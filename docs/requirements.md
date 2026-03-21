@@ -328,6 +328,34 @@ unsigned_to_signed MUST return Some(x as i64) when x <= i64::MAX, and
 None otherwise. The u64 → i64 → u64 roundtrip MUST preserve the value
 for inputs that fit in i64.
 
+## Bitmap
+
+r[bitmap.new]
+new MUST create a bitmap with num_bits bits, all initially clear. The
+number of backing u64 words MUST equal ceil(num_bits / 64).
+
+r[bitmap.get]
+get MUST return true if and only if the bit at the given position is set.
+Position MUST be less than num_bits.
+
+r[bitmap.set]
+set MUST set the bit at the given position to 1 without affecting other
+words. After set, get at the same position MUST return true.
+
+r[bitmap.clear]
+clear MUST set the bit at the given position to 0 without affecting other
+words. After clear, get at the same position MUST return false.
+
+r[bitmap.toggle]
+toggle MUST flip the bit at the given position. Toggling twice MUST
+restore the original word value.
+
+r[bitmap.len]
+len MUST return the total number of bits in the bitmap.
+
+r[bitmap.word-count]
+word_count MUST return the number of u64 words backing the bitmap.
+
 ## Ring Buffer
 
 r[ring-buffer.new]

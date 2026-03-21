@@ -12,6 +12,7 @@
 //!
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
+//! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bounds` — range predicates, clamping
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `collections` — sorted insert, binary search
@@ -23,6 +24,7 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
 pub mod arithmetic;
+pub mod bitmap;
 pub mod bitwise;
 pub mod bounds;
 pub mod conversion;

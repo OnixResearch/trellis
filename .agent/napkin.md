@@ -40,7 +40,16 @@
   - `&mut self` methods work with `old(self)` for pre-state references in ensures
   - Vec::set(i, v) is the Verus way to mutate vec elements in-place
   - Constructor loop builds Vec one element at a time (no vec![0; n] in Verus)
-- Total: 232 Verus proofs, 172 cargo tests, 80 requirements
+- Bitmap added: verified fixed-size bit set using bitwise module functions
+  - Toggle proof requires `(x >> p) & 1 == 0 || (x >> p) & 1 == 1` by(bit_vector)
+    because Z3 default theory treats `&` as uninterpreted — doesn't know & 1 ∈ {0,1}
+  - Split toggle ensures into two implications (was-set⟹now-clear, was-clear⟹now-set)
+    instead of `==` on booleans — Z3 handles implications better
+  - get_spec bridging needs explicit `assert(self.get_spec(...) == bit_at_spec(word, pos))`
+    to force Z3 to unfold through Vec indexing + bit_at_spec
+  - Word index bounds (pos/64 < words.len()) follows from div_ceil definition but Z3
+    handles it automatically when the invariant uses `(num_bits-1)/64+1` directly
+- Total: 249 Verus proofs, 183 cargo tests, 87 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
