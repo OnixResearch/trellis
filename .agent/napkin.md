@@ -8,6 +8,13 @@
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 
+## Recent Changes
+- Added `ordering` module: min, max, median_of_three, sign, compare_and_swap
+- 15 Verus proofs in the module (commutativity, associativity, idempotence, boundedness, antisymmetry)
+- 2 cross-module properties: min-max-abs-diff, clamp-via-min-max
+- 5 requirements + 2 cross-module requirements added to docs/requirements.md
+- Total: 90 Verus proofs, 73 cargo tests
+
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
 - `exec fn *(...)` with `ensures result == *_spec(args)` — runtime code, verified to match spec

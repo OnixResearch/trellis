@@ -37,10 +37,12 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 | Module | Functions | Verus proofs |
 |---|---|---|
-| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul` | 7 |
+| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul`, `gcd`, `div_ceil` | 10 |
+| `bitwise` | `is_power_of_two`, `bit_at`, `set_bit`, `clear_bit`, `toggle_bit` | 8 |
 | `bounds` | `in_range`, `clamp` | 4 |
-| `collections` | `sorted_insert`, `binary_search` | spec-level |
+| `collections` | `sorted_insert`, `binary_search`, `merge_sorted` | spec-level |
 | `option` | `unwrap_or_default`, `map` | 6 |
+| `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
 
 ## Usage
 

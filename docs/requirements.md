@@ -76,6 +76,29 @@ r[collections.merge-sorted]
 Merging two sorted sequences MUST produce a sorted sequence whose length
 equals the sum of the input lengths.
 
+## Ordering
+
+r[ordering.min]
+min MUST return the smaller of two values. min MUST be commutative,
+associative, and idempotent.
+
+r[ordering.max]
+max MUST return the larger of two values. max MUST be commutative,
+associative, and idempotent. min(a, b) <= max(a, b) MUST hold.
+
+r[ordering.median-of-three]
+median_of_three MUST return the middle value of three inputs. The result
+MUST be bounded by the overall min and max of the three values. The median
+of three equal values MUST be that value.
+
+r[ordering.sign]
+sign MUST return -1 if a < b, 0 if a == b, and 1 if a > b.
+sign MUST be antisymmetric: sign(a, b) == -sign(b, a).
+
+r[ordering.compare-and-swap]
+compare_and_swap MUST return (min(a,b), max(a,b)). The first element MUST
+be less than or equal to the second. Both input values MUST be preserved.
+
 ## Cross-Module Properties
 
 r[properties.abs-diff-zero-iff-equal]
@@ -112,6 +135,14 @@ complementary operations on individual bit positions.
 r[properties.toggle-involution]
 Toggling a bit twice MUST return the original value for any input and
 any valid bit position.
+
+r[properties.min-max-abs-diff]
+max(a, b) - min(a, b) MUST equal abs_diff(a, b). The gap between min and
+max is the absolute difference.
+
+r[properties.clamp-via-min-max]
+clamp(v, lo, hi) MUST equal min(max(v, lo), hi) when lo <= hi. Clamp is
+expressible as nested min/max.
 
 ## Option/Result Combinators
 

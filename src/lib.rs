@@ -11,13 +11,16 @@
 //! ## Modules
 //!
 //! - `arithmetic` — abs diff, saturating ops, checked mul
+//! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `bounds` — range predicates, clamping
 //! - `collections` — sorted insert, binary search
 //! - `option` — verified Option combinators
+//! - `ordering` — min, max, median, sign, compare-and-swap
 
 pub mod arithmetic;
 pub mod bitwise;
 pub mod bounds;
 pub mod collections;
 pub mod option;
+pub mod ordering;
 pub mod properties;

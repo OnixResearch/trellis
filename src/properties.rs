@@ -119,6 +119,39 @@ mod verus_proofs {
 
     // --- bitwise cross-module properties ---
 
+    use crate::ordering::{min_spec, max_spec};
+
+    // --- ordering × arithmetic ---
+
+    // r[impl properties.min-max-abs-diff]
+    /// max(a,b) - min(a,b) == abs_diff(a,b).
+    pub open spec fn min_max_abs_diff_prop(a: u64, b: u64) -> bool {
+        (max_spec(a, b) - min_spec(a, b)) as u64 == abs_diff_spec(a, b)
+    }
+
+    // r[verify properties.min-max-abs-diff]
+    proof fn prove_min_max_abs_diff(a: u64, b: u64)
+        ensures min_max_abs_diff_prop(a, b)
+    {}
+
+    // --- ordering × bounds ---
+
+    // r[impl properties.clamp-via-min-max]
+    /// clamp(v, lo, hi) == min(max(v, lo), hi).
+    pub open spec fn clamp_via_min_max_prop(v: u64, lo: u64, hi: u64) -> bool
+        recommends lo <= hi
+    {
+        clamp_spec(v, lo, hi) == min_spec(max_spec(v, lo), hi)
+    }
+
+    // r[verify properties.clamp-via-min-max]
+    proof fn prove_clamp_via_min_max(v: u64, lo: u64, hi: u64)
+        requires lo <= hi
+        ensures clamp_via_min_max_prop(v, lo, hi)
+    {}
+
+    // --- bitwise cross-module properties ---
+
     use crate::bitwise::{
         bit_at_spec, set_bit_spec, clear_bit_spec, toggle_bit_spec,
     };
@@ -165,6 +198,7 @@ mod tests {
     use crate::arithmetic::*;
     use crate::bitwise::*;
     use crate::bounds::*;
+    use crate::ordering::*;
 
     proptest! {
         // r[verify properties.abs-diff-zero-iff-equal]
@@ -241,6 +275,23 @@ mod tests {
             let d_hi = u128::from(abs_diff(value, hi));
             let range = u128::from(abs_diff(lo, hi));
             prop_assert_eq!(d_lo + d_hi, range);
+        }
+
+        // r[verify properties.min-max-abs-diff]
+        #[test]
+        fn prop_min_max_abs_diff(a: u64, b: u64) {
+            prop_assert_eq!(max(a, b) - min(a, b), abs_diff(a, b));
+        }
+
+        // r[verify properties.clamp-via-min-max]
+        #[test]
+        fn prop_clamp_via_min_max(
+            v: u64,
+            lo in 0..=u64::MAX / 2,
+            spread in 0..=u64::MAX / 2,
+        ) {
+            let hi = lo + spread;
+            prop_assert_eq!(clamp(v, lo, hi), min(max(v, lo), hi));
         }
 
         // r[verify properties.set-clear-roundtrip]
