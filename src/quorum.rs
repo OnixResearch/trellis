@@ -1,0 +1,221 @@
+//! Verified quorum arithmetic.
+//!
+//! Majority threshold, quorum predicates, and the intersection theorem:
+//! two quorums of the same set always share at least one member. This is
+//! the pigeonhole argument at the heart of Raft's safety proof.
+
+use vstd::prelude::*;
+
+verus! {
+
+// --- majority ---
+
+// r[depends quorum.majority]
+/// Spec: smallest count constituting a strict majority of `n`.
+pub open spec fn majority_spec(n: u64) -> u64
+    recommends n > 0
+{
+    (n / 2 + 1) as u64
+}
+
+// r[impl quorum.majority]
+/// Returns the majority threshold for `n` members.
+pub fn majority(n: u64) -> (result: u64)
+    requires n > 0
+    ensures result == majority_spec(n)
+{
+    n / 2 + 1
+}
+
+// r[verify quorum.majority]
+/// majority(n) is at least 1 for any n > 0.
+proof fn majority_ge_one(n: u64)
+    requires n > 0
+    ensures majority_spec(n) >= 1
+{}
+
+// r[verify quorum.majority]
+/// majority(n) is at most n for any n > 0.
+proof fn majority_le_n(n: u64)
+    requires n > 0
+    ensures majority_spec(n) <= n
+{
+    assert(n / 2 + 1 <= n) by(nonlinear_arith)
+        requires n > 0;
+}
+
+// r[verify quorum.majority]
+/// majority(n) is strictly more than half.
+proof fn majority_gt_half(n: u64)
+    requires n > 0
+    ensures majority_spec(n) as int * 2 > n as int
+{
+    assert((n as int / 2 + 1) * 2 > n as int) by(nonlinear_arith)
+        requires n > 0;
+}
+
+// --- is_quorum ---
+
+// r[depends quorum.is-quorum]
+/// Spec: count constitutes a quorum of total.
+pub open spec fn is_quorum_spec(count: u64, total: u64) -> bool
+    recommends total > 0
+{
+    count >= majority_spec(total)
+}
+
+// r[impl quorum.is-quorum]
+/// Returns true if `count` forms a quorum of `total` members.
+pub fn is_quorum(count: u64, total: u64) -> (result: bool)
+    requires total > 0
+    ensures result == is_quorum_spec(count, total)
+{
+    count >= majority(total)
+}
+
+// r[verify quorum.is-quorum]
+/// A full set always forms a quorum.
+proof fn full_is_quorum(n: u64)
+    requires n > 0
+    ensures is_quorum_spec(n, n)
+{
+    majority_le_n(n);
+}
+
+// r[verify quorum.is-quorum]
+/// A single member of a single-node cluster is a quorum.
+proof fn singleton_quorum()
+    ensures is_quorum_spec(1, 1)
+{}
+
+// --- intersection theorem ---
+
+// r[depends quorum.intersection]
+/// Spec: two quorums overlap — their combined count exceeds total.
+pub open spec fn quorum_intersection_prop(a: u64, b: u64, n: u64) -> bool
+    recommends n > 0
+{
+    (is_quorum_spec(a, n) && is_quorum_spec(b, n))
+        ==> a as int + b as int > n as int
+}
+
+// r[impl quorum.intersection]
+// r[verify quorum.intersection]
+/// THE safety theorem: two quorums of the same set always share a member.
+///
+/// Proof: each quorum has at least n/2 + 1 members. Together they account
+/// for at least 2*(n/2 + 1) = n + 2 - (n%2) > n slots in an n-member set.
+/// By pigeonhole, at least one member belongs to both.
+proof fn prove_quorum_intersection(a: u64, b: u64, n: u64)
+    requires n > 0, is_quorum_spec(a, n), is_quorum_spec(b, n)
+    ensures a as int + b as int > n as int
+{
+    // a >= n/2 + 1, b >= n/2 + 1
+    // a + b >= 2*(n/2 + 1) = 2*(n/2) + 2
+    // n = 2*(n/2) + n%2, so 2*(n/2) = n - n%2
+    // a + b >= n - n%2 + 2 >= n + 1 > n
+    assert((n as int / 2 + 1) + (n as int / 2 + 1) > n as int) by(nonlinear_arith)
+        requires n > 0;
+}
+
+} // verus!
+
+#[cfg(test)]
+mod tests {
+    use proptest::prelude::*;
+
+    use super::*;
+
+    // r[verify quorum.majority]
+    #[test]
+    fn test_majority() {
+        assert_eq!(majority(1), 1);
+        assert_eq!(majority(2), 2);
+        assert_eq!(majority(3), 2);
+        assert_eq!(majority(4), 3);
+        assert_eq!(majority(5), 3);
+        assert_eq!(majority(6), 4);
+        assert_eq!(majority(7), 4);
+        assert_eq!(majority(100), 51);
+    }
+
+    // r[verify quorum.is-quorum]
+    #[test]
+    fn test_is_quorum() {
+        // 3-node cluster: majority is 2
+        assert!(!is_quorum(0, 3));
+        assert!(!is_quorum(1, 3));
+        assert!(is_quorum(2, 3));
+        assert!(is_quorum(3, 3));
+
+        // 5-node cluster: majority is 3
+        assert!(!is_quorum(2, 5));
+        assert!(is_quorum(3, 5));
+        assert!(is_quorum(4, 5));
+        assert!(is_quorum(5, 5));
+
+        // 1-node cluster: majority is 1
+        assert!(is_quorum(1, 1));
+    }
+
+    // r[verify quorum.intersection]
+    #[test]
+    fn test_quorum_intersection() {
+        // Two quorums of 5: majority is 3, so min quorum pair sums to 6 > 5
+        let m5 = majority(5);
+        assert!(is_quorum(m5, 5));
+        assert!(u128::from(m5) + u128::from(m5) > 5);
+
+        // Two quorums of 3: majority is 2, so min quorum pair sums to 4 > 3
+        let m3 = majority(3);
+        assert!(is_quorum(m3, 3));
+        assert!(u128::from(m3) + u128::from(m3) > 3);
+    }
+
+    proptest! {
+        // r[verify quorum.majority]
+        #[test]
+        fn prop_majority_bounds(n in 1u64..=10000) {
+            let m = majority(n);
+            prop_assert!(m >= 1);
+            prop_assert!(m <= n);
+        }
+
+        // r[verify quorum.majority]
+        #[test]
+        fn prop_majority_gt_half(n in 1u64..=10000) {
+            let m = u128::from(majority(n));
+            prop_assert!(m * 2 > u128::from(n));
+        }
+
+        // r[verify quorum.is-quorum]
+        #[test]
+        fn prop_full_is_quorum(n in 1u64..=10000) {
+            prop_assert!(is_quorum(n, n));
+        }
+
+        // r[verify quorum.intersection]
+        #[test]
+        fn prop_quorum_intersection(
+            n in 1u64..=10000,
+            a_extra in 0u64..=100,
+            b_extra in 0u64..=100,
+        ) {
+            let m = majority(n);
+            let a = m.saturating_add(a_extra).min(n);
+            let b = m.saturating_add(b_extra).min(n);
+            // Both a and b are quorums (>= majority, <= n)
+            prop_assert!(is_quorum(a, n));
+            prop_assert!(is_quorum(b, n));
+            // Intersection: a + b > n
+            prop_assert!(u128::from(a) + u128::from(b) > u128::from(n));
+        }
+
+        // r[verify quorum.is-quorum]
+        #[test]
+        fn prop_below_majority_not_quorum(n in 2u64..=10000) {
+            let m = majority(n);
+            prop_assert!(!is_quorum(m - 1, n));
+        }
+    }
+}

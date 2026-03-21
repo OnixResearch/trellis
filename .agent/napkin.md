@@ -49,7 +49,13 @@
     to force Z3 to unfold through Vec indexing + bit_at_spec
   - Word index bounds (pos/64 < words.len()) follows from div_ceil definition but Z3
     handles it automatically when the invariant uses `(num_bits-1)/64+1` directly
-- Total: 249 Verus proofs, 183 cargo tests, 87 requirements
+- Quorum module added: majority, is_quorum, intersection theorem
+  - Intersection proof uses by(nonlinear_arith) for (n/2+1)+(n/2+1) > n
+  - majority_le_n also needs nonlinear_arith: n/2+1 <= n for n > 0
+  - majority_gt_half: (n/2+1)*2 > n — the key fact for pigeonhole
+  - All three proofs are one-line nonlinear_arith — Z3's nonlinear solver
+    handles integer division bounds cleanly
+- Total: 260 Verus proofs, 191 cargo tests, 90 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

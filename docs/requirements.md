@@ -396,3 +396,18 @@ MUST equal capacity.
 r[ring-buffer.full-batches]
 full_batches MUST return the number of complete batches of the given
 size that can be popped from the current contents.
+
+## Quorum
+
+r[quorum.majority]
+majority(n) MUST return n / 2 + 1 for any n > 0. majority(1) MUST be 1.
+majority(2) MUST be 2. majority(5) MUST be 3. The result MUST satisfy
+1 <= majority(n) <= n.
+
+r[quorum.is-quorum]
+is_quorum(count, total) MUST return true if and only if count >=
+majority(total). total MUST be greater than zero.
+
+r[quorum.intersection]
+If is_quorum(a, n) and is_quorum(b, n) both hold, then a + b MUST be
+greater than n. Two quorums of the same set MUST always overlap.

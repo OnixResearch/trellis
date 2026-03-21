@@ -19,6 +19,7 @@
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
+//! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
@@ -33,6 +34,7 @@ pub mod integer;
 pub mod option;
 pub mod ordering;
 pub mod properties;
+pub mod quorum;
 pub mod result;
 pub mod ring_buffer;
 pub mod slice;

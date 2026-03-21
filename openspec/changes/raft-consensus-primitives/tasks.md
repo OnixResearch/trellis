@@ -1,12 +1,12 @@
 ## Phase 1: Quorum module
 
-- [ ] Add quorum requirements to docs/requirements.md (majority, is_quorum, intersection)
-- [ ] Implement src/quorum.rs: majority spec+exec, is_quorum spec+exec
-- [ ] Prove quorum_intersection: is_quorum(a, n) && is_quorum(b, n) ==> a + b > n
-- [ ] Prove majority_bounds: 1 <= majority(n) <= n for n > 0
+- [x] Add quorum requirements to docs/requirements.md (majority, is_quorum, intersection) ✅
+- [x] Implement src/quorum.rs: majority spec+exec, is_quorum spec+exec ✅
+- [x] Prove quorum_intersection: is_quorum(a, n) && is_quorum(b, n) ==> a + b > n ✅
+- [x] Prove majority_bounds: 1 <= majority(n) <= n for n > 0 ✅
 - [ ] Prove majority_via_div_ceil cross-module property (majority(n) == div_ceil(n + 1, 2))
-- [ ] Unit tests + proptest for quorum functions
-- [ ] Verus + tracey clean
+- [x] Unit tests + proptest for quorum functions ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 2: Monotonic module
 
