@@ -10,13 +10,13 @@
 
 ## Phase 2: Monotonic module
 
-- [ ] Add monotonic requirements to docs/requirements.md (advance, strict_advance)
-- [ ] Implement src/monotonic.rs: is_advance spec+exec, is_strict_advance spec+exec
-- [ ] Prove reflexive, transitive, antisymmetric for is_advance
-- [ ] Prove irreflexive, transitive for is_strict_advance
-- [ ] Prove advance_strict_composition: a < b && b <= c ==> a < c
-- [ ] Unit tests + proptest
-- [ ] Verus + tracey clean
+- [x] Add monotonic requirements to docs/requirements.md (advance, strict_advance) ✅
+- [x] Implement src/monotonic.rs: is_advance spec+exec, is_strict_advance spec+exec ✅
+- [x] Prove reflexive, transitive, antisymmetric for is_advance ✅
+- [x] Prove irreflexive, transitive for is_strict_advance ✅
+- [x] Prove advance_strict_composition: a < b && b <= c ==> a < c ✅
+- [x] Unit tests + proptest ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 3: Epoch module
 

@@ -411,3 +411,14 @@ majority(total). total MUST be greater than zero.
 r[quorum.intersection]
 If is_quorum(a, n) and is_quorum(b, n) both hold, then a + b MUST be
 greater than n. Two quorums of the same set MUST always overlap.
+
+## Monotonic
+
+r[monotonic.is-advance]
+is_advance(old, new) MUST return true if and only if new >= old. Advance
+MUST be reflexive, transitive, and antisymmetric.
+
+r[monotonic.is-strict-advance]
+is_strict_advance(old, new) MUST return true if and only if new > old.
+Strict advance MUST be irreflexive and transitive. A strict advance
+followed by a non-strict advance MUST still be a strict advance.

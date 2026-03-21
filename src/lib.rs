@@ -18,6 +18,7 @@
 //! - `collections` — sorted insert, binary search
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
+//! - `monotonic` — advancement predicates for terms, commit indices
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `result` — verified Result combinators
@@ -31,6 +32,7 @@ pub mod bounds;
 pub mod conversion;
 pub mod collections;
 pub mod integer;
+pub mod monotonic;
 pub mod option;
 pub mod ordering;
 pub mod properties;
