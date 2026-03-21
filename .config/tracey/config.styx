@@ -5,7 +5,7 @@ specs (
     impls (
       {
         name rust
-        include (src/**/*.rs verus/**/*.rs)
+        include (src/**/*.rs)
         exclude (target/**)
         test_include (tests/**/*.rs)
       }

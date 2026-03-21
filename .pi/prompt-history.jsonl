@@ -3,3 +3,4 @@
 {"text":"lets continue","timestamp":1774109497154}
 {"text":"how could we incorporate clippy with this better?","timestamp":1774109767533}
 {"text":"how else can we ensure full verification?","timestamp":1774110137372}
+{"text":"is there a way to embed the verus inside the rust code so there cannot be drift","timestamp":1774110654699}

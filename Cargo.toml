@@ -6,6 +6,10 @@ license = "AGPL-3.0-or-later"
 description = "Verified logic building blocks — machine-checked with Verus"
 
 [dependencies]
+vstd = "=0.0.0-2026-01-25-0057"
+
+[package.metadata.verus]
+verify = true
 
 [dev-dependencies]
 pretty_assertions = "1.0"
@@ -21,6 +25,7 @@ default = []
 [lints.rust]
 unsafe_code = "forbid"
 missing_docs = "warn"
+unexpected_cfgs = { level = "allow", check-cfg = ['cfg(verus_keep_ghost)', 'cfg(verus_keep_ghost_body)'] }
 
 [lints.clippy]
 # --- Deny: correctness and suspicious code ---

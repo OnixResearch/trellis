@@ -25,7 +25,7 @@ fi
 echo ""
 
 echo "=== Verus verification ==="
-if ./scripts/verus.sh verus/lib.rs; then
+if ./scripts/verus.sh src/lib.rs; then
     echo "✓ verus proofs pass"
 else
     echo "✗ verus verification failed"

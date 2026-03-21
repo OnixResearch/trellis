@@ -2,18 +2,45 @@
 
 Reusable logic building blocks with machine-checked correctness.
 
-Every public function has formal pre/postconditions verified by
-[Verus](https://verus-lang.github.io/verus/guide/). Requirement coverage
-is tracked by [Tracey](https://tracey.bearcove.eu/).
+Every public function has a `spec fn` (mathematical definition) and an
+`exec fn` whose `ensures result == spec(args)` clause is verified by
+[Verus](https://verus-lang.github.io/verus/guide/). The specs are embedded
+directly in `src/` — drift between spec and implementation is structurally
+impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
+
+## How it works
+
+```rust
+verus! {
+
+// Mathematical definition (ghost code, erased at compile time)
+pub open spec fn abs_diff_spec(a: u64, b: u64) -> u64 {
+    if a >= b { (a - b) as u64 } else { (b - a) as u64 }
+}
+
+// Runtime implementation — Verus checks `ensures` against the body
+pub fn abs_diff(a: u64, b: u64) -> (result: u64)
+    ensures result == abs_diff_spec(a, b)    // ← mechanically checked
+{
+    if a >= b { a - b } else { b - a }
+}
+
+// Machine-checked proof of a property
+proof fn abs_diff_symmetric(a: u64, b: u64)
+    ensures abs_diff_spec(a, b) == abs_diff_spec(b, a)
+{}
+
+} // verus!
+```
 
 ## Modules
 
-| Module | Functions | Proofs |
+| Module | Functions | Verus proofs |
 |---|---|---|
-| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul` | 8 |
-| `bounds` | `in_range`, `clamp` | 5 |
-| `collections` | `sorted_insert`, `binary_search` | 5 |
-| `option` | `unwrap_or_default`, `map` | 4 |
+| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul` | 7 |
+| `bounds` | `in_range`, `clamp` | 4 |
+| `collections` | `sorted_insert`, `binary_search` | spec-level |
+| `option` | `unwrap_or_default`, `map` | 6 |
 
 ## Usage
 
@@ -34,39 +61,29 @@ let c = clamp(15, 0, 10); // 10
 
 ```bash
 nix develop          # enter devshell
-cargo check          # verify compilation
-cargo nextest run    # run tests
+cargo check          # compile (ghost code erased)
+cargo test           # 25 tests (unit + property)
 nix flake check      # full CI (build + test + clippy + fmt)
 ```
 
 ## Verification
 
 ```bash
-# Run everything — verus proofs + tracey coverage
-./scripts/verify.sh
+./scripts/verify.sh  # all gates: clippy → tests → verus → tracey
 
-# Verus proofs only (22 proofs across 4 files)
-./scripts/verus.sh verus/lib.rs
-
-# Tracey coverage
-tracey query status     # overview
-tracey query uncovered  # missing implementations
-tracey query untested   # missing tests/proofs
+./scripts/verus.sh   # verus only (verifies src/lib.rs)
+tracey query status  # requirement coverage
 ```
 
 ## Structure
 
 ```
-docs/requirements.md          ← 10 requirements (source of truth)
-src/arithmetic.rs              ← r[impl]  runtime code + tests r[verify]
-src/bounds.rs                  ← r[impl]  runtime code + tests r[verify]
-src/collections.rs             ← r[impl]  runtime code + tests r[verify]
-src/option.rs                  ← r[impl]  runtime code + tests r[verify]
-verus/arithmetic_spec.rs       ← r[depends] specs + r[verify] proofs
-verus/bounds_spec.rs           ← r[depends] specs + r[verify] proofs
-verus/collections_spec.rs      ← r[depends] specs + r[verify] proofs
-verus/option_spec.rs           ← r[depends] specs + r[verify] proofs
-.config/tracey/config.styx     ← tracey config
-scripts/verify.sh              ← combined verus + tracey check
-scripts/verus.sh               ← verus wrapper with nix store paths
+src/lib.rs             ← crate root
+src/arithmetic.rs      ← spec fn + exec fn + proof fn + tests
+src/bounds.rs          ← spec fn + exec fn + proof fn + tests
+src/collections.rs     ← spec fn + exec fn + tests (stdlib methods)
+src/option.rs          ← spec fn + exec fn + proof fn + tests
+docs/requirements.md   ← 10 tracey requirements
+scripts/verify.sh      ← full verification pipeline
+scripts/verus.sh       ← verus wrapper with nix store paths
 ```
