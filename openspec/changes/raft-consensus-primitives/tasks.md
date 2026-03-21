@@ -20,13 +20,13 @@
 
 ## Phase 3: Epoch module
 
-- [ ] Add epoch requirements to docs/requirements.md (epoch_cmp, epoch_ge)
-- [ ] Implement src/epoch.rs: Epoch struct, epoch_cmp spec+exec, epoch_ge spec+exec
-- [ ] Prove total ordering: exactly one of <, ==, > holds for any two epochs
-- [ ] Prove transitivity and antisymmetry
-- [ ] Prove epoch_ge_reflexive, epoch_ge_antisymmetric
-- [ ] Unit tests + proptest with random epoch pairs
-- [ ] Verus + tracey clean
+- [x] Add epoch requirements to docs/requirements.md (epoch_cmp, epoch_ge) ✅
+- [x] Implement src/epoch.rs: Epoch struct, epoch_cmp spec+exec, epoch_ge spec+exec ✅
+- [x] Prove total ordering: exactly one of <, ==, > holds for any two epochs ✅
+- [x] Prove transitivity and antisymmetry ✅
+- [x] Prove epoch_ge_reflexive, epoch_ge_antisymmetric ✅
+- [x] Unit tests + proptest with random epoch pairs ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 4: Log module
 

@@ -422,3 +422,15 @@ r[monotonic.is-strict-advance]
 is_strict_advance(old, new) MUST return true if and only if new > old.
 Strict advance MUST be irreflexive and transitive. A strict advance
 followed by a non-strict advance MUST still be a strict advance.
+
+## Epoch
+
+r[epoch.cmp]
+epoch_cmp MUST compare (term, index) pairs lexicographically: first by
+term, then by index. MUST return -1 if a < b, 0 if a == b, 1 if a > b.
+The ordering MUST be total, transitive, and antisymmetric.
+
+r[epoch.ge]
+epoch_ge(a, b) MUST return true if and only if epoch a is greater than
+or equal to b in the lexicographic ordering. This is the vote-granting
+predicate: a candidate's log must be at least as up-to-date as the voter's.

@@ -15,6 +15,7 @@
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bounds` — range predicates, clamping
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
+//! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `collections` — sorted insert, binary search
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
@@ -30,6 +31,7 @@ pub mod bitmap;
 pub mod bitwise;
 pub mod bounds;
 pub mod conversion;
+pub mod epoch;
 pub mod collections;
 pub mod integer;
 pub mod monotonic;

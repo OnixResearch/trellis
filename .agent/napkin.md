@@ -55,7 +55,14 @@
   - majority_gt_half: (n/2+1)*2 > n — the key fact for pigeonhole
   - All three proofs are one-line nonlinear_arith — Z3's nonlinear solver
     handles integer division bounds cleanly
-- Total: 260 Verus proofs, 191 cargo tests, 90 requirements
+- Monotonic module added: is_advance, is_strict_advance with full ordering proofs
+  - All proofs automatic — Z3 handles linear integer ordering without hints
+  - Mixed composition proofs (strict + non-strict) verify instantly
+- Epoch module added: lexicographic (term, index) comparison
+  - Total ordering, transitivity, antisymmetry, higher-term-wins all automatic
+  - epoch_ge_antisymmetric calls epoch_cmp_eq and epoch_cmp_antisymmetric as helpers
+  - bool_to_int_with_if clippy lint suppressed — Verus needs explicit if-chain
+- Total: 281 Verus proofs, 207 cargo tests, 94 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
