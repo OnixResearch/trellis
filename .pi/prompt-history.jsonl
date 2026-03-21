@@ -4,3 +4,4 @@
 {"text":"how could we incorporate clippy with this better?","timestamp":1774109767533}
 {"text":"how else can we ensure full verification?","timestamp":1774110137372}
 {"text":"is there a way to embed the verus inside the rust code so there cannot be drift","timestamp":1774110654699}
+{"text":"lets write that down in the agent.md to do this","timestamp":1774111329564}

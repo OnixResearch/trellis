@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # Wrapper around verus rust_verify with correct nix store paths.
 # Usage: ./scripts/verus.sh [file.rs] [extra args...]
-# Default file: verus/lib.rs
+# Default file: src/lib.rs
 set -euo pipefail
 
 VERUS_ROOT=/nix/store/7hr3z8ss29pxl29pllv6kchlk9kbckys-verus-root-0.2026.01.30
