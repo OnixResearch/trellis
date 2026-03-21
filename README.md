@@ -46,6 +46,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `option` | `unwrap_or_default`, `map`, `and_then`, `or_else`, `flatten`, `zip`, `filter` | 21 |
 | `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
 | `result` | `unwrap_or`, `map_ok`, `map_err`, `and_then`, `or_else` | 14 |
+| `ring_buffer` | `new`, `push`, `pop`, `peek`, `len`, `is_empty`, `is_full`, `capacity`, `remaining`, `full_batches` | 2 |
 | `slice` | `chunk_count`, `prefix_eq`, `suffix_eq`, `all_equal`, `mismatch_index` | 11 |
 
 ## Usage

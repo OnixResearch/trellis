@@ -19,6 +19,7 @@
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `result` — verified Result combinators
+//! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
 pub mod arithmetic;
@@ -31,4 +32,5 @@ pub mod option;
 pub mod ordering;
 pub mod properties;
 pub mod result;
+pub mod ring_buffer;
 pub mod slice;

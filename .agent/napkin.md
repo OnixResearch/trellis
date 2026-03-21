@@ -30,7 +30,17 @@
     case split on n%k > 0 vs == 0 with nonlinear_arith per branch
   - all_equal_implies_count needs inductive helper (count_from == len - from)
   - all_equal_implies_partitioned and narrow_iff_in_range are automatic (Z3 instant)
-- Total: 219 Verus proofs, 160 cargo tests, 70 requirements
+- Ring buffer added: verified FIFO queue with power-of-two capacity
+  - Struct fields must be `pub` for `pub open spec fn` — Verus treats struct as opaque
+    outside the module when any field is private
+  - `is_power_of_two_spec` import needs #[cfg(verus_keep_ghost)] — spec fns are erased
+    in normal builds, so top-level `use` fails without the gate
+  - Pop overflow fix: capture `head` and `cap` as locals before mutation, so Verus
+    retains `head < cap` for the `(head + 1)` arithmetic
+  - `&mut self` methods work with `old(self)` for pre-state references in ensures
+  - Vec::set(i, v) is the Verus way to mutate vec elements in-place
+  - Constructor loop builds Vec one element at a time (no vec![0; n] in Verus)
+- Total: 232 Verus proofs, 172 cargo tests, 80 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

@@ -327,3 +327,44 @@ r[conversion.unsigned-to-signed]
 unsigned_to_signed MUST return Some(x as i64) when x <= i64::MAX, and
 None otherwise. The u64 → i64 → u64 roundtrip MUST preserve the value
 for inputs that fit in i64.
+
+## Ring Buffer
+
+r[ring-buffer.new]
+new MUST create an empty ring buffer with the given power-of-two capacity.
+The result MUST satisfy the well-formedness invariant with count zero.
+
+r[ring-buffer.push]
+push MUST write the value at the tail position and advance the tail
+with wraparound. push MUST return true on success and false when full.
+Count MUST increase by one on success. The buffer MUST remain well-formed.
+
+r[ring-buffer.pop]
+pop MUST return Some with the head element and advance the head with
+wraparound. pop MUST return None when empty. Count MUST decrease by one
+on success. The buffer MUST remain well-formed.
+
+r[ring-buffer.peek]
+peek MUST return Some with the head element without modifying the buffer.
+peek MUST return None when empty.
+
+r[ring-buffer.len]
+len MUST return the current count of elements.
+
+r[ring-buffer.is-empty]
+is_empty MUST return true if and only if count is zero. An empty buffer
+with nonzero capacity MUST NOT be full.
+
+r[ring-buffer.is-full]
+is_full MUST return true if and only if count equals capacity.
+
+r[ring-buffer.capacity]
+capacity MUST return the buffer's fixed capacity.
+
+r[ring-buffer.remaining]
+remaining MUST return capacity minus current count. remaining plus len
+MUST equal capacity.
+
+r[ring-buffer.full-batches]
+full_batches MUST return the number of complete batches of the given
+size that can be popped from the current contents.
