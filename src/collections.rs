@@ -196,6 +196,55 @@ pub fn sorted_insert(slice: &[u64], value: u64) -> (result: Vec<u64>)
     result
 }
 
+// --- merge_sorted ---
+
+// r[impl collections.merge-sorted]
+/// Merges two sorted slices into a single sorted `Vec`.
+///
+/// Two-pointer merge: pick the smaller head, advance that pointer.
+/// The invariant tracks that:
+/// - result is sorted
+/// - every element in result <= the next element from both a and b
+pub fn merge_sorted(a: &[u64], b: &[u64]) -> (result: Vec<u64>)
+    requires
+        is_sorted_spec(a@),
+        is_sorted_spec(b@),
+        a@.len() + b@.len() < usize::MAX,
+    ensures
+        result@.len() == a@.len() + b@.len(),
+        is_sorted_spec(result@),
+{
+    let mut result = Vec::with_capacity(a.len() + b.len());
+    let mut i: usize = 0;
+    let mut j: usize = 0;
+
+    while i < a.len() || j < b.len()
+        invariant
+            0 <= i <= a@.len(),
+            0 <= j <= b@.len(),
+            result@.len() == i as int + j as int,
+            is_sorted_spec(a@),
+            is_sorted_spec(b@),
+            is_sorted_spec(result@),
+            forall|k: int| 0 <= k < result@.len() ==> (
+                (i < a@.len() ==> result@[k] <= a@[i as int]) &&
+                (j < b@.len() ==> result@[k] <= b@[j as int])
+            ),
+            a@.len() + b@.len() < usize::MAX,
+        decreases a@.len() - i as int + b@.len() - j as int,
+    {
+        if i < a.len() && (j >= b.len() || a[i] <= b[j]) {
+            result.push(a[i]);
+            i = i + 1;
+        } else {
+            result.push(b[j]);
+            j = j + 1;
+        }
+    }
+
+    result
+}
+
 } // verus!
 
 #[cfg(test)]
@@ -271,5 +320,52 @@ mod tests {
                 prop_assert!(!s.contains(&target));
             }
         }
+
+        // r[verify collections.merge-sorted]
+        #[test]
+        fn prop_merge_sorted_length(
+            a in sorted_vec(30),
+            b in sorted_vec(30),
+        ) {
+            let result = merge_sorted(&a, &b);
+            prop_assert_eq!(result.len(), a.len() + b.len());
+        }
+
+        // r[verify collections.merge-sorted]
+        #[test]
+        fn prop_merge_sorted_is_sorted(
+            a in sorted_vec(30),
+            b in sorted_vec(30),
+        ) {
+            let result = merge_sorted(&a, &b);
+            prop_assert!(is_sorted(&result));
+        }
+
+        // r[verify collections.merge-sorted]
+        #[test]
+        fn prop_merge_sorted_contains_all(
+            a in sorted_vec(30),
+            b in sorted_vec(30),
+        ) {
+            let result = merge_sorted(&a, &b);
+            // Every element from a and b appears in result
+            for &x in &a {
+                prop_assert!(result.contains(&x));
+            }
+            for &x in &b {
+                prop_assert!(result.contains(&x));
+            }
+        }
+    }
+
+    // r[verify collections.merge-sorted]
+    #[test]
+    fn test_merge_sorted() {
+        assert_eq!(merge_sorted(&[1, 3, 5], &[2, 4, 6]), vec![1, 2, 3, 4, 5, 6]);
+        assert_eq!(merge_sorted(&[1, 2, 3], &[]), vec![1, 2, 3]);
+        assert_eq!(merge_sorted(&[], &[4, 5, 6]), vec![4, 5, 6]);
+        assert_eq!(merge_sorted(&[1, 1], &[1, 1]), vec![1, 1, 1, 1]);
+        let empty: &[u64] = &[];
+        assert_eq!(merge_sorted(empty, empty), vec![]);
     }
 }

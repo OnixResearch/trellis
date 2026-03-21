@@ -167,8 +167,9 @@ proof fn toggle_bit_involution(x: u64, pos: u64)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify bitwise.is-power-of-two]
     #[test]

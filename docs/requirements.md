@@ -43,6 +43,14 @@ r[arithmetic.checked-mul]
 Checked multiplication MUST return None when the result would overflow
 the type's range, and Some(a * b) otherwise.
 
+r[arithmetic.gcd]
+The greatest common divisor function MUST compute the GCD via the Euclidean
+algorithm. gcd(a, 0) MUST return a. gcd(0, a) MUST return a.
+
+r[arithmetic.div-ceil]
+Ceiling division MUST return the smallest integer >= a/b. div_ceil(0, b)
+MUST return 0. The divisor MUST be nonzero.
+
 ## Bounds
 
 r[bounds.in-range]
@@ -63,6 +71,10 @@ r[collections.binary-search]
 Binary search on a sorted sequence MUST return the index of the target if
 present, or None if absent. It MUST NOT access indices outside the sequence
 bounds.
+
+r[collections.merge-sorted]
+Merging two sorted sequences MUST produce a sorted sequence whose length
+equals the sum of the input lengths.
 
 ## Cross-Module Properties
 
