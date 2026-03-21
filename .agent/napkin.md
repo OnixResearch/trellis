@@ -9,11 +9,12 @@
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 
 ## Recent Changes
-- Added `ordering` module: min, max, median_of_three, sign, compare_and_swap
-- 15 Verus proofs in the module (commutativity, associativity, idempotence, boundedness, antisymmetry)
-- 2 cross-module properties: min-max-abs-diff, clamp-via-min-max
-- 5 requirements + 2 cross-module requirements added to docs/requirements.md
-- Total: 90 Verus proofs, 73 cargo tests
+- Expanded `option` module: added and_then, or_else, flatten, zip, filter
+  - Functor composition law, monad identity laws, filter idempotence
+- Added `result` module: unwrap_or, map_ok, map_err, and_then, or_else
+  - Functor composition, map_ok/map_err commutativity, monad right identity
+- `.gitignore` had `result*` catching `src/result.rs` — changed to `/result*`
+- Total: 125 Verus proofs, 100 cargo tests
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

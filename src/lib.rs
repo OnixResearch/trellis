@@ -16,6 +16,7 @@
 //! - `collections` — sorted insert, binary search
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
+//! - `result` — verified Result combinators
 
 pub mod arithmetic;
 pub mod bitwise;
@@ -24,3 +25,4 @@ pub mod collections;
 pub mod option;
 pub mod ordering;
 pub mod properties;
+pub mod result;

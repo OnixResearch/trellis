@@ -144,7 +144,7 @@ r[properties.clamp-via-min-max]
 clamp(v, lo, hi) MUST equal min(max(v, lo), hi) when lo <= hi. Clamp is
 expressible as nested min/max.
 
-## Option/Result Combinators
+## Option Combinators
 
 r[option.unwrap-or-default]
 unwrap_or_default MUST return the contained value if Some, or the provided
@@ -152,3 +152,52 @@ default if None.
 
 r[option.map-preserves-none]
 Mapping over None MUST produce None regardless of the mapping function.
+Mapping MUST satisfy the functor composition law: map(map(opt, f), g)
+equals map(opt, g∘f).
+
+r[option.and-then]
+and_then MUST apply `f` to the contained value if Some, returning its
+result. and_then on None MUST return None. and_then MUST satisfy the
+monad identity laws: and_then(Some(v), f) == f(v) and
+and_then(opt, Some) == opt.
+
+r[option.or-else]
+or_else MUST return the option unchanged if Some. or_else on None MUST
+return the fallback value. or_else with a Some fallback MUST always
+yield Some.
+
+r[option.flatten]
+flatten on Some(Some(v)) MUST return Some(v). flatten on Some(None) and
+flatten on None MUST both return None.
+
+r[option.zip]
+zip MUST return Some((a, b)) if and only if both inputs are Some.
+If either input is None, zip MUST return None.
+
+r[option.filter]
+filter MUST return Some(v) when the predicate holds, None when it does
+not. filter on None MUST return None. filter MUST be idempotent:
+filter(filter(opt, p), p) == filter(opt, p).
+
+## Result Combinators
+
+r[result.unwrap-or]
+unwrap_or MUST return the Ok value if present, or the provided default
+if Err.
+
+r[result.map-ok]
+map_ok MUST apply `f` to the Ok value, leaving Err untouched. map_ok
+MUST satisfy the functor composition law. map_ok and map_err MUST
+commute: the order of application does not matter.
+
+r[result.map-err]
+map_err MUST apply `f` to the Err value, leaving Ok untouched.
+
+r[result.and-then]
+and_then on Ok(v) MUST apply `f`, returning its result. and_then on
+Err(e) MUST propagate the error unchanged. and_then MUST satisfy the
+monad right identity: and_then(res, Ok) == res.
+
+r[result.or-else]
+or_else on Ok(v) MUST return Ok(v) unchanged. or_else on Err MUST return
+the fallback. or_else with an Ok fallback MUST always yield Ok.

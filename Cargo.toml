@@ -50,6 +50,8 @@ manual_map = "allow"
 manual_saturating_arithmetic = "allow"
 manual_unwrap_or = "allow"
 manual_is_power_of_two = "allow"
+manual_filter = "allow"
+manual_unwrap_or_default = "allow"
 implicit_saturating_sub = "allow"
 
 # Verus loop patterns: `i = i + 1` (not `i += 1`), integer midpoint,
