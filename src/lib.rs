@@ -19,6 +19,7 @@
 //! - `collections` — sorted insert, binary search
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
+//! - `log` — append-only log with Log Matching Property
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
@@ -34,6 +35,7 @@ pub mod conversion;
 pub mod epoch;
 pub mod collections;
 pub mod integer;
+pub mod log;
 pub mod monotonic;
 pub mod option;
 pub mod ordering;

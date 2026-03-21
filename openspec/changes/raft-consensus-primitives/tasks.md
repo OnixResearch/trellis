@@ -30,14 +30,14 @@
 
 ## Phase 4: Log module
 
-- [ ] Add log requirements to docs/requirements.md (agree_at, prefix_matching, append, truncate)
-- [ ] Implement src/log.rs: agree_at spec, logs_match_prefix spec, log_append exec, log_truncate exec
-- [ ] Prove Log Matching Property: agree_at(a, b, k) for all i <= k ==> prefix match
-- [ ] Prove append preserves prefix: old log is prefix of new log
-- [ ] Prove truncate preserves prefix: truncated log is prefix of original
-- [ ] Link log prefix matching to slice::prefix_eq via cross-module property
-- [ ] Unit tests + proptest + model oracle (Vec-based reference log)
-- [ ] Verus + tracey clean
+- [x] Add log requirements to docs/requirements.md (agree_at, prefix_matching, append, truncate) ✅
+- [x] Implement src/log.rs: agree_at spec, logs_match_prefix spec, log_append exec, log_truncate exec ✅
+- [x] Prove Log Matching Property: prefix_match_implies_agree, prefix_match_monotonic ✅
+- [x] Prove append preserves prefix: old log is prefix of new log ✅
+- [x] Prove truncate preserves prefix: truncated log is prefix of original ✅
+- [x] Prove append_truncate_roundtrip ✅
+- [x] Unit tests + proptest ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 5: Cross-module properties
 

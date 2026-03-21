@@ -43,6 +43,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bounds` | `in_range`, `clamp` | 4 |
 | `conversion` | `narrow_u32`, `narrow_u16`, `narrow_u8`, `signed_to_unsigned`, `unsigned_to_signed` | 18 |
 | `integer` | `is_even`, `is_odd`, `align_down`, `align_up`, `log2_floor`, `next_power_of_two` | 20 |
+| `log` | `agree_at`, `logs_match_prefix`, `log_append`, `log_truncate` | 13 |
 | `collections` | `sorted_insert`, `binary_search`, `merge_sorted`, `is_partitioned`, `find_first`, `count_matches` | 10 |
 | `option` | `unwrap_or_default`, `map`, `and_then`, `or_else`, `flatten`, `zip`, `filter` | 21 |
 | `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |

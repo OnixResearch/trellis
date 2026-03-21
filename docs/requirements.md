@@ -434,3 +434,24 @@ r[epoch.ge]
 epoch_ge(a, b) MUST return true if and only if epoch a is greater than
 or equal to b in the lexicographic ordering. This is the vote-granting
 predicate: a candidate's log must be at least as up-to-date as the voter's.
+
+## Log
+
+r[log.agree-at]
+agree_at(a, b, i) MUST return true if and only if both logs have an entry
+at index i and the entries have the same term. Agreement checks term
+equality, not value equality.
+
+r[log.prefix-matching]
+If two logs agree at every index in [0, k), they MUST have matching terms
+at all those indices. logs_match_prefix(a, b, k) MUST hold when
+agree_at(a, b, i) holds for all 0 <= i < k.
+
+r[log.append]
+Appending an entry MUST increase the log length by 1. The appended entry
+MUST appear at the new last index. All prior entries MUST be unchanged.
+
+r[log.truncate]
+Truncating a log to length k MUST discard all entries at index k and
+beyond. The first k entries MUST be unchanged. The resulting length MUST
+be k. k MUST not exceed the current length.

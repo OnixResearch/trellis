@@ -62,7 +62,14 @@
   - Total ordering, transitivity, antisymmetry, higher-term-wins all automatic
   - epoch_ge_antisymmetric calls epoch_cmp_eq and epoch_cmp_antisymmetric as helpers
   - bool_to_int_with_if clippy lint suppressed — Verus needs explicit if-chain
-- Total: 281 Verus proofs, 207 cargo tests, 94 requirements
+- Log module added: agree_at, logs_match_prefix, log_append, log_truncate
+  - LogEntry struct with pub fields (same Verus opaque rule as RingBuffer/Bitmap)
+  - logs_match_prefix exec fn uses same loop pattern as prefix_eq in slice module
+  - Verus auto-chose triggers for Seq<LogEntry> quantifiers (a[i].term, b[i].term)
+  - Seq::push for append, Vec::truncate for truncation — both have Verus specs in vstd
+  - =~= (extensional equality) used in truncate_full and append_truncate_roundtrip
+  - All proofs automatic except logs_match_prefix exec (loop invariant)
+- Total: 294 Verus proofs, 213 cargo tests, 98 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
