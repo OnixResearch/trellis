@@ -8,12 +8,12 @@ is tracked by [Tracey](https://tracey.bearcove.eu/).
 
 ## Modules
 
-| Module | Functions |
-|---|---|
-| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul` |
-| `bounds` | `in_range`, `clamp` |
-| `collections` | `sorted_insert`, `binary_search` |
-| `option` | `unwrap_or_default`, `map` |
+| Module | Functions | Proofs |
+|---|---|---|
+| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul` | 8 |
+| `bounds` | `in_range`, `clamp` | 5 |
+| `collections` | `sorted_insert`, `binary_search` | 5 |
+| `option` | `unwrap_or_default`, `map` | 4 |
 
 ## Usage
 
@@ -42,20 +42,31 @@ nix flake check      # full CI (build + test + clippy + fmt)
 ## Verification
 
 ```bash
-# Formal proofs (requires verus)
-verus --crate-type=lib verus/lib.rs
-
-# Requirement coverage
-tracey query status
-
-# Combined check
+# Run everything — verus proofs + tracey coverage
 ./scripts/verify.sh
+
+# Verus proofs only (22 proofs across 4 files)
+./scripts/verus.sh verus/lib.rs
+
+# Tracey coverage
+tracey query status     # overview
+tracey query uncovered  # missing implementations
+tracey query untested   # missing tests/proofs
 ```
 
-## Requirements
+## Structure
 
-Requirements live in `docs/requirements.md` with Tracey IDs. Each maps to:
-
-- `src/<module>.rs` — `r[impl <req>]` on the function
-- `tests/` or inline `#[test]` — `r[verify <req>]` on tests
-- `verus/<module>_spec.rs` — `r[depends <req>]` / `r[verify <req>]` on specs and proofs
+```
+docs/requirements.md          ← 10 requirements (source of truth)
+src/arithmetic.rs              ← r[impl]  runtime code + tests r[verify]
+src/bounds.rs                  ← r[impl]  runtime code + tests r[verify]
+src/collections.rs             ← r[impl]  runtime code + tests r[verify]
+src/option.rs                  ← r[impl]  runtime code + tests r[verify]
+verus/arithmetic_spec.rs       ← r[depends] specs + r[verify] proofs
+verus/bounds_spec.rs           ← r[depends] specs + r[verify] proofs
+verus/collections_spec.rs      ← r[depends] specs + r[verify] proofs
+verus/option_spec.rs           ← r[depends] specs + r[verify] proofs
+.config/tracey/config.styx     ← tracey config
+scripts/verify.sh              ← combined verus + tracey check
+scripts/verus.sh               ← verus wrapper with nix store paths
+```
