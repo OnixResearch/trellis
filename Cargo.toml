@@ -9,6 +9,7 @@ description = "Verified logic building blocks — machine-checked with Verus"
 
 [dev-dependencies]
 pretty_assertions = "1.0"
+proptest = "1.0"
 
 [features]
 default = []
@@ -43,6 +44,8 @@ pedantic = { level = "warn", priority = -1 }
 manual_abs_diff = "allow"
 manual_map = "allow"
 manual_saturating_arithmetic = "allow"
+manual_unwrap_or = "allow"
+implicit_saturating_sub = "allow"
 
 # --- Allow: pedantic lints that add noise in a small library ---
 module_name_repetitions = "allow"
