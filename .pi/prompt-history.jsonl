@@ -9,3 +9,5 @@
 {"text":"3","timestamp":1774111626282}
 {"text":"what next","timestamp":1774112016655}
 {"text":"3","timestamp":1774112074038}
+{"text":"is there a way to require this through code or rules?  Final state: 35 Verus proofs, 32 tests, 17/17 Tracey, all gates green. Every public\n function in the crate now has Verus-verified postconditions.","timestamp":1774112527658}
+{"text":"continue","timestamp":1774112720558}

@@ -6,6 +6,22 @@ cd "$(git rev-parse --show-toplevel)"
 
 FAIL=0
 
+echo "=== Coverage: r[impl] on every pub fn ==="
+if ./scripts/check-coverage.sh; then
+    :
+else
+    FAIL=1
+fi
+echo ""
+
+echo "=== Coverage: ensures on every verified pub fn ==="
+if ./scripts/check-ensures.sh; then
+    :
+else
+    FAIL=1
+fi
+echo ""
+
 echo "=== Clippy ==="
 if cargo clippy --all-targets -- -D warnings; then
     echo "✓ clippy clean"

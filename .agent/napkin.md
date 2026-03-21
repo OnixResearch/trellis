@@ -35,6 +35,14 @@
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
 
+## Enforcement Scripts
+- `check-coverage.sh` — scans for `pub fn` without `r[impl]`, exits 1 on violation
+- `check-ensures.sh` — scans for `pub fn` inside `verus!` without `ensures`, exits 1
+- Both support exemption markers (`@verified-logic:exempt`, `@verified-logic:no-ensures`)
+- Lookback window: 10 lines for r[impl], 5 lines for exemptions
+- Stops scanning at `#[cfg(test)]` (test fns don't need r[impl])
+- Skips `spec fn`, `proof fn`, private `fn`
+
 ## Cross-Module Pattern
 - Spec fns from other modules are ghost code — erased in normal builds
 - Cross-module proofs must go in a `#[cfg(verus_keep_ghost)] mod verus_proofs { }`

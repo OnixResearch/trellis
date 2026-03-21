@@ -101,15 +101,48 @@ If the solver times out:
 
 ## Verification pipeline
 
-Run `./scripts/verify.sh` before committing. It runs five gates in order:
+Run `./scripts/verify.sh` before committing. It runs seven gates in order:
 
-1. **Clippy** — `cargo clippy --all-targets -- -D warnings`
-2. **Tests** — `cargo test` (unit + proptest)
-3. **Verus** — `./scripts/verus.sh src/lib.rs` (formal verification)
-4. **Tracey uncovered** — requirements with no `r[impl]`
-5. **Tracey untested** — requirements with `r[impl]` but no `r[verify]`
+1. **check-coverage** — every `pub fn` has an `r[impl ...]` annotation
+2. **check-ensures** — every `pub fn` inside `verus!` has an `ensures` clause
+3. **Clippy** — `cargo clippy --all-targets -- -D warnings`
+4. **Tests** — `cargo test` (unit + proptest)
+5. **Verus** — `./scripts/verus.sh src/lib.rs` (formal verification)
+6. **Tracey uncovered** — requirements with no `r[impl]`
+7. **Tracey untested** — requirements with `r[impl]` but no `r[verify]`
 
-All five must pass. The script exits non-zero on any failure.
+All seven must pass. The script exits non-zero on any failure.
+
+### What each gate catches
+
+| Gate | Catches |
+|---|---|
+| check-coverage | Unannotated pub fn — no requirement link |
+| check-ensures | Pub fn in verus! with no postcondition — unverified hole |
+| Clippy | Static bugs, lossy casts, suspicious patterns |
+| Tests | Runtime failures, property violations |
+| Verus | Postcondition violations, proof failures |
+| Tracey uncovered | Requirements with no implementation |
+| Tracey untested | Implementations with no test or proof |
+
+### Exemptions
+
+If a `pub fn` legitimately can't follow the pattern (e.g., uses generics
+Verus can't handle), add an exemption marker:
+
+```rust
+// @verified-logic:exempt uses generics Verus cannot handle
+pub fn map<T, U>(opt: Option<T>, f: impl FnOnce(T) -> U) -> Option<U> { ... }
+```
+
+For functions inside `verus!` without ensures:
+
+```rust
+// @verified-logic:no-ensures trivially correct helper
+pub fn identity(x: u64) -> u64 { x }
+```
+
+Exemptions are counted and reported. Keep them rare.
 
 ### Running verus alone
 
