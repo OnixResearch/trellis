@@ -66,8 +66,9 @@ pub fn map<T, U>(opt: Option<T>, f: impl FnOnce(T) -> U) -> Option<U> {
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify option.unwrap-or-default]
     #[test]

@@ -67,8 +67,9 @@ proof fn clamp_idempotent(value: u64, lo: u64, hi: u64)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify bounds.in-range]
     #[test]

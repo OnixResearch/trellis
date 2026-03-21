@@ -16,8 +16,12 @@
 #[cfg(verus_keep_ghost)]
 mod verus_proofs {
     use vstd::prelude::*;
-    use crate::arithmetic::{abs_diff_spec, saturating_add_spec, saturating_sub_spec};
-    use crate::bounds::{clamp_spec, in_range_spec};
+
+    use crate::arithmetic::abs_diff_spec;
+    use crate::arithmetic::saturating_add_spec;
+    use crate::arithmetic::saturating_sub_spec;
+    use crate::bounds::clamp_spec;
+    use crate::bounds::in_range_spec;
 
     verus! {
 
@@ -118,9 +122,10 @@ mod verus_proofs {
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::*;
+
     use crate::arithmetic::*;
     use crate::bounds::*;
-    use proptest::prelude::*;
 
     proptest! {
         // r[verify properties.abs-diff-zero-iff-equal]

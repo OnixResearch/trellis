@@ -4,7 +4,6 @@
 //! loop invariants. Verus checks that:
 //! - `binary_search` returns a valid index when found, and proves absence when not
 //! - `sorted_insert` produces a sorted result of length n+1 containing the value
-//!
 
 use vstd::prelude::*;
 
@@ -201,8 +200,9 @@ pub fn sorted_insert(slice: &[u64], value: u64) -> (result: Vec<u64>)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn is_sorted(s: &[u64]) -> bool {
         s.windows(2).all(|w| w[0] <= w[1])

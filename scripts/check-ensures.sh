@@ -5,7 +5,7 @@
 # Exemptions: add `// @verified-logic:no-ensures <reason>` above the pub fn.
 set -euo pipefail
 
-cd "$(git rev-parse --show-toplevel)"
+cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
 FAIL=0
 CHECKED=0

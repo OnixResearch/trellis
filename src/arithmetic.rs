@@ -120,8 +120,9 @@ proof fn checked_mul_zero(a: u64)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify arithmetic.abs-diff]
     #[test]
