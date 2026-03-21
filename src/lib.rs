@@ -19,3 +19,4 @@ pub mod arithmetic;
 pub mod bounds;
 pub mod collections;
 pub mod option;
+pub mod properties;

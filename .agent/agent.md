@@ -134,6 +134,46 @@ for the nix store verus installation. Do not call `rust_verify` directly.
 4. Run `./scripts/verify.sh` — all gates must pass
 5. Check `tracey query status` — requirement must show covered + verified
 
+## Cross-module proofs
+
+When proving properties that reference `spec fn`s from other modules,
+the specs are ghost code — erased in normal cargo builds. Use the
+`cfg(verus_keep_ghost)` pattern:
+
+```rust
+// src/properties.rs
+
+#[cfg(verus_keep_ghost)]
+mod verus_proofs {
+    use vstd::prelude::*;
+    use crate::arithmetic::{abs_diff_spec, saturating_add_spec};
+    use crate::bounds::{clamp_spec, in_range_spec};
+
+    verus! {
+
+    // r[impl properties.my-property]
+    pub open spec fn my_property_prop(a: u64) -> bool { ... }
+
+    // r[verify properties.my-property]
+    proof fn prove_my_property(a: u64)
+        ensures my_property_prop(a)
+    {}
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod tests {
+    // Tests go here — they use exec fns (which exist in all builds)
+}
+```
+
+The `cfg(verus_keep_ghost)` gate means:
+- Normal `cargo build/test`: module is skipped, no ghost import errors
+- `rust_verify` (Verus): module is compiled and verified, ghost imports resolve
+
+Tests must be outside the cfg-gated module since they run in normal builds.
+
 ## Adding a new module
 
 1. Create `src/<module>.rs`

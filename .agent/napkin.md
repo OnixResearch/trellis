@@ -35,6 +35,13 @@
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
 
+## Cross-Module Pattern
+- Spec fns from other modules are ghost code — erased in normal builds
+- Cross-module proofs must go in a `#[cfg(verus_keep_ghost)] mod verus_proofs { }`
+- Inside that module: `use crate::other_module::*_spec` works because Verus sets the cfg
+- Tests go outside the cfg-gated module (they use exec fns which exist in all builds)
+- Verus verifies the whole crate including cfg(verus_keep_ghost) modules
+
 ## Mistakes & Corrections
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.
 - `proof fn` can't call `exec fn` in ensures — must reference `spec fn` instead.

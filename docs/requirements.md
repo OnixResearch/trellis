@@ -42,6 +42,34 @@ Binary search on a sorted sequence MUST return the index of the target if
 present, or None if absent. It MUST NOT access indices outside the sequence
 bounds.
 
+## Cross-Module Properties
+
+r[properties.abs-diff-zero-iff-equal]
+abs_diff(a, b) MUST equal zero if and only if a equals b.
+
+r[properties.add-sub-roundtrip]
+When a + b does not overflow, saturating_sub(saturating_add(a, b), b) MUST
+return a. Addition and subtraction MUST be inverse operations within bounds.
+
+r[properties.triangle-inequality]
+abs_diff MUST satisfy the triangle inequality: abs_diff(a, c) is less than
+or equal to abs_diff(a, b) + abs_diff(b, c) for all a, b, c.
+
+r[properties.clamp-nearest-point]
+For any x in [lo, hi], clamp(value, lo, hi) MUST be at least as close to
+value as x is. Clamp returns the nearest point in the range.
+
+r[properties.clamp-monotonic]
+Clamp MUST be monotonic: if a <= b then clamp(a, lo, hi) <= clamp(b, lo, hi).
+
+r[properties.distance-decomposition]
+For any value in [lo, hi], the distances to the endpoints MUST sum to the
+range width: abs_diff(value, lo) + abs_diff(value, hi) == abs_diff(lo, hi).
+
+r[properties.sub-add-inverse]
+When b <= a, saturating_add(saturating_sub(a, b), b) MUST return a.
+Subtraction and addition MUST be inverse operations within bounds.
+
 ## Option/Result Combinators
 
 r[option.unwrap-or-default]
