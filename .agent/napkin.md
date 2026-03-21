@@ -20,8 +20,20 @@
 - Version: 0.2026.01.30 (needs rustc 1.93.0 libs + z3 bundled in verus-root)
 - Wrapper: `scripts/verus.sh` sets LD_LIBRARY_PATH, VERUS_Z3_PATH, extern flags
 
+## Clippy Policy
+- Correctness + suspicious lints: deny (catch real bugs)
+- Pedantic lints: warn (catch style issues)
+- `manual_abs_diff`, `manual_map`, `manual_saturating_arithmetic`: allow project-wide
+  because the whole crate is hand-written verified logic — stdlib delegation
+  would hide the logic from Verus
+- Cast lints (truncation, sign loss, wrap): deny — critical for a numeric library
+- `unsafe_code`: forbid
+- Config lives in `[lints.clippy]` section of Cargo.toml, not in lib.rs attributes
+
 ## Mistakes & Corrections
 - Tried to add `tracey` to flake.nix devshell — not in nixpkgs. Removed.
 - Verus wrapper script (`verus`) needs rustup — doesn't work in nix. Used `rust_verify`
   directly with LD_LIBRARY_PATH pointing at the matching 1.93.0 rustc libs.
 - Recursive spec fn needs `decreases` clause (sorted_insert_spec).
+- Clippy `manual_abs_diff` and `manual_map` fire on our verified implementations.
+  Project-wide allow is correct here since the entire crate is verified logic.

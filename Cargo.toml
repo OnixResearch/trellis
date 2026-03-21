@@ -12,3 +12,41 @@ pretty_assertions = "1.0"
 
 [features]
 default = []
+
+# -- Lint policy for a verified logic library --
+# Functions here are deliberately hand-written so Verus can reason about them.
+# Clippy's "use the stdlib method" suggestions conflict with that goal.
+# We allow those at the function level and keep everything else strict.
+[lints.rust]
+unsafe_code = "forbid"
+missing_docs = "warn"
+
+[lints.clippy]
+# --- Deny: correctness and suspicious code ---
+correctness = { level = "deny", priority = -1 }
+suspicious = { level = "deny", priority = -1 }
+cast_possible_truncation = "deny"
+cast_sign_loss = "deny"
+cast_possible_wrap = "deny"
+integer_division = "deny"
+as_underscore = "deny"
+default_numeric_fallback = "deny"
+
+# --- Warn: style and complexity ---
+style = { level = "warn", priority = -1 }
+complexity = { level = "warn", priority = -1 }
+pedantic = { level = "warn", priority = -1 }
+
+# --- Allow: lints that conflict with verified implementations ---
+# These fire on manual reimplementations of stdlib methods, but
+# we write them by hand so Verus can verify the logic.
+manual_abs_diff = "allow"
+manual_map = "allow"
+manual_saturating_arithmetic = "allow"
+
+# --- Allow: pedantic lints that add noise in a small library ---
+module_name_repetitions = "allow"
+must_use_candidate = "allow"
+return_self_not_must_use = "allow"
+missing_errors_doc = "allow"
+missing_panics_doc = "allow"
