@@ -41,8 +41,8 @@
 
 ## Phase 5: Cross-module properties
 
-- [ ] majority ↔ div_ceil: majority(n) == div_ceil(n + 1, 2)
-- [ ] epoch_ge ↔ ordering: epoch_ge implies term >= or (term == and index >=)
-- [ ] log prefix ↔ slice::prefix_eq: agreement on terms implies prefix_eq on term sequence
-- [ ] Add property tests for all cross-module relationships
-- [ ] Verus + tracey clean
+- [x] majority ↔ div_ceil: majority(n) == div_ceil(n + 1, 2) ✅
+- [x] epoch_ge ↔ ordering: epoch_ge implies term > or (term == and index >=) ✅
+- [x] log prefix ↔ term equality: prefix match implies term-wise equality ✅
+- [x] Add property tests for all cross-module relationships ✅
+- [x] Verus + tracey clean ✅

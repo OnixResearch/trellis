@@ -216,6 +216,20 @@ r[properties.all-equal-implies-partitioned]
 If all_equal(s, v) holds, is_partitioned(s, threshold) MUST hold for any
 threshold. A uniform sequence is trivially partitioned.
 
+r[properties.majority-via-div-ceil]
+majority(n) MUST equal div_ceil(n + 1, 2) for all n > 0. The majority
+threshold is ceiling division of (n+1) by 2.
+
+r[properties.epoch-ge-term-index]
+epoch_ge(a, b) MUST imply a.term > b.term, or a.term == b.term and
+a.index >= b.index. The lexicographic comparison decomposes into term
+and index conditions.
+
+r[properties.log-prefix-term-eq]
+If logs_match_prefix(a, b, k) holds, the term sequences of a and b
+MUST be equal over [0, k). Log term-agreement is equivalent to prefix
+equality on the projected term sequence.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]

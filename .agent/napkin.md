@@ -69,7 +69,12 @@
   - Seq::push for append, Vec::truncate for truncation — both have Verus specs in vstd
   - =~= (extensional equality) used in truncate_full and append_truncate_roundtrip
   - All proofs automatic except logs_match_prefix exec (loop invariant)
-- Total: 294 Verus proofs, 213 cargo tests, 98 requirements
+- Cross-module consensus properties added:
+  - majority_via_div_ceil: majority(n) == div_ceil(n+1, 2) — automatic, Z3 unfolds both specs
+  - epoch_ge_term_index: decomposes epoch_ge into term/index conditions — automatic
+  - log_prefix_term_eq: prefix match implies term equality — automatic (follows from spec def)
+  - All three proofs are trivially automatic — the specs are defined to make these hold
+- Total: 297 Verus proofs, 216 cargo tests, 101 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

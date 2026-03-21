@@ -125,6 +125,9 @@ mod verus_proofs {
     use crate::slice::{all_equal_spec, chunk_count_spec};
     use crate::collections::{count_matches_spec, count_from_spec, is_partitioned_spec};
     use crate::conversion::narrow_u32_spec;
+    use crate::epoch::{epoch_cmp_spec, epoch_ge_spec, Epoch};
+    use crate::log::{logs_match_prefix_spec, LogEntry};
+    use crate::quorum::majority_spec;
 
     use vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_pos_bound};
 
@@ -360,6 +363,60 @@ mod verus_proofs {
         ensures narrow_iff_in_range_prop(x)
     {}
 
+    // --- quorum × arithmetic ---
+
+    // r[impl properties.majority-via-div-ceil]
+    /// majority(n) == div_ceil(n + 1, 2).
+    pub open spec fn majority_via_div_ceil_prop(n: u64) -> bool
+        recommends n > 0, (n as int + 1) <= u64::MAX as int
+    {
+        majority_spec(n) as int == div_ceil_spec((n + 1) as u64, 2) as int
+    }
+
+    // r[verify properties.majority-via-div-ceil]
+    proof fn prove_majority_via_div_ceil(n: u64)
+        requires n > 0, (n as int + 1) <= u64::MAX as int
+        ensures majority_via_div_ceil_prop(n)
+    {
+        // majority(n) = n/2 + 1
+        // div_ceil(n+1, 2) = if n+1 == 0 { 0 } else { ((n+1-1)/2 + 1) } = n/2 + 1
+    }
+
+    // --- epoch × ordering ---
+
+    // r[impl properties.epoch-ge-term-index]
+    /// epoch_ge decomposes into term and index conditions.
+    pub open spec fn epoch_ge_term_index_prop(a: Epoch, b: Epoch) -> bool {
+        epoch_ge_spec(a, b) ==> (
+            a.term > b.term || (a.term == b.term && a.index >= b.index)
+        )
+    }
+
+    // r[verify properties.epoch-ge-term-index]
+    proof fn prove_epoch_ge_term_index(a: Epoch, b: Epoch)
+        ensures epoch_ge_term_index_prop(a, b)
+    {}
+
+    // --- log × term equality ---
+
+    // r[impl properties.log-prefix-term-eq]
+    /// Log prefix matching implies term equality over the prefix.
+    pub open spec fn log_prefix_term_eq_prop(
+        a: Seq<LogEntry>, b: Seq<LogEntry>, k: int,
+    ) -> bool
+        recommends 0 <= k <= a.len(), 0 <= k <= b.len()
+    {
+        logs_match_prefix_spec(a, b, k) ==>
+            forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+    }
+
+    // r[verify properties.log-prefix-term-eq]
+    proof fn prove_log_prefix_term_eq(
+        a: Seq<LogEntry>, b: Seq<LogEntry>, k: int,
+    )
+        ensures log_prefix_term_eq_prop(a, b, k)
+    {}
+
     } // verus!
 }
 
@@ -372,8 +429,11 @@ mod tests {
     use crate::bounds::*;
     use crate::collections::*;
     use crate::conversion::*;
+    use crate::epoch::{epoch_ge, Epoch};
     use crate::integer::*;
+    use crate::log::{logs_match_prefix, LogEntry};
     use crate::ordering::*;
+    use crate::quorum::majority;
     use crate::slice::*;
 
     proptest! {
@@ -539,6 +599,41 @@ mod tests {
         ) {
             let v: Vec<u64> = vec![value; len];
             prop_assert!(is_partitioned(&v, threshold));
+        }
+
+        // r[verify properties.majority-via-div-ceil]
+        #[test]
+        fn prop_majority_via_div_ceil(n in 1u64..=10000) {
+            // majority(n) = n/2 + 1
+            // div_ceil(n+1, 2) = (n+1-1)/2 + 1 = n/2 + 1
+            prop_assert_eq!(majority(n), div_ceil(n + 1, 2));
+        }
+
+        // r[verify properties.epoch-ge-term-index]
+        #[test]
+        fn prop_epoch_ge_term_index(
+            t1: u64, i1: u64, t2: u64, i2: u64,
+        ) {
+            let a = Epoch { term: t1, index: i1 };
+            let b = Epoch { term: t2, index: i2 };
+            if epoch_ge(&a, &b) {
+                prop_assert!(t1 > t2 || (t1 == t2 && i1 >= i2));
+            }
+        }
+
+        // r[verify properties.log-prefix-term-eq]
+        #[test]
+        fn prop_log_prefix_term_eq(
+            terms in proptest::collection::vec(1u64..10, 1..=20),
+        ) {
+            let a: Vec<LogEntry> = terms.iter().map(|&t| LogEntry { term: t, value: 0 }).collect();
+            let b: Vec<LogEntry> = terms.iter().map(|&t| LogEntry { term: t, value: 1 }).collect();
+            let k = terms.len();
+            prop_assert!(logs_match_prefix(&a, &b, k));
+            // Term equality holds at every index
+            for i in 0..k {
+                prop_assert_eq!(a[i].term, b[i].term);
+            }
         }
     }
 }
