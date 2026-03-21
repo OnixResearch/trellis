@@ -24,7 +24,13 @@
   - Roundtrip proofs (i64→u64→i64, u64→i64→u64) verify directly — Z3 handles cast chains
   - Narrowing chain proof (u8 fits → u16 fits → u32 fits) trivially automatic
   - Option<u32>, Option<u16>, Option<u8>, Option<i64> all work in Verus ensures
-- Total: 212 Verus proofs, 156 cargo tests, 66 requirements
+- Cross-module properties added: all_equal⟹count, chunk_count↔div_ceil, narrow↔in_range, all_equal⟹partitioned
+  - chunk_count_div_ceil needs by(nonlinear_arith) for quotient uniqueness:
+    Z3 can't derive (n-1)/k == n/k from fundamental_div_mod alone, needs
+    case split on n%k > 0 vs == 0 with nonlinear_arith per branch
+  - all_equal_implies_count needs inductive helper (count_from == len - from)
+  - all_equal_implies_partitioned and narrow_iff_in_range are automatic (Z3 instant)
+- Total: 219 Verus proofs, 160 cargo tests, 70 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

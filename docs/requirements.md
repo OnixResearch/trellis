@@ -199,6 +199,23 @@ r[properties.median-is-clamp]
 median_of_three(a, b, c) MUST equal clamp(a, min(b, c), max(b, c)).
 The median is a clamped value.
 
+r[properties.all-equal-implies-count]
+If all_equal(s, v) holds, count_matches(s, v) MUST equal s.len(). Every
+element matching means the count is the full length.
+
+r[properties.chunk-count-div-ceil]
+div_ceil(n, k) MUST equal chunk_count(n, k) + 1 when n has a remainder
+mod k, and chunk_count(n, k) when it divides evenly. Floor and ceiling
+division differ by exactly the presence of a remainder.
+
+r[properties.narrow-iff-in-range]
+narrow_u32(x).is_some() MUST hold if and only if in_range(x, 0, u32::MAX)
+holds. Checked narrowing and range predicates MUST agree.
+
+r[properties.all-equal-implies-partitioned]
+If all_equal(s, v) holds, is_partitioned(s, threshold) MUST hold for any
+threshold. A uniform sequence is trivially partitioned.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]

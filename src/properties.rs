@@ -122,6 +122,9 @@ mod verus_proofs {
     use crate::ordering::{min_spec, max_spec, median_of_three_spec};
     use crate::arithmetic::div_ceil_spec;
     use crate::integer::{align_down_spec, align_up_spec};
+    use crate::slice::{all_equal_spec, chunk_count_spec};
+    use crate::collections::{count_matches_spec, count_from_spec, is_partitioned_spec};
+    use crate::conversion::narrow_u32_spec;
 
     use vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_pos_bound};
 
@@ -249,6 +252,114 @@ mod verus_proofs {
         assert(pos < 64 ==> (x ^ (1u64 << pos)) ^ (1u64 << pos) == x) by(bit_vector);
     }
 
+    // --- slice × collections ---
+
+    // r[impl properties.all-equal-implies-count]
+    /// all_equal(s, v) implies count_matches(s, v) == s.len().
+    pub open spec fn all_equal_implies_count_prop(s: Seq<u64>, v: u64) -> bool {
+        all_equal_spec(s, v) ==> count_matches_spec(s, v) == s.len()
+    }
+
+    // r[verify properties.all-equal-implies-count]
+    proof fn prove_all_equal_implies_count(s: Seq<u64>, v: u64)
+        requires all_equal_spec(s, v)
+        ensures count_matches_spec(s, v) == s.len()
+    {
+        all_equal_count_from(s, v, 0);
+    }
+
+    /// Helper: all-equal means count_from equals remaining length.
+    proof fn all_equal_count_from(s: Seq<u64>, v: u64, from: int)
+        requires all_equal_spec(s, v), 0 <= from <= s.len()
+        ensures count_from_spec(s, v, from) as int == s.len() - from
+        decreases s.len() - from
+    {
+        if from < s.len() {
+            all_equal_count_from(s, v, from + 1);
+        }
+    }
+
+    // r[impl properties.all-equal-implies-partitioned]
+    /// A uniform sequence is partitioned by any threshold.
+    pub open spec fn all_equal_implies_partitioned_prop(
+        s: Seq<u64>, v: u64, threshold: u64,
+    ) -> bool {
+        all_equal_spec(s, v) ==> is_partitioned_spec(s, threshold)
+    }
+
+    // r[verify properties.all-equal-implies-partitioned]
+    proof fn prove_all_equal_implies_partitioned(
+        s: Seq<u64>, v: u64, threshold: u64,
+    )
+        requires all_equal_spec(s, v)
+        ensures is_partitioned_spec(s, threshold)
+    {}
+
+    // --- slice × arithmetic ---
+
+    // r[impl properties.chunk-count-div-ceil]
+    /// div_ceil == chunk_count + remainder indicator.
+    pub open spec fn chunk_count_div_ceil_prop(n: u64, k: u64) -> bool
+        recommends k > 0
+    {
+        div_ceil_spec(n, k) as int == chunk_count_spec(n, k) as int
+            + (if n as int % k as int > 0 { 1int } else { 0int })
+    }
+
+    // r[verify properties.chunk-count-div-ceil]
+    proof fn prove_chunk_count_div_ceil(n: u64, k: u64)
+        requires k > 0
+        ensures chunk_count_div_ceil_prop(n, k)
+    {
+        if n > 0 {
+            let ni = n as int;
+            let ki = k as int;
+            let q = ni / ki;
+            let r = ni % ki;
+            lemma_fundamental_div_mod(ni, ki);
+            lemma_mod_pos_bound(ni, ki);
+            lemma_fundamental_div_mod(ni - 1, ki);
+            lemma_mod_pos_bound(ni - 1, ki);
+            let q2 = (ni - 1) / ki;
+            let r2 = (ni - 1) % ki;
+            if r > 0 {
+                // ni-1 = ki*q + (r-1) with 0 <= r-1 < ki
+                // By quotient uniqueness: (ni-1)/ki == q
+                assert(q2 == q) by(nonlinear_arith)
+                    requires
+                        ni == ki * q + r,
+                        ni - 1 == ki * q2 + r2,
+                        0 < r, r < ki,
+                        0 <= r2, r2 < ki,
+                        ki > 0;
+            } else {
+                // r == 0: ni = ki*q, ni-1 = ki*(q-1) + (ki-1)
+                // By quotient uniqueness: (ni-1)/ki == q-1
+                assert(q2 == q - 1) by(nonlinear_arith)
+                    requires
+                        ni == ki * q + r,
+                        ni - 1 == ki * q2 + r2,
+                        r == 0,
+                        0 <= r2, r2 < ki,
+                        ki > 0,
+                        ni > 0;
+            }
+        }
+    }
+
+    // --- conversion × bounds ---
+
+    // r[impl properties.narrow-iff-in-range]
+    /// narrow_u32 agrees with in_range(0, u32::MAX).
+    pub open spec fn narrow_iff_in_range_prop(x: u64) -> bool {
+        narrow_u32_spec(x).is_some() <==> in_range_spec(x, 0, u32::MAX as u64)
+    }
+
+    // r[verify properties.narrow-iff-in-range]
+    proof fn prove_narrow_iff_in_range(x: u64)
+        ensures narrow_iff_in_range_prop(x)
+    {}
+
     } // verus!
 }
 
@@ -259,8 +370,11 @@ mod tests {
     use crate::arithmetic::*;
     use crate::bitwise::*;
     use crate::bounds::*;
+    use crate::collections::*;
+    use crate::conversion::*;
     use crate::integer::*;
     use crate::ordering::*;
+    use crate::slice::*;
 
     proptest! {
         // r[verify properties.abs-diff-zero-iff-equal]
@@ -389,6 +503,42 @@ mod tests {
         #[test]
         fn prop_toggle_involution(x: u64, pos in 0u64..64) {
             prop_assert_eq!(toggle_bit(toggle_bit(x, pos), pos), x);
+        }
+
+        // r[verify properties.all-equal-implies-count]
+        #[test]
+        fn prop_all_equal_implies_count(value: u64, len in 0usize..=50) {
+            let v: Vec<u64> = vec![value; len];
+            prop_assert_eq!(count_matches(&v, value), len);
+        }
+
+        // r[verify properties.chunk-count-div-ceil]
+        #[test]
+        fn prop_chunk_count_div_ceil(n: u64, k in 1u64..=10000) {
+            let cc = u128::from(chunk_count(n, k));
+            let dc = u128::from(div_ceil(n, k));
+            let has_rem = if n % k > 0 { 1u128 } else { 0u128 };
+            prop_assert_eq!(dc, cc + has_rem);
+        }
+
+        // r[verify properties.narrow-iff-in-range]
+        #[test]
+        fn prop_narrow_iff_in_range(x: u64) {
+            prop_assert_eq!(
+                narrow_u32(x).is_some(),
+                in_range(x, 0, u64::from(u32::MAX))
+            );
+        }
+
+        // r[verify properties.all-equal-implies-partitioned]
+        #[test]
+        fn prop_all_equal_implies_partitioned(
+            value: u64,
+            len in 0usize..=50,
+            threshold: u64,
+        ) {
+            let v: Vec<u64> = vec![value; len];
+            prop_assert!(is_partitioned(&v, threshold));
         }
     }
 }
