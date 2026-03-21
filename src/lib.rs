@@ -14,6 +14,7 @@
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `bounds` — range predicates, clamping
 //! - `collections` — sorted insert, binary search
+//! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `result` — verified Result combinators
@@ -22,6 +23,7 @@ pub mod arithmetic;
 pub mod bitwise;
 pub mod bounds;
 pub mod collections;
+pub mod integer;
 pub mod option;
 pub mod ordering;
 pub mod properties;

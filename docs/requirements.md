@@ -76,6 +76,34 @@ r[collections.merge-sorted]
 Merging two sorted sequences MUST produce a sorted sequence whose length
 equals the sum of the input lengths.
 
+## Integer
+
+r[integer.is-even]
+is_even MUST return true if and only if x is divisible by 2. is_even and
+is_odd MUST be complements: exactly one is true for any input.
+
+r[integer.is-odd]
+is_odd MUST return true if and only if x is not divisible by 2.
+
+r[integer.align-down]
+align_down MUST return the largest multiple of `align` that is <= x. The
+result MUST be <= x. The result MUST be divisible by `align`. Alignment 1
+MUST be the identity function.
+
+r[integer.align-up]
+align_up MUST return the smallest multiple of `align` that is >= x, or
+None if the result would overflow u64. When defined, the result MUST be
+>= x and divisible by `align`. Alignment 1 MUST be the identity.
+
+r[integer.log2-floor]
+log2_floor MUST return floor(log2(x)) for x > 0. log2_floor(1) MUST be 0.
+log2_floor(2) MUST be 1.
+
+r[integer.next-power-of-two]
+next_power_of_two MUST return the smallest power of 2 >= x, or None on
+overflow. next_power_of_two(0) and next_power_of_two(1) MUST return
+Some(1).
+
 ## Ordering
 
 r[ordering.min]

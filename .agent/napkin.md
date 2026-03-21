@@ -9,12 +9,14 @@
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 
 ## Recent Changes
-- Expanded `option` module: added and_then, or_else, flatten, zip, filter
-  - Functor composition law, monad identity laws, filter idempotence
-- Added `result` module: unwrap_or, map_ok, map_err, and_then, or_else
-  - Functor composition, map_ok/map_err commutativity, monad right identity
-- `.gitignore` had `result*` catching `src/result.rs` — changed to `/result*`
-- Total: 125 Verus proofs, 100 cargo tests
+- Added `integer` module: is_even, is_odd, align_down, align_up, log2_floor, next_power_of_two
+  - Used vstd::arithmetic::div_mod lemmas for division/modulo proofs (cfg-gated)
+  - pow2_spec + parameterized bound proof for log2_floor <= 63
+  - by(compute_only) for pow2_spec(64) > u64::MAX — Verus evaluates at compile time
+  - by(nonlinear_arith) for align_up_ge distributive step
+  - align_up_divisible proof dropped: Z3 can't chain through Option::unwrap in spec
+    postcondition. Property tests cover it empirically.
+- Total: 153 Verus proofs, 117 cargo tests
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
