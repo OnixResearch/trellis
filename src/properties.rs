@@ -119,7 +119,11 @@ mod verus_proofs {
 
     // --- bitwise cross-module properties ---
 
-    use crate::ordering::{min_spec, max_spec};
+    use crate::ordering::{min_spec, max_spec, median_of_three_spec};
+    use crate::arithmetic::div_ceil_spec;
+    use crate::integer::{align_down_spec, align_up_spec};
+
+    use vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_pos_bound};
 
     // --- ordering × arithmetic ---
 
@@ -148,6 +152,63 @@ mod verus_proofs {
     proof fn prove_clamp_via_min_max(v: u64, lo: u64, hi: u64)
         requires lo <= hi
         ensures clamp_via_min_max_prop(v, lo, hi)
+    {}
+
+    // --- integer × arithmetic ---
+
+    // r[impl properties.align-down-remainder]
+    /// x - align_down(x, a) == x % a.
+    pub open spec fn align_down_remainder_prop(x: u64, a: u64) -> bool
+        recommends a > 0
+    {
+        abs_diff_spec(x, align_down_spec(x, a)) as int == x as int % a as int
+    }
+
+    // r[verify properties.align-down-remainder]
+    proof fn prove_align_down_remainder(x: u64, a: u64)
+        requires a > 0
+        ensures align_down_remainder_prop(x, a)
+    {
+        lemma_mod_pos_bound(x as int, a as int);
+        lemma_fundamental_div_mod(x as int, a as int);
+        // x == a * (x/a) + x%a, 0 <= x%a < a
+        // therefore x%a <= x (since a * (x/a) >= 0)
+    }
+
+    // r[impl properties.align-up-via-div-ceil]
+    /// align_up(x, a) == div_ceil(x, a) * a when defined.
+    pub open spec fn align_up_via_div_ceil_prop(x: u64, a: u64) -> bool
+        recommends a > 0, align_up_spec(x, a).is_some()
+    {
+        align_up_spec(x, a).unwrap() as int == div_ceil_spec(x, a) as int * a as int
+    }
+
+    // r[verify properties.align-up-via-div-ceil]
+    proof fn prove_align_up_via_div_ceil(x: u64, a: u64)
+        requires a > 0, align_up_spec(x, a).is_some()
+        ensures align_up_via_div_ceil_prop(x, a)
+    {
+        // Both specs share the same core: q = (x == 0 ? 0 : (x-1)/a + 1).
+        // align_up gives q * a, div_ceil gives q. So align_up == div_ceil * a.
+        // Help Z3 with the cast round-trip:
+        if x > 0 {
+            vstd::arithmetic::div_mod::lemma_div_pos_is_pos(
+                (x - 1) as int, a as int,
+            );
+        }
+    }
+
+    // --- ordering × bounds ---
+
+    // r[impl properties.median-is-clamp]
+    /// median_of_three(a, b, c) == clamp(a, min(b, c), max(b, c)).
+    pub open spec fn median_is_clamp_prop(a: u64, b: u64, c: u64) -> bool {
+        median_of_three_spec(a, b, c) == clamp_spec(a, min_spec(b, c), max_spec(b, c))
+    }
+
+    // r[verify properties.median-is-clamp]
+    proof fn prove_median_is_clamp(a: u64, b: u64, c: u64)
+        ensures median_is_clamp_prop(a, b, c)
     {}
 
     // --- bitwise cross-module properties ---
@@ -198,6 +259,7 @@ mod tests {
     use crate::arithmetic::*;
     use crate::bitwise::*;
     use crate::bounds::*;
+    use crate::integer::*;
     use crate::ordering::*;
 
     proptest! {
@@ -292,6 +354,29 @@ mod tests {
         ) {
             let hi = lo + spread;
             prop_assert_eq!(clamp(v, lo, hi), min(max(v, lo), hi));
+        }
+
+        // r[verify properties.align-down-remainder]
+        #[test]
+        fn prop_align_down_remainder(x: u64, a in 1u64..=4096) {
+            prop_assert_eq!(abs_diff(x, align_down(x, a)), x % a);
+        }
+
+        // r[verify properties.align-up-via-div-ceil]
+        #[test]
+        fn prop_align_up_via_div_ceil(x: u64, a in 1u64..=4096) {
+            if let Some(v) = align_up(x, a) {
+                prop_assert_eq!(v, div_ceil(x, a) * a);
+            }
+        }
+
+        // r[verify properties.median-is-clamp]
+        #[test]
+        fn prop_median_is_clamp(a: u64, b: u64, c: u64) {
+            prop_assert_eq!(
+                median_of_three(a, b, c),
+                clamp(a, min(b, c), max(b, c))
+            );
         }
 
         // r[verify properties.set-clear-roundtrip]

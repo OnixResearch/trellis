@@ -172,6 +172,18 @@ r[properties.clamp-via-min-max]
 clamp(v, lo, hi) MUST equal min(max(v, lo), hi) when lo <= hi. Clamp is
 expressible as nested min/max.
 
+r[properties.align-down-remainder]
+x - align_down(x, a) MUST equal x % a. The distance from x to the
+aligned-down value is the remainder.
+
+r[properties.align-up-via-div-ceil]
+When align_up(x, a) is defined, it MUST equal div_ceil(x, a) * a. Rounding
+up to an alignment is ceiling division times the alignment.
+
+r[properties.median-is-clamp]
+median_of_three(a, b, c) MUST equal clamp(a, min(b, c), max(b, c)).
+The median is a clamped value.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]
