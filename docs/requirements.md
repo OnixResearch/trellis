@@ -3,6 +3,28 @@
 This document defines the requirements for the `verified-logic` library.
 Every requirement has a Tracey ID and maps to verified Rust code.
 
+## Bitwise
+
+r[bitwise.is-power-of-two]
+is_power_of_two MUST return true if and only if the value is a power of two
+(exactly one bit set). Zero MUST return false.
+
+r[bitwise.bit-at]
+bit_at MUST return true if and only if the bit at the given position is set.
+Position MUST be in the range [0, 64).
+
+r[bitwise.set-bit]
+set_bit MUST return a value with the bit at the given position set to 1,
+leaving all other bits unchanged.
+
+r[bitwise.clear-bit]
+clear_bit MUST return a value with the bit at the given position set to 0,
+leaving all other bits unchanged.
+
+r[bitwise.toggle-bit]
+toggle_bit MUST return a value with the bit at the given position flipped.
+Toggling twice MUST return the original value.
+
 ## Arithmetic
 
 r[arithmetic.abs-diff]
@@ -69,6 +91,15 @@ range width: abs_diff(value, lo) + abs_diff(value, hi) == abs_diff(lo, hi).
 r[properties.sub-add-inverse]
 When b <= a, saturating_add(saturating_sub(a, b), b) MUST return a.
 Subtraction and addition MUST be inverse operations within bounds.
+
+r[properties.set-clear-roundtrip]
+Setting a bit then clearing it MUST leave the bit cleared. Clearing a bit
+then setting it MUST leave the bit set. set_bit and clear_bit MUST be
+complementary operations on individual bit positions.
+
+r[properties.toggle-involution]
+Toggling a bit twice MUST return the original value for any input and
+any valid bit position.
 
 ## Option/Result Combinators
 

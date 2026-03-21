@@ -117,6 +117,44 @@ mod verus_proofs {
         ensures distance_decomposition_prop(value, lo, hi)
     {}
 
+    // --- bitwise cross-module properties ---
+
+    use crate::bitwise::{
+        bit_at_spec, set_bit_spec, clear_bit_spec, toggle_bit_spec,
+    };
+
+    // r[impl properties.set-clear-roundtrip]
+    /// Setting then clearing the same bit leaves it cleared.
+    pub open spec fn set_clear_roundtrip_prop(x: u64, pos: u64) -> bool
+        recommends pos < 64
+    {
+        clear_bit_spec(set_bit_spec(x, pos), pos) == clear_bit_spec(x, pos)
+    }
+
+    // r[verify properties.set-clear-roundtrip]
+    proof fn prove_set_clear_roundtrip(x: u64, pos: u64)
+        requires pos < 64
+        ensures set_clear_roundtrip_prop(x, pos)
+    {
+        assert(pos < 64 ==> (x | (1u64 << pos)) & !(1u64 << pos) == x & !(1u64 << pos)) by(bit_vector);
+    }
+
+    // r[impl properties.toggle-involution]
+    /// Toggling a bit twice returns the original value.
+    pub open spec fn toggle_involution_prop(x: u64, pos: u64) -> bool
+        recommends pos < 64
+    {
+        toggle_bit_spec(toggle_bit_spec(x, pos), pos) == x
+    }
+
+    // r[verify properties.toggle-involution]
+    proof fn prove_toggle_involution(x: u64, pos: u64)
+        requires pos < 64
+        ensures toggle_involution_prop(x, pos)
+    {
+        assert(pos < 64 ==> (x ^ (1u64 << pos)) ^ (1u64 << pos) == x) by(bit_vector);
+    }
+
     } // verus!
 }
 
@@ -125,6 +163,7 @@ mod tests {
     use proptest::prelude::*;
 
     use crate::arithmetic::*;
+    use crate::bitwise::*;
     use crate::bounds::*;
 
     proptest! {
@@ -202,6 +241,18 @@ mod tests {
             let d_hi = u128::from(abs_diff(value, hi));
             let range = u128::from(abs_diff(lo, hi));
             prop_assert_eq!(d_lo + d_hi, range);
+        }
+
+        // r[verify properties.set-clear-roundtrip]
+        #[test]
+        fn prop_set_clear_roundtrip(x: u64, pos in 0u64..64) {
+            prop_assert_eq!(clear_bit(set_bit(x, pos), pos), clear_bit(x, pos));
+        }
+
+        // r[verify properties.toggle-involution]
+        #[test]
+        fn prop_toggle_involution(x: u64, pos in 0u64..64) {
+            prop_assert_eq!(toggle_bit(toggle_bit(x, pos), pos), x);
         }
     }
 }

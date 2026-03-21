@@ -16,6 +16,7 @@
 //! - `option` — verified Option combinators
 
 pub mod arithmetic;
+pub mod bitwise;
 pub mod bounds;
 pub mod collections;
 pub mod option;
