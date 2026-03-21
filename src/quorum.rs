@@ -217,5 +217,59 @@ mod tests {
             let m = majority(n);
             prop_assert!(!is_quorum(m - 1, n));
         }
+
+        // r[verify quorum.majority]
+        // r[verify quorum.is-quorum]
+        // r[verify quorum.intersection]
+        /// Simulate two independent voter sets and verify overlap.
+        /// Generates a cluster size, then two random subsets each forming
+        /// a quorum. The sets must share at least one member.
+        #[test]
+        fn prop_quorum_overlap_simulation(
+            n in 3u64..=25,
+            voters_a in proptest::collection::vec(any::<bool>(), 25),
+            voters_b in proptest::collection::vec(any::<bool>(), 25),
+        ) {
+            let n_usize = n as usize;
+            // Build two voter sets from random booleans, capped at cluster size
+            let mut set_a: Vec<bool> = vec![false; n_usize];
+            let mut set_b: Vec<bool> = vec![false; n_usize];
+
+            // Fill up to a quorum for set_a
+            let m = majority(n) as usize;
+            let mut count_a = 0usize;
+            for i in 0..n_usize {
+                if count_a < m && (voters_a.get(i).copied().unwrap_or(true)) {
+                    set_a[i] = true;
+                    count_a += 1;
+                }
+            }
+            // Backfill if not enough
+            for i in 0..n_usize {
+                if count_a >= m { break; }
+                if !set_a[i] { set_a[i] = true; count_a += 1; }
+            }
+
+            // Same for set_b
+            let mut count_b = 0usize;
+            for i in 0..n_usize {
+                if count_b < m && (voters_b.get(i).copied().unwrap_or(true)) {
+                    set_b[i] = true;
+                    count_b += 1;
+                }
+            }
+            for i in 0..n_usize {
+                if count_b >= m { break; }
+                if !set_b[i] { set_b[i] = true; count_b += 1; }
+            }
+
+            // Both are quorums
+            prop_assert!(is_quorum(count_a as u64, n));
+            prop_assert!(is_quorum(count_b as u64, n));
+
+            // Must have at least one overlapping member
+            let overlap = (0..n_usize).filter(|&i| set_a[i] && set_b[i]).count();
+            prop_assert!(overlap >= 1);
+        }
     }
 }

@@ -225,5 +225,28 @@ mod tests {
             prop_assert!(cmp == -1 || cmp == 0 || cmp == 1);
             prop_assert_eq!(epoch_ge(&a, &b), cmp >= 0);
         }
+
+        // r[verify epoch.cmp]
+        // r[verify epoch.ge]
+        /// Transitivity oracle: generate three random epochs and verify
+        /// that the ordering relation is transitive.
+        #[test]
+        fn prop_epoch_transitivity(
+            t1: u64, i1: u64,
+            t2: u64, i2: u64,
+            t3: u64, i3: u64,
+        ) {
+            let a = e(t1, i1);
+            let b = e(t2, i2);
+            let c = e(t3, i3);
+            // If a >= b and b >= c, then a >= c
+            if epoch_ge(&a, &b) && epoch_ge(&b, &c) {
+                prop_assert!(epoch_ge(&a, &c));
+            }
+            // If a < b and b < c, then a < c
+            if epoch_cmp(&a, &b) == -1 && epoch_cmp(&b, &c) == -1 {
+                prop_assert_eq!(epoch_cmp(&a, &c), -1);
+            }
+        }
     }
 }

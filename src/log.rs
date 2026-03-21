@@ -271,5 +271,75 @@ mod tests {
                 prop_assert_eq!(log[i].term, terms[i]);
             }
         }
+
+        // r[verify log.agree-at]
+        // r[verify log.prefix-matching]
+        // r[verify log.append]
+        // r[verify log.truncate]
+        /// Model oracle: random Append/Truncate traces on two logs, checking
+        /// agree_at and logs_match_prefix against a Vec<(u64,u64)> reference.
+        #[test]
+        fn prop_log_model_oracle(
+            ops in proptest::collection::vec(
+                prop_oneof![
+                    3 => (1u64..5, any::<u64>()).prop_map(|(t, v)| (0u8, t, v, 0usize)),
+                    1 => any::<usize>().prop_map(|k| (1u8, 0, 0, k)),
+                ],
+                0..=100,
+            ),
+        ) {
+            let mut log_a: Vec<LogEntry> = Vec::new();
+            let mut log_b: Vec<LogEntry> = Vec::new();
+            let mut oracle_a: Vec<(u64, u64)> = Vec::new();
+            let mut oracle_b: Vec<(u64, u64)> = Vec::new();
+
+            for &(op, term, value, trunc) in &ops {
+                match op {
+                    0 => {
+                        // Append to both with same term (diverge on value)
+                        log_append(&mut log_a, entry(term, value));
+                        log_append(&mut log_b, entry(term, value.wrapping_add(1)));
+                        oracle_a.push((term, value));
+                        oracle_b.push((term, value.wrapping_add(1)));
+                    }
+                    _ => {
+                        // Truncate log_a to some valid length
+                        if !oracle_a.is_empty() {
+                            let k = trunc % oracle_a.len();
+                            log_truncate(&mut log_a, k);
+                            oracle_a.truncate(k);
+                        }
+                    }
+                }
+
+                // Validate lengths match oracle
+                prop_assert_eq!(log_a.len(), oracle_a.len());
+                prop_assert_eq!(log_b.len(), oracle_b.len());
+
+                // Validate entries match oracle
+                for (i, &(t, v)) in oracle_a.iter().enumerate() {
+                    prop_assert_eq!(log_a[i].term, t);
+                    prop_assert_eq!(log_a[i].value, v);
+                }
+
+                // Validate agree_at matches oracle
+                let min_len = oracle_a.len().min(oracle_b.len());
+                for i in 0..min_len {
+                    let expected = oracle_a[i].0 == oracle_b[i].0;
+                    prop_assert_eq!(agree_at(&log_a, &log_b, i), expected);
+                }
+
+                // Find first term mismatch
+                let match_len = (0..min_len)
+                    .take_while(|&i| oracle_a[i].0 == oracle_b[i].0)
+                    .count();
+                // logs_match_prefix should hold up to match_len
+                prop_assert!(logs_match_prefix(&log_a, &log_b, match_len));
+                // And fail at match_len + 1 if there's a mismatch
+                if match_len < min_len {
+                    prop_assert!(!logs_match_prefix(&log_a, &log_b, match_len + 1));
+                }
+            }
+        }
     }
 }
