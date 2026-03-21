@@ -321,6 +321,27 @@ mod tests {
         }
     }
 
+    // --- Operation type for stateful fuzzing ---
+
+    #[derive(Debug, Clone)]
+    enum Op {
+        Push(u64),
+        Pop,
+        Peek,
+    }
+
+    fn op_strategy() -> impl Strategy<Value = Op> {
+        prop_oneof![
+            3 => any::<u64>().prop_map(Op::Push),
+            3 => Just(Op::Pop),
+            1 => Just(Op::Peek),
+        ]
+    }
+
+    fn capacity_strategy() -> impl Strategy<Value = usize> {
+        prop::sample::select(vec![2_usize, 4, 8, 16, 32, 64])
+    }
+
     proptest! {
         // r[verify ring-buffer.push]
         // r[verify ring-buffer.pop]
@@ -386,6 +407,64 @@ mod tests {
             }
             prop_assert_eq!(rb.is_empty(), rb.count == 0);
             prop_assert_eq!(rb.is_full(), rb.len() == rb.capacity());
+        }
+
+        // r[verify ring-buffer.push]
+        // r[verify ring-buffer.pop]
+        // r[verify ring-buffer.peek]
+        // r[verify ring-buffer.len]
+        // r[verify ring-buffer.is-empty]
+        // r[verify ring-buffer.is-full]
+        // r[verify ring-buffer.remaining]
+        /// Model-based stateful fuzz: run random operation traces against a
+        /// VecDeque oracle. Every observable must match after every step.
+        #[test]
+        fn prop_model_oracle(
+            cap in capacity_strategy(),
+            ops in proptest::collection::vec(op_strategy(), 0..=200),
+        ) {
+            let mut rb = RingBuffer::new(cap);
+            let mut oracle: std::collections::VecDeque<u64> = std::collections::VecDeque::new();
+
+            for op in &ops {
+                // Invariants hold before every operation
+                prop_assert_eq!(rb.len(), oracle.len());
+                prop_assert_eq!(rb.is_empty(), oracle.is_empty());
+                prop_assert_eq!(rb.is_full(), oracle.len() == cap);
+                prop_assert_eq!(rb.len() + rb.remaining(), rb.capacity());
+
+                match op {
+                    Op::Push(v) => {
+                        let rb_ok = rb.push(*v);
+                        if oracle.len() < cap {
+                            oracle.push_back(*v);
+                            prop_assert!(rb_ok);
+                        } else {
+                            prop_assert!(!rb_ok);
+                        }
+                    }
+                    Op::Pop => {
+                        let rb_val = rb.pop();
+                        let oracle_val = oracle.pop_front();
+                        prop_assert_eq!(rb_val, oracle_val);
+                    }
+                    Op::Peek => {
+                        let rb_val = rb.peek();
+                        let oracle_val = oracle.front().copied();
+                        prop_assert_eq!(rb_val, oracle_val);
+                    }
+                }
+            }
+
+            // Final invariants
+            prop_assert_eq!(rb.len(), oracle.len());
+            prop_assert_eq!(rb.len() + rb.remaining(), rb.capacity());
+
+            // Drain both and compare full FIFO order
+            while let Some(oracle_val) = oracle.pop_front() {
+                prop_assert_eq!(rb.pop(), Some(oracle_val));
+            }
+            prop_assert!(rb.is_empty());
         }
     }
 }
