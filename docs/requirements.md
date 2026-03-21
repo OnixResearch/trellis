@@ -256,3 +256,30 @@ monad right identity: and_then(res, Ok) == res.
 r[result.or-else]
 or_else on Ok(v) MUST return Ok(v) unchanged. or_else on Err MUST return
 the fallback. or_else with an Ok fallback MUST always yield Ok.
+
+## Slice
+
+r[slice.chunk-count]
+chunk_count MUST return the number of full chunks of `chunk_size` that fit
+in a length of `len`. The result times chunk_size MUST not exceed len. The
+remainder MUST be less than chunk_size. chunk_size MUST be nonzero.
+
+r[slice.prefix-eq]
+prefix_eq MUST return true if and only if the first `n` elements of both
+slices are equal. When n is zero, prefix_eq MUST return true. When n
+exceeds either slice length, prefix_eq MUST return false.
+
+r[slice.suffix-eq]
+suffix_eq MUST return true if and only if the last `n` elements of both
+slices are equal. When n is zero, suffix_eq MUST return true. When n
+exceeds either slice length, suffix_eq MUST return false.
+
+r[slice.all-equal]
+all_equal MUST return true if and only if every element in the slice
+equals the given value. all_equal on an empty slice MUST return true.
+
+r[slice.mismatch-index]
+mismatch_index MUST return the index of the first position where two
+slices differ, comparing up to the shorter length. MUST return None if
+all compared elements match. mismatch_index of two empty slices MUST
+return None.

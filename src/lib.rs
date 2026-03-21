@@ -18,6 +18,7 @@
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `result` — verified Result combinators
+//! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
 pub mod arithmetic;
 pub mod bitwise;
@@ -28,3 +29,4 @@ pub mod option;
 pub mod ordering;
 pub mod properties;
 pub mod result;
+pub mod slice;

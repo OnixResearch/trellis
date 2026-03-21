@@ -9,14 +9,16 @@
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 
 ## Recent Changes
-- Collections hardened: is_partitioned, find_first, count_matches
-  - is_partitioned uses two-phase scan (skip < threshold, verify >= threshold)
-  - Must carry partition point invariant into second loop for the violation proof
-  - sorted_implies_partitioned: Z3 automatic from is_sorted transitivity
-  - count_from_bounded: inductive proof, requires 0 <= from <= s.len() (not just >= 0)
-  - count_matches loop invariant: count + count_from(s, t, i) == count_matches(s, t)
-- Total: 171 Verus proofs, 127 cargo tests, 56 requirements
-- Total: 153 Verus proofs, 117 cargo tests
+- Slice module added: chunk_count, prefix_eq, suffix_eq, all_equal, mismatch_index
+  - chunk_count proofs need nonlinear_arith for multiplication commutativity:
+    fundamental div-mod gives `d * (n/d)` but ensures needs `(n/d) * d`
+  - suffix_eq quantifier needs explicit #![trigger] — Verus can't auto-infer for
+    complex index expressions like `a[a.len() - n + i]`
+  - suffix_eq loop invariant needs `a_start + n == a.len()` to prove no arithmetic overflow
+    on `a_start + i` (instead of `a_start as int == a@.len() - n as int`)
+  - mismatch_none_implies_prefix_eq uses inductive helper proof fn
+  - Seq::len() returns nat, not int — must cast with `as int` for int return types
+- Total: 194 Verus proofs, 142 cargo tests, 61 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
