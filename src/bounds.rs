@@ -66,7 +66,6 @@ proof fn clamp_idempotent(value: u64, lo: u64, hi: u64)
 } // verus!
 
 #[cfg(test)]
-#[allow(clippy::integer_division)]
 mod tests {
     use super::*;
     use proptest::prelude::*;

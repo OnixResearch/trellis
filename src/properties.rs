@@ -117,7 +117,6 @@ mod verus_proofs {
 }
 
 #[cfg(test)]
-#[allow(clippy::integer_division)]
 mod tests {
     use crate::arithmetic::*;
     use crate::bounds::*;

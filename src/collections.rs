@@ -1,4 +1,10 @@
 //! Verified collection operations.
+//!
+//! `binary_search` and `sorted_insert` are hand-implemented with verified
+//! loop invariants. Verus checks that:
+//! - `binary_search` returns a valid index when found, and proves absence when not
+//! - `sorted_insert` produces a sorted result of length n+1 containing the value
+//!
 
 use vstd::prelude::*;
 
@@ -9,31 +15,189 @@ pub open spec fn is_sorted_spec(s: Seq<u64>) -> bool {
     forall|i: int, j: int| 0 <= i < j < s.len() ==> s[i] <= s[j]
 }
 
-// r[impl collections.sorted-insert]
-// r[impl collections.binary-search]
-// NOTE: sorted_insert and binary_search use stdlib methods (partition_point,
-// binary_search) whose internals aren't visible to Verus. The specs and
-// proofs for these live alongside the spec functions above. The exec
-// functions are verified via property tests below.
-
-} // verus!
-
-// r[impl collections.sorted-insert]
-/// Inserts `value` into a sorted slice, returning a new sorted `Vec`.
-pub fn sorted_insert(sorted: &[u64], value: u64) -> Vec<u64> {
-    let pos = sorted.partition_point(|&x| x < value);
-    let mut result = Vec::with_capacity(sorted.len() + 1);
-    result.extend_from_slice(&sorted[..pos]);
-    result.push(value);
-    result.extend_from_slice(&sorted[pos..]);
-    result
-}
+// --- binary_search ---
 
 // r[impl collections.binary-search]
 /// Binary search on a sorted slice.
-pub fn binary_search(sorted: &[u64], target: u64) -> Option<usize> {
-    sorted.binary_search(&target).ok()
+///
+/// Returns `Some(index)` where `slice[index] == target`, or `None` if
+/// absent. The loop invariant tracks that elements below `lo` and at/above
+/// `hi` cannot be the target, narrowing the window each iteration.
+pub fn binary_search(slice: &[u64], target: u64) -> (result: Option<usize>)
+    requires is_sorted_spec(slice@)
+    ensures
+        result.is_some() ==> {
+            let i = result.unwrap() as int;
+            &&& 0 <= i < slice@.len()
+            &&& slice@[i] == target
+        },
+        result.is_none() ==> forall|i: int| 0 <= i < slice@.len() ==> slice@[i] != target,
+{
+    let mut lo: usize = 0;
+    let mut hi: usize = slice.len();
+
+    while lo < hi
+        invariant
+            0 <= lo <= hi <= slice@.len(),
+            is_sorted_spec(slice@),
+            forall|i: int| 0 <= i < lo as int ==> slice@[i] != target,
+            forall|i: int| hi as int <= i < slice@.len() ==> slice@[i] != target,
+        decreases hi - lo,
+    {
+        let mid = lo + (hi - lo) / 2;
+
+        if slice[mid] == target {
+            return Some(mid);
+        } else if slice[mid] < target {
+            assert forall|i: int| 0 <= i <= mid as int implies slice@[i] != target
+            by {
+                if i >= lo as int {
+                    assert(slice@[i] <= slice@[mid as int]);
+                }
+            }
+            lo = mid + 1;
+        } else {
+            assert forall|i: int| mid as int <= i < slice@.len() implies slice@[i] != target
+            by {
+                if i < hi as int {
+                    assert(slice@[mid as int] <= slice@[i]);
+                }
+            }
+            hi = mid;
+        }
+    }
+
+    None
 }
+
+// --- sorted_insert ---
+
+/// Finds the insertion point for `value` in a sorted slice.
+/// All elements before the returned index are < value;
+/// all elements at or after are >= value.
+fn find_insert_pos(slice: &[u64], value: u64) -> (pos: usize)
+    requires is_sorted_spec(slice@)
+    ensures
+        0 <= pos <= slice@.len(),
+        forall|i: int| 0 <= i < pos as int ==> slice@[i] < value,
+        forall|i: int| pos as int <= i < slice@.len() ==> slice@[i] >= value,
+{
+    let mut lo: usize = 0;
+    let mut hi: usize = slice.len();
+
+    while lo < hi
+        invariant
+            0 <= lo <= hi <= slice@.len(),
+            is_sorted_spec(slice@),
+            forall|i: int| 0 <= i < lo as int ==> slice@[i] < value,
+            forall|i: int| hi as int <= i < slice@.len() ==> slice@[i] >= value,
+        decreases hi - lo,
+    {
+        let mid = lo + (hi - lo) / 2;
+
+        if slice[mid] < value {
+            assert forall|i: int| 0 <= i <= mid as int implies slice@[i] < value
+            by {
+                if i >= lo as int {
+                    assert(slice@[i] <= slice@[mid as int]);
+                }
+            }
+            lo = mid + 1;
+        } else {
+            assert forall|i: int| mid as int <= i < slice@.len() implies slice@[i] >= value
+            by {
+                if i < hi as int {
+                    assert(slice@[mid as int] <= slice@[i]);
+                }
+            }
+            hi = mid;
+        }
+    }
+
+    lo
+}
+
+// r[impl collections.sorted-insert]
+/// Inserts `value` into a sorted slice, returning a new sorted `Vec`.
+///
+/// Uses a verified insertion point search, then builds the result by
+/// copying elements before the position, inserting the value, and
+/// copying elements after. The postcondition proves:
+/// - result length is input length + 1
+/// - result is sorted
+/// - result contains the inserted value
+pub fn sorted_insert(slice: &[u64], value: u64) -> (result: Vec<u64>)
+    requires
+        is_sorted_spec(slice@),
+        slice@.len() < usize::MAX,
+    ensures
+        result@.len() == slice@.len() + 1,
+        is_sorted_spec(result@),
+        exists|i: int| 0 <= i < result@.len() && result@[i] == value,
+{
+    let pos = find_insert_pos(slice, value);
+    let mut result = Vec::with_capacity(slice.len() + 1);
+
+    let mut i: usize = 0;
+    while i < pos
+        invariant
+            0 <= i <= pos,
+            pos <= slice@.len(),
+            result@.len() == i as int,
+            forall|j: int| 0 <= j < i as int ==> result@[j] == slice@[j],
+        decreases pos - i,
+    {
+        result.push(slice[i]);
+        i = i + 1;
+    }
+
+    result.push(value);
+
+    let mut i: usize = pos;
+    while i < slice.len()
+        invariant
+            pos <= i <= slice@.len(),
+            pos <= slice@.len(),
+            result@.len() == i as int + 1,
+            forall|j: int| 0 <= j < pos as int ==> result@[j] == slice@[j],
+            result@[pos as int] == value,
+            forall|j: int| pos as int <= j < i as int ==> result@[j + 1] == slice@[j],
+        decreases slice@.len() - i as int,
+    {
+        result.push(slice[i]);
+        i = i + 1;
+    }
+
+    // Prove the result is sorted by case analysis on position relative to
+    // the insertion point.
+    assert forall|i: int, j: int| 0 <= i < j < result@.len()
+        implies result@[i] <= result@[j]
+    by {
+        let p = pos as int;
+        if i < p && j < p {
+            assert(result@[i] == slice@[i]);
+            assert(result@[j] == slice@[j]);
+        } else if i < p && j == p {
+            assert(result@[i] == slice@[i]);
+            assert(slice@[i] < value);
+        } else if i < p && j > p {
+            assert(result@[i] == slice@[i]);
+            assert(result@[j] == slice@[j - 1]);
+        } else if i == p && j > p {
+            assert(result@[j] == slice@[j - 1]);
+            assert(slice@[j - 1] >= value);
+        } else if i > p && j > p {
+            assert(result@[i] == slice@[i - 1]);
+            assert(result@[j] == slice@[j - 1]);
+        }
+    }
+
+    assert(result@[pos as int] == value);
+
+    result
+}
+
+} // verus!
 
 #[cfg(test)]
 mod tests {
