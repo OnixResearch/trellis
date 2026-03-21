@@ -76,6 +76,21 @@ r[collections.merge-sorted]
 Merging two sorted sequences MUST produce a sorted sequence whose length
 equals the sum of the input lengths.
 
+r[collections.is-partitioned]
+is_partitioned MUST return true if and only if all elements below the
+threshold precede all elements at or above it. Sorted sequences MUST be
+partitioned by any threshold. Empty slices MUST be partitioned.
+
+r[collections.find-first]
+find_first MUST return the index of the first occurrence of target, or
+None if absent. When found, no earlier index may contain the target.
+find_first on an empty slice MUST return None.
+
+r[collections.count-matches]
+count_matches MUST return the number of elements equal to target. The
+count MUST be zero for empty slices. The count MUST never exceed the
+slice length.
+
 ## Integer
 
 r[integer.is-even]

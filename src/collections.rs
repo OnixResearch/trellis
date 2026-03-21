@@ -245,6 +245,201 @@ pub fn merge_sorted(a: &[u64], b: &[u64]) -> (result: Vec<u64>)
     result
 }
 
+// --- is_partitioned ---
+
+// r[depends collections.is-partitioned]
+/// Spec: once an element >= threshold appears, all subsequent are >= threshold.
+pub open spec fn is_partitioned_spec(s: Seq<u64>, threshold: u64) -> bool {
+    forall|i: int, j: int|
+        0 <= i < j < s.len() && s[i] >= threshold ==> s[j] >= threshold
+}
+
+// r[impl collections.is-partitioned]
+/// Returns true if all elements < threshold precede all elements >= threshold.
+pub fn is_partitioned(slice: &[u64], threshold: u64) -> (result: bool)
+    ensures result == is_partitioned_spec(slice@, threshold)
+{
+    let mut i: usize = 0;
+    // Skip elements < threshold
+    while i < slice.len() && slice[i] < threshold
+        invariant
+            0 <= i <= slice@.len(),
+            forall|k: int| 0 <= k < i as int ==> slice@[k] < threshold,
+        decreases slice@.len() - i
+    {
+        i = i + 1;
+    }
+    // Partition point found at i.
+    // First loop exited because i == len OR slice[i] >= threshold.
+    let partition = i;
+    // Check remaining are all >= threshold.
+    while i < slice.len()
+        invariant
+            partition <= i <= slice@.len(),
+            partition < slice@.len() ==> slice@[partition as int] >= threshold,
+            forall|k: int| 0 <= k < partition as int ==> slice@[k] < threshold,
+            forall|k: int| partition as int <= k < i as int ==> slice@[k] >= threshold,
+        decreases slice@.len() - i
+    {
+        if slice[i] < threshold {
+            // Violation found
+            return false;
+        }
+        i = i + 1;
+    }
+    // All elements partitioned: [0, partition) < threshold, [partition, len) >= threshold
+    assert forall|i: int, j: int|
+        0 <= i < j < slice@.len() && slice@[i] >= threshold
+        implies slice@[j] >= threshold
+    by {
+        assert(i >= partition as int);
+        assert(j >= partition as int);
+    }
+    true
+}
+
+// r[verify collections.is-partitioned]
+/// Sorted sequences are partitioned by any threshold.
+proof fn sorted_implies_partitioned(s: Seq<u64>, threshold: u64)
+    requires is_sorted_spec(s)
+    ensures is_partitioned_spec(s, threshold)
+{
+    assert forall|i: int, j: int|
+        0 <= i < j < s.len() && s[i] >= threshold
+        implies s[j] >= threshold
+    by {
+        assert(s[i] <= s[j]);
+    }
+}
+
+// r[verify collections.is-partitioned]
+proof fn empty_is_partitioned(threshold: u64)
+    ensures is_partitioned_spec(Seq::<u64>::empty(), threshold)
+{}
+
+// --- find_first ---
+
+// r[depends collections.find-first]
+/// Spec: index of the first occurrence of target, or -1 if absent.
+pub open spec fn find_first_spec(s: Seq<u64>, target: u64) -> int
+    decreases s.len()
+{
+    if s.len() == 0 {
+        -1int
+    } else if s[0] == target {
+        0int
+    } else {
+        let sub = find_first_spec(s.subrange(1, s.len() as int), target);
+        if sub < 0 { -1int } else { 1 + sub }
+    }
+}
+
+// r[impl collections.find-first]
+/// Returns the index of the first occurrence of `target`, or `None`.
+///
+/// Linear scan with loop invariant: no match seen in [0, i).
+pub fn find_first(slice: &[u64], target: u64) -> (result: Option<usize>)
+    ensures
+        result.is_some() ==> {
+            let idx = result.unwrap() as int;
+            &&& 0 <= idx < slice@.len()
+            &&& slice@[idx] == target
+            &&& forall|k: int| 0 <= k < idx ==> slice@[k] != target
+        },
+        result.is_none() ==> forall|k: int| 0 <= k < slice@.len() ==> slice@[k] != target,
+{
+    let mut i: usize = 0;
+    while i < slice.len()
+        invariant
+            0 <= i <= slice@.len(),
+            forall|k: int| 0 <= k < i as int ==> slice@[k] != target,
+        decreases slice@.len() - i
+    {
+        if slice[i] == target {
+            return Some(i);
+        }
+        i = i + 1;
+    }
+    None
+}
+
+// r[verify collections.find-first]
+proof fn find_first_empty(target: u64)
+    ensures find_first_spec(Seq::<u64>::empty(), target) == -1int
+{}
+
+// --- count_matches ---
+
+// r[depends collections.count-matches]
+/// Spec: number of elements equal to target, counting from index `from`.
+pub open spec fn count_from_spec(s: Seq<u64>, target: u64, from: int) -> nat
+    decreases s.len() - from
+{
+    if from < 0 || from >= s.len() {
+        0
+    } else if s[from] == target {
+        1 + count_from_spec(s, target, from + 1)
+    } else {
+        count_from_spec(s, target, from + 1)
+    }
+}
+
+/// Spec: total count of elements equal to target.
+pub open spec fn count_matches_spec(s: Seq<u64>, target: u64) -> nat {
+    count_from_spec(s, target, 0)
+}
+
+// r[impl collections.count-matches]
+/// Counts the number of elements equal to `target`.
+///
+/// Linear scan with a running count. The invariant relates the partial
+/// count to the spec via: count + remaining == total.
+pub fn count_matches(slice: &[u64], target: u64) -> (result: usize)
+    requires slice@.len() < usize::MAX
+    ensures result as nat == count_matches_spec(slice@, target)
+{
+    let mut count: usize = 0;
+    let mut i: usize = 0;
+    while i < slice.len()
+        invariant
+            0 <= i <= slice@.len(),
+            count as nat + count_from_spec(slice@, target, i as int)
+                == count_matches_spec(slice@, target),
+            count <= i,
+        decreases slice@.len() - i
+    {
+        if slice[i] == target {
+            count = count + 1;
+        }
+        i = i + 1;
+    }
+    count
+}
+
+// r[verify collections.count-matches]
+proof fn count_matches_empty(target: u64)
+    ensures count_matches_spec(Seq::<u64>::empty(), target) == 0nat
+{}
+
+// r[verify collections.count-matches]
+/// Count never exceeds length.
+proof fn count_matches_bounded(s: Seq<u64>, target: u64)
+    ensures count_matches_spec(s, target) <= s.len()
+{
+    count_from_bounded(s, target, 0);
+}
+
+/// Helper: count_from(s, target, from) <= s.len() - from.
+proof fn count_from_bounded(s: Seq<u64>, target: u64, from: int)
+    requires 0 <= from <= s.len()
+    ensures count_from_spec(s, target, from) as int <= s.len() - from
+    decreases s.len() - from
+{
+    if from < s.len() {
+        count_from_bounded(s, target, from + 1);
+    }
+}
+
 } // verus!
 
 #[cfg(test)]
@@ -355,6 +550,73 @@ mod tests {
             for &x in &b {
                 prop_assert!(result.contains(&x));
             }
+        }
+    }
+
+    // r[verify collections.is-partitioned]
+    #[test]
+    fn test_is_partitioned() {
+        assert!(is_partitioned(&[], 5));
+        assert!(is_partitioned(&[1, 2, 3], 5));
+        assert!(is_partitioned(&[5, 6, 7], 5));
+        assert!(is_partitioned(&[1, 2, 5, 6], 5));
+        assert!(!is_partitioned(&[5, 1, 6], 5));
+        assert!(!is_partitioned(&[1, 6, 2, 7], 5));
+        assert!(is_partitioned(&[1, 3, 5, 7, 9], 1)); // all >= 1
+        assert!(is_partitioned(&[1, 3, 5, 7, 9], 100)); // all < 100
+    }
+
+    // r[verify collections.find-first]
+    #[test]
+    fn test_find_first() {
+        assert_eq!(find_first(&[], 5), None);
+        assert_eq!(find_first(&[1, 2, 3], 2), Some(1));
+        assert_eq!(find_first(&[1, 2, 3], 4), None);
+        assert_eq!(find_first(&[5, 5, 5], 5), Some(0));
+        assert_eq!(find_first(&[1, 2, 5, 3, 5], 5), Some(2));
+    }
+
+    // r[verify collections.count-matches]
+    #[test]
+    fn test_count_matches() {
+        assert_eq!(count_matches(&[], 5), 0);
+        assert_eq!(count_matches(&[1, 2, 3], 2), 1);
+        assert_eq!(count_matches(&[5, 5, 5], 5), 3);
+        assert_eq!(count_matches(&[1, 2, 3], 4), 0);
+        assert_eq!(count_matches(&[1, 5, 2, 5, 3, 5], 5), 3);
+    }
+
+    proptest! {
+        // r[verify collections.is-partitioned]
+        #[test]
+        fn prop_sorted_is_partitioned(s in sorted_vec(50), threshold: u64) {
+            prop_assert!(is_partitioned(&s, threshold));
+        }
+
+        // r[verify collections.find-first]
+        #[test]
+        fn prop_find_first_is_first(s in proptest::collection::vec(0u64..10, 0..=50), target in 0u64..10) {
+            if let Some(idx) = find_first(&s, target) {
+                prop_assert_eq!(s[idx], target);
+                for i in 0..idx {
+                    prop_assert_ne!(s[i], target);
+                }
+            } else {
+                prop_assert!(!s.contains(&target));
+            }
+        }
+
+        // r[verify collections.count-matches]
+        #[test]
+        fn prop_count_matches_correct(s in proptest::collection::vec(0u64..10, 0..=50), target in 0u64..10) {
+            let expected = s.iter().filter(|&&x| x == target).count();
+            prop_assert_eq!(count_matches(&s, target), expected);
+        }
+
+        // r[verify collections.count-matches]
+        #[test]
+        fn prop_count_matches_bounded(s in proptest::collection::vec(any::<u64>(), 0..=50), target: u64) {
+            prop_assert!(count_matches(&s, target) <= s.len());
         }
     }
 

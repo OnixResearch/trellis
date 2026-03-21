@@ -41,7 +41,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bitwise` | `is_power_of_two`, `bit_at`, `set_bit`, `clear_bit`, `toggle_bit` | 8 |
 | `bounds` | `in_range`, `clamp` | 4 |
 | `integer` | `is_even`, `is_odd`, `align_down`, `align_up`, `log2_floor`, `next_power_of_two` | 20 |
-| `collections` | `sorted_insert`, `binary_search`, `merge_sorted` | spec-level |
+| `collections` | `sorted_insert`, `binary_search`, `merge_sorted`, `is_partitioned`, `find_first`, `count_matches` | 10 |
 | `option` | `unwrap_or_default`, `map`, `and_then`, `or_else`, `flatten`, `zip`, `filter` | 21 |
 | `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
 | `result` | `unwrap_or`, `map_ok`, `map_err`, `and_then`, `or_else` | 14 |

@@ -9,11 +9,13 @@
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 
 ## Recent Changes
-- Cross-module properties: align-down-remainder, align-up-via-div-ceil, median-is-clamp
-  - align-down-remainder: lemma_fundamental_div_mod + lemma_mod_pos_bound
-  - align-up-via-div-ceil: lemma_div_pos_is_pos (both specs share same core)
-  - median-is-clamp: Z3 automatic (case analysis on spec definitions)
-  - gcd-min-max dropped: gcd commutativity needs deep Euclidean induction
+- Collections hardened: is_partitioned, find_first, count_matches
+  - is_partitioned uses two-phase scan (skip < threshold, verify >= threshold)
+  - Must carry partition point invariant into second loop for the violation proof
+  - sorted_implies_partitioned: Z3 automatic from is_sorted transitivity
+  - count_from_bounded: inductive proof, requires 0 <= from <= s.len() (not just >= 0)
+  - count_matches loop invariant: count + count_from(s, t, i) == count_matches(s, t)
+- Total: 171 Verus proofs, 127 cargo tests, 56 requirements
 - Total: 153 Verus proofs, 117 cargo tests
 
 ## Architecture
