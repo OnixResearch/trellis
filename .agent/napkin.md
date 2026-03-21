@@ -18,7 +18,13 @@
     on `a_start + i` (instead of `a_start as int == a@.len() - n as int`)
   - mismatch_none_implies_prefix_eq uses inductive helper proof fn
   - Seq::len() returns nat, not int — must cast with `as int` for int return types
-- Total: 194 Verus proofs, 142 cargo tests, 61 requirements
+- Conversion module added: narrow_u32, narrow_u16, narrow_u8, signed_to_unsigned, unsigned_to_signed
+  - Cast lints (truncation, sign_loss, wrap) allowed at module level — verified casts are the point
+  - clippy::checked_conversions also allowed — can't use try_from inside verus! blocks
+  - Roundtrip proofs (i64→u64→i64, u64→i64→u64) verify directly — Z3 handles cast chains
+  - Narrowing chain proof (u8 fits → u16 fits → u32 fits) trivially automatic
+  - Option<u32>, Option<u16>, Option<u8>, Option<i64> all work in Verus ensures
+- Total: 212 Verus proofs, 156 cargo tests, 66 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

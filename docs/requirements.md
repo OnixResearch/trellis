@@ -283,3 +283,30 @@ mismatch_index MUST return the index of the first position where two
 slices differ, comparing up to the shorter length. MUST return None if
 all compared elements match. mismatch_index of two empty slices MUST
 return None.
+
+## Conversion
+
+r[conversion.narrow-u32]
+narrow_u32 MUST return Some when the input fits in u32, None otherwise.
+Widening a u32 then narrowing MUST return the original value. Values
+above u32::MAX MUST be rejected.
+
+r[conversion.narrow-u16]
+narrow_u16 MUST return Some when the input fits in u16, None otherwise.
+Widening a u16 then narrowing MUST return the original value. Values
+above u16::MAX MUST be rejected.
+
+r[conversion.narrow-u8]
+narrow_u8 MUST return Some when the input fits in u8, None otherwise.
+Widening a u8 then narrowing MUST return the original value. Values
+above u8::MAX MUST be rejected.
+
+r[conversion.signed-to-unsigned]
+signed_to_unsigned MUST return Some(x as u64) for non-negative i64
+values, and None for negative values. The i64 → u64 → i64 roundtrip
+MUST preserve the value for non-negative inputs.
+
+r[conversion.unsigned-to-signed]
+unsigned_to_signed MUST return Some(x as i64) when x <= i64::MAX, and
+None otherwise. The u64 → i64 → u64 roundtrip MUST preserve the value
+for inputs that fit in i64.

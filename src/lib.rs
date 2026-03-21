@@ -13,6 +13,7 @@
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `bounds` — range predicates, clamping
+//! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `collections` — sorted insert, binary search
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `option` — verified Option combinators
@@ -23,6 +24,7 @@
 pub mod arithmetic;
 pub mod bitwise;
 pub mod bounds;
+pub mod conversion;
 pub mod collections;
 pub mod integer;
 pub mod option;
