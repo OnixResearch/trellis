@@ -107,25 +107,83 @@ pub fn query(bits: &Vec<bool>, positions: &Vec<usize>) -> (result: bool)
 
 // --- Safety proofs ---
 
+/// Helper: insert_spec preserves the length of the bit array when positions are in-bounds.
+proof fn insert_preserves_len(bits: Seq<bool>, positions: Seq<int>)
+    requires
+        forall|k: int| #![trigger positions[k]] 0 <= k < positions.len() ==> 0 <= positions[k] < bits.len() as int,
+    ensures insert_spec(bits, positions).len() == bits.len()
+    decreases positions.len()
+{
+    if positions.len() > 0 {
+        insert_preserves_len(bits, positions.drop_last());
+    }
+}
+
 // r[verify bloom.insert]
-/// Insert monotonic: trusted inductive proof. Verified by proptest.
-/// Cannot close: Seq::update axioms require 0 <= i < s.len() but the
-/// requires clause does not constrain positions to be in-bounds.
-#[verifier::external_body]
+/// Insert monotonic: if bit j is set, it stays set after inserting any in-bounds positions.
 proof fn insert_monotonic(bits: Seq<bool>, positions: Seq<int>, j: int)
-    requires 0 <= j < bits.len(), bits[j]
+    requires
+        0 <= j < bits.len(),
+        bits[j],
+        forall|k: int| #![trigger positions[k]] 0 <= k < positions.len() ==> 0 <= positions[k] < bits.len() as int,
     ensures insert_spec(bits, positions)[j]
-{}
+    decreases positions.len()
+{
+    if positions.len() > 0 {
+        let rest = insert_spec(bits, positions.drop_last());
+        let pos = positions.last();
+        // By IH, rest[j] is true
+        insert_monotonic(bits, positions.drop_last(), j);
+        // rest has same length as bits
+        insert_preserves_len(bits, positions.drop_last());
+        // pos is in-bounds for rest, so update preserves rest[j]
+        assert(0 <= pos < rest.len() as int);
+    }
+}
 
 // r[verify bloom.query]
-/// No false negatives: trusted inductive proof. Verified by proptest.
-/// Cannot close: depends on insert_monotonic which requires in-bounds
-/// positions for Seq::update axioms.
-#[verifier::external_body]
+/// No false negatives: after inserting in-bounds positions, query returns true.
 proof fn no_false_negatives(bits: Seq<bool>, positions: Seq<int>)
-    requires positions.len() > 0
+    requires
+        positions.len() > 0,
+        forall|k: int| #![trigger positions[k]] 0 <= k < positions.len() ==> 0 <= positions[k] < bits.len() as int,
     ensures query_spec(insert_spec(bits, positions), positions)
-{}
+{
+    let inserted = insert_spec(bits, positions);
+    assert forall|i: int| 0 <= i < positions.len() as int implies inserted[positions[i]] by {
+        no_false_negatives_helper(bits, positions, i);
+    }
+}
+
+/// Helper: position i is set in insert_spec(bits, positions) when positions are in-bounds.
+proof fn no_false_negatives_helper(bits: Seq<bool>, positions: Seq<int>, i: int)
+    requires
+        0 <= i < positions.len(),
+        forall|k: int| #![trigger positions[k]] 0 <= k < positions.len() ==> 0 <= positions[k] < bits.len() as int,
+    ensures insert_spec(bits, positions)[positions[i]]
+    decreases positions.len()
+{
+    if positions.len() == 0 {
+        // unreachable
+    } else if i == positions.len() - 1 {
+        // Last position: explicitly set by the final update
+        let rest = insert_spec(bits, positions.drop_last());
+        insert_preserves_len(bits, positions.drop_last());
+        // insert_spec(bits, positions) == rest.update(positions.last(), true)
+        // positions[i] == positions.last(), so the update sets it
+    } else {
+        // Position i < len-1: set in the sub-insert, preserved by the final update
+        let rest = insert_spec(bits, positions.drop_last());
+        // By IH: rest[positions[i]] is true
+        no_false_negatives_helper(bits, positions.drop_last(), i);
+        // rest has same length as bits
+        insert_preserves_len(bits, positions.drop_last());
+        // The final update preserves rest[positions[i]]
+        // because update(pos, true)[j] == if j == pos { true } else { rest[j] }
+        // Either way, the result is true (rest[positions[i]] is true, and true stays true)
+        assert(0 <= positions.last() < rest.len() as int);
+    }
+}
 
 } // verus!
 
