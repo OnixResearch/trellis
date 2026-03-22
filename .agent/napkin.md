@@ -99,7 +99,15 @@
   - Inductive proof over quantified sequences failed (all_exists_present) — Z3 can't
     handle forall over Seq combined with recursive spec. Dropped in favor of model oracle.
   - KEY_EXISTS and KEY_NOT_EXISTS proved to be complements
-- Total: 341 Verus proofs, 248 cargo tests, 112 requirements
+- Interval module added: contains, is_empty, overlaps, split, adjacent, merge
+  - Half-open [lo, hi) intervals over u64, matching aspen's KeyRange semantics
+  - Split produces non-overlapping adjacent halves; merge is inverse of split
+  - split_covers: every point in original is in exactly one half
+  - adjacent_no_overlap: adjacent intervals never overlap
+  - All proofs automatic — Z3 handles linear integer comparisons instantly
+  - nonminimal_bool clippy lint suppressed — Verus needs explicit conjunctions
+    in the adjacent spec for Z3 trigger matching
+- Total: 362 Verus proofs, 261 cargo tests, 118 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

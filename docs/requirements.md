@@ -367,6 +367,32 @@ r[expiration.is-ttl-valid]
 is_ttl_valid(ttl_seconds, max_ttl) MUST return true if and only if
 ttl_seconds <= max_ttl.
 
+## Interval
+
+r[interval.contains]
+contains(lo, hi, x) MUST return true if and only if lo <= x < hi.
+An empty interval (lo >= hi) MUST contain nothing.
+
+r[interval.is-empty]
+is_empty(lo, hi) MUST return true if and only if lo >= hi.
+
+r[interval.overlaps]
+overlaps(a_lo, a_hi, b_lo, b_hi) MUST return true if and only if the
+intervals share at least one point. Two empty intervals MUST NOT overlap.
+Overlap MUST be symmetric.
+
+r[interval.split]
+split(lo, hi, mid) MUST produce two intervals [lo, mid) and [mid, hi)
+that cover the original without overlap. mid MUST satisfy lo < mid < hi.
+
+r[interval.adjacent]
+adjacent(a_lo, a_hi, b_lo, b_hi) MUST return true if and only if one
+interval ends exactly where the other begins. Adjacent MUST be symmetric.
+
+r[interval.merge]
+merge(a_lo, a_hi, b_lo, b_hi) MUST combine two adjacent intervals into
+one covering both. Merge of a split MUST recover the original.
+
 ## Compare-and-Swap
 
 r[cas.check-condition]

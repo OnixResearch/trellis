@@ -20,6 +20,7 @@
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `collections` — sorted insert, binary search
 //! - `integer` — parity, alignment, log2, next-power-of-two
+//! - `interval` — half-open interval contains, overlap, split, merge
 //! - `option` — verified Option combinators
 //! - `log` — append-only log with Log Matching Property
 //! - `monotonic` — advancement predicates for terms, commit indices
@@ -39,6 +40,7 @@ pub mod conversion;
 pub mod epoch;
 pub mod expiration;
 pub mod integer;
+pub mod interval;
 pub mod log;
 pub mod monotonic;
 pub mod option;
