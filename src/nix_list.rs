@@ -70,12 +70,26 @@ pub open spec fn tail_spec(list: Seq<u64>) -> Seq<u64>
 }
 
 // r[impl nix-list.tail]
-#[verifier::external_body]
+/// All elements except the first.
 pub fn tail(list: &Vec<u64>) -> (result: Vec<u64>)
     requires list.len() > 0
     ensures result@ == tail_spec(list@)
 {
-    list[1..].to_vec()
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 1;
+    while i < list.len()
+        invariant
+            1 <= i <= list.len(),
+            list.len() > 0,
+            result.len() == i - 1,
+            forall|j: int| 0 <= j < (i - 1) as int ==> result@[j] == list@[j + 1],
+        decreases list.len() - i,
+    {
+        result.push(list[i]);
+        i += 1;
+    }
+    assert(result@ =~= tail_spec(list@));
+    result
 }
 
 // --- elem ---

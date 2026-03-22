@@ -37,14 +37,27 @@ pub open spec fn substring_spec(s: Seq<u8>, start: nat, len: nat) -> Seq<u8> {
 
 // r[impl nix-string.substring]
 /// Extract a substring with Nix's clamping semantics.
-#[verifier::external_body]
 pub fn substring(s: &Vec<u8>, start: usize, len: usize) -> (result: Vec<u8>)
     ensures result@ == substring_spec(s@, start as nat, len as nat)
 {
-    let actual_start = start.min(s.len());
-    let remaining = s.len() - actual_start;
-    let actual_len = len.min(remaining);
-    s[actual_start..actual_start + actual_len].to_vec()
+    let actual_start: usize = if start > s.len() { s.len() } else { start };
+    let remaining: usize = s.len() - actual_start;
+    let actual_len: usize = if len > remaining { remaining } else { len };
+    let mut result: Vec<u8> = Vec::new();
+    let mut i: usize = 0;
+    while i < actual_len
+        invariant
+            i <= actual_len,
+            actual_start + actual_len <= s.len(),
+            result.len() == i,
+            forall|j: int| 0 <= j < i as int ==> result@[j] == s@[actual_start as int + j],
+        decreases actual_len - i,
+    {
+        result.push(s[actual_start + i]);
+        i += 1;
+    }
+    assert(result@ =~= substring_spec(s@, start as nat, len as nat));
+    result
 }
 
 // --- replace_strings ---

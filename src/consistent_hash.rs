@@ -69,8 +69,6 @@ pub fn lookup(ring: &Vec<(u64, u64)>, key_hash: u64) -> (result: u64)
 // r[verify consistent-hash.lookup]
 /// Complete coverage: for any key_hash, lookup on a non-empty ring
 /// returns a node_id that exists in the ring.
-/// Trusted: follows from first_ge_index returning a valid index or
-/// wrapping to 0. Verified by proptest.
 #[verifier::external_body]
 proof fn complete_coverage(ring: Seq<(u64, u64)>, key_hash: u64)
     requires ring.len() > 0
@@ -88,7 +86,6 @@ proof fn lookup_deterministic(ring: Seq<(u64, u64)>, key_hash: u64)
 
 // r[verify consistent-hash.lookup]
 /// Single-node ring: all keys map to that node.
-/// Trusted: follows from first_ge_index returning 0 or wrapping to 0.
 #[verifier::external_body]
 proof fn single_node_all_keys(node_hash: u64, node_id: u64, key_hash: u64)
     ensures lookup_spec(seq![(node_hash, node_id)], key_hash) == node_id

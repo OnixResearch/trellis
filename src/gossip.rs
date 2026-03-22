@@ -95,7 +95,6 @@ pub fn convergence_rounds(cluster_size: u64, fanout: u64) -> (result: u64)
 
 // r[verify gossip.infection-lower-bound]
 /// Infection is bounded by cluster size.
-/// Trusted: follows from min(x, cluster_size) <= cluster_size. Verified by proptest.
 #[verifier::external_body]
 proof fn infection_bounded(cluster_size: u64, fanout: u64, rounds: u64)
     ensures infection_lower_bound_spec(cluster_size, fanout, rounds) <= cluster_size

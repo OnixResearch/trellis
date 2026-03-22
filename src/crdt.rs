@@ -83,13 +83,31 @@ pub open spec fn g_counter_increment_spec(counter: Seq<u64>, idx: int) -> Seq<u6
 
 // r[impl crdt.g-counter-increment]
 /// Increment the count for replica `idx`.
-#[verifier::external_body]
 pub fn g_counter_increment(counter: &Vec<u64>, idx: usize) -> (result: Vec<u64>)
     requires idx < counter.len(), counter[idx as int] < u64::MAX
     ensures result@ == g_counter_increment_spec(counter@, idx as int)
 {
-    let mut result = counter.clone();
-    result[idx] += 1;
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < counter.len()
+        invariant
+            i <= counter.len(),
+            idx < counter.len(),
+            counter@[idx as int] < u64::MAX,
+            result.len() == i,
+            forall|j: int| 0 <= j < i as int && j != idx as int ==> result@[j] == counter@[j],
+            forall|j: int| 0 <= j < i as int && j == idx as int ==> result@[j] == (counter@[j] + 1) as u64,
+        decreases counter.len() - i,
+    {
+        if i == idx {
+            assert(counter[i as int] < u64::MAX);
+            result.push(counter[i] + 1);
+        } else {
+            result.push(counter[i]);
+        }
+        i += 1;
+    }
+    assert(result@ =~= g_counter_increment_spec(counter@, idx as int));
     result
 }
 
