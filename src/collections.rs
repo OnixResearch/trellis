@@ -271,6 +271,7 @@ pub fn is_partitioned(slice: &[u64], threshold: u64) -> (result: bool)
     }
     // Partition point found at i.
     // First loop exited because i == len OR slice[i] >= threshold.
+    #[allow(unused_variables)]
     let partition = i;
     // Check remaining are all >= threshold.
     while i < slice.len()
@@ -598,8 +599,8 @@ mod tests {
         fn prop_find_first_is_first(s in proptest::collection::vec(0u64..10, 0..=50), target in 0u64..10) {
             if let Some(idx) = find_first(&s, target) {
                 prop_assert_eq!(s[idx], target);
-                for i in 0..idx {
-                    prop_assert_ne!(s[i], target);
+                for &val in s.iter().take(idx) {
+                    prop_assert_ne!(val, target);
                 }
             } else {
                 prop_assert!(!s.contains(&target));

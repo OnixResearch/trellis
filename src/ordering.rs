@@ -4,6 +4,8 @@
 //! machine-checked contracts. Proofs cover commutativity, associativity,
 //! idempotence, and the relationship between min/max and `abs_diff`.
 
+#![allow(clippy::bool_to_int_with_if)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -325,7 +327,7 @@ mod tests {
         #[test]
         fn prop_compare_and_swap_preserves(a: u64, b: u64) {
             let (lo, hi) = compare_and_swap(a, b);
-            prop_assert_eq!(lo as u128 + hi as u128, a as u128 + b as u128);
+            prop_assert_eq!(u128::from(lo) + u128::from(hi), u128::from(a) + u128::from(b));
         }
     }
 }

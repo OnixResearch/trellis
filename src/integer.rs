@@ -421,8 +421,8 @@ mod tests {
         assert_eq!(next_power_of_two(3), Some(4));
         assert_eq!(next_power_of_two(4), Some(4));
         assert_eq!(next_power_of_two(5), Some(8));
-        assert_eq!(next_power_of_two(1 << 62), Some(1 << 62));
-        assert_eq!(next_power_of_two(1 << 63), Some(1 << 63));
+        assert_eq!(next_power_of_two(1 << 62), Some(1 << 62_i32));
+        assert_eq!(next_power_of_two(1 << 63), Some(1 << 63_i32));
         assert_eq!(next_power_of_two((1 << 63) + 1), None);
     }
 
@@ -491,7 +491,7 @@ mod tests {
 
         // r[verify integer.next-power-of-two]
         #[test]
-        fn prop_next_power_of_two_matches_stdlib(x in 0u64..=(1u64 << 63)) {
+        fn prop_next_power_of_two_matches_stdlib(x in 0u64..=(1u64 << 63_i32)) {
             let ours = next_power_of_two(x);
             let stdlib = x.checked_next_power_of_two();
             prop_assert_eq!(ours, stdlib);

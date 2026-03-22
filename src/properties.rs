@@ -579,7 +579,7 @@ mod tests {
         fn prop_chunk_count_div_ceil(n: u64, k in 1u64..=10000) {
             let cc = u128::from(chunk_count(n, k));
             let dc = u128::from(div_ceil(n, k));
-            let has_rem = if n % k > 0 { 1u128 } else { 0u128 };
+            let has_rem = u128::from(n % k > 0);
             prop_assert_eq!(dc, cc + has_rem);
         }
 
