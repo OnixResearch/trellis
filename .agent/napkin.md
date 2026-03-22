@@ -143,7 +143,17 @@
   - writes_disjoint nested loop: outer invariant tracks scanned pairs, inner invariant
     tracks current row vs all columns — Z3 handles the case split at `i = i + 1`
   - All 11 proofs automatic or single-induction — no nonlinear_arith needed
-- Total: 401 Verus proofs, 302 cargo tests, 133 requirements
+- COW module added: should_copy, ref_count_after_clone/drop, is_exclusive, can_reclaim, snapshot isolation
+  - Models the copy-on-write decision pattern: ref counting, copy predicate, value visibility
+  - cow_writer_value has unused `_old_value` param — needed in ensures clause (ghost code)
+    but not in exec body; underscore prefix satisfies clippy
+  - Three mutually exclusive states: can_reclaim (rc=0), is_exclusive (rc=1), should_copy (rc>1)
+  - state_coverage proof: every ref count falls into exactly one state
+  - Lifecycle proofs: clone/drop roundtrip, clone-exclusive→shared, drop-to-exclusive,
+    drop-exclusive→reclaimable
+  - Snapshot isolation: writer sees new value, shared readers see old value
+  - All proofs automatic — Z3 handles linear integer comparisons instantly
+- Total: 427 Verus proofs, 320 cargo tests, 139 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

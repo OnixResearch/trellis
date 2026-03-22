@@ -612,6 +612,35 @@ r[acid.writes-disjoint]
 writes_disjoint MUST return true if and only if no write index in the
 first set matches any write index in the second set.
 
+## Copy-on-Write
+
+r[cow.should-copy]
+should_copy(ref_count) MUST return true if and only if ref_count > 1.
+An exclusive owner (ref_count == 1) MUST NOT require a copy.
+
+r[cow.ref-count-after-clone]
+ref_count_after_clone MUST return ref_count + 1, saturating at u64::MAX.
+The result MUST always be greater than or equal to the input.
+
+r[cow.ref-count-after-drop]
+ref_count_after_drop MUST return ref_count - 1 when ref_count > 0, and
+0 when ref_count is already 0. The result MUST always be less than or
+equal to the input.
+
+r[cow.is-exclusive]
+is_exclusive MUST return true if and only if ref_count == 1. Exclusive
+ownership and should_copy MUST be complements for any valid (> 0) ref
+count.
+
+r[cow.can-reclaim]
+can_reclaim MUST return true if and only if ref_count == 0. Storage
+backing a COW value MUST only be freed when no references remain.
+
+r[cow.snapshot-isolation]
+After a COW write on shared data, readers MUST see the old value and
+the writer MUST see the new value. When exclusive, the writer sees the
+new value and no other readers exist.
+
 ## Log
 
 r[log.agree-at]
