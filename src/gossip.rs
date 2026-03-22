@@ -6,6 +6,9 @@
 
 use vstd::prelude::*;
 
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::mul::lemma_mul_inequality;
+
 verus! {
 
 // --- infection_lower_bound ---
@@ -36,20 +39,98 @@ pub open spec fn saturating_pow_spec(base: u64, exp: u64) -> int
     }
 }
 
+/// Helper: once saturating_pow_spec exceeds u64::MAX, it stays as sentinel.
+proof fn saturating_pow_sentinel_propagates(base: u64, exp: u64)
+    requires
+        saturating_pow_spec(base, exp) > u64::MAX as int,
+        exp < u64::MAX,
+    ensures saturating_pow_spec(base, (exp + 1) as u64) > u64::MAX as int
+{
+    let prev = saturating_pow_spec(base, exp);
+    // Unfold one step: since prev > u64::MAX, spec returns sentinel
+    assert(prev > u64::MAX as int);
+    assert(saturating_pow_spec(base, (exp + 1) as u64) == (u64::MAX as int + 1));
+}
+
 // r[impl gossip.infection-lower-bound]
 /// Returns a lower bound on the number of infected nodes.
-#[verifier::external_body]
 pub fn infection_lower_bound(cluster_size: u64, fanout: u64, rounds: u64) -> (result: u64)
     ensures result == infection_lower_bound_spec(cluster_size, fanout, rounds)
 {
-    let mut infected: u64 = 1;
-    for _ in 0..rounds.min(63) {
-        infected = match infected.checked_mul(fanout) {
-            Some(v) => v.min(cluster_size),
-            None => cluster_size,
-        };
+    // Compute saturating_pow_spec(fanout, rounds) iteratively.
+    // Track the raw power, applying clamp to cluster_size only at the end.
+    let mut val: u64 = 1;
+    let mut overflowed: bool = false;
+    let mut i: u64 = 0;
+
+    proof {
+        assert(saturating_pow_spec(fanout, 0u64) == 1int);
     }
-    infected.min(cluster_size)
+
+    while i < rounds
+        invariant
+            0 <= i <= rounds,
+            !overflowed ==> val as int == saturating_pow_spec(fanout, i),
+            overflowed ==> saturating_pow_spec(fanout, i) > u64::MAX as int,
+        decreases rounds - i,
+    {
+        if overflowed {
+            proof {
+                saturating_pow_sentinel_propagates(fanout, i);
+            }
+            i = i + 1;
+        } else {
+            proof {
+                // Unfold spec one step: since val == saturating_pow_spec(fanout, i) <= u64::MAX,
+                // saturating_pow_spec(fanout, i+1) = val * fanout.
+                let prev = saturating_pow_spec(fanout, i);
+                assert(prev == val as int);
+                assert(prev <= u64::MAX as int);
+                assert(saturating_pow_spec(fanout, (i + 1) as u64) == prev * fanout as int);
+            }
+            match val.checked_mul(fanout) {
+                Some(v) => {
+                    proof {
+                        assert(v as int == val as int * fanout as int);
+                        assert(v as int == saturating_pow_spec(fanout, (i + 1) as u64));
+                    }
+                    val = v;
+                },
+                None => {
+                    proof {
+                        assert(val as int * fanout as int > u64::MAX as int);
+                        assert(saturating_pow_spec(fanout, (i + 1) as u64) > u64::MAX as int);
+                    }
+                    overflowed = true;
+                },
+            }
+            i = i + 1;
+        }
+    }
+
+    // Now apply the clamping to cluster_size.
+    proof {
+        let bound = saturating_pow_spec(fanout, rounds);
+        saturating_pow_nonneg(fanout, rounds);
+        if overflowed {
+            assert(bound > u64::MAX as int);
+            assert(bound > cluster_size as int);
+            assert(infection_lower_bound_spec(cluster_size, fanout, rounds) == cluster_size);
+        } else {
+            assert(val as int == bound);
+            if bound > cluster_size as int {
+                assert(infection_lower_bound_spec(cluster_size, fanout, rounds) == cluster_size);
+            } else {
+                assert(0 <= bound <= u64::MAX as int);
+                assert(infection_lower_bound_spec(cluster_size, fanout, rounds) == bound as u64);
+            }
+        }
+    }
+    if overflowed || val > cluster_size {
+        cluster_size
+    } else {
+        val
+    }
 }
 
 // --- convergence_rounds ---
@@ -94,11 +175,30 @@ pub fn convergence_rounds(cluster_size: u64, fanout: u64) -> (result: u64)
 // --- Safety proofs ---
 
 // r[verify gossip.infection-lower-bound]
+/// Helper: saturating_pow_spec is always >= 0.
+proof fn saturating_pow_nonneg(base: u64, exp: u64)
+    ensures saturating_pow_spec(base, exp) >= 0
+    decreases exp as int
+{
+    if exp != 0 {
+        saturating_pow_nonneg(base, (exp - 1) as u64);
+    }
+}
+
 /// Infection is bounded by cluster size.
-#[verifier::external_body]
 proof fn infection_bounded(cluster_size: u64, fanout: u64, rounds: u64)
     ensures infection_lower_bound_spec(cluster_size, fanout, rounds) <= cluster_size
-{}
+{
+    saturating_pow_nonneg(fanout, rounds);
+    let bound = saturating_pow_spec(fanout, rounds);
+    assert(bound >= 0);
+    if bound > cluster_size as int {
+        assert(infection_lower_bound_spec(cluster_size, fanout, rounds) == cluster_size);
+    } else {
+        assert(0 <= bound <= u64::MAX as int);
+        assert(infection_lower_bound_spec(cluster_size, fanout, rounds) == bound as u64);
+    }
+}
 
 // r[verify gossip.infection-lower-bound]
 /// Zero rounds means 1 infected (the initial node), capped at cluster size.

@@ -6,6 +6,9 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
+use vstd::arithmetic::mul::{lemma_mul_is_associative, lemma_mul_is_commutative, lemma_mul_inequality};
+
+#[cfg(verus_keep_ghost)]
 use crate::ordering::min_spec;
 
 verus! {
@@ -39,12 +42,24 @@ pub open spec fn pow2(n: nat) -> int
     if n == 0 { 1int } else { 2 * pow2((n - 1) as nat) }
 }
 
+/// Helper: pow2(n+1) == 2 * pow2(n).
+proof fn pow2_step(n: nat)
+    ensures pow2(n + 1) == 2 * pow2(n)
+{
+    // Directly from the definition: pow2(n+1) = 2 * pow2((n+1-1)) = 2 * pow2(n)
+}
+
+/// Helper: if base * pow2(i) <= u64::MAX, then base * pow2(i) >= 0.
+proof fn pow2_mul_nonneg(base: u64, n: nat)
+    ensures base as int * pow2(n) >= 0
+{
+    backoff_pow2_nonneg(n);
+}
+
 // r[impl backoff.compute-backoff]
 /// Computes the exponential backoff delay for the given attempt.
 ///
 /// Returns `min(base * 2^attempt, cap)`, with overflow detection.
-/// Trusted: iterative doubling matches recursive pow2 spec. Verified by proptest.
-#[verifier::external_body]
 pub fn compute_backoff(base: u64, attempt: u64, cap: u64) -> (result: u64)
     ensures
         result <= cap,
@@ -55,17 +70,100 @@ pub fn compute_backoff(base: u64, attempt: u64, cap: u64) -> (result: u64)
     }
     // Compute base * 2^attempt with overflow detection.
     // Cap iterations at 63 since 2^64 always overflows u64.
-    let capped_attempt = attempt.min(63);
+    let capped_attempt: u64 = if attempt < 63 { attempt } else { 63 };
     let mut shifted: u64 = base;
-    for _ in 0..capped_attempt {
-        shifted = match shifted.checked_mul(2) {
-            Some(v) => v,
-            None => u64::MAX,
-        };
+    let mut overflowed: bool = false;
+    let mut i: u64 = 0;
+    proof {
+        assert(pow2(0nat) == 1int);
+        assert(shifted as int == base as int * pow2(0nat));
     }
+    while i < capped_attempt
+        invariant
+            0 <= i <= capped_attempt,
+            capped_attempt <= 63,
+            base > 0,
+            attempt >= capped_attempt,
+            capped_attempt == (if attempt < 63 { attempt } else { 63u64 }),
+            !overflowed ==> shifted as int == base as int * pow2(i as nat),
+            overflowed ==> shifted == u64::MAX,
+            overflowed ==> base as int * pow2(i as nat) > u64::MAX as int,
+        decreases capped_attempt - i,
+    {
+        proof {
+            pow2_step(i as nat);
+            backoff_pow2_nonneg(i as nat);
+        }
+        if overflowed {
+            proof {
+                assert(pow2((i + 1) as nat) == 2 * pow2(i as nat));
+                backoff_pow2_nonneg(i as nat);
+                assert(pow2((i + 1) as nat) >= pow2(i as nat));
+                // Use vstd: pow2(i) <= pow2(i+1) && base >= 0 ==> pow2(i)*base <= pow2(i+1)*base
+                lemma_mul_inequality(pow2(i as nat), pow2((i + 1) as nat), base as int);
+                // Now we have pow2(i)*base <= pow2(i+1)*base
+                // By commutativity: base*pow2(i) <= base*pow2(i+1)
+                lemma_mul_is_commutative(pow2(i as nat), base as int);
+                lemma_mul_is_commutative(pow2((i + 1) as nat), base as int);
+            }
+            i = i + 1;
+        } else {
+            // shifted == base * pow2(i), try to double
+            let doubled = shifted.checked_mul(2);
+            match doubled {
+                Some(v) => {
+                    proof {
+                        assert(v as int == shifted as int * 2);
+                        assert(v as int == base as int * pow2(i as nat) * 2);
+                        // base * pow2(i+1) = base * (2 * pow2(i)) = (base * 2) * pow2(i)
+                        assert(pow2((i + 1) as nat) == 2 * pow2(i as nat));
+                        lemma_mul_is_associative(base as int, 2int, pow2(i as nat));
+                        // now: base * (2 * pow2(i)) == (base * 2) * pow2(i)
+                        lemma_mul_is_commutative(base as int, 2int);
+                        // now: base * 2 == 2 * base
+                        // so: base * pow2(i+1) == (2 * base) * pow2(i) == 2 * (base * pow2(i))
+                        lemma_mul_is_associative(2int, base as int, pow2(i as nat));
+                    }
+                    shifted = v;
+                },
+                None => {
+                    proof {
+                        assert(shifted as int * 2 > u64::MAX as int);
+                        assert(base as int * pow2(i as nat) * 2 > u64::MAX as int);
+                        assert(pow2((i + 1) as nat) == 2 * pow2(i as nat));
+                        lemma_mul_is_associative(base as int, 2int, pow2(i as nat));
+                        lemma_mul_is_commutative(base as int, 2int);
+                        lemma_mul_is_associative(2int, base as int, pow2(i as nat));
+                    }
+                    overflowed = true;
+                    shifted = u64::MAX;
+                },
+            }
+            i = i + 1;
+        }
+    }
+
     // If attempt >= 64 and base > 0, the shift certainly overflows
     if attempt >= 64 {
         shifted = u64::MAX;
+        overflowed = true;
+    }
+
+    proof {
+        if attempt >= 64 {
+            assert(compute_backoff_spec(base, attempt, cap) == min_spec(u64::MAX, cap));
+        } else if overflowed {
+            assert(base as int * pow2(attempt as nat) > u64::MAX as int);
+            assert(compute_backoff_spec(base, attempt, cap) == min_spec(u64::MAX, cap));
+        } else {
+            assert(i == capped_attempt);
+            assert(capped_attempt == attempt);
+            assert(shifted as int == base as int * pow2(attempt as nat));
+            backoff_pow2_nonneg(attempt as nat);
+            assert(base as int * pow2(attempt as nat) >= 0);
+            assert(base as int * pow2(attempt as nat) <= u64::MAX as int);
+            assert(compute_backoff_spec(base, attempt, cap) == min_spec(shifted, cap));
+        }
     }
     shifted.min(cap)
 }
