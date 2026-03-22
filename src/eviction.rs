@@ -345,7 +345,7 @@ mod tests {
                     prop_assert!(!entries[idx].1); // not protected
                     // Check it has minimum access time among unprotected
                     let min_time = entries[idx].0;
-                    for (_i, &(access_time, is_protected)) in entries.iter().enumerate() {
+                    for &(access_time, is_protected) in &entries {
                         if !is_protected {
                             prop_assert!(min_time <= access_time);
                         }
@@ -426,11 +426,11 @@ mod tests {
             protected_count in 0u64..20,
             access_times in proptest::collection::vec(0u64..1000, 1..=20)
         ) {
-            if evictable_count(count, protected_count) > 0 && access_times.len() == count as usize {
+            if evictable_count(count, protected_count) > 0 && access_times.len() == usize::try_from(count).unwrap() {
                 // Create entries where exactly `protected_count` are protected
                 let mut entries = Vec::new();
                 for (i, &access_time) in access_times.iter().enumerate() {
-                    entries.push((access_time, i < protected_count as usize));
+                    entries.push((access_time, i < usize::try_from(protected_count).unwrap()));
                 }
                 
                 if entries.iter().any(|&(_, protected)| !protected) {

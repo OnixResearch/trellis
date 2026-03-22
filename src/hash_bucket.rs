@@ -296,7 +296,7 @@ mod tests {
                 assert_eq!(
                     assign_bucket(hash, buckets),
                     assign_bucket_pow2(hash, buckets),
-                    "Mismatch for hash={}, buckets={}", hash, buckets
+                    "Mismatch for hash={hash}, buckets={buckets}"
                 );
             }
         }

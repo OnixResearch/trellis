@@ -479,9 +479,9 @@ mod tests {
     // r[verify acid.abort]
     #[test]
     fn test_abort_no_change() {
-        let state = vec![10, 20, 30];
+        let state = vec![10_i32, 20_i32, 30_i32];
         // Abort = don't call apply_writes. State is unchanged.
-        assert_eq!(state, vec![10, 20, 30]);
+        assert_eq!(state, vec![10_i32, 20_i32, 30_i32]);
     }
 
     // r[verify acid.consistency]
