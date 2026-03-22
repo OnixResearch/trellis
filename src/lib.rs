@@ -12,6 +12,8 @@
 //!
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
+//! - `backoff` — exponential backoff with cap and jitter bounds
+//! - `ballot` — vote tracking for Raft elections with quorum intersection safety
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
@@ -20,6 +22,7 @@
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
 //! - `chain` — chain hash integrity with append-preserves proof
+//! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
 //! - `collections` — sorted insert, binary search
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
@@ -32,6 +35,7 @@
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
+//! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `option` — verified Option combinators
@@ -48,10 +52,14 @@
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
+//! - `two_phase` — two-phase commit decision: unanimity, abort safety
+//! - `vector_clock` — causality tracking with partial order and merge lattice
 
 pub mod acid;
 pub mod approval;
 pub mod arithmetic;
+pub mod backoff;
+pub mod ballot;
 pub mod batch;
 pub mod bitmap;
 pub mod bitwise;
@@ -60,6 +68,7 @@ pub mod bounds;
 pub mod cas;
 pub mod chain;
 pub mod chunk;
+pub mod circuit_breaker;
 pub mod collections;
 pub mod conversion;
 pub mod cow;
@@ -71,6 +80,7 @@ pub mod fencing;
 pub mod hash_bucket;
 pub mod integer;
 pub mod interval;
+pub mod lease;
 pub mod log;
 pub mod monotonic;
 pub mod option;
@@ -88,3 +98,5 @@ pub mod ring_buffer;
 pub mod sequential;
 pub mod signal;
 pub mod slice;
+pub mod two_phase;
+pub mod vector_clock;

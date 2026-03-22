@@ -223,9 +223,31 @@
 - Fencing module added: issue_token, is_valid_write, is_stale
   - Thin wrapper over monotonic concepts — all proofs automatic, no hints needed
   - Cross-module property: issue_token is a strict advance (trivial for Z3)
-  - stale_complement: is_stale == !is_valid_write — Z3 handles >= vs < instantly
-  - Additional proofs: zero_fence_accepts_all, max_fence_rejects_below, issued_token_meets_own_fence
-- Total: 767 Verus proofs, 534 cargo tests, 222 requirements
+- Ballot module added: can_grant_vote, grant_vote, has_won_election
+  - election_safety_quorum_overlap calls prove_quorum_intersection — must be `pub proof fn`
+  - Single-vote-per-term: Z3 handles the disjunction automatically
+  - Wildcard `use crate::module::*` inside verus! works (macro handles erasure)
+- Vector clock module: happens_before, concurrent, merge, increment
+  - Seq-based (not const generic [u64; N]) — Verus quantifiers over Seq work well
+  - concurrent needs explicit "differs somewhere" check — equal clocks are NOT concurrent
+  - increment loop invariant must carry `v@[idx] < u64::MAX` to prove overflow safety
+  - All decreases clauses go AFTER invariant block, before opening `{`
+  - Merge lattice proofs (comm, assoc, idempotent) all automatic via =~= extensional equality
+- Lease module: grant, renew, revoke, is_valid, effective_expiry
+  - Uses ordering::min_spec — needs #[cfg(verus_keep_ghost)] on import
+  - Disjointness proof: Z3 handles the interval arithmetic automatically
+- Two-phase commit: can_commit, must_abort, decide
+  - all_none_is_pending needs explicit assert(votes[0] == None) to help Z3 distinguish None from Some(true)
+  - Seq::new with closure needs explicit quantifier help for must_abort (no witness for Some(false))
+- Circuit breaker: next_state, allow_request, is_valid_state
+  - Integer-encoded states (same pattern as batch FlushDecision)
+  - All proofs automatic — Z3 handles the case splits on u8 constants
+- Backoff: compute_backoff, jitter_range
+  - Iterative doubling can't connect to recursive pow2 spec — used external_body for exec
+  - Spec must handle base=0 first (before attempt>=64 check) or 0*2^64 returns MAX
+  - Proptest must cap attempt range to avoid O(2^64) loop iterations
+- Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
+- Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

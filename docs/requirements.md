@@ -1070,3 +1070,75 @@ Fencing token issuance is a strict monotonic advance.
 r[properties.fencing-stale-is-not-advance]
 is_stale(token, fence) MUST imply !is_valid_write(token, fence).
 A stale token cannot pass the validity check.
+
+## Ballot
+
+r[ballot.can-grant-vote]
+can_grant_vote MUST return true only if the candidate_term is newer than voted_term (or same term and same candidate), AND the candidate's log epoch is >= our log epoch.
+
+r[ballot.grant-vote]
+grant_vote MUST return a VoteState with voted_term set to candidate_term and voted_for set to candidate.
+
+r[ballot.has-won-election]
+has_won_election MUST return true if and only if votes_received constitutes a quorum of cluster_size (delegates to quorum::is_quorum).
+
+## Vector Clock
+
+r[vector-clock.happens-before]
+happens_before MUST return true if and only if all components of a are <= corresponding components of b, AND at least one component of a is strictly less than the corresponding component of b. Clocks MUST have equal length.
+
+r[vector-clock.concurrent]
+concurrent MUST return true if and only if neither clock happens-before the other AND the clocks differ in at least one component.
+
+r[vector-clock.merge]
+merge MUST return a clock where each component is the maximum of the corresponding components of the two inputs. The result length MUST equal the input lengths.
+
+r[vector-clock.increment]
+increment MUST return a clock identical to the input except at position idx, which MUST be incremented by 1. The component at idx MUST be less than u64::MAX (precondition).
+
+## Lease
+
+r[lease.effective-expiry]
+effective_expiry MUST return min(expiry, revoked_at) if the lease is revoked, or expiry otherwise.
+
+r[lease.is-valid]
+is_valid MUST return true if and only if now >= start AND now < effective_expiry.
+
+r[lease.grant]
+grant MUST return a Lease with the given resource_id, start, expiry, and is_revoked set to false. start MUST be less than expiry.
+
+r[lease.renew]
+renew MUST return a Lease with the same fields except expiry set to new_expiry. new_expiry MUST be greater than the current expiry. The lease MUST NOT be revoked.
+
+r[lease.revoke]
+revoke MUST return a Lease with is_revoked set to true and revoked_at set to the given timestamp.
+
+## Two-Phase Commit
+
+r[two-phase.can-commit]
+can_commit MUST return true if and only if votes is non-empty AND every vote is Some(true).
+
+r[two-phase.must-abort]
+must_abort MUST return true if and only if any vote is Some(false).
+
+r[two-phase.decide]
+decide MUST return 1 (commit) if can_commit is true, 2 (abort) if must_abort is true, or 0 (pending) otherwise. can_commit and must_abort MUST be mutually exclusive.
+
+## Circuit Breaker
+
+r[circuit-breaker.is-valid-state]
+is_valid_state MUST return true if and only if state is CLOSED (0), OPEN (1), or HALF_OPEN (2).
+
+r[circuit-breaker.next-state]
+next_state MUST return OPEN if current is CLOSED and failure_count >= threshold, HALF_OPEN if current is OPEN and elapsed >= timeout, CLOSED if current is HALF_OPEN and probe_succeeded, OPEN if current is HALF_OPEN and !probe_succeeded, or the current state otherwise. The result MUST always be a valid state.
+
+r[circuit-breaker.allow-request]
+allow_request MUST return true if state is CLOSED, false if state is OPEN, and !probe_active if state is HALF_OPEN.
+
+## Backoff
+
+r[backoff.compute-backoff]
+compute_backoff MUST return min(base * 2^attempt, cap). If base is 0, the result MUST be 0. The result MUST never exceed cap.
+
+r[backoff.jitter-range]
+jitter_range MUST return (0, backoff_value). The lower bound MUST be 0 and the upper bound MUST equal the backoff value.

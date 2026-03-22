@@ -108,7 +108,7 @@ pub open spec fn quorum_intersection_prop(a: u64, b: u64, n: u64) -> bool
 /// Proof: each quorum has at least n/2 + 1 members. Together they account
 /// for at least 2*(n/2 + 1) = n + 2 - (n%2) > n slots in an n-member set.
 /// By pigeonhole, at least one member belongs to both.
-proof fn prove_quorum_intersection(a: u64, b: u64, n: u64)
+pub proof fn prove_quorum_intersection(a: u64, b: u64, n: u64)
     requires n > 0, is_quorum_spec(a, n), is_quorum_spec(b, n)
     ensures a as int + b as int > n as int
 {
