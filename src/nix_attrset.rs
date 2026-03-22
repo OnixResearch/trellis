@@ -208,15 +208,54 @@ pub fn merge(
 
 // --- remove_attrs ---
 
+/// Spec helper: is key present in the key list?
+pub open spec fn key_in_keys(key: Seq<u8>, keys: Seq<Seq<u8>>) -> bool {
+    exists|i: int| 0 <= i < keys.len() as int && keys[i] =~= key
+}
+
 // r[depends nix-attrset.remove-attrs]
 /// Spec: remove keys present in the exclusion set.
-pub closed spec fn remove_attrs_spec(
+pub open spec fn remove_attrs_spec(
     attrs: Seq<(Seq<u8>, u64)>, keys: Seq<Seq<u8>>,
-) -> Seq<(Seq<u8>, u64)>;
+) -> Seq<(Seq<u8>, u64)>
+    decreases attrs.len()
+{
+    if attrs.len() == 0 {
+        Seq::<(Seq<u8>, u64)>::empty()
+    } else {
+        let rest = remove_attrs_spec(attrs.subrange(1, attrs.len() as int), keys);
+        if key_in_keys(attrs[0int].0, keys) {
+            rest
+        } else {
+            seq![attrs[0int]] + rest
+        }
+    }
+}
+
+/// Exec helper: check if key is in keys list.
+fn key_in_keys_exec(key: &Vec<u8>, keys: &Vec<Vec<u8>>) -> (result: bool)
+    ensures result == key_in_keys(key@, keys@.map_values(|v: Vec<u8>| v@))
+{
+    let ghost mk = keys@.map_values(|v: Vec<u8>| v@);
+    let mut j: usize = 0;
+    while j < keys.len()
+        invariant
+            j <= keys.len(),
+            mk =~= keys@.map_values(|v: Vec<u8>| v@),
+            forall|k: int| 0 <= k < j as int ==> !(mk[k] =~= key@),
+        decreases keys.len() - j,
+    {
+        if keys[j] == *key {
+            assert(mk[j as int] =~= key@);
+            return true;
+        }
+        j = j + 1;
+    }
+    false
+}
 
 // r[impl nix-attrset.remove-attrs]
 /// Remove attributes whose keys appear in `keys`.
-#[verifier::external_body]
 pub fn remove_attrs(
     attrs: &Vec<(Vec<u8>, u64)>, keys: &Vec<Vec<u8>>,
 ) -> (result: Vec<(Vec<u8>, u64)>)
@@ -225,23 +264,94 @@ pub fn remove_attrs(
             attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
             keys@.map_values(|v: Vec<u8>| v@))
 {
-    attrs.iter()
-        .filter(|(k, _)| !keys.contains(k))
-        .cloned()
-        .collect()
+    let ghost ma = attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+    let ghost mk = keys@.map_values(|v: Vec<u8>| v@);
+    let ghost full_spec = remove_attrs_spec(ma, mk);
+
+    let mut result: Vec<(Vec<u8>, u64)> = Vec::new();
+    let ghost mut rg: Seq<(Seq<u8>, u64)> = Seq::empty();
+    let mut i: usize = 0;
+
+    proof {
+        assert(ma.subrange(0int, ma.len() as int) =~= ma);
+        assert(Seq::<(Seq<u8>, u64)>::empty() + remove_attrs_spec(ma, mk)
+            =~= remove_attrs_spec(ma, mk));
+    }
+
+    while i < attrs.len()
+        invariant
+            i <= attrs.len(),
+            ma =~= attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mk =~= keys@.map_values(|v: Vec<u8>| v@),
+            full_spec =~= remove_attrs_spec(ma, mk),
+            // Ghost result mirrors exec result in spec types
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            // Main invariant: full = accumulated + remaining
+            full_spec =~= rg + remove_attrs_spec(
+                ma.subrange(i as int, ma.len() as int), mk),
+        decreases attrs.len() - i,
+    {
+        let ghost remaining = ma.subrange(i as int, ma.len() as int);
+        // Unfold: remaining[0] == ma[i], remaining.subrange(1,..) == ma.subrange(i+1,..)
+        assert(remaining.len() > 0);
+        assert(remaining[0int] =~= ma[i as int]);
+        assert(remaining.subrange(1, remaining.len() as int)
+            =~= ma.subrange(i as int + 1, ma.len() as int));
+
+        let found = key_in_keys_exec(&attrs[i].0, keys);
+
+        if !found {
+            // Keep: remaining_spec == seq![ma[i]] + remaining_spec(i+1)
+            // So: full_spec =~= rg + seq![ma[i]] + remaining_spec(i+1)
+            //                =~= (rg + seq![ma[i]]) + remaining_spec(i+1)
+            let k = attrs[i].0.clone();
+            let v = attrs[i].1;
+            result.push((k, v));
+            proof {
+                rg = rg + seq![ma[i as int]];
+            }
+        }
+        // Skip: remaining_spec == remaining_spec(i+1), rg unchanged
+
+        i = i + 1;
+    }
+    proof {
+        // Remaining subrange is empty
+        assert(ma.subrange(i as int, ma.len() as int).len() == 0);
+        assert(remove_attrs_spec(ma.subrange(i as int, ma.len() as int), mk)
+            =~= Seq::<(Seq<u8>, u64)>::empty());
+        // full_spec =~= rg + empty =~= rg
+        // rg =~= result@.map_values(...)
+        assert(rg =~= result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    }
+    result
 }
 
 // --- intersect_attrs ---
 
 // r[depends nix-attrset.intersect-attrs]
 /// Spec: key intersection, values from second set.
-pub closed spec fn intersect_attrs_spec(
+pub open spec fn intersect_attrs_spec(
     a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>,
-) -> Seq<(Seq<u8>, u64)>;
+) -> Seq<(Seq<u8>, u64)>
+    decreases b.len()
+{
+    if b.len() == 0 {
+        Seq::<(Seq<u8>, u64)>::empty()
+    } else {
+        let rest = intersect_attrs_spec(a, b.subrange(1, b.len() as int));
+        if has_attr_spec(a, b[0int].0) {
+            seq![b[0int]] + rest
+        } else {
+            rest
+        }
+    }
+}
 
 // r[impl nix-attrset.intersect-attrs]
 /// Keep only keys present in both sets. Values come from `b`.
-#[verifier::external_body]
 pub fn intersect_attrs(
     a: &Vec<(Vec<u8>, u64)>, b: &Vec<(Vec<u8>, u64)>,
 ) -> (result: Vec<(Vec<u8>, u64)>)
@@ -250,10 +360,64 @@ pub fn intersect_attrs(
             a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
             b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
 {
-    b.iter()
-        .filter(|(k, _)| a.iter().any(|(ak, _)| ak == k))
-        .cloned()
-        .collect()
+    let ghost ma = a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+    let ghost mb = b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+    let ghost full_spec = intersect_attrs_spec(ma, mb);
+
+    let mut result: Vec<(Vec<u8>, u64)> = Vec::new();
+    let ghost mut rg: Seq<(Seq<u8>, u64)> = Seq::empty();
+    let mut i: usize = 0;
+
+    proof {
+        assert(mb.subrange(0int, mb.len() as int) =~= mb);
+        assert(Seq::<(Seq<u8>, u64)>::empty() + intersect_attrs_spec(ma, mb)
+            =~= intersect_attrs_spec(ma, mb));
+    }
+
+    while i < b.len()
+        invariant
+            i <= b.len(),
+            ma =~= a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mb =~= b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            full_spec =~= intersect_attrs_spec(ma, mb),
+            // Ghost result mirrors exec result in spec types
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            // Main invariant: full = accumulated + remaining
+            full_spec =~= rg + intersect_attrs_spec(
+                ma, mb.subrange(i as int, mb.len() as int)),
+        decreases b.len() - i,
+    {
+        let ghost remaining = mb.subrange(i as int, mb.len() as int);
+        assert(remaining.len() > 0);
+        assert(remaining[0int] =~= mb[i as int]);
+        assert(remaining.subrange(1, remaining.len() as int)
+            =~= mb.subrange(i as int + 1, mb.len() as int));
+
+        // Check if b[i]'s key appears in a
+        let found = has_attr(a, &b[i].0);
+
+        if found {
+            // Keep: intersect_spec(remaining) == seq![mb[i]] + intersect_spec(i+1)
+            let k = b[i].0.clone();
+            let v = b[i].1;
+            result.push((k, v));
+            proof {
+                rg = rg + seq![mb[i as int]];
+            }
+        }
+        // Skip: intersect_spec(remaining) == intersect_spec(i+1), rg unchanged
+
+        i = i + 1;
+    }
+    proof {
+        assert(mb.subrange(i as int, mb.len() as int).len() == 0);
+        assert(intersect_attrs_spec(ma, mb.subrange(i as int, mb.len() as int))
+            =~= Seq::<(Seq<u8>, u64)>::empty());
+        assert(rg =~= result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    }
+    result
 }
 
 // --- list_to_attrs ---

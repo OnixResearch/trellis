@@ -124,23 +124,74 @@ pub proof fn compare_versions_range(a: Seq<u8>, b: Seq<u8>)
 // r[depends nix-version.parse-drv-name]
 /// Spec: split "name-version" at the first digit after a hyphen.
 /// Returns (name_end_index). Version starts at name_end + 1.
-pub closed spec fn parse_drv_name_spec(s: Seq<u8>) -> int;
+pub open spec fn parse_drv_name_spec(s: Seq<u8>) -> int {
+    parse_drv_name_helper(s, 0)
+}
+
+/// Helper: linear scan from index `i` for '-' followed by a digit.
+pub open spec fn parse_drv_name_helper(s: Seq<u8>, i: int) -> int
+    decreases s.len() - i
+{
+    if i >= s.len() - 1 {
+        s.len() as int
+    } else if s[i] == 45 && s[i + 1] >= 48 && s[i + 1] <= 57 {
+        i
+    } else {
+        parse_drv_name_helper(s, i + 1)
+    }
+}
+
+/// Helper: the recursive spec skips non-matching positions.
+proof fn parse_drv_name_skip(s: Seq<u8>, i: int)
+    requires
+        0 <= i < s.len() - 1,
+        !(s[i] == 45 && s[i + 1] >= 48 && s[i + 1] <= 57),
+    ensures parse_drv_name_helper(s, i) == parse_drv_name_helper(s, i + 1)
+{}
+
+/// Helper: bounds on parse_drv_name_helper result.
+proof fn parse_drv_name_helper_bounds(s: Seq<u8>, i: int)
+    requires 0 <= i <= s.len()
+    ensures parse_drv_name_helper(s, i) <= s.len() as int
+    decreases s.len() - i
+{
+    if i >= s.len() - 1 {
+        // Base: returns s.len()
+    } else if s[i] == 45 && s[i + 1] >= 48 && s[i + 1] <= 57 {
+        // Match: returns i, and i < s.len()
+    } else {
+        parse_drv_name_helper_bounds(s, i + 1);
+    }
+}
 
 // r[impl nix-version.parse-drv-name]
 /// Split a derivation name into name and version parts.
 /// Returns the index where the name ends (version starts at index + 1).
 /// Returns s.len() if no version part is found.
-#[verifier::external_body]
 pub fn parse_drv_name(s: &Vec<u8>) -> (result: usize)
     ensures result as int == parse_drv_name_spec(s@),
             result <= s.len()
 {
-    // Find first '-' followed by a digit
-    for i in 0..s.len() {
-        if s[i] == b'-' && i + 1 < s.len() && s[i + 1].is_ascii_digit() {
+    let mut i: usize = 0;
+    proof { parse_drv_name_helper_bounds(s@, 0); }
+    while i < s.len()
+        invariant
+            i <= s.len(),
+            parse_drv_name_spec(s@) == parse_drv_name_helper(s@, i as int),
+        decreases s.len() - i,
+    {
+        if s[i] == 45 && i + 1 < s.len() && s[i + 1] >= 48 && s[i + 1] <= 57 {
+            assert(parse_drv_name_helper(s@, i as int) == i as int);
             return i;
         }
+        // Not a match — show the helper skips this position
+        if i < s.len() - 1 {
+            proof { parse_drv_name_skip(s@, i as int); }
+        }
+        // else i >= s.len() - 1: next iteration won't enter the loop
+        i = i + 1;
     }
+    // i == s.len(): helper(s, s.len()) base case
     s.len()
 }
 
