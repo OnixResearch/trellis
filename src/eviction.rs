@@ -183,11 +183,59 @@ proof fn evictable_zero_implies_all_protected(count: u64, protected_count: u64)
     ensures count == protected_count
 {}
 
+/// Inductive helper: if best_idx >= 0, find_lru_from_spec returns >= 0.
+/// (The recursive spec only returns best_idx at the base case, and only
+/// replaces it with `from >= 0`, so it never goes below 0 once positive.)
+proof fn find_lru_from_preserves_nonneg(entries: Seq<(u64, bool)>, from: int, best_idx: int, best_time: u64)
+    requires from >= 0, best_idx >= 0
+    ensures find_lru_from_spec(entries, from, best_idx, best_time) >= 0
+    decreases entries.len() - from
+{
+    if from >= entries.len() {
+    } else {
+        let (access_time, is_protected) = entries[from];
+        if !is_protected && (best_idx == -1 || access_time < best_time) {
+            find_lru_from_preserves_nonneg(entries, from + 1, from, access_time);
+        } else {
+            find_lru_from_preserves_nonneg(entries, from + 1, best_idx, best_time);
+        }
+    }
+}
+
+/// Inductive helper: if there exists a non-protected entry at `witness`,
+/// scanning from `from` with best_idx == -1 will find it (or something better).
+proof fn find_lru_from_finds_entry(entries: Seq<(u64, bool)>, from: int, best_time: u64, witness: int)
+    requires
+        from >= 0,
+        from <= witness,
+        witness < entries.len(),
+        !entries[witness].1,
+    ensures find_lru_from_spec(entries, from, -1, best_time) >= 0
+    decreases entries.len() - from
+{
+    if from >= entries.len() {
+        // Contradiction: from <= witness < len but from >= len
+    } else {
+        let (access_time, is_protected) = entries[from];
+        if !is_protected && (true || access_time < best_time) {
+            // best_idx == -1, so condition is just !is_protected
+            // Found a non-protected entry at `from`. New best_idx = from >= 0.
+            find_lru_from_preserves_nonneg(entries, from + 1, from, access_time);
+        } else {
+            // entries[from] is protected. witness must be after from.
+            if from == witness {
+                // Contradiction: entries[witness].1 is false but entries[from].1 is true
+                assert(!entries[witness].1);
+                assert(entries[from].1);
+            } else {
+                find_lru_from_finds_entry(entries, from + 1, best_time, witness);
+            }
+        }
+    }
+}
+
 // r[verify eviction.evictable-count]
 /// When evictable count is positive and we have matching entries, find_lru should succeed.
-// Trusted: requires induction over find_lru_candidate_spec with existential witness.
-// Verified by prop_evictable_positive_find_lru proptest.
-#[verifier::external_body]
 proof fn evictable_positive_find_lru_succeeds(entries: Seq<(u64, bool)>, count: u64, protected_count: u64)
     requires
         evictable_count_spec(count, protected_count) > 0,
@@ -195,7 +243,11 @@ proof fn evictable_positive_find_lru_succeeds(entries: Seq<(u64, bool)>, count: 
         count == protected_count + evictable_count_spec(count, protected_count),
         exists|i: int| 0 <= i < entries.len() && !entries[i].1
     ensures find_lru_candidate_spec(entries) != -1int
-{}
+{
+    // Extract the witness from the existential
+    let witness = choose|i: int| 0 <= i < entries.len() && !entries[i].1;
+    find_lru_from_finds_entry(entries, 0, u64::MAX, witness);
+}
 
 
 
