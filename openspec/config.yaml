@@ -9,6 +9,8 @@ domains:
   - collections
   - bounds
   - option-result
+  - consensus
+  - distributed
 
 context: |
   Rust library crate verified with Verus (SMT-backed formal verification).

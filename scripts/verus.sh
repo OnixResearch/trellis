@@ -5,7 +5,7 @@
 set -euo pipefail
 
 VERUS_ROOT=/nix/store/7hr3z8ss29pxl29pllv6kchlk9kbckys-verus-root-0.2026.01.30
-RUST_TOOLCHAIN=/nix/store/27f9852zp2qlg34zmqjz27cg6sq680sx-rust-default-1.93.0
+RUST_TOOLCHAIN=/nix/store/h2kyfzjnnnnqc35xx4fiqnwzhyczl9cz-rust-default-1.93.0
 
 FILE="${1:-src/lib.rs}"
 shift 2>/dev/null || true

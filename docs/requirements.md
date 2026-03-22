@@ -931,3 +931,106 @@ then finishing an operation MUST be a no-op on the in-flight count.
 r[properties.sequential-chunk-continuation]
 When reading chunk i then chunk i+1 of the same file, is_sequential
 MUST return true. Sequential chunk reads MUST be detected as sequential.
+
+## Permission
+
+r[permission.bit-position]
+bit_position MUST map (who, perm) to a bit index in [0, 8]. who encodes
+the role: 0=owner, 1=group, 2=other. perm encodes the access type:
+0=execute, 1=write, 2=read. The formula MUST be (2 - who) * 3 + perm.
+
+r[permission.has]
+has_permission MUST return true if and only if the permission bit at
+bit_position(who, perm) is set in mode. who MUST be <= 2. perm MUST
+be <= 2.
+
+r[permission.set]
+set_permission MUST return mode with the permission bit at
+bit_position(who, perm) set to 1, leaving all other bits unchanged.
+Setting an already-set permission MUST be idempotent.
+
+r[permission.clear]
+clear_permission MUST return mode with the permission bit at
+bit_position(who, perm) set to 0, leaving all other bits unchanged.
+Clearing an already-clear permission MUST be idempotent.
+
+r[permission.apply-umask]
+apply_umask MUST return mode & !umask. The result MUST be a bitwise
+subset of mode. The result MUST have no bits set that are in umask.
+
+## Signal
+
+r[signal.add]
+signal_add MUST return the signal set with the given signal added.
+Adding a signal already in the set MUST be idempotent. sig MUST be
+in [0, 64).
+
+r[signal.remove]
+signal_remove MUST return the signal set with the given signal removed.
+Removing a signal not in the set MUST be idempotent. sig MUST be
+in [0, 64).
+
+r[signal.contains]
+signal_contains MUST return true if and only if the signal is present
+in the set. sig MUST be in [0, 64).
+
+r[signal.union]
+signal_union MUST return the bitwise OR of two signal sets. Union MUST
+be commutative and associative. Union with empty set MUST be identity.
+
+r[signal.intersect]
+signal_intersect MUST return the bitwise AND of two signal sets.
+Intersect MUST be commutative and associative. Intersect with full set
+MUST be identity.
+
+r[signal.complement]
+signal_complement MUST return the bitwise NOT of a signal set.
+Complementing twice MUST return the original set.
+
+r[signal.deliverable]
+signal_deliverable MUST return pending & !blocked — the signals that
+are pending and not masked. The result MUST be a subset of pending.
+The result MUST have no bits in common with blocked.
+
+## Process State
+
+r[process-state.is-valid]
+is_valid_state MUST return true if and only if state is one of:
+0 (Created), 1 (Ready), 2 (Running), 3 (Blocked), 4 (Terminated).
+
+r[process-state.can-transition]
+can_transition MUST return true for exactly these state pairs:
+Created->Ready, Ready->Running, Running->Ready (preempt),
+Running->Blocked (wait), Running->Terminated (exit),
+Blocked->Ready (wakeup). All other transitions MUST return false.
+
+r[process-state.is-terminal]
+is_terminal MUST return true if and only if state == 4 (Terminated).
+A terminal state MUST have no valid outgoing transitions.
+
+r[process-state.is-schedulable]
+is_schedulable MUST return true if and only if state == 1 (Ready).
+Only ready processes can be selected by the scheduler.
+
+## Page
+
+r[page.frame-number]
+frame_number MUST return addr / page_size. page_size MUST be nonzero.
+The result times page_size MUST NOT exceed addr.
+
+r[page.offset]
+page_offset MUST return addr % page_size. page_size MUST be nonzero.
+The result MUST be strictly less than page_size.
+
+r[page.is-aligned]
+is_page_aligned MUST return true if and only if addr % page_size == 0.
+page_size MUST be nonzero. Zero MUST always be page-aligned.
+
+r[page.start-address]
+page_start MUST return frame * page_size. The multiplication MUST NOT
+overflow. The result MUST be page-aligned.
+
+r[page.pages-needed]
+pages_needed MUST return the minimum number of pages required to cover
+size bytes. pages_needed(0, ps) MUST be 0. For size > 0, the result
+times page_size MUST be >= size. page_size MUST be nonzero.

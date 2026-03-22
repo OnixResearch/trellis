@@ -192,7 +192,35 @@
     use explicit `len() == 0` instead of `is_empty()`
   - bounded_range: overlaps spec needs careful handling of unbounded cases
   - All trusted (external_body) items have proptest oracles verifying correctness
-- Total: 614 Verus proofs, 460 cargo tests, 185 requirements
+- Permission module added: bit_position, has/set/clear_permission, apply_umask
+  - Composes bitwise module (bit_at, set_bit, clear_bit) — no new by(bit_vector) needed for exec
+  - Proof fns reuse existing by(bit_vector) patterns from bitwise module
+  - bit_position spec uses int arithmetic: ((2 - who as int) * 3 + perm as int) as u64
+  - Z3 handles bit_position_bounded and injective automatically (small domain)
+  - apply_umask proofs: (mode & !umask) & mode == mode & !umask and & umask == 0 by(bit_vector)
+- Signal module added: add/remove/contains, union/intersect/complement, deliverable
+  - Direct bit operations (|, &, !, ^) — same pattern as bitwise but set-algebraic semantics
+  - All proofs use by(bit_vector): De Morgan, involution, commutativity, associativity
+  - deliverable = pending & !blocked — subset and disjointness proofs trivial
+  - Model oracle test tracks BTreeSet alongside bitmask for full correspondence
+- Process state module added: is_valid_state, can_transition, is_terminal, is_schedulable
+  - Pure boolean/integer logic — all proofs automatic, no hints needed
+  - 6 valid transitions encoded as disjunction, Z3 handles case splits
+  - clippy::nonminimal_bool allowed at module level — Verus needs explicit conjunctions
+  - unnested_or_patterns clippy lint: must nest patterns in test match arms
+- Page module added: frame_number, page_offset, is_page_aligned, page_start, pages_needed
+  - Uses lemma_fundamental_div_mod from vstd for decomposition roundtrip
+  - frame_number_bounded needs by(nonlinear_arith) for multiplication commutativity:
+    fundamental_div_mod gives addr == ps * q + r, but we need q * ps <= addr
+  - exact_page_one_page needs by(nonlinear_arith) to prove (ps-1)/ps == 0
+  - page_start_aligned needs by(nonlinear_arith) for (frame * ps) % ps == 0
+  - pages_needed_covers needs by(nonlinear_arith) with fundamental_div_mod as hypothesis
+  - decomposition_roundtrip: two steps — call fundamental_div_mod then nonlinear_arith
+    for commutativity (ps * q == q * ps)
+  - Test code: use u128::from(x) not x as u128 — clippy cast_lossless is deny
+- Verus toolchain: rustc-1.93.0 nix store path can get GC'd — update scripts/verus.sh
+  if it breaks. Current: /nix/store/h2kyfzjnnnnqc35xx4fiqnwzhyczl9cz-rust-default-1.93.0
+- Total: 754 Verus proofs, 523 cargo tests, 214 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

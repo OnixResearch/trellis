@@ -89,3 +89,8 @@
 {"text":"yes","timestamp":1774180951275}
 {"text":"what next","timestamp":1774184610626}
 {"text":"push then nix flake check","timestamp":1774184672882}
+{"text":"what distributed systems primivtives should we verify","timestamp":1774185383289}
+{"text":"make an open spec to go through these","timestamp":1774185454303}
+{"text":"make an openspec for nix primitive verification","timestamp":1774185770356}
+{"text":"lets write verifications for os primitives","timestamp":1774186088795}
+{"text":"commit all","timestamp":1774187105764}

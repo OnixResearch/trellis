@@ -35,13 +35,17 @@
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
+//! - `page` — virtual address decomposition: frame number, offset, alignment
 //! - `partition` — verified non-overlapping gap-free interval partitions
+//! - `permission` — Unix file permission bits: has/set/clear, umask
 //! - `pressure` — multi-threshold severity classification
+//! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `sequential` — sequential access detection, prefetch triggering
+//! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
 pub mod acid;
@@ -69,12 +73,16 @@ pub mod log;
 pub mod monotonic;
 pub mod option;
 pub mod ordering;
+pub mod page;
 pub mod partition;
+pub mod permission;
 pub mod pressure;
+pub mod process_state;
 pub mod properties;
 pub mod quorum;
 pub mod rate_limit;
 pub mod result;
 pub mod ring_buffer;
 pub mod sequential;
+pub mod signal;
 pub mod slice;
