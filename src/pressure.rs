@@ -310,13 +310,13 @@ mod tests {
     // r[verify pressure.classify]
     #[test]
     fn test_classify_level() {
-        assert_eq!(classify_level(5, 10, 20), 0);  // Normal: below warning
+        assert_eq!(classify_level(5, 10, 20), 0); // Normal: below warning
         assert_eq!(classify_level(15, 10, 20), 1); // Warning: between thresholds
         assert_eq!(classify_level(25, 10, 20), 2); // Critical: above critical
         assert_eq!(classify_level(10, 10, 20), 1); // Boundary: at warning
         assert_eq!(classify_level(20, 10, 20), 2); // Boundary: at critical
         // Equal thresholds
-        assert_eq!(classify_level(5, 10, 10), 0);  // Below
+        assert_eq!(classify_level(5, 10, 10), 0); // Below
         assert_eq!(classify_level(10, 10, 10), 2); // At threshold
         assert_eq!(classify_level(15, 10, 10), 2); // Above
     }

@@ -33,7 +33,7 @@ pub fn count_valid_approvals(approvals: &[(bool, bool)]) -> (result: u64)
 {
     let mut i: usize = 0;
     let mut count: u64 = 0;
-    
+
     while i < approvals.len()
         invariant
             0 <= i <= approvals@.len(),
@@ -47,7 +47,7 @@ pub fn count_valid_approvals(approvals: &[(bool, bool)]) -> (result: u64)
         }
         i = i + 1;
     }
-    
+
     count
 }
 
@@ -195,7 +195,7 @@ proof fn stale_approvals_exist_property(approvals: Seq<(bool, bool)>)
 
 /// Helper to show stale approvals exist.
 proof fn stale_exists_helper(approvals: Seq<(bool, bool)>, from: int)
-    requires 
+    requires
         0 <= from <= approvals.len(),
         has_stale_approvals_spec(approvals, from)
     ensures exists|i: int| #![trigger approvals[i]] from <= i < approvals.len() && {
@@ -227,18 +227,21 @@ mod tests {
     fn test_count_valid_approvals() {
         // Empty
         assert_eq!(count_valid_approvals(&[]), 0);
-        
+
         // All valid
         assert_eq!(count_valid_approvals(&[(true, true), (true, true)]), 2);
-        
+
         // Mixed
-        assert_eq!(count_valid_approvals(&[
-            (true, true),   // valid
-            (true, false),  // stale
-            (false, true),  // not approved
-            (false, false), // not approved
-            (true, true),   // valid
-        ]), 2);
+        assert_eq!(
+            count_valid_approvals(&[
+                (true, true),   // valid
+                (true, false),  // stale
+                (false, true),  // not approved
+                (false, false), // not approved
+                (true, true),   // valid
+            ]),
+            2
+        );
     }
 
     // r[verify approval.is-merge-allowed]
@@ -246,14 +249,14 @@ mod tests {
     fn test_is_merge_allowed() {
         // CI failed
         assert!(!is_merge_allowed(5, 3, false));
-        
+
         // CI passed, enough approvals
         assert!(is_merge_allowed(5, 3, true));
         assert!(is_merge_allowed(3, 3, true));
-        
+
         // CI passed, not enough approvals
         assert!(!is_merge_allowed(2, 3, true));
-        
+
         // Required 0 with CI passed
         assert!(is_merge_allowed(0, 0, true));
         assert!(is_merge_allowed(10, 0, true));
@@ -274,12 +277,12 @@ mod tests {
         // No stale
         assert!(!has_stale_approvals(&[]));
         assert!(!has_stale_approvals(&[(true, true), (false, false)]));
-        
+
         // Has stale
         assert!(has_stale_approvals(&[(true, false)]));
         assert!(has_stale_approvals(&[
-            (true, true),   // valid
-            (true, false),  // stale
+            (true, true),  // valid
+            (true, false), // stale
         ]));
     }
 
@@ -337,7 +340,7 @@ mod tests {
             let merge_allowed = is_merge_allowed(valid_count, required, ci_passed);
             let needs_more = needs_more_approvals(valid_count, required);
             let has_stale = has_stale_approvals(&approvals);
-            
+
             // Oracle calculations
             let oracle_valid = approvals.iter()
                 .filter(|(approved, matches_head)| *approved && *matches_head)
@@ -346,7 +349,7 @@ mod tests {
             let oracle_needs = if oracle_valid >= required { 0 } else { required - oracle_valid };
             let oracle_stale = approvals.iter()
                 .any(|(approved, matches_head)| *approved && !*matches_head);
-            
+
             prop_assert_eq!(valid_count, oracle_valid);
             prop_assert_eq!(merge_allowed, oracle_merge);
             prop_assert_eq!(needs_more, oracle_needs);

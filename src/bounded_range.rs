@@ -37,7 +37,7 @@ proof fn unbounded_contains_all_ge_lower(lower: u64, upper: u64, x: u64)
 // r[verify bounded-range.contains]
 /// Bounded range follows interval semantics.
 proof fn bounded_follows_interval(lower: u64, upper: u64, x: u64)
-    ensures contains_spec(lower, upper, true, x) == 
+    ensures contains_spec(lower, upper, true, x) ==
         (x >= lower && x < upper)
 {}
 

@@ -178,7 +178,7 @@ proof fn valid_offset_in_bounds(total_size: u64, chunk_size: u64, offset: u64)
         chunk_index_for_offset_spec(chunk_size, offset) < chunk_count_ceil_spec(total_size, chunk_size)
 {
     assert((offset as int / chunk_size as int) < ((total_size - 1) as int / chunk_size as int + 1)) by(nonlinear_arith)
-        requires 
+        requires
             chunk_size > 0,
             offset < total_size,
             total_size > 0;

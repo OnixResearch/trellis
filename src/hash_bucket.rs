@@ -26,7 +26,7 @@ pub open spec fn assign_bucket_spec(hash: u64, num_buckets: u64) -> u64
 /// Returns hash % `num_buckets` with in-bounds guarantee.
 pub fn assign_bucket(hash: u64, num_buckets: u64) -> (result: u64)
     requires num_buckets > 0
-    ensures 
+    ensures
         result == assign_bucket_spec(hash, num_buckets),
         result < num_buckets
 {
@@ -64,7 +64,7 @@ pub fn assign_bucket_pow2(hash: u64, num_buckets: u64) -> (result: u64)
     requires
         num_buckets > 0,
         is_power_of_two_buckets_spec(num_buckets)
-    ensures 
+    ensures
         result == assign_bucket_pow2_spec(hash, num_buckets)
 {
     hash & (num_buckets - 1)
@@ -229,6 +229,7 @@ proof fn assign_pow2_requires_pow2(hash: u64, num_buckets: u64)
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
+
     use super::*;
 
     // r[verify hash-bucket.assign]
@@ -238,7 +239,7 @@ mod tests {
         assert_eq!(assign_bucket(5, 3), 2);
         assert_eq!(assign_bucket(8, 4), 0);
         assert_eq!(assign_bucket(10, 7), 3);
-        
+
         // In-bounds guarantee
         assert!(assign_bucket(u64::MAX, 5) < 5);
         assert!(assign_bucket(12345, 100) < 100);
@@ -248,10 +249,10 @@ mod tests {
     #[test]
     fn test_assign_bucket_pow2() {
         assert_eq!(assign_bucket_pow2(0, 1), 0);
-        assert_eq!(assign_bucket_pow2(5, 4), 1);  // 5 & 3 = 1
-        assert_eq!(assign_bucket_pow2(8, 4), 0);  // 8 & 3 = 0
+        assert_eq!(assign_bucket_pow2(5, 4), 1); // 5 & 3 = 1
+        assert_eq!(assign_bucket_pow2(8, 4), 0); // 8 & 3 = 0
         assert_eq!(assign_bucket_pow2(15, 8), 7); // 15 & 7 = 7
-        
+
         // In-bounds guarantee
         assert!(assign_bucket_pow2(u64::MAX, 16) < 16);
         assert!(assign_bucket_pow2(12345, 64) < 64);
@@ -290,7 +291,7 @@ mod tests {
         // For power-of-two bucket counts, both methods should give same result
         let pow2_buckets = [1, 2, 4, 8, 16, 32, 64, 128];
         let test_hashes = [0, 1, 5, 15, 63, 255, 12345, u64::MAX];
-        
+
         for &buckets in &pow2_buckets {
             for &hash in &test_hashes {
                 assert_eq!(

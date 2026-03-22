@@ -77,29 +77,29 @@ pub fn is_valid_partition(intervals: &[(u64, u64)]) -> (result: bool)
         decreases intervals@.len() - i as int,
     {
         let (lo, hi) = intervals[i];
-        
+
         // Check interval is non-empty
         if !is_non_empty_interval(lo, hi) {
             return false;
         }
-        
+
         if i > 0 {
             let (prev_lo, prev_hi) = intervals[i - 1];
-            
+
             // Check sorted order
             if prev_lo > lo {
                 return false;
             }
-            
+
             // Check adjacent (no gap, no overlap)
             if !is_adjacent_pair(prev_hi, lo) {
                 return false;
             }
         }
-        
+
         i = i + 1;
     }
-    
+
     true
 }
 
@@ -146,8 +146,8 @@ pub fn partition_span_hi(intervals: &[(u64, u64)]) -> (result: u64)
 // r[depends partition.covers]
 /// Spec: partition exactly covers the range [lo, hi).
 pub open spec fn partition_covers_spec(
-    intervals: Seq<(u64, u64)>, 
-    lo: u64, 
+    intervals: Seq<(u64, u64)>,
+    lo: u64,
     hi: u64
 ) -> bool {
     &&& intervals.len() > 0
@@ -163,10 +163,10 @@ pub fn partition_covers(intervals: &[(u64, u64)], lo: u64, hi: u64) -> (result: 
     if intervals.len() == 0 {
         return false;
     }
-    
+
     let start = partition_span_lo(intervals);
     let end = partition_span_hi(intervals);
-    
+
     start == lo && end == hi
 }
 
@@ -195,7 +195,7 @@ proof fn empty_partition_valid()
 /// Valid partition has all non-empty intervals.
 proof fn valid_partition_has_non_empty_intervals(intervals: Seq<(u64, u64)>)
     requires is_valid_partition_spec(intervals)
-    ensures forall|i: int| 0 <= i < intervals.len() ==> 
+    ensures forall|i: int| 0 <= i < intervals.len() ==>
         is_non_empty_interval_spec(intervals[i].0, intervals[i].1)
 {}
 
@@ -246,24 +246,24 @@ mod tests {
     fn test_is_valid_partition() {
         // Empty partition
         assert!(is_valid_partition(&[]));
-        
+
         // Single interval
         assert!(is_valid_partition(&[(0, 10)]));
         assert!(!is_valid_partition(&[(5, 5)])); // empty interval
-        
+
         // Adjacent intervals
         assert!(is_valid_partition(&[(0, 5), (5, 10)]));
         assert!(is_valid_partition(&[(0, 5), (5, 10), (10, 15)]));
-        
+
         // Gap between intervals
         assert!(!is_valid_partition(&[(0, 5), (6, 10)]));
-        
+
         // Overlapping intervals
         assert!(!is_valid_partition(&[(0, 6), (5, 10)]));
-        
+
         // Unsorted intervals
         assert!(!is_valid_partition(&[(5, 10), (0, 5)]));
-        
+
         // Empty interval in sequence
         assert!(!is_valid_partition(&[(0, 5), (5, 5), (5, 10)]));
     }
@@ -274,7 +274,7 @@ mod tests {
         let intervals = vec![(0, 5), (5, 10), (10, 15)];
         assert_eq!(partition_span_lo(&intervals), 0);
         assert_eq!(partition_span_hi(&intervals), 15);
-        
+
         let single = vec![(100, 200)];
         assert_eq!(partition_span_lo(&single), 100);
         assert_eq!(partition_span_hi(&single), 200);
@@ -285,12 +285,12 @@ mod tests {
     fn test_partition_covers() {
         // Empty never covers
         assert!(!partition_covers(&[], 0, 10));
-        
+
         // Single interval exact match
         assert!(partition_covers(&[(0, 10)], 0, 10));
         assert!(!partition_covers(&[(0, 10)], 0, 5));
         assert!(!partition_covers(&[(0, 10)], 5, 10));
-        
+
         // Multi-interval exact match
         assert!(partition_covers(&[(0, 5), (5, 10)], 0, 10));
         assert!(!partition_covers(&[(0, 5), (5, 10)], 1, 10));
@@ -310,17 +310,17 @@ mod tests {
     #[test]
     fn test_three_interval_partition() {
         let intervals = vec![(0, 10), (10, 20), (20, 30)];
-        
+
         // Valid partition
         assert!(is_valid_partition(&intervals));
-        
+
         // Covers full range
         assert!(partition_covers(&intervals, 0, 30));
-        
+
         // Span properties
         assert_eq!(partition_span_lo(&intervals), 0);
         assert_eq!(partition_span_hi(&intervals), 30);
-        
+
         // Doesn't cover partial ranges
         assert!(!partition_covers(&intervals, 0, 25));
         assert!(!partition_covers(&intervals, 5, 30));
@@ -334,7 +334,7 @@ mod tests {
         let intervals = vec![(0, 1), (1, 2), (2, 3)];
         assert!(is_valid_partition(&intervals));
         assert!(partition_covers(&intervals, 0, 3));
-        
+
         // Large span with single points
         let intervals = vec![(100, 101), (101, 102)];
         assert!(is_valid_partition(&intervals));

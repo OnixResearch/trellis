@@ -90,6 +90,7 @@ pub open spec fn commit_spec(state: Seq<u64>, writes: Seq<WriteOp>) -> Seq<u64> 
 }
 
 // r[depends acid.abort]
+// r[impl acid.abort]
 /// Spec: abort = identity (no writes applied).
 pub open spec fn abort_spec(state: Seq<u64>) -> Seq<u64> {
     state
@@ -137,6 +138,7 @@ pub open spec fn wal_to_writes_spec(wal: Seq<WalEntry>) -> Seq<WriteOp> {
 // ==================== Consistency helper ====================
 
 // r[depends acid.consistency]
+// r[impl acid.consistency]
 /// Spec: index j does not appear in any write from position `from` onward.
 pub open spec fn idx_not_in_writes_from(
     writes: Seq<WriteOp>, j: int, from: int,
@@ -253,6 +255,7 @@ proof fn abort_is_identity(state: Seq<u64>)
     ensures abort_spec(state) == state
 {}
 
+// r[impl acid.atomicity]
 // r[verify acid.atomicity]
 /// Committing an empty write set leaves the state unchanged.
 proof fn commit_empty_is_identity(state: Seq<u64>)
@@ -319,6 +322,7 @@ proof fn unwritten_unchanged(
 
 // ==================== Isolation proofs ====================
 
+// r[impl acid.isolation]
 // r[verify acid.isolation]
 /// Two writes to distinct positions commute.
 proof fn single_writes_commute(
@@ -425,11 +429,7 @@ mod tests {
     }
 
     fn wal(idx: usize, val: u64, committed: bool) -> WalEntry {
-        WalEntry {
-            idx,
-            val,
-            committed,
-        }
+        WalEntry { idx, val, committed }
     }
 
     // r[verify acid.apply-write]

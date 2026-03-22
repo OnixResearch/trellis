@@ -140,7 +140,7 @@ pub open spec fn is_cache_valid_spec(count: u64, capacity: u64, protected_count:
 
 // r[impl eviction.cache-valid]
 /// Returns true if the cache is in a valid state.
-/// 
+///
 /// A valid cache has:
 /// - Count at most capacity + 1 (allowing temporary overflow before eviction)
 /// - Protected count at most the total count
@@ -161,7 +161,7 @@ pub open spec fn evictable_count_spec(count: u64, protected_count: u64) -> u64 {
 
 // r[impl eviction.evictable-count]
 /// Returns the number of entries that can be evicted (not protected).
-/// 
+///
 /// Uses saturating subtraction to handle edge cases where `protected_count`
 /// might temporarily exceed count.
 pub fn evictable_count(count: u64, protected_count: u64) -> (result: u64)
@@ -262,11 +262,11 @@ mod tests {
     // r[verify eviction.should-evict]
     #[test]
     fn test_should_evict() {
-        assert!(should_evict(10, 10));  // at capacity
-        assert!(should_evict(11, 10));  // over capacity
-        assert!(!should_evict(9, 10));  // below capacity
-        assert!(should_evict(0, 0));    // zero capacity
-        assert!(!should_evict(0, 1));   // empty cache with capacity
+        assert!(should_evict(10, 10)); // at capacity
+        assert!(should_evict(11, 10)); // over capacity
+        assert!(!should_evict(9, 10)); // below capacity
+        assert!(should_evict(0, 0)); // zero capacity
+        assert!(!should_evict(0, 1)); // empty cache with capacity
     }
 
     // r[verify eviction.find-lru]
@@ -298,24 +298,24 @@ mod tests {
     #[test]
     fn test_is_cache_valid() {
         // Valid states
-        assert!(is_cache_valid(10, 10, 5));   // at capacity with some protected
-        assert!(is_cache_valid(9, 10, 5));    // below capacity
-        assert!(is_cache_valid(11, 10, 5));   // one over capacity (temporary)
-        assert!(is_cache_valid(10, 10, 10));  // all protected
-        assert!(is_cache_valid(0, 10, 0));    // empty cache
+        assert!(is_cache_valid(10, 10, 5)); // at capacity with some protected
+        assert!(is_cache_valid(9, 10, 5)); // below capacity
+        assert!(is_cache_valid(11, 10, 5)); // one over capacity (temporary)
+        assert!(is_cache_valid(10, 10, 10)); // all protected
+        assert!(is_cache_valid(0, 10, 0)); // empty cache
 
         // Invalid states
-        assert!(!is_cache_valid(12, 10, 5));  // more than one over capacity
+        assert!(!is_cache_valid(12, 10, 5)); // more than one over capacity
         assert!(!is_cache_valid(10, 10, 11)); // protected count exceeds total
     }
 
     // r[verify eviction.evictable-count]
     #[test]
     fn test_evictable_count() {
-        assert_eq!(evictable_count(10, 3), 7);   // 10 - 3 = 7
-        assert_eq!(evictable_count(10, 10), 0);  // all protected
-        assert_eq!(evictable_count(5, 8), 0);    // protected exceeds total (saturating)
-        assert_eq!(evictable_count(0, 0), 0);    // empty cache
+        assert_eq!(evictable_count(10, 3), 7); // 10 - 3 = 7
+        assert_eq!(evictable_count(10, 10), 0); // all protected
+        assert_eq!(evictable_count(5, 8), 0); // protected exceeds total (saturating)
+        assert_eq!(evictable_count(0, 0), 0); // empty cache
         assert_eq!(evictable_count(100, 0), 100); // none protected
     }
 
@@ -413,7 +413,7 @@ mod tests {
             for access_time in unprotected_entries {
                 entries.push((access_time, false));
             }
-            
+
             prop_assert!(find_lru_candidate(&entries).is_some());
         }
 
@@ -432,7 +432,7 @@ mod tests {
                 for (i, &access_time) in access_times.iter().enumerate() {
                     entries.push((access_time, i < usize::try_from(protected_count).unwrap()));
                 }
-                
+
                 if entries.iter().any(|&(_, protected)| !protected) {
                     prop_assert!(find_lru_candidate(&entries).is_some());
                 }

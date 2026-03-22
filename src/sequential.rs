@@ -102,7 +102,7 @@ proof fn consecutive_increases_when_sequential(consecutive: u64)
 // r[verify sequential.update-consecutive]
 /// Result is always 0 or greater than or equal to previous when sequential.
 proof fn update_consecutive_monotonic(is_seq: bool, consecutive: u64)
-    ensures 
+    ensures
         update_consecutive_spec(is_seq, consecutive) == 0 ||
         update_consecutive_spec(is_seq, consecutive) >= consecutive
 {}
@@ -210,8 +210,8 @@ proof fn prefetch_size_bounded(consecutive: u64, chunk_size: u64, max_prefetch: 
 /// Prefetch size is monotonic when consecutive values are 0.
 proof fn prefetch_size_monotonic_from_zero(consecutive: u64, chunk_size: u64, max_prefetch: u64)
     requires chunk_size > 0
-    ensures 
-        prefetch_size_spec(0, chunk_size, max_prefetch) <= 
+    ensures
+        prefetch_size_spec(0, chunk_size, max_prefetch) <=
         prefetch_size_spec(consecutive, chunk_size, max_prefetch)
 {
     // prefetch_size_spec(0, _, _) == 0, and 0 <= anything
@@ -220,7 +220,7 @@ proof fn prefetch_size_monotonic_from_zero(consecutive: u64, chunk_size: u64, ma
 // r[verify sequential.prefetch-size]
 /// When no overflow and within bounds, prefetch size equals the product.
 proof fn prefetch_size_exact(consecutive: u64, chunk_size: u64, max_prefetch: u64)
-    requires 
+    requires
         chunk_size > 0,
         consecutive > 0,
         consecutive as int * chunk_size as int <= u64::MAX as int,
@@ -231,7 +231,7 @@ proof fn prefetch_size_exact(consecutive: u64, chunk_size: u64, max_prefetch: u6
 // r[verify sequential.prefetch-size]
 /// On multiplication overflow, prefetch size is max_prefetch.
 proof fn prefetch_size_overflow(consecutive: u64, chunk_size: u64, max_prefetch: u64)
-    requires 
+    requires
         chunk_size > 0,
         consecutive > 0,
         consecutive as int * chunk_size as int > u64::MAX as int
@@ -251,8 +251,8 @@ proof fn prefetch_size_zero(chunk_size: u64, max_prefetch: u64)
 // r[verify sequential.update-consecutive]
 /// Sequential detection followed by consecutive update preserves sequentiality.
 proof fn sequential_then_update_preserves(offset: u64, last_offset: u64, last_size: u64, consecutive: u64)
-    ensures 
-        is_sequential_spec(offset, last_offset, last_size) ==> 
+    ensures
+        is_sequential_spec(offset, last_offset, last_size) ==>
         update_consecutive_spec(true, consecutive) > 0
 {}
 
@@ -268,7 +268,7 @@ proof fn update_may_trigger_prefetch(consecutive: u64, threshold: u64)
 // r[verify sequential.prefetch-size]
 /// When prefetch is triggered, size is computed correctly.
 proof fn prefetch_triggered_has_size(consecutive: u64, threshold: u64, chunk_size: u64, max_prefetch: u64)
-    requires 
+    requires
         threshold > 0,
         chunk_size > 0,
         should_prefetch_spec(consecutive, threshold)
@@ -280,6 +280,7 @@ proof fn prefetch_triggered_has_size(consecutive: u64, threshold: u64, chunk_siz
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
+
     use super::*;
 
     // r[verify sequential.is-sequential]
