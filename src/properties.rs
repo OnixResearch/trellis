@@ -949,5 +949,120 @@ mod tests {
                 prop_assert!(!crate::fencing::is_valid_write(token, fence));
             }
         }
+
+        // --- Phase 14 cross-module properties ---
+
+        // r[verify properties.vector-clock-merge-is-ordering-max]
+        #[test]
+        fn prop_vector_clock_merge_is_ordering_max(
+            a in proptest::collection::vec(any::<u64>(), 3),
+            b in proptest::collection::vec(any::<u64>(), 3),
+        ) {
+            let m = crate::vector_clock::merge(&a, &b);
+            for i in 0..3 {
+                prop_assert_eq!(m[i], crate::ordering::max(a[i], b[i]));
+            }
+        }
+
+        // r[verify properties.ballot-winner-needs-quorum]
+        #[test]
+        fn prop_ballot_winner_needs_quorum(
+            n in 1u64..=10000,
+            votes: u64,
+        ) {
+            if crate::ballot::has_won_election(votes, n) {
+                prop_assert!(crate::quorum::is_quorum(votes, n));
+            }
+        }
+
+        // r[verify properties.lease-disjoint-intervals]
+        #[test]
+        fn prop_lease_disjoint_intervals(
+            start in 0u64..1000,
+            width in 1u64..1000,
+            width2 in 1u64..1000,
+            t: u64,
+        ) {
+            let expiry = start + width;
+            let start2 = expiry;
+            if start2 + width2 > start2 {
+                let a = crate::lease::grant(1, start, expiry);
+                let b = crate::lease::grant(1, start2, start2 + width2);
+                // Sequential leases never overlap
+                prop_assert!(!(crate::lease::is_valid(&a, t) && crate::lease::is_valid(&b, t)));
+            }
+        }
+
+        // r[verify properties.two-phase-abort-prevents-commit]
+        #[test]
+        fn prop_two_phase_abort_prevents_commit(
+            votes in proptest::collection::vec(
+                proptest::option::of(any::<bool>()), 1..=10
+            ),
+        ) {
+            if crate::two_phase::must_abort(&votes) {
+                prop_assert!(!crate::two_phase::can_commit(&votes));
+            }
+        }
+
+        // r[verify properties.bloom-no-false-negatives]
+        #[test]
+        fn prop_bloom_no_false_negatives(
+            size in 8usize..64,
+            positions in proptest::collection::vec(0usize..8, 1..=5),
+        ) {
+            let positions: Vec<usize> = positions.into_iter().map(|p| p % size).collect();
+            let mut bits = vec![false; size];
+            crate::bloom::insert(&mut bits, &positions);
+            prop_assert!(crate::bloom::query(&bits, &positions));
+        }
+
+        // r[verify properties.cut-join-is-vector-clock-merge]
+        #[test]
+        fn prop_cut_join_is_vector_clock_merge(
+            a in proptest::collection::vec(any::<u64>(), 3),
+            b in proptest::collection::vec(any::<u64>(), 3),
+        ) {
+            // cut_join and vector_clock::merge produce the same result
+            prop_assert_eq!(
+                crate::causal_order::cut_join(&a, &b),
+                crate::vector_clock::merge(&a, &b)
+            );
+        }
+
+        // r[verify properties.crdt-merge-is-vector-clock-merge]
+        #[test]
+        fn prop_crdt_merge_is_vector_clock_merge(
+            a in proptest::collection::vec(any::<u64>(), 3),
+            b in proptest::collection::vec(any::<u64>(), 3),
+        ) {
+            // G-Counter merge and vector_clock::merge are the same operation
+            prop_assert_eq!(
+                crate::crdt::g_counter_merge(&a, &b),
+                crate::vector_clock::merge(&a, &b)
+            );
+        }
+
+        // r[verify properties.backoff-bounded-by-cap]
+        #[test]
+        fn prop_backoff_bounded_by_cap(base: u64, attempt: u64, cap: u64) {
+            prop_assert!(crate::backoff::compute_backoff(base, attempt, cap) <= cap);
+        }
+
+        // r[verify properties.circuit-breaker-valid-output]
+        #[test]
+        fn prop_circuit_breaker_valid_output(
+            current in 0u8..=2,
+            failures: u64,
+            threshold in 1u64..=1000,
+            elapsed: u64,
+            timeout in 1u64..=1000,
+            probe: bool,
+        ) {
+            let ns = crate::circuit_breaker::next_state(
+                current, failures, threshold, elapsed, timeout, probe
+            );
+            prop_assert!(crate::circuit_breaker::is_valid_state(ns));
+        }
     }
 }

@@ -42,6 +42,7 @@
 //! - `interval` — half-open interval contains, overlap, split, merge
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
+//! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
@@ -92,6 +93,7 @@ pub mod integer;
 pub mod interval;
 pub mod lease;
 pub mod log;
+pub mod merkle;
 pub mod monotonic;
 pub mod option;
 pub mod ordering;
