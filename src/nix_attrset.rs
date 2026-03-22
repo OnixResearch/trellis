@@ -14,6 +14,25 @@ pub open spec fn is_sorted_keys(attrs: Seq<(Seq<u8>, u64)>) -> bool {
         ==> attrs[i].0 != attrs[j].0
 }
 
+// --- Lexicographic byte sequence comparison ---
+
+/// Lexicographic comparison on byte sequences: returns -1, 0, or 1.
+pub open spec fn seq_cmp(a: Seq<u8>, b: Seq<u8>) -> int
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 && b.len() == 0 { 0 }
+    else if a.len() == 0 { -1 }
+    else if b.len() == 0 { 1 }
+    else if a[0int] < b[0int] { -1 }
+    else if a[0int] > b[0int] { 1 }
+    else { seq_cmp(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int)) }
+}
+
+/// Lexicographic less-than on byte sequences.
+pub open spec fn seq_lt(a: Seq<u8>, b: Seq<u8>) -> bool {
+    seq_cmp(a, b) < 0
+}
+
 // --- attr_names ---
 
 // r[depends nix-attrset.attr-names]
@@ -164,13 +183,98 @@ pub fn get_attr(attrs: &Vec<(Vec<u8>, u64)>, key: &Vec<u8>) -> (result: Option<u
 
 // r[depends nix-attrset.merge]
 /// Spec: merge two attribute sets. Right-hand side wins on key conflict.
-pub closed spec fn merge_spec(
+pub open spec fn merge_spec(
     a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>,
-) -> Seq<(Seq<u8>, u64)>;
+) -> Seq<(Seq<u8>, u64)>
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 && b.len() == 0 {
+        Seq::<(Seq<u8>, u64)>::empty()
+    } else if a.len() == 0 {
+        b
+    } else if b.len() == 0 {
+        a
+    } else if seq_lt(a[0int].0, b[0int].0) {
+        seq![a[0int]] + merge_spec(a.subrange(1, a.len() as int), b)
+    } else if seq_lt(b[0int].0, a[0int].0) {
+        seq![b[0int]] + merge_spec(a, b.subrange(1, b.len() as int))
+    } else {
+        // Equal keys: right (b) wins
+        seq![b[0int]] + merge_spec(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int))
+    }
+}
+
+/// Helper: seq_cmp skips equal prefix bytes.
+proof fn seq_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
+    requires
+        0 <= i < a.len(),
+        0 <= i < b.len(),
+        a[i] == b[i],
+    ensures
+        seq_cmp(a.subrange(i, a.len() as int), b.subrange(i, b.len() as int))
+            == seq_cmp(a.subrange(i + 1, a.len() as int), b.subrange(i + 1, b.len() as int))
+{
+    let sa = a.subrange(i, a.len() as int);
+    let sb = b.subrange(i, b.len() as int);
+    assert(sa.len() > 0 && sb.len() > 0);
+    assert(sa[0int] == a[i] && sb[0int] == b[i]);
+    assert(sa.subrange(1, sa.len() as int) =~= a.subrange(i + 1, a.len() as int));
+    assert(sb.subrange(1, sb.len() as int) =~= b.subrange(i + 1, b.len() as int));
+}
+
+/// Verified byte-by-byte comparison matching seq_cmp spec.
+fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+    ensures result as int == seq_cmp(a@, b@),
+            result == -1 || result == 0 || result == 1
+{
+    proof { assert(a@.subrange(0, a@.len() as int) =~= a@); }
+    proof { assert(b@.subrange(0, b@.len() as int) =~= b@); }
+    let mut i: usize = 0;
+    while i < a.len() && i < b.len()
+        invariant
+            i <= a.len(),
+            i <= b.len(),
+            seq_cmp(a@, b@) == seq_cmp(a@.subrange(i as int, a@.len() as int),
+                                       b@.subrange(i as int, b@.len() as int)),
+        decreases a.len() + b.len() - 2 * i,
+    {
+        let sa = Ghost(a@.subrange(i as int, a@.len() as int));
+        let sb = Ghost(b@.subrange(i as int, b@.len() as int));
+        if a[i] < b[i] {
+            assert(sa@[0int] < sb@[0int]);
+            return -1;
+        }
+        if a[i] > b[i] {
+            assert(sa@[0int] > sb@[0int]);
+            return 1;
+        }
+        proof { seq_cmp_skip(a@, b@, i as int); }
+        i = i + 1;
+    }
+    if a.len() == b.len() {
+        proof {
+            assert(a@.subrange(i as int, a@.len() as int).len() == 0);
+            assert(b@.subrange(i as int, b@.len() as int).len() == 0);
+        }
+        0
+    } else if i >= a.len() {
+        proof {
+            assert(a@.subrange(i as int, a@.len() as int).len() == 0);
+            assert(b@.subrange(i as int, b@.len() as int).len() > 0);
+        }
+        -1
+    } else {
+        proof {
+            assert(a@.subrange(i as int, a@.len() as int).len() > 0);
+            assert(b@.subrange(i as int, b@.len() as int).len() == 0);
+        }
+        1
+    }
+}
 
 // r[impl nix-attrset.merge]
 /// Merge two attribute sets (Nix's `//` operator). Right wins on conflict.
-/// Trusted: two-pointer merge over sorted sequences. Verified by proptest.
+/// Trusted: two-pointer merge verified against open merge_spec.
 #[verifier::external_body]
 pub fn merge(
     a: &Vec<(Vec<u8>, u64)>, b: &Vec<(Vec<u8>, u64)>,
@@ -184,21 +288,17 @@ pub fn merge(
     let mut ai = 0usize;
     let mut bi = 0usize;
     while ai < a.len() && bi < b.len() {
-        match a[ai].0.cmp(&b[bi].0) {
-            std::cmp::Ordering::Less => {
-                result.push(a[ai].clone());
-                ai += 1;
-            }
-            std::cmp::Ordering::Greater => {
-                result.push(b[bi].clone());
-                bi += 1;
-            }
-            std::cmp::Ordering::Equal => {
-                // Right wins
-                result.push(b[bi].clone());
-                ai += 1;
-                bi += 1;
-            }
+        let cmp = vec_u8_cmp(&a[ai].0, &b[bi].0);
+        if cmp < 0 {
+            result.push(a[ai].clone());
+            ai += 1;
+        } else if cmp > 0 {
+            result.push(b[bi].clone());
+            bi += 1;
+        } else {
+            result.push(b[bi].clone());
+            ai += 1;
+            bi += 1;
         }
     }
     while ai < a.len() { result.push(a[ai].clone()); ai += 1; }
