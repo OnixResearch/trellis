@@ -5,6 +5,9 @@
 //! size calculation, offset mapping, and decomposition proofs. All
 //! functions require positive chunk size and avoid integer overflow.
 
+// Verus spec needs separate branches for Z3 case analysis even when exec values match.
+#![allow(clippy::if_same_then_else)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -86,12 +89,10 @@ pub fn chunk_size_at(total_size: u64, chunk_size: u64, index: u64) -> (result: u
 {
     if index + 1 < chunk_count_ceil(total_size, chunk_size) {
         chunk_size
+    } else if total_size % chunk_size == 0 {
+        chunk_size
     } else {
-        if total_size % chunk_size == 0 {
-            chunk_size
-        } else {
-            total_size % chunk_size
-        }
+        total_size % chunk_size
     }
 }
 

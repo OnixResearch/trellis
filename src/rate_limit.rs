@@ -15,28 +15,25 @@ verus! {
 
 // r[depends rate-limit.refill]
 /// Spec: tokens available after time-based refill.
-/// Formula: tokens + elapsed_ms * rate_per_sec / 1000, capped at burst.
-/// Uses int arithmetic to avoid overflow concerns.
+/// Formula: min(tokens + elapsed_ms * rate_per_sec / 1000, burst).
+/// Uses pure int arithmetic — no overflow. The exec fn saturates at burst
+/// when intermediate u64 values would overflow.
 pub open spec fn tokens_after_refill_spec(
     tokens: u64,
     elapsed_ms: u64,
     rate_per_sec: u64,
     burst: u64,
 ) -> u64 {
-    let refill_amount = (elapsed_ms as int * rate_per_sec as int / 1000) as u64;
-    let new_tokens = if tokens as int + refill_amount as int > u64::MAX as int {
-        u64::MAX
-    } else {
-        (tokens + refill_amount) as u64
-    };
-    if new_tokens > burst { burst } else { new_tokens }
+    let refill_amount_int = elapsed_ms as int * rate_per_sec as int / 1000;
+    let new_tokens_int = tokens as int + refill_amount_int;
+    if new_tokens_int > burst as int { burst } else { new_tokens_int as u64 }
 }
 
 // r[impl rate-limit.refill]
 /// Returns tokens available after refill: tokens + `elapsed_ms` * `rate_per_sec` / 1000,
 /// capped at burst. Handles overflow by saturating to burst.
-// Trusted: exec uses u64 overflow detection that Verus can't connect to the int-based spec.
-// Runtime correctness is verified by proptest lifecycle oracle below.
+// Trusted: exec overflow guards (u64 division) can't be connected to int spec
+// without nonlinear u64↔int bridging. Verified by proptest lifecycle oracle.
 #[verifier::external_body]
 pub fn tokens_after_refill(
     tokens: u64,
@@ -46,14 +43,14 @@ pub fn tokens_after_refill(
 ) -> (result: u64)
     ensures result == tokens_after_refill_spec(tokens, elapsed_ms, rate_per_sec, burst)
 {
-    // Check for overflow in elapsed_ms * rate_per_sec using division
+    // Check for overflow in elapsed_ms * rate_per_sec using division.
+    // When the product would overflow u64, the refill amount exceeds burst,
+    // so capping at burst is correct per the spec.
     if elapsed_ms > 0 && rate_per_sec > u64::MAX / elapsed_ms {
-        // Overflow would occur, return burst
         burst
     } else {
         let refill_amount = (elapsed_ms * rate_per_sec) / 1000;
         if tokens > u64::MAX - refill_amount {
-            // Addition would overflow, cap at burst
             burst
         } else {
             let new_tokens = tokens + refill_amount;
@@ -70,14 +67,22 @@ proof fn refill_bounded_by_burst(tokens: u64, elapsed_ms: u64, rate_per_sec: u64
 
 // r[verify rate-limit.refill]
 /// Refill is monotonic in elapsed time: more time yields more tokens (up to burst).
-// Trusted: nonlinear int arithmetic involving division and min makes this
-// intractable for Z3. Verified by prop_refill_monotonic proptest.
-#[verifier::external_body]
+/// Refill is monotonic in elapsed time: more time yields more tokens (up to burst).
 proof fn refill_monotonic_time(tokens: u64, t1: u64, t2: u64, rate_per_sec: u64, burst: u64)
     requires t1 <= t2
     ensures tokens_after_refill_spec(tokens, t1, rate_per_sec, burst) 
             <= tokens_after_refill_spec(tokens, t2, rate_per_sec, burst)
-{}
+{
+    // The refill amount is (t * rate / 1000). Since t1 <= t2,
+    // t1 * rate <= t2 * rate, so t1 * rate / 1000 <= t2 * rate / 1000.
+    // Both are capped at burst, and min is monotonic.
+    assert(t1 as int * rate_per_sec as int <= t2 as int * rate_per_sec as int) by(nonlinear_arith)
+        requires t1 as int <= t2 as int, rate_per_sec as int >= 0int
+    ;
+    assert(t1 as int * rate_per_sec as int / 1000 <= t2 as int * rate_per_sec as int / 1000) by(nonlinear_arith)
+        requires t1 as int * rate_per_sec as int <= t2 as int * rate_per_sec as int
+    ;
+}
 
 // r[verify rate-limit.refill]
 /// Zero elapsed time returns tokens unchanged.
@@ -190,7 +195,8 @@ pub open spec fn tokens_to_wait_ms_spec(
 /// Returns milliseconds to wait until cost can be afforded.
 /// If tokens >= cost, returns 0. Otherwise calculates ceiling division.
 /// Requires `rate_per_sec` > 0 to avoid division by zero.
-// Trusted: overflow detection path differs from int-based spec.
+// Trusted: exec overflow detection path (u64 division-based guards) can't be
+// connected to the int-based spec without nonlinear reasoning. Verified by proptest.
 #[verifier::external_body]
 pub fn tokens_to_wait_ms(
     tokens: u64,
@@ -204,13 +210,15 @@ pub fn tokens_to_wait_ms(
         0
     } else {
         let shortage = cost - tokens;
-        // Check for overflow in shortage * 1000 + rate_per_sec using division
-        if shortage > 0 && 1000 > (u64::MAX - rate_per_sec) / shortage {
-            // Overflow protection: return max value
+        if shortage > u64::MAX / 1000 {
             u64::MAX
         } else {
-            // Ceiling division: (shortage * 1000 + rate_per_sec - 1) / rate_per_sec
-            (shortage * 1000 + rate_per_sec - 1) / rate_per_sec
+            let numerator = shortage * 1000;
+            if numerator > u64::MAX - (rate_per_sec - 1) {
+                numerator / rate_per_sec + 1
+            } else {
+                (numerator + rate_per_sec - 1) / rate_per_sec
+            }
         }
     }
 }
@@ -224,7 +232,8 @@ proof fn wait_time_sufficient(tokens: u64, cost: u64, rate_per_sec: u64)
 
 // r[verify rate-limit.wait-time]
 /// When tokens are insufficient, wait time is positive.
-// Trusted: requires nonlinear reasoning about ceiling division positivity.
+// Trusted: int-level proof works (numer/rate >= 1 via vstd div lemmas) but
+// the `as u64` cast in the spec blocks Z3 from connecting int >= 1 to u64 > 0.
 #[verifier::external_body]
 proof fn wait_time_insufficient(tokens: u64, cost: u64, rate_per_sec: u64)
     requires rate_per_sec > 0, tokens < cost

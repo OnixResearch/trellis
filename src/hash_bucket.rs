@@ -71,12 +71,10 @@ pub fn assign_bucket_pow2(hash: u64, num_buckets: u64) -> (result: u64)
 }
 
 // r[verify hash-bucket.assign-pow2]
-/// Helper proof: for power of two n, x & (n-1) < n.
-/// This is a known bit_vector limitation - the solver can't handle power-of-two 
-/// preconditions plus bound proofs in one shot.
-#[verifier::external_body]
+/// For power of two n, x & (n-1) < n.
 proof fn pow2_mask_bound(x: u64, n: u64)
-    requires n > 0, n & sub(n, 1) == 0  // n is power of two
+    by(bit_vector)
+    requires n > 0, n & sub(n, 1) == 0
     ensures x & sub(n, 1) < n
 {}
 
@@ -100,15 +98,21 @@ proof fn assign_bucket_pow2_deterministic(hash: u64, num_buckets: u64)
 
 // r[verify hash-bucket.assign-pow2]
 // r[verify hash-bucket.assign]
-/// Power-of-two assignment is equivalent to modular assignment for power-of-two buckets.
-/// This is a known mathematical identity: for power-of-two n, hash & (n-1) == hash % n.
-/// However, the bit_vector solver can't prove this modular/bitwise equivalence directly.
+/// For power of two n, hash & (n-1) == hash % n.
+// Trusted: 64-bit SAT encoding exceeds rlimit. Verified by proptest.
 #[verifier::external_body]
+proof fn pow2_mask_is_mod(x: u64, n: u64)
+    requires n > 0, n & sub(n, 1) == 0
+    ensures x & sub(n, 1) == x % n
+{}
+
+/// Power-of-two assignment is equivalent to modular assignment.
 proof fn assign_bucket_pow2_equivalent(hash: u64, num_buckets: u64)
     requires num_buckets > 0, is_power_of_two_buckets_spec(num_buckets)
     ensures assign_bucket_pow2_spec(hash, num_buckets) == assign_bucket_spec(hash, num_buckets)
 {
-    // External body: this mathematical identity is verified empirically by runtime tests
+    assert(is_power_of_two_buckets_spec(num_buckets) ==> (num_buckets & sub(num_buckets, 1) == 0));
+    pow2_mask_is_mod(hash, num_buckets);
 }
 
 // --- bucket_count_valid ---

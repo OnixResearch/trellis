@@ -59,7 +59,7 @@ pub open spec fn find_lru_from_spec(entries: Seq<(u64, bool)>, from: int, best_i
         best_idx
     } else {
         let (access_time, is_protected) = entries[from];
-        if !is_protected && access_time < best_time {
+        if !is_protected && (best_idx == -1 || access_time < best_time) {
             find_lru_from_spec(entries, from + 1, from, access_time)
         } else {
             find_lru_from_spec(entries, from + 1, best_idx, best_time)
@@ -70,23 +70,19 @@ pub open spec fn find_lru_from_spec(entries: Seq<(u64, bool)>, from: int, best_i
 /// Finds the index of the least-recently-used unprotected entry.
 /// Returns the index with smallest `access_time` among non-protected entries.
 /// First match wins on ties. Returns None if all protected or empty.
-// Trusted: loop invariant quantifier intractable for Z3. Verified by proptest.
 // r[impl eviction.find-lru]
 #[allow(clippy::len_zero)]
-#[verifier::external_body]
 pub fn find_lru_candidate(entries: &[(u64, bool)]) -> (result: Option<usize>)
     ensures
-        match result {
-            Some(idx) => {
-                &&& 0 <= idx < entries@.len()
-                &&& !entries@[idx as int].1  // not protected
-                &&& forall|i: int| 0 <= i < entries@.len() && !entries@[i].1 
-                       ==> entries@[idx as int].0 <= entries@[i].0  // has minimum access_time
-            },
-            None => {
-                forall|i: int| 0 <= i < entries@.len() ==> entries@[i].1  // all protected or empty
-            }
-        }
+        result.is_some() ==> {
+            let idx = result.unwrap() as int;
+            &&& 0 <= idx < entries@.len()
+            &&& !entries@[idx].1
+            &&& forall|i: int| #![auto] 0 <= i < entries@.len() && !entries@[i].1
+                   ==> entries@[idx].0 <= entries@[i].0
+        },
+        result.is_none() ==> forall|i: int| #![auto]
+            0 <= i < entries@.len() ==> entries@[i].1,
 {
     if entries.len() == 0 {
         return None;
@@ -102,19 +98,19 @@ pub fn find_lru_candidate(entries: &[(u64, bool)]) -> (result: Option<usize>)
             best_idx.is_some() ==> {
                 let idx = best_idx.unwrap() as int;
                 &&& 0 <= idx < i as int
-                &&& !entries@[idx].1  // not protected
+                &&& !entries@[idx].1
                 &&& entries@[idx].0 == best_time
-                &&& forall|j: int| 0 <= j < i as int && !entries@[j].1 
+                &&& forall|j: int| #![auto] 0 <= j < i as int && !entries@[j].1
                        ==> best_time <= entries@[j].0
             },
             best_idx.is_none() ==> {
                 &&& best_time == u64::MAX
-                &&& (forall|j: int| #![auto] 0 <= j < i as int ==> entries@[j].1)
-            }
+                &&& forall|j: int| #![auto] 0 <= j < i as int ==> entries@[j].1
+            },
         decreases entries@.len() - i as int
     {
         let (access_time, is_protected) = entries[i];
-        if !is_protected && access_time < best_time {
+        if !is_protected && (best_idx.is_none() || access_time < best_time) {
             best_idx = Some(i);
             best_time = access_time;
         }
