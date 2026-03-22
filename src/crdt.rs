@@ -60,17 +60,73 @@ pub open spec fn g_counter_value_spec(counter: Seq<u64>) -> int
     }
 }
 
+// Helper lemma: taking i+1 elements decomposes as take(i) + element[i]
+proof fn g_counter_value_take_lemma(s: Seq<u64>, i: int)
+    requires 0 <= i < s.len()
+    ensures
+        g_counter_value_spec(s.take(i + 1))
+            == g_counter_value_spec(s.take(i)) + s[i] as int,
+{
+    let t = s.take(i + 1);
+    assert(t.drop_last() =~= s.take(i));
+    assert(t.last() == s[i]);
+}
+
+// Helper lemma: g_counter_value_spec is non-negative
+proof fn g_counter_value_nonneg(s: Seq<u64>)
+    ensures g_counter_value_spec(s) >= 0
+    decreases s.len()
+{
+    if s.len() > 0 {
+        g_counter_value_nonneg(s.drop_last());
+    }
+}
+
+// Helper lemma: prefix sum is monotonically non-decreasing
+proof fn g_counter_value_prefix_le(s: Seq<u64>, i: int)
+    requires 0 <= i <= s.len()
+    ensures g_counter_value_spec(s.take(i)) <= g_counter_value_spec(s)
+    decreases s.len() - i
+{
+    if i == s.len() {
+        assert(s.take(i) =~= s);
+    } else {
+        // take(i) sum <= take(i+1) sum <= ... <= full sum
+        g_counter_value_take_lemma(s, i);
+        g_counter_value_prefix_le(s, i + 1);
+    }
+}
+
 // r[impl crdt.g-counter-value]
 /// Returns the sum of all replica counts.
-/// Trusted: inductive loop over recursive spec. Verified by proptest.
-#[verifier::external_body]
 pub fn g_counter_value(counter: &Vec<u64>) -> (result: u64)
     requires
         g_counter_value_spec(counter@) <= u64::MAX as int,
         g_counter_value_spec(counter@) >= 0,
     ensures result as int == g_counter_value_spec(counter@)
 {
-    counter.iter().copied().fold(0u64, |acc, v| acc + v)
+    let mut sum: u64 = 0;
+    let mut i: usize = 0;
+    assert(counter@.take(0int) =~= Seq::<u64>::empty());
+    while i < counter.len()
+        invariant
+            i <= counter.len(),
+            sum as int == g_counter_value_spec(counter@.take(i as int)),
+            g_counter_value_spec(counter@) <= u64::MAX as int,
+            g_counter_value_spec(counter@.take(i as int)) <= u64::MAX as int,
+        decreases counter.len() - i,
+    {
+        proof {
+            g_counter_value_take_lemma(counter@, i as int);
+            g_counter_value_prefix_le(counter@, i as int + 1);
+        }
+        sum = sum + counter[i];
+        i = i + 1;
+    }
+    proof {
+        assert(counter@.take(counter@.len() as int) =~= counter@);
+    }
+    sum
 }
 
 // r[depends crdt.g-counter-increment]

@@ -73,19 +73,35 @@ pub fn insert(bits: &mut Vec<bool>, positions: &Vec<usize>)
 
 // r[impl bloom.query]
 /// Query: check if all hash positions are set.
-/// Trusted: loop checks each position. Verified by proptest.
-#[verifier::external_body]
 pub fn query(bits: &Vec<bool>, positions: &Vec<usize>) -> (result: bool)
     requires
         forall|i: int| 0 <= i < positions@.len()
             ==> 0 <= positions@[i] as int && (positions@[i] as int) < bits@.len(),
     ensures result == query_spec(bits@, positions@.map_values(|v: usize| v as int))
 {
-    for &pos in positions.iter() {
-        if !bits[pos] {
+    let mapped = Ghost(positions@.map_values(|v: usize| v as int));
+    let mut i: usize = 0;
+    while i < positions.len()
+        invariant
+            i <= positions.len(),
+            forall|k: int| 0 <= k < positions@.len()
+                ==> 0 <= positions@[k] as int && (positions@[k] as int) < bits@.len(),
+            // All positions checked so far were true
+            forall|k: int| 0 <= k < i as int
+                ==> bits@[mapped@[k]],
+            // Relate mapped to positions
+            mapped@ == positions@.map_values(|v: usize| v as int),
+        decreases positions.len() - i,
+    {
+        if !bits[positions[i]] {
+            // Found a false bit — query_spec must be false
+            assert(!bits@[mapped@[i as int]]);
             return false;
         }
+        i = i + 1;
     }
+    // All positions were true
+    assert(forall|k: int| 0 <= k < positions@.len() as int ==> bits@[mapped@[k]]);
     true
 }
 
@@ -93,6 +109,8 @@ pub fn query(bits: &Vec<bool>, positions: &Vec<usize>) -> (result: bool)
 
 // r[verify bloom.insert]
 /// Insert monotonic: trusted inductive proof. Verified by proptest.
+/// Cannot close: Seq::update axioms require 0 <= i < s.len() but the
+/// requires clause does not constrain positions to be in-bounds.
 #[verifier::external_body]
 proof fn insert_monotonic(bits: Seq<bool>, positions: Seq<int>, j: int)
     requires 0 <= j < bits.len(), bits[j]
@@ -101,6 +119,8 @@ proof fn insert_monotonic(bits: Seq<bool>, positions: Seq<int>, j: int)
 
 // r[verify bloom.query]
 /// No false negatives: trusted inductive proof. Verified by proptest.
+/// Cannot close: depends on insert_monotonic which requires in-bounds
+/// positions for Seq::update axioms.
 #[verifier::external_body]
 proof fn no_false_negatives(bits: Seq<bool>, positions: Seq<int>)
     requires positions.len() > 0
