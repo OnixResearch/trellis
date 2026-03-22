@@ -4,7 +4,7 @@
 - [x] Implement src/quorum.rs: majority spec+exec, is_quorum spec+exec ✅
 - [x] Prove quorum_intersection: is_quorum(a, n) && is_quorum(b, n) ==> a + b > n ✅
 - [x] Prove majority_bounds: 1 <= majority(n) <= n for n > 0 ✅
-- [ ] Prove majority_via_div_ceil cross-module property (majority(n) == div_ceil(n + 1, 2))
+- [x] Prove majority_via_div_ceil cross-module property (majority(n) == div_ceil(n + 1, 2)) ✅
 - [x] Unit tests + proptest for quorum functions ✅
 - [x] Verus + tracey clean ✅
 
