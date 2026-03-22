@@ -588,17 +588,53 @@ mod verus_proofs {
     }
 
     // r[verify properties.sequential-chunk-continuation]
-    // Trusted: the int arithmetic is proven (3 asserts pass) but Z3 can't bridge
-    // the (int → as u64 → as int) cast chain in chunk_offset_spec through
-    // is_sequential_spec's overflow guard. Verified by proptest.
-    #[verifier::external_body]
     proof fn prove_sequential_chunk_continuation(chunk_size: u64, index: u64)
         requires
             chunk_size > 0,
             index as int * chunk_size as int <= u64::MAX as int,
             (index as int + 1) * chunk_size as int <= u64::MAX as int,
         ensures sequential_chunk_continuation_prop(chunk_size, index)
-    {}
+    {
+        let cs = chunk_size as int;
+        let idx = index as int;
+        let lo = idx * cs;
+        let hi = (idx + 1) * cs;
+        // Step 1: both products are non-negative and fit in u64
+        assert(idx >= 0 && cs > 0) by(nonlinear_arith)
+            requires idx >= 0, cs > 0;
+        assert(lo >= 0) by(nonlinear_arith)
+            requires idx >= 0, cs > 0, lo == idx * cs;
+        assert(hi >= 0) by(nonlinear_arith)
+            requires idx >= 0, cs > 0, hi == (idx + 1) * cs;
+        // Step 2: as-u64 casts are lossless
+        assert((lo as u64) as int == lo);
+        assert((hi as u64) as int == hi);
+        // Step 3: algebraic step — (i+1)*cs == i*cs + cs
+        assert(hi == lo + cs) by(nonlinear_arith)
+            requires idx >= 0, cs > 0, hi == (idx + 1) * cs, lo == idx * cs;
+        // Step 4: the addition doesn't overflow u64
+        assert(lo + cs <= u64::MAX as int);
+        // Step 5: unfold chunk_offset_spec
+        // chunk_offset_spec(cs, idx) = (idx as int * cs as int) as u64
+        // index + 1 fits in u64 because (index+1)*cs <= MAX and cs > 0
+        assert(idx + 1 <= u64::MAX as int) by(nonlinear_arith)
+            requires cs > 0, (idx + 1) * cs <= u64::MAX as int;
+        let next_idx = (index + 1) as u64;
+        assert(next_idx as int == idx + 1);
+        // chunk_offset_spec(chunk_size, index) = (index as int * cs) as u64 = lo as u64
+        assert(chunk_offset_spec(chunk_size, index) as int == lo);
+        // chunk_offset_spec(chunk_size, next_idx) = (next_idx as int * cs) as u64
+        // = ((idx+1) * cs) as u64 = hi as u64
+        assert(next_idx as int * cs == hi) by(nonlinear_arith)
+            requires next_idx as int == idx + 1, hi == (idx + 1) * cs;
+        assert((next_idx as int * cs as int) as u64 as int == hi);
+        assert(chunk_offset_spec(chunk_size, next_idx) as int == hi);
+        // Step 6: is_sequential_spec: lo + cs = hi <= MAX, offset == last_offset + cs
+        let last_offset = chunk_offset_spec(chunk_size, index);
+        let offset = chunk_offset_spec(chunk_size, next_idx);
+        assert(last_offset as int + chunk_size as int <= u64::MAX as int);
+        assert(offset == (last_offset + chunk_size));
+    }
 
     // --- fencing × monotonic ---
 
