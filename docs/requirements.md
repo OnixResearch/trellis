@@ -367,6 +367,26 @@ r[expiration.is-ttl-valid]
 is_ttl_valid(ttl_seconds, max_ttl) MUST return true if and only if
 ttl_seconds <= max_ttl.
 
+## Chain Hash
+
+r[chain.hash-deterministic]
+The hash function MUST be deterministic: same inputs MUST always produce
+the same output. Modeled as an uninterpreted function with this axiom.
+
+r[chain.compute-entry-hash]
+compute_entry_hash MUST combine prev_hash, log_index, term, and data
+into a single hash input and return the hash. The result MUST depend on
+all four inputs.
+
+r[chain.chain-valid]
+A chain is valid if every entry's hash equals the hash computed from its
+predecessor's hash, its index, its term, and its data. The first entry
+uses the genesis hash as its predecessor.
+
+r[chain.append-preserves]
+Appending a correctly-hashed entry to a valid chain MUST produce a valid
+chain. All prior entries MUST remain valid.
+
 ## Batch Limits
 
 r[batch.check-limits]

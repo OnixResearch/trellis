@@ -43,6 +43,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bitmap` | `new`, `get`, `set`, `clear`, `toggle`, `len`, `word_count` | 9 |
 | `bounds` | `in_range`, `clamp` | 4 |
 | `cas` | `check_condition`, `check_cas`, `evaluate_conditions` | 10 |
+| `chain` | `hash_spec` (axiom), `compute_entry_hash`, `chain_valid`, `append_preserves` | 6 |
 | `conversion` | `narrow_u32`, `narrow_u16`, `narrow_u8`, `signed_to_unsigned`, `unsigned_to_signed` | 18 |
 | `integer` | `is_even`, `is_odd`, `align_down`, `align_up`, `log2_floor`, `next_power_of_two` | 20 |
 | `interval` | `contains`, `is_empty`, `overlaps`, `split`, `adjacent`, `merge` | 21 |

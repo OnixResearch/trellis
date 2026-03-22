@@ -16,6 +16,7 @@
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
+//! - `chain` — chain hash integrity with append-preserves proof
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
@@ -37,6 +38,7 @@ pub mod bitmap;
 pub mod bitwise;
 pub mod bounds;
 pub mod cas;
+pub mod chain;
 pub mod collections;
 pub mod conversion;
 pub mod epoch;

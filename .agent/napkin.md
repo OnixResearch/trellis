@@ -115,7 +115,19 @@
     for Z3 to match each branch to the correct spec case
   - Lifecycle model oracle: simulate add/flush cycles, verify check_limits
     and flush_decision agree with manual calculation at every step
-- Total: 376 Verus proofs, 273 cargo tests, 121 requirements
+- Chain module added: hash_spec axiom, compute_entry_hash, chain_valid, append_preserves
+  - Blake3 modeled as `closed spec fn` (uninterpreted) with trusted determinism axiom
+    via `#[verifier::external_body]` proof fn
+  - compute_entry_hash is `#[verifier::external_body]` exec fn — Verus trusts the
+    ensures clause, runtime uses a deterministic mix for testing
+  - chain_valid quantifier needs explicit `#![trigger entries[i]]` — Verus can't
+    auto-infer triggers when the body calls a closed spec fn
+  - append_preserves requires helper spec fn `correctly_hashed` — Verus parser can't
+    handle bare block `{ ... }` inside requires clause
+  - prefix_valid: subrange of valid chain is valid — proved by trigger matching
+  - Spec fns need both `r[depends]` AND `r[impl]` for tracey coverage when there's
+    no separate exec fn
+- Total: 380 Verus proofs, 283 cargo tests, 125 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
