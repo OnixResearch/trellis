@@ -8,6 +8,8 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
+**633 Verus proofs · 467 tests · 193 requirements · 34 modules**
+
 ## How it works
 
 ```rust
@@ -35,29 +37,59 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 ## Modules
 
-| Module | Functions | Verus proofs |
-|---|---|---|
-| `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul`, `gcd`, `div_ceil` | 10 |
-| `bitwise` | `is_power_of_two`, `bit_at`, `set_bit`, `clear_bit`, `toggle_bit` | 8 |
-| `batch` | `check_limits`, `flush_decision`, `op_size`, `delete_op_size` | 14 |
-| `bitmap` | `new`, `get`, `set`, `clear`, `toggle`, `len`, `word_count` | 9 |
-| `bounds` | `in_range`, `clamp` | 4 |
-| `cas` | `check_condition`, `check_cas`, `evaluate_conditions` | 10 |
-| `chain` | `hash_spec` (axiom), `compute_entry_hash`, `chain_valid`, `append_preserves` | 6 |
-| `conversion` | `narrow_u32`, `narrow_u16`, `narrow_u8`, `signed_to_unsigned`, `unsigned_to_signed` | 18 |
-| `integer` | `is_even`, `is_odd`, `align_down`, `align_up`, `log2_floor`, `next_power_of_two` | 20 |
-| `interval` | `contains`, `is_empty`, `overlaps`, `split`, `adjacent`, `merge` | 21 |
-| `log` | `agree_at`, `logs_match_prefix`, `log_append`, `log_truncate` | 13 |
-| `collections` | `sorted_insert`, `binary_search`, `merge_sorted`, `is_partitioned`, `find_first`, `count_matches` | 10 |
-| `option` | `unwrap_or_default`, `map`, `and_then`, `or_else`, `flatten`, `zip`, `filter` | 21 |
-| `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
-| `epoch` | `epoch_cmp`, `epoch_ge` + total order proofs | 10 |
-| `expiration` | `expires_at`, `is_expired`, `is_expired_opt`, `time_remaining`, `is_ttl_valid` | 16 |
-| `monotonic` | `is_advance`, `is_strict_advance` + ordering proofs | 8 |
-| `quorum` | `majority`, `is_quorum`, `fault_tolerance`, `can_remove_safely`, `min_cluster_size` + intersection theorem | 17 |
-| `result` | `unwrap_or`, `map_ok`, `map_err`, `and_then`, `or_else` | 14 |
-| `ring_buffer` | `new`, `push`, `pop`, `peek`, `len`, `is_empty`, `is_full`, `capacity`, `remaining`, `full_batches` | 2 |
-| `slice` | `chunk_count`, `prefix_eq`, `suffix_eq`, `all_equal`, `mismatch_index` | 11 |
+### Core arithmetic and data
+
+| Module | What it verifies |
+|---|---|
+| `arithmetic` | abs diff, saturating add/sub, checked mul, gcd, div ceil |
+| `bitwise` | power-of-two, bit get/set/clear/toggle |
+| `bitmap` | fixed-size bit set over u64 words |
+| `bounds` | range predicates, clamping |
+| `collections` | sorted insert, binary search, merge sorted, partitioning, find, count |
+| `conversion` | checked narrowing (u32/u16/u8), signed↔unsigned |
+| `integer` | parity, alignment, log2, next-power-of-two |
+| `interval` | half-open interval contains, overlap, split, adjacent, merge |
+| `option` | verified Option combinators (map, and_then, or_else, flatten, zip, filter) |
+| `ordering` | min, max, median, sign, compare-and-swap |
+| `result` | verified Result combinators (map_ok, map_err, and_then, or_else) |
+| `ring_buffer` | FIFO queue with power-of-two capacity |
+| `slice` | chunk count, prefix/suffix equality, all-equal, mismatch |
+
+### Consensus and replication
+
+| Module | What it verifies |
+|---|---|
+| `acid` | atomicity, consistency, isolation, durability over state vectors |
+| `cas` | compare-and-swap condition evaluation |
+| `chain` | chain hash integrity with append-preserves proof |
+| `epoch` | lexicographic (term, index) comparison for Raft elections |
+| `log` | append-only log with Log Matching Property |
+| `monotonic` | advancement predicates for terms, commit indices |
+| `quorum` | majority threshold, intersection theorem, fault tolerance |
+
+### Systems decision logic
+
+| Module | What it verifies |
+|---|---|
+| `approval` | merge gating: approval counting, stale detection, CI checks |
+| `batch` | write batch limit checking and flush decisions |
+| `bounded_range` | ranges with optional upper bound (None = unbounded) |
+| `chunk` | ceiling-division chunk arithmetic, offset↔chunk mapping |
+| `cow` | copy-on-write ref counting, snapshot isolation |
+| `drain` | graceful shutdown admission protocol |
+| `eviction` | LRU cache eviction with protected entries |
+| `expiration` | TTL calculation, lease/key expiration |
+| `hash_bucket` | hash-to-bucket assignment, modular and power-of-two |
+| `partition` | non-overlapping gap-free interval partitions |
+| `pressure` | multi-threshold severity classification |
+| `rate_limit` | integer token bucket rate limiting |
+| `sequential` | sequential access detection, prefetch triggering |
+
+### Cross-module
+
+| Module | What it verifies |
+|---|---|
+| `properties` | 50 proofs linking modules: triangle inequality, arithmetic inverses, clamp-is-min-max, chunk-ceil-is-div-ceil, partition-no-overlap, hash-bucket-in-interval, pressure-classify-monotonic, and more |
 
 ## Usage
 
@@ -69,38 +101,62 @@ verified-logic = { git = "https://github.com/yourname/verified-logic" }
 ```rust
 use verified_logic::arithmetic::abs_diff;
 use verified_logic::bounds::clamp;
+use verified_logic::quorum::majority;
+use verified_logic::drain::can_start_op;
 
-let d = abs_diff(10, 3); // 7
-let c = clamp(15, 0, 10); // 10
+let d = abs_diff(10, 3);       // 7
+let c = clamp(15, 0, 10);      // 10
+let m = majority(5);           // 3
+let ok = can_start_op(false);  // true (not draining)
 ```
+
+For normal `cargo build`, the `vstd` crate erases all ghost code. No
+runtime cost from specs, proofs, requires, or ensures.
 
 ## Development
 
 ```bash
-nix develop          # enter devshell
-cargo check          # compile (ghost code erased)
-cargo test           # 25 tests (unit + property)
-nix flake check      # full CI (build + test + clippy + fmt)
+nix develop                # enter devshell
+cargo check                # compile (ghost code erased)
+cargo test                 # 467 tests (unit + property)
+cargo clippy -- -D warnings
 ```
 
 ## Verification
 
 ```bash
-./scripts/verify.sh  # all gates: clippy → tests → verus → tracey
-
-./scripts/verus.sh   # verus only (verifies src/lib.rs)
-tracey query status  # requirement coverage
+./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
+./scripts/verus.sh         # verus only (633 proofs)
+./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
+./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
 
 ## Structure
 
 ```
-src/lib.rs             ← crate root
-src/arithmetic.rs      ← spec fn + exec fn + proof fn + tests
-src/bounds.rs          ← spec fn + exec fn + proof fn + tests
-src/collections.rs     ← spec fn + exec fn + tests (stdlib methods)
-src/option.rs          ← spec fn + exec fn + proof fn + tests
-docs/requirements.md   ← 10 tracey requirements
-scripts/verify.sh      ← full verification pipeline
-scripts/verus.sh       ← verus wrapper with nix store paths
+src/lib.rs              ← crate root, 34 module declarations
+src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
+docs/requirements.md    ← 193 tracey requirements
+scripts/verus.sh        ← verus wrapper with nix store paths
+scripts/verify.sh       ← full verification pipeline
+scripts/check-*.sh      ← annotation enforcement
 ```
+
+Each module follows the same pattern:
+
+1. `pub open spec fn *_spec(...)` — mathematical definition with `r[depends]` annotation
+2. `pub fn *(...)` with `ensures result == *_spec(args)` — runtime code with `r[impl]` annotation
+3. `proof fn` — properties of the spec with `r[verify]` annotation
+4. `#[cfg(test)]` — unit tests and proptest property tests
+
+## Trusted items
+
+7 functions are marked `#[verifier::external_body]` (Verus trusts the
+ensures clause without checking the body):
+
+- 2 in `chain` — blake3 hash modeled as an uninterpreted function with a determinism axiom
+- 1 in `hash_bucket` — `x & (n-1) == x % n` for power-of-two n exceeds Z3's 64-bit SAT rlimit
+- 3 in `rate_limit` — exec overflow detection (u64 division guards) can't be bridged to int-based specs
+- 1 in `properties` — int→u64→int cast chain through two spec functions
+
+All trusted items have proptest oracles verifying the same property at runtime.
