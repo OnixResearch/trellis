@@ -163,12 +163,126 @@ pub open spec fn concat_lists_spec(lists: Seq<Seq<u64>>) -> Seq<u64>
     }
 }
 
+/// Helper lemma: concat_lists_spec(lists.take(i+1)) ==
+///   concat_lists_spec(lists.take(i)) + lists[i]
+proof fn concat_lists_take_step(lists: Seq<Seq<u64>>, i: int)
+    requires 0 <= i < lists.len()
+    ensures concat_lists_spec(lists.take(i + 1))
+        =~= concat_lists_spec(lists.take(i)) + lists[i]
+    decreases i
+{
+    let curr = lists.take(i + 1);
+    let prev = lists.take(i);
+
+    if i == 0 {
+        assert(curr.len() == 1);
+        assert(curr[0] == lists[0]);
+        assert(prev.len() == 0);
+
+        // Explicitly unfold concat_lists_spec for prev (len == 0 → empty)
+        assert(concat_lists_spec(prev) =~= Seq::<u64>::empty());
+
+        // Explicitly unfold concat_lists_spec for curr (len == 1)
+        // Step 1: curr.subrange(1, 1) is empty
+        let curr_rest = curr.subrange(1, curr.len() as int);
+        assert(curr_rest.len() == 0);
+        assert(concat_lists_spec(curr_rest) =~= Seq::<u64>::empty());
+
+        // Step 2: concat_lists_spec(curr) = curr[0] + empty = lists[0] + empty
+        assert(concat_lists_spec(curr) =~= curr[0] + concat_lists_spec(curr_rest));
+        assert(concat_lists_spec(curr) =~= lists[0] + Seq::<u64>::empty());
+
+        // Step 3: lists[0] + empty =~= lists[0] =~= empty + lists[0]
+        assert(lists[0] + Seq::<u64>::empty() =~= lists[0]);
+        assert(Seq::<u64>::empty() + lists[0] =~= lists[0]);
+
+        // Combine: concat_lists_spec(curr) =~= lists[0] =~= concat_lists_spec(prev) + lists[0]
+        assert(concat_lists_spec(curr) =~= concat_lists_spec(prev) + lists[i]);
+    } else {
+        // Both curr and prev start with lists[0]
+        assert(curr[0] == lists[0]);
+        assert(prev[0] == lists[0]);
+
+        let curr_tail = curr.subrange(1, curr.len() as int);
+        let prev_tail = prev.subrange(1, prev.len() as int);
+
+        // Relate tails to subrange of original list
+        let sub = lists.subrange(1, lists.len() as int);
+        assert(curr_tail =~= sub.take(i));
+        assert(prev_tail =~= sub.take(i - 1));
+        assert(sub[i - 1] == lists[i]);
+
+        // IH on shifted list
+        concat_lists_take_step(sub, i - 1);
+        // Now: concat_lists_spec(sub.take(i)) =~= concat_lists_spec(sub.take(i-1)) + sub[i-1]
+        // i.e.: concat_lists_spec(curr_tail) =~= concat_lists_spec(prev_tail) + lists[i]
+
+        // Associativity of Seq +
+        let a: Seq<u64> = lists[0];
+        let b: Seq<u64> = concat_lists_spec(prev_tail);
+        let c: Seq<u64> = lists[i];
+        assert(a + (b + c) =~= (a + b) + c);
+    }
+}
+
+/// Helper lemma: concat_lists_spec of empty is empty.
+proof fn concat_lists_empty()
+    ensures concat_lists_spec(Seq::<Seq<u64>>::empty()) =~= Seq::<u64>::empty()
+{}
+
 // r[impl nix-list.concat-lists]
-#[verifier::external_body]
 pub fn concat_lists(lists: &Vec<Vec<u64>>) -> (result: Vec<u64>)
     ensures result@ == concat_lists_spec(lists@.map_values(|v: Vec<u64>| v@))
 {
-    lists.iter().flat_map(|l| l.iter().copied()).collect()
+    let mapped = Ghost(lists@.map_values(|v: Vec<u64>| v@));
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+
+    proof {
+        concat_lists_empty();
+        assert(mapped@.take(0) =~= Seq::<Seq<u64>>::empty());
+        assert(result@ =~= concat_lists_spec(mapped@.take(0int)));
+    }
+
+    while i < lists.len()
+        invariant
+            i <= lists.len(),
+            mapped@ == lists@.map_values(|v: Vec<u64>| v@),
+            result@ == concat_lists_spec(mapped@.take(i as int)),
+        decreases lists.len() - i,
+    {
+        let mut j: usize = 0;
+        let ghost prev_result = result@;
+        while j < lists[i].len()
+            invariant
+                i < lists.len(),
+                j <= lists[i as int].len(),
+                mapped@ == lists@.map_values(|v: Vec<u64>| v@),
+                result@ == prev_result + lists@[i as int]@.take(j as int),
+            decreases lists[i as int].len() - j,
+        {
+            result.push(lists[i][j]);
+            proof {
+                assert(lists@[i as int]@.take(j as int + 1) =~=
+                    lists@[i as int]@.take(j as int).push(lists@[i as int]@[j as int]));
+            }
+            j += 1;
+        }
+        proof {
+            assert(lists@[i as int]@.take(lists@[i as int]@.len() as int) =~= lists@[i as int]@);
+            assert(mapped@[i as int] == lists@[i as int]@);
+            assert(result@ == prev_result + mapped@[i as int]);
+            // prev_result == concat_lists_spec(mapped@.take(i))
+            // result@ == concat_lists_spec(mapped@.take(i)) + mapped@[i]
+            concat_lists_take_step(mapped@, i as int);
+            // Now: concat_lists_spec(mapped@.take(i + 1)) == concat_lists_spec(mapped@.take(i)) + mapped@[i]
+        }
+        i += 1;
+    }
+    proof {
+        assert(mapped@.take(lists@.len() as int) =~= mapped@);
+    }
+    result
 }
 
 // --- Proofs ---

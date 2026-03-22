@@ -24,12 +24,26 @@ pub open spec fn attr_names_spec(attrs: Seq<(Seq<u8>, u64)>) -> Seq<Seq<u8>> {
 
 // r[impl nix-attrset.attr-names]
 /// Returns the list of attribute names (keys).
-#[verifier::external_body]
 pub fn attr_names(attrs: &Vec<(Vec<u8>, u64)>) -> (result: Vec<Vec<u8>>)
     ensures result@.map_values(|v: Vec<u8>| v@) == attr_names_spec(
         attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
 {
-    attrs.iter().map(|(k, _)| k.clone()).collect()
+    let mapped_attrs = Ghost(attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    let mut result: Vec<Vec<u8>> = Vec::new();
+    let mut i: usize = 0;
+    while i < attrs.len()
+        invariant
+            i <= attrs.len(),
+            result.len() == i,
+            mapped_attrs@ == attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            forall|j: int| 0 <= j < i as int ==> (#[trigger] result@[j])@ == mapped_attrs@[j].0,
+        decreases attrs.len() - i,
+    {
+        result.push(attrs[i].0.clone());
+        i += 1;
+    }
+    assert(result@.map_values(|v: Vec<u8>| v@) =~= attr_names_spec(mapped_attrs@));
+    result
 }
 
 // --- attr_values ---
@@ -42,12 +56,26 @@ pub open spec fn attr_values_spec(attrs: Seq<(Seq<u8>, u64)>) -> Seq<u64> {
 
 // r[impl nix-attrset.attr-values]
 /// Returns the list of attribute values.
-#[verifier::external_body]
 pub fn attr_values(attrs: &Vec<(Vec<u8>, u64)>) -> (result: Vec<u64>)
     ensures result@ == attr_values_spec(
         attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
 {
-    attrs.iter().map(|(_, v)| *v).collect()
+    let mapped_attrs = Ghost(attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < attrs.len()
+        invariant
+            i <= attrs.len(),
+            result.len() == i,
+            mapped_attrs@ == attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            forall|j: int| 0 <= j < i as int ==> (#[trigger] result@[j]) == mapped_attrs@[j].1,
+        decreases attrs.len() - i,
+    {
+        result.push(attrs[i].1);
+        i += 1;
+    }
+    assert(result@ =~= attr_values_spec(mapped_attrs@));
+    result
 }
 
 // --- has_attr ---
@@ -60,12 +88,26 @@ pub open spec fn has_attr_spec(attrs: Seq<(Seq<u8>, u64)>, key: Seq<u8>) -> bool
 
 // r[impl nix-attrset.has-attr]
 /// Returns true if the attribute set contains the given key.
-#[verifier::external_body]
 pub fn has_attr(attrs: &Vec<(Vec<u8>, u64)>, key: &Vec<u8>) -> (result: bool)
     ensures result == has_attr_spec(
         attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)), key@)
 {
-    attrs.iter().any(|(k, _)| k == key)
+    let mapped_attrs = Ghost(attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    let mut i: usize = 0;
+    while i < attrs.len()
+        invariant
+            i <= attrs.len(),
+            mapped_attrs@ == attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            forall|j: int| 0 <= j < i as int ==> (#[trigger] mapped_attrs@[j]).0 != key@,
+        decreases attrs.len() - i,
+    {
+        if attrs[i].0 == *key {
+            assert(mapped_attrs@[i as int].0 == key@);
+            return true;
+        }
+        i += 1;
+    }
+    false
 }
 
 // --- get_attr ---
@@ -83,12 +125,39 @@ pub open spec fn get_attr_spec(attrs: Seq<(Seq<u8>, u64)>, key: Seq<u8>) -> Opti
 
 // r[impl nix-attrset.get-attr]
 /// Look up a value by key. Returns None if the key is absent.
-#[verifier::external_body]
+/// Note: the spec uses `choose`, so when multiple keys match, the
+/// result must equal whichever the solver picks. We add
+/// `is_sorted_keys` as a precondition so keys are unique, making
+/// `choose` unambiguous.
 pub fn get_attr(attrs: &Vec<(Vec<u8>, u64)>, key: &Vec<u8>) -> (result: Option<u64>)
+    requires is_sorted_keys(attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
     ensures result == get_attr_spec(
         attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)), key@)
 {
-    attrs.iter().find(|(k, _)| k == key).map(|(_, v)| *v)
+    let mapped_attrs = Ghost(attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    let mut i: usize = 0;
+    while i < attrs.len()
+        invariant
+            i <= attrs.len(),
+            mapped_attrs@ == attrs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            is_sorted_keys(mapped_attrs@),
+            forall|j: int| 0 <= j < i as int ==> (#[trigger] mapped_attrs@[j]).0 != key@,
+        decreases attrs.len() - i,
+    {
+        if attrs[i].0 == *key {
+            assert(mapped_attrs@[i as int].0 == key@);
+            // With is_sorted_keys, no other index has the same key,
+            // so choose must pick this index.
+            let chosen = Ghost(choose|ci: int| 0 <= ci < mapped_attrs@.len() as int && mapped_attrs@[ci].0 == key@);
+            assert(0 <= chosen@ < mapped_attrs@.len() as int);
+            assert(mapped_attrs@[chosen@].0 == key@);
+            // chosen@ != i as int would contradict uniqueness or the scanned prefix
+            assert(chosen@ == i as int);
+            return Some(attrs[i].1);
+        }
+        i += 1;
+    }
+    None
 }
 
 // --- merge (the // operator) ---
