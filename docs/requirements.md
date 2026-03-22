@@ -367,6 +367,24 @@ r[expiration.is-ttl-valid]
 is_ttl_valid(ttl_seconds, max_ttl) MUST return true if and only if
 ttl_seconds <= max_ttl.
 
+## Batch Limits
+
+r[batch.check-limits]
+check_limits MUST report whether adding an operation would exceed the
+entry count or byte size limit. An empty batch (zero entries) MUST
+never report exceeded — the first operation always fits.
+
+r[batch.flush-decision]
+flush_decision MUST return Immediate when the batch is full (entries or
+bytes), when batching is disabled (immediate mode), or when the batch
+is empty. MUST return Delayed when the batch has items but is not full
+and no flush is already scheduled. MUST return None when a flush is
+already scheduled.
+
+r[batch.op-size]
+op_size MUST return key_len + value_len, saturating at u64::MAX.
+delete_op_size MUST return key_len.
+
 ## Interval
 
 r[interval.contains]

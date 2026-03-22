@@ -12,6 +12,7 @@
 //!
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
+//! - `batch` — write batch limit checking and flush decisions
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
@@ -31,6 +32,7 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
 pub mod arithmetic;
+pub mod batch;
 pub mod bitmap;
 pub mod bitwise;
 pub mod bounds;

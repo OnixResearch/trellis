@@ -39,6 +39,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 |---|---|---|
 | `arithmetic` | `abs_diff`, `saturating_add`, `saturating_sub`, `checked_mul`, `gcd`, `div_ceil` | 10 |
 | `bitwise` | `is_power_of_two`, `bit_at`, `set_bit`, `clear_bit`, `toggle_bit` | 8 |
+| `batch` | `check_limits`, `flush_decision`, `op_size`, `delete_op_size` | 14 |
 | `bitmap` | `new`, `get`, `set`, `clear`, `toggle`, `len`, `word_count` | 9 |
 | `bounds` | `in_range`, `clamp` | 4 |
 | `cas` | `check_condition`, `check_cas`, `evaluate_conditions` | 10 |

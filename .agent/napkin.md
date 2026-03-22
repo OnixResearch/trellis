@@ -107,7 +107,15 @@
   - All proofs automatic — Z3 handles linear integer comparisons instantly
   - nonminimal_bool clippy lint suppressed — Verus needs explicit conjunctions
     in the adjacent spec for Z3 trigger matching
-- Total: 362 Verus proofs, 261 cargo tests, 118 requirements
+- Batch module added: check_limits, flush_decision, op_size, delete_op_size
+  - FlushDecision enum (Immediate/Delayed/None) with spec using int encoding
+    (1/2/0) — Verus can't match on enum variants in specs, use int proxy
+  - Empty batch invariant: check_limits(0, ...) always returns (false, false)
+  - if_same_then_else clippy lint suppressed — Verus needs explicit if-chain
+    for Z3 to match each branch to the correct spec case
+  - Lifecycle model oracle: simulate add/flush cycles, verify check_limits
+    and flush_decision agree with manual calculation at every step
+- Total: 376 Verus proofs, 273 cargo tests, 121 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
