@@ -149,13 +149,102 @@ pub open spec fn convergence_rounds_spec(cluster_size: u64, fanout: u64) -> u64
 }
 
 /// Spec: ceiling of log base `base` of `n`.
-/// Ceiling of log base `base` of `n`. Trusted: Z3 can't prove termination
-/// for integer division recursion. Verified by proptest.
-pub closed spec fn ceil_log_spec(n: u64, base: u64) -> u64;
+/// Uses fuel-bounded recursion for guaranteed termination.
+pub open spec fn ceil_log_spec(n: u64, base: u64) -> u64 {
+    ceil_log_helper(n, base, n as nat)
+}
+
+/// Fuel-bounded recursive helper. Fuel starts at n (sufficient since
+/// ceil(n/base) < n for n > 1, base >= 2).
+pub open spec fn ceil_log_helper(n: u64, base: u64, fuel: nat) -> u64
+    decreases fuel
+{
+    if fuel == 0 || n <= 1 {
+        0u64
+    } else {
+        let next = ((n as int - 1) / base as int + 1) as u64;
+        (1 + ceil_log_helper(next, base, (fuel - 1) as nat)) as u64
+    }
+}
+
+/// Helper: ceil_div(n, base) < n when n > 1, base >= 2.
+proof fn ceil_div_decreases(n: u64, base: u64)
+    requires n > 1, base >= 2
+    ensures ({
+        let next_int = (n as int - 1) / base as int + 1;
+        &&& 1 <= next_int < n as int
+        &&& next_int <= u64::MAX as int
+        &&& ((n as int - 1) / base as int + 1) as u64 == next_int as u64
+    })
+{
+    let ni = n as int;
+    let bi = base as int;
+    assert((ni - 1) / bi >= 0) by(nonlinear_arith)
+        requires ni > 1, bi >= 2;
+    assert((ni - 1) / bi < ni - 1) by(nonlinear_arith)
+        requires ni > 1, bi >= 2;
+    assert((ni - 1) / bi + 1 < ni) by(nonlinear_arith)
+        requires ni > 1, bi >= 2, (ni - 1) / bi < ni - 1;
+    assert((ni - 1) / bi + 1 >= 1) by(nonlinear_arith)
+        requires ni > 1, bi >= 2, (ni - 1) / bi >= 0;
+}
+
+/// Helper: extra fuel beyond what's needed doesn't change the result.
+proof fn ceil_log_helper_fuel_sufficient(n: u64, base: u64, fuel1: nat, fuel2: nat)
+    requires
+        base >= 2,
+        fuel1 >= n as nat,
+        fuel2 >= n as nat,
+    ensures ceil_log_helper(n, base, fuel1) == ceil_log_helper(n, base, fuel2)
+    decreases fuel1
+{
+    if n > 1 && fuel1 > 0 && fuel2 > 0 {
+        ceil_div_decreases(n, base);
+        let next = ((n as int - 1) / base as int + 1) as u64;
+        ceil_log_helper_fuel_sufficient(
+            next, base,
+            (fuel1 - 1) as nat,
+            (fuel2 - 1) as nat,
+        );
+    }
+}
+
+/// Helper: ceil_log result is bounded by n (so it fits in u64 and rounds don't overflow).
+proof fn ceil_log_bounded(n: u64, base: u64, fuel: nat)
+    requires base >= 2, fuel >= n as nat
+    ensures ceil_log_helper(n, base, fuel) <= n
+    decreases fuel
+{
+    if n > 1 && fuel > 0 {
+        ceil_div_decreases(n, base);
+        let next = ((n as int - 1) / base as int + 1) as u64;
+        ceil_log_bounded(next, base, (fuel - 1) as nat);
+    }
+}
+
+/// One-step unfolding: ceil_log(n, base) == 1 + ceil_log(ceil(n/base), base) for n > 1.
+proof fn ceil_log_unfold(n: u64, base: u64)
+    requires n > 1, base >= 2
+    ensures ({
+        let next = ((n as int - 1) / base as int + 1) as u64;
+        ceil_log_spec(n, base) as int == 1 + ceil_log_spec(next, base) as int
+    })
+{
+    ceil_div_decreases(n, base);
+    let next = ((n as int - 1) / base as int + 1) as u64;
+    // ceil_log_spec(n, base) = ceil_log_helper(n, base, n as nat)
+    // By definition: helper(n, base, n) = 1 + helper(next, base, n-1) (since n > 1, fuel > 0)
+    // Need: helper(next, base, n-1) == helper(next, base, next) = ceil_log_spec(next, base)
+    assert(next as nat <= (n as nat - 1) as nat);
+    ceil_log_helper_fuel_sufficient(next, base, (n as nat - 1) as nat, next as nat);
+    // Now need to show (1 + helper(next, base, n-1)) as u64 == 1 + ceil_log_spec(next, base)
+    // i.e., the as-u64 cast is lossless
+    ceil_log_bounded(next, base, next as nat);
+    ceil_log_bounded(n, base, n as nat);
+}
 
 // r[impl gossip.convergence-rounds]
 /// Returns the number of gossip rounds needed for full infection.
-#[verifier::external_body]
 pub fn convergence_rounds(cluster_size: u64, fanout: u64) -> (result: u64)
     requires cluster_size > 0, fanout >= 2
     ensures result == convergence_rounds_spec(cluster_size, fanout)
@@ -163,11 +252,27 @@ pub fn convergence_rounds(cluster_size: u64, fanout: u64) -> (result: u64)
     if cluster_size <= 1 {
         return 0;
     }
-    let mut n = cluster_size;
+    let mut n: u64 = cluster_size;
     let mut rounds: u64 = 0;
-    while n > 1 {
-        n = (n + fanout - 1) / fanout;
-        rounds += 1;
+    while n > 1
+        invariant
+            1 <= n <= cluster_size,
+            fanout >= 2,
+            rounds as int + ceil_log_spec(n, fanout) as int
+                == ceil_log_spec(cluster_size, fanout) as int,
+            rounds <= cluster_size,
+        decreases n,
+    {
+        proof {
+            ceil_log_unfold(n, fanout);
+            ceil_log_bounded(cluster_size, fanout, cluster_size as nat);
+            ceil_div_decreases(n, fanout);
+        }
+        // ceil(n / fanout) = (n - 1) / fanout + 1
+        // Use subtraction first to avoid u64 overflow on n + fanout - 1
+        let next = (n - 1) / fanout + 1;
+        n = next;
+        rounds = rounds + 1;
     }
     rounds
 }
