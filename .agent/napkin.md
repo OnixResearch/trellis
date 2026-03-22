@@ -91,7 +91,15 @@
     is_expired_opt uses >= (key: expired AT boundary) — matches aspen's distinction
   - Lifecycle model oracle: create expiration, advance time in steps, check
     is_expired and time_remaining agree at every point
-- Total: 326 Verus proofs, 240 cargo tests, 109 requirements
+- CAS module added: check_condition, check_cas, evaluate_conditions
+  - Abstracted over value types — uses (condition_type, is_some, values_equal) booleans
+    instead of string/byte references, keeping module generic
+  - evaluate_conditions uses direct postconditions (first-failure index + all-prior-pass)
+    like find_first and mismatch_index patterns
+  - Inductive proof over quantified sequences failed (all_exists_present) — Z3 can't
+    handle forall over Seq combined with recursive spec. Dropped in favor of model oracle.
+  - KEY_EXISTS and KEY_NOT_EXISTS proved to be complements
+- Total: 341 Verus proofs, 248 cargo tests, 112 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

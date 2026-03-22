@@ -41,6 +41,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bitwise` | `is_power_of_two`, `bit_at`, `set_bit`, `clear_bit`, `toggle_bit` | 8 |
 | `bitmap` | `new`, `get`, `set`, `clear`, `toggle`, `len`, `word_count` | 9 |
 | `bounds` | `in_range`, `clamp` | 4 |
+| `cas` | `check_condition`, `check_cas`, `evaluate_conditions` | 10 |
 | `conversion` | `narrow_u32`, `narrow_u16`, `narrow_u8`, `signed_to_unsigned`, `unsigned_to_signed` | 18 |
 | `integer` | `is_even`, `is_odd`, `align_down`, `align_up`, `log2_floor`, `next_power_of_two` | 20 |
 | `log` | `agree_at`, `logs_match_prefix`, `log_append`, `log_truncate` | 13 |

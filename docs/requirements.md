@@ -367,6 +367,24 @@ r[expiration.is-ttl-valid]
 is_ttl_valid(ttl_seconds, max_ttl) MUST return true if and only if
 ttl_seconds <= max_ttl.
 
+## Compare-and-Swap
+
+r[cas.check-condition]
+check_condition MUST evaluate a typed condition against a current value:
+VALUE_EQUALS succeeds when current matches expected, KEY_EXISTS succeeds
+when current is Some, KEY_NOT_EXISTS succeeds when current is None.
+Unknown condition types MUST return false.
+
+r[cas.check-cas]
+check_cas MUST return true if and only if expected and current match:
+both None, or both Some with equal values. Any other combination MUST
+return false.
+
+r[cas.evaluate-conditions]
+evaluate_conditions MUST check conditions in order, returning the index
+of the first failure. If all conditions pass, MUST return all-met.
+An empty condition list MUST return all-met.
+
 ## Bitmap
 
 r[bitmap.new]

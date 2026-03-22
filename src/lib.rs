@@ -14,6 +14,7 @@
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bounds` — range predicates, clamping
+//! - `cas` — compare-and-swap condition evaluation
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
@@ -32,6 +33,7 @@ pub mod arithmetic;
 pub mod bitmap;
 pub mod bitwise;
 pub mod bounds;
+pub mod cas;
 pub mod collections;
 pub mod conversion;
 pub mod epoch;
