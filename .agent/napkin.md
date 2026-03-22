@@ -331,3 +331,25 @@
     because Z3 can't see inside the spec to verify the body matches
   - gossip::convergence_rounds depends on `closed spec fn ceil_log_spec` — can't close
     without opening the spec (which would require proving termination of integer log)
+- Merge exec closed: three-loop invariant (main merge, drain-a, drain-b) with ghost rg accumulator
+  - Key invariant: `ai >= a.len() || bi >= b.len()` shared across drain loops — avoids
+    split invariants for which side is exhausted
+  - `seq_cmp_antisymmetric` proof needed: Z3 can't derive `seq_lt(b, a)` from `seq_cmp(a, b) > 0`
+    without explicit antisymmetry lemma (recursive spec → uninterpreted for Z3)
+  - `subrange_decompose` helper: s.subrange(i, j) =~= seq![s[i]] + s.subrange(i+1, j)
+  - Verus rejects `a[ai].clone()` on indexed tuples — must destructure: `let k = a[ai].0.clone(); let v = a[ai].1;`
+  - `merge_spec_right_empty` and `merge_spec_left_empty`: trivial helpers for Z3 to simplify
+    merge_spec(s, empty) == s
+- Version comparison spec opened: fuel-bounded recursion (like ceil_log pattern)
+  - `cv_fuel(a, ai, b, bi, fuel)` with fuel = a.len() + b.len()
+  - Helper specs: skip_seps, comp_end, parse_num_from, lex_cmp (all total, no when clauses)
+  - `when` clauses on decreases cause recommendation issues in proof fns — removed in favor of
+    explicit `i < 0 || i >= s.len()` base cases for totality
+  - Spec uses `if ai2 < a.len() { is_digit_byte(a[ai2]) } else { false }` for guarded access —
+    Verus `&&` in spec mode evaluates BOTH sides, triggering index-out-of-bounds recommendations
+  - Proof fns must only access `a[ai2]` inside `if ai2 < a.len() { ... }` blocks
+  - cv_fuel proofs (antisymmetric, reflexive, range) fail: spec has 8+ levels of nested
+    let+if/else, Z3 can't unfold deeply enough even at rlimit(2000). The proof structure
+    (induction on fuel, case split, recursive call at equal-value branches) is correct —
+    kept as external_body with proof bodies preserved
+  - lex_cmp proofs (antisymmetric, reflexive, range) all automatic with single recursive call

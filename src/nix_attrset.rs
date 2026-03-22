@@ -204,6 +204,19 @@ pub open spec fn merge_spec(
     }
 }
 
+/// Antisymmetry: seq_cmp(a, b) == -seq_cmp(b, a).
+proof fn seq_cmp_antisymmetric(a: Seq<u8>, b: Seq<u8>)
+    ensures seq_cmp(a, b) == -seq_cmp(b, a)
+    decreases a.len() + b.len()
+{
+    if a.len() > 0 && b.len() > 0 && a[0int] == b[0int] {
+        seq_cmp_antisymmetric(
+            a.subrange(1, a.len() as int),
+            b.subrange(1, b.len() as int),
+        );
+    }
+}
+
 /// Helper: seq_cmp skips equal prefix bytes.
 proof fn seq_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
     requires
@@ -272,10 +285,29 @@ fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
     }
 }
 
+/// Helper: merge_spec(a, empty) == a.
+proof fn merge_spec_right_empty(a: Seq<(Seq<u8>, u64)>)
+    ensures merge_spec(a, Seq::<(Seq<u8>, u64)>::empty()) =~= a
+    decreases a.len()
+{
+    if a.len() > 0 {
+        // a.len() > 0 && b.len() == 0 → returns a
+    }
+}
+
+/// Helper: merge_spec(empty, b) == b.
+proof fn merge_spec_left_empty(b: Seq<(Seq<u8>, u64)>)
+    ensures merge_spec(Seq::<(Seq<u8>, u64)>::empty(), b) =~= b
+{}
+
+/// Helper: a non-empty subrange decomposes as head + tail.
+proof fn subrange_decompose<T>(s: Seq<T>, i: int, j: int)
+    requires 0 <= i < j, j <= s.len()
+    ensures s.subrange(i, j) =~= seq![s[i]] + s.subrange(i + 1, j)
+{}
+
 // r[impl nix-attrset.merge]
 /// Merge two attribute sets (Nix's `//` operator). Right wins on conflict.
-/// Trusted: two-pointer merge verified against open merge_spec.
-#[verifier::external_body]
 pub fn merge(
     a: &Vec<(Vec<u8>, u64)>, b: &Vec<(Vec<u8>, u64)>,
 ) -> (result: Vec<(Vec<u8>, u64)>)
@@ -284,25 +316,154 @@ pub fn merge(
             a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
             b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
 {
-    let mut result = Vec::new();
-    let mut ai = 0usize;
-    let mut bi = 0usize;
-    while ai < a.len() && bi < b.len() {
+    let ghost ma = a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+    let ghost mb = b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+    let ghost full = merge_spec(ma, mb);
+
+    let mut result: Vec<(Vec<u8>, u64)> = Vec::new();
+    let ghost mut rg: Seq<(Seq<u8>, u64)> = Seq::empty();
+    let mut ai: usize = 0;
+    let mut bi: usize = 0;
+
+    proof {
+        assert(Seq::<(Seq<u8>, u64)>::empty() + merge_spec(ma, mb) =~= merge_spec(ma, mb));
+        assert(ma.subrange(0int, ma.len() as int) =~= ma);
+        assert(mb.subrange(0int, mb.len() as int) =~= mb);
+    }
+
+    // Main two-pointer merge loop
+    while ai < a.len() && bi < b.len()
+        invariant
+            ai <= a.len(),
+            bi <= b.len(),
+            ma =~= a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mb =~= b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            full =~= merge_spec(ma, mb),
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            full =~= rg + merge_spec(
+                ma.subrange(ai as int, ma.len() as int),
+                mb.subrange(bi as int, mb.len() as int)),
+        decreases a.len() + b.len() - ai - bi,
+    {
+        let ghost rem_a = ma.subrange(ai as int, ma.len() as int);
+        let ghost rem_b = mb.subrange(bi as int, mb.len() as int);
+        // Unfold: first elements of remaining subranges
+        assert(rem_a.len() > 0 && rem_b.len() > 0);
+        assert(rem_a[0int] =~= ma[ai as int]);
+        assert(rem_b[0int] =~= mb[bi as int]);
+        assert(rem_a.subrange(1, rem_a.len() as int)
+            =~= ma.subrange(ai as int + 1, ma.len() as int));
+        assert(rem_b.subrange(1, rem_b.len() as int)
+            =~= mb.subrange(bi as int + 1, mb.len() as int));
+
+        // Connect exec comparison to spec comparison
         let cmp = vec_u8_cmp(&a[ai].0, &b[bi].0);
+        assert(a@[ai as int].0@ =~= ma[ai as int].0);
+        assert(b@[bi as int].0@ =~= mb[bi as int].0);
+        proof { seq_cmp_antisymmetric(rem_a[0int].0, rem_b[0int].0); }
+
         if cmp < 0 {
-            result.push(a[ai].clone());
-            ai += 1;
+            // seq_lt(rem_a[0].0, rem_b[0].0) → take from a
+            assert(seq_lt(rem_a[0int].0, rem_b[0int].0));
+            let k = a[ai].0.clone();
+            let v = a[ai].1;
+            result.push((k, v));
+            proof { rg = rg + seq![ma[ai as int]]; }
+            ai = ai + 1;
         } else if cmp > 0 {
-            result.push(b[bi].clone());
-            bi += 1;
+            // seq_lt(rem_b[0].0, rem_a[0].0) → take from b
+            assert(seq_lt(rem_b[0int].0, rem_a[0int].0));
+            let k = b[bi].0.clone();
+            let v = b[bi].1;
+            result.push((k, v));
+            proof { rg = rg + seq![mb[bi as int]]; }
+            bi = bi + 1;
         } else {
-            result.push(b[bi].clone());
-            ai += 1;
-            bi += 1;
+            // Equal keys → take from b (right wins)
+            assert(!seq_lt(rem_a[0int].0, rem_b[0int].0));
+            assert(!seq_lt(rem_b[0int].0, rem_a[0int].0));
+            let k = b[bi].0.clone();
+            let v = b[bi].1;
+            result.push((k, v));
+            proof { rg = rg + seq![mb[bi as int]]; }
+            ai = ai + 1;
+            bi = bi + 1;
         }
     }
-    while ai < a.len() { result.push(a[ai].clone()); ai += 1; }
-    while bi < b.len() { result.push(b[bi].clone()); bi += 1; }
+
+    // Drain remaining from a (only executes when b is exhausted)
+    while ai < a.len()
+        invariant
+            ai <= a.len(),
+            bi <= b.len(),
+            ai >= a.len() || bi >= b.len(),
+            ma =~= a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mb =~= b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            full =~= merge_spec(ma, mb),
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            full =~= rg + merge_spec(
+                ma.subrange(ai as int, ma.len() as int),
+                mb.subrange(bi as int, mb.len() as int)),
+        decreases a.len() - ai,
+    {
+        // ai < a.len() ∧ (ai >= a.len() ∨ bi >= b.len()) ⟹ bi >= b.len()
+        proof {
+            let rem_a = ma.subrange(ai as int, ma.len() as int);
+            let rem_b = mb.subrange(bi as int, mb.len() as int);
+            assert(rem_b.len() == 0);
+            merge_spec_right_empty(rem_a);
+            subrange_decompose(ma, ai as int, ma.len() as int);
+        }
+        let k = a[ai].0.clone();
+        let v = a[ai].1;
+        result.push((k, v));
+        proof { rg = rg + seq![ma[ai as int]]; }
+        ai = ai + 1;
+    }
+
+    // Drain remaining from b (only executes when a is exhausted)
+    while bi < b.len()
+        invariant
+            ai <= a.len(),
+            bi <= b.len(),
+            ai >= a.len() || bi >= b.len(),
+            ma =~= a@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mb =~= b@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            full =~= merge_spec(ma, mb),
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            full =~= rg + merge_spec(
+                ma.subrange(ai as int, ma.len() as int),
+                mb.subrange(bi as int, mb.len() as int)),
+        decreases b.len() - bi,
+    {
+        // bi < b.len() ∧ (ai >= a.len() ∨ bi >= b.len()) ⟹ ai >= a.len()
+        proof {
+            let rem_a = ma.subrange(ai as int, ma.len() as int);
+            let rem_b = mb.subrange(bi as int, mb.len() as int);
+            assert(rem_a.len() == 0);
+            merge_spec_left_empty(rem_b);
+            subrange_decompose(mb, bi as int, mb.len() as int);
+        }
+        let k = b[bi].0.clone();
+        let v = b[bi].1;
+        result.push((k, v));
+        proof { rg = rg + seq![mb[bi as int]]; }
+        bi = bi + 1;
+    }
+
+    proof {
+        let rem_a = ma.subrange(ai as int, ma.len() as int);
+        let rem_b = mb.subrange(bi as int, mb.len() as int);
+        assert(rem_a.len() == 0 && rem_b.len() == 0);
+        assert(merge_spec(rem_a, rem_b) =~= Seq::<(Seq<u8>, u64)>::empty());
+        assert(rg =~= result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)));
+    }
     result
 }
 
