@@ -17,8 +17,12 @@
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
+//! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
+//! - `causal_order` — causal delivery and consistent snapshots
+//! - `consistent_hash` — consistent hash ring with complete coverage
+//! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
 //! - `chain` — chain hash integrity with append-preserves proof
@@ -31,6 +35,7 @@
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
 //! - `fencing` — fencing tokens for stale-write rejection
+//! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `integer` — parity, alignment, log2, next-power-of-two
@@ -63,7 +68,11 @@ pub mod ballot;
 pub mod batch;
 pub mod bitmap;
 pub mod bitwise;
+pub mod bloom;
 pub mod bounded_range;
+pub mod causal_order;
+pub mod consistent_hash;
+pub mod crdt;
 pub mod bounds;
 pub mod cas;
 pub mod chain;
@@ -77,6 +86,7 @@ pub mod epoch;
 pub mod eviction;
 pub mod expiration;
 pub mod fencing;
+pub mod gossip;
 pub mod hash_bucket;
 pub mod integer;
 pub mod interval;

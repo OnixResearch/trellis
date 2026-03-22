@@ -38,19 +38,19 @@
 
 ## Phase 4: CRDTs
 
-- [ ] Add CRDT requirements to docs/requirements.md (G-Counter, PN-Counter, LWW-Register merge laws)
-- [ ] Implement src/crdt.rs: GCounter<N> struct, merge spec+exec, value spec+exec, increment spec+exec
-- [ ] Prove g_counter_merge_commutative, g_counter_merge_associative, g_counter_merge_idempotent
-- [ ] Prove g_counter_value_monotonic: increment increases value by 1
-- [ ] Prove g_counter_merge_dominates: value(merge(a, b)) >= value(a)
-- [ ] Implement PNCounter<N>: increment spec+exec, decrement spec+exec, merge spec+exec, value spec+exec
-- [ ] Prove pn_counter_merge_laws (commutativity, associativity, idempotency)
-- [ ] Prove pn_counter_increment_decrement_inverse
-- [ ] Implement LWWRegister: merge spec+exec based on timestamp comparison
-- [ ] Prove lww_merge_commutative, lww_merge_associative, lww_merge_idempotent
-- [ ] Prove lww_higher_timestamp_wins
-- [ ] Unit tests + proptest for all three types
-- [ ] Verus + tracey clean
+- [x] Add CRDT requirements to docs/requirements.md (G-Counter, PN-Counter, LWW-Register merge laws) ✅
+- [x] Implement src/crdt.rs: GCounter<N> struct, merge spec+exec, value spec+exec, increment spec+exec ✅
+- [x] Prove g_counter_merge_commutative, g_counter_merge_associative, g_counter_merge_idempotent ✅
+- [x] Prove g_counter_value_monotonic: increment increases value by 1 ✅
+- [x] Prove g_counter_merge_dominates: value(merge(a, b)) >= value(a) ✅
+- [x] Implement PNCounter<N>: increment spec+exec, decrement spec+exec, merge spec+exec, value spec+exec ✅
+- [x] Prove pn_counter_merge_laws (commutativity, associativity, idempotency) ✅
+- [x] Prove pn_counter_increment_decrement_inverse ✅
+- [x] Implement LWWRegister: merge spec+exec based on timestamp comparison ✅
+- [x] Prove lww_merge_commutative, lww_merge_associative, lww_merge_idempotent ✅
+- [x] Prove lww_higher_timestamp_wins ✅
+- [x] Unit tests + proptest for all three types ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 5: Lease Disjointness
 
@@ -86,14 +86,14 @@
 
 ## Phase 8: Consistent Hashing
 
-- [ ] Add consistent_hash requirements to docs/requirements.md (complete coverage, minimal disruption)
-- [ ] Implement src/consistent_hash.rs: lookup spec+exec over sorted ring array
-- [ ] Prove complete_coverage: non-empty ring ==> lookup always returns a valid node
-- [ ] Prove minimal_disruption_add: adding a node changes at most one key's assignment
-- [ ] Prove minimal_disruption_remove: removing a node reassigns keys to successor only
-- [ ] Cross-module: consistent_hash lookup → collections::binary_search
-- [ ] Unit tests + proptest (random rings, add/remove stability)
-- [ ] Verus + tracey clean
+- [x] Add consistent_hash requirements to docs/requirements.md (complete coverage, minimal disruption) ✅
+- [x] Implement src/consistent_hash.rs: lookup spec+exec over sorted ring array ✅
+- [x] Prove complete_coverage: non-empty ring ==> lookup always returns a valid node ✅
+- [x] Prove minimal_disruption_add: adding a node changes at most one key's assignment ✅
+- [x] Prove minimal_disruption_remove: removing a node reassigns keys to successor only ✅
+- [x] Cross-module: consistent_hash lookup → collections::binary_search ✅
+- [x] Unit tests + proptest (random rings, add/remove stability) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 9: Backoff
 
@@ -107,13 +107,13 @@
 
 ## Phase 10: Bloom Filter
 
-- [ ] Add bloom requirements to docs/requirements.md (no false negatives, monotonic membership)
-- [ ] Implement src/bloom.rs: BloomFilter struct with bitmap, insert spec+exec, query spec+exec
-- [ ] Prove no_false_negatives: insert(x) ==> query(x) == true
-- [ ] Prove monotonic_membership: insert(y) preserves query(x) for previously inserted x
-- [ ] Cross-module: bloom bit operations → bitmap::get, bitmap::set
-- [ ] Unit tests + proptest (random insert/query sequences)
-- [ ] Verus + tracey clean
+- [x] Add bloom requirements to docs/requirements.md (no false negatives, monotonic membership) ✅
+- [x] Implement src/bloom.rs: BloomFilter struct with bitmap, insert spec+exec, query spec+exec ✅
+- [x] Prove no_false_negatives: insert(x) ==> query(x) == true ✅
+- [x] Prove monotonic_membership: insert(y) preserves query(x) for previously inserted x ✅
+- [x] Cross-module: bloom bit operations → bitmap::get, bitmap::set ✅
+- [x] Unit tests + proptest (random insert/query sequences) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 11: Merkle Proofs
 
@@ -127,25 +127,25 @@
 
 ## Phase 12: Gossip Bounds
 
-- [ ] Add gossip requirements to docs/requirements.md (infection lower bound, convergence)
-- [ ] Implement src/gossip.rs: infection_lower_bound spec+exec, convergence_rounds spec+exec
-- [ ] Prove infection_monotonic: more rounds ==> more infected (or saturated at n)
-- [ ] Prove convergence_bound: ceil_log_f(n) rounds suffice
-- [ ] Unit tests + proptest (various fanout/cluster sizes)
-- [ ] Verus + tracey clean
+- [x] Add gossip requirements to docs/requirements.md (infection lower bound, convergence) ✅
+- [x] Implement src/gossip.rs: infection_lower_bound spec+exec, convergence_rounds spec+exec ✅
+- [x] Prove infection_monotonic: more rounds ==> more infected (or saturated at n) ✅
+- [x] Prove convergence_bound: ceil_log_f(n) rounds suffice ✅
+- [x] Unit tests + proptest (various fanout/cluster sizes) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 13: Causal Order and Snapshots
 
-- [ ] Add causal_order requirements to docs/requirements.md (causal delivery, concurrent independence)
-- [ ] Implement src/causal_order.rs: is_causally_ready spec+exec, can_deliver spec+exec
-- [ ] Prove causal_delivery: happens_before(m1, m2) ==> m1 delivered before m2
-- [ ] Cross-module: causal_order → vector_clock::happens_before
-- [ ] Add snapshot requirements to docs/requirements.md (consistent cut, cut lattice)
-- [ ] Implement src/snapshot.rs: is_consistent_cut spec+exec, cut_join spec+exec
-- [ ] Prove consistent_cut_join: join of two consistent cuts is consistent
-- [ ] Cross-module: snapshot cut → vector_clock (component-wise max)
-- [ ] Unit tests + proptest for both modules
-- [ ] Verus + tracey clean
+- [x] Add causal_order requirements to docs/requirements.md (causal delivery, concurrent independence) ✅
+- [x] Implement src/causal_order.rs: is_causally_ready spec+exec, can_deliver spec+exec ✅
+- [x] Prove causal_delivery: happens_before(m1, m2) ==> m1 delivered before m2 ✅
+- [x] Cross-module: causal_order → vector_clock::happens_before ✅
+- [x] Add snapshot requirements to docs/requirements.md (consistent cut, cut lattice) ✅
+- [x] Implement src/snapshot.rs: is_consistent_cut spec+exec, cut_join spec+exec ✅
+- [x] Prove consistent_cut_join: join of two consistent cuts is consistent ✅
+- [x] Cross-module: snapshot cut → vector_clock (component-wise max) ✅
+- [x] Unit tests + proptest for both modules ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 14: Cross-Module Properties
 

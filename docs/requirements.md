@@ -1142,3 +1142,52 @@ compute_backoff MUST return min(base * 2^attempt, cap). If base is 0, the result
 
 r[backoff.jitter-range]
 jitter_range MUST return (0, backoff_value). The lower bound MUST be 0 and the upper bound MUST equal the backoff value.
+
+## CRDT
+
+r[crdt.g-counter-merge]
+G-Counter merge MUST return a counter where each component is the maximum of the corresponding components from both inputs. Merge MUST be commutative, associative, and idempotent.
+
+r[crdt.g-counter-value]
+G-Counter value MUST return the sum of all components. The value MUST be monotonic: merge or increment operations never decrease the value.
+
+r[crdt.g-counter-increment]
+G-Counter increment MUST increase the component at the given node_id by 1. The component MUST be less than u64::MAX (precondition). Only the specified component changes.
+
+r[crdt.pn-counter-merge]
+PN-Counter merge MUST merge the positive and negative G-Counters independently. The result MUST preserve the merge properties: commutativity, associativity, idempotency.
+
+r[crdt.lww-merge]
+LWW-Register merge MUST return the register with the higher timestamp. When timestamps are equal, the merge MUST be deterministic (e.g., by comparing values). Merge MUST be commutative, associative, and idempotent.
+
+## Bloom Filter
+
+r[bloom.insert]
+Bloom filter insert MUST set all hash-derived bit positions for the key to 1. The operation MUST be idempotent - inserting the same key multiple times has no additional effect.
+
+r[bloom.query]
+Bloom filter query MUST return true if all hash-derived bit positions for the key are set. MUST guarantee no false negatives: if insert(key) was called, query(key) MUST return true.
+
+## Consistent Hashing
+
+r[consistent-hash.lookup]
+Consistent hash lookup MUST return the first node in the ring whose hash position is >= the key hash (wrapping to first node if no such node exists). Empty rings MUST NOT be allowed.
+
+## Gossip
+
+r[gossip.infection-lower-bound]
+Gossip infection MUST spread to at least (fanout^rounds) nodes, capped at total population. The infection MUST be monotonic - more rounds never reduce the infected count.
+
+r[gossip.convergence-rounds]
+Gossip convergence MUST complete within ceil(log_fanout(n)) rounds for full infection of n nodes. The bound MUST account for the fanout parameter and network size.
+
+## Causal Order
+
+r[causal-order.is-causally-ready]
+A message is causally ready if its vector timestamp is <= the recipient's vector clock plus 1 at the sender position. This ensures causal delivery order.
+
+r[causal-order.is-consistent-cut]
+A cut is consistent if for any event in the cut, all causally preceding events are also in the cut. Uses vector clock happens-before relation.
+
+r[causal-order.cut-join]
+Cut join MUST return the component-wise maximum (vector clock merge) of two cuts. The result preserves consistency if both inputs are consistent cuts.
