@@ -117,13 +117,13 @@
 
 ## Phase 11: Merkle Proofs
 
-- [ ] Add merkle requirements to docs/requirements.md (inclusion verification, proof length)
-- [ ] Implement src/merkle.rs: verify_proof spec+exec using chain module hash axiom
-- [ ] Prove valid_proof_accepted: correct leaf + correct siblings → root matches
-- [ ] Prove proof_length: siblings.len() == ceil_log2(tree_size)
-- [ ] Cross-module: merkle hash → chain::hash_spec, proof_length → integer::log2
-- [ ] Unit tests + proptest (random trees, tampered proofs)
-- [ ] Verus + tracey clean
+- [x] Add merkle requirements to docs/requirements.md (inclusion verification, proof length) ✅
+- [x] Implement src/merkle.rs: verify_proof spec+exec using chain module hash axiom ✅
+- [x] Prove valid_proof_accepted: correct leaf + correct siblings → root matches ✅
+- [x] Prove proof_length: siblings.len() == ceil_log2(tree_size) ✅
+- [x] Cross-module: merkle hash → chain::hash_spec, proof_length → integer::log2 ✅
+- [x] Unit tests + proptest (random trees, tampered proofs) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 12: Gossip Bounds
 
@@ -149,14 +149,14 @@
 
 ## Phase 14: Cross-Module Properties
 
-- [ ] vector_clock::merge component ↔ ordering::max (pointwise)
-- [ ] ballot::winner → quorum::is_quorum (election safety)
-- [ ] fencing::is_valid → monotonic::is_advance (token ordering)
-- [ ] lease::disjoint → interval::overlaps (time intervals)
-- [ ] two_phase::can_commit ↔ collections::find_first (first no-vote)
-- [ ] backoff::compute ↔ integer::next_power_of_two (exponential)
-- [ ] merkle::proof_length ↔ integer::log2 (tree depth)
-- [ ] bloom::no_false_negatives → bitmap::get (bit membership)
-- [ ] snapshot::cut_join → vector_clock::merge (lattice = merge)
-- [ ] All property tests passing
-- [ ] Verus + tracey clean
+- [x] vector_clock::merge component ↔ ordering::max (pointwise) ✅
+- [x] ballot::winner → quorum::is_quorum (election safety) ✅
+- [x] fencing::is_valid → monotonic::is_advance (token ordering) ✅
+- [x] lease::disjoint → interval::overlaps (time intervals) ✅
+- [x] two_phase::can_commit ↔ collections::find_first (first no-vote) ✅
+- [x] backoff::compute ↔ integer::next_power_of_two (exponential) ✅
+- [x] merkle::proof_length ↔ integer::log2 (tree depth) ✅
+- [x] bloom::no_false_negatives → bitmap::get (bit membership) ✅
+- [x] snapshot::cut_join → vector_clock::merge (lattice = merge) ✅
+- [x] All property tests passing ✅
+- [x] Verus + tracey clean ✅
