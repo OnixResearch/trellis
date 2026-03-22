@@ -4,9 +4,10 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 21 Verus proofs + 25 cargo tests (10 unit + 15 property) = all gates green
+- 949 Verus proofs + 663 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
+- 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
@@ -306,3 +307,27 @@
   - `assign_bucket_pow2_equivalent` proof: marked as `#[verifier::external_body]` (modular/bitwise equivalence known hard)
   - Runtime tests verify the mathematical identities empirically (x & (n-1) < n, x & (n-1) == x % n for power-of-two n)
   - These are known Z3/bit_vector limitations, not logic errors — the math is sound, verified by tests
+- Closing external_body gaps (34 → 17):
+  - bloom::query: while loop with ghost `map_values` tracking, `positions@.map_values` needs
+    to be captured as Ghost variable for loop invariant reference
+  - consistent_hash::lookup: key insight is `first_ge_index_helper(ring, kh, 0) == first_ge_index_helper(ring, kh, i)`
+    as loop invariant — proving the recursive spec "skips" scanned elements
+  - crdt::g_counter_value: needs THREE helper lemmas — take_lemma (take(i+1) decomposition),
+    nonneg (sum >= 0), prefix_le (partial sum <= total) for overflow bounds
+  - backoff::compute_backoff: vstd `lemma_mul_is_associative` and `lemma_mul_is_commutative`
+    needed for connecting iterative doubling to recursive pow2 spec
+  - merkle::verify_proof: `verify_proof_unfold` helper proves one-step spec unfolding via
+    `=~=` on subrange equality; switched runtime hash to `compute_entry_hash`
+  - bloom::insert_monotonic: requires `insert_preserves_len` helper lemma — Seq::update
+    axioms (axiom_seq_update_same, axiom_seq_update_different) require 0 <= i < s.len(),
+    so must prove insert_spec doesn't change length before reasoning about element values
+  - bloom::no_false_negatives: split into `no_false_negatives_helper(bits, positions, i)`
+    which proves individual position i is set, then wrap with forall
+  - properties::prove_sequential_chunk_continuation: Z3 can't prove `(index+1) as u64 as int == index+1`
+    without explicit `by(nonlinear_arith)` showing `index+1 <= u64::MAX` from the requires
+  - nix_attrset::get_attr: added `requires is_sorted_keys(...)` to disambiguate `choose`
+    operator — without key uniqueness, choose picks arbitrary matching index
+  - Closed spec fns (merge_spec, remove_attrs_spec, etc.) cannot have external_body closed
+    because Z3 can't see inside the spec to verify the body matches
+  - gossip::convergence_rounds depends on `closed spec fn ceil_log_spec` — can't close
+    without opening the spec (which would require proving termination of integer log)
