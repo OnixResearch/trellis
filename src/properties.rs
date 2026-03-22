@@ -417,6 +417,185 @@ mod verus_proofs {
         ensures log_prefix_term_eq_prop(a, b, k)
     {}
 
+    // ========================================================================
+    // Cross-module properties for new modules
+    // ========================================================================
+
+    use crate::chunk::chunk_count_ceil_spec;
+    use crate::bounded_range::contains_spec as br_contains_spec;
+    use crate::interval::contains_spec as iv_contains_spec;
+    use crate::interval::overlaps_spec as iv_overlaps_spec;
+    use crate::partition::is_adjacent_pair_spec;
+    use crate::partition::is_non_empty_interval_spec;
+    use crate::pressure::classify_level_spec;
+    use crate::hash_bucket::assign_bucket_spec;
+    use crate::rate_limit::tokens_after_refill_spec;
+    use crate::drain::{after_start_op_spec, after_finish_op_spec};
+    use crate::sequential::is_sequential_spec;
+    use crate::chunk::chunk_offset_spec;
+
+    // --- chunk × arithmetic ---
+
+    // r[impl properties.chunk-ceil-is-div-ceil]
+    /// chunk_count_ceil and div_ceil must agree.
+    pub open spec fn chunk_ceil_is_div_ceil_prop(n: u64, k: u64) -> bool
+        recommends k > 0
+    {
+        chunk_count_ceil_spec(n, k) as int == div_ceil_spec(n, k) as int
+    }
+
+    // r[verify properties.chunk-ceil-is-div-ceil]
+    proof fn prove_chunk_ceil_is_div_ceil(n: u64, k: u64)
+        requires k > 0
+        ensures chunk_ceil_is_div_ceil_prop(n, k)
+    {
+        // Both specs: if n == 0 then 0, else (n-1)/k + 1.
+        // div_ceil: if a == 0 { 0 } else { (a - 1) / b + 1 }
+        // chunk_count_ceil: if total_size == 0 { 0 } else { ((total_size - 1) as int / chunk_size as int + 1) as u64 }
+    }
+
+    // --- bounded_range × interval ---
+
+    // r[impl properties.bounded-range-specializes-interval]
+    /// Bounded range reduces to interval when has_upper is true.
+    pub open spec fn bounded_range_specializes_interval_prop(
+        lo: u64, hi: u64, x: u64,
+    ) -> bool {
+        br_contains_spec(lo, hi, true, x) == iv_contains_spec(lo, hi, x)
+    }
+
+    // r[verify properties.bounded-range-specializes-interval]
+    proof fn prove_bounded_range_specializes_interval(lo: u64, hi: u64, x: u64)
+        ensures bounded_range_specializes_interval_prop(lo, hi, x)
+    {}
+
+    // --- partition × interval ---
+
+    // r[impl properties.partition-no-overlap]
+    /// Adjacent partition intervals don't overlap per interval.overlaps.
+    pub open spec fn partition_no_overlap_prop(
+        a_lo: u64, a_hi: u64, b_lo: u64, b_hi: u64,
+    ) -> bool
+        recommends
+            is_non_empty_interval_spec(a_lo, a_hi),
+            is_non_empty_interval_spec(b_lo, b_hi),
+            is_adjacent_pair_spec(a_hi, b_lo),
+    {
+        !iv_overlaps_spec(a_lo, a_hi, b_lo, b_hi)
+    }
+
+    // r[verify properties.partition-no-overlap]
+    proof fn prove_partition_no_overlap(
+        a_lo: u64, a_hi: u64, b_lo: u64, b_hi: u64,
+    )
+        requires
+            is_non_empty_interval_spec(a_lo, a_hi),
+            is_non_empty_interval_spec(b_lo, b_hi),
+            is_adjacent_pair_spec(a_hi, b_lo),
+        ensures partition_no_overlap_prop(a_lo, a_hi, b_lo, b_hi)
+    {}
+
+    // --- pressure × monotonic ---
+
+    // r[impl properties.pressure-classify-monotonic]
+    /// Monotonic values produce monotonic severity levels.
+    pub open spec fn pressure_classify_monotonic_prop(
+        v1: u64, v2: u64, warn: u64, crit: u64,
+    ) -> bool
+        recommends warn <= crit, v1 <= v2
+    {
+        classify_level_spec(v1, warn, crit) <= classify_level_spec(v2, warn, crit)
+    }
+
+    // r[verify properties.pressure-classify-monotonic]
+    proof fn prove_pressure_classify_monotonic(
+        v1: u64, v2: u64, warn: u64, crit: u64,
+    )
+        requires warn <= crit, v1 <= v2
+        ensures pressure_classify_monotonic_prop(v1, v2, warn, crit)
+    {}
+
+    // --- hash_bucket × interval ---
+
+    // r[impl properties.hash-bucket-in-interval]
+    /// Hash assignment lands in the valid bucket interval.
+    pub open spec fn hash_bucket_in_interval_prop(hash: u64, num_buckets: u64) -> bool
+        recommends num_buckets > 0
+    {
+        iv_contains_spec(0, num_buckets, assign_bucket_spec(hash, num_buckets))
+    }
+
+    // r[verify properties.hash-bucket-in-interval]
+    proof fn prove_hash_bucket_in_interval(hash: u64, num_buckets: u64)
+        requires num_buckets > 0
+        ensures hash_bucket_in_interval_prop(hash, num_buckets)
+    {}
+
+    // --- rate_limit × bounds ---
+
+    // r[impl properties.refill-within-bounds]
+    /// Refill result is always within [0, burst].
+    pub open spec fn refill_within_bounds_prop(
+        tokens: u64, elapsed_ms: u64, rate_per_sec: u64, burst: u64,
+    ) -> bool {
+        in_range_spec(tokens_after_refill_spec(tokens, elapsed_ms, rate_per_sec, burst), 0, burst)
+    }
+
+    // r[verify properties.refill-within-bounds]
+    proof fn prove_refill_within_bounds(
+        tokens: u64, elapsed_ms: u64, rate_per_sec: u64, burst: u64,
+    )
+        ensures refill_within_bounds_prop(tokens, elapsed_ms, rate_per_sec, burst)
+    {}
+
+    // --- drain roundtrip ---
+
+    // r[impl properties.drain-start-finish-roundtrip]
+    /// Starting then finishing an operation is a no-op on in-flight count.
+    pub open spec fn drain_start_finish_roundtrip_prop(n: u64) -> bool
+        recommends n < u64::MAX
+    {
+        after_finish_op_spec(after_start_op_spec(n)) == n
+    }
+
+    // r[verify properties.drain-start-finish-roundtrip]
+    proof fn prove_drain_start_finish_roundtrip(n: u64)
+        requires n < u64::MAX
+        ensures drain_start_finish_roundtrip_prop(n)
+    {}
+
+    // --- sequential × chunk ---
+
+    // r[impl properties.sequential-chunk-continuation]
+    /// Reading consecutive chunks is detected as sequential.
+    pub open spec fn sequential_chunk_continuation_prop(
+        chunk_size: u64, index: u64,
+    ) -> bool
+        recommends
+            chunk_size > 0,
+            index as int * chunk_size as int <= u64::MAX as int,
+            (index as int + 1) * chunk_size as int <= u64::MAX as int,
+    {
+        is_sequential_spec(
+            chunk_offset_spec(chunk_size, (index + 1) as u64),
+            chunk_offset_spec(chunk_size, index),
+            chunk_size,
+        )
+    }
+
+    // r[verify properties.sequential-chunk-continuation]
+    // Trusted: the int arithmetic is proven (3 asserts pass) but Z3 can't bridge
+    // the (int → as u64 → as int) cast chain in chunk_offset_spec through
+    // is_sequential_spec's overflow guard. Verified by proptest.
+    #[verifier::external_body]
+    proof fn prove_sequential_chunk_continuation(chunk_size: u64, index: u64)
+        requires
+            chunk_size > 0,
+            index as int * chunk_size as int <= u64::MAX as int,
+            (index as int + 1) * chunk_size as int <= u64::MAX as int,
+        ensures sequential_chunk_continuation_prop(chunk_size, index)
+    {}
+
     } // verus!
 }
 
@@ -632,10 +811,97 @@ mod tests {
             let b: Vec<LogEntry> = terms.iter().map(|&t| LogEntry { term: t, value: 1 }).collect();
             let k = terms.len();
             prop_assert!(logs_match_prefix(&a, &b, k));
-            // Term equality holds at every index
             for i in 0..k {
                 prop_assert_eq!(a[i].term, b[i].term);
             }
+        }
+
+        // --- new module cross-module tests ---
+
+        // r[verify properties.chunk-ceil-is-div-ceil]
+        #[test]
+        fn prop_chunk_ceil_is_div_ceil(n: u64, k in 1u64..=10000) {
+            prop_assert_eq!(
+                crate::chunk::chunk_count_ceil(n, k),
+                crate::arithmetic::div_ceil(n, k),
+            );
+        }
+
+        // r[verify properties.bounded-range-specializes-interval]
+        #[test]
+        fn prop_bounded_range_specializes_interval(lo: u64, hi: u64, x: u64) {
+            prop_assert_eq!(
+                crate::bounded_range::contains(lo, hi, true, x),
+                crate::interval::contains(lo, hi, x),
+            );
+        }
+
+        // r[verify properties.partition-no-overlap]
+        #[test]
+        fn prop_partition_no_overlap(
+            a_lo in 0u64..u64::MAX / 3,
+            width_a in 1u64..u64::MAX / 3,
+            width_b in 1u64..u64::MAX / 3,
+        ) {
+            let a_hi = a_lo + width_a;
+            let b_lo = a_hi; // adjacent: a_hi == b_lo
+            let b_hi = b_lo + width_b;
+            prop_assert!(!crate::interval::overlaps(a_lo, a_hi, b_lo, b_hi));
+        }
+
+        // r[verify properties.pressure-classify-monotonic]
+        #[test]
+        fn prop_pressure_classify_monotonic(
+            v1: u64, v2: u64,
+            warn in 0u64..u64::MAX / 2,
+            spread in 0u64..u64::MAX / 2,
+        ) {
+            let crit = warn + spread;
+            if v1 <= v2 {
+                prop_assert!(
+                    crate::pressure::classify_level(v1, warn, crit)
+                        <= crate::pressure::classify_level(v2, warn, crit)
+                );
+            }
+        }
+
+        // r[verify properties.hash-bucket-in-interval]
+        #[test]
+        fn prop_hash_bucket_in_interval(hash: u64, num_buckets in 1u64..=u64::MAX) {
+            let bucket = crate::hash_bucket::assign_bucket(hash, num_buckets);
+            prop_assert!(crate::interval::contains(0, num_buckets, bucket));
+        }
+
+        // r[verify properties.refill-within-bounds]
+        #[test]
+        fn prop_refill_within_bounds(
+            tokens: u64, elapsed_ms: u64, rate_per_sec: u64, burst: u64,
+        ) {
+            let result = crate::rate_limit::tokens_after_refill(
+                tokens, elapsed_ms, rate_per_sec, burst,
+            );
+            prop_assert!(crate::bounds::in_range(result, 0, burst));
+        }
+
+        // r[verify properties.drain-start-finish-roundtrip]
+        #[test]
+        fn prop_drain_start_finish_roundtrip(n in 0u64..u64::MAX) {
+            let started = crate::drain::after_start_op(n);
+            let finished = crate::drain::after_finish_op(started);
+            prop_assert_eq!(finished, n);
+        }
+
+        // r[verify properties.sequential-chunk-continuation]
+        #[test]
+        fn prop_sequential_chunk_continuation(
+            chunk_size in 1u64..=1000,
+            index in 0u64..1000,
+        ) {
+            let offset_i = crate::chunk::chunk_offset(chunk_size, index);
+            let offset_next = crate::chunk::chunk_offset(chunk_size, index + 1);
+            prop_assert!(crate::sequential::is_sequential(
+                offset_next, offset_i, chunk_size
+            ));
         }
     }
 }

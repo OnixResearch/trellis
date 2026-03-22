@@ -893,3 +893,41 @@ r[sequential.prefetch-size]
 prefetch_size MUST return min(consecutive * chunk_size, max_prefetch),
 saturating on multiplication overflow. chunk_size MUST be nonzero. The
 result MUST never exceed max_prefetch.
+
+## Cross-Module Properties (New Modules)
+
+r[properties.chunk-ceil-is-div-ceil]
+chunk_count_ceil(n, k) MUST equal div_ceil(n, k) for all n, k > 0.
+The two independent ceiling division implementations MUST agree.
+
+r[properties.bounded-range-specializes-interval]
+When has_upper is true, bounded_range.contains(lo, hi, true, x) MUST
+equal interval.contains(lo, hi, x). The generic range MUST reduce to
+the numeric interval when bounded.
+
+r[properties.partition-no-overlap]
+For adjacent intervals in a valid partition, interval.overlaps MUST
+return false. Partition adjacency (a_hi == b_lo) MUST guarantee
+interval non-overlap.
+
+r[properties.pressure-classify-monotonic]
+If value1 <= value2, classify_level(value1, w, c) MUST be <=
+classify_level(value2, w, c). Monotonic inputs produce monotonic
+severity levels.
+
+r[properties.hash-bucket-in-interval]
+interval.contains(0, num_buckets, assign_bucket(hash, num_buckets))
+MUST hold for all hash and num_buckets > 0. Hash assignment MUST
+land in the valid bucket interval [0, num_buckets).
+
+r[properties.refill-within-bounds]
+in_range(tokens_after_refill(t, e, r, b), 0, b) MUST hold. The
+refill result MUST always be within [0, burst].
+
+r[properties.drain-start-finish-roundtrip]
+after_finish_op(after_start_op(n)) MUST equal n for valid n. Starting
+then finishing an operation MUST be a no-op on the in-flight count.
+
+r[properties.sequential-chunk-continuation]
+When reading chunk i then chunk i+1 of the same file, is_sequential
+MUST return true. Sequential chunk reads MUST be detected as sequential.
