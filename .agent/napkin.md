@@ -82,7 +82,16 @@
   - min_size_has_tolerance: ft(min_size(f)) == f — exact roundtrip for odd clusters
   - can_remove_ge_3: n >= 3 ⟹ can remove safely — the critical cluster safety threshold
   - Tolerance vs remove equivalence: can_remove(n) ⟺ ft(n) >= 1
-- Total: 310 Verus proofs, 228 cargo tests, 104 requirements
+- Expiration module added: expires_at, is_expired, is_expired_opt, time_remaining, is_ttl_valid
+  - Direct equivalents of aspen's calculate_expires_at_ms, is_lease_expired,
+    is_key_expired, time_remaining_exec, is_ttl_valid
+  - Verus doesn't support saturating_mul — use explicit overflow check instead:
+    `if x > u64::MAX / 1000 { u64::MAX } else { x * 1000 }`
+  - Two expiration semantics: is_expired uses > (lease: not expired AT boundary),
+    is_expired_opt uses >= (key: expired AT boundary) — matches aspen's distinction
+  - Lifecycle model oracle: create expiration, advance time in steps, check
+    is_expired and time_remaining agree at every point
+- Total: 326 Verus proofs, 240 cargo tests, 109 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

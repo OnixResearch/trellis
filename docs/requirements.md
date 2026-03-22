@@ -342,6 +342,31 @@ unsigned_to_signed MUST return Some(x as i64) when x <= i64::MAX, and
 None otherwise. The u64 → i64 → u64 roundtrip MUST preserve the value
 for inputs that fit in i64.
 
+## Expiration
+
+r[expiration.expires-at]
+expires_at(now_ms, ttl_seconds) MUST return now_ms + ttl_seconds * 1000,
+saturating at u64::MAX on overflow. The result MUST always be >= now_ms.
+
+r[expiration.is-expired]
+is_expired(expires_at_ms, now_ms) MUST return true if and only if
+now_ms > expires_at_ms. At the exact expiration time, the entry is NOT
+expired.
+
+r[expiration.is-expired-opt]
+is_expired_opt(expires_at_ms, now_ms) MUST return false when expires_at_ms
+is None (no TTL means never expires). When Some, MUST delegate to
+is_expired.
+
+r[expiration.time-remaining]
+time_remaining(expires_at_ms, now_ms) MUST return None when expires_at_ms
+is None. MUST return Some(0) when already expired. MUST return
+Some(expires_at - now) when not yet expired.
+
+r[expiration.is-ttl-valid]
+is_ttl_valid(ttl_seconds, max_ttl) MUST return true if and only if
+ttl_seconds <= max_ttl.
+
 ## Bitmap
 
 r[bitmap.new]

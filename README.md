@@ -48,6 +48,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `option` | `unwrap_or_default`, `map`, `and_then`, `or_else`, `flatten`, `zip`, `filter` | 21 |
 | `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
 | `epoch` | `epoch_cmp`, `epoch_ge` + total order proofs | 10 |
+| `expiration` | `expires_at`, `is_expired`, `is_expired_opt`, `time_remaining`, `is_ttl_valid` | 16 |
 | `monotonic` | `is_advance`, `is_strict_advance` + ordering proofs | 8 |
 | `quorum` | `majority`, `is_quorum`, `fault_tolerance`, `can_remove_safely`, `min_cluster_size` + intersection theorem | 17 |
 | `result` | `unwrap_or`, `map_ok`, `map_err`, `and_then`, `or_else` | 14 |
