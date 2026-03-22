@@ -10,6 +10,7 @@
 //!
 //! ## Modules
 //!
+//! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
@@ -32,6 +33,7 @@
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 
+pub mod acid;
 pub mod arithmetic;
 pub mod batch;
 pub mod bitmap;

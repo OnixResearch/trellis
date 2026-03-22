@@ -127,7 +127,23 @@
   - prefix_valid: subrange of valid chain is valid — proved by trigger matching
   - Spec fns need both `r[depends]` AND `r[impl]` for tracey coverage when there's
     no separate exec fn
-- Total: 380 Verus proofs, 283 cargo tests, 125 requirements
+- ACID module added: atomicity, consistency, isolation, durability proofs
+  - WriteOp struct needs `pub` fields (same Verus opaque rule)
+  - apply_writes loop invariant: `apply_writes_spec(state@, ops@, i) == apply_writes_spec(initial, ops@, 0)`
+    captures "remaining work from current state = total work from initial state"
+  - `let ghost initial = state@;` before loop captures pre-mutation state for invariant
+    (can't use `old(state)` in loop invariants — only in ensures)
+  - Seq::len() returns `nat`, not `int` — must cast with `as int` for predicate params
+    that take `int` (writes_valid_spec, wal_valid_spec)
+  - single_writes_commute uses `=~=` extensional equality — Z3 handles it automatically
+    via Seq::update axioms (case split on index equality)
+  - wal_all_committed_is_commit needs explicit `assert(ops[from].idx == wal[from].idx)`
+    to help Z3 connect Seq::new elements to WAL entries
+  - wal_recover exec fn uses same ghost-initial-state pattern as apply_writes
+  - writes_disjoint nested loop: outer invariant tracks scanned pairs, inner invariant
+    tracks current row vs all columns — Z3 handles the case split at `i = i + 1`
+  - All 11 proofs automatic or single-induction — no nonlinear_arith needed
+- Total: 401 Verus proofs, 302 cargo tests, 133 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

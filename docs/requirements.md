@@ -571,6 +571,47 @@ epoch_ge(a, b) MUST return true if and only if epoch a is greater than
 or equal to b in the lexicographic ordering. This is the vote-granting
 predicate: a candidate's log must be at least as up-to-date as the voter's.
 
+## ACID Transaction Properties
+
+r[acid.apply-write]
+apply_write MUST update the state at the given index to the new value,
+leaving all other positions unchanged. The state length MUST be preserved.
+All write indices MUST be within state bounds.
+
+r[acid.commit]
+commit (apply_writes) MUST apply all write operations in sequence.
+Committing an empty write set MUST return the state unchanged. The
+state length MUST be preserved after commit.
+
+r[acid.abort]
+abort MUST return the state unchanged. No positions are modified.
+
+r[acid.atomicity]
+A committed transaction MUST have all writes applied — the final state
+reflects every write in order. An aborted transaction MUST leave the
+state identical to the original. The state length MUST be preserved.
+No partial application is possible.
+
+r[acid.consistency]
+Positions not targeted by any write operation MUST retain their original
+values after commit. Only explicitly written positions may change.
+
+r[acid.isolation]
+Two writes to distinct positions MUST commute: applying write A then B
+MUST produce the same state as applying B then A when their indices
+differ. Reading a position not targeted by a write MUST return the
+original value.
+
+r[acid.durability]
+WAL recovery MUST replay all committed entries and skip uncommitted
+entries. Recovering a fully committed WAL MUST produce the same state
+as a direct commit. Recovering a fully uncommitted WAL MUST leave
+the state unchanged. Recovery MUST preserve state length.
+
+r[acid.writes-disjoint]
+writes_disjoint MUST return true if and only if no write index in the
+first set matches any write index in the second set.
+
 ## Log
 
 r[log.agree-at]
