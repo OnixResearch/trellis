@@ -641,6 +641,145 @@ After a COW write on shared data, readers MUST see the old value and
 the writer MUST see the new value. When exclusive, the writer sees the
 new value and no other readers exist.
 
+## Approval
+
+r[approval.count-valid]
+count_valid_approvals MUST return the number of entries where both
+approved and matches_head_commit are true. The count MUST be less than
+or equal to the total length. An empty input MUST yield zero.
+
+r[approval.is-merge-allowed]
+is_merge_allowed MUST return true if and only if ci_passed is true AND
+valid_count >= required. If CI has not passed, merge MUST NOT be allowed
+regardless of approval count.
+
+r[approval.needs-more]
+needs_more_approvals MUST return required - valid_count when valid_count
+< required, and zero otherwise. The result MUST be zero if and only if
+valid_count >= required.
+
+r[approval.has-stale]
+has_stale_approvals MUST return true if any entry has approved true but
+matches_head_commit false. An empty input MUST return false.
+
+## Bounded Range
+
+r[bounded-range.contains]
+contains MUST return true if x >= lower and either the range is unbounded
+or x < upper. An unbounded range MUST contain all x >= lower. An empty
+bounded range MUST contain nothing.
+
+r[bounded-range.is-empty]
+is_empty MUST return true if and only if the range is bounded and
+lower >= upper. Unbounded ranges MUST never be empty.
+
+r[bounded-range.overlaps]
+overlaps MUST return true if and only if two non-empty ranges share at
+least one point. Overlap MUST be symmetric. Empty ranges MUST NOT
+overlap. Two non-empty unbounded ranges MUST always overlap.
+
+r[bounded-range.is-bounded]
+is_bounded MUST return true if and only if has_upper is true and
+lower < upper. Bounded implies non-empty.
+
+r[bounded-range.restrict]
+restrict MUST produce a bounded range with the same lower bound and an
+upper bound of new_upper (or min of current and new_upper for already-
+bounded ranges). The result MUST be a subset of the input range.
+
+## Chunk
+
+r[chunk.count-ceil]
+chunk_count_ceil MUST return the number of chunks needed including a
+partial last chunk. MUST use ceiling division without overflow:
+if total_size == 0 then 0, else (total_size - 1) / chunk_size + 1.
+chunk_size MUST be nonzero.
+
+r[chunk.size-at]
+chunk_size_at MUST return the size of the chunk at the given index. All
+chunks except possibly the last MUST have size chunk_size. The last chunk
+MUST have size total_size - index * chunk_size. The result MUST be > 0
+and <= chunk_size. index MUST be < chunk_count_ceil.
+
+r[chunk.offset]
+chunk_offset MUST return index * chunk_size. The multiplication MUST
+NOT overflow. chunk_size MUST be nonzero.
+
+r[chunk.index-for-offset]
+chunk_index_for_offset MUST return offset / chunk_size. chunk_size MUST
+be nonzero.
+
+r[chunk.offset-within]
+offset_within_chunk MUST return offset % chunk_size. The result MUST be
+less than chunk_size. chunk_size MUST be nonzero.
+
+## Drain
+
+r[drain.can-start-op]
+can_start_op MUST return true if and only if is_draining is false. New
+operations MUST NOT be admitted during drain.
+
+r[drain.after-start-op]
+after_start_op MUST return in_flight + 1. in_flight MUST be less than
+u64::MAX to prevent overflow.
+
+r[drain.after-finish-op]
+after_finish_op MUST return in_flight - 1. in_flight MUST be greater
+than zero to prevent underflow.
+
+r[drain.is-drain-complete]
+is_drain_complete MUST return true if and only if is_draining is true
+AND in_flight is zero. Both conditions MUST hold.
+
+r[drain.should-notify]
+should_notify MUST return true if and only if is_draining is true,
+old_in_flight > 0, and new_in_flight == 0. This detects the transition
+when the last operation finishes during drain.
+
+r[drain.start-drain]
+start_drain_decision MUST return 0 if already draining, 1 if drain
+completes immediately (no in-flight ops), 2 if drain starts but must
+wait. The result MUST always be 0, 1, or 2.
+
+## Eviction
+
+r[eviction.should-evict]
+should_evict MUST return true if and only if count >= capacity. The
+cache is at or over capacity and eviction is needed.
+
+r[eviction.find-lru]
+find_lru_candidate MUST return the index of the entry with the smallest
+access_time among non-protected entries. MUST return None if all entries
+are protected or the slice is empty. When found, the entry at the
+returned index MUST NOT be protected and MUST have access_time <= all
+other non-protected entries.
+
+r[eviction.cache-valid]
+is_cache_valid MUST return true if and only if count <= capacity + 1
+AND protected_count <= count. The cache may temporarily exceed capacity
+by one before eviction runs.
+
+r[eviction.evictable-count]
+evictable_count MUST return count - protected_count using saturating
+subtraction. The result MUST be <= count.
+
+## Hash Bucket
+
+r[hash-bucket.assign]
+assign_bucket MUST return hash % num_buckets. The result MUST be less
+than num_buckets. num_buckets MUST be nonzero.
+
+r[hash-bucket.assign-pow2]
+assign_bucket_pow2 MUST return hash & (num_buckets - 1). The result
+MUST be less than num_buckets. num_buckets MUST be a power of two.
+
+r[hash-bucket.valid-count]
+bucket_count_valid MUST return true if and only if num_buckets > 0.
+
+r[hash-bucket.is-pow2]
+is_power_of_two_buckets MUST return true if and only if num_buckets > 0
+and num_buckets & (num_buckets - 1) == 0.
+
 ## Log
 
 r[log.agree-at]
@@ -661,3 +800,96 @@ r[log.truncate]
 Truncating a log to length k MUST discard all entries at index k and
 beyond. The first k entries MUST be unchanged. The resulting length MUST
 be k. k MUST not exceed the current length.
+
+## Partition
+
+r[partition.is-valid]
+is_valid_partition MUST check that a sequence of intervals forms a valid
+non-overlapping gap-free covering: every interval is non-empty (lo < hi),
+intervals are sorted by start, and each interval's end equals the next
+interval's start. An empty sequence MUST be a valid partition.
+
+r[partition.is-non-empty-interval]
+is_non_empty_interval MUST return true if and only if lo < hi.
+
+r[partition.is-adjacent-pair]
+is_adjacent_pair MUST return true if and only if a_hi == b_lo. Adjacent
+intervals form a continuous covering with no gap or overlap.
+
+r[partition.covers]
+partition_covers MUST verify that a non-empty partition exactly covers
+a specified range [lo, hi): the first interval starts at lo and the
+last interval ends at hi.
+
+r[partition.span]
+partition_span_lo MUST return the first interval's start.
+partition_span_hi MUST return the last interval's end. Both MUST
+require a non-empty partition.
+
+## Pressure
+
+r[pressure.classify]
+classify_level MUST return 0 (Normal) when value < warn_threshold,
+1 (Warning) when warn_threshold <= value < crit_threshold, and
+2 (Critical) when value >= crit_threshold. The result MUST always be
+0, 1, or 2. Classification MUST be monotonic: higher values produce
+same or higher levels. warn_threshold MUST be <= crit_threshold.
+
+r[pressure.is-critical]
+is_critical MUST return true if and only if level == 2.
+
+r[pressure.should-pause]
+should_pause MUST return true if and only if level >= 2. Critical
+pressure MUST trigger a pause.
+
+r[pressure.most-severe]
+most_severe MUST return the maximum of two levels, capped at 2. MUST
+be commutative, associative, and idempotent. The result MUST be >= both
+inputs.
+
+r[pressure.is-all-normal]
+is_all_normal MUST return true if and only if every element in the
+slice equals 0. An empty slice MUST return true.
+
+## Rate Limit
+
+r[rate-limit.refill]
+tokens_after_refill MUST return tokens + elapsed_ms * rate_per_sec / 1000,
+capped at burst. On multiplication overflow, MUST return burst. Zero
+elapsed time MUST return tokens unchanged. The result MUST never exceed
+burst. Refill MUST be monotonic in elapsed_ms.
+
+r[rate-limit.try-consume]
+try_consume MUST return (true, tokens - cost) when tokens >= cost, and
+(false, tokens) otherwise. On denial, tokens MUST be unchanged.
+
+r[rate-limit.within-burst]
+is_within_burst MUST return true if and only if tokens <= burst. After
+any refill, tokens MUST be within burst.
+
+r[rate-limit.wait-time]
+tokens_to_wait_ms MUST return 0 when tokens >= cost, and
+ceil((cost - tokens) * 1000 / rate_per_sec) otherwise. rate_per_sec
+MUST be nonzero.
+
+## Sequential
+
+r[sequential.is-sequential]
+is_sequential MUST return true if and only if offset == last_offset +
+last_size, handling u64 overflow by returning false when the addition
+would wrap. offset 0 with last_offset 0 and last_size 0 MUST be
+sequential.
+
+r[sequential.update-consecutive]
+update_consecutive MUST return consecutive + 1 (saturating at u64::MAX)
+when is_seq is true, and 0 when is_seq is false. Non-sequential access
+MUST reset the counter.
+
+r[sequential.should-prefetch]
+should_prefetch MUST return true if and only if consecutive >= threshold.
+threshold MUST be nonzero. MUST return false when consecutive < threshold.
+
+r[sequential.prefetch-size]
+prefetch_size MUST return min(consecutive * chunk_size, max_prefetch),
+saturating on multiplication overflow. chunk_size MUST be nonzero. The
+result MUST never exceed max_prefetch.
