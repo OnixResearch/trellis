@@ -220,7 +220,12 @@
   - Test code: use u128::from(x) not x as u128 — clippy cast_lossless is deny
 - Verus toolchain: rustc-1.93.0 nix store path can get GC'd — update scripts/verus.sh
   if it breaks. Current: /nix/store/h2kyfzjnnnnqc35xx4fiqnwzhyczl9cz-rust-default-1.93.0
-- Total: 754 Verus proofs, 523 cargo tests, 214 requirements
+- Fencing module added: issue_token, is_valid_write, is_stale
+  - Thin wrapper over monotonic concepts — all proofs automatic, no hints needed
+  - Cross-module property: issue_token is a strict advance (trivial for Z3)
+  - stale_complement: is_stale == !is_valid_write — Z3 handles >= vs < instantly
+  - Additional proofs: zero_fence_accepts_all, max_fence_rejects_below, issued_token_meets_own_fence
+- Total: 767 Verus proofs, 534 cargo tests, 222 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)

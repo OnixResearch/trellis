@@ -27,6 +27,7 @@
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
+//! - `fencing` — fencing tokens for stale-write rejection
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `integer` — parity, alignment, log2, next-power-of-two
@@ -66,6 +67,7 @@ pub mod drain;
 pub mod epoch;
 pub mod eviction;
 pub mod expiration;
+pub mod fencing;
 pub mod hash_bucket;
 pub mod integer;
 pub mod interval;

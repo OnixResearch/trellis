@@ -1034,3 +1034,39 @@ r[page.pages-needed]
 pages_needed MUST return the minimum number of pages required to cover
 size bytes. pages_needed(0, ps) MUST be 0. For size > 0, the result
 times page_size MUST be >= size. page_size MUST be nonzero.
+
+## Fencing
+
+r[fencing.issue-token]
+issue_token MUST return current + 1. The current token MUST be less
+than u64::MAX (precondition).
+
+r[fencing.is-valid-write]
+is_valid_write MUST return true if and only if request_token >= fence.
+A write is valid when its token is at least as recent as the fence.
+
+r[fencing.is-stale]
+is_stale MUST return true if and only if token < fence.
+is_stale and is_valid_write MUST be exact complements for the same
+token and fence values.
+
+r[fencing.issuance-strictly-increasing]
+issue_token(t) MUST be strictly greater than t. Successive issuances
+produce a strictly monotonic sequence.
+
+r[fencing.no-false-rejection]
+A freshly issued token MUST be valid against the fence it was issued
+from. issue_token(fence) produces a token where
+is_valid_write(token, fence) is true.
+
+r[fencing.stale-implies-not-valid]
+is_stale(token, fence) MUST imply !is_valid_write(token, fence) and
+vice versa. The two predicates partition all (token, fence) pairs.
+
+r[properties.fencing-is-strict-advance]
+issue_token(t) MUST satisfy monotonic::is_strict_advance(t, issue_token(t)).
+Fencing token issuance is a strict monotonic advance.
+
+r[properties.fencing-stale-is-not-advance]
+is_stale(token, fence) MUST imply !is_valid_write(token, fence).
+A stale token cannot pass the validity check.

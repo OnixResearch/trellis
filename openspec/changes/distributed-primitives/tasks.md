@@ -1,13 +1,13 @@
 ## Phase 1: Fencing Tokens
 
-- [ ] Add fencing requirements to docs/requirements.md (monotonic issuance, stale rejection, no false rejection)
-- [ ] Implement src/fencing.rs: issue_token spec+exec, is_valid_write spec+exec, is_stale spec+exec
-- [ ] Prove issuance_strictly_increasing: issue_token(t) > t
-- [ ] Prove valid_write_not_stale: is_valid_write(t, fence) == !is_stale(t, fence)
-- [ ] Prove no_false_rejection: issued token is always valid against the fence it was issued from
-- [ ] Cross-module: fencing::is_stale ↔ monotonic::is_strict_advance
-- [ ] Unit tests + proptest
-- [ ] Verus + tracey clean
+- [x] Add fencing requirements to docs/requirements.md (monotonic issuance, stale rejection, no false rejection) ✅
+- [x] Implement src/fencing.rs: issue_token spec+exec, is_valid_write spec+exec, is_stale spec+exec ✅
+- [x] Prove issuance_strictly_increasing: issue_token(t) > t ✅
+- [x] Prove valid_write_not_stale: is_valid_write(t, fence) == !is_stale(t, fence) ✅
+- [x] Prove no_false_rejection: issued token is always valid against the fence it was issued from ✅
+- [x] Cross-module: fencing::is_stale ↔ monotonic::is_strict_advance ✅
+- [x] Unit tests + proptest ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 2: Ballot / Vote Tracking
 

@@ -22,6 +22,10 @@ mod verus_proofs {
     use crate::arithmetic::saturating_sub_spec;
     use crate::bounds::clamp_spec;
     use crate::bounds::in_range_spec;
+    use crate::fencing::is_stale_spec;
+    use crate::fencing::is_valid_write_spec;
+    use crate::fencing::issue_token_spec;
+    use crate::monotonic::is_strict_advance_spec;
 
     verus! {
 
@@ -596,6 +600,33 @@ mod verus_proofs {
         ensures sequential_chunk_continuation_prop(chunk_size, index)
     {}
 
+    // --- fencing × monotonic ---
+
+    // r[impl properties.fencing-is-strict-advance]
+    /// Issuing a fencing token is a strict advance in the monotonic sense.
+    pub open spec fn fencing_is_strict_advance_prop(t: u64) -> bool
+        recommends t < u64::MAX
+    {
+        is_strict_advance_spec(t, issue_token_spec(t))
+    }
+
+    // r[verify properties.fencing-is-strict-advance]
+    proof fn prove_fencing_is_strict_advance(t: u64)
+        requires t < u64::MAX
+        ensures fencing_is_strict_advance_prop(t)
+    {}
+
+    // r[impl properties.fencing-stale-is-not-advance]
+    /// A stale token has not advanced to the fence.
+    pub open spec fn fencing_stale_is_not_advance_prop(token: u64, fence: u64) -> bool {
+        is_stale_spec(token, fence) ==> !is_valid_write_spec(token, fence)
+    }
+
+    // r[verify properties.fencing-stale-is-not-advance]
+    proof fn prove_fencing_stale_is_not_advance(token: u64, fence: u64)
+        ensures fencing_stale_is_not_advance_prop(token, fence)
+    {}
+
     } // verus!
 }
 
@@ -902,6 +933,21 @@ mod tests {
             prop_assert!(crate::sequential::is_sequential(
                 offset_next, offset_i, chunk_size
             ));
+        }
+
+        // r[verify properties.fencing-is-strict-advance]
+        #[test]
+        fn prop_fencing_is_strict_advance(t in 0..u64::MAX) {
+            let issued = crate::fencing::issue_token(t);
+            prop_assert!(crate::monotonic::is_strict_advance(t, issued));
+        }
+
+        // r[verify properties.fencing-stale-is-not-advance]
+        #[test]
+        fn prop_fencing_stale_is_not_advance(token: u64, fence: u64) {
+            if crate::fencing::is_stale(token, fence) {
+                prop_assert!(!crate::fencing::is_valid_write(token, fence));
+            }
         }
     }
 }
