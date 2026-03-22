@@ -429,9 +429,11 @@ mod tests {
     use crate::bounds::*;
     use crate::collections::*;
     use crate::conversion::*;
-    use crate::epoch::{epoch_ge, Epoch};
+    use crate::epoch::Epoch;
+    use crate::epoch::epoch_ge;
     use crate::integer::*;
-    use crate::log::{logs_match_prefix, LogEntry};
+    use crate::log::LogEntry;
+    use crate::log::logs_match_prefix;
     use crate::ordering::*;
     use crate::quorum::majority;
     use crate::slice::*;

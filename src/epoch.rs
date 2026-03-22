@@ -148,10 +148,10 @@ mod tests {
     #[test]
     fn test_epoch_cmp() {
         assert_eq!(epoch_cmp(&e(3, 5), &e(4, 0)), -1); // lower term
-        assert_eq!(epoch_cmp(&e(4, 0), &e(3, 5)), 1);  // higher term
-        assert_eq!(epoch_cmp(&e(3, 5), &e(3, 8)), -1);  // same term, lower index
-        assert_eq!(epoch_cmp(&e(3, 8), &e(3, 5)), 1);   // same term, higher index
-        assert_eq!(epoch_cmp(&e(3, 5), &e(3, 5)), 0);   // equal
+        assert_eq!(epoch_cmp(&e(4, 0), &e(3, 5)), 1); // higher term
+        assert_eq!(epoch_cmp(&e(3, 5), &e(3, 8)), -1); // same term, lower index
+        assert_eq!(epoch_cmp(&e(3, 8), &e(3, 5)), 1); // same term, higher index
+        assert_eq!(epoch_cmp(&e(3, 5), &e(3, 5)), 0); // equal
         assert_eq!(epoch_cmp(&e(0, 0), &e(0, 0)), 0);
     }
 
@@ -159,9 +159,9 @@ mod tests {
     #[test]
     fn test_epoch_ge() {
         assert!(epoch_ge(&e(4, 0), &e(3, 100))); // higher term wins
-        assert!(epoch_ge(&e(3, 5), &e(3, 5)));   // equal
-        assert!(epoch_ge(&e(3, 8), &e(3, 5)));   // same term, higher index
-        assert!(!epoch_ge(&e(3, 5), &e(3, 8)));  // same term, lower index
+        assert!(epoch_ge(&e(3, 5), &e(3, 5))); // equal
+        assert!(epoch_ge(&e(3, 8), &e(3, 5))); // same term, higher index
+        assert!(!epoch_ge(&e(3, 5), &e(3, 8))); // same term, lower index
         assert!(!epoch_ge(&e(2, 100), &e(3, 0))); // lower term loses
     }
 

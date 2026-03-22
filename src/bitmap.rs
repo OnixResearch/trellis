@@ -7,10 +7,20 @@
 
 #![allow(clippy::cast_lossless, clippy::len_without_is_empty)]
 
-#[cfg(verus_keep_ghost)]
-use crate::bitwise::{bit_at_spec, clear_bit_spec, set_bit_spec, toggle_bit_spec};
-use crate::bitwise::{bit_at, clear_bit, set_bit, toggle_bit};
 use vstd::prelude::*;
+
+use crate::bitwise::bit_at;
+#[cfg(verus_keep_ghost)]
+use crate::bitwise::bit_at_spec;
+use crate::bitwise::clear_bit;
+#[cfg(verus_keep_ghost)]
+use crate::bitwise::clear_bit_spec;
+use crate::bitwise::set_bit;
+#[cfg(verus_keep_ghost)]
+use crate::bitwise::set_bit_spec;
+use crate::bitwise::toggle_bit;
+#[cfg(verus_keep_ghost)]
+use crate::bitwise::toggle_bit_spec;
 
 verus! {
 

@@ -260,18 +260,18 @@ mod tests {
     // r[verify expiration.is-expired]
     #[test]
     fn test_is_expired() {
-        assert!(is_expired(1000, 2000));   // past
-        assert!(!is_expired(2000, 1000));  // before
-        assert!(!is_expired(1000, 1000));  // at boundary — NOT expired
+        assert!(is_expired(1000, 2000)); // past
+        assert!(!is_expired(2000, 1000)); // before
+        assert!(!is_expired(1000, 1000)); // at boundary — NOT expired
     }
 
     // r[verify expiration.is-expired-opt]
     #[test]
     fn test_is_expired_opt() {
-        assert!(is_expired_opt(Some(1000), 2000));  // expired
-        assert!(is_expired_opt(Some(1000), 1000));  // at boundary — expired (>=)
+        assert!(is_expired_opt(Some(1000), 2000)); // expired
+        assert!(is_expired_opt(Some(1000), 1000)); // at boundary — expired (>=)
         assert!(!is_expired_opt(Some(2000), 1000)); // not expired
-        assert!(!is_expired_opt(None, u64::MAX));   // no TTL — never
+        assert!(!is_expired_opt(None, u64::MAX)); // no TTL — never
     }
 
     // r[verify expiration.time-remaining]

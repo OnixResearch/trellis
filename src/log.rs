@@ -188,8 +188,8 @@ mod tests {
     fn test_agree_at() {
         let a = vec![entry(1, 10), entry(2, 20), entry(3, 30)];
         let b = vec![entry(1, 99), entry(2, 88), entry(4, 77)];
-        assert!(agree_at(&a, &b, 0));  // same term (1)
-        assert!(agree_at(&a, &b, 1));  // same term (2)
+        assert!(agree_at(&a, &b, 0)); // same term (1)
+        assert!(agree_at(&a, &b, 1)); // same term (2)
         assert!(!agree_at(&a, &b, 2)); // different terms (3 vs 4)
         assert!(!agree_at(&a, &b, 3)); // out of bounds
     }
