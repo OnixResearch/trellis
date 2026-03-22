@@ -426,6 +426,21 @@ r[quorum.intersection]
 If is_quorum(a, n) and is_quorum(b, n) both hold, then a + b MUST be
 greater than n. Two quorums of the same set MUST always overlap.
 
+r[quorum.fault-tolerance]
+fault_tolerance(n) MUST return (n - 1) / 2 for n > 0, and 0 for n == 0.
+This is the maximum number of node failures a cluster of size n can
+tolerate while maintaining quorum.
+
+r[quorum.can-remove-safely]
+can_remove_safely(n) MUST return true if and only if removing one voter
+from a cluster of n still leaves a quorum. MUST return false for n <= 2
+and true for n >= 3.
+
+r[quorum.min-cluster-size]
+min_cluster_size(f) MUST return 2*f + 1 — the smallest cluster that
+tolerates f failures. min_cluster_size(fault_tolerance(n)) MUST be <= n
+for all n > 0.
+
 ## Monotonic
 
 r[monotonic.is-advance]

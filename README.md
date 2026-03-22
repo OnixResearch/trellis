@@ -49,7 +49,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `ordering` | `min`, `max`, `median_of_three`, `sign`, `compare_and_swap` | 15 |
 | `epoch` | `epoch_cmp`, `epoch_ge` + total order proofs | 10 |
 | `monotonic` | `is_advance`, `is_strict_advance` + ordering proofs | 8 |
-| `quorum` | `majority`, `is_quorum` + intersection theorem | 7 |
+| `quorum` | `majority`, `is_quorum`, `fault_tolerance`, `can_remove_safely`, `min_cluster_size` + intersection theorem | 17 |
 | `result` | `unwrap_or`, `map_ok`, `map_err`, `and_then`, `or_else` | 14 |
 | `ring_buffer` | `new`, `push`, `pop`, `peek`, `len`, `is_empty`, `is_full`, `capacity`, `remaining`, `full_batches` | 2 |
 | `slice` | `chunk_count`, `prefix_eq`, `suffix_eq`, `all_equal`, `mismatch_index` | 11 |

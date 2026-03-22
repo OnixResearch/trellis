@@ -74,7 +74,15 @@
   - epoch_ge_term_index: decomposes epoch_ge into term/index conditions — automatic
   - log_prefix_term_eq: prefix match implies term equality — automatic (follows from spec def)
   - All three proofs are trivially automatic — the specs are defined to make these hold
-- Total: 297 Verus proofs, 216 cargo tests, 101 requirements
+- Quorum module expanded: fault_tolerance, can_remove_safely, min_cluster_size
+  - Direct equivalents of aspen's fault_tolerance_for_size, can_remove_voter_safely,
+    min_cluster_size_for_tolerance — same formulas, now machine-checked
+  - fault_tolerance_leaves_quorum: n - ft(n) >= majority(n) — by(nonlinear_arith)
+  - min_size_fault_tolerance_inverse: min_size(ft(n)) <= n — the functions are inverses
+  - min_size_has_tolerance: ft(min_size(f)) == f — exact roundtrip for odd clusters
+  - can_remove_ge_3: n >= 3 ⟹ can remove safely — the critical cluster safety threshold
+  - Tolerance vs remove equivalence: can_remove(n) ⟺ ft(n) >= 1
+- Total: 310 Verus proofs, 228 cargo tests, 104 requirements
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
