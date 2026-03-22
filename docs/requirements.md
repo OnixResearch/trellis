@@ -1143,6 +1143,79 @@ compute_backoff MUST return min(base * 2^attempt, cap). If base is 0, the result
 r[backoff.jitter-range]
 jitter_range MUST return (0, backoff_value). The lower bound MUST be 0 and the upper bound MUST equal the backoff value.
 
+## Nix Version
+
+r[nix-version.compare-versions]
+compare_versions MUST compare two version strings component-by-component, with numeric components beating alphabetic components, returning -1, 0, or 1.
+
+r[nix-version.parse-drv-name]
+parse_drv_name MUST split a derivation name at the first hyphen-digit boundary.
+
+## Nix String
+
+r[nix-string.string-length]
+string_length MUST return the byte length of a string.
+
+r[nix-string.substring]
+substring MUST extract a substring with clamping semantics for out-of-bounds indices.
+
+r[nix-string.replace-strings]
+replace_strings MUST perform left-to-right non-overlapping replacement of patterns.
+
+## Nix Attribute Set
+
+r[nix-attrset.attr-names]
+attr_names MUST extract keys from a sorted attribute set.
+
+r[nix-attrset.attr-values]
+attr_values MUST extract values from an attribute set.
+
+r[nix-attrset.has-attr]
+has_attr MUST check if a key exists in the attribute set.
+
+r[nix-attrset.get-attr]
+get_attr MUST look up a value by key, returning None if the key is absent.
+
+r[nix-attrset.merge]
+merge MUST merge two attribute sets, with the right set winning on key conflicts.
+
+r[nix-attrset.remove-attrs]
+remove_attrs MUST filter out specified keys from the attribute set.
+
+r[nix-attrset.intersect-attrs]
+intersect_attrs MUST keep only shared keys, using values from the second set.
+
+r[nix-attrset.list-to-attrs]
+list_to_attrs MUST sort and deduplicate key-value pairs to construct an attribute set.
+
+## Nix List
+
+r[nix-list.length]
+length MUST return the length of a list.
+
+r[nix-list.elem-at]
+elem_at MUST get the element at a given index.
+
+r[nix-list.head]
+head MUST return the first element of a list.
+
+r[nix-list.tail]
+tail MUST return all elements except the first.
+
+r[nix-list.elem]
+elem MUST check if an element is present in the list.
+
+r[nix-list.gen-list]
+gen_list MUST generate a list [0..n-1] for a given n.
+
+r[nix-list.concat-lists]
+concat_lists MUST flatten a list of lists into a single list.
+
+## Nix Closure
+
+r[nix-closure.generic-closure]
+generic_closure MUST compute the transitive closure with unique keys.
+
 ## CRDT
 
 r[crdt.g-counter-merge]

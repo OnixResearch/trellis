@@ -44,6 +44,11 @@
 //! - `log` — append-only log with Log Matching Property
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
+//! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
+//! - `nix_closure` — Nix generic closure with fuel-based termination
+//! - `nix_list` — Nix list builtins: elem, head, tail, gen_list, concat
+//! - `nix_string` — Nix string operations: length, substring, replace
+//! - `nix_version` — Nix version comparison with component classification
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `page` — virtual address decomposition: frame number, offset, alignment
@@ -95,6 +100,11 @@ pub mod lease;
 pub mod log;
 pub mod merkle;
 pub mod monotonic;
+pub mod nix_attrset;
+pub mod nix_closure;
+pub mod nix_list;
+pub mod nix_string;
+pub mod nix_version;
 pub mod option;
 pub mod ordering;
 pub mod page;
