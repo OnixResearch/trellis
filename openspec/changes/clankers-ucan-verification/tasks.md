@@ -25,20 +25,20 @@ Generic scope predicate shared by authorization and delegation.
 
 ## Phase 2: Access Mode Partial Order
 
-- [ ] Define mode type (integer-tagged for Verus)
-- [ ] Implement `mode_le_spec(a: int, b: int) -> bool` — partial order
-- [ ] Implement `mode_le` exec function
-- [ ] Implement `mode_permits_spec(cap_mode: int, op_mode: int) -> bool`
-- [ ] Implement `mode_permits` exec function
-- [ ] Prove transitive: `mode_le(a, b) && mode_le(b, c) ==> mode_le(a, c)`
-- [ ] Prove antisymmetric: `mode_le(a, b) && mode_le(b, a) ==> a == b`
-- [ ] Prove reflexive: `mode_le(a, a)`
-- [ ] Prove Read ⊂ Full: `mode_le(READ, FULL) && !mode_le(FULL, READ)`
-- [ ] Prove no-escalation: `!mode_le(child, parent) ==> delegation denied`
-- [ ] Prove mode_permits for read-only denies write
-- [ ] Prove mode_permits for full allows both read and write
-- [ ] Unit tests + proptest (random mode pairs)
-- [ ] Verus + tracey clean
+- [x] Define mode type (integer-tagged for Verus) ✅
+- [x] Implement `mode_le_spec(a: u8, b: u8) -> bool` — partial order ✅
+- [x] Implement `mode_le` exec function ✅
+- [x] Implement `mode_permits_spec(cap_mode: u8, op_mode: u8) -> bool` ✅
+- [x] Implement `mode_permits` exec function ✅
+- [x] Prove transitive: `mode_le(a, b) && mode_le(b, c) ==> mode_le(a, c)` ✅
+- [x] Prove antisymmetric: `mode_le(a, b) && mode_le(b, a) ==> a == b` ✅
+- [x] Prove reflexive: `mode_le(a, a)` ✅
+- [x] Prove Read ⊂ Full: `mode_le(READ, FULL) && !mode_le(FULL, READ)` ✅
+- [x] Prove no-escalation: `!mode_le(child, parent) ==> delegation denied` ✅
+- [x] Prove mode_permits for read-only denies write ✅
+- [x] Prove mode_permits for full allows both read and write ✅
+- [x] Unit tests + proptest (random mode pairs) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 3: Pattern Matching Primitives
 

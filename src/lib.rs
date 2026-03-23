@@ -10,6 +10,7 @@
 //!
 //! ## Modules
 //!
+//! - `access_mode` — access mode partial order: read/write/delete/full with no-escalation
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `backoff` — exponential backoff with cap and jitter bounds
@@ -67,6 +68,7 @@
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 
+pub mod access_mode;
 pub mod acid;
 pub mod approval;
 pub mod arithmetic;

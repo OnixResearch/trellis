@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1096 Verus proofs + 774 cargo tests = all gates green
+- 1117 Verus proofs + 787 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -257,6 +257,11 @@
   - All proofs automatic — Z3 handles prefix containment, extensional equality, and
     Option case analysis without hints
   - 18 new Verus proofs, 18 new cargo tests (6 unit + 12 proptest)
+- Access mode module added: mode_le, mode_permits, delegation_allowed
+  - Diamond lattice: READ/WRITE/DELETE pairwise incomparable, FULL subsumes all
+  - mode_le_spec is just `a == b || b == MODE_FULL()` — Z3 handles all case splits
+  - All 21 proofs automatic — no hints needed for u8 constant comparisons
+  - delegation_allowed == mode_le(child, parent), escalation_denies_permits follows directly
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

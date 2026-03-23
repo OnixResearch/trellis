@@ -1379,3 +1379,23 @@ An optional scope constraint of Some MUST deny when the target is None.
 
 r[scope.optional-some-some-delegates]
 When both cap and target are Some, optional coverage MUST delegate to covers.
+
+## Access Mode Ordering
+
+r[access-mode.valid-mode]
+Valid access modes are READ (0), WRITE (1), DELETE (2), and FULL (3). The set is exhaustive.
+
+r[access-mode.order-reflexive]
+Every mode MUST be ≤ itself. The ordering is reflexive.
+
+r[access-mode.order-transitive]
+The mode ordering MUST be transitive. READ, WRITE, DELETE are each ≤ FULL but pairwise incomparable.
+
+r[access-mode.order-antisymmetric]
+The mode ordering MUST be antisymmetric. If a ≤ b and b ≤ a then a == b.
+
+r[access-mode.permits-ordering]
+mode_permits(cap, op) MUST return true iff the operation mode is ≤ the capability mode. Read-only MUST deny write and delete. Full MUST allow all.
+
+r[access-mode.no-escalation]
+Delegation MUST require child mode ≤ parent mode. Escalation (child > parent) MUST be denied. Failed delegation MUST also fail mode_permits.
