@@ -882,6 +882,56 @@ mod slab_page_proofs {
     } // verus!
 }
 
+// --- watermark ↔ monotonic/region agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod watermark_proofs {
+    use vstd::prelude::*;
+
+    use crate::monotonic::is_advance_spec;
+    use crate::region::regions_disjoint_spec;
+    use crate::watermark::watermark_alloc_spec;
+
+    verus! {
+
+    // r[impl properties.watermark-advance-is-monotonic]
+    pub open spec fn watermark_advance_is_monotonic_prop(mark: u64, size: u64) -> bool
+        recommends mark as int + size as int <= u64::MAX as int
+    {
+        is_advance_spec(mark, watermark_alloc_spec(mark, size))
+    }
+
+    // r[verify properties.watermark-advance-is-monotonic]
+    proof fn prove_watermark_advance_is_monotonic(mark: u64, size: u64)
+        requires mark as int + size as int <= u64::MAX as int
+        ensures watermark_advance_is_monotonic_prop(mark, size)
+    {}
+
+    // r[impl properties.watermark-alloc-disjoint-regions]
+    pub open spec fn watermark_alloc_disjoint_regions_prop(
+        mark: u64, size1: u64, size2: u64,
+    ) -> bool
+        recommends
+            size1 > 0, size2 > 0,
+            mark as int + size1 as int + size2 as int <= u64::MAX as int,
+    {
+        let mark2 = watermark_alloc_spec(mark, size1);
+        regions_disjoint_spec(mark, size1, mark2, size2)
+    }
+
+    // r[verify properties.watermark-alloc-disjoint-regions]
+    proof fn prove_watermark_alloc_disjoint_regions(
+        mark: u64, size1: u64, size2: u64,
+    )
+        requires
+            size1 > 0, size2 > 0,
+            mark as int + size1 as int + size2 as int <= u64::MAX as int,
+        ensures watermark_alloc_disjoint_regions_prop(mark, size1, size2)
+    {}
+
+    } // verus!
+}
+
 // --- buddy ↔ bitwise agreement ---
 
 #[cfg(verus_keep_ghost)]
@@ -1708,6 +1758,31 @@ mod tests {
                 let path = crate::forest::ancestor_path(&parents, n);
                 prop_assert!(path.contains(&root),
                     "node {} in subtree({}) but root not on path {:?}", n, root, path);
+            }
+        }
+
+        // r[verify properties.watermark-advance-is-monotonic]
+        #[test]
+        fn prop_watermark_advance_is_monotonic(
+            mark in 0u64..=u64::MAX / 2,
+            size in 0u64..=10000,
+        ) {
+            if mark as u128 + size as u128 <= u64::MAX as u128 {
+                let new_mark = crate::watermark::watermark_alloc(mark, size);
+                prop_assert!(crate::monotonic::is_advance(mark, new_mark));
+            }
+        }
+
+        // r[verify properties.watermark-alloc-disjoint-regions]
+        #[test]
+        fn prop_watermark_alloc_disjoint_regions(
+            mark in 0u64..=u64::MAX / 4,
+            size1 in 1u64..=1000,
+            size2 in 1u64..=1000,
+        ) {
+            if mark as u128 + size1 as u128 + size2 as u128 <= u64::MAX as u128 {
+                let mark2 = crate::watermark::watermark_alloc(mark, size1);
+                prop_assert!(crate::region::regions_disjoint(mark, size1, mark2, size2));
             }
         }
 

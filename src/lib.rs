@@ -77,6 +77,7 @@
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
+//! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 
 pub mod access_mode;
 pub mod acid;
@@ -154,3 +155,4 @@ pub mod subsumption;
 pub mod token_timestamp;
 pub mod two_phase;
 pub mod vector_clock;
+pub mod watermark;

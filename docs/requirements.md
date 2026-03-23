@@ -1685,3 +1685,41 @@ buddy_of(addr, order) MUST equal bitwise::toggle_bit(addr, order).
 
 r[properties.block-size-is-pow2]
 block_size(order) MUST equal integer::pow2_spec(order).
+
+## Watermark Allocation
+
+r[watermark.remaining]
+watermark_remaining(mark, base, capacity) MUST return capacity - (mark - base).
+When mark == base, remaining MUST equal capacity.
+
+r[watermark.fits]
+watermark_fits(mark, size, base, capacity) MUST return true iff an allocation
+of `size` bytes fits in the remaining space.
+
+r[watermark.alloc]
+watermark_alloc(mark, size) MUST return the new mark after allocating `size` bytes
+(mark + size). The allocation occupies [mark, mark + size).
+
+r[watermark.reset]
+watermark_reset returns the base address. After reset, remaining == capacity.
+
+r[watermark.is-empty]
+The watermark is empty (no allocations) when mark == base.
+
+r[watermark.monotonic]
+Allocation only moves the mark forward: new_mark >= old_mark.
+
+r[watermark.non-overlap]
+Two successive allocations from the same watermark return disjoint regions.
+
+r[watermark.capacity-conservation]
+remaining + used == capacity, where used = mark - base.
+
+## Cross-module: Watermark
+
+r[properties.watermark-advance-is-monotonic]
+watermark_alloc advances the mark, which satisfies monotonic::is_advance.
+
+r[properties.watermark-alloc-disjoint-regions]
+Two allocations from sequential marks produce regions that are
+region::regions_disjoint.
