@@ -1508,3 +1508,23 @@ Compound containment MUST require mount equality. Mount mismatch MUST deny.
 
 r[containment.optional-constraint]
 Optional containment: parent None MUST contain any child. Parent Some MUST block child None.
+
+## Delegation Chain
+
+r[delegation.depth-bounded]
+Chain depth MUST NOT exceed MAX_DELEGATION_DEPTH (8). Depths 0-8 are valid, 9+ are invalid.
+
+r[delegation.root-depth-zero]
+Root tokens MUST have depth 0.
+
+r[delegation.depth-increments]
+Each delegation level MUST increment depth by exactly 1.
+
+r[delegation.delegate-gate]
+Delegation MUST require the parent to hold the Delegate capability. Without Delegate, delegation is denied.
+
+r[delegation.chain-attenuation]
+Each parent-to-child transition MUST attenuate: parent variant subsumes child, child mode <= parent mode. Escalation on either axis MUST be rejected.
+
+r[delegation.chain-valid]
+A full chain is valid iff: non-empty, root at depth 0, last depth within bounds, and every consecutive pair passes level validation.

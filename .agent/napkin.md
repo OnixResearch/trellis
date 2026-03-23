@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1168 Verus proofs + 852 cargo tests = all gates green
+- 1184 Verus proofs + 870 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -299,6 +299,16 @@
   - contains_transitive calls sub-module transitivity proofs — those must be `pub proof fn`
     (initially were private, causing E0425 in Verus compilation)
   - All 12 proofs automatic except contains_transitive which calls three helper lemmas
+- Delegation module added: chain_valid, level_valid, depth checks, ChainLevel struct
+  - ChainLevel struct with pub fields (same Verus opaque rule)
+  - chain_valid_spec is recursive over Seq<ChainLevel> with decreases chain.len() - from
+  - chain_valid exec marked external_body — recursive spec over Seq<struct> with
+    field access (chain[from].has_delegate etc.) is complex for Z3 loop invariants
+  - Concrete chain proofs (two_level_valid, bad_root_invalid, depth_exceeded_invalid)
+    need explicit unfolding hints: assert(level_valid_spec(...)) and assert(chain_valid_spec(chain, 1))
+    to force Z3 to unfold the recursive spec one step
+  - Cross-module imports: needs access_mode, containment, subsumption all via #[cfg(verus_keep_ghost)]
+  - mode_le_spec not re-exported by containment — must import access_mode directly
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 
