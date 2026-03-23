@@ -67,6 +67,7 @@
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
+//! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 
@@ -130,5 +131,6 @@ pub mod scope;
 pub mod sequential;
 pub mod signal;
 pub mod slice;
+pub mod subsumption;
 pub mod two_phase;
 pub mod vector_clock;

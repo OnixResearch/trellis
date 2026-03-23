@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1133 Verus proofs + 814 cargo tests = all gates green
+- 1146 Verus proofs + 825 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -284,6 +284,11 @@
   - Proof fns cover the no-star cases (exact match, exact rejects) which are Z3-tractable
   - `has_star_spec` uses existential quantifier — proof needs `assert(seq[0] == STAR())`
     to provide the witness
+- Subsumption module added: subsumes_spec, 8 variant constants, partial order proofs
+  - Same integer-tag pattern as access_mode (u8 constants, no enum)
+  - subsumes_spec is `a == b || (a == FULL && b in {R,W,D,Wa})` — simple disjunction
+  - All 13 proofs automatic — Z3 handles u8 case splits on small finite domains
+  - Partial order (reflexive + antisymmetric + transitive) verified in one shot
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

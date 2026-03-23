@@ -1442,3 +1442,17 @@ A glob pattern with multiple `*` wildcards MUST match inputs where segments appe
 
 r[glob.non-match-rejected]
 A glob pattern MUST reject inputs that don't satisfy the pattern structure.
+
+## Variant Subsumption
+
+r[subsumption.identity]
+Every variant MUST subsume itself. Subsumption is reflexive and forms a partial order (reflexive, antisymmetric, transitive).
+
+r[subsumption.acyclic]
+Subsumption MUST be acyclic. If a subsumes b and b subsumes a, then a == b. Subsumption MUST be transitive.
+
+r[subsumption.admin-full]
+Full MUST subsume Read, Write, Delete, and Watch. These are the admin-to-leaf edges in the subsumption DAG.
+
+r[subsumption.soundness]
+If variant a does not subsume variant b, then no capability of type a can authorize operations of type b. Leaf variants MUST NOT subsume Full. Independent variants (Prompt, ToolUse, Delegate) MUST NOT subsume each other.
