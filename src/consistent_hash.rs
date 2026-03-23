@@ -1,9 +1,11 @@
 //! Verified consistent hash ring.
 //!
-//! A ring is a sorted array of (hash, node_id) pairs. Lookup finds the
+//! A ring is a sorted array of (hash, `node_id`) pairs. Lookup finds the
 //! first node whose hash is >= the key hash, wrapping to index 0 if none.
 //! The key safety property: a non-empty ring always assigns every key
 //! to exactly one node (complete coverage).
+
+#![allow(clippy::ptr_arg)]
 
 use vstd::prelude::*;
 

@@ -4,7 +4,9 @@
 //! idle time thresholds. Provides promotion and demotion functions with
 //! verified ordering properties.
 //!
-//! Generalized from seaglass's tiered-cache TierThresholds.
+//! Generalized from seaglass's tiered-cache `TierThresholds`.
+
+#![allow(clippy::bool_to_int_with_if)]
 
 use vstd::prelude::*;
 

@@ -3,6 +3,9 @@
 //! Models `builtins.stringLength`, `builtins.substring`, and
 //! `builtins.replaceStrings`. Uses `Seq<u8>` / `Vec<u8>` for strings.
 
+// Verus requires &Vec for @ view, not &[T]
+#![allow(clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -143,6 +146,7 @@ proof fn substring_length_bounded(s: Seq<u8>, start: nat, len: nat)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::naive_bytecount)]
 mod tests {
     use proptest::prelude::*;
 

@@ -4,7 +4,7 @@
 //! associativity, idempotency). G-Counter and PN-Counter use vector
 //! clocks internally; LWW-Register uses timestamp comparison.
 
-#![allow(clippy::nonminimal_bool)]
+#![allow(clippy::nonminimal_bool, clippy::ptr_arg)]
 
 use vstd::prelude::*;
 

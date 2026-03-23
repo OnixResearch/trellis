@@ -435,7 +435,7 @@ mod tests {
 
         // Max possible: 10000 * 20 * 4 = 800000
         let max = full_score(25, 25, 25, 25, 100, 100, 100, 100, 3, 2);
-        assert_eq!(max, 800000);
+        assert_eq!(max, 800_000);
 
         // Min possible: 0
         let min = full_score(25, 25, 25, 25, 0, 0, 0, 0, 0, 0);
@@ -476,7 +476,7 @@ mod tests {
             tier in 0u8..=2,
         ) {
             let score = full_score(25, 25, 25, 25, s1, s2, s3, s4, priority, tier);
-            prop_assert!(score <= 800000);
+            prop_assert!(score <= 800_000);
         }
 
         // r[verify eviction-score.full-score]

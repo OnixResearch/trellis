@@ -147,6 +147,7 @@ pub open spec fn bytes_eq_spec(a: Seq<u8>, b: Seq<u8>) -> bool {
     a =~= b
 }
 
+// r[impl scope.bytes-eq]
 /// Byte-for-byte equality comparison.
 pub fn bytes_eq(a: &[u8], b: &[u8]) -> (result: bool)
     ensures result == bytes_eq_spec(a@, b@),

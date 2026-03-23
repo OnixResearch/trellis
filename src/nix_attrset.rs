@@ -4,6 +4,12 @@
 //! are byte strings. The sorted invariant enables O(n) merge and
 //! intersection via two-pointer algorithms.
 
+// Verus requires &Vec for @ view, not &[T].
+// Merge/insert functions are long due to Verus loop invariants — splitting would break proofs.
+// Ghost variables (mapped_attrs, chosen, sa, sb) are used in Verus proof blocks but
+// appear unused to rustc since proof code is erased in normal builds.
+#![allow(clippy::ptr_arg, clippy::too_many_lines, unused_variables)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -235,7 +241,7 @@ proof fn seq_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
     assert(sb.subrange(1, sb.len() as int) =~= b.subrange(i + 1, b.len() as int));
 }
 
-/// Verified byte-by-byte comparison matching seq_cmp spec.
+/// Verified byte-by-byte comparison matching `seq_cmp` spec.
 fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
     ensures result as int == seq_cmp(a@, b@),
             result == -1 || result == 0 || result == 1
@@ -935,6 +941,14 @@ mod tests {
     use super::*;
 
     fn kv(k: &str, v: u64) -> (Vec<u8>, u64) { (k.as_bytes().to_vec(), v) }
+
+    // r[verify nix-attrset.attr-values]
+    #[test]
+    fn test_attr_values() {
+        let attrs = vec![kv("a", 1), kv("b", 2), kv("c", 3)];
+        assert_eq!(attr_values(&attrs), vec![1, 2, 3]);
+        assert_eq!(attr_values(&vec![]), Vec::<u64>::new());
+    }
 
     // r[verify nix-attrset.has-attr]
     #[test]

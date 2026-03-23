@@ -6,6 +6,8 @@
 //! Applicable to git DAGs, file system trees, dependency graphs,
 //! and conversation branching structures.
 
+#![allow(clippy::single_match, clippy::collapsible_match, clippy::single_match_else, clippy::if_not_else)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -1116,7 +1118,7 @@ pub open spec fn subtree_spec(parents: Seq<Option<int>>, root: int) -> Seq<int> 
 
 // r[impl forest.subtree]
 /// Collect subtree via forward scan with push-based reachability.
-/// Builds the marked array via push (not set) to avoid Vec::set quantifier issues.
+/// Builds the marked array via push (not set) to avoid `Vec::set` quantifier issues.
 pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
     requires
         root < parents@.len(),
@@ -1221,6 +1223,7 @@ mod tests {
     use super::*;
 
     // Helper to build pm mapping for tests
+    #[allow(dead_code)]
     fn to_pm(parents: &[Option<usize>]) -> Vec<Option<usize>> {
         parents.to_vec()
     }

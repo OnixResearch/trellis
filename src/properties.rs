@@ -1685,8 +1685,8 @@ mod tests {
             let tgt = 0;
             let path_src = crate::forest::ancestor_path(&parents, src);
             let path_tgt = crate::forest::ancestor_path(&parents, tgt);
-            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
-            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| i64::try_from(x).unwrap()).collect();
             let cap = parents.len() + 1;
             let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
             // unique ⊆ source path
@@ -1710,8 +1710,8 @@ mod tests {
             let tgt = 0;
             let path_src = crate::forest::ancestor_path(&parents, src);
             let path_tgt = crate::forest::ancestor_path(&parents, tgt);
-            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
-            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| i64::try_from(x).unwrap()).collect();
             let cap = parents.len() + 1;
             let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
             let inter = crate::seq_set::set_intersection(&src_i64, &tgt_i64, cap);
@@ -1730,8 +1730,8 @@ mod tests {
             let tgt = 0;
             let path_src = crate::forest::ancestor_path(&parents, src);
             let path_tgt = crate::forest::ancestor_path(&parents, tgt);
-            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
-            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| i64::try_from(x).unwrap()).collect();
             let cap = parents.len() + 1;
             let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
             // Select half
@@ -1767,7 +1767,7 @@ mod tests {
             mark in 0u64..=u64::MAX / 2,
             size in 0u64..=10000,
         ) {
-            if mark as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(mark) + u128::from(size) <= u128::from(u64::MAX) {
                 let new_mark = crate::watermark::watermark_alloc(mark, size);
                 prop_assert!(crate::monotonic::is_advance(mark, new_mark));
             }
@@ -1780,7 +1780,7 @@ mod tests {
             size1 in 1u64..=1000,
             size2 in 1u64..=1000,
         ) {
-            if mark as u128 + size1 as u128 + size2 as u128 <= u64::MAX as u128 {
+            if u128::from(mark) + u128::from(size1) + u128::from(size2) <= u128::from(u64::MAX) {
                 let mark2 = crate::watermark::watermark_alloc(mark, size1);
                 prop_assert!(crate::region::regions_disjoint(mark, size1, mark2, size2));
             }
@@ -1811,7 +1811,7 @@ mod tests {
         // r[verify properties.slab-capacity-is-pages-dual]
         #[test]
         fn prop_slab_capacity_exact(n in 0u64..=10000, slot_size in 1u64..=256) {
-            if n as u128 * slot_size as u128 <= u64::MAX as u128 {
+            if u128::from(n) * u128::from(slot_size) <= u128::from(u64::MAX) {
                 let region_size = n * slot_size;
                 let cap = crate::slab::slab_capacity(region_size, slot_size);
                 prop_assert_eq!(cap, n);
@@ -1825,7 +1825,7 @@ mod tests {
             size in 0u64..=1000,
             x: u64,
         ) {
-            if base as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(size) <= u128::from(u64::MAX) {
                 let region_result = crate::region::contains_addr(base, size, x);
                 let interval_result = crate::interval::contains(base, base + size, x);
                 prop_assert_eq!(region_result, interval_result);
@@ -1840,8 +1840,8 @@ mod tests {
             b_base in 0u64..=u64::MAX / 2,
             b_size in 0u64..=1000,
         ) {
-            if a_base as u128 + a_size as u128 <= u64::MAX as u128
-                && b_base as u128 + b_size as u128 <= u64::MAX as u128
+            if u128::from(a_base) + u128::from(a_size) <= u128::from(u64::MAX)
+                && u128::from(b_base) + u128::from(b_size) <= u128::from(u64::MAX)
             {
                 let region_result = crate::region::regions_disjoint(a_base, a_size, b_base, b_size);
                 let interval_result = !crate::interval::overlaps(
@@ -1859,8 +1859,8 @@ mod tests {
             b_base in 0u64..=u64::MAX / 2,
             b_size in 0u64..=1000,
         ) {
-            if a_base as u128 + a_size as u128 <= u64::MAX as u128
-                && b_base as u128 + b_size as u128 <= u64::MAX as u128
+            if u128::from(a_base) + u128::from(a_size) <= u128::from(u64::MAX)
+                && u128::from(b_base) + u128::from(b_size) <= u128::from(u64::MAX)
             {
                 let region_result = crate::region::region_adjacent(a_base, a_size, b_base, b_size);
                 let interval_result = crate::interval::adjacent(

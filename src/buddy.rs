@@ -265,7 +265,7 @@ pub open spec fn order_for_size_spec(size: u64) -> u64
 }
 
 // r[impl buddy.order-for-size]
-/// Returns the minimum order where block_size >= size.
+/// Returns the minimum order where `block_size` >= size.
 #[verifier::external_body]
 pub fn order_for_size(size: u64) -> (result: u64)
     requires size > 0, size <= (1u64 << 63)
@@ -277,7 +277,7 @@ pub fn order_for_size(size: u64) -> (result: u64)
     let mut order: u64 = 0;
     let mut s: u64 = size - 1;
     while s > 0 {
-        s >>= 1;
+        s >>= 1_u64;
         order += 1;
         if order >= 63 {
             break;
@@ -439,7 +439,7 @@ mod tests {
 
         // r[verify buddy.order-for-size]
         #[test]
-        fn prop_order_covers_size(size in 1u64..=(1u64 << 32)) {
+        fn prop_order_covers_size(size in 1u64..=(1u64 << 32_u64)) {
             let order = order_for_size(size);
             prop_assert!(order < 64);
             prop_assert!(block_size(order) >= size);

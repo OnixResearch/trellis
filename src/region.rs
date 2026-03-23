@@ -8,6 +8,8 @@
 //! interval endpoints don't overflow (see cross-module properties in
 //! `properties.rs`).
 
+#![allow(clippy::nonminimal_bool)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -549,7 +551,7 @@ mod tests {
             b_size in 1u64..=1000,
         ) {
             let b_base = a_base + a_size;
-            if b_base as u128 + b_size as u128 <= u64::MAX as u128 {
+            if u128::from(b_base) + u128::from(b_size) <= u128::from(u64::MAX) {
                 prop_assert!(region_adjacent(a_base, a_size, b_base, b_size));
                 prop_assert!(regions_disjoint(a_base, a_size, b_base, b_size));
             }
@@ -564,7 +566,7 @@ mod tests {
             frac in 1u64..=999,
         ) {
             let offset = ((size - 1) * frac / 1000).max(1).min(size - 1);
-            if offset > 0 && offset < size && base as u128 + size as u128 <= u64::MAX as u128 {
+            if offset > 0 && offset < size && u128::from(base) + u128::from(size) <= u128::from(u64::MAX) {
                 let ((lb, ls), (rb, rs)) = region_split(base, size, offset);
                 // Disjoint
                 prop_assert!(regions_disjoint(lb, ls, rb, rs));
@@ -586,7 +588,7 @@ mod tests {
             size in 2u64..=100,
         ) {
             let offset = 1u64;
-            if base as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(size) <= u128::from(u64::MAX) {
                 let ((lb, ls), (rb, rs)) = region_split(base, size, offset);
                 for x in base..base + size.min(50) {
                     let in_left = contains_addr(lb, ls, x);
@@ -603,7 +605,7 @@ mod tests {
             base in 0u64..=u64::MAX / 2,
             size in 0u64..=1000,
         ) {
-            if base as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(size) <= u128::from(u64::MAX) {
                 prop_assert!(contains_region(base, size, base, size));
             }
         }
@@ -611,9 +613,8 @@ mod tests {
         // r[verify region.contains-addr]
         #[test]
         fn prop_empty_contains_nothing(base: u64, x: u64) {
-            if base as u128 + 0u128 <= u64::MAX as u128 {
-                prop_assert!(!contains_addr(base, 0, x));
-            }
+            // Empty region contains nothing
+            prop_assert!(!contains_addr(base, 0, x));
         }
 
         // r[verify region.contains-addr]
@@ -625,7 +626,7 @@ mod tests {
             size in 0u64..=1000,
             x: u64,
         ) {
-            if base as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(size) <= u128::from(u64::MAX) {
                 // Region contains matches manual check
                 let expected = x >= base && x < base + size;
                 prop_assert_eq!(contains_addr(base, size, x), expected);

@@ -5,6 +5,9 @@
 //! checker walks a sibling path, combining hashes at each level to
 //! reconstruct the root.
 
+// Verus requires &Vec for @ view, not &[T]
+#![allow(clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 use crate::chain::compute_entry_hash;
@@ -145,7 +148,7 @@ mod tests {
     use super::*;
     use crate::chain::compute_entry_hash;
 
-    /// Runtime hash matching compute_entry_hash(a, b, 0, 0).
+    /// Runtime hash matching `compute_entry_hash(a, b, 0, 0)`.
     fn test_hash(a: u64, b: u64) -> u64 {
         compute_entry_hash(a, b, 0, 0)
     }

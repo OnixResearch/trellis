@@ -6,6 +6,9 @@
 //! Generation counters for ABA-safe handle validation. Handle packing
 //! combines an index and generation into a single u64.
 
+// Handle packing uses u32→u64 casts verified by Verus bit_vector proofs.
+#![allow(clippy::cast_lossless)]
+
 #[cfg(verus_keep_ghost)]
 use vstd::arithmetic::div_mod::lemma_div_is_ordered;
 #[cfg(verus_keep_ghost)]
@@ -296,7 +299,7 @@ pub open spec fn generation_valid_spec(g: u32, max_gen: u32) -> bool {
 }
 
 // r[impl slab.generation-valid]
-/// Returns true if g < max_gen.
+/// Returns true if g < `max_gen`.
 pub fn generation_valid(g: u32, max_gen: u32) -> (result: bool)
     ensures result == generation_valid_spec(g, max_gen)
 {
@@ -576,7 +579,7 @@ mod tests {
             index in 0u64..=1000,
             slot_size in 1u64..=256,
         ) {
-            if base as u128 + index as u128 * slot_size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(index) * u128::from(slot_size) <= u128::from(u64::MAX) {
                 let addr = slot_address(index, base, slot_size);
                 prop_assert_eq!(slot_index(addr, base, slot_size), index);
             }
@@ -589,7 +592,7 @@ mod tests {
             index in 0u64..=1000,
             slot_size in 1u64..=256,
         ) {
-            if base as u128 + index as u128 * slot_size as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(index) * u128::from(slot_size) <= u128::from(u64::MAX) {
                 let addr = slot_address(index, base, slot_size);
                 prop_assert!(is_slot_aligned(addr, base, slot_size));
             }
@@ -598,7 +601,7 @@ mod tests {
         // r[verify slab.slab-capacity]
         #[test]
         fn prop_capacity_bounded(
-            region_size in 0u64..=100000,
+            region_size in 0u64..=100_000,
             slot_size in 1u64..=256,
         ) {
             let cap = slab_capacity(region_size, slot_size);

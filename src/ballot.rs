@@ -5,6 +5,8 @@
 //! follows from quorum intersection: two winners in the same term would
 //! require a voter who voted for both, contradicting single-vote-per-term.
 
+#![allow(clippy::wildcard_imports)]
+
 use vstd::prelude::*;
 
 use crate::epoch::*;
@@ -16,7 +18,7 @@ verus! {
 pub struct VoteState {
     /// The term in which the last vote was cast (0 = never voted).
     pub voted_term: u64,
-    /// The candidate we voted for (meaningful only when voted_term > 0).
+    /// The candidate we voted for (meaningful only when `voted_term` > 0).
     pub voted_for: u64,
 }
 

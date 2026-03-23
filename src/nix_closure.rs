@@ -4,13 +4,18 @@
 //! repeatedly apply an operator to produce new items until no new keys
 //! appear. Uses fuel-based termination.
 
+// Verus requires &Vec for @ view, not &[T]
+#![allow(clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 verus! {
 
 /// An item with a key and arbitrary data.
 pub struct ClosureItem {
+    /// Unique identifier for the closure item.
     pub key: u64,
+    /// Associated data for the closure item.
     pub data: u64,
 }
 
@@ -146,7 +151,7 @@ mod tests {
             // All keys in result must be unique
             let keys: Vec<u64> = result.iter().map(|i| i.key).collect();
             let mut sorted = keys.clone();
-            sorted.sort();
+            sorted.sort_unstable();
             sorted.dedup();
             prop_assert_eq!(keys.len(), sorted.len());
         }

@@ -54,7 +54,7 @@
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
 //! - `nix_closure` — Nix generic closure with fuel-based termination
-//! - `nix_list` — Nix list builtins: elem, head, tail, gen_list, concat
+//! - `nix_list` — Nix list builtins: elem, head, tail, `gen_list`, concat
 //! - `nix_string` — Nix string operations: length, substring, replace
 //! - `nix_version` — Nix version comparison with component classification
 //! - `option` — verified Option combinators

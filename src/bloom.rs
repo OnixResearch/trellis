@@ -5,6 +5,9 @@
 //! negatives. If a key was inserted, query returns true. False positives
 //! are possible but not modeled here (requires real-valued arithmetic).
 
+// Ghost variable `mapped` is used in Verus proof blocks but appears unused to rustc.
+#![allow(clippy::ptr_arg, unused_variables)]
+
 use vstd::prelude::*;
 
 verus! {

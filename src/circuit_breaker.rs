@@ -1,6 +1,6 @@
 //! Verified circuit breaker state machine.
 //!
-//! Three states: CLOSED (normal), OPEN (blocking), HALF_OPEN (probing).
+//! Three states: CLOSED (normal), OPEN (blocking), `HALF_OPEN` (probing).
 //! Transitions are deterministic functions of failure counts, elapsed time,
 //! and probe outcomes. Encoded as u8 constants because Verus can't match
 //! on enum variants in spec functions.
@@ -14,7 +14,9 @@ verus! {
 
 /// Circuit breaker states.
 pub const CLOSED: u8 = 0;
+/// Circuit breaker open state - failures exceed threshold.
 pub const OPEN: u8 = 1;
+/// Circuit breaker half-open state - testing for recovery.
 pub const HALF_OPEN: u8 = 2;
 
 // --- is_valid_state ---

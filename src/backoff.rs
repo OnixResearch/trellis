@@ -3,6 +3,8 @@
 //! Computes retry delays as `min(base * 2^attempt, cap)` using saturating
 //! left-shift to prevent overflow. Jitter range is `[0, backoff]`.
 
+#![allow(unused_assignments, clippy::single_match, clippy::collapsible_match, clippy::single_match_else)]
+
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]

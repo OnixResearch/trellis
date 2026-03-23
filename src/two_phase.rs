@@ -7,7 +7,7 @@
 //! Votes are `Option<bool>`: None = no vote yet, Some(true) = yes,
 //! Some(false) = no.
 
-#![allow(clippy::nonminimal_bool)]
+#![allow(clippy::nonminimal_bool, clippy::ptr_arg, clippy::len_zero)]
 
 use vstd::prelude::*;
 
@@ -244,7 +244,7 @@ mod tests {
             ),
         ) {
             if must_abort(&votes) {
-                prop_assert!(votes.iter().any(|v| *v == Some(false)));
+                prop_assert!(votes.contains(&Some(false)));
             }
         }
 

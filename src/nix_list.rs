@@ -4,6 +4,10 @@
 //! `builtins.concatLists`, `builtins.genList`, `builtins.elem`,
 //! `builtins.elemAt`, `builtins.head`, `builtins.tail`, `builtins.length`.
 
+// Verus requires &Vec for @ view, not &[T].
+// Ghost variable `mapped` is used in Verus proof blocks but appears unused to rustc.
+#![allow(clippy::ptr_arg, unused_variables)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -17,6 +21,7 @@ pub open spec fn length_spec(list: Seq<u64>) -> nat {
 }
 
 // r[impl nix-list.length]
+/// Returns the length of the list.
 pub fn length(list: &Vec<u64>) -> (result: usize)
     ensures result as nat == length_spec(list@)
 {
@@ -34,6 +39,7 @@ pub open spec fn elem_at_spec(list: Seq<u64>, idx: int) -> u64
 }
 
 // r[impl nix-list.elem-at]
+/// Returns the element at the specified index.
 pub fn elem_at(list: &Vec<u64>, idx: usize) -> (result: u64)
     requires idx < list.len()
     ensures result == elem_at_spec(list@, idx as int)
@@ -52,6 +58,7 @@ pub open spec fn head_spec(list: Seq<u64>) -> u64
 }
 
 // r[impl nix-list.head]
+/// Returns the first element of the list.
 pub fn head(list: &Vec<u64>) -> (result: u64)
     requires list.len() > 0
     ensures result == head_spec(list@)
@@ -101,6 +108,7 @@ pub open spec fn elem_spec(list: Seq<u64>, x: u64) -> bool {
 }
 
 // r[impl nix-list.elem]
+/// Returns true if the value is present in the list.
 pub fn elem(list: &Vec<u64>, x: u64) -> (result: bool)
     ensures result == elem_spec(list@, x)
 {
@@ -128,6 +136,7 @@ pub open spec fn gen_list_spec(n: nat) -> Seq<u64> {
 }
 
 // r[impl nix-list.gen-list]
+/// Generates a list [0, 1, ..., n-1].
 pub fn gen_list(n: usize) -> (result: Vec<u64>)
     requires n <= u64::MAX as usize
     ensures result@ == gen_list_spec(n as nat)
@@ -231,6 +240,7 @@ proof fn concat_lists_empty()
 {}
 
 // r[impl nix-list.concat-lists]
+/// Concatenates a list of lists into a single flat list.
 pub fn concat_lists(lists: &Vec<Vec<u64>>) -> (result: Vec<u64>)
     ensures result@ == concat_lists_spec(lists@.map_values(|v: Vec<u64>| v@))
 {

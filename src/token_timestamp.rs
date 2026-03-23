@@ -28,7 +28,7 @@ pub open spec fn is_expired_spec(expires_at: u64, now: u64, tolerance: u64) -> b
 }
 
 // r[impl token-timestamp.expiration-tolerance]
-/// Returns true if the token is expired (now > expires_at + tolerance).
+/// Returns true if the token is expired (now > `expires_at` + tolerance).
 /// Uses saturating addition for overflow safety.
 pub fn is_expired(expires_at: u64, now: u64, tolerance: u64) -> (result: bool)
     ensures result == is_expired_spec(expires_at, now, tolerance),

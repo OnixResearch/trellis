@@ -4,7 +4,7 @@
 //! and STRING as universal source. The conversion graph is reflexive and
 //! forms a partial order over 7 type constants.
 //!
-//! Generalized from seaglass's TypeInferenceEngine `can_convert_to`.
+//! Generalized from seaglass's `TypeInferenceEngine` `can_convert_to`.
 
 use vstd::prelude::*;
 

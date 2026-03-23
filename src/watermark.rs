@@ -300,11 +300,11 @@ mod tests {
             capacity in 0u64..=10000,
             used_frac in 0u64..=100,
         ) {
-            if base as u128 + capacity as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(capacity) <= u128::from(u64::MAX) {
                 let used = capacity * used_frac / 100;
                 let mark = base + used;
                 let remaining = watermark_remaining(mark, base, capacity);
-                prop_assert_eq!(remaining as u128 + used as u128, capacity as u128);
+                prop_assert_eq!(u128::from(remaining) + u128::from(used), u128::from(capacity));
             }
         }
 
@@ -314,7 +314,7 @@ mod tests {
             mark in 0u64..=u64::MAX / 2,
             size in 0u64..=10000,
         ) {
-            if mark as u128 + size as u128 <= u64::MAX as u128 {
+            if u128::from(mark) + u128::from(size) <= u128::from(u64::MAX) {
                 let new_mark = watermark_alloc(mark, size);
                 prop_assert!(new_mark >= mark);
             }
@@ -328,7 +328,7 @@ mod tests {
             used_pct in 0u64..=100,
             size in 0u64..=20000,
         ) {
-            if base as u128 + capacity as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(capacity) <= u128::from(u64::MAX) {
                 let used = capacity * used_pct / 100;
                 let mark = base + used;
                 let remaining = watermark_remaining(mark, base, capacity);
@@ -345,7 +345,7 @@ mod tests {
             base in 0u64..=u64::MAX / 4,
             capacity in 0u64..=10000,
         ) {
-            if base as u128 + capacity as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(capacity) <= u128::from(u64::MAX) {
                 let reset_mark = watermark_reset(base);
                 prop_assert!(watermark_is_empty(reset_mark, base));
                 prop_assert_eq!(watermark_remaining(reset_mark, base, capacity), capacity);
@@ -359,7 +359,7 @@ mod tests {
             size1 in 1u64..=1000,
             size2 in 1u64..=1000,
         ) {
-            if mark as u128 + size1 as u128 + size2 as u128 <= u64::MAX as u128 {
+            if u128::from(mark) + u128::from(size1) + u128::from(size2) <= u128::from(u64::MAX) {
                 let m1 = watermark_alloc(mark, size1);
                 let m2 = watermark_alloc(m1, size2);
                 // Region 1: [mark, m1), Region 2: [m1, m2)
@@ -386,7 +386,7 @@ mod tests {
         ) {
             let used = used.min(capacity);
             let size = size.min(capacity - used);
-            if base as u128 + capacity as u128 <= u64::MAX as u128 {
+            if u128::from(base) + u128::from(capacity) <= u128::from(u64::MAX) {
                 let mark = base + used;
                 let rem_before = watermark_remaining(mark, base, capacity);
                 let new_mark = watermark_alloc(mark, size);

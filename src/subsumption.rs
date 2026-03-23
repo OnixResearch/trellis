@@ -166,7 +166,7 @@ mod tests {
     #[test]
     fn test_self_subsumption() {
         for v in 0u8..=7 {
-            assert!(subsumes(v, v), "variant {} should subsume itself", v);
+            assert!(subsumes(v, v), "variant {v} should subsume itself");
         }
     }
 
@@ -193,7 +193,7 @@ mod tests {
         for &a in &leaves {
             for &b in &leaves {
                 if a != b {
-                    assert!(!subsumes(a, b), "{} should not subsume {}", a, b);
+                    assert!(!subsumes(a, b), "{a} should not subsume {b}");
                 }
             }
         }
@@ -248,7 +248,7 @@ mod tests {
         #[test]
         fn prop_non_subsumed_count(a in 0u8..=7) {
             // Count how many variants a subsumes.
-            let count: u8 = (0u8..=7).filter(|&b| subsumes(a, b)).count() as u8;
+            let count: u8 = u8::try_from((0u8..=7).filter(|&b| subsumes(a, b)).count()).unwrap();
             if a == 4 {
                 // Full subsumes R, W, D, Wa, and itself = 5
                 prop_assert_eq!(count, 5);

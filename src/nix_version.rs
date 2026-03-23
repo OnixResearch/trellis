@@ -5,6 +5,9 @@
 //! compare pairwise. Numeric beats alpha when types differ; empty
 //! components compare as less than any non-empty component.
 
+// Verus requires &Vec for @ view, not &[T]; u8→u64 cast in Verus blocks
+#![allow(clippy::ptr_arg, clippy::cast_lossless)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -468,7 +471,7 @@ proof fn parse_drv_name_helper_bounds(s: Seq<u8>, i: int)
 // r[impl nix-version.parse-drv-name]
 /// Split a derivation name into name and version parts.
 /// Returns the index where the name ends (version starts at index + 1).
-/// Returns s.len() if no version part is found.
+/// Returns `s.len()` if no version part is found.
 pub fn parse_drv_name(s: &Vec<u8>) -> (result: usize)
     ensures result as int == parse_drv_name_spec(s@),
             result <= s.len()
@@ -498,7 +501,7 @@ pub fn parse_drv_name(s: &Vec<u8>) -> (result: usize)
 
 } // verus!
 
-/// Parse a numeric component, capping at u64::MAX for overflow safety.
+/// Parse a numeric component, capping at `u64::MAX` for overflow safety.
 fn parse_numeric(bytes: &[u8]) -> u64 {
     let mut val: u64 = 0;
     for &b in bytes {

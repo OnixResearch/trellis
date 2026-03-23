@@ -6,6 +6,9 @@
 //! of b, and at least one is strictly less. Merge is the component-wise
 //! max (join in the lattice).
 
+// Verus requires &Vec for @ view, not &[T]
+#![allow(clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]

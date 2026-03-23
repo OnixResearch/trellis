@@ -4,7 +4,12 @@
 //! secret detection for environment variable sanitization. Extracted
 //! from the clankers sandbox policy module.
 
-#![allow(clippy::nonminimal_bool)]
+// Verus block arithmetic patterns — manual range check and u8 cast are intentional.
+#![allow(
+    clippy::nonminimal_bool,
+    clippy::manual_range_contains,
+    clippy::unnecessary_cast
+)]
 
 use vstd::prelude::*;
 
@@ -727,6 +732,7 @@ mod proptests {
             }
         }
 
+        // r[verify env-scrub.blocked-keys-absent]
         #[test]
         fn prop_blocked_subset_of_secret(key in proptest::collection::vec(0u8..=255u8, 0..30)) {
             if is_blocked(&key) {
@@ -734,6 +740,7 @@ mod proptests {
             }
         }
 
+        // r[verify env-scrub.suffix-matched-absent]
         #[test]
         fn prop_suffix_subset_of_secret(key in proptest::collection::vec(0u8..=255u8, 0..30)) {
             if has_secret_suffix(&key) {

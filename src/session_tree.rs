@@ -1,8 +1,8 @@
-//! Session tree operations as compositions of forest and seq_set primitives.
+//! Session tree operations as compositions of forest and `seq_set` primitives.
 //!
 //! Maps clankers session-tree operations to generic verified building blocks:
-//! `find_unique` = set_difference(ancestor_path), `find_divergence` = lca,
-//! `selective_merge` = set_intersection, `cherry_pick_subtree` = subtree.
+//! `find_unique` = `set_difference(ancestor_path)`, `find_divergence` = lca,
+//! `selective_merge` = `set_intersection`, `cherry_pick_subtree` = subtree.
 
 #[cfg(verus_keep_ghost)]
 use crate::forest::*;
@@ -163,8 +163,8 @@ mod tests {
         let path_a = crate::forest::ancestor_path(&p, 3); // [0, 1, 3]
         let path_b = crate::forest::ancestor_path(&p, 4); // [0, 2, 4]
         // Convert to i64 for seq_set
-        let a_i64: Vec<i64> = path_a.iter().map(|&x| x as i64).collect();
-        let b_i64: Vec<i64> = path_b.iter().map(|&x| x as i64).collect();
+        let a_i64: Vec<i64> = path_a.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+        let b_i64: Vec<i64> = path_b.iter().map(|&x| i64::try_from(x).unwrap()).collect();
         let unique = crate::seq_set::set_difference(&a_i64, &b_i64, 10);
         assert_eq!(unique, vec![1, 3]);
     }
@@ -216,8 +216,8 @@ mod tests {
         let p = [None, Some(0), Some(0), Some(1), Some(2)];
         let path_a = crate::forest::ancestor_path(&p, 3);
         let path_b = crate::forest::ancestor_path(&p, 4);
-        let a_i64: Vec<i64> = path_a.iter().map(|&x| x as i64).collect();
-        let b_i64: Vec<i64> = path_b.iter().map(|&x| x as i64).collect();
+        let a_i64: Vec<i64> = path_a.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+        let b_i64: Vec<i64> = path_b.iter().map(|&x| i64::try_from(x).unwrap()).collect();
         let unique = crate::seq_set::set_difference(&a_i64, &b_i64, 10);
         assert_eq!(unique.len(), 2); // nodes 1 and 3
     }
@@ -263,8 +263,8 @@ mod tests {
                 let tgt = 0;
                 let path_src = crate::forest::ancestor_path(&parents, src);
                 let path_tgt = crate::forest::ancestor_path(&parents, tgt);
-                let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
-                let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+                let src_i64: Vec<i64> = path_src.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+                let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| i64::try_from(x).unwrap()).collect();
                 let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, parents.len() + 1);
                 // Every unique node is on source path
                 for &u in &unique {
@@ -282,8 +282,8 @@ mod tests {
                 let tgt = 0;
                 let path_src = crate::forest::ancestor_path(&parents, src);
                 let path_tgt = crate::forest::ancestor_path(&parents, tgt);
-                let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
-                let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+                let src_i64: Vec<i64> = path_src.iter().map(|&x| i64::try_from(x).unwrap()).collect();
+                let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| i64::try_from(x).unwrap()).collect();
                 let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, parents.len() + 1);
                 // Select first half
                 let selected: Vec<i64> = unique.iter().take(unique.len() / 2 + 1).copied().collect();

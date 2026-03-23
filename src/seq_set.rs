@@ -4,6 +4,14 @@
 //! difference, intersection, subset, and distinctness predicates with
 //! algebraic proofs (partition, transitivity, distinctness preservation).
 
+// Verus exec code uses i64→usize casts bounded by invariants (0 <= x < cap).
+// if-not-else patterns are in Verus proof blocks where restructuring would break proofs.
+#![allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::if_not_else
+)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -910,7 +918,7 @@ mod tests {
                 "distinct",
                 |v| {
                     let mut s = v.clone();
-                    s.sort();
+                    s.sort_unstable();
                     s.dedup();
                     s.len() == v.len()
                 },

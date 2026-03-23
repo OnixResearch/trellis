@@ -196,7 +196,7 @@ pub open spec fn delegation_allowed_spec(parent_mode: u8, child_mode: u8) -> boo
 }
 
 // r[impl access-mode.no-escalation]
-/// Returns true if delegating from parent_mode to child_mode is allowed.
+/// Returns true if delegating from `parent_mode` to `child_mode` is allowed.
 pub fn delegation_allowed(parent_mode: u8, child_mode: u8) -> (result: bool)
     ensures result == delegation_allowed_spec(parent_mode, child_mode),
 {

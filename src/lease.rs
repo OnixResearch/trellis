@@ -227,6 +227,7 @@ mod tests {
     use super::*;
 
     // r[verify lease.is-valid]
+    // r[verify lease.effective-expiry]
     #[test]
     fn test_lease_validity() {
         let l = grant(1, 10, 20);

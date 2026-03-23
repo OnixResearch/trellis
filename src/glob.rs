@@ -89,7 +89,7 @@ pub open spec fn glob_match_spec(pattern: Seq<u8>, input: Seq<u8>) -> bool {
 // r[impl glob.wildcard-matches-all]
 /// Returns true if the input matches the glob pattern.
 /// Glob matching with multi-segment `*` wildcards is complex for Z3 —
-/// marked external_body with proptest coverage.
+/// marked `external_body` with proptest coverage.
 /// @verified-logic:no-ensures
 #[verifier::external_body]
 pub fn glob_match(pattern: &[u8], input: &[u8]) -> (result: bool)

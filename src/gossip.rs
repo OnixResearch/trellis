@@ -4,6 +4,8 @@
 //! fanout f, at least min(n, f^k) nodes are infected (assuming ideal
 //! conditions — no message loss, no duplicates in early rounds).
 
+#![allow(clippy::single_match_else)]
+
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]

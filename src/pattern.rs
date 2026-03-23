@@ -120,7 +120,7 @@ pub open spec fn pattern_contains_spec(p1: Seq<int>, p2: Seq<int>) -> bool {
 // r[impl pattern.containment-subset]
 /// Returns true if p1 contains p2 (every item in p2 is in p1, or p1 is wildcard).
 /// Z3 can't close the existential negation through Seq.map indirection — marked
-/// external_body with proptest coverage.
+/// `external_body` with proptest coverage.
 #[verifier::external_body]
 pub fn pattern_contains(p1: &[i64], p2: &[i64]) -> (result: bool)
     ensures result == pattern_contains_spec(
@@ -131,7 +131,7 @@ pub fn pattern_contains(p1: &[i64], p2: &[i64]) -> (result: bool)
     if p1.len() == 1 && p1[0] == -1 {
         return true;
     }
-    for &target in p2.iter() {
+    for &target in p2 {
         if !p1.contains(&target) {
             return false;
         }

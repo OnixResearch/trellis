@@ -30,11 +30,14 @@ pub open spec fn V_DELEGATE() -> u8 { 7 }
 /// We model capabilities as (variant, scope, mode) tuples.
 /// `has_delegate` indicates whether the level holds the Delegate capability.
 pub struct ChainLevel {
+    /// Depth level in the delegation chain.
     pub depth: u64,
+    /// Whether this level holds the Delegate capability.
     pub has_delegate: bool,
     /// Capabilities at this level — for containment checking we track
     /// representative (variant, mode) pairs. Scope is checked separately.
     pub variant: u8,
+    /// Mode component of the capability tuple.
     pub mode: u8,
 }
 

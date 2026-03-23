@@ -4,7 +4,7 @@
 //! crossing detection, milestone counting, budget status classification,
 //! and model selection priority ordering. Extracted from clankers-model-selection.
 
-#![allow(clippy::nonminimal_bool)]
+#![allow(clippy::nonminimal_bool, clippy::bool_to_int_with_if)]
 
 use vstd::prelude::*;
 

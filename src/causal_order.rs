@@ -4,6 +4,8 @@
 //! delivered before m2. A consistent cut is a set of events where
 //! if an event is in the cut, all its causal predecessors are too.
 
+#![allow(clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
@@ -193,6 +195,15 @@ mod tests {
         // Not ready: non-sender component too high
         let msg3 = vc(&[3, 4, 1]);
         assert!(!is_causally_ready(&msg3, &local, 1));
+    }
+
+    // r[verify causal-order.is-consistent-cut]
+    #[test]
+    fn test_consistent_cut() {
+        // All vector-clock cuts are consistent by construction
+        assert!(is_consistent_cut(&vc(&[1, 2, 3])));
+        assert!(is_consistent_cut(&vc(&[0, 0, 0])));
+        assert!(is_consistent_cut(&vec![]));
     }
 
     // r[verify causal-order.cut-join]

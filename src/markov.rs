@@ -4,7 +4,7 @@
 //! confidence-threshold prediction. Avoids floating point — confidence
 //! is compared as `count * 100 >= total * threshold_pct`.
 //!
-//! Generalized from seaglass's tiered-cache AccessPredictor.
+//! Generalized from seaglass's tiered-cache `AccessPredictor`.
 
 use vstd::prelude::*;
 
@@ -23,8 +23,8 @@ pub open spec fn confidence_meets_spec(count: u64, total: u64, threshold_pct: u6
 // r[impl markov.confidence]
 /// Returns true if the transition confidence meets the threshold.
 ///
-/// Uses cross-multiplication to avoid division: count * 100 >= total * threshold_pct.
-/// Marked external_body: the overflow-safe large-total fallback branch is too complex
+/// Uses cross-multiplication to avoid division: count * 100 >= total * `threshold_pct`.
+/// Marked `external_body`: the overflow-safe large-total fallback branch is too complex
 /// for Z3 to connect to the int-based spec. Proptest verifies correctness.
 #[verifier::external_body]
 pub fn confidence_meets(count: u64, total: u64, threshold_pct: u64) -> (result: bool)
@@ -181,7 +181,7 @@ pub open spec fn record_transition_spec(count: u64, total: u64, max_total: u64) 
 
 // r[impl markov.record-bounded]
 /// Records a transition. Increments count and total, unless total has
-/// reached max_total.
+/// reached `max_total`.
 pub fn record_transition(count: u64, total: u64, max_total: u64) -> (result: (u64, u64))
     requires count <= total, total <= max_total
     ensures result == record_transition_spec(count, total, max_total)
@@ -285,9 +285,9 @@ pub open spec fn best_prediction_index_from_spec(counts: Seq<u64>, from: int, be
 /// Returns the index of the highest count in the slice.
 /// If multiple entries tie, returns the first one.
 ///
-/// Marked external_body: the iterative loop invariant for linking to the
-/// recursive best_prediction_index_from_spec is hard for Z3 (same pattern
-/// as consistent_hash::lookup). Proptest verifies correctness.
+/// Marked `external_body`: the iterative loop invariant for linking to the
+/// recursive `best_prediction_index_from_spec` is hard for Z3 (same pattern
+/// as `consistent_hash::lookup`). Proptest verifies correctness.
 #[verifier::external_body]
 pub fn best_prediction_index(counts: &[u64]) -> (result: usize)
     requires counts@.len() > 0
@@ -405,7 +405,7 @@ mod tests {
         // r[verify markov.confidence]
         #[test]
         fn prop_full_count_meets_threshold(
-            total in 1u64..=1000000,
+            total in 1u64..=1_000_000,
             threshold_pct in 0u64..=100,
         ) {
             prop_assert!(confidence_meets(total, total, threshold_pct));
@@ -414,7 +414,7 @@ mod tests {
         // r[verify markov.confidence]
         #[test]
         fn prop_zero_count_fails_positive_threshold(
-            total in 1u64..=1000000,
+            total in 1u64..=1_000_000,
             threshold_pct in 1u64..=100,
         ) {
             prop_assert!(!confidence_meets(0, total, threshold_pct));
@@ -486,8 +486,10 @@ mod tests {
             threshold_pct in 0u64..=100,
         ) {
             let count = count.min(total);
+            #[allow(clippy::cast_precision_loss)]
             let float_confidence = count as f64 / total as f64;
-            let float_threshold = threshold_pct as f64 / 100.0;
+            #[allow(clippy::cast_precision_loss)]
+            let float_threshold = threshold_pct as f64 / 100.0_f64;
             let expected = float_confidence >= float_threshold;
             let actual = confidence_meets(count, total, threshold_pct);
             // Should agree (modulo floating point rounding at boundary)
