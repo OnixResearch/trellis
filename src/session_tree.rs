@@ -102,7 +102,6 @@ pub open spec fn latest_leaf_from(parents: Seq<Option<int>>, from: int) -> int
 
 // r[impl session-tree.latest-leaf]
 /// Find the highest-indexed leaf node (most recently added leaf).
-#[verifier::external_body]
 pub fn find_latest_leaf(parents: &[Option<usize>]) -> (result: Option<usize>)
     requires parents@.len() > 0
     ensures ({
@@ -116,10 +115,32 @@ pub fn find_latest_leaf(parents: &[Option<usize>]) -> (result: Option<usize>)
         }
     })
 {
+    let ghost pm = parents@.map(|_i: int, p: Option<usize>| match p {
+        Some(j) => Some(j as int),
+        None => None::<int>,
+    });
     let mut i = parents.len();
-    while i > 0 {
+    while i > 0
+        invariant
+            0 <= i <= parents@.len(),
+            pm =~= parents@.map(|_i: int, p: Option<usize>| match p {
+                Some(j) => Some(j as int),
+                None => None::<int>,
+            }),
+            // No leaf in [i, parents.len())
+            forall|k: int| i as int <= k < parents@.len() as int ==>
+                !is_leaf_spec(pm, k),
+            // Connects to spec: latest_leaf_from scanned past [i, len)
+            latest_leaf_from(pm, parents@.len() as int - 1) ==
+                latest_leaf_from(pm, i as int - 1),
+        decreases i,
+    {
         i -= 1;
         if crate::forest::is_leaf(parents, i) {
+            proof {
+                assert(is_leaf_spec(pm, i as int));
+                // latest_leaf_from(pm, i) == i since is_leaf
+            }
             return Some(i);
         }
     }

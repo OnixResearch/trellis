@@ -554,7 +554,6 @@ pub open spec fn depth_spec(parents: Seq<Option<int>>, node: int) -> int {
 
 // r[impl forest.depth]
 /// Compute depth by counting parent-pointer hops.
-#[verifier::external_body]
 pub fn depth(parents: &[Option<usize>], node: usize) -> (result: usize)
     requires
         node < parents@.len(),
@@ -585,12 +584,22 @@ pub fn depth(parents: &[Option<usize>], node: usize) -> (result: usize)
             }),
             well_formed_spec(pm),
             d as int + depth_spec(pm, cur as int) == depth_spec(pm, node as int),
+            d as int <= node as int,
         decreases cur,
     {
+        proof {
+            ancestor_path_unfold(pm, cur as int);
+            // depth_spec(pm, cur) = ancestor_path_spec(pm, cur).len() - 1
+            // After unfold: path(cur) = path(p).push(cur), so len = path(p).len() + 1
+            // depth(cur) = path(p).len() = depth(p) + 1
+            // So: d + depth(p) + 1 = depth(node), meaning d + 1 <= depth(node) <= node
+            path_length_bound(pm, node as int);
+        }
         let p = parents[cur].unwrap();
         d += 1;
         cur = p;
     }
+    proof { ancestor_path_unfold(pm, cur as int); }
     d
 }
 
@@ -819,15 +828,14 @@ proof fn lca_self(parents: Seq<Option<int>>, a: int)
 
 /// Common prefix of a sequence with itself is the full length.
 proof fn common_prefix_full(s: Seq<int>)
-    ensures common_prefix_len(s, s) == s.len()
+    ensures common_prefix_len(s, s) == s.len() as int
 {
     common_prefix_from_full(s, 0);
 }
 
-#[verifier::external_body]
 proof fn common_prefix_from_full(s: Seq<int>, from: int)
-    requires 0 <= from
-    ensures common_prefix_from(s, s, from) == s.len()
+    requires 0 <= from <= s.len()
+    ensures common_prefix_from(s, s, from) == s.len() as int
     decreases (s.len() - from),
 {
     if from < s.len() as int {
