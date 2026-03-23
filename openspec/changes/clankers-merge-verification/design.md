@@ -6,177 +6,182 @@ for the children index and `HashMap<MessageId, usize>` for O(1) lookup.
 Messages are stored in a flat `Vec<SessionEntry>` and nodes reference
 each other by string-based `MessageId`s.
 
-This design document covers how we extract the core logic into
-verified-logic, what abstractions we use, and where the boundaries are.
+This design covers how we decompose the session tree logic into three
+modules: two generic (`forest`, `seq_set`) and one thin composition
+layer (`session_tree`).
 
 ## Goals / Non-Goals
 
 **Goals:**
-- Verify tree walk termination, path validity, and root-anchoring
-- Verify set operations (unique messages, divergence point) correctness
-- Verify leaf enumeration soundness and completeness
-- Verify merge/cherry-pick subset selection logic
-- Produce reusable DAG primitives, not just session-specific code
+- Produce reusable forest primitives (not session-specific)
+- Produce reusable sequence-as-set primitives (not tree-specific)
+- Verify tree walk termination, path validity, root-anchoring, LCA
+- Verify set operations (difference, intersection) algebraic properties
+- Verify subtree collection soundness and completeness
+- Compose generic primitives into session-tree operations
 
 **Non-Goals:**
 - Verify I/O (file persistence, Automerge storage)
 - Verify serde round-trips (tested, not proved)
 - Verify async session manager methods
-- Verify actual message content cloning (only the ID selection logic)
-- String-based message IDs — we abstract to integers
+- Verify message content cloning (only ID selection logic)
+- String-based message IDs — abstract to integers
+
+## Module Structure
+
+```
+src/forest.rs      — parent-pointer forest primitives
+src/seq_set.rs     — set operations over Seq<int>
+src/session_tree.rs — thin compositions for clankers operations
+```
+
+`forest` and `seq_set` have zero coupling. `session_tree` imports both.
 
 ## Decisions
 
-### 1. Integer Node IDs, Not Strings
+### 1. Three Modules, Not One
 
-**Choice:** Nodes are identified by `int` indices into a parent array
-(`Seq<Option<int>>`). The verified module knows nothing about
-`MessageId` strings.
+**Choice:** Split into `forest` (tree structure), `seq_set` (set
+algebra), and `session_tree` (composition).
 
-**Rationale:** Verus reasons about integers and sequences. String
-equality, hashing, and `HashMap` operations add complexity that
-doesn't contribute to the structural invariants we care about.
-The clankers tree already uses integer indices internally
-(`Vec<usize>` in children maps) — `MessageId` is just the
-external key.
+**Rationale:** The original single-module design mixed tree traversal
+with set operations with application logic. The set operations
+(difference, intersection, membership) are completely generic —
+they work on any `Seq<int>`, not just tree paths. The forest
+operations (walk, LCA, subtree) work on any parent-pointer tree,
+not just conversation DAGs. Separating them makes both reusable.
 
-**Alternative:** Model `MessageId` as an uninterpreted type with
-equality. Rejected — adds axiom overhead for zero benefit. The
-properties we prove (walk terminates, path is valid, set difference
-is correct) depend on index arithmetic, not ID representation.
+**Impact:** `session_tree` becomes 5-6 thin functions that compose
+`forest::ancestor_path` with `seq_set::set_difference`, etc. The
+hard proofs live in `forest` and `seq_set`; `session_tree` proofs
+are one-liners.
 
-**Implementation:** `type NodeId = int` in spec mode. Exec functions
-use `usize`. The parent map is `Seq<Option<int>>` where
-`parents[i] = Some(j)` means node `i`'s parent is node `j`, and
-`parents[i] = None` means node `i` is a root.
+### 2. Integer Node IDs, Not Strings
 
-### 2. Well-formedness as Precondition
+**Choice:** Nodes identified by `int` indices into a parent array
+(`Seq<Option<int>>`). No `MessageId` strings.
 
-**Choice:** A spec predicate `well_formed(parents: Seq<Option<int>>)`
-that requires:
-1. All parent references are in bounds: `parents[i] == Some(j)` →
-   `0 <= j < parents.len()`
-2. No self-references: `parents[i] != Some(i)`
-3. Strict ordering: `parents[i] == Some(j)` → `j < i`
-   (parent index always less than child)
+**Rationale:** Verus reasons about integers and sequences. The
+clankers tree uses integer indices internally — `MessageId` is the
+external key. Walk termination, path validity, and set correctness
+depend on index arithmetic, not ID representation.
 
-Property (3) guarantees acyclicity without needing an explicit
-cycle-detection proof. In the clankers tree, entries are appended
-chronologically — a message's parent always precedes it in the
-entry list.
+### 3. Well-formedness as Precondition
 
-**Rationale:** The clankers `SessionTree::build()` constructs the
-index from a `Vec<SessionEntry>` where each `MessageEntry` has a
-`parent_id` that was inserted earlier. The strict ordering invariant
-is maintained by construction. By requiring it as a precondition,
-walk termination falls out directly: each step moves to a strictly
-smaller index.
+**Choice:** `well_formed(parents: Seq<Option<int>>)` requires:
+1. `parents[i] = Some(j)` implies `0 <= j < i`
+2. `parents[i] = None` is always valid
 
-**Alternative:** Model arbitrary DAGs and prove acyclicity separately.
-Rejected — the strict ordering invariant is the natural structural
-property and makes proofs much simpler.
+Property (1) subsumes bounds checking, self-reference rejection,
+and acyclicity in one predicate. Walk termination follows directly:
+each parent-pointer step moves to a strictly smaller index.
 
-### 3. Sequence-based Children Map
-
-**Choice:** The children map is computed as a function from the parent
-array, not stored separately. A spec function
-`children_of(parents, p) -> Seq<int>` returns all indices whose
-parent is `p`.
-
-**Rationale:** Verus reasons about `Seq` better than `Map<int, Seq<int>>`.
-The children map in clankers is derived from the parent array anyway —
-it's a computed view, not independent state. Defining it as a spec
-function avoids maintaining consistency invariants between two
-data structures.
-
-**Implementation:** Spec-level: recursive `children_of` function that
-filters indices. Exec-level: build a `Vec<Vec<usize>>` in one pass
-(matching clankers' `HashMap` construction). Prove the exec output
-matches the spec.
+**Rationale:** The clankers `SessionTree::build()` appends entries
+chronologically — parents always precede children. The invariant
+is maintained by construction.
 
 ### 4. Walk as Recursive Spec, Iterative Exec
 
-**Choice:** `walk_branch_spec` is a recursive spec function that
-follows parent pointers. `walk_branch` is an iterative exec function
-with a loop invariant proving it matches the spec.
+**Choice:** `ancestor_path_spec` is recursive with `decreases node`
+(index decreases toward 0 per well-formedness). `ancestor_path`
+exec is an iterative loop.
 
-**Rationale:** Recursive specs are natural for tree traversals and
-easy for Z3 to reason about. Iterative exec matches the clankers
-implementation (while loop with `current_id`). The loop invariant
-connects the two: "after k iterations, we've collected the same
-nodes as the recursive spec truncated at depth k."
+**Rationale:** Recursive specs are natural for tree traversals.
+Iterative exec matches clankers code shape and avoids stack overflow.
 
-**Alternative:** Recursive exec with `decreases` clause. Possible
-but doesn't match the clankers code shape, and deep recursion risks
-stack overflow in production.
+### 5. Seq<int> for Set Operations
 
-**Implementation:** The spec recurses with `decreases i` (current
-index decreases toward 0 because `parent < child`). The exec loop
-uses a `steps` counter bounded by `parents.len()`.
+**Choice:** `seq_set` operates on `Seq<int>` (not generic `Seq<T>`).
 
-### 5. Set Difference via Path Membership
+**Rationale:** Verus equality on `int` is decidable and well-behaved.
+Generic set operations would need `Eq` bounds that complicate specs.
+Forest nodes are `int`, so the types align without conversion. If
+`Seq<u64>` set operations are needed later, a parallel module or
+newtype wrapper can be added — the proof structure is identical.
 
-**Choice:** `find_unique_messages` is specified as: node `n` is in
-the result iff `n` is on `walk_branch(source)` AND `n` is not on
-`walk_branch(target)`.
+### 6. Boolean Array for Membership in Exec
 
-**Rationale:** This is the mathematical definition. The clankers
-implementation computes both paths, builds a `HashSet` of target
-IDs, and filters. We prove the exec matches this spec by showing
-the HashSet membership is equivalent to path membership.
+**Choice:** Exec functions for `set_difference` and `set_intersection`
+use a `Vec<bool>` indexed by node ID for O(n) membership testing.
 
-**Implementation:** Spec uses `Seq::contains`. Exec uses a boolean
-array (indexed by node ID) for O(n) membership checking — avoids
-needing verified hash maps.
+**Rationale:** Avoids needing verified hash maps. Parent-pointer
+forests have dense integer indices (0..n), so a boolean array is
+both simpler and faster than hashing. The spec uses `Seq::contains`;
+the exec uses array lookup; the proof connects them.
 
-### 6. Cherry-pick Subtree via Transitive Closure
+### 7. Children-of as Spec Function, Not Stored State
 
-**Choice:** The subtree collected by cherry-pick with children is
-specified as the transitive closure of the children relation from
-the source node: all nodes reachable via zero or more child-pointer
-hops.
+**Choice:** `children_of(parents, p)` is a spec function that
+filters the parent array. No stored children map in the spec.
 
-**Rationale:** The clankers code uses an explicit stack-based DFS.
-The spec defines reachability inductively. The proof connects the
-two: DFS visits every reachable node exactly once (because the DAG
-is acyclic and each node has at most one parent — it's a forest).
+**Rationale:** Verus reasons about `Seq` better than
+`Map<int, Seq<int>>`. The children map is a computed view of the
+parent array. Defining it as a spec avoids maintaining consistency
+between two data structures.
 
-**Implementation:** Spec: recursive `reachable(parents, root, node)`
-predicate. Exec: iterative DFS with a visited array. Proof: each
-node popped from the stack is reachable, and every reachable node
-is eventually pushed.
+The exec `build_children` produces `Vec<Vec<usize>>` (matching
+clankers' construction). Proof shows the exec matches the spec.
 
-### 7. No Ghost State for Merge Annotations
+### 8. Subtree via Forward Scan, Not DFS
 
-**Choice:** We verify the *selection logic* of merge operations
-(which messages get copied), not the annotation recording or
-storage persistence.
+**Choice:** `subtree_spec` is recursive over the parent array.
+`subtree` exec uses a forward scan with a `visited` boolean array:
+mark the root, then scan left-to-right marking any node whose parent
+is already marked.
 
-**Rationale:** Merge annotations are metadata written to Automerge.
-Their correctness is "the JSON contains the right fields" — not
-a structural invariant. The interesting property is: selective merge
-copies exactly `selected ∩ unique`, cherry-pick collects exactly
-the subtree, merge_branch reports the right count. These are pure
-functions over the tree structure.
+**Rationale:** In a well-formed forest, children have higher indices
+than parents. A single left-to-right pass marks all reachable nodes:
+when we visit index `i`, its parent `j < i` was already scanned.
+This is simpler than stack-based DFS and the loop invariant is
+straightforward: "after scanning up to index `k`, every reachable
+node with index `<= k` is marked."
+
+The clankers code uses stack-based DFS because `MessageId` ordering
+doesn't guarantee topological order. But our integer-indexed model
+does have that guarantee, so the simpler algorithm suffices.
+
+### 9. Latest Leaf as Max-Index Leaf
+
+**Choice:** `find_latest_leaf` returns the highest-indexed leaf,
+not the result of following last-child pointers.
+
+**Rationale:** In a well-formed forest with chronological append,
+the highest-indexed leaf is the most recently added message without
+replies — which is what clankers means by "latest." A backward scan
+from `n-1` finding the first leaf is O(n) and trivial to verify.
+The clankers `find_latest_leaf` follows last-child pointers as an
+optimization; the result is the same.
+
+### 10. Session Tree as Pure Composition
+
+**Choice:** `session_tree` functions are one-line compositions:
+- `find_unique = set_difference(ancestor_path(src), ancestor_path(tgt))`
+- `find_divergence = lca(a, b)`
+- `selective_merge = set_intersection(selected, unique)`
+- `cherry_pick_subtree = subtree(root)`
+- `merge_branch_count = find_unique(...).len()`
+- `find_latest_leaf = max-index leaf`
+
+**Rationale:** All algorithmic complexity lives in `forest` and
+`seq_set`. The session-tree proofs reduce to "apply the generic
+lemma." This makes the session-tree module almost trivially correct
+and focuses verification effort where it matters.
 
 ## Risks / Trade-offs
 
-**[Strict ordering may be too strong]** → If clankers ever allows
-re-ordering entries (e.g., CRDT-based merge of concurrent appends),
-the `j < i` invariant breaks. Mitigation: the well-formedness
-predicate is a parameter — callers can weaken it if needed. For
-now, chronological append is the only entry path.
+**[Strict ordering may be too strong]** → If clankers allows
+CRDT-based concurrent appends, `j < i` breaks. Mitigation: the
+well-formedness predicate is a parameter — callers can weaken it.
 
-**[Children map as spec function may slow Z3]** → The `children_of`
-filter scans the entire parent array. For large trees, quantifier
-instantiation could blow up. Mitigation: the exec builds the
-children map eagerly, and proofs only reason about `children_of`
-at specific indices. If Z3 struggles, we can switch to a stored
-`Map<int, Seq<int>>` with an explicit consistency invariant.
+**[children_of as spec function may slow Z3]** → The filter scans
+the full parent array. Mitigation: proofs reason about `children_of`
+at specific indices; the exec builds eagerly.
 
-**[DFS subtree proof complexity]** → Proving DFS completeness
-(every reachable node visited) requires an inductive argument
-over the stack contents. This is the hardest proof in the module.
-Mitigation: the tree is a forest (each node has at most one parent),
-so reachability is simpler than in general DAGs — it's just
-ancestor chains.
+**[seq_set quadratic]** → `set_difference` / `set_intersection`
+exec functions scan `b` for each element of `a` (or use a boolean
+array). For forest paths this is O(n) with the boolean array
+approach, which is fine.
+
+**[Seq<int> not generic]** → If `Seq<u64>` or `Seq<u8>` set
+operations are needed, a new module or type wrapper is required.
+Acceptable — the proof patterns transfer directly.

@@ -3,109 +3,91 @@
 Clankers sessions are stored as branching message DAGs. Users fork
 conversations with `/fork`, navigate with `/switch`, and recombine
 with merge and cherry-pick. The merge operations sit on top of a tree
-structure that maps parent→child relationships via hash indices.
+structure that maps parent→child relationships via integer indices.
 
-Three operations mutate the DAG:
+The tree navigation and set operations that underlie merges:
 
-- **merge_branch** — records a merge annotation, moves the active
-  head to the target leaf, source branch stays intact
-- **merge_selective** — copies a subset of messages from source to
-  target with fresh IDs, appending them as a new chain
-- **cherry_pick** — copies a single message (optionally with its
-  subtree) to a target branch with fresh IDs
-
-The tree navigation that underlies all three:
-
-- **walk_branch** — traces parent pointers from leaf to root
+- **walk_branch** — traces parent pointers from node to root
 - **find_unique_messages** — set difference between two branch paths
 - **find_divergence_point** — last common ancestor of two branches
-- **find_all_leaves** — iterative DFS collecting nodes with no children
-- **find_latest_leaf** — follows last-child pointers to deepest leaf
+- **find_all_leaves** — nodes with no children
+- **find_latest_leaf** — most recently added leaf
+- **selective_merge** — intersection of user selection with unique set
+- **cherry_pick_subtree** — collect all descendants of a node
 
-These are pure functions over an adjacency-list DAG. Their correctness
-properties are structural: walks terminate, paths are valid, set
-differences are correct, LCA is actually on both branches, DFS visits
-each node once. All of this maps to Verus specs over sequences and
-finite maps.
-
-The merge operations add properties on top: selective merge copies
-exactly the requested messages, cherry-pick with children collects
-the full subtree, merge_branch doesn't clone any messages.
-
-The clankers codebase already has Tiger Style depth bounds and tracey
-markers (`r[impl session.walk.*]`, `r[verify session.walk.*]`) on
-these functions. Runtime tests cover the happy paths. But the tree
-invariants (acyclicity, index consistency, walk correctness) are
-exactly the kind of inductive properties that tests sample and proofs
-cover exhaustively.
+These decompose into two independent layers of generic primitives
+plus a thin application-specific composition.
 
 ## What Changes
 
-A new `session_tree` module in verified-logic that extracts the core
-DAG logic from `clankers-session`, stripped of all I/O, async, serde,
-chrono, and Automerge dependencies. The module operates on abstract
-node IDs (integers) and parent maps (`Seq<Option<NodeId>>`).
+Three new modules in verified-logic:
 
-**Tree construction and index**
+### 1. `seq_set.rs` — Set operations over `Seq<int>`
 
-- `build_children_map` — given a parent array, produce a children map
-- Index consistency: every child's parent points back correctly
-- Every node appears in exactly one children list (or is a root)
+Generic set-theoretic operations on integer sequences. Currently
+missing from the codebase (existing `collections` and `slice` modules
+have sorted-sequence and structural operations, but no set algebra).
 
-**Walk operations**
+- `is_member`, `set_difference`, `set_intersection`
+- `is_subset`, `all_distinct`
+- Algebraic proofs: partition, subset transitivity, distinctness
+  preservation
 
-- `walk_branch` — trace parent pointers from leaf to root, return path
-- Termination: bounded by node count (acyclic DAG → no cycles)
-- Root-anchored: first element of path has parent = None
-- Path-valid: consecutive elements have parent→child relationship
+### 2. `forest.rs` — Parent-pointer forest primitives
 
-**Set operations on branches**
+Generic operations on topologically ordered forests represented as
+`Seq<Option<int>>` where parent indices are strictly less than child
+indices. Applicable to git DAGs, file system trees, dependency
+graphs, DOM trees — any parent-pointer structure with chronological
+ordering.
 
-- `find_unique_messages` — nodes on source path not on target path
-- Correctness: result is the set difference of the two paths
-- `find_divergence_point` — LCA of two branches
-- Correctness: result is on both branches, and the next element
-  on each branch differs
+- `well_formed`, `is_root`, `is_leaf`, `children_of`
+- `ancestor_path`, `depth`, `is_ancestor`, `lca`
+- `leaves`, `subtree` (reachability / transitive closure)
+- Structural proofs: termination, path validity, root-anchoring,
+  LCA correctness, subtree soundness/completeness
 
-**Leaf operations**
+### 3. `session_tree.rs` — Thin composition layer
 
-- `find_all_leaves` — collect nodes with no children
-- Completeness: every childless node is in the result
-- Soundness: every node in the result has no children
-- `find_latest_leaf` — follow last-child pointers to deepest node
-- Result is a leaf (no children)
+One-liner functions composing `forest` and `seq_set`:
 
-**Merge properties**
-
-- `selective_merge_spec` — given selected IDs and unique set, result
-  contains exactly the intersection
-- `cherry_pick_subtree_spec` — given a root, DFS collects all
-  reachable descendants
-- `merge_branch_count` — count of unique messages equals the set
-  difference size
+- `find_unique` = `set_difference(ancestor_path(src), ancestor_path(tgt))`
+- `find_divergence` = `lca(parents, a, b)`
+- `selective_merge` = `set_intersection(selected, unique)`
+- `cherry_pick_subtree` = `subtree(parents, root)`
+- `merge_branch_count` = `find_unique(...).len()`
+- `find_latest_leaf` = max-index leaf (backward scan)
 
 ## Capabilities
 
 ### New Capabilities
 
-- `session-tree-walks`: Verified parent-pointer traversal with
-  termination, root-anchoring, and path validity proofs
-- `session-tree-set-ops`: Verified set difference and LCA on branch
-  paths
-- `session-tree-leaves`: Verified leaf enumeration with soundness
-  and completeness
-- `session-merge-correctness`: Verified selective merge and
-  cherry-pick subtree collection
+- `seq-set-ops`: Verified set difference, intersection, subset, and
+  distinctness over integer sequences
+- `forest-structure`: Verified well-formedness, root/leaf classification,
+  and children-of consistency for parent-pointer forests
+- `forest-walks`: Verified ancestor-path traversal with termination,
+  validity, root-anchoring, and length bounds
+- `forest-ancestry`: Verified is-ancestor predicate with ordering
+  properties and least-common-ancestor with maximality proof
+- `forest-reachability`: Verified leaf enumeration and subtree
+  collection with soundness and completeness
+- `session-tree-composition`: Session-specific wiring of forest and
+  seq_set primitives for clankers merge operations
 
-### Modified Capabilities
+### Cross-module Links
 
-- Cross-module links to existing `collections` (find_first, set
-  operations) and `drain` (bounded iteration)
+- `seq_set::all_distinct` used in `forest` path distinctness proofs
+- `forest::ancestor_path` feeds into `seq_set::set_difference` for
+  unique message computation
+- `session_tree` properties reduce to generic lemmas from both modules
 
 ## Impact
 
-- **Files**: 1 new `src/session_tree.rs` module, `src/lib.rs` addition,
-  `src/properties.rs` cross-module links
-- **APIs**: ~15–20 new pub fns (spec + exec pairs)
-- **Dependencies**: None — pure logic using existing vstd Seq/Map
-- **Testing**: Verus verification + proptest with random DAG generation
+- **Files**: 3 new modules (`src/forest.rs`, `src/seq_set.rs`,
+  `src/session_tree.rs`), `src/lib.rs` additions, `src/properties.rs`
+  cross-module links
+- **APIs**: ~25-30 new pub fns across the three modules
+- **Dependencies**: None — pure logic using existing vstd Seq
+- **Testing**: Verus verification + proptest with random forests and
+  random integer sequences

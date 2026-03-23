@@ -1,71 +1,93 @@
-## Phase 1: Well-formedness and Tree Construction
+## Phase 1: seq_set — Set Operations over Sequences
 
-- [ ] Add session-tree requirements to specs/session-tree/spec.md (well-formedness, index consistency)
-- [ ] Implement `well_formed` spec predicate: bounds, no self-ref, strict ordering
-- [ ] Implement `children_of` spec function: filter parent array for children of a given node
-- [ ] Implement `build_children` exec function: single-pass Vec<Vec<usize>> construction
-- [ ] Prove index consistency: `children_of(parents, Some(p))` contains `c` iff `parents[c] == Some(p)`
-- [ ] Prove root consistency: `children_of(parents, None)` contains `c` iff `parents[c] == None`
-- [ ] Prove partition: every node appears in exactly one children list
+- [ ] Add seq-set requirements to specs/seq-set/spec.md ✅ (done during decomposition)
+- [ ] Implement `is_member_spec` + `is_member` exec (linear scan, returns bool)
+- [ ] Prove empty_no_members: is_member([], x) == false
+- [ ] Implement `set_difference_spec` + `set_difference` exec (boolean array filter)
+- [ ] Prove difference_subset: every element in result is member of a
+- [ ] Prove difference_disjoint: no element in result is member of b
+- [ ] Prove difference_complete: member of a && !member of b ==> in result
+- [ ] Implement `set_intersection_spec` + `set_intersection` exec
+- [ ] Prove intersection_in_both: every element in result is member of a and b
+- [ ] Prove intersection_complete: member of a && member of b ==> in result
+- [ ] Implement `is_subset_spec` + `is_subset` exec
+- [ ] Prove subset_reflexive, subset_transitive
+- [ ] Prove empty_subset: is_subset([], b) for any b
+- [ ] Implement `all_distinct_spec` + `all_distinct` exec
+- [ ] Prove difference_intersection_partition: for distinct a, diff.len() + inter.len() == a.len()
+- [ ] Prove difference_preserves_distinct, intersection_preserves_distinct
+- [ ] Unit tests + proptest (random integer sequences, set algebra identities)
+- [ ] Verus + cargo test green
+
+## Phase 2: forest — Well-formedness and Structure
+
+- [ ] Add forest requirements to specs/forest/spec.md ✅ (done during decomposition)
+- [ ] Implement `well_formed_spec` + `well_formed` exec
+- [ ] Implement `is_root_spec`, `is_leaf_spec` predicates
+- [ ] Implement `children_of_spec` (recursive filter) + `build_children` exec
+- [ ] Prove children_of_forward: parents[c] == Some(p) ==> c in children_of(Some(p))
+- [ ] Prove children_of_reverse: c in children_of(p) ==> parents[c] == p
+- [ ] Prove children_of_ordered: result is in ascending index order
 - [ ] Unit tests + proptest (random well-formed parent arrays)
-- [ ] Verus + tracey clean
+- [ ] Verus + cargo test green
 
-## Phase 2: Walk Branch
+## Phase 3: forest — Ancestor Path and Depth
 
-- [ ] Implement `walk_branch_spec` recursive spec function (parent-pointer trace, reversed)
-- [ ] Implement `walk_branch` exec function (iterative loop with counter)
-- [ ] Prove termination: walk completes in at most `parents.len()` steps
-- [ ] Prove root-anchored: `result[0]` has parent `None`
-- [ ] Prove path-valid: consecutive elements have parent→child relationship
-- [ ] Prove leaf-present: `result[result.len() - 1] == leaf_id`
-- [ ] Prove length bound: `result.len() <= parents.len()`
-- [ ] Unit tests + proptest (linear chains, deep trees, single-node trees)
-- [ ] Verus + tracey clean
+- [ ] Implement `ancestor_path_spec` (recursive, decreases node) + `ancestor_path` exec
+- [ ] Prove path_root_anchored: parents[result[0]] == None
+- [ ] Prove path_valid: parents[result[i]] == Some(result[i-1]) for consecutive elements
+- [ ] Prove path_contains_node: result[result.len()-1] == node
+- [ ] Prove path_length_bound: result.len() <= parents.len()
+- [ ] Prove path_elements_in_bounds: all elements 0 <= e < parents.len()
+- [ ] Prove path_distinct: all_distinct(ancestor_path(parents, node))
+- [ ] Implement `depth_spec` + `depth` exec
+- [ ] Prove root_depth_zero: is_root ==> depth == 0
+- [ ] Unit tests + proptest (linear chains, wide trees, single-node)
+- [ ] Verus + cargo test green
 
-## Phase 3: Set Operations on Branches
+## Phase 4: forest — Is-ancestor and LCA
 
-- [ ] Implement `find_unique_spec` spec function (set difference of two paths)
-- [ ] Implement `find_unique` exec function (boolean membership array + filter)
-- [ ] Prove correctness: result contains `n` iff `n` on source path AND `n` not on target path
-- [ ] Prove subset: every element in result is on the source path
-- [ ] Implement `find_divergence_spec` spec function (longest common prefix of two paths)
-- [ ] Implement `find_divergence` exec function (parallel scan)
-- [ ] Prove on-both-branches: result is on both walk paths
-- [ ] Prove maximality: the node after divergence (if any) differs between branches
-- [ ] Unit tests + proptest (forked trees, ancestor/descendant pairs, disjoint roots)
-- [ ] Verus + tracey clean
+- [ ] Implement `is_ancestor_spec` (membership in ancestor_path)
+- [ ] Prove is_ancestor_reflexive, is_ancestor_transitive, is_ancestor_antisymmetric
+- [ ] Implement `lca_spec` + `lca` exec (walk both paths, find last common element)
+- [ ] Prove lca_is_ancestor_of_both: is_ancestor(lca, a) && is_ancestor(lca, b)
+- [ ] Prove lca_maximal: no descendant of lca is ancestor of both a and b
+- [ ] Prove lca_symmetric: lca(a, b) == lca(b, a)
+- [ ] Prove lca_self: lca(a, a) == a
+- [ ] Unit tests + proptest (forked trees, ancestor-descendant pairs, disjoint roots)
+- [ ] Verus + cargo test green
 
-## Phase 4: Leaf Enumeration
+## Phase 5: forest — Leaves and Subtree
 
-- [ ] Implement `is_leaf_spec` predicate: node has no children
-- [ ] Implement `find_all_leaves_spec` spec function: all nodes where `is_leaf_spec` holds
-- [ ] Implement `find_all_leaves` exec function (scan parent array, collect childless nodes)
-- [ ] Prove soundness: every returned node has no children
-- [ ] Prove completeness: every childless node is returned
-- [ ] Implement `find_latest_leaf` exec function (follow last-child pointers)
-- [ ] Prove result is a leaf
-- [ ] Unit tests + proptest (trees with varying branching factors)
-- [ ] Verus + tracey clean
+- [ ] Implement `leaves_spec` + `leaves` exec (scan for childless nodes)
+- [ ] Prove leaves_sound: every returned node satisfies is_leaf
+- [ ] Prove leaves_complete: every is_leaf node is returned
+- [ ] Implement `reachable_spec` (recursive predicate) + `subtree` exec (forward scan)
+- [ ] Prove subtree_sound: every returned node is reachable from root
+- [ ] Prove subtree_complete: every reachable node is returned
+- [ ] Prove subtree_contains_root
+- [ ] Prove leaf_subtree_singleton: is_leaf(root) ==> subtree == [root]
+- [ ] Unit tests + proptest (varying branching factors, deep vs wide trees)
+- [ ] Verus + cargo test green
 
-## Phase 5: Merge and Cherry-pick Selection
+## Phase 6: session_tree — Composition Layer
 
-- [ ] Implement `selective_merge_set_spec`: intersection of selected IDs with unique set
-- [ ] Implement `selective_merge_set` exec function
-- [ ] Prove: result == selected ∩ unique (both directions)
-- [ ] Implement `reachable_spec` recursive predicate: transitive closure of children
-- [ ] Implement `collect_subtree` exec function (iterative DFS with visited array)
-- [ ] Prove subtree soundness: every collected node is reachable from source
-- [ ] Prove subtree completeness: every reachable node is collected
-- [ ] Implement `merge_branch_count_spec`: count equals `find_unique(source, target).len()`
-- [ ] Prove count correctness
-- [ ] Unit tests + proptest (random trees, random selections, subtree shapes)
-- [ ] Verus + tracey clean
+- [ ] Implement `find_unique` = set_difference(ancestor_path(src), ancestor_path(tgt))
+- [ ] Implement `find_divergence` = lca(parents, a, b)
+- [ ] Implement `selective_merge` = set_intersection(selected, unique)
+- [ ] Implement `cherry_pick_subtree` = subtree(parents, root)
+- [ ] Implement `merge_branch_count` = find_unique(...).len()
+- [ ] Implement `find_latest_leaf` (backward scan for max-index leaf)
+- [ ] Prove latest_leaf_is_leaf: is_leaf(result)
+- [ ] Prove latest_leaf_maximal: no leaf has higher index
+- [ ] Unit tests + proptest (random trees, merge scenarios)
+- [ ] Verus + cargo test green
 
-## Phase 6: Cross-module Properties and Integration
+## Phase 7: Cross-module Properties
 
-- [ ] Link `walk_branch` termination to existing `drain` module's bounded iteration pattern
-- [ ] Link `find_unique` to `collections::find_first` / set membership patterns
-- [ ] Link `is_leaf_spec` to `collections` membership predicates
-- [ ] Add cross-module property tests in `src/properties.rs`
-- [ ] Final `verus` pass on full module
-- [ ] Final `tracey query uncovered` — zero uncovered requirements
+- [ ] Prove unique_subset_of_source: find_unique result ⊆ ancestor_path(src)
+- [ ] Prove unique_disjoint_from_target: find_unique result ∩ ancestor_path(tgt) == []
+- [ ] Prove selective_subset_of_unique: selective_merge result ⊆ find_unique result
+- [ ] Prove subtree_walk_connection: ancestor_path(node) ⊆ subtree(root) when is_ancestor(root, node)
+- [ ] Add cross-module property tests in src/properties.rs
+- [ ] Final verus + tracey pass
