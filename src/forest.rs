@@ -237,7 +237,7 @@ proof fn ancestor_path_fuel_sufficient(parents: Seq<Option<int>>, node: int, fue
 
 // r[impl forest.ancestor-path]
 /// Trace parent pointers from `node` to root, return path root→node.
-#[verifier::external_body]
+/// Strategy: walk upward pushing to vec, then reverse by rebuilding.
 pub fn ancestor_path(parents: &[Option<usize>], node: usize) -> (result: Vec<usize>)
     requires
         node < parents@.len(),
@@ -260,60 +260,53 @@ pub fn ancestor_path(parents: &[Option<usize>], node: usize) -> (result: Vec<usi
         None => None::<int>,
     });
 
-    // Walk upward collecting ancestors in reverse order
+    // Phase 1: walk upward, build path in leaf→root order
     let mut rev: Vec<usize> = Vec::new();
     let mut cur: usize = node;
-    let mut done: bool = false;
-
-    // Push the starting node
     rev.push(cur);
 
-    while !done
+    while parents[cur].is_some()
         invariant
-            !done ==> cur < parents@.len(),
+            cur < parents@.len(),
             pm =~= parents@.map(|_i: int, p: Option<usize>| match p {
                 Some(j) => Some(j as int),
                 None => None::<int>,
             }),
             well_formed_spec(pm),
             rev@.len() > 0,
-            // rev is the path from cur to node (inclusive, in child→root order)
-            // i.e., rev = [node, ..., cur]
             rev@[0] == node,
             rev@[rev@.len() - 1] == cur,
-            // All elements in bounds
-            forall|k: int| #![trigger rev@[k]] 0 <= k < rev@.len() ==> 0 <= (rev@[k] as int) < parents@.len(),
-            // Consecutive: parents[rev[k]] == Some(rev[k+1])
-            forall|k: int| #![trigger rev@[k]] 0 <= k < rev@.len() - 1 ==>
-                pm[rev@[k] as int] == Some(rev@[k + 1] as int),
-            // done means cur is a root
-            done ==> pm[cur as int] == None::<int>,
-            !done ==> cur < parents@.len(),
-            rev@.len() <= parents@.len(),
-        decreases if done { 0 } else { cur + 1 },
+            // All in bounds
+            forall|k: int| #![trigger rev@[k]] 0 <= k < rev@.len()
+                ==> 0 <= (rev@[k] as int) < parents@.len(),
+            // Parent chain: rev[k]'s parent is rev[k+1]
+            forall|k: int| #![trigger rev@[k]] 0 <= k < rev@.len() - 1
+                ==> pm[rev@[k] as int] == Some(rev@[k + 1] as int),
+            rev@.len() as int <= node as int - cur as int + 1,
+        decreases cur,
     {
-        match parents[cur] {
-            Some(p) => {
-                assert(pm[cur as int] == Some(p as int));
-                // well-formedness: p < cur
-                rev.push(p);
-                cur = p;
-            }
-            None => {
-                done = true;
-            }
-        }
+        let p = parents[cur].unwrap();
+        proof { assert(pm[cur as int] == Some(p as int)); }
+        rev.push(p);
+        cur = p;
     }
 
-    // Reverse rev to get root→node order
+    // cur is now the root
+    proof {
+        assert(pm[cur as int] == None::<int>);
+    }
+
+    // Phase 2: reverse into path (root→node order)
+    let rlen = rev.len();
     let mut path: Vec<usize> = Vec::new();
-    let mut i: usize = rev.len();
+    let mut i: usize = rlen;
     while i > 0
         invariant
-            0 <= i <= rev@.len(),
-            path@.len() == rev@.len() - i,
-            forall|k: int| 0 <= k < path@.len() ==>
-                path@[k] == rev@[rev@.len() - 1 - k],
+            0 <= i <= rlen,
+            rlen == rev@.len(),
+            path@.len() == rlen - i,
+            forall|k: int| 0 <= k < path@.len()
+                ==> path@[k] == rev@[rlen - 1 - k],
         decreases i,
     {
         i -= 1;
@@ -321,101 +314,104 @@ pub fn ancestor_path(parents: &[Option<usize>], node: usize) -> (result: Vec<usi
     }
 
     proof {
-        // Connect iterative result to recursive spec
-        ancestor_path_matches_rev(pm, node as int, rev@.map(|_i: int, v: usize| v as int));
-        // Show path is the reverse of rev
-        let rev_int = rev@.map(|_i: int, v: usize| v as int);
-        let path_int = path@.map(|_i: int, v: usize| v as int);
-        let spec_path = ancestor_path_spec(pm, node as int);
-        // path_int[k] = rev_int[rev_int.len()-1-k] for all k
-        assert forall|k: int| 0 <= k < path_int.len() implies
-            path_int[k] == rev_int[rev_int.len() as int - 1 - k]
-        by {
-            assert(path@[k] == rev@[rev@.len() - 1 - k]);
-        }
+        // Connect reversed vec to spec via induction on rev
+        ancestor_path_from_rev(pm, node as int, rev@, path@);
     }
     path
 }
 
-/// Helper: if rev = [node, p1, p2, ..., root] (child→root with parent links),
-/// then ancestor_path_spec(pm, node) == reverse(rev).
-#[verifier::external_body]
-proof fn ancestor_path_matches_rev(
-    pm: Seq<Option<int>>, node: int, rev: Seq<int>,
+/// Inductive proof: if rev = [node, p1, ..., root] with correct parent links,
+/// then reversing rev gives ancestor_path_spec(pm, node).
+proof fn ancestor_path_from_rev(
+    pm: Seq<Option<int>>, node: int,
+    rev: Seq<usize>, path: Seq<usize>,
 )
     requires
         well_formed_spec(pm),
+        0 <= node < pm.len(),
         rev.len() > 0,
         rev[0] == node,
-        0 <= node < pm.len(),
-        rev[rev.len() as int - 1] < pm.len() as int,
-        rev[rev.len() as int - 1] >= 0,
-        pm[rev[rev.len() as int - 1]] == None::<int>,
-        forall|k: int| #![trigger rev[k]] 0 <= k < rev.len() ==> 0 <= rev[k] < pm.len(),
-        forall|k: int| #![trigger rev[k]] 0 <= k < rev.len() as int - 1 ==>
-            pm[rev[k]] == Some(rev[k + 1]),
-        rev.len() <= pm.len(),
+        // Last element is root
+        pm[rev[rev.len() - 1] as int] == None::<int>,
+        0 <= (rev[rev.len() - 1] as int) < pm.len(),
+        // All in bounds
+        forall|k: int| #![trigger rev[k]] 0 <= k < rev.len()
+            ==> 0 <= (rev[k] as int) < pm.len(),
+        // Parent chain
+        forall|k: int| #![trigger rev[k]] 0 <= k < rev.len() as int - 1
+            ==> pm[rev[k] as int] == Some(rev[k + 1] as int),
+        // path is reverse of rev
+        path.len() == rev.len(),
+        forall|k: int| 0 <= k < path.len()
+            ==> path[k] == rev[rev.len() - 1 - k],
     ensures
-        ancestor_path_spec(pm, node) =~= reverse_seq(rev),
+        path.map(|_i: int, v: usize| v as int)
+            =~= ancestor_path_spec(pm, node),
     decreases rev.len(),
 {
+    let path_int = path.map(|_i: int, v: usize| v as int);
+    let spec = ancestor_path_spec(pm, node);
+    ancestor_path_unfold(pm, node);
+
     if rev.len() == 1 {
-        // rev = [node], node is root
+        // rev = [node], node is root, path = [node]
         assert(pm[node] == None::<int>);
-        assert(ancestor_path_spec(pm, node) =~= seq![node]);
-        assert(reverse_seq(rev) =~= seq![node]);
+        assert(spec =~= seq![node]);
+        assert(path[0] == node);
+        assert(path_int =~= seq![node as int]);
     } else {
-        // rev = [node, p, ...rest]
-        let p = rev[1];
+        // rev = [node, p, ...], path = [..., p, node]
+        let p = rev[1] as int;
         assert(pm[node] == Some(p));
-        let rest = rev.subrange(1, rev.len() as int);
-        // rest satisfies the same invariants for p
-        assert(rest[0] == p);
-        assert(rest.len() > 0);
-        assert(rest[rest.len() as int - 1] == rev[rev.len() as int - 1]);
-        assert forall|k: int| #![trigger rest[k]] 0 <= k < rest.len() implies 0 <= rest[k] < pm.len()
-        by {
-            assert(rest[k] == rev[k + 1]);
-        }
-        assert forall|k: int| #![trigger rest[k]] 0 <= k < rest.len() as int - 1 implies
-            pm[rest[k]] == Some(rest[k + 1])
-        by {
-            assert(rest[k] == rev[k + 1]);
-            assert(rest[k + 1] == rev[k + 2]);
-        }
-        ancestor_path_matches_rev(pm, p, rest);
-        // ancestor_path(pm, node) = ancestor_path(pm, p).push(node)
-        //                         = reverse(rest).push(node)
-        // reverse(rev) = reverse([node] + rest) = reverse(rest) + [node]
-        // QED
-        assert(ancestor_path_spec(pm, node) =~= ancestor_path_spec(pm, p).push(node));
-        reverse_cons(node, rest);
-    }
-}
+        // spec = ancestor_path_spec(pm, p).push(node)
+        // path = [root, ..., p, node]
+        // path[0..len-1] = [root, ..., p] which should be ancestor_path_spec(pm, p)
 
-/// Spec helper: reverse a sequence.
-pub open spec fn reverse_seq(s: Seq<int>) -> Seq<int> {
-    Seq::new(s.len(), |i: int| s[s.len() as int - 1 - i])
-}
+        // Build sub_rev = rev[1..] and sub_path = path[0..len-1]
+        let sub_rev = rev.subrange(1, rev.len() as int);
+        let sub_path = path.subrange(0, path.len() as int - 1);
 
-/// Helper: reverse([x] + rest) == reverse(rest).push(x).
-proof fn reverse_cons(x: int, rest: Seq<int>)
-    ensures reverse_seq(seq![x] + rest) =~= reverse_seq(rest).push(x),
-{
-    let combined = seq![x] + rest;
-    let rev_combined = reverse_seq(combined);
-    let rev_rest = reverse_seq(rest);
-    assert forall|i: int| 0 <= i < rev_combined.len() implies
-        rev_combined[i] == rev_rest.push(x)[i]
-    by {
-        if i < rest.len() as int {
-            assert(rev_combined[i] == combined[combined.len() as int - 1 - i]);
-            assert(combined[combined.len() as int - 1 - i] == rest[rest.len() as int - 1 - i]);
-            assert(rev_rest[i] == rest[rest.len() as int - 1 - i]);
-        } else {
-            assert(rev_combined[i] == combined[0]);
-            assert(combined[0] == x);
+        // sub_rev has the same structure for node p
+        assert(sub_rev[0] == rev[1]);
+        assert(sub_rev.len() == rev.len() - 1);
+        assert(sub_rev[sub_rev.len() - 1] == rev[rev.len() - 1]);
+
+        // sub_rev parent chain
+        assert forall|k: int| #![trigger sub_rev[k]] 0 <= k < sub_rev.len() as int - 1
+            implies pm[sub_rev[k] as int] == Some(sub_rev[k + 1] as int)
+        by {
+            assert(sub_rev[k] == rev[k + 1]);
+            assert(sub_rev[k + 1] == rev[k + 2]);
         }
+
+        // sub_rev bounds
+        assert forall|k: int| #![trigger sub_rev[k]] 0 <= k < sub_rev.len()
+            implies 0 <= (sub_rev[k] as int) < pm.len()
+        by {
+            assert(sub_rev[k] == rev[k + 1]);
+        }
+
+        // sub_path is reverse of sub_rev
+        assert forall|k: int| 0 <= k < sub_path.len()
+            implies sub_path[k] == sub_rev[sub_rev.len() - 1 - k]
+        by {
+            assert(sub_path[k] == path[k]);
+            assert(path[k] == rev[rev.len() - 1 - k]);
+            assert(rev[rev.len() - 1 - k] == sub_rev[rev.len() - 2 - k]);
+            assert(sub_rev.len() - 1 - k == rev.len() - 2 - k);
+        }
+
+        // Recurse on sub problem
+        ancestor_path_from_rev(pm, p, sub_rev, sub_path);
+        // Now: sub_path.map(int) =~= ancestor_path_spec(pm, p)
+
+        // path = sub_path ++ [node]
+        // path_int = sub_path.map(int) ++ [node as int]
+        //          = ancestor_path_spec(pm, p) ++ [node as int]
+        //          = ancestor_path_spec(pm, p).push(node as int)
+        //          = spec
+        let sub_int = sub_path.map(|_i: int, v: usize| v as int);
+        assert(path_int =~= sub_int.push(node as int));
     }
 }
 
@@ -674,7 +670,6 @@ pub open spec fn common_prefix_from(a: Seq<int>, b: Seq<int>, from: int) -> int
 
 // r[impl forest.lca]
 /// Compute LCA by walking both ancestor paths and finding the last common element.
-#[verifier::external_body]
 pub fn lca(parents: &[Option<usize>], a: usize, b: usize) -> (result: Option<usize>)
     requires
         a < parents@.len(),
@@ -698,21 +693,24 @@ pub fn lca(parents: &[Option<usize>], a: usize, b: usize) -> (result: Option<usi
     let path_a = ancestor_path(parents, a);
     let path_b = ancestor_path(parents, b);
 
-    // Find common prefix length
+    // Find common prefix length (no break — explicit stop condition)
     let min_len = if path_a.len() < path_b.len() { path_a.len() } else { path_b.len() };
     let mut common: usize = 0;
-    while common < min_len
+    let mut found_diff: bool = false;
+    while common < min_len && !found_diff
         invariant
             0 <= common <= min_len,
             min_len <= path_a@.len(),
             min_len <= path_b@.len(),
             forall|k: int| 0 <= k < common as int ==> path_a@[k] == path_b@[k],
-        decreases min_len - common,
+            found_diff ==> common < min_len && path_a@[common as int] != path_b@[common as int],
+        decreases min_len - common + if found_diff { 0usize } else { 1usize },
     {
         if path_a[common] != path_b[common] {
-            break;
+            found_diff = true;
+        } else {
+            common += 1;
         }
-        common += 1;
     }
 
     proof {
@@ -722,7 +720,17 @@ pub fn lca(parents: &[Option<usize>], a: usize, b: usize) -> (result: Option<usi
         });
         let pa = path_a@.map(|_i: int, v: usize| v as int);
         let pb = path_b@.map(|_i: int, v: usize| v as int);
-        // Show common matches common_prefix_len
+        assert forall|k: int| 0 <= k < common as int implies pa[k] == pb[k]
+        by {
+            assert(pa[k] == path_a@[k] as int);
+            assert(pb[k] == path_b@[k] as int);
+            assert(path_a@[k] == path_b@[k]);
+        }
+        if found_diff {
+            assert(pa[common as int] == path_a@[common as int] as int);
+            assert(pb[common as int] == path_b@[common as int] as int);
+            assert(pa[common as int] != pb[common as int]);
+        }
         common_prefix_from_matches(pa, pb, 0, common as int);
     }
 
@@ -1107,8 +1115,8 @@ pub open spec fn subtree_spec(parents: Seq<Option<int>>, root: int) -> Seq<int> 
 }
 
 // r[impl forest.subtree]
-/// Collect subtree via forward scan with reachability marking.
-#[verifier::external_body]
+/// Collect subtree via forward scan with push-based reachability.
+/// Builds the marked array via push (not set) to avoid Vec::set quantifier issues.
 pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
     requires
         root < parents@.len(),
@@ -1129,107 +1137,68 @@ pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
         None => None::<int>,
     });
 
-    // Mark reachable nodes via forward scan
+    // Single pass: build marked array AND result vec simultaneously via push.
+    // For each index i from 0 to len-1, determine if reachable and push
+    // marked[i] = true/false. Since well_formed guarantees parent < child,
+    // when we process i, all potential ancestors are already in marked.
     let mut marked: Vec<bool> = Vec::new();
-    let mut k: usize = 0;
-    while k < parents.len()
-        invariant
-            0 <= k <= parents@.len(),
-            marked@.len() == k as int,
-            forall|j: int| 0 <= j < k as int ==> marked@[j] == false,
-        decreases parents.len() - k,
-    {
-        marked.push(false);
-        k += 1;
-    }
-
-    // Mark root
-    marked.set(root, true);
-
-    // Forward scan: if parent is marked, mark this node
+    let mut out: Vec<usize> = Vec::new();
     let mut i: usize = 0;
+
     while i < parents.len()
         invariant
             0 <= i <= parents@.len(),
-            marked@.len() == parents@.len(),
+            marked@.len() == i as int,
             pm =~= parents@.map(|_i: int, p: Option<usize>| match p {
                 Some(j) => Some(j as int),
                 None => None::<int>,
             }),
             well_formed_spec(pm),
-            // Soundness: marked implies reachable
-            forall|n: int| #![trigger marked@[n]] 0 <= n < parents@.len() && marked@[n] ==>
-                reachable_spec(pm, root as int, n),
-            // Completeness up to i: reachable with index < i implies marked
-            forall|n: int| 0 <= n < i as int && n < parents@.len()
-                && reachable_spec(pm, root as int, n)
-                ==> #[trigger] marked@[n],
+            // marked[n] == reachable for all n < i
+            forall|n: int| #![trigger marked@[n]] 0 <= n < i as int ==>
+                (marked@[n] == reachable_spec(pm, root as int, n)),
+            // out tracks subtree_from_spec up to i
+            out@.map(|_i: int, v: usize| v as int) + subtree_from_spec(pm, root as int, i as int)
+                =~= subtree_from_spec(pm, root as int, 0),
         decreases parents.len() - i,
     {
-        match parents[i] {
-            Some(p) => {
-                proof {
-                    assert(pm[i as int] == Some(p as int));
-                    assert(0 <= (p as int) < (i as int));
-                }
-                if i == root {
-                    // root already marked, nothing to do
-                } else if marked[p] {
+        let is_reachable: bool;
+        if i == root {
+            is_reachable = true;
+        } else {
+            match parents[i] {
+                Some(p) => {
                     proof {
-                        assert(marked@[p as int] == true);
-                        assert(reachable_spec(pm, root as int, p as int));
+                        assert(pm[i as int] == Some(p as int));
+                        assert(0 <= (p as int) < (i as int));
                     }
-                    let ghost pre_marked = marked@;
-                    marked.set(i, true);
+                    // Parent already processed (p < i by well_formed)
+                    is_reachable = marked[p];
                     proof {
-                        // Vec::set ensures: marked@ == old_marked.update(i, true)
-                        // Seq::update axiom: for j != i, updated[j] == old[j]
-                        assert(marked@ =~= pre_marked.update(i as int, true));
-                        assert(i as int != root as int);
-                        // Therefore marked@[root] == pre_marked[root] == true
-                        reachable_child(pm, root as int, i as int);
-                    }
-                } else {
-                    proof {
+                        assert(marked@[p as int] == reachable_spec(pm, root as int, p as int));
                         reachable_unfold(pm, root as int, i as int);
-                        // marked not modified, root still true
+                        // reachable(i) == reachable(p) when parents[i] = Some(p) and i != root
                     }
                 }
-            }
-            None => {
-                proof {
-                    if i as int != root as int {
+                None => {
+                    is_reachable = false;
+                    proof {
                         reachable_unfold(pm, root as int, i as int);
-                        // parents[i] == None and i != root => !reachable
+                        // parents[i] == None, i != root => !reachable
                     }
                 }
             }
         }
+
+        marked.push(is_reachable);
+
+        if is_reachable {
+            out.push(i);
+        }
+
         i += 1;
     }
 
-    // Collect marked nodes
-    let mut out: Vec<usize> = Vec::new();
-    let mut j: usize = 0;
-    while j < parents.len()
-        invariant
-            0 <= j <= parents@.len(),
-            marked@.len() == parents@.len(),
-            pm =~= parents@.map(|_i: int, p: Option<usize>| match p {
-                Some(j) => Some(j as int),
-                None => None::<int>,
-            }),
-            forall|n: int| #![trigger marked@[n]] 0 <= n < parents@.len() ==>
-                (marked@[n] <==> reachable_spec(pm, root as int, n)),
-            out@.map(|_i: int, v: usize| v as int) + subtree_from_spec(pm, root as int, j as int)
-                =~= subtree_from_spec(pm, root as int, 0),
-        decreases parents.len() - j,
-    {
-        if marked[j] {
-            out.push(j);
-        }
-        j += 1;
-    }
     out
 }
 
