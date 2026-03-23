@@ -4,10 +4,10 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1272 Verus proofs + 927 cargo tests = all gates green
+- 1285 Verus proofs + 927 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- 23 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs, 5 forest exec fns, 1 session_tree exec fn
+- 19 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs, 2 forest exec fns (ancestor_path, subtree), 1 forest proof (ancestor_path_matches_rev), 1 forest exec (lca, depends on ancestor_path)
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
