@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1447 Verus proofs + 1002 cargo tests = all gates green
+- 1466 Verus proofs + 1016 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -377,6 +377,15 @@
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
 
+- Watermark module added: watermark_remaining, watermark_fits, watermark_alloc,
+  watermark_reset, watermark_is_empty
+  - All proofs automatic — pure linear integer arithmetic, no nonlinear_arith
+  - Exec fns need `base as int + capacity as int <= u64::MAX as int` in requires —
+    the remaining calculation `base + capacity - mark` overflows without this guard
+  - `watermark_fits` exec uses `let remaining = base + capacity - mark; size <= remaining`
+    instead of `mark + size <= base + capacity` to avoid addition overflow
+  - Cross-module: alloc satisfies monotonic::is_advance (automatic),
+    successive allocs produce region::regions_disjoint (automatic)
 - Buddy module added: block_size, buddy_of, is_aligned_to_order, can_coalesce, parent_block,
   order_for_size
   - Verus bitwise ops (`&`, `|`, `^`, `!`, `<<`, `>>`) only work on u64 — subtraction
