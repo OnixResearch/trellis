@@ -39,6 +39,7 @@
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
+//! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
@@ -48,6 +49,7 @@
 //! - `interval` — half-open interval contains, overlap, split, merge
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
+//! - `markov` — Markov chain prediction: transition counting, confidence thresholds
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
@@ -74,6 +76,8 @@
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
+//! - `tier` — hot/warm/cold tier classification with promote/demote
+//! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
@@ -111,6 +115,7 @@ pub mod drain;
 pub mod env_scrub;
 pub mod epoch;
 pub mod eviction;
+pub mod eviction_score;
 pub mod expiration;
 pub mod fencing;
 pub mod forest;
@@ -121,6 +126,7 @@ pub mod integer;
 pub mod interval;
 pub mod lease;
 pub mod log;
+pub mod markov;
 pub mod merkle;
 pub mod monotonic;
 pub mod nix_attrset;
@@ -152,7 +158,9 @@ pub mod signal;
 pub mod slab;
 pub mod slice;
 pub mod subsumption;
+pub mod tier;
 pub mod token_timestamp;
+pub mod type_lattice;
 pub mod two_phase;
 pub mod vector_clock;
 pub mod watermark;

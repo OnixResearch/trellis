@@ -1723,3 +1723,92 @@ watermark_alloc advances the mark, which satisfies monotonic::is_advance.
 r[properties.watermark-alloc-disjoint-regions]
 Two allocations from sequential marks produce regions that are
 region::regions_disjoint.
+
+## Eviction Score
+
+r[eviction-score.weighted-score]
+weighted_score MUST compute the weighted sum of four factor scores
+using integer weights that sum to 100. Each factor score MUST be in
+the range [0, 100]. The result MUST equal
+w1*s1 + w2*s2 + w3*s3 + w4*s4.
+
+r[eviction-score.full-score]
+full_score MUST multiply the weighted base score by a priority
+multiplier and a tier multiplier. Lower scores are evicted first.
+
+r[eviction-score.weights-valid]
+Eviction weights are valid when all four are in [0, 100] and their
+sum equals 100.
+
+r[eviction-score.priority-multiplier]
+priority_multiplier MUST return 1 for Low (0), 2 for Normal (1),
+4 for High (2), 20 for Critical (3). Higher priority entries get
+higher scores (harder to evict).
+
+r[eviction-score.tier-multiplier]
+tier_multiplier MUST return 1 for Cold (0), 2 for Warm (1),
+4 for Hot (2). Hotter entries get higher scores (harder to evict).
+
+## Tier
+
+r[tier.classify]
+classify_tier MUST return Hot (2) if access_count >= hot_threshold,
+Warm (1) if access_count >= warm_threshold, Cold (0) otherwise.
+Thresholds MUST be ordered: warm_threshold <= hot_threshold.
+
+r[tier.promote]
+promote MUST return the next higher tier: Cold (0) becomes Warm (1),
+Warm (1) becomes Hot (2), Hot (2) stays Hot (2).
+
+r[tier.demote]
+demote MUST return the next lower tier: Hot (2) becomes Warm (1),
+Warm (1) becomes Cold (0), Cold (0) stays Cold (0).
+
+r[tier.should-demote]
+should_demote MUST return true when idle_time >= cold_idle_threshold
+and current tier is above Cold.
+
+## Markov
+
+r[markov.confidence]
+confidence_meets MUST return true when count * 100 >=
+total * threshold_pct. This is the integer equivalent of
+(count / total) >= (threshold_pct / 100).
+
+r[markov.record-bounded]
+After recording a transition, the count for that transition
+MUST NOT exceed the total. The total MUST NOT exceed the
+configured maximum.
+
+r[markov.prediction-valid]
+A prediction is valid when count > 0 and count <= total
+and total > 0. The confidence ratio count/total MUST be
+in (0, 1].
+
+r[markov.best-prediction]
+best_prediction MUST return the count of the most frequent
+transition. If multiple transitions tie, any of them MAY be
+returned.
+
+## Type Lattice
+
+r[type-lattice.can-convert]
+can_convert MUST return true if and only if a value of the source
+type can be converted to the target type. The conversion graph
+MUST be reflexive: can_convert(t, t) for all valid types.
+
+r[type-lattice.any-top]
+ANY MUST act as the top element: can_convert(ANY, t) and
+can_convert(t, ANY) MUST both return true for all valid types.
+
+r[type-lattice.string-source]
+STRING MUST be convertible to every other valid type.
+can_convert(STRING, t) MUST return true for all valid t.
+
+r[type-lattice.numeric-widening]
+INTEGER MUST be convertible to FLOAT. FLOAT MUST be convertible
+to INTEGER. Both MUST be convertible to STRING.
+
+r[type-lattice.temporal-widening]
+DATE MUST be convertible to DATETIME and vice versa. Both MUST
+be convertible to STRING.
