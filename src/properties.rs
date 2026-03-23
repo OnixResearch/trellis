@@ -882,6 +882,49 @@ mod slab_page_proofs {
     } // verus!
 }
 
+// --- buddy ↔ bitwise agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod buddy_bitwise_proofs {
+    use vstd::prelude::*;
+
+    use crate::bitwise::toggle_bit_spec;
+    use crate::buddy::block_size_spec;
+    use crate::buddy::buddy_of_spec;
+
+    verus! {
+
+    // r[impl properties.buddy-uses-toggle]
+    pub open spec fn buddy_uses_toggle_prop(addr: u64, order: u64) -> bool
+        recommends order < 64
+    {
+        buddy_of_spec(addr, order) == toggle_bit_spec(addr, order)
+    }
+
+    // r[verify properties.buddy-uses-toggle]
+    proof fn prove_buddy_uses_toggle(addr: u64, order: u64)
+        requires order < 64
+        ensures buddy_uses_toggle_prop(addr, order)
+    {
+        // Both are addr ^ (1u64 << order)
+    }
+
+    // r[impl properties.block-size-is-pow2]
+    pub open spec fn block_size_is_pow2_prop(order: u64) -> bool
+        recommends order < 64
+    {
+        block_size_spec(order) == (1u64 << order)
+    }
+
+    // r[verify properties.block-size-is-pow2]
+    proof fn prove_block_size_is_pow2(order: u64)
+        requires order < 64
+        ensures block_size_is_pow2_prop(order)
+    {}
+
+    } // verus!
+}
+
 // --- region ↔ interval agreement ---
 
 #[cfg(verus_keep_ghost)]
@@ -1666,6 +1709,20 @@ mod tests {
                 prop_assert!(path.contains(&root),
                     "node {} in subtree({}) but root not on path {:?}", n, root, path);
             }
+        }
+
+        // r[verify properties.buddy-uses-toggle]
+        #[test]
+        fn prop_buddy_uses_toggle(addr: u64, order in 0u64..64) {
+            let buddy = crate::buddy::buddy_of(addr, order);
+            let toggled = crate::bitwise::toggle_bit(addr, order);
+            prop_assert_eq!(buddy, toggled);
+        }
+
+        // r[verify properties.block-size-is-pow2]
+        #[test]
+        fn prop_block_size_is_pow2(order in 0u64..64) {
+            prop_assert_eq!(crate::buddy::block_size(order), 1u64 << order);
         }
 
         // r[verify properties.slab-slot-is-page-frame]

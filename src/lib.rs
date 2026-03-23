@@ -22,6 +22,7 @@
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
+//! - `buddy` — buddy system: block sizes, buddy addresses, coalescing, parent blocks
 //! - `causal_order` — causal delivery and consistent snapshots
 //! - `containment` — delegation containment: scope + mode + subsumption
 //! - `consistent_hash` — consistent hash ring with complete coverage
@@ -90,6 +91,7 @@ pub mod bitmap;
 pub mod bitwise;
 pub mod bloom;
 pub mod bounded_range;
+pub mod buddy;
 pub mod causal_order;
 pub mod containment;
 pub mod consistent_hash;

@@ -1653,3 +1653,35 @@ page::frame_number(addr, slot_size).
 r[properties.slab-capacity-is-pages-dual]
 For exact multiples: slab_capacity(n * s, s) == n, matching the
 inverse relationship with pages_needed.
+
+## Buddy System
+
+r[buddy.block-size]
+block_size(order) MUST return 2^order. block_size(0) == 1.
+
+r[buddy.buddy-of]
+buddy_of(addr, order) MUST return the buddy address by flipping bit `order`
+in addr. buddy_of MUST be an involution: buddy_of(buddy_of(addr, order), order) == addr.
+
+r[buddy.order-for-size]
+order_for_size(size) MUST return the minimum order k such that 2^k >= size.
+For exact powers of two, order_for_size(2^k) == k.
+
+r[buddy.can-coalesce]
+Two blocks can coalesce iff they are buddies at the same order and both
+are aligned to that order. Coalescing produces a block at order+1.
+
+r[buddy.parent-block]
+parent_block(addr, order) MUST return the start of the parent block at
+order+1. The parent is aligned to order+1.
+
+r[buddy.is-aligned-to-order]
+An address is aligned to order iff addr % 2^order == 0.
+
+## Cross-module: Buddy ↔ Bitwise/Integer
+
+r[properties.buddy-uses-toggle]
+buddy_of(addr, order) MUST equal bitwise::toggle_bit(addr, order).
+
+r[properties.block-size-is-pow2]
+block_size(order) MUST equal integer::pow2_spec(order).
