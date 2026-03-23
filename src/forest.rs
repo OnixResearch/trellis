@@ -869,7 +869,6 @@ pub open spec fn leaves_spec(parents: Seq<Option<int>>) -> Seq<int> {
 
 // r[impl forest.leaves]
 /// Collect all leaf nodes.
-#[verifier::external_body]
 pub fn leaves(parents: &[Option<usize>]) -> (result: Vec<usize>)
     ensures ({
         let pm = parents@.map(|_i: int, p: Option<usize>| match p {
@@ -920,11 +919,38 @@ pub fn leaves(parents: &[Option<usize>]) -> (result: Vec<usize>)
     {
         match parents[j] {
             Some(p) => {
-                has_child.set(p, true);
+                if p < parents.len() {
+                    has_child.set(p, true);
+                    proof {
+                        assert(pm[j as int] == Some(p as int));
+                    }
+                }
             }
             None => {}
         }
         j += 1;
+    }
+
+    // Establish biconditional: has_child[x] <==> !is_leaf_spec(pm, x)
+    proof {
+        assert forall|x: int| 0 <= x < parents@.len() implies
+            (has_child@[x] == true <==> !is_leaf_spec(pm, x))
+        by {
+            if has_child@[x] {
+                // Forward: has_child[x] => exists c with pm[c] == Some(x) => !is_leaf
+                let c = choose|c: int| 0 <= c < parents@.len() && pm[c] == Some(x);
+                assert(pm[c] == Some(x));
+                // is_leaf requires forall j: pm[j] != Some(x), but pm[c] == Some(x)
+            }
+            if !is_leaf_spec(pm, x) {
+                // Backward: !is_leaf => exists j: pm[j] == Some(x)
+                let j = choose|j: int| #![trigger pm[j]] 0 <= j < pm.len() && pm[j] == Some(x);
+                // j < parents.len(), and second loop invariant says has_child[x] == true
+                assert(pm[j] == Some(x));
+                assert(0 <= x < parents@.len());
+                assert(has_child@[x] == true);
+            }
+        }
     }
 
     // Collect nodes with no children
@@ -985,6 +1011,77 @@ pub open spec fn reachable_spec(
     parents: Seq<Option<int>>, root: int, n: int,
 ) -> bool {
     reachable_fuel(parents, root, n, (if n >= 0 { n + 1 } else { 0 }) as nat)
+}
+
+/// Under well_formed, reachable_spec unfolds one step.
+proof fn reachable_unfold(parents: Seq<Option<int>>, root: int, n: int)
+    requires well_formed_spec(parents), 0 <= n < parents.len()
+    ensures reachable_spec(parents, root, n) == if n == root { true } else {
+        match parents[n] {
+            Some(p) => reachable_spec(parents, root, p),
+            None => false,
+        }
+    }
+    decreases n,
+{
+    if n == root {
+        // Base: reachable_fuel(parents, root, root, fuel) = true for any fuel > 0
+    } else {
+        match parents[n] {
+            Some(p) => {
+                // well_formed: 0 <= p < n
+                // reachable_spec(parents, root, n) = reachable_fuel(parents, root, n, n+1)
+                // Unfolds to: reachable_fuel(parents, root, p, n)
+                // Need: reachable_fuel(parents, root, p, n) == reachable_fuel(parents, root, p, p+1)
+                reachable_fuel_sufficient(parents, root, p, n as nat);
+            }
+            None => {}
+        }
+    }
+}
+
+/// Extra fuel beyond n+1 doesn't change the result under well_formed.
+proof fn reachable_fuel_sufficient(parents: Seq<Option<int>>, root: int, n: int, fuel: nat)
+    requires well_formed_spec(parents), 0 <= n < parents.len(), fuel >= n + 1
+    ensures reachable_fuel(parents, root, n, fuel) ==
+        reachable_fuel(parents, root, n, (n + 1) as nat)
+    decreases n,
+{
+    if n == root {
+    } else {
+        match parents[n] {
+            Some(p) => {
+                reachable_fuel_sufficient(parents, root, p, (fuel - 1) as nat);
+                reachable_fuel_sufficient(parents, root, p, n as nat);
+            }
+            None => {}
+        }
+    }
+}
+
+/// If parent is reachable, child is reachable.
+proof fn reachable_child(parents: Seq<Option<int>>, root: int, n: int)
+    requires
+        well_formed_spec(parents),
+        0 <= n < parents.len(),
+        n != root,
+        parents[n].is_some(),
+        reachable_spec(parents, root, parents[n].unwrap()),
+    ensures reachable_spec(parents, root, n)
+{
+    reachable_unfold(parents, root, n);
+}
+
+/// If reachable and not root, parent must be reachable.
+proof fn reachable_parent(parents: Seq<Option<int>>, root: int, n: int)
+    requires
+        well_formed_spec(parents),
+        0 <= n < parents.len(),
+        n != root,
+        reachable_spec(parents, root, n),
+    ensures parents[n].is_some() && reachable_spec(parents, root, parents[n].unwrap())
+{
+    reachable_unfold(parents, root, n);
 }
 
 // r[depends forest.subtree]
@@ -1060,7 +1157,6 @@ pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
                 None => None::<int>,
             }),
             well_formed_spec(pm),
-            marked@[root as int] == true,
             // Soundness: marked implies reachable
             forall|n: int| #![trigger marked@[n]] 0 <= n < parents@.len() && marked@[n] ==>
                 reachable_spec(pm, root as int, n),
@@ -1072,40 +1168,39 @@ pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
     {
         match parents[i] {
             Some(p) => {
-                if marked[p] {
+                proof {
+                    assert(pm[i as int] == Some(p as int));
+                    assert(0 <= (p as int) < (i as int));
+                }
+                if i == root {
+                    // root already marked, nothing to do
+                } else if marked[p] {
+                    proof {
+                        assert(marked@[p as int] == true);
+                        assert(reachable_spec(pm, root as int, p as int));
+                    }
+                    let ghost pre_marked = marked@;
                     marked.set(i, true);
                     proof {
-                        // p is reachable, and parents[i] = Some(p),
-                        // so i is reachable via p
-                        assert(reachable_spec(pm, root as int, p as int));
-                        // Show reachable(pm, root, i):
-                        // i != root (or i == root which is already marked)
-                        // parents[i] = Some(p) and reachable(pm, root, p)
+                        // Vec::set ensures: marked@ == old_marked.update(i, true)
+                        // Seq::update axiom: for j != i, updated[j] == old[j]
+                        assert(marked@ =~= pre_marked.update(i as int, true));
+                        assert(i as int != root as int);
+                        // Therefore marked@[root] == pre_marked[root] == true
+                        reachable_child(pm, root as int, i as int);
                     }
                 } else {
                     proof {
-                        // If reachable(pm, root, i), then by def either i == root
-                        // or parents[i] == Some(p) and reachable(pm, root, p).
-                        // If reachable(pm, root, p), then p < i (well-formed),
-                        // so p was already scanned and should be marked.
-                        // Contradiction shows !reachable or already handled.
-                        if i as int != root as int {
-                            if reachable_spec(pm, root as int, i as int) {
-                                assert(pm[i as int] == Some(p as int));
-                                assert(reachable_spec(pm, root as int, p as int));
-                                assert(marked@[p as int]); // by completeness, p < i
-                            }
-                        }
+                        reachable_unfold(pm, root as int, i as int);
+                        // marked not modified, root still true
                     }
                 }
             }
             None => {
                 proof {
-                    // If i is reachable and i != root, then parents[i] must be Some
-                    // But parents[i] == None::<int>, so only reachable if i == root
                     if i as int != root as int {
-                        // reachable(pm, root, i) => i == root (base) or parents[i] = Some(p)
-                        // parents[i] = None, so must be i == root. Contradiction.
+                        reachable_unfold(pm, root as int, i as int);
+                        // parents[i] == None and i != root => !reachable
                     }
                 }
             }
