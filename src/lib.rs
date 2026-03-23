@@ -52,6 +52,7 @@
 //! - `nix_version` — Nix version comparison with component classification
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
+//! - `pattern` — wildcard and set-membership pattern matching for capabilities
 //! - `page` — virtual address decomposition: frame number, offset, alignment
 //! - `partition` — verified non-overlapping gap-free interval partitions
 //! - `permission` — Unix file permission bits: has/set/clear, umask
@@ -114,6 +115,7 @@ pub mod option;
 pub mod ordering;
 pub mod page;
 pub mod partition;
+pub mod pattern;
 pub mod permission;
 pub mod pressure;
 pub mod process_state;

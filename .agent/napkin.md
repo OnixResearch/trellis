@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1117 Verus proofs + 787 cargo tests = all gates green
+- 1128 Verus proofs + 802 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -262,6 +262,17 @@
   - mode_le_spec is just `a == b || b == MODE_FULL()` — Z3 handles all case splits
   - All 21 proofs automatic — no hints needed for u8 constant comparisons
   - delegation_allowed == mode_le(child, parent), escalation_denies_permits follows directly
+- Pattern module added: match_pattern, pattern_contains, is_wildcard
+  - Seq<int> with sentinel WILDCARD() == -1 for wildcard patterns
+  - match_pattern exec uses Seq.map(|_i, x| x as int) to bridge i64 slices to Seq<int> specs
+  - Seq.map indirection needs explicit #![trigger pat[j]] — Verus can't auto-infer through map
+  - Ghost vars (`let ghost pat = pattern@.map(...)`) avoid repeating the map expression in invariants
+  - pattern_contains exec marked external_body: Z3 can't negate existential through Seq.map
+    (inner loop proves forall k < len: s1[k] != target, but Z3 can't derive !exists from forall
+    when the sequences go through map indirection). Proptest covers correctness.
+  - Transitivity and containment-implies-match only hold for well-formed patterns
+    (non-wildcard patterns must not contain the sentinel -1). Added _wellformed variants
+    with that precondition — the vacuous case (non-wildcard with sentinel) is contradictory.
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

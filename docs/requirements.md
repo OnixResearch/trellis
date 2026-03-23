@@ -1399,3 +1399,29 @@ mode_permits(cap, op) MUST return true iff the operation mode is ≤ the capabil
 
 r[access-mode.no-escalation]
 Delegation MUST require child mode ≤ parent mode. Escalation (child > parent) MUST be denied. Failed delegation MUST also fail mode_permits.
+
+## Pattern Matching
+
+r[pattern.wildcard-matches-all]
+A wildcard pattern MUST match any input value. The wildcard sentinel is -1.
+
+r[pattern.exact-match-reflexive]
+A singleton pattern MUST match its own element.
+
+r[pattern.non-member-rejected]
+If a value is not in the pattern items and the pattern is not wildcard, matching MUST fail.
+
+r[pattern.containment-subset]
+pattern_contains(p1, p2) MUST hold iff p1 is wildcard or every item in p2 appears in p1. Containment implies match propagation.
+
+r[pattern.wildcard-contains-any]
+A wildcard pattern MUST contain any other pattern.
+
+r[pattern.non-wildcard-cannot-contain-wildcard]
+A non-wildcard pattern that does not contain the sentinel MUST NOT contain the wildcard pattern.
+
+r[pattern.containment-reflexive]
+Every pattern MUST contain itself.
+
+r[pattern.containment-transitive]
+Pattern containment MUST be transitive for well-formed patterns (non-wildcard patterns must not contain the sentinel value).
