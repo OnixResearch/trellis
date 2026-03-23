@@ -138,6 +138,7 @@ pub mod ring_buffer;
 pub mod scope;
 pub mod seq_set;
 pub mod sequential;
+pub mod session_tree;
 pub mod signal;
 pub mod slice;
 pub mod subsumption;
