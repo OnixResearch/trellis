@@ -2,246 +2,427 @@
 
 ## Purpose
 
-Defines the correctness properties for UCAN-style capability
-authorization: pattern matching primitives, operation authorization
-dispatch, and delegation containment. Extracted from the
-`clankers-ucan` capability module.
+Defines correctness properties for UCAN-style capability authorization
+as generic, composable building blocks. Covers scope coverage, access
+mode ordering, variant subsumption, pattern matching, authorization
+composition, delegation containment, chain validation, and token
+timestamps. Applicable to both clankers-ucan and aspen-auth.
 
 ## Definitions
 
+- **Scope**: A byte sequence representing a resource boundary
+  (key prefix, path prefix, service prefix, etc.).
+- **Coverage**: `covers(scope, target)` — the target falls within
+  the scope. Implemented as `target.starts_with(scope)`.
+- **Compound scope**: Two-field scoping where both fields must match
+  (e.g., mount equality + prefix coverage).
+- **Optional constraint**: An `Option<Scope>` where `None` means
+  unconstrained and `Some` imposes a coverage check.
+- **Access mode**: A position in a partial order over permission
+  levels (e.g., Read ⊂ Full, SecretsRead ⊂ SecretsFull).
+- **Subsumption**: A relation over capability variant types where
+  one variant can authorize operations of another variant
+  (e.g., Full subsumes Read, Write, Delete, Watch).
 - **Pattern**: A sequence of items representing allowed values.
-  A wildcard pattern matches everything. A multi-item pattern
-  matches any single item in the set.
-- **Glob pattern**: A byte sequence optionally ending with a
-  wildcard byte. The prefix before the wildcard must match the
-  start of the input.
-- **Capability**: An enum variant granting a specific kind of
-  access (prompt, tool use, shell execute, file access, etc.).
-- **Operation**: An enum variant representing a requested action.
-- **Authorization**: A capability authorizes an operation if the
-  capability's variant matches the operation's variant and the
-  capability's pattern/prefix covers the operation's target.
-- **Containment**: A parent capability contains a child capability
-  if the child's scope is equal or narrower on every axis.
+  A wildcard matches everything. A multi-item pattern matches
+  any single item in the set.
+- **Glob pattern**: A byte sequence with `*` wildcards. Trailing
+  wildcard matches any suffix. Multi-segment wildcards match
+  ordered substrings.
+- **Capability**: A typed grant of access with a variant, scope,
+  and access mode.
+- **Operation**: A typed request with a variant, target, and mode.
+- **Authorization**: `authorizes(cap, op) = subsumes(cap.variant,
+  op.variant) && covers(cap.scope, op.target) && mode_permits(
+  cap.mode, op.mode)`.
+- **Containment**: `contains(parent, child)` — the child's access
+  is equal or narrower than the parent's on every axis.
+- **Delegation chain**: A sequence of tokens where each level
+  attenuates capabilities from its parent.
 
 ## Requirements
 
-### Requirement: Wildcard Matches All
+### Scope Coverage
+
+#### Requirement: Scope Coverage Is Reflexive
+
+A scope MUST cover itself.
+
+`covers(s, s)` MUST return true for all `s`.
+
+##### Scenario: Identical prefix
+
+- GIVEN scope `"/home/user/"` and target `"/home/user/"`
+- WHEN checking coverage
+- THEN coverage succeeds
+
+#### Requirement: Scope Coverage Is Transitive
+
+If scope A covers B and B covers C, then A covers C.
+
+`covers(a, b) && covers(b, c) ==> covers(a, c)`
+
+##### Scenario: Nested prefixes
+
+- GIVEN a = `"/home/"`, b = `"/home/user/"`, c = `"/home/user/docs/"`
+- WHEN a covers b and b covers c
+- THEN a covers c
+
+#### Requirement: Scope Coverage Rejects Non-Prefixes
+
+A scope MUST NOT cover a target that does not start with the scope.
+
+`!starts_with(target, scope) ==> !covers(scope, target)`
+
+##### Scenario: Disjoint paths
+
+- GIVEN scope `"/home/user/"` and target `"/etc/passwd"`
+- WHEN checking coverage
+- THEN coverage fails
+
+#### Requirement: Scope Narrowing Is Monotone
+
+If child scope is narrower than parent scope, then everything the
+child covers is also covered by the parent.
+
+`covers(parent, child) ==> forall t: covers(child, t) ==> covers(parent, t)`
+
+##### Scenario: Narrower prefix covers subset
+
+- GIVEN parent scope `"/data/"` and child scope `"/data/sub/"`
+- WHEN child covers `"/data/sub/file.txt"`
+- THEN parent also covers `"/data/sub/file.txt"`
+
+#### Requirement: Compound Scope Requires All Fields
+
+Compound scoping (e.g., mount + prefix) MUST require all fields
+to match. A mount mismatch MUST deny regardless of prefix match.
+
+`compound_covers(cap_mount, cap_prefix, op_mount, op_path) =
+ cap_mount == op_mount && covers(cap_prefix, op_path)`
+
+##### Scenario: Mount mismatch denies
+
+- GIVEN cap mount `"secret/"`, cap prefix `""`, op mount `"kv/"`, op path `"key"`
+- WHEN checking compound coverage
+- THEN coverage fails despite prefix match
+
+##### Scenario: Both match
+
+- GIVEN cap mount `"secret/"`, cap prefix `"app/"`, op mount `"secret/"`, op path `"app/db-pass"`
+- WHEN checking compound coverage
+- THEN coverage succeeds
+
+#### Requirement: Optional Constraint None Is Unconstrained
+
+An optional constraint of `None` MUST allow any target.
+
+`optional_covers(None, t) == true` for all `t`.
+
+##### Scenario: No working dir constraint
+
+- GIVEN capability working_dir `None`
+- WHEN authorizing any operation
+- THEN the optional constraint passes
+
+#### Requirement: Optional Constraint Some Requires Value
+
+An optional constraint of `Some` MUST deny when the target is `None`.
+
+`optional_covers(Some(s), None) == false`
+
+##### Scenario: Constraint present but value missing
+
+- GIVEN capability working_dir `Some("/home/user")`
+- WHEN operation has no working dir
+- THEN authorization fails
+
+#### Requirement: Optional Constraint Some-Some Delegates to Coverage
+
+`optional_covers(Some(s), Some(t)) == covers(s, t)`
+
+##### Scenario: Subdirectory matches
+
+- GIVEN cap working_dir `Some("/home/user")`, op working_dir `Some("/home/user/project")`
+- WHEN checking optional coverage
+- THEN passes because `covers` passes
+
+### Access Mode Ordering
+
+#### Requirement: Mode Order Is Transitive
+
+`mode_le(a, b) && mode_le(b, c) ==> mode_le(a, c)`
+
+##### Scenario: Read ≤ Full, Full ≤ Full
+
+- GIVEN Read ≤ Full and Full ≤ Full
+- WHEN checking Read ≤ Full transitively
+- THEN holds
+
+#### Requirement: Mode Order Is Antisymmetric
+
+`mode_le(a, b) && mode_le(b, a) ==> a == b`
+
+##### Scenario: Two modes that contain each other are equal
+
+- GIVEN mode_le(X, Y) and mode_le(Y, X)
+- THEN X == Y
+
+#### Requirement: Mode Permits Checks Ordering
+
+Authorization MUST check that the capability's mode permits the
+operation's mode: `mode_permits(cap_mode, op_mode)`.
+
+A Read-mode capability MUST NOT authorize Write operations.
+A Full-mode capability MUST authorize both Read and Write.
+
+##### Scenario: Read-only denies write
+
+- GIVEN cap mode Read, op mode Write
+- WHEN checking mode_permits
+- THEN denied
+
+##### Scenario: Full allows both
+
+- GIVEN cap mode Full, op mode Read
+- WHEN checking mode_permits
+- THEN allowed
+
+#### Requirement: Delegation Cannot Escalate Mode
+
+Delegation containment MUST require `mode_le(child_mode, parent_mode)`.
+A child MUST NOT have a higher mode than its parent.
+
+##### Scenario: Read parent, Write child rejected
+
+- GIVEN parent mode Read, child mode Write
+- WHEN checking delegation containment
+- THEN rejected
+
+##### Scenario: Full parent, Read child allowed
+
+- GIVEN parent mode Full, child mode Read
+- WHEN checking delegation containment
+- THEN allowed (attenuation)
+
+### Variant Subsumption
+
+#### Requirement: Subsumption Soundness
+
+If variant A does not subsume variant B, then a capability of
+type A MUST NOT authorize an operation of type B.
+
+`!subsumes(A, B) ==> !authorizes(cap_A, op_B)`
+
+##### Scenario: Read cap cannot authorize Delete op
+
+- GIVEN Read capability and Delete operation
+- WHEN subsumes(Read, Delete) is false
+- THEN authorization fails
+
+#### Requirement: Subsumption Completeness
+
+If variant A subsumes variant B, and scope covers and mode permits,
+then authorization MUST succeed.
+
+`subsumes(A, B) && covers(scope) && mode_permits(mode) ==> authorizes`
+
+##### Scenario: Full cap authorizes Read op within scope
+
+- GIVEN Full capability with prefix `"/data/"` and Read op for `"/data/key"`
+- WHEN Full subsumes Read, scope covers, mode permits
+- THEN authorization succeeds
+
+#### Requirement: Subsumption Is Acyclic
+
+No variant MUST subsume itself through a chain of other variants.
+The subsumption relation forms a DAG.
+
+##### Scenario: No circular subsumption
+
+- GIVEN the full subsumption relation
+- WHEN checking for cycles
+- THEN none exist
+
+#### Requirement: Non-Subsumed Pairs Always Deny
+
+A capability MUST NOT authorize an operation of an incompatible
+variant regardless of scope or mode.
+
+##### Scenario: Prompt cap vs ToolUse op
+
+- GIVEN a Prompt capability with wildcard scope
+- WHEN authorizing a ToolUse operation
+- THEN authorization fails
+
+### Pattern Matching
+
+#### Requirement: Wildcard Matches All
 
 A wildcard pattern MUST match any input value.
 
 `match_pattern(WILDCARD, v)` MUST return true for all `v`.
 
-#### Scenario: Wildcard tool pattern
-
-- GIVEN a wildcard tool pattern
-- WHEN checked against any tool name
-- THEN the match succeeds
-
-#### Scenario: Wildcard command pattern
-
-- GIVEN a wildcard command pattern
-- WHEN checked against any command string
-- THEN the match succeeds
-
-### Requirement: Exact Match Is Reflexive
-
-A single-item pattern MUST match when the input equals that item.
+#### Requirement: Exact Match Is Reflexive
 
 `match_pattern([x], x)` MUST return true.
 
-#### Scenario: Single tool name
-
-- GIVEN pattern `["read"]` and input `"read"`
-- WHEN matching
-- THEN the result is true
-
-### Requirement: Non-member Rejected
-
-A multi-item pattern MUST reject inputs not in the set.
+#### Requirement: Non-member Rejected
 
 If `v` is not in pattern items, `match_pattern(pattern, v)` MUST
 return false.
 
-#### Scenario: Tool not in list
-
-- GIVEN pattern `["read", "grep"]` and input `"bash"`
-- WHEN matching
-- THEN the result is false
-
-### Requirement: Pattern Containment Is Subset
+#### Requirement: Pattern Containment Is Subset
 
 `pattern_contains(p1, p2)` MUST return true iff every item in
 `p2` is also in `p1`.
 
-#### Scenario: Subset
-
-- GIVEN p1 = `["read", "grep", "find"]` and p2 = `["read", "grep"]`
-- WHEN checking containment
-- THEN p1 contains p2
-
-#### Scenario: Not subset
-
-- GIVEN p1 = `["read", "grep"]` and p2 = `["read", "bash"]`
-- WHEN checking containment
-- THEN p1 does not contain p2
-
-### Requirement: Wildcard Contains Any Pattern
-
-A wildcard pattern MUST contain any non-wildcard pattern.
+#### Requirement: Wildcard Contains Any Pattern
 
 `pattern_contains(WILDCARD, p)` MUST return true for all `p`.
 
-#### Scenario: Wildcard parent
-
-- GIVEN parent pattern is wildcard, child is `["read"]`
-- WHEN checking containment
-- THEN the wildcard contains the child
-
-### Requirement: Non-wildcard Cannot Contain Wildcard
-
-A non-wildcard pattern MUST NOT contain the wildcard pattern.
+#### Requirement: Non-wildcard Cannot Contain Wildcard
 
 `pattern_contains(p, WILDCARD)` MUST return false when `p` is
 not wildcard.
 
-#### Scenario: Escalation attempt
+#### Requirement: Pattern Containment Is Transitive
 
-- GIVEN parent pattern `["read", "grep"]` and child is wildcard
-- WHEN checking containment
-- THEN containment is denied
+`pattern_contains(a, b) && pattern_contains(b, c) ==> pattern_contains(a, c)`
 
-### Requirement: Containment Is Transitive
+### Glob Matching
 
-If `contains(A, B)` and `contains(B, C)` then `contains(A, C)`.
+#### Requirement: Glob Wildcard Matches All
 
-#### Scenario: Three-level delegation chain
+A glob pattern that is exactly `"*"` MUST match any input.
 
-- GIVEN A = wildcard, B = `["read", "grep", "find"]`, C = `["read"]`
-- WHEN A contains B and B contains C
-- THEN A contains C
+#### Requirement: Glob Prefix Match
 
-### Requirement: Glob Prefix Match
+A glob pattern with trailing `*` MUST match inputs starting with
+the prefix.
 
-A glob pattern with trailing wildcard MUST match any input that
-starts with the prefix before the wildcard.
+##### Scenario: `"pg_*"` matches `"pg_dump"`
 
-#### Scenario: Command glob
+#### Requirement: Glob Exact Match
 
-- GIVEN glob `"pg_*"` and input `"pg_dump"`
-- WHEN glob matching
-- THEN the match succeeds
+A glob pattern with no wildcards MUST match only exact equality.
 
-#### Scenario: Non-matching glob
+#### Requirement: Glob Multi-Segment Match
 
-- GIVEN glob `"pg_*"` and input `"mysql"`
-- WHEN glob matching
-- THEN the match fails
+A glob pattern with multiple `*` wildcards MUST match inputs where
+segments appear in order. First segment anchored at start, last
+segment anchored at end, middle segments appear anywhere in order.
 
-### Requirement: Read-only Blocks Write
+##### Scenario: `"pg_*_dump"` matches `"pg_full_dump"`
 
-A file access capability with `read_only = true` MUST deny
-write operations even when the path prefix matches.
+##### Scenario: `"pg_*_dump"` does not match `"pg_full_restore"`
 
-#### Scenario: Read allowed
+#### Requirement: Glob Non-Match Rejected
 
-- GIVEN read-only file capability with prefix `/home/`
-- WHEN authorizing FileRead for `/home/user/file.txt`
-- THEN authorization succeeds
+A glob pattern MUST reject inputs that don't satisfy the pattern.
 
-#### Scenario: Write denied
+### Authorization Composition
 
-- GIVEN read-only file capability with prefix `/home/`
-- WHEN authorizing FileWrite for `/home/user/file.txt`
+#### Requirement: Authorization Decomposes Into Three Factors
+
+`authorizes(cap, op)` MUST be equivalent to:
+`subsumes(cap.variant, op.variant) && covers(cap.scope, op.target)
+&& mode_permits(cap.mode, op.mode)`
+
+Each factor is independently verified. The composition is structural.
+
+#### Requirement: Authorization Rejects on Any Factor Failure
+
+If any of the three factors fails, authorization MUST fail.
+
+##### Scenario: Scope mismatch
+
+- GIVEN matching variant and mode, but scope doesn't cover
 - THEN authorization fails
 
-### Requirement: Read-write Allows Both
+##### Scenario: Mode mismatch
 
-A file access capability with `read_only = false` MUST allow
-both read and write operations within the prefix.
-
-#### Scenario: Both allowed
-
-- GIVEN read-write file capability with prefix `/home/`
-- WHEN authorizing FileRead or FileWrite for `/home/user/file.txt`
-- THEN both succeed
-
-### Requirement: Path Prefix Scoping
-
-File access authorization MUST require the operation path to
-start with the capability prefix.
-
-#### Scenario: Outside prefix
-
-- GIVEN file capability with prefix `/home/user/`
-- WHEN authorizing FileRead for `/etc/passwd`
+- GIVEN matching variant and scope, but mode doesn't permit
 - THEN authorization fails
 
-### Requirement: Mismatched Variants Deny
+##### Scenario: Variant mismatch
 
-A capability of one variant MUST NOT authorize an operation of
-a different variant (e.g., Prompt capability cannot authorize
-ToolUse operation).
-
-#### Scenario: Cross-variant denial
-
-- GIVEN a Prompt capability
-- WHEN authorizing a ToolUse operation
+- GIVEN matching scope and mode, but variant not subsumed
 - THEN authorization fails
 
-### Requirement: No Escalation on Delegation
+### Delegation Containment
 
-Delegation containment MUST deny any child capability that
-grants more access than the parent:
+#### Requirement: Containment Decomposes Into Scope + Mode + Subsumption
 
-- Read-only parent MUST NOT contain read-write child
-- Narrower prefix parent MUST NOT contain wider prefix child
-- Non-wildcard parent MUST NOT contain wildcard child
+`contains(parent, child)` MUST require:
+- `subsumes(parent.variant, child.variant)` or same variant
+- `covers(parent.scope, child.scope)`
+- `mode_le(child.mode, parent.mode)`
 
-#### Scenario: Read-only to read-write escalation
+#### Requirement: Containment Is Transitive
 
-- GIVEN parent with read-only `/home/`, child with read-write `/home/user/`
-- WHEN checking containment
-- THEN containment is denied
+`contains(a, b) && contains(b, c) ==> contains(a, c)`
 
-#### Scenario: Prefix widening
+#### Requirement: No Escalation on Any Axis
 
-- GIVEN parent with prefix `/home/user/`, child with prefix `/home/`
-- WHEN checking containment
-- THEN containment is denied
+Delegation MUST deny if the child is wider on any axis:
+- Wider scope than parent
+- Higher mode than parent
+- Non-subsumed variant
 
-### Requirement: Delegation Allows Attenuation
+### Delegation Chain
 
-A parent capability MUST contain a child that is strictly narrower:
-narrower prefix, fewer pattern items, or adding read-only restriction.
+#### Requirement: Chain Attenuation at Each Level
 
-#### Scenario: Attenuate to read-only
+In a valid delegation chain, each level's capabilities MUST be
+contained by its parent's capabilities. Every child capability
+MUST have a containing parent capability.
 
-- GIVEN parent with read-write `/home/`, child with read-only `/home/user/`
-- WHEN checking containment
-- THEN containment succeeds
+#### Requirement: Delegate Gate
 
-### Requirement: Shell Working Dir Scoping
+Delegation MUST require the parent token to hold a Delegate
+capability. Without Delegate, no child tokens can be created.
 
-ShellExecute authorization with a working dir constraint MUST
-require the operation's working dir to start with the capability's
-working dir. If the capability has a working dir but the operation
-does not, authorization MUST fail.
+#### Requirement: Chain Depth Bounded
 
-#### Scenario: Allowed subdirectory
+Chain depth MUST NOT exceed MAX_DELEGATION_DEPTH (8).
+`depth > MAX_DELEGATION_DEPTH ==> chain invalid`
 
-- GIVEN shell capability with working_dir `/home/user`
-- WHEN authorizing command in `/home/user/project`
-- THEN authorization succeeds
+#### Requirement: Root Has Depth Zero
 
-#### Scenario: Missing working dir
+Root tokens (no proof/parent) MUST have depth 0.
 
-- GIVEN shell capability with working_dir `/home/user`
-- WHEN authorizing command with no working dir
-- THEN authorization fails
+#### Requirement: Depth Increments by One
 
-#### Scenario: No constraint
+Each delegation level MUST increment depth by exactly 1.
+`child.depth == parent.depth + 1`
 
-- GIVEN shell capability with working_dir None
-- WHEN authorizing command in any directory
-- THEN authorization succeeds
+### Token Timestamps
+
+#### Requirement: Fresh Token Is Immediately Valid
+
+A token checked at its `issued_at` time MUST be valid.
+
+`issued_at <= expires_at ==> valid_at(token, issued_at)`
+
+#### Requirement: Expiration Is Monotonic
+
+Once a token is expired, it stays expired.
+
+`expired_at(t1) && t2 >= t1 ==> expired_at(t2)`
+
+#### Requirement: Expiration Includes Tolerance
+
+A token MUST be considered valid until `expires_at + tolerance`.
+
+`now <= expires_at + tolerance ==> not_expired`
+
+#### Requirement: Future Tokens Rejected
+
+A token with `issued_at > now + tolerance` MUST be rejected.
+
+#### Requirement: Refresh Threshold
+
+A token needs refresh when remaining lifetime is ≤ 20% of total.
+
+`remaining <= total_lifetime / 5 ==> needs_refresh`
