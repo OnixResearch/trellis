@@ -116,3 +116,11 @@
 {"text":"what next","timestamp":1774236294123}
 {"text":"2","timestamp":1774236383016}
 {"text":"continue","timestamp":1774236953811}
+{"text":"whatfrom ../clankers/ should we verify?","timestamp":1774237150387}
+{"text":"write an openspec. what about clanker merge logic?","timestamp":1774237296242}
+{"text":"create open sepc for the other clanker items to be verified","timestamp":1774237555394}
+{"text":"what in ../seaglass/ should we verify","timestamp":1774238080172}
+{"text":"write an openspec for all of these","timestamp":1774238426201}
+{"text":"the verified logic should live here, not seaglass-verified.","timestamp":1774238757814}
+{"text":"what next","timestamp":1774239078799}
+{"text":"yes","timestamp":1774239132094}
