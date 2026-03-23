@@ -41,13 +41,21 @@ branches) is correct — Z3 just runs out of quantifier instantiation
 budget. These remain external_body with the structural proof bodies
 preserved as documentation.
 
-## Remaining closed specs (3)
+## Phase 5: list_to_attrs sort+dedup
+
+- [x] Add `insert_into_sorted_spec` — recursive insertion using seq_cmp ✅
+- [x] Open `list_to_attrs_spec` — fold via insert_into_sorted_spec ✅
+- [x] Add `insert_into_sorted` exec fn — two-phase loop with early return ✅
+- [x] Close `list_to_attrs` exec fn — iterative insertion sort ✅
+- [x] Add proptest: sorted, unique, last-wins, completeness ✅
+- [x] Verus + cargo test green ✅
+
+## Remaining closed specs (2)
 
 - chain::hash_spec — genuinely uninterpreted (models blake3)
-- nix_attrset::list_to_attrs_spec — needs sort spec + dedup
 - nix_string::replace_strings_spec — multi-pattern matching
 
-## Remaining external_body (12)
+## Remaining external_body (11)
 
 ### Genuine axioms / Z3 limits (3)
 - chain::hash_deterministic, compute_entry_hash
@@ -60,6 +68,5 @@ preserved as documentation.
 - nix_version::cv_fuel_antisymmetric, cv_fuel_reflexive, cv_fuel_range
 - nix_version::compare_versions
 
-### Closed spec dependent (2)
-- nix_attrset::list_to_attrs
+### Closed spec dependent (1)
 - nix_string::replace_strings

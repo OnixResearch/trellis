@@ -340,6 +340,18 @@
   - Verus rejects `a[ai].clone()` on indexed tuples — must destructure: `let k = a[ai].0.clone(); let v = a[ai].1;`
   - `merge_spec_right_empty` and `merge_spec_left_empty`: trivial helpers for Z3 to simplify
     merge_spec(s, empty) == s
+- list_to_attrs spec opened and exec closed:
+  - insert_into_sorted_spec uses seq_cmp directly (not seq_lt + ==) — exec's vec_u8_cmp
+    result maps directly to spec conditions, no seq_cmp_eq proof needed
+  - Two-phase exec with early return: phase 1 copies elements with keys < pair.key,
+    then handles insert+skip inline and returns; fall-through appends at end
+  - Key insight: using `return` from inside the loop (after copying remaining elements)
+    avoids needing `break` or boolean flags — same pattern as has_attr/key_in_keys_exec
+  - list_to_attrs exec is iterative fold: result = insert(pairs[i], result) for each i
+  - Loop invariant: result_spec =~= list_to_attrs_spec(mp.subrange(0, i))
+  - Spec unfolding hint: assert sub[sub.len()-1] =~= mp[i] and sub.subrange(0, sub.len()-1) =~= mp.subrange(0, i)
+  - 7 new Verus proofs (999→1006), 1 new proptest (663→664)
+  - Closed specs: 3→2, external_body: 12→11
 - Version comparison spec opened: fuel-bounded recursion (like ceil_log pattern)
   - `cv_fuel(a, ai, b, bi, fuel)` with fuel = a.len() + b.len()
   - Helper specs: skip_seps, comp_end, parse_num_from, lex_cmp (all total, no when clauses)

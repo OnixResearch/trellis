@@ -683,33 +683,225 @@ pub fn intersect_attrs(
 
 // --- list_to_attrs ---
 
+/// Spec: insert a pair into a sorted sequence, replacing on key match.
+pub open spec fn insert_into_sorted_spec(
+    pair: (Seq<u8>, u64),
+    sorted: Seq<(Seq<u8>, u64)>,
+) -> Seq<(Seq<u8>, u64)>
+    decreases sorted.len(),
+{
+    if sorted.len() == 0 {
+        seq![pair]
+    } else if seq_cmp(pair.0, sorted[0int].0) < 0 {
+        seq![pair] + sorted
+    } else if seq_cmp(pair.0, sorted[0int].0) == 0 {
+        seq![pair] + sorted.subrange(1, sorted.len() as int)
+    } else {
+        seq![sorted[0int]] + insert_into_sorted_spec(
+            pair, sorted.subrange(1, sorted.len() as int))
+    }
+}
+
 // r[depends nix-attrset.list-to-attrs]
 /// Spec: construct an attribute set from unsorted pairs.
-pub closed spec fn list_to_attrs_spec(
+/// Processes pairs left-to-right; later entries override earlier ones
+/// with the same key.
+pub open spec fn list_to_attrs_spec(
     pairs: Seq<(Seq<u8>, u64)>,
-) -> Seq<(Seq<u8>, u64)>;
+) -> Seq<(Seq<u8>, u64)>
+    decreases pairs.len(),
+{
+    if pairs.len() == 0 {
+        Seq::<(Seq<u8>, u64)>::empty()
+    } else {
+        let rest = list_to_attrs_spec(
+            pairs.subrange(0, pairs.len() as int - 1));
+        insert_into_sorted_spec(pairs[pairs.len() as int - 1], rest)
+    }
+}
+
+/// Insert a pair into a sorted vec, maintaining sort order.
+/// Replaces the value if the key already exists.
+fn insert_into_sorted(
+    pair: &(Vec<u8>, u64),
+    sorted: &Vec<(Vec<u8>, u64)>,
+) -> (result: Vec<(Vec<u8>, u64)>)
+    ensures result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1))
+        =~= insert_into_sorted_spec(
+            (pair.0@, pair.1),
+            sorted@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
+{
+    let ghost mp = (pair.0@, pair.1);
+    let ghost ms = sorted@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+
+    let mut result: Vec<(Vec<u8>, u64)> = Vec::new();
+    let ghost mut rg: Seq<(Seq<u8>, u64)> = Seq::empty();
+    let mut i: usize = 0;
+
+    proof {
+        assert(ms.subrange(0int, ms.len() as int) =~= ms);
+        assert(Seq::<(Seq<u8>, u64)>::empty()
+            + insert_into_sorted_spec(mp, ms)
+            =~= insert_into_sorted_spec(mp, ms));
+    }
+
+    // Phase 1: copy elements with keys strictly less than pair.key
+    while i < sorted.len()
+        invariant
+            i <= sorted.len(),
+            ms =~= sorted@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)),
+            mp == (pair.0@, pair.1),
+            rg.len() == result@.len(),
+            forall|k: int| 0 <= k < rg.len() as int
+                ==> rg[k] =~= (#[trigger] result@[k].0@, result@[k].1),
+            rg =~= ms.subrange(0, i as int),
+            insert_into_sorted_spec(mp, ms) =~=
+                rg + insert_into_sorted_spec(
+                    mp, ms.subrange(i as int, ms.len() as int)),
+        decreases sorted.len() - i,
+    {
+        let cmp = vec_u8_cmp(&pair.0, &sorted[i].0);
+        proof {
+            let rem = ms.subrange(i as int, ms.len() as int);
+            assert(rem.len() > 0);
+            assert(rem[0int] =~= ms[i as int]);
+        }
+
+        if cmp <= 0 {
+            // Found insertion point — handle inline and return
+            result.push((pair.0.clone(), pair.1));
+            proof { rg = rg + seq![mp]; }
+
+            // If key matches, skip the duplicate
+            let mut start = i;
+            if cmp == 0 {
+                proof {
+                    let rem = ms.subrange(i as int, ms.len() as int);
+                    assert(seq_cmp(mp.0, rem[0int].0) == 0);
+                    assert(rem.subrange(1, rem.len() as int)
+                        =~= ms.subrange(i as int + 1, ms.len() as int));
+                }
+                start = i + 1;
+            } else {
+                proof {
+                    let rem = ms.subrange(i as int, ms.len() as int);
+                    assert(seq_cmp(mp.0, rem[0int].0) < 0);
+                }
+            }
+
+            // Copy remaining elements
+            let mut j = start;
+            while j < sorted.len()
+                invariant
+                    j <= sorted.len(),
+                    ms =~= sorted@.map_values(
+                        |p: (Vec<u8>, u64)| (p.0@, p.1)),
+                    rg.len() == result@.len(),
+                    forall|k: int| 0 <= k < rg.len() as int
+                        ==> rg[k] =~= (
+                            #[trigger] result@[k].0@, result@[k].1),
+                    insert_into_sorted_spec(mp, ms) =~=
+                        rg + ms.subrange(j as int, ms.len() as int),
+                decreases sorted.len() - j,
+            {
+                proof {
+                    subrange_decompose(
+                        ms, j as int, ms.len() as int);
+                }
+                let k = sorted[j].0.clone();
+                let v = sorted[j].1;
+                result.push((k, v));
+                proof { rg = rg + seq![ms[j as int]]; }
+                j = j + 1;
+            }
+
+            proof {
+                assert(ms.subrange(
+                    j as int, ms.len() as int).len() == 0);
+                assert(rg =~= result@.map_values(
+                    |p: (Vec<u8>, u64)| (p.0@, p.1)));
+            }
+            return result;
+        }
+
+        // cmp > 0: pair.key > sorted[i].key — copy and continue
+        proof {
+            let rem = ms.subrange(i as int, ms.len() as int);
+            assert(seq_cmp(mp.0, rem[0int].0) > 0);
+            assert(rem.subrange(1, rem.len() as int)
+                =~= ms.subrange(i as int + 1, ms.len() as int));
+        }
+        let k = sorted[i].0.clone();
+        let v = sorted[i].1;
+        result.push((k, v));
+        proof { rg = rg + seq![ms[i as int]]; }
+        i = i + 1;
+    }
+
+    // Exhausted sorted — pair is largest, append at end
+    proof {
+        let rem = ms.subrange(i as int, ms.len() as int);
+        assert(rem.len() == 0);
+    }
+    result.push((pair.0.clone(), pair.1));
+    proof {
+        rg = rg + seq![mp];
+        assert(rg =~= result@.map_values(
+            |p: (Vec<u8>, u64)| (p.0@, p.1)));
+    }
+    result
+}
 
 // r[impl nix-attrset.list-to-attrs]
 /// Sort and deduplicate (last wins) to construct an attribute set.
-#[verifier::external_body]
 pub fn list_to_attrs(
     pairs: &Vec<(Vec<u8>, u64)>,
 ) -> (result: Vec<(Vec<u8>, u64)>)
     ensures result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1))
-        == list_to_attrs_spec(pairs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
+        == list_to_attrs_spec(
+            pairs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1)))
 {
-    let mut sorted = pairs.clone();
-    sorted.sort_by(|a, b| a.0.cmp(&b.0));
-    sorted.dedup_by(|a, b| {
-        if a.0 == b.0 {
-            // Keep later (a is the later element in dedup_by)
-            std::mem::swap(a, b);
-            true
-        } else {
-            false
+    let ghost mp = pairs@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1));
+
+    let mut result: Vec<(Vec<u8>, u64)> = Vec::new();
+    let mut i: usize = 0;
+
+    proof {
+        assert(mp.subrange(0, 0int)
+            =~= Seq::<(Seq<u8>, u64)>::empty());
+        assert(list_to_attrs_spec(Seq::<(Seq<u8>, u64)>::empty())
+            =~= Seq::<(Seq<u8>, u64)>::empty());
+        assert(result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1))
+            =~= Seq::<(Seq<u8>, u64)>::empty());
+    }
+
+    while i < pairs.len()
+        invariant
+            i <= pairs.len(),
+            mp =~= pairs@.map_values(
+                |p: (Vec<u8>, u64)| (p.0@, p.1)),
+            result@.map_values(|p: (Vec<u8>, u64)| (p.0@, p.1))
+                =~= list_to_attrs_spec(mp.subrange(0, i as int)),
+        decreases pairs.len() - i,
+    {
+        proof {
+            // Unfold spec for mp.subrange(0, i+1):
+            // list_to_attrs_spec(sub) =
+            //   insert_into_sorted_spec(sub[i], list_to_attrs_spec(sub[0..i]))
+            let sub = mp.subrange(0, (i + 1) as int);
+            assert(sub.len() as int == (i + 1) as int);
+            assert(sub[sub.len() as int - 1] =~= mp[i as int]);
+            assert(sub.subrange(0, sub.len() as int - 1)
+                =~= mp.subrange(0, i as int));
         }
-    });
-    sorted
+        result = insert_into_sorted(&pairs[i], &result);
+        i = i + 1;
+    }
+
+    proof {
+        assert(mp.subrange(0, mp.len() as int) =~= mp);
+    }
+    result
 }
 
 // --- Proofs ---
@@ -829,6 +1021,46 @@ mod tests {
             let b = vec![(k.clone(), val)];
             let m = merge(&a, &b);
             prop_assert!(has_attr(&m, &k));
+        }
+
+        // r[verify nix-attrset.list-to-attrs]
+        #[test]
+        fn prop_list_to_attrs_sorted(
+            pairs in proptest::collection::vec(
+                ("[a-z]{1,4}", 0u64..1000),
+                0..20,
+            ),
+        ) {
+            let pairs: Vec<(Vec<u8>, u64)> = pairs
+                .into_iter()
+                .map(|(k, v)| (k.into_bytes(), v))
+                .collect();
+            let result = list_to_attrs(&pairs);
+            // Result is sorted
+            for w in result.windows(2) {
+                prop_assert!(w[0].0 < w[1].0,
+                    "not sorted: {:?} >= {:?}", w[0].0, w[1].0);
+            }
+            // Result has unique keys
+            for (i, a) in result.iter().enumerate() {
+                for b in result.iter().skip(i + 1) {
+                    prop_assert_ne!(&a.0, &b.0);
+                }
+            }
+            // Last-wins: each key's value matches the last occurrence in input
+            for (rk, rv) in &result {
+                let last_val = pairs.iter()
+                    .rev()
+                    .find(|(k, _)| k == rk)
+                    .map(|(_, v)| *v);
+                prop_assert_eq!(Some(*rv), last_val,
+                    "key {:?}: expected {:?}, got {}", rk, last_val, rv);
+            }
+            // Every input key is in the result
+            for (k, _) in &pairs {
+                prop_assert!(result.iter().any(|(rk, _)| rk == k),
+                    "input key {:?} missing from result", k);
+            }
         }
     }
 }
