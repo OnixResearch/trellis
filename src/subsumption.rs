@@ -76,7 +76,7 @@ proof fn subsumes_antisymmetric(a: u8, b: u8)
 
 // r[verify subsumption.acyclic]
 /// Subsumption is transitive.
-proof fn subsumes_transitive(a: u8, b: u8, c: u8)
+pub proof fn subsumes_transitive(a: u8, b: u8, c: u8)
     requires
         subsumes_spec(a, b),
         subsumes_spec(b, c),

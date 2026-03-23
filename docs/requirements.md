@@ -1479,3 +1479,32 @@ Authorization with compound scope MUST require mount equality and prefix coverag
 
 r[authorize.optional-constraint]
 Authorization with optional constraint: None cap constraint MUST NOT block. Some cap with None target MUST block.
+
+## Delegation Containment
+
+r[containment.decomposition]
+contains(parent, child) MUST equal subsumes(parent.variant, child.variant) && covers(parent.scope, child.scope) && mode_le(child.mode, parent.mode).
+
+r[containment.no-scope-widening]
+If the parent scope does not cover the child scope, containment MUST fail.
+
+r[containment.no-mode-escalation]
+If the child mode is not ≤ the parent mode, containment MUST fail.
+
+r[containment.no-variant-escalation]
+If the parent variant does not subsume the child variant, containment MUST fail.
+
+r[containment.transitive]
+Containment MUST be transitive, following from transitivity of each factor.
+
+r[containment.self-contained]
+Every capability MUST contain itself.
+
+r[containment.attenuation-allowed]
+A child with narrower scope and equal-or-lower mode MUST be contained by the parent.
+
+r[containment.compound-scope]
+Compound containment MUST require mount equality. Mount mismatch MUST deny.
+
+r[containment.optional-constraint]
+Optional containment: parent None MUST contain any child. Parent Some MUST block child None.

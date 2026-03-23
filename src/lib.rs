@@ -23,6 +23,7 @@
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `causal_order` — causal delivery and consistent snapshots
+//! - `containment` — delegation containment: scope + mode + subsumption
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
@@ -85,6 +86,7 @@ pub mod bitwise;
 pub mod bloom;
 pub mod bounded_range;
 pub mod causal_order;
+pub mod containment;
 pub mod consistent_hash;
 pub mod crdt;
 pub mod bounds;

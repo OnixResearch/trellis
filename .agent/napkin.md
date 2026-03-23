@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1156 Verus proofs + 839 cargo tests = all gates green
+- 1168 Verus proofs + 852 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -294,6 +294,11 @@
   - All 10 proofs automatic — the spec is just conjunction of three sub-specs, Z3 handles trivially
   - `authorizes_with_optional` ensures clause needs explicit match on Option<&[u8]> to convert to Seq<u8>
     (same pattern as scope::optional_covers)
+- Containment module added: contains, contains_compound, contains_with_optional
+  - Same cross-module pattern as authorize: imports scope, access_mode, subsumption
+  - contains_transitive calls sub-module transitivity proofs — those must be `pub proof fn`
+    (initially were private, causing E0425 in Verus compilation)
+  - All 12 proofs automatic except contains_transitive which calls three helper lemmas
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

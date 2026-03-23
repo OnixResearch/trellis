@@ -68,7 +68,7 @@ proof fn mode_le_reflexive(a: u8)
 
 // r[verify access-mode.order-transitive]
 /// mode_le is transitive: a ≤ b ∧ b ≤ c ⟹ a ≤ c.
-proof fn mode_le_transitive(a: u8, b: u8, c: u8)
+pub proof fn mode_le_transitive(a: u8, b: u8, c: u8)
     requires
         mode_le_spec(a, b),
         mode_le_spec(b, c),

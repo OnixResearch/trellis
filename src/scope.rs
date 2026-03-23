@@ -73,7 +73,7 @@ proof fn covers_reflexive(s: Seq<u8>)
 
 // r[verify scope.coverage-transitive]
 /// If a covers b and b covers c, then a covers c.
-proof fn covers_transitive(a: Seq<u8>, b: Seq<u8>, c: Seq<u8>)
+pub proof fn covers_transitive(a: Seq<u8>, b: Seq<u8>, c: Seq<u8>)
     requires
         covers_spec(a, b),
         covers_spec(b, c),
