@@ -762,6 +762,72 @@ mod verus_proofs {
         ensures budget_exceeded_stays_exceeded_prop(soft, hard, t1, t2)
     {}
 
+    // ========================================================================
+    // Generic algebraic + pointwise cross-module properties
+    // ========================================================================
+
+    use crate::pointwise::{pointwise_merge_spec, max_u64};
+    use crate::vector_clock::merge_spec as vc_merge_spec;
+    use crate::crdt::g_counter_merge_spec;
+    use crate::causal_order::cut_join_spec;
+
+    // r[impl properties.vc-merge-is-pointwise-max]
+    /// Vector clock merge is pointwise max.
+    pub open spec fn vc_merge_is_pointwise_max_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len()
+    {
+        vc_merge_spec(a, b) =~= pointwise_merge_spec(a, b, |x: u64, y: u64| max_u64(x, y))
+    }
+
+    // r[verify properties.vc-merge-is-pointwise-max]
+    proof fn prove_vc_merge_is_pointwise_max(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len()
+        ensures vc_merge_is_pointwise_max_prop(a, b)
+    {}
+
+    // r[impl properties.g-counter-merge-is-pointwise-max]
+    /// G-Counter merge is pointwise max.
+    pub open spec fn g_counter_merge_is_pointwise_max_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len()
+    {
+        g_counter_merge_spec(a, b) =~= pointwise_merge_spec(a, b, |x: u64, y: u64| max_u64(x, y))
+    }
+
+    // r[verify properties.g-counter-merge-is-pointwise-max]
+    proof fn prove_g_counter_merge_is_pointwise_max(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len()
+        ensures g_counter_merge_is_pointwise_max_prop(a, b)
+    {}
+
+    // r[impl properties.cut-join-is-pointwise-max]
+    /// Causal order cut join is pointwise max.
+    pub open spec fn cut_join_is_pointwise_max_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len()
+    {
+        cut_join_spec(a, b) =~= pointwise_merge_spec(a, b, |x: u64, y: u64| max_u64(x, y))
+    }
+
+    // r[verify properties.cut-join-is-pointwise-max]
+    proof fn prove_cut_join_is_pointwise_max(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len()
+        ensures cut_join_is_pointwise_max_prop(a, b)
+    {}
+
+    // r[impl properties.all-three-merges-agree]
+    /// VC merge, G-Counter merge, and cut join all agree (they're the same operation).
+    pub open spec fn all_three_merges_agree_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len()
+    {
+        vc_merge_spec(a, b) =~= g_counter_merge_spec(a, b)
+        && g_counter_merge_spec(a, b) =~= cut_join_spec(a, b)
+    }
+
+    // r[verify properties.all-three-merges-agree]
+    proof fn prove_all_three_merges_agree(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len()
+        ensures all_three_merges_agree_prop(a, b)
+    {}
+
     } // verus!
 }
 
@@ -1361,6 +1427,24 @@ mod tests {
         // ============================================================
         // Session tree cross-module properties (forest × seq_set)
         // ============================================================
+
+        // --- Generic module cross-module tests ---
+
+        // r[verify properties.vc-merge-is-pointwise-max]
+        // r[verify properties.g-counter-merge-is-pointwise-max]
+        // r[verify properties.cut-join-is-pointwise-max]
+        // r[verify properties.all-three-merges-agree]
+        #[test]
+        fn prop_all_three_merges_agree(
+            a in proptest::collection::vec(any::<u64>(), 3),
+            b in proptest::collection::vec(any::<u64>(), 3),
+        ) {
+            let vc = crate::vector_clock::merge(&a, &b);
+            let gc = crate::crdt::g_counter_merge(&a, &b);
+            let cj = crate::causal_order::cut_join(&a, &b);
+            prop_assert_eq!(&vc, &gc, "vc != g_counter");
+            prop_assert_eq!(&gc, &cj, "g_counter != cut_join");
+        }
 
         // r[verify properties.unique-subset-of-source]
         /// Unique messages are a subset of the source branch path.

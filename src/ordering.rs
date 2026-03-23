@@ -72,6 +72,20 @@ proof fn max_associative(a: u64, b: u64, c: u64)
     ensures max_spec(a, max_spec(b, c)) == max_spec(max_spec(a, b), c)
 {}
 
+// --- min/max as semilattices (via algebraic) ---
+
+// r[verify ordering.min]
+/// min is a semilattice: commutative + associative + idempotent.
+proof fn min_is_semilattice()
+    ensures crate::algebraic::is_semilattice(|a: u64, b: u64| min_spec(a, b))
+{}
+
+// r[verify ordering.max]
+/// max is a semilattice: commutative + associative + idempotent.
+proof fn max_is_semilattice()
+    ensures crate::algebraic::is_semilattice(|a: u64, b: u64| max_spec(a, b))
+{}
+
 // --- min/max relationship ---
 
 // r[verify ordering.min]

@@ -103,6 +103,20 @@ proof fn advance_neq_implies_strict(a: u64, b: u64)
     ensures is_strict_advance_spec(a, b)
 {}
 
+// --- Algebraic characterization ---
+
+// r[verify monotonic.is-advance]
+/// is_advance is a partial order on u64.
+proof fn advance_is_partial_order()
+    ensures crate::algebraic::is_partial_order(|a: u64, b: u64| is_advance_spec(a, b))
+{}
+
+// r[verify monotonic.is-strict-advance]
+/// is_strict_advance is a strict partial order on u64.
+proof fn strict_advance_is_strict_partial_order()
+    ensures crate::algebraic::is_strict_partial_order(|a: u64, b: u64| is_strict_advance_spec(a, b))
+{}
+
 } // verus!
 
 #[cfg(test)]

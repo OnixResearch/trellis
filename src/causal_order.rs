@@ -10,6 +10,8 @@ use vstd::prelude::*;
 use crate::ordering::max_spec;
 #[cfg(verus_keep_ghost)]
 use crate::vector_clock::happens_before_spec;
+#[cfg(verus_keep_ghost)]
+use crate::pointwise::{pointwise_merge_spec, max_u64};
 
 verus! {
 
@@ -134,17 +136,23 @@ proof fn consistent_cut_join(a: Seq<u64>, b: Seq<u64>)
 {}
 
 // r[verify causal-order.cut-join]
-/// Join is commutative.
+/// Join is commutative (delegated to pointwise).
 proof fn cut_join_commutative(a: Seq<u64>, b: Seq<u64>)
     requires a.len() == b.len()
     ensures cut_join_spec(a, b) =~= cut_join_spec(b, a)
-{}
+{
+    crate::pointwise::max_u64_commutative();
+    crate::pointwise::pointwise_commutative(a, b, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify causal-order.cut-join]
-/// Join is idempotent.
+/// Join is idempotent (delegated to pointwise).
 proof fn cut_join_idempotent(a: Seq<u64>)
     ensures cut_join_spec(a, a) =~= a
-{}
+{
+    crate::pointwise::max_u64_idempotent();
+    crate::pointwise::pointwise_idempotent(a, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify causal-order.is-causally-ready]
 /// A causally ready message's clock is one step ahead of local

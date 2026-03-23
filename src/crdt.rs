@@ -10,6 +10,8 @@ use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
 use crate::ordering::max_spec;
+#[cfg(verus_keep_ghost)]
+use crate::pointwise::{pointwise_merge_spec, max_u64};
 
 verus! {
 
@@ -167,14 +169,17 @@ pub fn g_counter_increment(counter: &Vec<u64>, idx: usize) -> (result: Vec<u64>)
     result
 }
 
-// --- G-Counter merge proofs ---
+// --- G-Counter merge proofs (delegated to pointwise) ---
 
 // r[verify crdt.g-counter-merge]
 /// Merge is commutative.
 proof fn g_counter_merge_commutative(a: Seq<u64>, b: Seq<u64>)
     requires a.len() == b.len()
     ensures g_counter_merge_spec(a, b) =~= g_counter_merge_spec(b, a)
-{}
+{
+    crate::pointwise::max_u64_commutative();
+    crate::pointwise::pointwise_commutative(a, b, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify crdt.g-counter-merge]
 /// Merge is associative.
@@ -182,13 +187,19 @@ proof fn g_counter_merge_associative(a: Seq<u64>, b: Seq<u64>, c: Seq<u64>)
     requires a.len() == b.len(), b.len() == c.len()
     ensures g_counter_merge_spec(g_counter_merge_spec(a, b), c)
         =~= g_counter_merge_spec(a, g_counter_merge_spec(b, c))
-{}
+{
+    crate::pointwise::max_u64_associative();
+    crate::pointwise::pointwise_associative(a, b, c, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify crdt.g-counter-merge]
 /// Merge is idempotent.
 proof fn g_counter_merge_idempotent(a: Seq<u64>)
     ensures g_counter_merge_spec(a, a) =~= a
-{}
+{
+    crate::pointwise::max_u64_idempotent();
+    crate::pointwise::pointwise_idempotent(a, |x: u64, y: u64| max_u64(x, y));
+}
 
 // ============================================================
 // PN-Counter: increment/decrement via two G-Counters

@@ -316,6 +316,62 @@ proof fn remove_add_roundtrip(set: u64, sig: u64)
     ) by(bit_vector);
 }
 
+// --- Algebraic characterization ---
+
+// r[verify signal.union]
+/// signal_union is a semilattice (commutative, associative, idempotent).
+proof fn union_is_semilattice()
+    ensures crate::algebraic::is_semilattice(|a: u64, b: u64| signal_union_spec(a, b))
+{
+    assert forall|a: u64, b: u64| #[trigger] signal_union_spec(a, b) == signal_union_spec(b, a) by {
+        assert(a | b == b | a) by(bit_vector);
+    }
+    assert forall|a: u64, b: u64, c: u64|
+        #[trigger] signal_union_spec(signal_union_spec(a, b), c)
+        == signal_union_spec(a, signal_union_spec(b, c))
+    by {
+        assert((a | b) | c == a | (b | c)) by(bit_vector);
+    }
+    assert forall|a: u64| #![trigger signal_union_spec(a, a)]
+        signal_union_spec(a, a) == a
+    by {
+        assert(a | a == a) by(bit_vector);
+    }
+}
+
+// r[verify signal.intersect]
+/// signal_intersect is a semilattice (commutative, associative, idempotent).
+proof fn intersect_is_semilattice()
+    ensures crate::algebraic::is_semilattice(|a: u64, b: u64| signal_intersect_spec(a, b))
+{
+    assert forall|a: u64, b: u64| #[trigger] signal_intersect_spec(a, b) == signal_intersect_spec(b, a) by {
+        assert(a & b == b & a) by(bit_vector);
+    }
+    assert forall|a: u64, b: u64, c: u64|
+        #[trigger] signal_intersect_spec(signal_intersect_spec(a, b), c)
+        == signal_intersect_spec(a, signal_intersect_spec(b, c))
+    by {
+        assert((a & b) & c == a & (b & c)) by(bit_vector);
+    }
+    assert forall|a: u64| #![trigger signal_intersect_spec(a, a)]
+        signal_intersect_spec(a, a) == a
+    by {
+        assert(a & a == a) by(bit_vector);
+    }
+}
+
+// r[verify signal.complement]
+/// signal_complement is an involution (per algebraic::is_involution).
+proof fn complement_is_involution()
+    ensures crate::algebraic::is_involution(|s: u64| signal_complement_spec(s))
+{
+    assert forall|s: u64| #![trigger signal_complement_spec(signal_complement_spec(s))]
+        signal_complement_spec(signal_complement_spec(s)) == s
+    by {
+        assert(!!s == s) by(bit_vector);
+    }
+}
+
 } // verus!
 
 #[cfg(test)]

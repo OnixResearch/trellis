@@ -77,6 +77,7 @@
 
 pub mod access_mode;
 pub mod acid;
+pub mod algebraic;
 pub mod approval;
 pub mod authorize;
 pub mod arithmetic;
@@ -128,6 +129,7 @@ pub mod page;
 pub mod partition;
 pub mod pattern;
 pub mod permission;
+pub mod pointwise;
 pub mod pressure;
 pub mod process_state;
 pub mod properties;
@@ -136,6 +138,7 @@ pub mod rate_limit;
 pub mod result;
 pub mod ring_buffer;
 pub mod scope;
+pub mod seq_fold;
 pub mod seq_set;
 pub mod sequential;
 pub mod session_tree;

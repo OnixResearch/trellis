@@ -10,6 +10,8 @@ use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
 use crate::ordering::max_spec;
+#[cfg(verus_keep_ghost)]
+use crate::pointwise::{pointwise_merge_spec, max_u64};
 
 verus! {
 
@@ -196,41 +198,63 @@ proof fn happens_before_transitive(a: Seq<u64>, b: Seq<u64>, c: Seq<u64>)
     // exists i: a[i] < b[i], and b[i] <= c[i], so a[i] < c[i]
 }
 
-// --- Merge lattice proofs ---
+// --- Merge lattice proofs (delegated to pointwise) ---
+
+// r[verify vector-clock.merge]
+/// merge_spec is pointwise max — connect to the generic pointwise module.
+proof fn merge_is_pointwise(a: Seq<u64>, b: Seq<u64>)
+    requires a.len() == b.len()
+    ensures merge_spec(a, b) =~= pointwise_merge_spec(a, b, |x: u64, y: u64| max_u64(x, y))
+{}
 
 // r[verify vector-clock.merge]
 /// Merge is commutative: merge(a, b) == merge(b, a).
 proof fn merge_commutative(a: Seq<u64>, b: Seq<u64>)
     requires a.len() == b.len()
     ensures merge_spec(a, b) =~= merge_spec(b, a)
-{}
+{
+    crate::pointwise::max_u64_commutative();
+    crate::pointwise::pointwise_commutative(a, b, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify vector-clock.merge]
 /// Merge is associative: merge(merge(a, b), c) == merge(a, merge(b, c)).
 proof fn merge_associative(a: Seq<u64>, b: Seq<u64>, c: Seq<u64>)
     requires a.len() == b.len(), b.len() == c.len()
     ensures merge_spec(merge_spec(a, b), c) =~= merge_spec(a, merge_spec(b, c))
-{}
+{
+    crate::pointwise::max_u64_associative();
+    crate::pointwise::pointwise_associative(a, b, c, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify vector-clock.merge]
 /// Merge is idempotent: merge(v, v) == v.
 proof fn merge_idempotent(v: Seq<u64>)
     ensures merge_spec(v, v) =~= v
-{}
+{
+    crate::pointwise::max_u64_idempotent();
+    crate::pointwise::pointwise_idempotent(v, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify vector-clock.merge]
 /// Merge dominates both inputs: merge(a,b)[i] >= a[i] for all i.
 proof fn merge_dominates_left(a: Seq<u64>, b: Seq<u64>)
     requires a.len() == b.len()
     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= a[i]
-{}
+{
+    crate::pointwise::max_u64_dominates_left();
+    crate::pointwise::pointwise_dominates_left(a, b, |x: u64, y: u64| max_u64(x, y));
+}
 
 // r[verify vector-clock.merge]
 /// Merge dominates right input too.
 proof fn merge_dominates_right(a: Seq<u64>, b: Seq<u64>)
     requires a.len() == b.len()
     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= b[i]
-{}
+{
+    crate::pointwise::max_u64_dominates_right();
+    crate::pointwise::pointwise_dominates_right(a, b, |x: u64, y: u64| max_u64(x, y));
+}
 
 // --- Increment proofs ---
 

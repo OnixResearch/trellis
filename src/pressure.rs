@@ -196,6 +196,24 @@ proof fn most_severe_bounded(a: u8, b: u8)
 
 // --- is_all_normal ---
 
+// --- Algebraic characterization ---
+
+// r[verify pressure.most-severe]
+/// most_severe is a semilattice over valid pressure levels (0, 1, 2).
+/// For arbitrary u8 inputs, it still satisfies comm+assoc but idempotence
+/// holds up to capping: most_severe(a, a) == a when a <= 2.
+proof fn most_severe_is_semilattice_on_valid()
+    ensures
+        // Commutativity (unconditional)
+        forall|a: u8, b: u8| #[trigger] most_severe_spec(a, b) == most_severe_spec(b, a),
+        // Associativity (unconditional)
+        forall|a: u8, b: u8, c: u8|
+            #[trigger] most_severe_spec(most_severe_spec(a, b), c)
+            == most_severe_spec(a, most_severe_spec(b, c)),
+        // Idempotence for valid levels
+        forall|a: u8| a <= 2 ==> (#[trigger] most_severe_spec(a, a) == a),
+{}
+
 // r[depends pressure.is-all-normal]
 /// Spec: whether all pressure levels in a slice are Normal (0).
 pub open spec fn is_all_normal_spec(levels: Seq<u8>) -> bool {
