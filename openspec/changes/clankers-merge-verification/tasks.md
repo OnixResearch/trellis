@@ -69,12 +69,12 @@
 
 ## Phase 7: Cross-module Properties
 
-- [ ] Prove unique_subset_of_source: find_unique result ⊆ ancestor_path(src)
-- [ ] Prove unique_disjoint_from_target: find_unique result ∩ ancestor_path(tgt) == []
-- [ ] Prove selective_subset_of_unique: selective_merge result ⊆ find_unique result
-- [ ] Prove subtree_walk_connection: ancestor_path(node) ⊆ subtree(root) when is_ancestor(root, node)
-- [ ] Add cross-module property tests in src/properties.rs
-- [ ] Final verus + tracey pass
+- [x] Prove unique_subset_of_source: find_unique result ⊆ ancestor_path(src)
+- [x] Prove unique_disjoint_from_target: find_unique result ∩ ancestor_path(tgt) == []
+- [x] Prove selective_subset_of_unique: selective_merge result ⊆ find_unique result
+- [x] Prove subtree_walk_connection: ancestor_path(node) ⊆ subtree(root) when is_ancestor(root, node)
+- [x] Add cross-module property tests in src/properties.rs
+- [x] Final verus + tracey pass
 
 ## External body summary (forest module)
 
