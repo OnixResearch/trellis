@@ -13,16 +13,16 @@
 
 ## Phase 2: Slab Allocation Arithmetic
 
-- [ ] Add requirements to `docs/requirements.md` for slab module
-- [ ] Create `src/slab.rs` with `slot_index` (spec + exec + proof + tests)
-- [ ] Add `slot_address` with roundtrip proof (slot_address ∘ slot_index on aligned addrs)
-- [ ] Add `is_slot_aligned` with alignment-iff-zero-offset proof
-- [ ] Add `slab_capacity` with bounded-index proof
-- [ ] Add `generation_valid` and `generation_increment` with monotonicity proof
-- [ ] Add `handle_pack`, `handle_unpack_index`, `handle_unpack_generation` with roundtrip proofs
-- [ ] Add `pub mod slab;` to `src/lib.rs`
-- [ ] Add cross-module properties: slab ↔ page decomposition duality
-- [ ] Run `./scripts/verify.sh` — all gates pass
+- [x] Add requirements to `docs/requirements.md` for slab module ✅
+- [x] Create `src/slab.rs` with `slot_index` (spec + exec + proof + tests) ✅
+- [x] Add `slot_address` with roundtrip proof (slot_address ∘ slot_index on aligned addrs) ✅
+- [x] Add `is_slot_aligned` with alignment-iff-zero-offset proof ✅
+- [x] Add `slab_capacity` with bounded-index proof ✅
+- [x] Add `generation_valid` and `generation_increment` with monotonicity proof ✅
+- [x] Add `handle_pack`, `handle_unpack_index`, `handle_unpack_generation` with roundtrip proofs ✅
+- [x] Add `pub mod slab;` to `src/lib.rs` ✅
+- [x] Add cross-module properties: slab ↔ page decomposition duality ✅
+- [x] Run `./scripts/verify.sh` — all gates pass ✅ (1411 verified, 0 errors)
 
 ## Phase 3: Buddy System Arithmetic
 

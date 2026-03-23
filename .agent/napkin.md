@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1367 Verus proofs + 967 cargo tests = all gates green
+- 1411 Verus proofs + 985 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -377,6 +377,23 @@
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
 
+- Slab module added: slot_index, slot_offset, slot_address, is_slot_aligned, slab_capacity,
+  generation_valid, generation_increment, handle_pack/unpack_index/unpack_generation
+  - Verus macro `as int` before `<` or `-` followed by identifier: use parens or restructure
+    to avoid generic-parameter parse ambiguity. `base as int + region_size as int` works,
+    `region_size as int <= u64::MAX as int - base as int` fails — rewrite as
+    `(base as int) + (region_size as int) <= (u64::MAX as int)` or flip the inequality
+  - `gen` is a reserved keyword in Rust 2024 — use `g` or `generation` as parameter name
+  - slot_index_bounded needs `lemma_div_is_ordered(offset, region_size, ss)` from vstd —
+    Z3 can't derive `offset/ss <= region_size/ss` from `offset < region_size` alone
+  - slot_address_aligned needs `by(nonlinear_arith)` for `(index * ss) % ss == 0`
+  - Both roundtrip proofs (address→index, index→address) need `by(nonlinear_arith)` with
+    `lemma_fundamental_div_mod` to connect multiplication commutativity
+  - slab_capacity exact proof needs `by(nonlinear_arith)` for `(n*ss)/ss == n`
+  - Handle packing: `by(bit_vector)` for roundtrip (low 32 = index, high 32 = generation)
+  - Handle injectivity: extract both components from same handle, prove equality
+  - Cross-module: slot_index(addr, 0, ss) == frame_number(addr, ss) — automatic
+  - Cross-module: slab_capacity(n*s, s) == n — needs nonlinear_arith
 - Region module added: contains_addr, regions_disjoint, contains_region, region_adjacent,
   region_merge, region_split — all (base, size) half-open region operations
   - Spec fn `contains_addr_spec` needs parenthesized `as int` casts:
