@@ -1059,6 +1059,445 @@ mod region_interval_proofs {
     } // verus!
 }
 
+// --- signal ↔ bitwise agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod signal_bitwise_proofs {
+    use vstd::prelude::*;
+
+    use crate::bitwise::bit_at_spec;
+    use crate::bitwise::clear_bit_spec;
+    use crate::bitwise::set_bit_spec;
+    use crate::signal::signal_add_spec;
+    use crate::signal::signal_contains_spec;
+    use crate::signal::signal_remove_spec;
+
+    verus! {
+
+    // r[impl properties.signal-add-is-set-bit]
+    pub open spec fn signal_add_is_set_bit_prop(set: u64, sig: u64) -> bool
+        recommends sig < 64
+    {
+        signal_add_spec(set, sig) == set_bit_spec(set, sig)
+    }
+
+    // r[verify properties.signal-add-is-set-bit]
+    proof fn prove_signal_add_is_set_bit(set: u64, sig: u64)
+        requires sig < 64
+        ensures signal_add_is_set_bit_prop(set, sig)
+    {}
+
+    // r[impl properties.signal-remove-is-clear-bit]
+    pub open spec fn signal_remove_is_clear_bit_prop(set: u64, sig: u64) -> bool
+        recommends sig < 64
+    {
+        signal_remove_spec(set, sig) == clear_bit_spec(set, sig)
+    }
+
+    // r[verify properties.signal-remove-is-clear-bit]
+    proof fn prove_signal_remove_is_clear_bit(set: u64, sig: u64)
+        requires sig < 64
+        ensures signal_remove_is_clear_bit_prop(set, sig)
+    {}
+
+    // r[impl properties.signal-contains-is-bit-at]
+    pub open spec fn signal_contains_is_bit_at_prop(set: u64, sig: u64) -> bool
+        recommends sig < 64
+    {
+        signal_contains_spec(set, sig) == bit_at_spec(set, sig)
+    }
+
+    // r[verify properties.signal-contains-is-bit-at]
+    proof fn prove_signal_contains_is_bit_at(set: u64, sig: u64)
+        requires sig < 64
+        ensures signal_contains_is_bit_at_prop(set, sig)
+    {}
+
+    } // verus!
+}
+
+// --- permission ↔ bitwise composition ---
+
+#[cfg(verus_keep_ghost)]
+mod permission_bitwise_proofs {
+    use vstd::prelude::*;
+
+    use crate::permission::bit_position_spec;
+    use crate::permission::has_permission_spec;
+    use crate::permission::set_permission_spec;
+
+    verus! {
+
+    // r[impl properties.permission-set-check-roundtrip]
+    pub open spec fn permission_set_check_roundtrip_prop(
+        mode: u64, who: u64, perm: u64,
+    ) -> bool
+        recommends who <= 2, perm <= 2
+    {
+        has_permission_spec(set_permission_spec(mode, who, perm), who, perm)
+    }
+
+    // r[verify properties.permission-set-check-roundtrip]
+    proof fn prove_permission_set_check_roundtrip(mode: u64, who: u64, perm: u64)
+        requires who <= 2, perm <= 2
+        ensures permission_set_check_roundtrip_prop(mode, who, perm)
+    {
+        let pos = bit_position_spec(who, perm);
+        assert(pos < 9) by {
+            // bit_position = (2 - who) * 3 + perm, max = 2*3+2 = 8
+        }
+        // set_bit then bit_at at same position is true
+        assert(((mode | (1u64 << pos)) >> pos) & 1u64 == 1u64) by(bit_vector)
+            requires pos < 9u64;
+    }
+
+    // r[impl properties.permission-set-independence]
+    pub open spec fn permission_set_independence_prop(
+        mode: u64, w1: u64, p1: u64, w2: u64, p2: u64,
+    ) -> bool
+        recommends w1 <= 2, p1 <= 2, w2 <= 2, p2 <= 2
+    {
+        bit_position_spec(w1, p1) != bit_position_spec(w2, p2) ==>
+            has_permission_spec(set_permission_spec(mode, w1, p1), w2, p2)
+                == has_permission_spec(mode, w2, p2)
+    }
+
+    // r[verify properties.permission-set-independence]
+    proof fn prove_permission_set_independence(
+        mode: u64, w1: u64, p1: u64, w2: u64, p2: u64,
+    )
+        requires w1 <= 2, p1 <= 2, w2 <= 2, p2 <= 2
+        ensures permission_set_independence_prop(mode, w1, p1, w2, p2)
+    {
+        let pos1 = bit_position_spec(w1, p1);
+        let pos2 = bit_position_spec(w2, p2);
+        if pos1 != pos2 {
+            assert(pos1 < 9 && pos2 < 9) by {}
+            // Setting bit pos1 doesn't change bit pos2
+            assert(((mode | (1u64 << pos1)) >> pos2) & 1u64
+                == (mode >> pos2) & 1u64) by(bit_vector)
+                requires pos1 != pos2, pos1 < 9u64, pos2 < 9u64;
+        }
+    }
+
+    } // verus!
+}
+
+// --- page ↔ arithmetic/integer agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod page_arithmetic_proofs {
+    use vstd::prelude::*;
+
+    use crate::arithmetic::div_ceil_spec;
+    use crate::integer::align_down_spec;
+    use crate::page::is_page_aligned_spec;
+    use crate::page::pages_needed_spec;
+
+    verus! {
+
+    // r[impl properties.pages-needed-is-div-ceil]
+    pub open spec fn pages_needed_is_div_ceil_prop(size: u64, ps: u64) -> bool
+        recommends ps > 0
+    {
+        pages_needed_spec(size, ps) == div_ceil_spec(size, ps)
+    }
+
+    // r[verify properties.pages-needed-is-div-ceil]
+    proof fn prove_pages_needed_is_div_ceil(size: u64, ps: u64)
+        requires ps > 0
+        ensures pages_needed_is_div_ceil_prop(size, ps)
+    {}
+
+    // r[impl properties.page-aligned-is-align-down-fixpoint]
+    pub open spec fn page_aligned_is_align_down_fixpoint_prop(addr: u64, ps: u64) -> bool
+        recommends ps > 0
+    {
+        is_page_aligned_spec(addr, ps) == (align_down_spec(addr, ps) == addr)
+    }
+
+    // r[verify properties.page-aligned-is-align-down-fixpoint]
+    proof fn prove_page_aligned_is_align_down_fixpoint(addr: u64, ps: u64)
+        requires ps > 0
+        ensures page_aligned_is_align_down_fixpoint_prop(addr, ps)
+    {
+        vstd::arithmetic::div_mod::lemma_fundamental_div_mod(addr as int, ps as int);
+    }
+
+    } // verus!
+}
+
+// --- expiration ↔ lease boundary agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod lease_expiration_proofs {
+    use vstd::prelude::*;
+
+    use crate::expiration::is_expired_spec;
+    use crate::lease::effective_expiry_spec;
+    use crate::lease::grant_spec;
+    use crate::lease::is_valid_spec;
+    use crate::lease::renew_spec;
+    use crate::lease::Lease;
+    use crate::monotonic::is_advance_spec;
+
+    verus! {
+
+    // r[impl properties.lease-valid-implies-not-expired]
+    pub open spec fn lease_valid_implies_not_expired_prop(lease: Lease, now: u64) -> bool {
+        (!lease.is_revoked && is_valid_spec(lease, now))
+            ==> !is_expired_spec(lease.expiry, now)
+    }
+
+    // r[verify properties.lease-valid-implies-not-expired]
+    proof fn prove_lease_valid_implies_not_expired(lease: Lease, now: u64)
+        ensures lease_valid_implies_not_expired_prop(lease, now)
+    {
+        // is_valid requires now < effective_expiry = expiry (non-revoked)
+        // !is_expired requires now <= expiry (now > expiry is false)
+        // now < expiry ==> now <= expiry — automatic
+    }
+
+    // r[impl properties.lease-renewal-is-advance]
+    pub open spec fn lease_renewal_is_advance_prop(lease: Lease, new_expiry: u64) -> bool
+        recommends !lease.is_revoked, new_expiry > lease.expiry
+    {
+        is_advance_spec(
+            effective_expiry_spec(lease),
+            effective_expiry_spec(renew_spec(lease, new_expiry)),
+        )
+    }
+
+    // r[verify properties.lease-renewal-is-advance]
+    proof fn prove_lease_renewal_is_advance(lease: Lease, new_expiry: u64)
+        requires !lease.is_revoked, new_expiry > lease.expiry
+        ensures lease_renewal_is_advance_prop(lease, new_expiry)
+    {
+        // effective_expiry(non-revoked) = expiry
+        // renew sets expiry = new_expiry
+        // is_advance = new_expiry >= lease.expiry — follows from new_expiry > lease.expiry
+    }
+
+    } // verus!
+}
+
+// --- tier ↔ eviction_score monotonicity ---
+
+#[cfg(verus_keep_ghost)]
+mod tier_score_proofs {
+    use vstd::prelude::*;
+
+    use crate::eviction_score::tier_multiplier_spec;
+    use crate::tier::classify_tier_spec;
+
+    verus! {
+
+    // r[impl properties.tier-score-monotonic]
+    pub open spec fn tier_score_monotonic_prop(
+        count_a: u64, count_b: u64, warm_t: u64, hot_t: u64,
+    ) -> bool
+        recommends warm_t <= hot_t
+    {
+        count_a <= count_b ==>
+            tier_multiplier_spec(classify_tier_spec(count_a, warm_t, hot_t))
+                <= tier_multiplier_spec(classify_tier_spec(count_b, warm_t, hot_t))
+    }
+
+    // r[verify properties.tier-score-monotonic]
+    proof fn prove_tier_score_monotonic(
+        count_a: u64, count_b: u64, warm_t: u64, hot_t: u64,
+    )
+        requires warm_t <= hot_t
+        ensures tier_score_monotonic_prop(count_a, count_b, warm_t, hot_t)
+    {
+        // Z3 case splits on the tier thresholds:
+        // count_a <= count_b, so tier(count_a) <= tier(count_b)
+        // tier_multiplier is monotone in tier value (0→1, 1→2, 2→4)
+    }
+
+    } // verus!
+}
+
+// --- backoff ↔ bounds ---
+
+#[cfg(verus_keep_ghost)]
+mod backoff_bounds_proofs {
+    use vstd::prelude::*;
+
+    use crate::backoff::compute_backoff_spec;
+
+    verus! {
+
+    // r[impl properties.backoff-in-range]
+    pub open spec fn backoff_in_range_prop(base: u64, attempt: u64, cap: u64) -> bool {
+        compute_backoff_spec(base, attempt, cap) <= cap
+    }
+
+    // r[verify properties.backoff-in-range]
+    proof fn prove_backoff_in_range(base: u64, attempt: u64, cap: u64)
+        ensures backoff_in_range_prop(base, attempt, cap)
+    {
+        // base == 0 → result = 0 <= cap (u64 non-negative)
+        // base > 0 → result = min(uncapped, cap) <= cap by definition of min
+    }
+
+    } // verus!
+}
+
+// --- approval ↔ quorum ---
+
+#[cfg(verus_keep_ghost)]
+mod approval_quorum_proofs {
+    use vstd::prelude::*;
+
+    use crate::approval::is_merge_allowed_spec;
+    use crate::quorum::is_quorum_spec;
+    use crate::quorum::majority_spec;
+
+    verus! {
+
+    // r[impl properties.approval-majority-implies-quorum]
+    pub open spec fn approval_majority_implies_quorum_prop(
+        valid: u64, required: u64, total: u64,
+    ) -> bool
+        recommends total > 0
+    {
+        (required >= majority_spec(total)
+            && is_merge_allowed_spec(valid, required, true))
+            ==> is_quorum_spec(valid, total)
+    }
+
+    // r[verify properties.approval-majority-implies-quorum]
+    proof fn prove_approval_majority_implies_quorum(
+        valid: u64, required: u64, total: u64,
+    )
+        requires total > 0
+        ensures approval_majority_implies_quorum_prop(valid, required, total)
+    {
+        // is_merge_allowed(valid, required, true) = valid >= required
+        // required >= majority(total) and valid >= required
+        // ==> valid >= majority(total) = is_quorum(valid, total)
+    }
+
+    } // verus!
+}
+
+// --- two-phase commit ↔ quorum ---
+
+#[cfg(verus_keep_ghost)]
+mod two_phase_quorum_proofs {
+    use vstd::prelude::*;
+
+    use crate::quorum::is_quorum_spec;
+    use crate::quorum::majority_spec;
+    use crate::two_phase::can_commit_spec;
+
+    verus! {
+
+    // r[impl properties.two-phase-unanimity-implies-quorum]
+    pub open spec fn two_phase_unanimity_implies_quorum_prop(
+        votes: Seq<Option<bool>>,
+    ) -> bool
+        recommends votes.len() <= u64::MAX as int
+    {
+        can_commit_spec(votes) ==>
+            is_quorum_spec(votes.len() as u64, votes.len() as u64)
+    }
+
+    // r[verify properties.two-phase-unanimity-implies-quorum]
+    proof fn prove_two_phase_unanimity_implies_quorum(
+        votes: Seq<Option<bool>>,
+    )
+        requires votes.len() <= u64::MAX as int
+        ensures two_phase_unanimity_implies_quorum_prop(votes)
+    {
+        // can_commit ==> votes.len() > 0
+        // is_quorum(n, n) = n >= majority(n) = n >= n/2 + 1
+        if can_commit_spec(votes) {
+            let n: u64 = votes.len() as u64;
+            assert(votes.len() > 0);
+            assert(n as int == votes.len());
+            assert(n > 0);
+            assert(n >= n / 2 + 1) by(nonlinear_arith)
+                requires n > 0u64;
+        }
+    }
+
+    } // verus!
+}
+
+// --- expiration ↔ monotonic ---
+
+#[cfg(verus_keep_ghost)]
+mod expiration_monotonic_proofs {
+    use vstd::prelude::*;
+
+    use crate::expiration::expires_at_spec;
+    use crate::monotonic::is_advance_spec;
+
+    verus! {
+
+    // r[impl properties.expires-at-monotonic-is-advance]
+    pub open spec fn expires_at_monotonic_is_advance_prop(
+        now: u64, ttl_a: u64, ttl_b: u64,
+    ) -> bool {
+        ttl_a <= ttl_b ==>
+            is_advance_spec(expires_at_spec(now, ttl_a), expires_at_spec(now, ttl_b))
+    }
+
+    // r[verify properties.expires-at-monotonic-is-advance]
+    proof fn prove_expires_at_monotonic_is_advance(
+        now: u64, ttl_a: u64, ttl_b: u64,
+    )
+        ensures expires_at_monotonic_is_advance_prop(now, ttl_a, ttl_b)
+    {
+        // is_advance = new >= old
+        // expires_at uses saturating semantics: larger ttl → larger or equal result
+        // Case 1: both ttl*1000 fit in u64 → both now+ttl_ms fit → direct <=
+        // Case 2: ttl_a*1000 fits but ttl_b*1000 doesn't → b saturates to MAX >= a's result
+        // Case 3: both overflow → both = MAX (or now+MAX saturated)
+        // All cases: expires_at(now, ttl_b) >= expires_at(now, ttl_a)
+    }
+
+    } // verus!
+}
+
+// --- cow ↔ drain isomorphism ---
+
+#[cfg(verus_keep_ghost)]
+mod cow_drain_proofs {
+    use vstd::prelude::*;
+
+    use crate::cow::ref_count_after_clone_spec;
+    use crate::cow::ref_count_after_drop_spec;
+    use crate::drain::after_finish_op_spec;
+    use crate::drain::after_start_op_spec;
+
+    verus! {
+
+    // r[impl properties.cow-clone-is-drain-start]
+    pub open spec fn cow_clone_is_drain_start_prop(n: u64) -> bool {
+        ref_count_after_clone_spec(n) == after_start_op_spec(n)
+    }
+
+    // r[verify properties.cow-clone-is-drain-start]
+    proof fn prove_cow_clone_is_drain_start(n: u64)
+        ensures cow_clone_is_drain_start_prop(n)
+    {}
+
+    // r[impl properties.cow-drop-is-drain-finish]
+    pub open spec fn cow_drop_is_drain_finish_prop(n: u64) -> bool {
+        ref_count_after_drop_spec(n) == after_finish_op_spec(n)
+    }
+
+    // r[verify properties.cow-drop-is-drain-finish]
+    proof fn prove_cow_drop_is_drain_finish(n: u64)
+        ensures cow_drop_is_drain_finish_prop(n)
+    {}
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -1868,6 +2307,181 @@ mod tests {
                 );
                 prop_assert_eq!(region_result, interval_result);
             }
+        }
+
+        // --- Wave 1 cross-module proptests ---
+
+        // r[verify properties.signal-add-is-set-bit]
+        #[test]
+        fn prop_signal_add_is_set_bit(set: u64, sig in 0u64..64) {
+            prop_assert_eq!(
+                crate::signal::signal_add(set, sig),
+                crate::bitwise::set_bit(set, sig),
+            );
+        }
+
+        // r[verify properties.signal-remove-is-clear-bit]
+        #[test]
+        fn prop_signal_remove_is_clear_bit(set: u64, sig in 0u64..64) {
+            prop_assert_eq!(
+                crate::signal::signal_remove(set, sig),
+                crate::bitwise::clear_bit(set, sig),
+            );
+        }
+
+        // r[verify properties.signal-contains-is-bit-at]
+        #[test]
+        fn prop_signal_contains_is_bit_at(set: u64, sig in 0u64..64) {
+            prop_assert_eq!(
+                crate::signal::signal_contains(set, sig),
+                crate::bitwise::bit_at(set, sig),
+            );
+        }
+
+        // r[verify properties.permission-set-check-roundtrip]
+        #[test]
+        fn prop_permission_set_check_roundtrip(
+            mode: u64, who in 0u64..=2, perm in 0u64..=2,
+        ) {
+            let updated = crate::permission::set_permission(mode, who, perm);
+            prop_assert!(crate::permission::has_permission(updated, who, perm));
+        }
+
+        // r[verify properties.permission-set-independence]
+        #[test]
+        fn prop_permission_set_independence(
+            mode: u64,
+            w1 in 0u64..=2, p1 in 0u64..=2,
+            w2 in 0u64..=2, p2 in 0u64..=2,
+        ) {
+            if crate::permission::bit_position(w1, p1)
+                != crate::permission::bit_position(w2, p2)
+            {
+                let before = crate::permission::has_permission(mode, w2, p2);
+                let updated = crate::permission::set_permission(mode, w1, p1);
+                let after = crate::permission::has_permission(updated, w2, p2);
+                prop_assert_eq!(before, after);
+            }
+        }
+
+        // r[verify properties.pages-needed-is-div-ceil]
+        #[test]
+        fn prop_pages_needed_is_div_ceil(size: u64, ps in 1u64..=10000) {
+            prop_assert_eq!(
+                crate::page::pages_needed(size, ps),
+                crate::arithmetic::div_ceil(size, ps),
+            );
+        }
+
+        // r[verify properties.page-aligned-is-align-down-fixpoint]
+        #[test]
+        fn prop_page_aligned_is_align_down_fixpoint(addr: u64, ps in 1u64..=10000) {
+            prop_assert_eq!(
+                crate::page::is_page_aligned(addr, ps),
+                (crate::integer::align_down(addr, ps) == addr),
+            );
+        }
+
+        // r[verify properties.lease-valid-implies-not-expired]
+        #[test]
+        fn prop_lease_valid_implies_not_expired(
+            start in 0u64..=u64::MAX / 2,
+            expiry_offset in 1u64..=1000,
+            now_offset in 0u64..=2000,
+        ) {
+            let expiry = start + expiry_offset;
+            let now = start + now_offset;
+            let lease = crate::lease::grant(1, start, expiry);
+            if crate::lease::is_valid(&lease, now) {
+                prop_assert!(!crate::expiration::is_expired(expiry, now));
+            }
+        }
+
+        // r[verify properties.tier-score-monotonic]
+        #[test]
+        fn prop_tier_score_monotonic(
+            count_a: u64, count_b: u64,
+            warm_t in 1u64..=100, hot_t in 1u64..=200,
+        ) {
+            if warm_t <= hot_t && count_a <= count_b {
+                let tier_a = crate::tier::classify_tier(count_a, warm_t, hot_t);
+                let tier_b = crate::tier::classify_tier(count_b, warm_t, hot_t);
+                let mult_a = crate::eviction_score::tier_multiplier(tier_a);
+                let mult_b = crate::eviction_score::tier_multiplier(tier_b);
+                prop_assert!(mult_a <= mult_b);
+            }
+        }
+
+        // r[verify properties.backoff-in-range]
+        #[test]
+        fn prop_backoff_in_range(base: u64, attempt in 0u64..=100, cap: u64) {
+            prop_assert!(crate::backoff::compute_backoff(base, attempt, cap) <= cap);
+        }
+
+        // r[verify properties.approval-majority-implies-quorum]
+        #[test]
+        fn prop_approval_majority_implies_quorum(
+            valid in 0u64..=100, total in 1u64..=100,
+        ) {
+            let required = crate::quorum::majority(total);
+            if crate::approval::is_merge_allowed(valid, required, true) {
+                prop_assert!(crate::quorum::is_quorum(valid, total));
+            }
+        }
+
+        // r[verify properties.lease-renewal-is-advance]
+        #[test]
+        fn prop_lease_renewal_is_advance(
+            start in 0u64..=u64::MAX / 4,
+            expiry_offset in 1u64..=1000,
+            renewal_offset in 1u64..=1000,
+        ) {
+            let expiry = start + expiry_offset;
+            let lease = crate::lease::grant(1, start, expiry);
+            let new_expiry = expiry + renewal_offset;
+            let renewed = crate::lease::renew(&lease, new_expiry);
+            prop_assert!(crate::lease::effective_expiry(&renewed)
+                >= crate::lease::effective_expiry(&lease));
+        }
+
+        // r[verify properties.two-phase-unanimity-implies-quorum]
+        #[test]
+        fn prop_two_phase_unanimity_implies_quorum(n in 1u64..=100) {
+            let votes: Vec<Option<bool>> = vec![Some(true); n as usize];
+            if crate::two_phase::can_commit(&votes) {
+                prop_assert!(crate::quorum::is_quorum(n, n));
+            }
+        }
+
+        // r[verify properties.expires-at-monotonic-is-advance]
+        #[test]
+        fn prop_expires_at_monotonic_is_advance(
+            now: u64, ttl_a: u64, ttl_b: u64,
+        ) {
+            if ttl_a <= ttl_b {
+                prop_assert!(
+                    crate::expiration::expires_at(now, ttl_b)
+                        >= crate::expiration::expires_at(now, ttl_a)
+                );
+            }
+        }
+
+        // r[verify properties.cow-clone-is-drain-start]
+        #[test]
+        fn prop_cow_clone_is_drain_start(n: u64) {
+            prop_assert_eq!(
+                crate::cow::ref_count_after_clone(n),
+                crate::drain::after_start_op(n),
+            );
+        }
+
+        // r[verify properties.cow-drop-is-drain-finish]
+        #[test]
+        fn prop_cow_drop_is_drain_finish(n: u64) {
+            prop_assert_eq!(
+                crate::cow::ref_count_after_drop(n),
+                crate::drain::after_finish_op(n),
+            );
         }
     }
 }

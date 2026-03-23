@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1466 Verus proofs + 1016 cargo tests = all gates green
+- 1590 Verus proofs + 1085 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -470,6 +470,25 @@
   - pressure: most_severe_is_semilattice_on_valid
   - All bit_vector proofs need `assert forall ... by { assert(...) by(bit_vector) }` pattern
     to prove quantified properties from per-element bit_vector facts
+
+## Cross-Module Properties Wave 1
+- 16 new cross-module properties added to properties.rs (1590 proofs, 1085 tests)
+- signal ↔ bitwise: signal_add/remove/contains are identical to set_bit/clear_bit/bit_at — automatic
+- permission ↔ bitwise: set-then-check roundtrip needs `by(bit_vector)` for `((mode | (1 << pos)) >> pos) & 1 == 1`
+- permission independence: setting bit pos1 doesn't affect bit pos2 — `by(bit_vector)` with `pos1 != pos2` requires
+- page ↔ arithmetic: pages_needed = div_ceil — identical spec bodies, automatic
+- page aligned ↔ align_down fixpoint: needs `lemma_fundamental_div_mod` to connect `%` to `as u64` cast
+  - First attempt with `by(nonlinear_arith)` failed — mod bound `0 <= r < ps` needs div_mod lemma as prerequisite
+- lease valid ⟹ not expired: automatic — `now < expiry` (valid) implies `now <= expiry` (not expired)
+- lease renewal is advance: automatic — `new_expiry > expiry` implies `new_expiry >= expiry`
+- tier → score monotonic: automatic — Z3 case-splits on threshold comparisons
+- backoff in range: automatic — `min(x, cap) <= cap` by definition of min
+- approval majority ⟹ quorum: automatic — transitivity of `>=`
+- two-phase unanimity ⟹ quorum: needs `requires votes.len() <= u64::MAX as int`
+  - Without this, `votes.len() as u64` cast can't be proven in-range (Verus Seq has nat length)
+  - `n >= n / 2 + 1` needs `by(nonlinear_arith) requires n > 0u64`
+- expires_at monotonic is advance: automatic — saturating semantics preserve ordering
+- cow ↔ drain isomorphism: clone=start, drop=finish — identical spec bodies, automatic
 
 ## Mistakes & Corrections
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.

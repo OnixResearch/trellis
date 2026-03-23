@@ -1812,3 +1812,79 @@ to INTEGER. Both MUST be convertible to STRING.
 r[type-lattice.temporal-widening]
 DATE MUST be convertible to DATETIME and vice versa. Both MUST
 be convertible to STRING.
+
+## Cross-Module Properties (Wave 1)
+
+r[properties.signal-add-is-set-bit]
+signal_add(set, sig) MUST equal bitwise::set_bit(set, sig) for all
+set and sig < 64. The signal set-add operation is the same as setting
+a bit.
+
+r[properties.signal-remove-is-clear-bit]
+signal_remove(set, sig) MUST equal bitwise::clear_bit(set, sig) for
+all set and sig < 64. Signal removal is bit clearing.
+
+r[properties.signal-contains-is-bit-at]
+signal_contains(set, sig) MUST equal bitwise::bit_at(set, sig) for
+all set and sig < 64. Signal membership test is bit inspection.
+
+r[properties.permission-set-check-roundtrip]
+has_permission(set_permission(mode, who, perm), who, perm) MUST be
+true for all valid mode, who <= 2, perm <= 2. Setting a permission
+then checking it always succeeds.
+
+r[properties.permission-set-independence]
+Setting permission (w1, p1) MUST NOT affect has_permission(mode, w2, p2)
+when (w1, p1) != (w2, p2) and both are valid. Different permission
+bits are independent.
+
+r[properties.pages-needed-is-div-ceil]
+pages_needed(size, ps) MUST equal div_ceil(size, ps) for all size
+and ps > 0. Page count and ceiling division are the same computation.
+
+r[properties.page-aligned-is-align-down-fixpoint]
+is_page_aligned(addr, ps) MUST equal (align_down(addr, ps) == addr)
+for ps > 0. An aligned address is a fixpoint of align_down.
+
+r[properties.lease-valid-implies-not-expired]
+For a non-revoked lease, is_valid(lease, now) MUST imply
+!is_expired(lease.expiry, now). Lease validity is strictly stronger
+than non-expiration.
+
+r[properties.tier-score-monotonic]
+If count_a <= count_b and warm_t <= hot_t, then
+tier_multiplier(classify_tier(count_a, w, h)) MUST be <=
+tier_multiplier(classify_tier(count_b, w, h)). Higher access count
+never produces a lower tier multiplier.
+
+r[properties.backoff-in-range]
+compute_backoff(base, attempt, cap) MUST be <= cap for all inputs.
+The backoff value is always bounded by the cap.
+
+r[properties.approval-majority-implies-quorum]
+If required >= majority(total) and is_merge_allowed(valid, required, true),
+then is_quorum(valid, total). Meeting an approval threshold at least
+as strong as majority guarantees a quorum.
+
+r[properties.lease-renewal-is-advance]
+For a non-revoked lease, effective_expiry(renew(lease, new_expiry))
+>= effective_expiry(lease) when new_expiry > lease.expiry. Lease
+renewal satisfies monotonic::is_advance on the effective expiry.
+
+r[properties.two-phase-unanimity-implies-quorum]
+If can_commit(votes) is true, then is_quorum(n, n) holds where
+n = votes.len(). Unanimity (2PC requirement) implies any quorum
+threshold.
+
+r[properties.expires-at-monotonic-is-advance]
+If ttl_a <= ttl_b, then is_advance(expires_at(now, ttl_a),
+expires_at(now, ttl_b)). Longer TTL produces later (or equal)
+expiration, satisfying monotonic advance.
+
+r[properties.cow-clone-is-drain-start]
+ref_count_after_clone(n) MUST equal after_start_op(n) for all n.
+CoW cloning and drain start are the same increment-with-saturation.
+
+r[properties.cow-drop-is-drain-finish]
+ref_count_after_drop(n) MUST equal after_finish_op(n) for all n.
+CoW drop and drain finish are the same decrement-with-floor.
