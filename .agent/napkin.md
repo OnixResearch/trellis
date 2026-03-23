@@ -4,10 +4,10 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1199 Verus proofs + 887 cargo tests = all gates green
+- 1257 Verus proofs + 923 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
+- 33 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs, 16 forest tree walks
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
@@ -322,6 +322,32 @@
   - All 5 proptest properties pass
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
+
+- seq_set module: set_difference, set_intersection, is_subset, all_distinct over Seq<int>
+  - Index-based recursion (`set_difference_from_spec(a, b, from)`) matches loop iteration
+    direction — drop_first recursion caused unprovable snoc lemmas
+  - Boolean array for exec membership: Vec<bool> indexed by value, O(n+m) total
+  - Partition theorem: diff.len() + inter.len() == a.len() proved inductively
+  - Distinctness preservation: needs helper `difference_from_indices_above` showing
+    result elements come from indices >= from (connects to all_distinct on source)
+  - `#![trigger a@[i]]` needed on all `forall|i: int| 0 <= i < a@.len() ==> 0 <= a@[i] < cap`
+- forest module: parent-pointer forest over Seq<Option<int>>
+  - `when 0 <= node < parents.len() && well_formed_spec(parents)` on recursive specs
+    (ancestor_path_spec, reachable_spec) — `decreases node` needs well-formedness
+    to prove parent < child, can't use `decreases node + 1` without it
+  - All exec fns external_body: loop invariants for tree walks through Option<int> parent
+    indirection are hard for Z3 (parent map lookup + well-formedness guard + path accumulation)
+  - `None::<int>` type annotation needed when comparing `Option<int>` in Verus specs
+  - `#![trigger rev[k]]` needed on quantifiers over Seq<int> path elements
+  - `reverse_seq` helper as `Seq::new(s.len(), |i: int| s[s.len() - 1 - i])` — simpler
+    than recursive reverse for Z3
+  - `reverse_cons` lemma: `reverse([x] + rest) =~= reverse(rest).push(x)` — needed
+    for connecting iterative walk (builds child→root) to recursive spec (builds root→child)
+  - `common_prefix_from` iterative-style recursion for LCA — matches exec parallel scan
+- session_tree module: thin composition of forest + seq_set
+  - All specs are one-line aliases: find_unique = set_difference(ancestor_path, ancestor_path)
+  - find_latest_leaf uses backward scan (external_body) — simpler than last-child following
+  - Cross-module imports need #[cfg(verus_keep_ghost)]
 
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
