@@ -86,6 +86,7 @@ pub mod chunk;
 pub mod circuit_breaker;
 pub mod collections;
 pub mod conversion;
+pub mod cost_tracker;
 pub mod cow;
 pub mod drain;
 pub mod epoch;

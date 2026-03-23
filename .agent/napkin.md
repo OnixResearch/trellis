@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 949 Verus proofs + 663 cargo tests = all gates green
+- 1047 Verus proofs + 708 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -365,3 +365,19 @@
     (induction on fuel, case split, recursive call at equal-value branches) is correct —
     kept as external_body with proof bodies preserved
   - lex_cmp proofs (antisymmetric, reflexive, range) all automatic with single recursive call
+- Cost tracker module: all 4 phases + cross-module complete
+  - compute_cost overflow: `tokens > u64::MAX / price` guard needs `by(nonlinear_arith)`
+    with `lemma_fundamental_div_mod` to prove `tokens * price > u64::MAX` (and inverse
+    for the safe branch)
+  - milestone_count subtraction: `current / interval - prev / interval` needs
+    `lemma_div_is_ordered` to prove `prev / interval <= current / interval`
+  - complexity_score overflow: same `fundamental_div_mod` pattern for multiplication guard
+  - Budget status as u8 constants (0-3) instead of enum — Verus can't match on enum
+    variants in specs (same pattern as batch::FlushDecision)
+  - Budget monotonicity: Z3 handles all case splits automatically — u8 ordering
+    maps directly to the severity ordering
+  - select_role: soft budget demotion proof (role <= role without pressure) works
+    because score/2 <= score and thresholds are monotone in score
+  - All 37 new Verus proofs automatic or single-lemma — no external_body needed
+  - Rust toolchain path GC'd again: updated verus.sh to use
+    /nix/store/2i2rgbachy91xi97xfc07y4s3abgksq5-rust-default-1.93.0

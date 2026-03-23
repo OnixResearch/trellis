@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**1006 Verus proofs · 664 tests · ~250 requirements · 57 modules · 11 trusted axioms**
+**1047 Verus proofs · 708 tests · ~260 requirements · 58 modules · 11 trusted axioms**
 
 ## How it works
 
@@ -47,6 +47,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bounds` | range predicates, clamping |
 | `collections` | sorted insert, binary search, merge sorted, partitioning, find, count |
 | `conversion` | checked narrowing (u32/u16/u8), signed↔unsigned |
+| `cost_tracker` | cost accumulation, threshold crossing, budget status, model selection priority |
 | `integer` | parity, alignment, log2, next-power-of-two |
 | `interval` | half-open interval contains, overlap, split, adjacent, merge |
 | `option` | verified Option combinators (map, and_then, or_else, flatten, zip, filter) |

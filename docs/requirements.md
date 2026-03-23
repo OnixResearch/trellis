@@ -1264,3 +1264,58 @@ A cut is consistent if for any event in the cut, all causally preceding events a
 
 r[causal-order.cut-join]
 Cut join MUST return the component-wise maximum (vector clock merge) of two cuts. The result preserves consistency if both inputs are consistent cuts.
+
+## Cost Tracker
+
+r[cost-tracker.cost-non-negative]
+compute_cost MUST return a non-negative value for any inputs. Zero tokens or zero price MUST yield zero cost.
+
+r[cost-tracker.cost-monotonic]
+Accumulating a turn cost MUST produce a total >= the previous total (monotonically non-decreasing).
+
+r[cost-tracker.cost-additive]
+Accumulating a turn cost MUST produce exactly total_before + turn_cost. Two accumulations MUST compose associatively.
+
+r[cost-tracker.threshold-fires-once]
+A threshold crossing MUST fire when prev < limit AND current >= limit. It MUST NOT fire when already crossed (prev >= limit) or not yet reached (current < limit). Over a monotonic sequence, at most one adjacent pair crosses any given threshold.
+
+r[cost-tracker.milestone-count]
+Milestone count MUST equal floor(current/interval) - floor(prev/interval). Count MUST be zero when both values fall in the same interval. Milestones MUST compose additively: count(a,c) == count(a,b) + count(b,c).
+
+r[cost-tracker.milestone-non-negative]
+Milestone count MUST be non-negative when current >= prev and interval > 0.
+
+r[cost-tracker.budget-status-exhaustive]
+Budget status MUST map every (soft, hard, total) triple to exactly one of NoBudget, Ok, Warning, or Exceeded. No limits means NoBudget. Under all defined limits means Ok. Between soft and hard means Warning. At or above hard means Exceeded.
+
+r[cost-tracker.budget-status-monotone]
+Budget status MUST be monotone: increasing total never moves status backward. Warning is stable (stays Warning or advances to Exceeded). Exceeded is absorbing.
+
+r[cost-tracker.hard-budget-overrides-hint]
+Model selection MUST return smol (cheapest) when cost >= hard_limit, regardless of user hint or complexity score.
+
+r[cost-tracker.hint-overrides-score]
+When under hard limit, a user hint MUST override the complexity score in model selection.
+
+r[cost-tracker.score-thresholds-partition]
+Score thresholds MUST partition the score range into smol (< low), default ([low, high]), and slow (> high) with no gaps.
+
+r[cost-tracker.soft-budget-demotes]
+Soft budget pressure (score/2) MUST never promote — adjusted score <= original score. The resulting role MUST be <= the role without soft pressure.
+
+r[cost-tracker.score-non-negative]
+Complexity score MUST be non-negative when all weights are non-negative (u64 inputs guarantee this).
+
+## Cross-module: Cost Tracker
+
+r[properties.accumulate-is-advance]
+Cost accumulation is a monotonic advance: total_after >= total_before.
+
+r[properties.threshold-crossing-irreversible]
+Once a threshold is crossed in a monotonic sequence, it stays crossed — no later adjacent pair can cross the same threshold.
+
+r[properties.budget-warning-implies-not-ok]
+Warning status implies we are past Ok — the two states are mutually exclusive.
+
+r[properties.budget-exceeded-stays-exceeded]
+Exceeded is absorbing under increasing totals — once exceeded, always exceeded.

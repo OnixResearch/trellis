@@ -663,6 +663,67 @@ mod verus_proofs {
         ensures fencing_stale_is_not_advance_prop(token, fence)
     {}
 
+    // --- cost tracker × monotonic ---
+
+    use crate::cost_tracker::accumulate_spec;
+    use crate::cost_tracker::crosses_threshold_spec;
+    use crate::cost_tracker::budget_status_spec;
+    use crate::cost_tracker::BUDGET_OK;
+    use crate::cost_tracker::BUDGET_WARNING;
+    use crate::cost_tracker::BUDGET_EXCEEDED;
+
+    // r[impl properties.accumulate-is-advance]
+    /// Cost accumulation is a monotonic advance: total_after >= total_before.
+    pub open spec fn accumulate_is_advance_prop(total: u64, cost: u64) -> bool {
+        accumulate_spec(total, cost) >= total as int
+    }
+
+    // r[verify properties.accumulate-is-advance]
+    proof fn prove_accumulate_is_advance(total: u64, cost: u64)
+        ensures accumulate_is_advance_prop(total, cost)
+    {}
+
+    // r[impl properties.threshold-crossing-irreversible]
+    /// Once a threshold is crossed, it stays crossed (monotonic totals).
+    pub open spec fn threshold_crossing_irreversible_prop(t1: u64, t2: u64, t3: u64, limit: u64) -> bool
+        recommends t1 <= t2, t2 <= t3,
+    {
+        crosses_threshold_spec(t1, t2, limit) ==> !crosses_threshold_spec(t2, t3, limit)
+    }
+
+    // r[verify properties.threshold-crossing-irreversible]
+    proof fn prove_threshold_crossing_irreversible(t1: u64, t2: u64, t3: u64, limit: u64)
+        requires t1 <= t2, t2 <= t3,
+        ensures threshold_crossing_irreversible_prop(t1, t2, t3, limit)
+    {}
+
+    // r[impl properties.budget-warning-implies-not-ok]
+    /// Warning status implies we're past Ok — can't be both.
+    pub open spec fn budget_warning_implies_not_ok_prop(soft: Option<u64>, hard: Option<u64>, total: u64) -> bool {
+        budget_status_spec(soft, hard, total) == BUDGET_WARNING()
+            ==> budget_status_spec(soft, hard, total) != BUDGET_OK()
+    }
+
+    // r[verify properties.budget-warning-implies-not-ok]
+    proof fn prove_budget_warning_implies_not_ok(soft: Option<u64>, hard: Option<u64>, total: u64)
+        ensures budget_warning_implies_not_ok_prop(soft, hard, total)
+    {}
+
+    // r[impl properties.budget-exceeded-stays-exceeded]
+    /// Exceeded is absorbing under increasing totals.
+    pub open spec fn budget_exceeded_stays_exceeded_prop(soft: Option<u64>, hard: Option<u64>, t1: u64, t2: u64) -> bool
+        recommends t2 >= t1,
+    {
+        (t2 >= t1 && budget_status_spec(soft, hard, t1) == BUDGET_EXCEEDED())
+            ==> budget_status_spec(soft, hard, t2) == BUDGET_EXCEEDED()
+    }
+
+    // r[verify properties.budget-exceeded-stays-exceeded]
+    proof fn prove_budget_exceeded_stays_exceeded(soft: Option<u64>, hard: Option<u64>, t1: u64, t2: u64)
+        requires t2 >= t1,
+        ensures budget_exceeded_stays_exceeded_prop(soft, hard, t1, t2)
+    {}
+
     } // verus!
 }
 
@@ -1099,6 +1160,45 @@ mod tests {
                 current, failures, threshold, elapsed, timeout, probe
             );
             prop_assert!(crate::circuit_breaker::is_valid_state(ns));
+        }
+
+        // r[verify properties.accumulate-is-advance]
+        #[test]
+        fn prop_accumulate_is_advance(total in 0u64..u64::MAX/2, cost in 0u64..u64::MAX/2) {
+            if let Some(result) = crate::cost_tracker::accumulate(total, cost) {
+                prop_assert!(result >= total);
+            }
+        }
+
+        // r[verify properties.threshold-crossing-irreversible]
+        #[test]
+        fn prop_threshold_crossing_irreversible(
+            t1 in 0u64..1_000_000u64,
+            d1 in 0u64..1_000_000u64,
+            d2 in 0u64..1_000_000u64,
+            limit in 0u64..2_000_000u64,
+        ) {
+            let t2 = t1.saturating_add(d1);
+            let t3 = t2.saturating_add(d2);
+            let c1 = crate::cost_tracker::crosses_threshold(t1, t2, limit);
+            let c2 = crate::cost_tracker::crosses_threshold(t2, t3, limit);
+            prop_assert!(!(c1 && c2), "threshold crossed twice");
+        }
+
+        // r[verify properties.budget-exceeded-stays-exceeded]
+        #[test]
+        fn prop_budget_exceeded_stays_exceeded(
+            soft in proptest::option::of(0u64..10_000_000u64),
+            hard in proptest::option::of(0u64..10_000_000u64),
+            t1 in 0u64..10_000_000u64,
+            delta in 0u64..5_000_000u64,
+        ) {
+            let t2 = t1.saturating_add(delta);
+            let s1 = crate::cost_tracker::budget_status(soft, hard, t1);
+            let s2 = crate::cost_tracker::budget_status(soft, hard, t2);
+            if s1 == 3 { // Exceeded
+                prop_assert_eq!(s2, 3, "exceeded went backward");
+            }
         }
     }
 }
