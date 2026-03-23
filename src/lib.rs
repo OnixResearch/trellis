@@ -89,6 +89,7 @@ pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
 pub mod drain;
+pub mod env_scrub;
 pub mod epoch;
 pub mod eviction;
 pub mod expiration;

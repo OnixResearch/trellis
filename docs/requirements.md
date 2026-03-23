@@ -1319,3 +1319,37 @@ Warning status implies we are past Ok — the two states are mutually exclusive.
 
 r[properties.budget-exceeded-stays-exceeded]
 Exceeded is absorbing under increasing totals — once exceeded, always exceeded.
+
+## Environment Scrubbing
+
+r[env-scrub.suffix-case-insensitive]
+Secret suffix detection MUST be case-insensitive. ASCII uppercasing MUST be idempotent and length-preserving.
+
+r[env-scrub.blocked-keys-absent]
+Every key in the explicit blocklist MUST be identified as secret. Byte sequence equality MUST be used for exact matching.
+
+r[env-scrub.suffix-matched-absent]
+Every key whose uppercased form ends with a secret suffix (_SECRET, _TOKEN, _PASSWORD, _CREDENTIALS, _API_KEY, _APIKEY, _PRIVATE_KEY) MUST be identified as secret.
+
+r[env-scrub.sandbox-marker-present]
+The sandbox marker key (CLANKERS_SANDBOX) MUST NOT be blocked and MUST NOT match any secret suffix. It is not a secret.
+
+r[env-scrub.output-size-bounded]
+The filter count MUST be bounded by the input size. Filtering can only remove entries, never add them.
+
+r[env-scrub.filter-idempotent]
+Re-filtering already-filtered keys MUST keep all of them. If every key in the list is non-secret, the count equals the list length.
+
+r[env-scrub.blocklist-disjoint-safe]
+Common safe variable names (PATH, HOME) MUST NOT be in the blocklist and MUST NOT match any secret suffix.
+
+r[env-scrub.empty-yields-marker]
+Filtering an empty key list MUST yield zero safe entries.
+
+## Cross-module: Environment Scrubbing
+
+r[properties.to-upper-preserves-suffix]
+If a key ends with an uppercase suffix, uppercasing the key preserves the suffix — uppercase suffixes are fixed points of to_upper.
+
+r[properties.secret-implies-not-safe]
+A secret key is never safe — is_secret and !is_secret are mutually exclusive.

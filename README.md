@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**1047 Verus proofs · 708 tests · ~260 requirements · 58 modules · 11 trusted axioms**
+**1078 Verus proofs · 756 tests · ~270 requirements · 59 modules · 11 trusted axioms**
 
 ## How it works
 
@@ -63,6 +63,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `acid` | atomicity, consistency, isolation, durability over state vectors |
 | `cas` | compare-and-swap condition evaluation |
 | `chain` | chain hash integrity with append-preserves proof |
+| `env_scrub` | ASCII uppercasing, suffix matching, blocklist filtering for sandbox env isolation |
 | `epoch` | lexicographic (term, index) comparison for Raft elections |
 | `log` | append-only log with Log Matching Property |
 | `monotonic` | advancement predicates for terms, commit indices |

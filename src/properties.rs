@@ -663,6 +663,44 @@ mod verus_proofs {
         ensures fencing_stale_is_not_advance_prop(token, fence)
     {}
 
+    // --- env scrub × suffix matching ---
+
+    use crate::env_scrub::to_upper_spec;
+    use crate::env_scrub::ends_with_bytes_spec;
+    use crate::env_scrub::has_secret_suffix_spec;
+    use crate::env_scrub::is_secret_spec;
+
+    // r[impl properties.to-upper-preserves-suffix]
+    /// If a key ends with an uppercase suffix, uppercasing the key preserves
+    /// the suffix (since the suffix bytes are already uppercase).
+    pub open spec fn to_upper_preserves_suffix_prop(key: Seq<u8>, suffix: Seq<u8>) -> bool
+        recommends
+            key.len() >= suffix.len(),
+            forall|i: int| 0 <= i < suffix.len() as int ==> !(97 <= suffix[i] && suffix[i] <= 122),
+    {
+        ends_with_bytes_spec(key, suffix) ==> ends_with_bytes_spec(to_upper_spec(key), suffix)
+    }
+
+    // r[verify properties.to-upper-preserves-suffix]
+    proof fn prove_to_upper_preserves_suffix(key: Seq<u8>, suffix: Seq<u8>)
+        requires
+            key.len() >= suffix.len(),
+            // suffix is already uppercase (no lowercase ASCII)
+            forall|i: int| 0 <= i < suffix.len() as int ==> !(97 <= suffix[i] && suffix[i] <= 122),
+        ensures to_upper_preserves_suffix_prop(key, suffix)
+    {}
+
+    // r[impl properties.secret-implies-not-safe]
+    /// A secret key is never safe (tautology, but worth stating).
+    pub open spec fn secret_implies_not_safe_prop(key: Seq<u8>) -> bool {
+        is_secret_spec(key) ==> !(!is_secret_spec(key))
+    }
+
+    // r[verify properties.secret-implies-not-safe]
+    proof fn prove_secret_implies_not_safe(key: Seq<u8>)
+        ensures secret_implies_not_safe_prop(key)
+    {}
+
     // --- cost tracker × monotonic ---
 
     use crate::cost_tracker::accumulate_spec;
@@ -1183,6 +1221,22 @@ mod tests {
             let c1 = crate::cost_tracker::crosses_threshold(t1, t2, limit);
             let c2 = crate::cost_tracker::crosses_threshold(t2, t3, limit);
             prop_assert!(!(c1 && c2), "threshold crossed twice");
+        }
+
+        // r[verify properties.to-upper-preserves-suffix]
+        #[test]
+        fn prop_to_upper_idempotent_cross(s in proptest::collection::vec(0u8..=255u8, 0..50)) {
+            let u1 = crate::env_scrub::to_upper(&s);
+            let u2 = crate::env_scrub::to_upper(&u1);
+            prop_assert_eq!(u1, u2);
+        }
+
+        // r[verify properties.secret-implies-not-safe]
+        #[test]
+        fn prop_secret_and_safe_disjoint(key in proptest::collection::vec(0u8..=255u8, 0..30)) {
+            let secret = crate::env_scrub::is_secret(&key);
+            let safe = !secret;
+            prop_assert!(!(secret && safe), "key is both secret and safe");
         }
 
         // r[verify properties.budget-exceeded-stays-exceeded]

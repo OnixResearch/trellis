@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1047 Verus proofs + 708 cargo tests = all gates green
+- 1078 Verus proofs + 756 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -381,3 +381,20 @@
   - All 37 new Verus proofs automatic or single-lemma — no external_body needed
   - Rust toolchain path GC'd again: updated verus.sh to use
     /nix/store/2i2rgbachy91xi97xfc07y4s3abgksq5-rust-default-1.93.0
+- Env scrub module: all 5 phases complete
+  - to_upper_spec uses Seq::map — `s.map(|_i: int, b: u8| to_upper_byte_spec(b))`
+  - Seq::map preserves length, so length proof is automatic
+  - Idempotence of to_upper proved via per-byte case analysis — Z3 automatic
+  - ends_with_bytes_spec needs explicit `#![trigger suffix[i]]` for quantifier matching
+  - Verus loops MUST have `decreases` clauses (unlike Verus docs suggest) — applies
+    to all while loops in exec functions
+  - Blocklist entries as open spec fns returning seq! literals — verbose but allows
+    Z3 to prove marker_not_blocked by length comparison (marker has 16 bytes,
+    entries have 17, 12, 13, 12 bytes — length mismatch makes =~= false)
+  - Secret suffix spec fns (7 entries) as seq! with explicit byte values
+  - has_secret_suffix exec uses inline byte arrays: `&[95u8, 83u8, ...]`
+  - bytes_eq helper needed: Verus doesn't support `==` on `&[u8]` (no PartialEq in vstd)
+  - count_safe_spec recursive proofs need `idx <= keys.len()` in requires — when
+    idx > keys.len(), spec returns 0 but `keys.len() - idx < 0` fails the ensures
+  - All 31 new Verus proofs automatic — no external_body, no nonlinear_arith needed
+  - 0 new external_body items (fully open blocklist approach)
