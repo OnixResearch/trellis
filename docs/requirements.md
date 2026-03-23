@@ -1456,3 +1456,26 @@ Full MUST subsume Read, Write, Delete, and Watch. These are the admin-to-leaf ed
 
 r[subsumption.soundness]
 If variant a does not subsume variant b, then no capability of type a can authorize operations of type b. Leaf variants MUST NOT subsume Full. Independent variants (Prompt, ToolUse, Delegate) MUST NOT subsume each other.
+
+## Authorization Composition
+
+r[authorize.decomposition]
+authorizes(cap, op) MUST equal subsumes(cap.variant, op.variant) && covers(cap.scope, op.target) && mode_permits(cap.mode, op.mode). Each factor is independently verified.
+
+r[authorize.rejects-scope-failure]
+Scope mismatch MUST deny even with matching variant and mode.
+
+r[authorize.rejects-mode-failure]
+Mode mismatch MUST deny even with matching variant and scope.
+
+r[authorize.rejects-variant-failure]
+Variant mismatch MUST deny even with matching scope and mode.
+
+r[authorize.all-match]
+When all three factors match, authorization MUST succeed.
+
+r[authorize.compound-scope]
+Authorization with compound scope MUST require mount equality and prefix coverage. Mount mismatch MUST deny.
+
+r[authorize.optional-constraint]
+Authorization with optional constraint: None cap constraint MUST NOT block. Some cap with None target MUST block.

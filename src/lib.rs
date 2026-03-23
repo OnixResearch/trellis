@@ -19,6 +19,7 @@
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bloom` — Bloom filter with no-false-negatives proof
+//! - `authorize` — three-factor authorization: subsumption × scope × mode
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `causal_order` — causal delivery and consistent snapshots
@@ -74,6 +75,7 @@
 pub mod access_mode;
 pub mod acid;
 pub mod approval;
+pub mod authorize;
 pub mod arithmetic;
 pub mod backoff;
 pub mod ballot;

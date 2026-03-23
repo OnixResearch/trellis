@@ -88,17 +88,18 @@ Generic scope predicate shared by authorization and delegation.
 
 ## Phase 6: Authorization Composition
 
-- [ ] Implement `authorizes_spec` — `subsumes && covers && mode_permits`
-- [ ] Implement `authorizes` exec function
-- [ ] Prove decomposition: `authorizes == subsumes && covers && mode_permits`
-- [ ] Prove rejects on scope failure: matching variant+mode, scope miss → denied
-- [ ] Prove rejects on mode failure: matching variant+scope, mode miss → denied
-- [ ] Prove rejects on variant failure: matching scope+mode, variant miss → denied
-- [ ] Prove all three match → authorized
-- [ ] Prove with optional constraint: `authorizes` composes `optional_covers` for constrained fields
-- [ ] Prove with compound scope: `authorizes` composes `compound_covers` for mount+prefix fields
-- [ ] Unit tests + proptest (random cap × op triples, validate against aspen's match arms)
-- [ ] Verus + tracey clean
+- [x] Implement `authorizes_spec` — `subsumes && covers && mode_permits` ✅
+- [x] Implement `authorizes` exec function ✅
+- [x] Prove decomposition: `authorizes == subsumes && covers && mode_permits` ✅
+- [x] Prove rejects on scope failure: matching variant+mode, scope miss → denied ✅
+- [x] Prove rejects on mode failure: matching variant+scope, mode miss → denied ✅
+- [x] Prove rejects on variant failure: matching scope+mode, variant miss → denied ✅
+- [x] Prove all three match → authorized ✅
+- [x] Prove with optional constraint: None never blocks, Some+None blocks ✅
+- [x] Prove with compound scope: mount mismatch denies ✅
+- [x] Implement `authorizes_compound_spec/exec` and `authorizes_with_optional_spec/exec` ✅
+- [x] Unit tests + proptest (random cap × op triples, decomposition validation) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 7: Delegation Containment
 
