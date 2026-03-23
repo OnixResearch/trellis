@@ -1528,3 +1528,40 @@ Each parent-to-child transition MUST attenuate: parent variant subsumes child, c
 
 r[delegation.chain-valid]
 A full chain is valid iff: non-empty, root at depth 0, last depth within bounds, and every consecutive pair passes level validation.
+
+## Token Timestamps
+
+r[token-timestamp.expiration-tolerance]
+A token is expired when now > expires_at + tolerance. Saturating addition MUST prevent overflow. Within the tolerance window, the token MUST NOT be expired. Zero tolerance means expired iff now > expires_at.
+
+r[token-timestamp.fresh-token-valid]
+A token checked at its issued_at time with issued_at <= expires_at MUST NOT be expired.
+
+r[token-timestamp.expiration-monotonic]
+Once a token is expired, it MUST stay expired as time advances.
+
+r[token-timestamp.future-rejection]
+A token with issued_at > now + tolerance MUST be rejected as from the future. Clock skew within tolerance MUST be accepted.
+
+r[token-timestamp.refresh-threshold]
+A token needs refresh when remaining lifetime <= 20% of total lifetime. Expired tokens always need refresh. Fresh tokens (at issued_at) MUST NOT need refresh.
+
+r[token-timestamp.token-valid]
+A token is temporally valid iff not expired and not from the future. A well-formed token checked at its issued_at time MUST be valid.
+
+## Cross-module: UCAN Authorization
+
+r[properties.delegation-safety]
+If a parent contains a capability and that capability authorizes an operation, then the parent also authorizes the operation. Delegation cannot create new access.
+
+r[properties.auth-implies-subsumes]
+Authorization implies all three factors hold: variant subsumption, scope coverage, and mode permission.
+
+r[properties.containment-implies-factors]
+Containment implies all three factors hold: variant subsumption, scope coverage, and mode ordering.
+
+r[properties.token-valid-at-issue]
+A well-formed token is temporally valid at its issued_at time.
+
+r[properties.chain-valid-implies-depth-bounded]
+A valid delegation chain has depth within MAX_DELEGATION_DEPTH (8). Chains exceeding the bound are rejected.

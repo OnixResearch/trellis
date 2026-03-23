@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1184 Verus proofs + 870 cargo tests = all gates green
+- 1199 Verus proofs + 887 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -309,6 +309,17 @@
     to force Z3 to unfold the recursive spec one step
   - Cross-module imports: needs access_mode, containment, subsumption all via #[cfg(verus_keep_ghost)]
   - mode_le_spec not re-exported by containment — must import access_mode directly
+- Token timestamp module added: is_expired, is_from_future, needs_refresh, token_time_valid
+  - Spec uses `int` arithmetic (expires_at as int + tolerance as int) to avoid overflow
+  - Exec uses saturating add: `if tolerance > u64::MAX - expires_at { u64::MAX } else { ... }`
+  - needs_refresh overflow: remaining * 5 might overflow, guard with `remaining > u64::MAX / 5`
+  - Verus spec-mode arithmetic on u64 produces int — `(now + tolerance) as u64` cast needed in ensures
+  - All 15 proofs automatic — Z3 handles linear integer arithmetic without hints
+- Cross-module UCAN properties added to properties.rs:
+  - Delegation safety: contains(parent,cap) && authorizes(cap,op) ==> authorizes(parent,op)
+  - Authorization/containment imply their three factors
+  - Token valid at issue, chain depth bounded
+  - All 5 proptest properties pass
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

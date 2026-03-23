@@ -1254,5 +1254,108 @@ mod tests {
                 prop_assert_eq!(s2, 3, "exceeded went backward");
             }
         }
+
+        // ============================================================
+        // UCAN cross-module properties
+        // ============================================================
+
+        // r[verify properties.delegation-safety]
+        /// If a capability authorizes an operation and a parent contains that capability,
+        /// then the parent also authorizes the operation.
+        #[test]
+        fn prop_delegation_safety(
+            pv in 0u8..=7, cv in 0u8..=7, ov in 0u8..=7,
+            pm in 0u8..=3, cm in 0u8..=3, om in 0u8..=3,
+            parent_scope in proptest::collection::vec(any::<u8>(), 0..=10),
+            cap_ext in proptest::collection::vec(any::<u8>(), 0..=5),
+            target_ext in proptest::collection::vec(any::<u8>(), 0..=5),
+        ) {
+            let mut cap_scope = parent_scope.clone();
+            cap_scope.extend_from_slice(&cap_ext);
+            let mut target = cap_scope.clone();
+            target.extend_from_slice(&target_ext);
+
+            let parent_contains_cap = crate::containment::contains(pv, &parent_scope, pm, cv, &cap_scope, cm);
+            let cap_authorizes_op = crate::authorize::authorizes(cv, &cap_scope, cm, ov, &target, om);
+
+            if parent_contains_cap && cap_authorizes_op {
+                // Parent scope covers cap scope (from containment),
+                // cap scope covers target (from authorization),
+                // so parent scope covers target (by transitivity).
+                // Parent mode >= cap mode >= op mode (from ordering).
+                // Parent variant subsumes cap variant subsumes op variant (from transitivity).
+                let parent_auth = crate::authorize::authorizes(pv, &parent_scope, pm, ov, &target, om);
+                prop_assert!(parent_auth, "delegation safety violated");
+            }
+        }
+
+        // r[verify properties.auth-implies-subsumes]
+        /// Authorization implies variant subsumption.
+        #[test]
+        fn prop_auth_implies_subsumes(
+            cv in 0u8..=7, ov in 0u8..=7,
+            cm in 0u8..=3, om in 0u8..=3,
+            scope in proptest::collection::vec(any::<u8>(), 0..=10),
+            target in proptest::collection::vec(any::<u8>(), 0..=10),
+        ) {
+            if crate::authorize::authorizes(cv, &scope, cm, ov, &target, om) {
+                prop_assert!(crate::subsumption::subsumes(cv, ov));
+                prop_assert!(crate::scope::covers(&scope, &target));
+                prop_assert!(crate::access_mode::mode_permits(cm, om));
+            }
+        }
+
+        // r[verify properties.containment-implies-factors]
+        /// Containment implies all three factors hold.
+        #[test]
+        fn prop_containment_implies_factors(
+            pv in 0u8..=7, cv in 0u8..=7,
+            pm in 0u8..=3, cm in 0u8..=3,
+            ps in proptest::collection::vec(any::<u8>(), 0..=10),
+            cs in proptest::collection::vec(any::<u8>(), 0..=10),
+        ) {
+            if crate::containment::contains(pv, &ps, pm, cv, &cs, cm) {
+                prop_assert!(crate::subsumption::subsumes(pv, cv));
+                prop_assert!(crate::scope::covers(&ps, &cs));
+                prop_assert!(crate::access_mode::mode_le(cm, pm));
+            }
+        }
+
+        // r[verify properties.token-valid-at-issue]
+        /// A well-formed token is valid at its issued_at time.
+        #[test]
+        fn prop_token_valid_at_issue(
+            issued_at in 0u64..=u64::MAX / 4,
+            total in 0u64..=10000,
+            tolerance in 0u64..=1000,
+        ) {
+            let expires_at = issued_at + total;
+            prop_assert!(crate::token_timestamp::token_time_valid(
+                issued_at, expires_at, issued_at, tolerance,
+            ));
+        }
+
+        // r[verify properties.chain-valid-implies-depth-bounded]
+        /// A valid chain has bounded depth.
+        #[test]
+        fn prop_chain_depth_bounded(depth in 0u64..=20) {
+            use crate::delegation::*;
+            // Build a chain of the given depth.
+            let mut chain = Vec::new();
+            for d in 0..=depth {
+                chain.push(ChainLevel {
+                    depth: d,
+                    has_delegate: d < depth, // last level doesn't need delegate
+                    variant: 4, // Full
+                    mode: 3,    // Full mode
+                });
+            }
+            let valid = chain_valid(&chain);
+            if depth <= 8 {
+                prop_assert!(valid, "valid chain rejected at depth {}", depth);
+            } else {
+                prop_assert!(!valid, "invalid chain accepted at depth {}", depth);
+            }
+        }
     }
 }
