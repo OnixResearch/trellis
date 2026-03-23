@@ -831,6 +831,57 @@ mod verus_proofs {
     } // verus!
 }
 
+// --- slab ↔ page duality ---
+
+#[cfg(verus_keep_ghost)]
+mod slab_page_proofs {
+    use vstd::prelude::*;
+
+    use crate::page::frame_number_spec;
+    use crate::slab::slab_capacity_spec;
+    use crate::slab::slot_index_spec;
+
+    verus! {
+
+    // r[impl properties.slab-slot-is-page-frame]
+    pub open spec fn slab_slot_is_page_frame_prop(addr: u64, slot_size: u64) -> bool
+        recommends slot_size > 0
+    {
+        slot_index_spec(addr, 0, slot_size) == frame_number_spec(addr, slot_size)
+    }
+
+    // r[verify properties.slab-slot-is-page-frame]
+    proof fn prove_slab_slot_is_page_frame(addr: u64, slot_size: u64)
+        requires slot_size > 0
+        ensures slab_slot_is_page_frame_prop(addr, slot_size)
+    {}
+
+    // r[impl properties.slab-capacity-is-pages-dual]
+    pub open spec fn slab_capacity_exact_prop(n: u64, slot_size: u64) -> bool
+        recommends slot_size > 0, n as int * slot_size as int <= u64::MAX as int
+    {
+        slab_capacity_spec((n as int * slot_size as int) as u64, slot_size) == n
+    }
+
+    // r[verify properties.slab-capacity-is-pages-dual]
+    proof fn prove_slab_capacity_exact(n: u64, slot_size: u64)
+        requires
+            slot_size > 0,
+            n as int * slot_size as int <= u64::MAX as int,
+        ensures slab_capacity_exact_prop(n, slot_size)
+    {
+        let product = n as int * slot_size as int;
+        let ss = slot_size as int;
+        vstd::arithmetic::div_mod::lemma_fundamental_div_mod(product, ss);
+        assert(product / ss == n as int) by(nonlinear_arith)
+            requires ss > 0, product == n as int * ss,
+                product == ss * (product / ss) + product % ss,
+                0 <= product % ss, (product % ss) < ss;
+    }
+
+    } // verus!
+}
+
 // --- region ↔ interval agreement ---
 
 #[cfg(verus_keep_ghost)]
@@ -1614,6 +1665,24 @@ mod tests {
                 let path = crate::forest::ancestor_path(&parents, n);
                 prop_assert!(path.contains(&root),
                     "node {} in subtree({}) but root not on path {:?}", n, root, path);
+            }
+        }
+
+        // r[verify properties.slab-slot-is-page-frame]
+        #[test]
+        fn prop_slab_slot_is_page_frame(addr: u64, slot_size in 1u64..=4096) {
+            let slab_idx = crate::slab::slot_index(addr, 0, slot_size);
+            let page_frame = crate::page::frame_number(addr, slot_size);
+            prop_assert_eq!(slab_idx, page_frame);
+        }
+
+        // r[verify properties.slab-capacity-is-pages-dual]
+        #[test]
+        fn prop_slab_capacity_exact(n in 0u64..=10000, slot_size in 1u64..=256) {
+            if n as u128 * slot_size as u128 <= u64::MAX as u128 {
+                let region_size = n * slot_size;
+                let cap = crate::slab::slab_capacity(region_size, slot_size);
+                prop_assert_eq!(cap, n);
             }
         }
 

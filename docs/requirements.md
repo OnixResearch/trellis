@@ -1613,3 +1613,43 @@ regions_disjoint(a_base, a_size, b_base, b_size) MUST agree with
 r[properties.region-adjacent-agrees-interval]
 region_adjacent(a_base, a_size, b_base, b_size) MUST agree with
 interval::adjacent(a_base, a_end, b_base, b_end) for valid regions.
+
+## Slab Allocation
+
+r[slab.slot-index]
+slot_index MUST return (addr - base) / slot_size for addresses within the slab region.
+The slot index MUST be bounded: slot_index < slab_capacity.
+
+r[slab.slot-offset]
+slot_offset MUST return (addr - base) % slot_size, the byte position within a slot.
+
+r[slab.slot-address]
+slot_address MUST return base + index * slot_size. On aligned addresses,
+slot_address(slot_index(addr)) MUST equal addr (roundtrip).
+
+r[slab.is-slot-aligned]
+An address is slot-aligned iff its slot_offset is zero.
+
+r[slab.slab-capacity]
+slab_capacity MUST return region_size / slot_size — the number of whole
+slots that fit. Zero slot_size or region_size MUST yield zero.
+
+r[slab.generation-valid]
+A generation is valid if it is less than a maximum generation limit.
+generation_increment MUST produce a valid successor. Validity MUST be
+monotonic: if gen is invalid, gen+1 is also invalid.
+
+r[slab.handle-pack]
+handle_pack MUST combine an index and generation into a single u64.
+handle_unpack_index and handle_unpack_generation MUST recover the
+original values (roundtrip).
+
+## Cross-module: Slab ↔ Page
+
+r[properties.slab-slot-is-page-frame]
+slot_index(addr, base, slot_size) with base=0 MUST agree with
+page::frame_number(addr, slot_size).
+
+r[properties.slab-capacity-is-pages-dual]
+For exact multiples: slab_capacity(n * s, s) == n, matching the
+inverse relationship with pages_needed.

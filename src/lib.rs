@@ -69,6 +69,7 @@
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
@@ -145,6 +146,7 @@ pub mod seq_set;
 pub mod sequential;
 pub mod session_tree;
 pub mod signal;
+pub mod slab;
 pub mod slice;
 pub mod subsumption;
 pub mod token_timestamp;
