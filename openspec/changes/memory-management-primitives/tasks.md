@@ -1,15 +1,15 @@
 ## Phase 1: Region Arithmetic
 
-- [ ] Add requirements to `docs/requirements.md` for region module
-- [ ] Create `src/region.rs` with `region_contains_addr` (spec + exec + proof + tests)
-- [ ] Add `regions_disjoint` with symmetry proof
-- [ ] Add `region_contains_region` with reflexivity and transitivity proofs
-- [ ] Add `region_adjacent` with symmetry proof
-- [ ] Add `region_merge` with merge-of-split roundtrip proof
-- [ ] Add `region_split` with adjacent-halves and size-sum proofs
-- [ ] Add `pub mod region;` to `src/lib.rs`
-- [ ] Add cross-module properties: region ↔ interval agreement (contains, overlaps, adjacent)
-- [ ] Run `./scripts/verify.sh` — all gates pass
+- [x] Add requirements to `docs/requirements.md` for region module ✅
+- [x] Create `src/region.rs` with `region_contains_addr` (spec + exec + proof + tests) ✅
+- [x] Add `regions_disjoint` with symmetry proof ✅
+- [x] Add `region_contains_region` with reflexivity and transitivity proofs ✅
+- [x] Add `region_adjacent` with symmetry proof ✅
+- [x] Add `region_merge` with merge-of-split roundtrip proof ✅
+- [x] Add `region_split` with adjacent-halves and size-sum proofs ✅
+- [x] Add `pub mod region;` to `src/lib.rs` ✅
+- [x] Add cross-module properties: region ↔ interval agreement (contains, overlaps, adjacent) ✅
+- [x] Run `./scripts/verify.sh` — all gates pass ✅ (1367 verified, 0 errors)
 
 ## Phase 2: Slab Allocation Arithmetic
 

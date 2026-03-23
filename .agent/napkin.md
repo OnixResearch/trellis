@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1335 Verus proofs + 947 cargo tests = all gates green
+- 1367 Verus proofs + 967 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -376,6 +376,22 @@
 - `r[impl]` on `exec fn` — the runtime implementation
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
+
+- Region module added: contains_addr, regions_disjoint, contains_region, region_adjacent,
+  region_merge, region_split — all (base, size) half-open region operations
+  - Spec fn `contains_addr_spec` needs parenthesized `as int` casts:
+    `(x as int) < (base as int + size as int)` — without parens, Verus parser
+    reads `< base` as start of generic parameters, producing `expected ','` error
+  - Split/merge proofs need `base as int + size as int <= u64::MAX as int` in requires —
+    specs use `(x as int + y as int) as u64` which truncates on overflow, so Z3 can't
+    prove properties like non-empty or disjoint without the overflow guard
+  - `region_merge_spec` returns `(a_size as int + b_size as int) as u64` — needs
+    overflow precondition for `merge_nonempty` and `merge_size_sum` proofs
+  - `region_split_right_spec` returns `((base as int + offset as int) as u64, ...)` —
+    needs overflow precondition for `split_disjoint`, `split_adjacent`, `split_covers`
+  - `split_nonempty` and `split_size_sum` don't need overflow (pure int arithmetic)
+  - All proofs automatic — no nonlinear_arith, no external_body
+  - Cross-module: region ↔ interval agreement (contains, disjoint, adjacent) all automatic
 
 ## Enforcement Scripts
 - `check-coverage.sh` — scans for `pub fn` without `r[impl]`, exits 1 on violation
