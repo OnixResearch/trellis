@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1078 Verus proofs + 756 cargo tests = all gates green
+- 1096 Verus proofs + 774 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 closed specs
@@ -247,6 +247,16 @@
   - Iterative doubling can't connect to recursive pow2 spec — used external_body for exec
   - Spec must handle base=0 first (before attempt>=64 check) or 0*2^64 returns MAX
   - Proptest must cap attempt range to avoid O(2^64) loop iterations
+- Scope module added: covers, compound_covers, optional_covers
+  - starts_with_bytes_spec uses same quantifier+trigger pattern as ends_with_bytes_spec in env_scrub
+  - Transitivity proof needs explicit assert forall with trigger on prefix[i] to chain
+    a[i]==b[i] and b[i]==c[i] through the two starts_with quantifiers
+  - bytes_eq helper for mount comparison — same pattern as env_scrub::bytes_eq
+  - optional_covers exec uses Option<&[u8]> params, ensures clause must spell out
+    the match on cap/target to convert &[u8] to Seq<u8> for the spec
+  - All proofs automatic — Z3 handles prefix containment, extensional equality, and
+    Option case analysis without hints
+  - 18 new Verus proofs, 18 new cargo tests (6 unit + 12 proptest)
 - Spec fn imports from other modules need `#[cfg(verus_keep_ghost)]` — ghost code erased in normal builds
 - Total: 842 Verus proofs, 588 cargo tests, ~250 requirements
 

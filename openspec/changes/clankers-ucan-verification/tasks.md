@@ -2,26 +2,26 @@
 
 Generic scope predicate shared by authorization and delegation.
 
-- [ ] Add capability-auth requirements to specs
-- [ ] Implement `covers_spec(scope: Seq<u8>, target: Seq<u8>)` — delegates to `starts_with`
-- [ ] Implement `covers` exec function
-- [ ] Prove reflexive: `covers(s, s)` for all `s`
-- [ ] Prove transitive: `covers(a, b) && covers(b, c) ==> covers(a, c)`
-- [ ] Prove rejects non-prefix: `!starts_with(target, scope) ==> !covers(scope, target)`
-- [ ] Prove monotone narrowing: `covers(parent, child) ==> (covers(child, t) ==> covers(parent, t))`
-- [ ] Implement `compound_covers_spec` — mount equality + prefix coverage
-- [ ] Implement `compound_covers` exec function
-- [ ] Prove mount mismatch denies: `mount1 != mount2 ==> !compound_covers`
-- [ ] Prove both-match authorizes: `mount_eq && covers(prefix, path) ==> compound_covers`
-- [ ] Implement `optional_covers_spec` — `Option<Scope>` three-way match
-- [ ] Implement `optional_covers` exec function
-- [ ] Prove None is unconstrained: `optional_covers(None, t) == true`
-- [ ] Prove Some-None denies: `optional_covers(Some(s), None) == false`
-- [ ] Prove Some-Some delegates: `optional_covers(Some(s), Some(t)) == covers(s, t)`
-- [ ] Prove optional containment: parent None contains any child, parent Some requires child narrower
-- [ ] Cross-module: link to `slice::starts_with` proofs
-- [ ] Unit tests + proptest (random prefix pairs, compound scopes, optional combos)
-- [ ] Verus + tracey clean
+- [x] Add capability-auth requirements to specs ✅
+- [x] Implement `covers_spec(scope: Seq<u8>, target: Seq<u8>)` — delegates to `starts_with` ✅
+- [x] Implement `covers` exec function ✅
+- [x] Prove reflexive: `covers(s, s)` for all `s` ✅
+- [x] Prove transitive: `covers(a, b) && covers(b, c) ==> covers(a, c)` ✅
+- [x] Prove rejects non-prefix: `!starts_with(target, scope) ==> !covers(scope, target)` ✅
+- [x] Prove monotone narrowing: `covers(parent, child) ==> (covers(child, t) ==> covers(parent, t))` ✅
+- [x] Implement `compound_covers_spec` — mount equality + prefix coverage ✅
+- [x] Implement `compound_covers` exec function ✅
+- [x] Prove mount mismatch denies: `mount1 != mount2 ==> !compound_covers` ✅
+- [x] Prove both-match authorizes: `mount_eq && covers(prefix, path) ==> compound_covers` ✅
+- [x] Implement `optional_covers_spec` — `Option<Scope>` three-way match ✅
+- [x] Implement `optional_covers` exec function ✅
+- [x] Prove None is unconstrained: `optional_covers(None, t) == true` ✅
+- [x] Prove Some-None denies: `optional_covers(Some(s), None) == false` ✅
+- [x] Prove Some-Some delegates: `optional_covers(Some(s), Some(t)) == covers(s, t)` ✅
+- [x] Prove optional containment: parent None contains any child, parent Some requires child narrower ✅
+- [x] Cross-module: link to `slice::starts_with` proofs — scope module has its own starts_with_bytes, standalone ✅
+- [x] Unit tests + proptest (random prefix pairs, compound scopes, optional combos) ✅
+- [x] Verus + tracey clean ✅
 
 ## Phase 2: Access Mode Partial Order
 

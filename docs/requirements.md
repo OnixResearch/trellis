@@ -1353,3 +1353,29 @@ If a key ends with an uppercase suffix, uppercasing the key preserves the suffix
 
 r[properties.secret-implies-not-safe]
 A secret key is never safe — is_secret and !is_secret are mutually exclusive.
+
+## Scope Coverage
+
+r[scope.coverage-reflexive]
+A scope MUST cover itself. Coverage is defined as starts-with on byte sequences: covers(scope, target) iff target starts with scope.
+
+r[scope.coverage-transitive]
+If scope A covers B and B covers C, then A MUST cover C. Prefix containment is transitive.
+
+r[scope.coverage-rejects-non-prefix]
+A scope MUST NOT cover a target that does not start with the scope prefix.
+
+r[scope.coverage-narrowing-monotone]
+If parent scope covers child scope, then everything the child covers is also covered by the parent. Narrowing is monotone.
+
+r[scope.compound-requires-all-fields]
+Compound scoping (mount + prefix) MUST require all fields to match. Mount mismatch MUST deny regardless of prefix match.
+
+r[scope.optional-none-unconstrained]
+An optional scope constraint of None MUST allow any target. None is unconstrained.
+
+r[scope.optional-some-none-denies]
+An optional scope constraint of Some MUST deny when the target is None.
+
+r[scope.optional-some-some-delegates]
+When both cap and target are Some, optional coverage MUST delegate to covers.

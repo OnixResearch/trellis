@@ -62,6 +62,7 @@
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
@@ -119,6 +120,7 @@ pub mod quorum;
 pub mod rate_limit;
 pub mod result;
 pub mod ring_buffer;
+pub mod scope;
 pub mod sequential;
 pub mod signal;
 pub mod slice;
