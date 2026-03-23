@@ -26,7 +26,6 @@ pub open spec fn well_formed_spec(parents: Seq<Option<int>>) -> bool {
 
 // r[impl forest.well-formedness]
 /// Check that a parent map is well-formed.
-#[verifier::external_body]
 pub fn well_formed(parents: &[Option<usize>]) -> (result: bool)
     ensures result == well_formed_spec(
         parents@.map(|_i: int, p: Option<usize>| match p {
@@ -56,6 +55,11 @@ pub fn well_formed(parents: &[Option<usize>]) -> (result: bool)
         match parents[i] {
             Some(j) => {
                 if j >= i {
+                    proof {
+                        // pm[i] == Some(j as int) where j >= i, violates well_formed
+                        assert(pm[i as int] == Some(j as int));
+                        assert(!(0 <= (j as int) < (i as int)));
+                    }
                     return false;
                 }
             }
@@ -160,15 +164,74 @@ pub open spec fn children_of_spec(
 // r[depends forest.ancestor-path]
 /// Spec: path from root to `node`, following parent pointers upward.
 /// Returns [root, ..., node] in root-to-leaf order.
+/// Uses `fuel` to guarantee termination without requiring well_formed in
+/// the `when` guard. Under well_formed, fuel = node + 1 always suffices.
+pub open spec fn ancestor_path_fuel(
+    parents: Seq<Option<int>>, node: int, fuel: nat,
+) -> Seq<int>
+    decreases fuel,
+{
+    if fuel == 0 || node < 0 || node >= parents.len() {
+        seq![]
+    } else {
+        match parents[node] {
+            Some(p) => ancestor_path_fuel(parents, p, (fuel - 1) as nat).push(node),
+            None => seq![node],
+        }
+    }
+}
+
+/// Top-level ancestor path spec with sufficient fuel.
 pub open spec fn ancestor_path_spec(
     parents: Seq<Option<int>>, node: int,
-) -> Seq<int>
-    decreases node
-    when 0 <= node < parents.len() && well_formed_spec(parents)
-{
-    match parents[node] {
+) -> Seq<int> {
+    ancestor_path_fuel(parents, node, (if node >= 0 { node + 1 } else { 0 }) as nat)
+}
+
+/// Under well_formed, ancestor_path_spec unfolds one step.
+proof fn ancestor_path_unfold(parents: Seq<Option<int>>, node: int)
+    requires well_formed_spec(parents), 0 <= node < parents.len()
+    ensures ancestor_path_spec(parents, node) == match parents[node] {
         Some(p) => ancestor_path_spec(parents, p).push(node),
         None => seq![node],
+    }
+    decreases node,
+{
+    let fuel: nat = (node + 1) as nat;
+    // ancestor_path_spec(parents, node) = ancestor_path_fuel(parents, node, node+1)
+    // Unfolds to: match parents[node] { Some(p) => fuel(parents, p, node).push(node) ... }
+    // Need: fuel(parents, p, node) == fuel(parents, p, p+1) = ancestor_path_spec(parents, p)
+    match parents[node] {
+        Some(p) => {
+            // well_formed: p < node, so p+1 <= node
+            // fuel(parents, p, node as nat) with extra fuel
+            // Need to show fuel(parents, p, node) == fuel(parents, p, p+1)
+            ancestor_path_fuel_sufficient(parents, p, (fuel - 1) as nat);
+        }
+        None => {}
+    }
+}
+
+/// Extra fuel beyond node+1 doesn't change the result under well_formed.
+proof fn ancestor_path_fuel_sufficient(parents: Seq<Option<int>>, node: int, fuel: nat)
+    requires well_formed_spec(parents), 0 <= node < parents.len(), fuel >= node + 1
+    ensures ancestor_path_fuel(parents, node, fuel) ==
+        ancestor_path_fuel(parents, node, (node + 1) as nat)
+    decreases node,
+{
+    // Both unfold: fuel > 0 and (node+1) > 0, node in bounds
+    // So both produce: match parents[node] { Some(p) => fuel(p, fuel-1/node).push(node), None => [node] }
+    match parents[node] {
+        Some(p) => {
+            // well_formed: 0 <= p < node
+            // Recursive: fuel(p, fuel-1) == fuel(p, p+1)
+            ancestor_path_fuel_sufficient(parents, p, (fuel - 1) as nat);
+            // And: fuel(p, node as nat) == fuel(p, p+1)
+            ancestor_path_fuel_sufficient(parents, p, node as nat);
+        }
+        None => {
+            // Both return seq![node]
+        }
     }
 }
 
@@ -362,7 +425,6 @@ proof fn reverse_cons(x: int, rest: Seq<int>)
 
 // r[verify forest.ancestor-path]
 /// Path contains the target node as last element.
-#[verifier::external_body]
 proof fn path_contains_node(parents: Seq<Option<int>>, node: int)
     requires well_formed_spec(parents), 0 <= node < parents.len()
     ensures ancestor_path_spec(parents, node).len() > 0,
@@ -371,6 +433,7 @@ proof fn path_contains_node(parents: Seq<Option<int>>, node: int)
         ] == node,
     decreases node,
 {
+    ancestor_path_unfold(parents, node);
     match parents[node] {
         Some(p) => {
             path_contains_node(parents, p);
@@ -381,12 +444,12 @@ proof fn path_contains_node(parents: Seq<Option<int>>, node: int)
 
 // r[verify forest.ancestor-path]
 /// Path first element is a root.
-#[verifier::external_body]
 proof fn path_root_anchored(parents: Seq<Option<int>>, node: int)
     requires well_formed_spec(parents), 0 <= node < parents.len()
     ensures is_root_spec(parents, ancestor_path_spec(parents, node)[0]),
     decreases node,
 {
+    ancestor_path_unfold(parents, node);
     match parents[node] {
         Some(p) => {
             path_root_anchored(parents, p);
@@ -402,7 +465,6 @@ proof fn path_root_anchored(parents: Seq<Option<int>>, node: int)
 
 // r[verify forest.ancestor-path]
 /// Path consecutive elements have parent→child relationship.
-#[verifier::external_body]
 proof fn path_valid(parents: Seq<Option<int>>, node: int)
     requires well_formed_spec(parents), 0 <= node < parents.len()
     ensures ({
@@ -412,8 +474,10 @@ proof fn path_valid(parents: Seq<Option<int>>, node: int)
     })
     decreases node,
 {
+    ancestor_path_unfold(parents, node);
     match parents[node] {
         Some(p) => {
+            ancestor_path_unfold(parents, p);
             path_valid(parents, p);
             let parent_path = ancestor_path_spec(parents, p);
             let path = ancestor_path_spec(parents, node);
@@ -442,23 +506,26 @@ proof fn path_valid(parents: Seq<Option<int>>, node: int)
 
 // r[verify forest.ancestor-path]
 /// Path length is bounded by the number of nodes.
-#[verifier::external_body]
 proof fn path_length_bound(parents: Seq<Option<int>>, node: int)
     requires well_formed_spec(parents), 0 <= node < parents.len()
-    ensures ancestor_path_spec(parents, node).len() <= parents.len(),
+    ensures ancestor_path_spec(parents, node).len() <= node + 1
     decreases node,
 {
+    ancestor_path_unfold(parents, node);
     match parents[node] {
         Some(p) => {
             path_length_bound(parents, p);
+            // IH: path(p).len() <= p + 1
+            // path(node) = path(p).push(node), so len = path(p).len() + 1 <= p + 2 <= node + 1
         }
-        None => {}
+        None => {
+            // path(node) = [node], len = 1 <= node + 1
+        }
     }
 }
 
 // r[verify forest.ancestor-path]
 /// All elements in the path are valid indices.
-#[verifier::external_body]
 proof fn path_elements_in_bounds(parents: Seq<Option<int>>, node: int)
     requires well_formed_spec(parents), 0 <= node < parents.len()
     ensures forall|k: int| 0 <= k < ancestor_path_spec(parents, node).len() ==>
@@ -466,6 +533,7 @@ proof fn path_elements_in_bounds(parents: Seq<Option<int>>, node: int)
         && ancestor_path_spec(parents, node)[k] < parents.len()),
     decreases node,
 {
+    ancestor_path_unfold(parents, node);
     match parents[node] {
         Some(p) => {
             path_elements_in_bounds(parents, p);
@@ -657,7 +725,6 @@ pub fn lca(parents: &[Option<usize>], a: usize, b: usize) -> (result: Option<usi
 }
 
 /// Helper: connect iterative common prefix scan to recursive spec.
-#[verifier::external_body]
 proof fn common_prefix_from_matches(a: Seq<int>, b: Seq<int>, from: int, to: int)
     requires
         0 <= from <= to,
@@ -677,7 +744,6 @@ proof fn common_prefix_from_matches(a: Seq<int>, b: Seq<int>, from: int, to: int
 
 // r[verify forest.lca]
 /// LCA is symmetric.
-#[verifier::external_body]
 proof fn lca_symmetric(parents: Seq<Option<int>>, a: int, b: int)
     requires well_formed_spec(parents), 0 <= a < parents.len(), 0 <= b < parents.len()
     ensures lca_spec(parents, a, b) == lca_spec(parents, b, a)
@@ -685,6 +751,38 @@ proof fn lca_symmetric(parents: Seq<Option<int>>, a: int, b: int)
     let pa = ancestor_path_spec(parents, a);
     let pb = ancestor_path_spec(parents, b);
     common_prefix_symmetric(pa, pb);
+    // common_prefix_len(pa, pb) == common_prefix_len(pb, pa)
+    let cl_ab = common_prefix_len(pa, pb);
+    let cl_ba = common_prefix_len(pb, pa);
+    assert(cl_ab == cl_ba);
+    // If cl > 0, lca_spec(a,b) = pa[cl-1], lca_spec(b,a) = pb[cl-1]
+    // But pa[i] == pb[i] for i < cl (by common prefix definition)
+    if cl_ab > 0 {
+        common_prefix_implies_equal(pa, pb, cl_ab - 1);
+    }
+}
+
+/// Elements within the common prefix are equal.
+proof fn common_prefix_implies_equal(a: Seq<int>, b: Seq<int>, i: int)
+    requires 0 <= i < common_prefix_len(a, b)
+    ensures a[i] == b[i]
+{
+    common_prefix_from_implies_equal(a, b, 0, i);
+}
+
+proof fn common_prefix_from_implies_equal(a: Seq<int>, b: Seq<int>, from: int, i: int)
+    requires 0 <= from <= i, i < common_prefix_from(a, b, from),
+        from <= a.len(), from <= b.len()
+    ensures a[i] == b[i]
+    decreases i - from,
+{
+    // common_prefix_from(a, b, from) > i >= from means a[from] == b[from]
+    // and common_prefix_from(a, b, from+1) > i
+    if from == i {
+        // a[from] == b[from] because common_prefix_from > from means they match
+    } else {
+        common_prefix_from_implies_equal(a, b, from + 1, i);
+    }
 }
 
 /// Common prefix length is symmetric.
@@ -707,7 +805,6 @@ proof fn common_prefix_from_symmetric(a: Seq<int>, b: Seq<int>, from: int)
 
 // r[verify forest.lca]
 /// LCA with self is self.
-#[verifier::external_body]
 proof fn lca_self(parents: Seq<Option<int>>, a: int)
     requires well_formed_spec(parents), 0 <= a < parents.len()
     ensures lca_spec(parents, a, a) == a
@@ -731,7 +828,7 @@ proof fn common_prefix_full(s: Seq<int>)
 proof fn common_prefix_from_full(s: Seq<int>, from: int)
     requires 0 <= from
     ensures common_prefix_from(s, s, from) == s.len()
-    decreases if from < s.len() as int { (s.len() - from) as int } else { 0 },
+    decreases (s.len() - from),
 {
     if from < s.len() as int {
         common_prefix_from_full(s, from + 1);
@@ -857,20 +954,29 @@ pub fn leaves(parents: &[Option<usize>]) -> (result: Vec<usize>)
 
 // r[depends forest.subtree]
 /// Spec: is node `n` reachable from `root` via child pointers?
-pub open spec fn reachable_spec(
-    parents: Seq<Option<int>>, root: int, n: int,
+/// Fuel-bounded to guarantee termination without well_formed in `when`.
+pub open spec fn reachable_fuel(
+    parents: Seq<Option<int>>, root: int, n: int, fuel: nat,
 ) -> bool
-    decreases n
-    when 0 <= n < parents.len() && well_formed_spec(parents)
+    decreases fuel,
 {
     if n == root {
         true
+    } else if fuel == 0 || n < 0 || n >= parents.len() {
+        false
     } else {
         match parents[n] {
-            Some(p) => reachable_spec(parents, root, p),
+            Some(p) => reachable_fuel(parents, root, p, (fuel - 1) as nat),
             None => false,
         }
     }
+}
+
+/// Top-level reachable spec with sufficient fuel.
+pub open spec fn reachable_spec(
+    parents: Seq<Option<int>>, root: int, n: int,
+) -> bool {
+    reachable_fuel(parents, root, n, (if n >= 0 { n + 1 } else { 0 }) as nat)
 }
 
 // r[depends forest.subtree]
@@ -1026,11 +1132,13 @@ pub fn subtree(parents: &[Option<usize>], root: usize) -> (result: Vec<usize>)
 
 // r[verify forest.subtree]
 /// Subtree always contains the root.
-#[verifier::external_body]
 proof fn subtree_contains_root(parents: Seq<Option<int>>, root: int)
     requires 0 <= root < parents.len()
     ensures reachable_spec(parents, root, root)
-{}
+{
+    // reachable_spec(parents, root, root) unfolds to
+    // reachable_fuel(parents, root, root, fuel) which hits n == root => true
+}
 
 } // verus!
 
