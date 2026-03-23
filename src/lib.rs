@@ -107,6 +107,7 @@ pub mod epoch;
 pub mod eviction;
 pub mod expiration;
 pub mod fencing;
+pub mod forest;
 pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;
