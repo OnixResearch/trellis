@@ -535,5 +535,203 @@ mod tests {
         ) {
             prop_assert!(!level_valid(false, pd, pv, pm, pd + 1, cv, cm));
         }
+
+        // r[verify delegation.chain-valid]
+        /// Valid chains built by attenuating from Full/Full root always pass.
+        #[test]
+        fn prop_chain_valid_well_formed(
+            len in 1usize..=9,
+            leaf_variant in 0u8..=4,
+            leaf_mode in 0u8..=3,
+        ) {
+            // Build a well-formed chain: root at depth 0 with Full/Full,
+            // intermediate levels delegate with Full/Full, leaf attenuates.
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            for i in 0..len {
+                let depth = i as u64;
+                let is_last = i == len - 1;
+                let (has_delegate, variant, mode) = if is_last {
+                    (false, leaf_variant, leaf_mode)
+                } else {
+                    (true, 4u8, 3u8) // Full variant, Full mode
+                };
+                chain.push(ChainLevel { depth, has_delegate, variant, mode });
+            }
+            prop_assert!(chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-valid]
+        /// Removing the delegate flag from any non-leaf level breaks the chain.
+        #[test]
+        fn prop_chain_invalid_missing_delegate(
+            break_at in 0usize..=6,
+            total_len in 2usize..=8,
+        ) {
+            let len = total_len.min(break_at + 2); // need at least break_at+2 levels
+            if break_at >= len - 1 {
+                return Ok(());  // break_at must be non-leaf
+            }
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            for i in 0..len {
+                let depth = i as u64;
+                let is_last = i == len - 1;
+                let has_delegate = if i == break_at { false } else { !is_last };
+                chain.push(ChainLevel { depth, has_delegate, variant: 4, mode: 3 });
+            }
+            prop_assert!(!chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-valid]
+        /// Chains with non-zero root depth are always invalid.
+        #[test]
+        fn prop_chain_invalid_bad_root(
+            root_depth in 1u64..=100,
+            len in 1usize..=5,
+        ) {
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            for i in 0..len {
+                let depth = root_depth + i as u64;
+                let is_last = i == len - 1;
+                chain.push(ChainLevel {
+                    depth,
+                    has_delegate: !is_last,
+                    variant: 4,
+                    mode: 3,
+                });
+            }
+            prop_assert!(!chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-valid]
+        /// Depth gap (skip) at any position invalidates the chain.
+        #[test]
+        fn prop_chain_invalid_depth_skip(
+            skip_at in 0usize..=6,
+            gap in 2u64..=5,
+        ) {
+            let len = skip_at + 2; // at least 2 elements after root
+            if len > 9 { return Ok(()); }
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            let mut depth = 0u64;
+            for i in 0..len {
+                let is_last = i == len - 1;
+                chain.push(ChainLevel {
+                    depth,
+                    has_delegate: !is_last,
+                    variant: 4,
+                    mode: 3,
+                });
+                if i == skip_at {
+                    depth += gap; // skip
+                } else {
+                    depth += 1;
+                }
+            }
+            prop_assert!(!chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-attenuation]
+        /// Variant escalation (child has broader variant than parent) is rejected.
+        #[test]
+        fn prop_chain_invalid_variant_escalation(
+            parent_variant in 0u8..=3,
+            child_variant in 5u8..=7,
+        ) {
+            // Parent has a leaf variant (0-3), child has Prompt/ToolUse/Delegate (5-7).
+            // subsumes(leaf, non-leaf) is false.
+            let chain = [
+                ChainLevel { depth: 0, has_delegate: true, variant: parent_variant, mode: 3 },
+                ChainLevel { depth: 1, has_delegate: false, variant: child_variant, mode: 3 },
+            ];
+            prop_assert!(!chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-attenuation]
+        /// Mode escalation (child has broader mode than parent) is rejected.
+        #[test]
+        fn prop_chain_invalid_mode_escalation(
+            parent_mode in 0u8..=2,
+            child_mode in prop::sample::select(vec![3u8]),
+        ) {
+            // Parent has leaf mode (0-2), child has Full (3). mode_le(3, 0..2) is false.
+            let chain = [
+                ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: parent_mode },
+                ChainLevel { depth: 1, has_delegate: false, variant: 0, mode: child_mode },
+            ];
+            prop_assert!(!chain_valid(&chain));
+        }
+
+        // r[verify delegation.chain-valid]
+        /// chain_valid agrees with manual pairwise level_valid check.
+        #[test]
+        fn prop_chain_valid_matches_pairwise(
+            len in 1usize..=5,
+            variants in proptest::collection::vec(0u8..=7, 1..=5),
+            modes in proptest::collection::vec(0u8..=3, 1..=5),
+        ) {
+            let len = len.min(variants.len()).min(modes.len());
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            for i in 0..len {
+                chain.push(ChainLevel {
+                    depth: i as u64,
+                    has_delegate: i < len - 1,
+                    variant: variants[i],
+                    mode: modes[i],
+                });
+            }
+
+            let exec_result = chain_valid(&chain);
+
+            // Manual check: root depth 0 + last depth valid + all pairs pass level_valid
+            let mut manual = !chain.is_empty()
+                && chain[0].depth == 0
+                && chain[chain.len() - 1].depth <= 8;
+            for i in 0..chain.len().saturating_sub(1) {
+                let p = &chain[i];
+                let c = &chain[i + 1];
+                if !level_valid(p.has_delegate, p.depth, p.variant, p.mode,
+                                c.depth, c.variant, c.mode) {
+                    manual = false;
+                    break;
+                }
+            }
+            prop_assert_eq!(exec_result, manual,
+                "chain_valid disagrees with pairwise check for chain of length {}", len);
+        }
+
+        // r[verify delegation.chain-valid]
+        /// Attenuation monotonicity: valid chain never gains privileges.
+        /// If chain is valid, the leaf's variant is subsumed by the root's variant
+        /// and the leaf's mode is ≤ the root's mode.
+        #[test]
+        fn prop_chain_valid_attenuation_monotone(
+            len in 2usize..=9,
+            leaf_variant in 0u8..=4,
+            leaf_mode in 0u8..=3,
+        ) {
+            let mut chain: Vec<ChainLevel> = Vec::new();
+            for i in 0..len {
+                let is_last = i == len - 1;
+                let (variant, mode) = if is_last {
+                    (leaf_variant, leaf_mode)
+                } else {
+                    (4u8, 3u8)
+                };
+                chain.push(ChainLevel {
+                    depth: i as u64,
+                    has_delegate: !is_last,
+                    variant,
+                    mode,
+                });
+            }
+            if chain_valid(&chain) {
+                let root = &chain[0];
+                let leaf = &chain[chain.len() - 1];
+                // Root subsumes leaf variant
+                prop_assert!(crate::subsumption::subsumes(root.variant, leaf.variant));
+                // Leaf mode ≤ root mode
+                prop_assert!(crate::access_mode::mode_le(leaf.mode, root.mode));
+            }
+        }
     }
 }
