@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1411 Verus proofs + 985 cargo tests = all gates green
+- 1447 Verus proofs + 1002 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -377,6 +377,18 @@
 - `r[verify]` on `proof fn` and `#[test]` — evidence of correctness
 - Config scans `src/**/*.rs` only (no separate verus/ directory)
 
+- Buddy module added: block_size, buddy_of, is_aligned_to_order, can_coalesce, parent_block,
+  order_for_size
+  - Verus bitwise ops (`&`, `|`, `^`, `!`, `<<`, `>>`) only work on u64 — subtraction
+    promotes to int, so use `sub(x, 1u64)` in specs instead of `x - 1u64`
+  - Exec fns need `assert(order < 64 ==> (1u64 << order) >= 1u64) by(bit_vector)`
+    before `block_size(order) - 1` to prove no underflow
+  - `(order + 1)` in spec becomes int — must cast `(order + 1) as u64` for `<<`
+  - `leading_zeros()` can't be called in spec mode — use table-based spec instead
+  - `assert(... ==> ...) by(bit_vector) requires ...` pattern: put the constraint
+    INSIDE the `==>` antecedent, not as a separate `requires` clause
+  - buddies_same_parent: inline the expression in the by(bit_vector) assertion,
+    don't use `let` bindings inside the assert block
 - Slab module added: slot_index, slot_offset, slot_address, is_slot_aligned, slab_capacity,
   generation_valid, generation_increment, handle_pack/unpack_index/unpack_generation
   - Verus macro `as int` before `<` or `-` followed by identifier: use parens or restructure
