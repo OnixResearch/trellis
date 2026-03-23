@@ -1357,5 +1357,96 @@ mod tests {
                 prop_assert!(!valid, "invalid chain accepted at depth {}", depth);
             }
         }
+
+        // ============================================================
+        // Session tree cross-module properties (forest × seq_set)
+        // ============================================================
+
+        // r[verify properties.unique-subset-of-source]
+        /// Unique messages are a subset of the source branch path.
+        #[test]
+        fn prop_unique_subset_of_source(raw in proptest::collection::vec(proptest::option::of(0usize..100), 2..=15)) {
+            let parents: Vec<Option<usize>> = raw.into_iter().enumerate().map(|(i, opt)| {
+                if i == 0 { None } else { match opt { Some(v) => Some(v % i), None => None } }
+            }).collect();
+            let src = parents.len() - 1;
+            let tgt = 0;
+            let path_src = crate::forest::ancestor_path(&parents, src);
+            let path_tgt = crate::forest::ancestor_path(&parents, tgt);
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let cap = parents.len() + 1;
+            let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
+            // unique ⊆ source path
+            for &u in &unique {
+                prop_assert!(src_i64.contains(&u), "unique {} not on source path", u);
+            }
+            // unique ∩ target path = ∅
+            for &u in &unique {
+                prop_assert!(!tgt_i64.contains(&u), "unique {} on target path", u);
+            }
+        }
+
+        // r[verify properties.unique-disjoint-from-target]
+        /// Unique messages have no overlap with target branch.
+        #[test]
+        fn prop_unique_disjoint_from_target(raw in proptest::collection::vec(proptest::option::of(0usize..100), 2..=15)) {
+            let parents: Vec<Option<usize>> = raw.into_iter().enumerate().map(|(i, opt)| {
+                if i == 0 { None } else { match opt { Some(v) => Some(v % i), None => None } }
+            }).collect();
+            let src = parents.len() - 1;
+            let tgt = 0;
+            let path_src = crate::forest::ancestor_path(&parents, src);
+            let path_tgt = crate::forest::ancestor_path(&parents, tgt);
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let cap = parents.len() + 1;
+            let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
+            let inter = crate::seq_set::set_intersection(&src_i64, &tgt_i64, cap);
+            // Partition: unique + shared = source
+            prop_assert_eq!(unique.len() + inter.len(), src_i64.len());
+        }
+
+        // r[verify properties.selective-subset-of-unique]
+        /// Selective merge result is subset of both selection and unique set.
+        #[test]
+        fn prop_selective_subset_of_unique(raw in proptest::collection::vec(proptest::option::of(0usize..100), 3..=15)) {
+            let parents: Vec<Option<usize>> = raw.into_iter().enumerate().map(|(i, opt)| {
+                if i == 0 { None } else { match opt { Some(v) => Some(v % i), None => None } }
+            }).collect();
+            let src = parents.len() - 1;
+            let tgt = 0;
+            let path_src = crate::forest::ancestor_path(&parents, src);
+            let path_tgt = crate::forest::ancestor_path(&parents, tgt);
+            let src_i64: Vec<i64> = path_src.iter().map(|&x| x as i64).collect();
+            let tgt_i64: Vec<i64> = path_tgt.iter().map(|&x| x as i64).collect();
+            let cap = parents.len() + 1;
+            let unique = crate::seq_set::set_difference(&src_i64, &tgt_i64, cap);
+            // Select half
+            let selected: Vec<i64> = unique.iter().take(unique.len() / 2 + 1).copied().collect();
+            let merged = crate::seq_set::set_intersection(&selected, &unique, cap);
+            // merged ⊆ unique AND merged ⊆ selected
+            for &m in &merged {
+                prop_assert!(unique.contains(&m), "merged {} not in unique", m);
+                prop_assert!(selected.contains(&m), "merged {} not in selected", m);
+            }
+        }
+
+        // r[verify properties.subtree-walk-connection]
+        /// Every node in a subtree has the root on its ancestor path.
+        #[test]
+        fn prop_subtree_walk_connection(raw in proptest::collection::vec(proptest::option::of(0usize..100), 2..=15)) {
+            let parents: Vec<Option<usize>> = raw.into_iter().enumerate().map(|(i, opt)| {
+                if i == 0 { None } else { match opt { Some(v) => Some(v % i), None => None } }
+            }).collect();
+            // Pick a root in the middle
+            let root = parents.len() / 2;
+            let sub = crate::forest::subtree(&parents, root);
+            for &n in &sub {
+                let path = crate::forest::ancestor_path(&parents, n);
+                prop_assert!(path.contains(&root),
+                    "node {} in subtree({}) but root not on path {:?}", n, root, path);
+            }
+        }
     }
 }
