@@ -4,10 +4,11 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1292 Verus proofs + 946 cargo tests = all gates green
+- 1335 Verus proofs + 947 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
+- Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
@@ -390,6 +391,31 @@
 - Inside that module: `use crate::other_module::*_spec` works because Verus sets the cfg
 - Tests go outside the cfg-gated module (they use exec fns which exist in all builds)
 - Verus verifies the whole crate including cfg(verus_keep_ghost) modules
+
+## Generic Proof Decomposition
+- algebraic.rs: spec_fn-based predicates for common algebraic properties
+  - All quantifiers need explicit #[trigger] or #![trigger] — Verus can't auto-infer
+    triggers on spec_fn application (e.g., `forall|a, b| f(a, b) == f(b, a)` fails)
+  - is_semilattice = is_commutative + is_associative + is_idempotent_binary
+  - is_partial_order = is_reflexive + is_antisymmetric + is_transitive
+  - is_strict_partial_order = is_irreflexive + is_transitive
+- pointwise.rs: Seq<u64> lifting — `Seq::new(a.len(), |i| f(a[i], b[i]))`
+  - max_u64 as open spec fn (not closure) so it can be named in pointwise_merge_spec calls
+  - Callers prove scalar properties (max_u64_commutative etc.) then call
+    pointwise_commutative/associative/idempotent — the lifting is one call
+  - `=~=` extensional equality handles the Seq::new unfolding automatically
+  - vector_clock, crdt, causal_order all delegate merge proofs to pointwise
+  - Exec fns stay in individual modules (Verus Fn trait + spec_fn linking is complex)
+- seq_fold.rs: generic count_matching with bounded-by-length inductive proof
+  - Same index-based recursion pattern as collections::count_from_spec
+  - count_matching_bounded, count_matching_all, count_matching_none as reusable lemmas
+- Witness proofs connecting concrete modules to generic predicates:
+  - ordering: min_is_semilattice, max_is_semilattice
+  - monotonic: advance_is_partial_order, strict_advance_is_strict_partial_order
+  - signal: union_is_semilattice, intersect_is_semilattice, complement_is_involution
+  - pressure: most_severe_is_semilattice_on_valid
+  - All bit_vector proofs need `assert forall ... by { assert(...) by(bit_vector) }` pattern
+    to prove quantified properties from per-element bit_vector facts
 
 ## Mistakes & Corrections
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.
