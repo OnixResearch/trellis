@@ -36,6 +36,7 @@
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
 //! - `fencing` — fencing tokens for stale-write rejection
+//! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
@@ -98,6 +99,7 @@ pub mod epoch;
 pub mod eviction;
 pub mod expiration;
 pub mod fencing;
+pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;
 pub mod integer;

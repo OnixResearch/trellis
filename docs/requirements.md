@@ -1425,3 +1425,20 @@ Every pattern MUST contain itself.
 
 r[pattern.containment-transitive]
 Pattern containment MUST be transitive for well-formed patterns (non-wildcard patterns must not contain the sentinel value).
+
+## Glob Matching
+
+r[glob.wildcard-matches-all]
+A glob pattern of exactly `"*"` MUST match any input.
+
+r[glob.exact-match]
+A glob pattern with no `*` MUST match only exact byte equality and reject different inputs.
+
+r[glob.prefix-match]
+A glob pattern with trailing `*` MUST match inputs starting with the prefix before the `*`.
+
+r[glob.multi-segment-match]
+A glob pattern with multiple `*` wildcards MUST match inputs where segments appear in order: first anchored at start, last at end, middle anywhere.
+
+r[glob.non-match-rejected]
+A glob pattern MUST reject inputs that don't satisfy the pattern structure.
