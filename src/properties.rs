@@ -831,6 +831,90 @@ mod verus_proofs {
     } // verus!
 }
 
+// --- region ↔ interval agreement ---
+
+#[cfg(verus_keep_ghost)]
+mod region_interval_proofs {
+    use vstd::prelude::*;
+
+    use crate::interval::adjacent_spec;
+    use crate::interval::contains_spec;
+    use crate::interval::overlaps_spec;
+    use crate::region::contains_addr_spec;
+    use crate::region::region_adjacent_spec;
+    use crate::region::regions_disjoint_spec;
+
+    verus! {
+
+    // r[impl properties.region-contains-agrees-interval]
+    pub open spec fn region_contains_agrees_interval_prop(
+        base: u64, size: u64, x: u64,
+    ) -> bool
+        recommends base as int + size as int <= u64::MAX as int
+    {
+        contains_addr_spec(base, size, x)
+            == contains_spec(base, (base as int + size as int) as u64, x)
+    }
+
+    // r[verify properties.region-contains-agrees-interval]
+    proof fn prove_region_contains_agrees_interval(base: u64, size: u64, x: u64)
+        requires base as int + size as int <= u64::MAX as int
+        ensures region_contains_agrees_interval_prop(base, size, x)
+    {}
+
+    // r[impl properties.region-disjoint-agrees-interval]
+    pub open spec fn region_disjoint_agrees_interval_prop(
+        a_base: u64, a_size: u64, b_base: u64, b_size: u64,
+    ) -> bool
+        recommends
+            a_base as int + a_size as int <= u64::MAX as int,
+            b_base as int + b_size as int <= u64::MAX as int,
+    {
+        regions_disjoint_spec(a_base, a_size, b_base, b_size)
+            == !overlaps_spec(
+                a_base, (a_base as int + a_size as int) as u64,
+                b_base, (b_base as int + b_size as int) as u64,
+            )
+    }
+
+    // r[verify properties.region-disjoint-agrees-interval]
+    proof fn prove_region_disjoint_agrees_interval(
+        a_base: u64, a_size: u64, b_base: u64, b_size: u64,
+    )
+        requires
+            a_base as int + a_size as int <= u64::MAX as int,
+            b_base as int + b_size as int <= u64::MAX as int,
+        ensures region_disjoint_agrees_interval_prop(a_base, a_size, b_base, b_size)
+    {}
+
+    // r[impl properties.region-adjacent-agrees-interval]
+    pub open spec fn region_adjacent_agrees_interval_prop(
+        a_base: u64, a_size: u64, b_base: u64, b_size: u64,
+    ) -> bool
+        recommends
+            a_base as int + a_size as int <= u64::MAX as int,
+            b_base as int + b_size as int <= u64::MAX as int,
+    {
+        region_adjacent_spec(a_base, a_size, b_base, b_size)
+            == adjacent_spec(
+                a_base, (a_base as int + a_size as int) as u64,
+                b_base, (b_base as int + b_size as int) as u64,
+            )
+    }
+
+    // r[verify properties.region-adjacent-agrees-interval]
+    proof fn prove_region_adjacent_agrees_interval(
+        a_base: u64, a_size: u64, b_base: u64, b_size: u64,
+    )
+        requires
+            a_base as int + a_size as int <= u64::MAX as int,
+            b_base as int + b_size as int <= u64::MAX as int,
+        ensures region_adjacent_agrees_interval_prop(a_base, a_size, b_base, b_size)
+    {}
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -1530,6 +1614,58 @@ mod tests {
                 let path = crate::forest::ancestor_path(&parents, n);
                 prop_assert!(path.contains(&root),
                     "node {} in subtree({}) but root not on path {:?}", n, root, path);
+            }
+        }
+
+        // r[verify properties.region-contains-agrees-interval]
+        #[test]
+        fn prop_region_contains_agrees_interval(
+            base in 0u64..=u64::MAX / 2,
+            size in 0u64..=1000,
+            x: u64,
+        ) {
+            if base as u128 + size as u128 <= u64::MAX as u128 {
+                let region_result = crate::region::contains_addr(base, size, x);
+                let interval_result = crate::interval::contains(base, base + size, x);
+                prop_assert_eq!(region_result, interval_result);
+            }
+        }
+
+        // r[verify properties.region-disjoint-agrees-interval]
+        #[test]
+        fn prop_region_disjoint_agrees_interval(
+            a_base in 0u64..=u64::MAX / 2,
+            a_size in 0u64..=1000,
+            b_base in 0u64..=u64::MAX / 2,
+            b_size in 0u64..=1000,
+        ) {
+            if a_base as u128 + a_size as u128 <= u64::MAX as u128
+                && b_base as u128 + b_size as u128 <= u64::MAX as u128
+            {
+                let region_result = crate::region::regions_disjoint(a_base, a_size, b_base, b_size);
+                let interval_result = !crate::interval::overlaps(
+                    a_base, a_base + a_size, b_base, b_base + b_size,
+                );
+                prop_assert_eq!(region_result, interval_result);
+            }
+        }
+
+        // r[verify properties.region-adjacent-agrees-interval]
+        #[test]
+        fn prop_region_adjacent_agrees_interval(
+            a_base in 0u64..=u64::MAX / 2,
+            a_size in 0u64..=1000,
+            b_base in 0u64..=u64::MAX / 2,
+            b_size in 0u64..=1000,
+        ) {
+            if a_base as u128 + a_size as u128 <= u64::MAX as u128
+                && b_base as u128 + b_size as u128 <= u64::MAX as u128
+            {
+                let region_result = crate::region::region_adjacent(a_base, a_size, b_base, b_size);
+                let interval_result = crate::interval::adjacent(
+                    a_base, a_base + a_size, b_base, b_base + b_size,
+                );
+                prop_assert_eq!(region_result, interval_result);
             }
         }
     }

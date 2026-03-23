@@ -1565,3 +1565,51 @@ A well-formed token is temporally valid at its issued_at time.
 
 r[properties.chain-valid-implies-depth-bounded]
 A valid delegation chain has depth within MAX_DELEGATION_DEPTH (8). Chains exceeding the bound are rejected.
+
+## Region Arithmetic
+
+r[region.contains-addr]
+A region (base, size) MUST contain address x iff base <= x < base + size.
+Empty regions (size == 0) MUST contain no address. Overflow: base + size
+MUST NOT exceed u64::MAX + 1 (enforced via requires).
+
+r[region.end-addr]
+The exclusive end address of a region MUST equal base + size.
+
+r[region.is-empty]
+A region is empty iff its size is zero.
+
+r[region.disjoint]
+Two regions MUST be disjoint iff they share no address. Disjointness
+MUST be symmetric.
+
+r[region.contains-region]
+Region A contains region B iff every address in B is also in A.
+Containment MUST be reflexive and transitive.
+
+r[region.adjacent]
+Two regions MUST be adjacent iff one ends exactly where the other
+begins, with no gap and no overlap. Adjacency MUST be symmetric.
+
+r[region.merge]
+Merging two adjacent regions MUST produce a region covering exactly
+the combined span. Split-then-merge MUST be a roundtrip.
+
+r[region.split]
+Splitting a region at an offset within (0, size) MUST produce two
+non-empty, non-overlapping, adjacent sub-regions whose sizes sum
+to the original size.
+
+## Cross-module: Region ↔ Interval
+
+r[properties.region-contains-agrees-interval]
+region_contains_addr(base, size, x) MUST agree with interval::contains(base, base+size, x)
+for valid (non-overflowing) regions.
+
+r[properties.region-disjoint-agrees-interval]
+regions_disjoint(a_base, a_size, b_base, b_size) MUST agree with
+!interval::overlaps(a_base, a_end, b_base, b_end) for valid regions.
+
+r[properties.region-adjacent-agrees-interval]
+region_adjacent(a_base, a_size, b_base, b_size) MUST agree with
+interval::adjacent(a_base, a_end, b_base, b_end) for valid regions.

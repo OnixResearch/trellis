@@ -64,6 +64,7 @@
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `rate_limit` — integer token bucket rate limiting
+//! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `sequential` — sequential access detection, prefetch triggering
@@ -135,6 +136,7 @@ pub mod process_state;
 pub mod properties;
 pub mod quorum;
 pub mod rate_limit;
+pub mod region;
 pub mod result;
 pub mod ring_buffer;
 pub mod scope;
