@@ -135,6 +135,7 @@ pub mod rate_limit;
 pub mod result;
 pub mod ring_buffer;
 pub mod scope;
+pub mod seq_set;
 pub mod sequential;
 pub mod signal;
 pub mod slice;
