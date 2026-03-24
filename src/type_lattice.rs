@@ -97,6 +97,7 @@ proof fn can_convert_reflexive(t: u8)
 
 // --- ANY as top ---
 
+// r[impl type-lattice.any-top]
 // r[verify type-lattice.any-top]
 /// ANY converts to any type.
 proof fn any_converts_to_all(t: u8)
@@ -111,6 +112,7 @@ proof fn all_convert_to_any(t: u8)
 
 // --- STRING as universal source ---
 
+// r[impl type-lattice.string-source]
 // r[verify type-lattice.string-source]
 /// STRING converts to every type.
 proof fn string_converts_to_all(t: u8)
@@ -119,6 +121,7 @@ proof fn string_converts_to_all(t: u8)
 
 // --- Numeric widening ---
 
+// r[impl type-lattice.numeric-widening]
 // r[verify type-lattice.numeric-widening]
 /// INTEGER converts to FLOAT (widening).
 proof fn integer_widens_to_float()
@@ -141,6 +144,7 @@ proof fn numerics_to_string()
 
 // --- Temporal widening ---
 
+// r[impl type-lattice.temporal-widening]
 // r[verify type-lattice.temporal-widening]
 /// DATE converts to DATETIME.
 proof fn date_widens_to_datetime()

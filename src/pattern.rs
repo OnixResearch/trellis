@@ -86,6 +86,7 @@ proof fn wildcard_matches_all(v: int)
     ensures match_pattern_spec(seq![WILDCARD()], v)
 {}
 
+// r[impl pattern.exact-match-reflexive]
 // r[verify pattern.exact-match-reflexive]
 /// A singleton pattern matches its own element.
 proof fn exact_match_reflexive(x: int)
@@ -95,6 +96,7 @@ proof fn exact_match_reflexive(x: int)
     assert(seq![x][0] == x);
 }
 
+// r[impl pattern.non-member-rejected]
 // r[verify pattern.non-member-rejected]
 /// A value not in the pattern (and pattern is not wildcard) is rejected.
 proof fn non_member_rejected(pattern: Seq<int>, v: int)
@@ -139,12 +141,14 @@ pub fn pattern_contains(p1: &[i64], p2: &[i64]) -> (result: bool)
     true
 }
 
+// r[impl pattern.wildcard-contains-any]
 // r[verify pattern.wildcard-contains-any]
 /// Wildcard contains any pattern.
 proof fn wildcard_contains_any(p2: Seq<int>)
     ensures pattern_contains_spec(seq![WILDCARD()], p2)
 {}
 
+// r[impl pattern.non-wildcard-cannot-contain-wildcard]
 // r[verify pattern.non-wildcard-cannot-contain-wildcard]
 /// A non-wildcard pattern that doesn't contain the sentinel value
 /// cannot contain the wildcard pattern.
@@ -160,6 +164,7 @@ proof fn non_wildcard_no_sentinel_cannot_contain_wildcard(p1: Seq<int>)
     assert(!seq_contains_int(p1, seq![WILDCARD()][0]));
 }
 
+// r[impl pattern.containment-reflexive]
 // r[verify pattern.containment-reflexive]
 /// Every pattern contains itself.
 proof fn pattern_contains_reflexive(p: Seq<int>)
@@ -174,6 +179,7 @@ proof fn pattern_contains_reflexive(p: Seq<int>)
     }
 }
 
+// r[impl pattern.containment-transitive]
 // r[verify pattern.containment-transitive]
 /// Transitivity for well-formed patterns (no sentinel in non-wildcard patterns).
 proof fn pattern_contains_transitive_wellformed(a: Seq<int>, b: Seq<int>, c: Seq<int>)

@@ -305,6 +305,7 @@ pub open spec fn count_safe_spec(keys: Seq<Seq<u8>>, idx: int) -> int
     }
 }
 
+// r[impl env-scrub.output-size-bounded]
 // r[verify env-scrub.output-size-bounded]
 /// Filter can only remove entries: count <= remaining length.
 proof fn count_safe_bounded(keys: Seq<Seq<u8>>, idx: int)
@@ -333,6 +334,7 @@ proof fn count_safe_non_negative(keys: Seq<Seq<u8>>, idx: int)
 // Phase 5: Marker + Idempotence Proofs
 // ============================================================
 
+// r[impl env-scrub.sandbox-marker-present]
 // r[verify env-scrub.sandbox-marker-present]
 /// The sandbox marker key is not in the blocklist.
 proof fn marker_not_blocked()
@@ -361,6 +363,7 @@ proof fn marker_not_secret()
     marker_not_suffix();
 }
 
+// r[impl env-scrub.blocklist-disjoint-safe]
 // r[verify env-scrub.blocklist-disjoint-safe]
 /// PATH is not in the blocklist.
 proof fn path_not_blocked()
@@ -411,6 +414,7 @@ proof fn home_not_secret()
     home_not_suffix();
 }
 
+// r[impl env-scrub.filter-idempotent]
 // r[verify env-scrub.filter-idempotent]
 /// is_secret is a pure predicate — applying it twice gives the same answer.
 /// If a key passes the first filter (!is_secret), it passes again.
@@ -434,6 +438,7 @@ proof fn count_safe_idempotent(keys: Seq<Seq<u8>>, idx: int)
     }
 }
 
+// r[impl env-scrub.empty-yields-marker]
 // r[verify env-scrub.empty-yields-marker]
 /// Filtering an empty key list yields zero safe entries.
 proof fn count_safe_empty()

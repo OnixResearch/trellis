@@ -59,6 +59,7 @@ proof fn subsumes_reflexive(a: u8)
     ensures subsumes_spec(a, a)
 {}
 
+// r[impl subsumption.acyclic]
 // r[verify subsumption.acyclic]
 /// Subsumption is acyclic: if a subsumes b and b subsumes a, then a == b.
 /// (No non-trivial cycles.)
@@ -87,6 +88,7 @@ pub proof fn subsumes_transitive(a: u8, b: u8, c: u8)
     // So c==b, and subsumes(a,c) == subsumes(FULL, b) which is true.
 }
 
+// r[impl subsumption.admin-full]
 // r[verify subsumption.admin-full]
 /// Full subsumes Read.
 proof fn full_subsumes_read()
@@ -111,6 +113,7 @@ proof fn full_subsumes_watch()
     ensures subsumes_spec(V_FULL(), V_WATCH())
 {}
 
+// r[impl subsumption.soundness]
 // r[verify subsumption.soundness]
 /// Read does not subsume Delete.
 proof fn read_not_subsume_delete()

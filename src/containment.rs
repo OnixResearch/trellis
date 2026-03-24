@@ -67,6 +67,7 @@ pub fn contains(
 // Factor failure proofs
 // ============================================================
 
+// r[impl containment.no-scope-widening]
 // r[verify containment.no-scope-widening]
 /// Scope widening denies containment.
 proof fn no_scope_widening(
@@ -77,6 +78,7 @@ proof fn no_scope_widening(
     ensures !contains_spec(pv, ps, pm, cv, cs, cm)
 {}
 
+// r[impl containment.no-mode-escalation]
 // r[verify containment.no-mode-escalation]
 /// Mode escalation denies containment.
 proof fn no_mode_escalation(
@@ -87,6 +89,7 @@ proof fn no_mode_escalation(
     ensures !contains_spec(pv, ps, pm, cv, cs, cm)
 {}
 
+// r[impl containment.no-variant-escalation]
 // r[verify containment.no-variant-escalation]
 /// Variant escalation denies containment.
 proof fn no_variant_escalation(
@@ -97,6 +100,7 @@ proof fn no_variant_escalation(
     ensures !contains_spec(pv, ps, pm, cv, cs, cm)
 {}
 
+// r[impl containment.attenuation-allowed]
 // r[verify containment.attenuation-allowed]
 /// Attenuation is allowed: narrower scope + equal-or-lower mode is contained.
 proof fn attenuation_allowed(
@@ -110,6 +114,7 @@ proof fn attenuation_allowed(
     ensures contains_spec(pv, ps, pm, cv, cs, cm)
 {}
 
+// r[impl containment.transitive]
 // r[verify containment.transitive]
 /// Containment is transitive: if a contains b and b contains c, then a contains c.
 proof fn contains_transitive(
@@ -130,6 +135,7 @@ proof fn contains_transitive(
     mode_le_transitive(cm, bm, am);
 }
 
+// r[impl containment.self-contained]
 // r[verify containment.self-contained]
 /// Every capability contains itself.
 proof fn contains_reflexive(v: u8, s: Seq<u8>, m: u8)

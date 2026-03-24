@@ -64,6 +64,7 @@ pub fn is_stale(token: u64, fence: u64) -> (result: bool)
 
 // --- Safety proofs ---
 
+// r[impl fencing.issuance-strictly-increasing]
 // r[verify fencing.issuance-strictly-increasing]
 /// Issued tokens are strictly greater than the input.
 proof fn issuance_strictly_increasing(t: u64)
@@ -71,6 +72,7 @@ proof fn issuance_strictly_increasing(t: u64)
     ensures issue_token_spec(t) > t
 {}
 
+// r[impl fencing.no-false-rejection]
 // r[verify fencing.no-false-rejection]
 /// A freshly issued token is always valid against the fence it came from.
 proof fn no_false_rejection(fence: u64)
@@ -78,6 +80,7 @@ proof fn no_false_rejection(fence: u64)
     ensures is_valid_write_spec(issue_token_spec(fence), fence)
 {}
 
+// r[impl fencing.stale-implies-not-valid]
 // r[verify fencing.stale-implies-not-valid]
 /// is_stale and is_valid_write are exact complements.
 proof fn stale_complement(token: u64, fence: u64)

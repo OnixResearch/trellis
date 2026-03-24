@@ -31,6 +31,7 @@ pub open spec fn MODE_DELETE() -> u8 { 2 }
 /// Full access (subsumes read, write, delete).
 pub open spec fn MODE_FULL() -> u8 { 3 }
 
+// r[impl access-mode.valid-mode]
 // r[depends access-mode.valid-mode]
 /// Spec: is this a valid mode value?
 pub open spec fn is_valid_mode_spec(m: u8) -> bool {
@@ -60,6 +61,7 @@ pub fn mode_le(a: u8, b: u8) -> (result: bool)
     a == b || b == 3
 }
 
+// r[impl access-mode.order-reflexive]
 // r[verify access-mode.order-reflexive]
 /// Every mode is ≤ itself.
 proof fn mode_le_reflexive(a: u8)
@@ -79,6 +81,7 @@ pub proof fn mode_le_transitive(a: u8, b: u8, c: u8)
     // If a==b, then mode_le(b,c) gives mode_le(a,c) directly.
 }
 
+// r[impl access-mode.order-antisymmetric]
 // r[verify access-mode.order-antisymmetric]
 /// mode_le is antisymmetric: a ≤ b ∧ b ≤ a ⟹ a == b.
 proof fn mode_le_antisymmetric(a: u8, b: u8)
@@ -247,6 +250,21 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
+
+    // r[verify access-mode.valid-mode]
+    #[test]
+    fn test_valid_modes() {
+        // Exactly 4 valid modes: READ(0), WRITE(1), DELETE(2), FULL(3)
+        // Valid modes are self-reflexive under mode_le
+        for m in [0u8, 1, 2, 3] {
+            assert!(mode_le(m, m));
+            assert!(mode_permits(m, m));
+        }
+        // FULL permits all valid modes
+        for m in [0u8, 1, 2, 3] {
+            assert!(mode_permits(3, m));
+        }
+    }
 
     #[test]
     fn test_mode_le_reflexive() {

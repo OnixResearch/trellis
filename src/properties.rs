@@ -2485,6 +2485,7 @@ mod tests {
         // UCAN cross-module properties
         // ============================================================
 
+        // r[impl properties.delegation-safety]
         // r[verify properties.delegation-safety]
         /// If a capability authorizes an operation and a parent contains that capability,
         /// then the parent also authorizes the operation.
@@ -2515,6 +2516,7 @@ mod tests {
             }
         }
 
+        // r[impl properties.auth-implies-subsumes]
         // r[verify properties.auth-implies-subsumes]
         /// Authorization implies variant subsumption.
         #[test]
@@ -2531,6 +2533,7 @@ mod tests {
             }
         }
 
+        // r[impl properties.containment-implies-factors]
         // r[verify properties.containment-implies-factors]
         /// Containment implies all three factors hold.
         #[test]
@@ -2547,6 +2550,7 @@ mod tests {
             }
         }
 
+        // r[impl properties.token-valid-at-issue]
         // r[verify properties.token-valid-at-issue]
         /// A well-formed token is valid at its issued_at time.
         #[test]
@@ -2561,6 +2565,7 @@ mod tests {
             ));
         }
 
+        // r[impl properties.chain-valid-implies-depth-bounded]
         // r[verify properties.chain-valid-implies-depth-bounded]
         /// A valid chain has bounded depth.
         #[test]

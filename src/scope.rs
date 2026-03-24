@@ -71,6 +71,7 @@ proof fn covers_reflexive(s: Seq<u8>)
     ensures covers_spec(s, s)
 {}
 
+// r[impl scope.coverage-transitive]
 // r[verify scope.coverage-transitive]
 /// If a covers b and b covers c, then a covers c.
 pub proof fn covers_transitive(a: Seq<u8>, b: Seq<u8>, c: Seq<u8>)
@@ -96,6 +97,7 @@ pub proof fn covers_transitive(a: Seq<u8>, b: Seq<u8>, c: Seq<u8>)
     }
 }
 
+// r[impl scope.coverage-rejects-non-prefix]
 // r[verify scope.coverage-rejects-non-prefix]
 /// A scope rejects targets that don't start with it.
 proof fn covers_rejects_non_prefix(scope: Seq<u8>, target: Seq<u8>)
@@ -103,6 +105,7 @@ proof fn covers_rejects_non_prefix(scope: Seq<u8>, target: Seq<u8>)
     ensures !covers_spec(scope, target)
 {}
 
+// r[impl scope.coverage-narrowing-monotone]
 // r[verify scope.coverage-narrowing-monotone]
 /// If parent covers child, then everything child covers is also covered by parent.
 proof fn covers_narrowing_monotone(parent: Seq<u8>, child: Seq<u8>, target: Seq<u8>)
@@ -248,12 +251,14 @@ proof fn optional_none_unconstrained(target: Option<Seq<u8>>)
     ensures optional_covers_spec(None, target)
 {}
 
+// r[impl scope.optional-some-none-denies]
 // r[verify scope.optional-some-none-denies]
 /// Some cap with None target always denies.
 proof fn optional_some_none_denies(scope: Seq<u8>)
     ensures !optional_covers_spec(Some(scope), None)
 {}
 
+// r[impl scope.optional-some-some-delegates]
 // r[verify scope.optional-some-some-delegates]
 /// Some cap with Some target delegates to covers.
 proof fn optional_some_some_delegates(scope: Seq<u8>, target: Seq<u8>)

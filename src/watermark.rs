@@ -37,6 +37,7 @@ proof fn remaining_at_base(base: u64, capacity: u64)
     ensures watermark_remaining_spec(base, base, capacity) == capacity
 {}
 
+// r[impl watermark.capacity-conservation]
 // r[verify watermark.capacity-conservation]
 /// remaining + used == capacity.
 proof fn capacity_conservation(mark: u64, base: u64, capacity: u64)
@@ -103,6 +104,7 @@ pub fn watermark_alloc(mark: u64, size: u64) -> (result: u64)
     mark + size
 }
 
+// r[impl watermark.monotonic]
 // r[verify watermark.monotonic]
 /// Allocation moves the mark forward (or keeps it same for size==0).
 proof fn alloc_monotonic(mark: u64, size: u64)
@@ -185,6 +187,7 @@ proof fn empty_full_remaining(base: u64, capacity: u64)
 
 // --- non-overlap ---
 
+// r[impl watermark.non-overlap]
 // r[verify watermark.non-overlap]
 /// Two successive allocations produce disjoint regions.
 proof fn successive_allocs_disjoint(

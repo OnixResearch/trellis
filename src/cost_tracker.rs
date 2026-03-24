@@ -105,6 +105,7 @@ pub fn accumulate(total_before: u64, turn_cost: u64) -> (result: Option<u64>)
     }
 }
 
+// r[impl cost-tracker.cost-monotonic]
 // r[verify cost-tracker.cost-monotonic]
 /// Accumulation is monotonic: result >= total_before.
 proof fn accumulate_monotonic(total_before: u64, turn_cost: u64)
@@ -210,6 +211,7 @@ pub fn milestone_count(prev: u64, current: u64, interval: u64) -> (result: u64)
     current / interval - prev / interval
 }
 
+// r[impl cost-tracker.milestone-non-negative]
 // r[verify cost-tracker.milestone-non-negative]
 /// Milestone count is non-negative when current >= prev.
 proof fn milestone_count_non_negative(prev: u64, current: u64, interval: u64)
@@ -342,6 +344,7 @@ proof fn budget_status_valid(soft: Option<u64>, hard: Option<u64>, total: u64)
     }),
 {}
 
+// r[impl cost-tracker.budget-status-monotone]
 // r[verify cost-tracker.budget-status-monotone]
 /// Increasing total never moves status backward.
 /// Encoded: status_value(t2) >= status_value(t1) when t2 >= t1.
@@ -461,6 +464,7 @@ proof fn hard_budget_overrides_all(
     ensures select_role_spec(total, Some(hard_limit), soft_limit, hint, score, low_threshold, high_threshold) == ROLE_SMOL(),
 {}
 
+// r[impl cost-tracker.hint-overrides-score]
 // r[verify cost-tracker.hint-overrides-score]
 /// User hint overrides complexity score when under hard limit.
 proof fn hint_overrides_score(
@@ -478,6 +482,7 @@ proof fn hint_overrides_score(
         select_role_spec(total, hard_limit, soft_limit, Some(hint), score, low_threshold, high_threshold) == hint,
 {}
 
+// r[impl cost-tracker.score-thresholds-partition]
 // r[verify cost-tracker.score-thresholds-partition]
 /// Score thresholds partition the number line with no gaps.
 proof fn score_thresholds_partition(
@@ -497,6 +502,7 @@ proof fn score_thresholds_partition(
     }),
 {}
 
+// r[impl cost-tracker.soft-budget-demotes]
 // r[verify cost-tracker.soft-budget-demotes]
 /// Soft budget halves the score — never promotes.
 proof fn soft_budget_never_promotes(score: u64)

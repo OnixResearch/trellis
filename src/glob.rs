@@ -167,6 +167,7 @@ proof fn glob_wildcard_matches_all(input: Seq<u8>)
     assert(seq![STAR()][0] == STAR());
 }
 
+// r[impl glob.exact-match]
 // r[verify glob.exact-match]
 /// A pattern with no `*` matches only itself.
 proof fn glob_exact_match(s: Seq<u8>)
@@ -183,6 +184,7 @@ proof fn glob_exact_rejects(pattern: Seq<u8>, input: Seq<u8>)
     ensures !glob_match_spec(pattern, input)
 {}
 
+// r[impl glob.non-match-rejected]
 // r[verify glob.non-match-rejected]
 /// Non-matching inputs are rejected (trivial — restates definition).
 proof fn glob_non_match(pattern: Seq<u8>, input: Seq<u8>)
@@ -234,6 +236,7 @@ mod tests {
         assert!(!glob_match(b"", b"x"));
     }
 
+    // r[impl glob.prefix-match]
     // r[verify glob.prefix-match]
     #[test]
     fn test_prefix_wildcard() {
@@ -252,6 +255,7 @@ mod tests {
         assert!(!glob_match(b"*_dump", b"pg_restore"));
     }
 
+    // r[impl glob.multi-segment-match]
     // r[verify glob.multi-segment-match]
     #[test]
     fn test_multi_segment() {

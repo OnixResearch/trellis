@@ -67,6 +67,7 @@ pub fn authorizes(
 // Factor failure proofs
 // ============================================================
 
+// r[impl authorize.rejects-scope-failure]
 // r[verify authorize.rejects-scope-failure]
 /// Scope mismatch denies even with matching variant and mode.
 proof fn scope_failure_denies(
@@ -80,6 +81,7 @@ proof fn scope_failure_denies(
     ensures !authorizes_spec(cap_variant, cap_scope, cap_mode, op_variant, op_target, op_mode)
 {}
 
+// r[impl authorize.rejects-mode-failure]
 // r[verify authorize.rejects-mode-failure]
 /// Mode mismatch denies even with matching variant and scope.
 proof fn mode_failure_denies(
@@ -93,6 +95,7 @@ proof fn mode_failure_denies(
     ensures !authorizes_spec(cap_variant, cap_scope, cap_mode, op_variant, op_target, op_mode)
 {}
 
+// r[impl authorize.rejects-variant-failure]
 // r[verify authorize.rejects-variant-failure]
 /// Variant mismatch denies even with matching scope and mode.
 proof fn variant_failure_denies(
@@ -106,6 +109,7 @@ proof fn variant_failure_denies(
     ensures !authorizes_spec(cap_variant, cap_scope, cap_mode, op_variant, op_target, op_mode)
 {}
 
+// r[impl authorize.all-match]
 // r[verify authorize.all-match]
 /// All three factors match implies authorized.
 proof fn all_match_authorizes(

@@ -43,6 +43,7 @@ pub fn is_expired(expires_at: u64, now: u64, tolerance: u64) -> (result: bool)
     now > deadline
 }
 
+// r[impl token-timestamp.fresh-token-valid]
 // r[verify token-timestamp.fresh-token-valid]
 /// A fresh token (checked at issued_at, with issued_at <= expires_at) is not expired.
 proof fn fresh_token_valid(issued_at: u64, expires_at: u64, tolerance: u64)
@@ -52,6 +53,7 @@ proof fn fresh_token_valid(issued_at: u64, expires_at: u64, tolerance: u64)
     // issued_at <= expires_at <= expires_at + tolerance, so issued_at <= deadline, not expired.
 }
 
+// r[impl token-timestamp.expiration-monotonic]
 // r[verify token-timestamp.expiration-monotonic]
 /// Once expired, stays expired as time advances.
 proof fn expiration_monotonic(expires_at: u64, t1: u64, t2: u64, tolerance: u64)
