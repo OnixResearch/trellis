@@ -1888,3 +1888,42 @@ CoW cloning and drain start are the same increment-with-saturation.
 r[properties.cow-drop-is-drain-finish]
 ref_count_after_drop(n) MUST equal after_finish_op(n) for all n.
 CoW drop and drain finish are the same decrement-with-floor.
+
+## Cross-Module Properties (Wave 2)
+
+r[properties.type-lattice-reflexive]
+can_convert(t, t) MUST be true for all valid types. Type conversion
+is reflexive — every type converts to itself.
+
+r[properties.type-lattice-any-top]
+can_convert(t, ANY) and can_convert(ANY, t) MUST both be true for
+all valid types. ANY is the universal converter — top element in
+both directions.
+
+r[properties.circuit-breaker-preserves-validity]
+next_state applied to a valid state MUST produce a valid state.
+State transitions never leave the valid state space.
+
+r[properties.process-terminal-blocks-circuit-open-blocks]
+process_state::is_terminal(4) implies no outgoing transitions, and
+circuit_breaker::allow_request(OPEN) is false. Both state machines
+have a "blocked" state that prevents forward progress.
+
+r[properties.bitmap-signal-agree]
+For a single-word bitmap (num_bits <= 64), bitmap.get_spec(pos) MUST
+equal signal_contains_spec(bitmap.words[0], pos). The bitmap's bit
+decomposition agrees with signal's direct bit check.
+
+r[properties.slab-slot-in-region]
+slot_address(i, base, ss) MUST be contained in region (base, capacity)
+when i < slab_capacity(capacity, ss) and slot_size > 0. Every valid
+slab slot falls within the backing memory region.
+
+r[properties.pressure-eviction-pipeline]
+classify_level(count, capacity, capacity) >= 2 implies
+should_evict(count, capacity). Critical memory pressure triggers
+the eviction decision.
+
+r[properties.eviction-score-cold-minimum]
+tier_multiplier(COLD) MUST be the minimum multiplier value. Cold
+entries get the lowest protection score, making them first to evict.

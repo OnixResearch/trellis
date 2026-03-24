@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1590 Verus proofs + 1085 cargo tests = all gates green
+- 1599 Verus proofs + 1093 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -489,6 +489,19 @@
   - `n >= n / 2 + 1` needs `by(nonlinear_arith) requires n > 0u64`
 - expires_at monotonic is advance: automatic — saturating semantics preserve ordering
 - cow ↔ drain isomorphism: clone=start, drop=finish — identical spec bodies, automatic
+- Wave 2:
+- type_lattice reflexive: automatic — `from == to` is first disjunct in can_convert_spec
+- type_lattice ANY is top: automatic — `to == TYPE_ANY()` and `from == TYPE_ANY()` disjuncts
+  - NOTE: type_lattice is NOT transitive! INTEGER→ANY→BOOLEAN works via ANY but
+    INTEGER→BOOLEAN is false. The conversion graph is not transitively closed.
+    Proptest caught this (a=1, b=6, c=3 counterexample).
+- circuit_breaker preserves validity: automatic — all branches return CLOSED/OPEN/HALF_OPEN
+- process_state terminal blocks + circuit_breaker OPEN blocks: automatic — concrete u8 values
+- bitmap ↔ signal agree: automatic — both reduce to `(word >> pos) & 1 == 1`
+- slab slot in region: needs `lemma_fundamental_div_mod` + `by(nonlinear_arith)` for
+  `index < capacity/slot_size ==> index * slot_size < capacity`
+- pressure → eviction pipeline: automatic — both check `count >= capacity`
+- eviction_score cold minimum: automatic — `tier_multiplier(0) = 1 <= all others`
 
 ## Mistakes & Corrections
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.
