@@ -3444,6 +3444,107 @@ mod kv_storage_proofs {
     } // verus!
 }
 
+// --- Cluster coordination cross-module properties ---
+
+#[cfg(verus_keep_ghost)]
+mod cluster_coordination_proofs {
+    use vstd::prelude::*;
+
+    use crate::drain::can_start_op_spec;
+    use crate::drain_protocol::try_start_with_recheck_spec;
+    use crate::node_lifecycle::{DEGRADED, ONLINE, is_operational_spec};
+
+    verus! {
+
+    // r[impl properties.drain-protocol-extends-drain]
+    // r[verify properties.drain-protocol-extends-drain]
+    /// drain_protocol try_start refines drain::can_start_op:
+    /// if can_start_op is false (draining), then try_start always rejects.
+    proof fn prove_drain_protocol_extends_drain(
+        is_draining: bool,
+        in_flight: u64,
+        draining_at_recheck: bool,
+    )
+        requires !can_start_op_spec(is_draining)
+        ensures !try_start_with_recheck_spec(is_draining, in_flight, draining_at_recheck).0
+    {}
+
+    // r[impl properties.trust-access-exhaustive]
+    // r[verify properties.trust-access-exhaustive]
+    /// Trust access is exhaustive: blocked=deny, trusted=allow, public=conditional.
+    proof fn prove_trust_access_exhaustive(level: u8, is_public: bool)
+        ensures
+            level == crate::trust_level::BLOCKED ==>
+                !crate::trust_level::can_access_spec(level, is_public),
+            level == crate::trust_level::TRUSTED ==>
+                crate::trust_level::can_access_spec(level, is_public),
+            level == crate::trust_level::PUBLIC ==>
+                crate::trust_level::can_access_spec(level, is_public) == is_public,
+    {}
+
+    // r[impl properties.lifecycle-operational-pressure]
+    // r[verify properties.lifecycle-operational-pressure]
+    /// Operational nodes are exactly Online or Degraded.
+    proof fn prove_lifecycle_operational(status: u8)
+        ensures is_operational_spec(status) <==> (status == ONLINE || status == DEGRADED)
+    {}
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod cluster_coordination_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.jitter-bounded-like-backoff]
+        #[test]
+        fn prop_jitter_bounded_like_backoff(
+            node_id: u64,
+            jitter_range in 1u64..10000,
+            base in 1u64..10000,
+            cap in 1u64..60000,
+        ) {
+            // Both jitter and backoff are bounded by their cap/range
+            let jitter = crate::election_jitter::compute_jitter(node_id, jitter_range);
+            let backoff = crate::backoff::compute_backoff(base, 0, cap);
+            prop_assert!(jitter < jitter_range);
+            prop_assert!(backoff <= cap);
+        }
+
+        // r[verify properties.drain-protocol-extends-drain]
+        #[test]
+        fn prop_drain_protocol_extends_drain(in_flight: u64, recheck: bool) {
+            // If draining, both drain::can_start_op and drain_protocol reject
+            let can_start = crate::drain::can_start_op(true);
+            let (proto_ok, _) = crate::drain_protocol::try_start_with_recheck(true, in_flight, recheck);
+            prop_assert!(!can_start);
+            prop_assert!(!proto_ok);
+        }
+
+        // r[verify properties.lifecycle-operational-pressure]
+        #[test]
+        fn prop_lifecycle_operational(status in 0u8..4) {
+            let op = crate::node_lifecycle::is_operational(status);
+            prop_assert_eq!(op, status == 1 || status == 2); // ONLINE=1, DEGRADED=2
+        }
+
+        // r[verify properties.trust-access-exhaustive]
+        #[test]
+        fn prop_trust_access_exhaustive(in_blocked: bool, in_trusted: bool, is_public: bool) {
+            let level = crate::trust_level::resolve_trust(in_blocked, in_trusted);
+            let access = crate::trust_level::can_access(level, is_public);
+            if in_blocked {
+                prop_assert!(!access);
+            } else if in_trusted {
+                prop_assert!(access);
+            } else {
+                prop_assert_eq!(access, is_public);
+            }
+        }
+    }
+}
+
 #[cfg(test)]
 mod kv_storage_tests {
     use proptest::prelude::*;

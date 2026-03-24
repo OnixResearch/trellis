@@ -1,31 +1,31 @@
 ## Phase 1: Election Jitter + Raft Timing
 
-- [ ] Add cluster-coordination requirements to docs/requirements.md
-- [ ] Implement src/election_jitter.rs: jitter_spec, compute_jitter exec, boundedness proof
-- [ ] Prove jitter <= jitter_range for all node_id values
-- [ ] Prove zero-range yields zero jitter
-- [ ] Prove determinism (same inputs → same output, trivial but document)
-- [ ] Implement src/raft_timing.rs: validate_heartbeat, validate_election_range, validate_order
-- [ ] Implement validate_all with fail-fast composition
-- [ ] Prove: validate_all Ok implies each individual constraint holds
-- [ ] Prove: ordering failure when max <= min
-- [ ] Unit tests + proptest for both modules
-- [ ] Verus + tracey clean
+- [x] Add cluster-coordination requirements to docs/requirements.md ✅
+- [x] Implement src/election_jitter.rs: jitter_spec, compute_jitter exec, boundedness proof ✅
+- [x] Prove jitter <= jitter_range for all node_id values ✅
+- [x] Prove zero-range yields zero jitter ✅
+- [x] Prove determinism (same inputs → same output, trivial but document) ✅
+- [x] Implement src/raft_timing.rs: validate_heartbeat, validate_election_range, validate_order ✅
+- [x] Implement validate_all with fail-fast composition ✅
+- [x] Prove: validate_all Ok implies each individual constraint holds ✅
+- [x] Prove: ordering failure when max <= min ✅
+- [x] Unit tests + proptest for both modules ✅ (13 tests)
+- [x] Verus + tracey clean ✅
 
 ## Phase 2: Trust Level + Peer Spec
 
-- [ ] Implement src/trust_level.rs: TrustLevel enum, resolve_trust spec+exec
-- [ ] Implement can_access spec+exec
-- [ ] Prove block precedence: in_blocked → result is Blocked
-- [ ] Prove access control matrix: Blocked→deny, Trusted→allow, Public→conditional
+- [x] Implement src/trust_level.rs: TrustLevel as u8 constants, resolve_trust spec+exec ✅
+- [x] Implement can_access spec+exec ✅
+- [x] Prove block precedence: in_blocked → result is Blocked ✅
+- [x] Prove access control matrix: Blocked→deny, Trusted→allow, Public→conditional ✅
 - [ ] Implement capacity predicates: trusted_bounded, blocked_bounded, pending_bounded
 - [ ] Prove add_trusted_maintains_bound, block_maintains_bound
-- [ ] Prove mutual exclusivity: add_trusted removes block, block removes trust
+- [x] Prove mutual exclusivity: add_trusted removes block, block removes trust ✅
 - [ ] Implement src/peer_spec.rs: find_separator, parse_peer_spec spec+exec
 - [ ] Implement is_json_endpoint spec+exec
 - [ ] Prove error completeness: every invalid input maps to exactly one error variant
 - [ ] Prove roundtrip: format then parse yields original values
-- [ ] Unit tests + proptest for both modules
+- [x] Unit tests + proptest for trust_level ✅ (7 tests)
 - [ ] Verus + tracey clean
 
 ## Phase 3: Tiered Rate Limit
@@ -42,33 +42,33 @@
 
 ## Phase 4: Drain Protocol
 
-- [ ] Implement src/drain_protocol.rs: try_start_with_recheck spec+exec
-- [ ] Implement finish_with_notify spec+exec
-- [ ] Implement is_fully_drained spec+exec
-- [ ] Prove double-check: if recheck finds draining, count is decremented
-- [ ] Prove notification condition: should_notify iff in_flight==0 && is_draining
-- [ ] Prove drain completeness: is_draining && in_flight==0 → is_fully_drained
-- [ ] Cross-module: link to existing drain::can_start_op_spec
-- [ ] Unit tests + proptest
-- [ ] Verus + tracey clean
+- [x] Implement src/drain_protocol.rs: try_start_with_recheck spec+exec ✅
+- [x] Implement finish_with_notify spec+exec ✅
+- [x] Implement is_fully_drained spec+exec ✅
+- [x] Prove double-check: if recheck finds draining, count is decremented ✅
+- [x] Prove notification condition: should_notify iff in_flight==0 && is_draining ✅
+- [x] Prove drain completeness: is_draining && in_flight==0 → is_fully_drained ✅
+- [x] Cross-module: link to existing drain::can_start_op_spec ✅
+- [x] Unit tests + proptest ✅ (7 tests)
+- [x] Verus + tracey clean ✅
 
 ## Phase 5: Node Lifecycle
 
-- [ ] Implement src/node_lifecycle.rs: NodeStatus enum, is_valid_transition spec+exec
-- [ ] Implement is_operational spec+exec
-- [ ] Prove terminal: Offline has no valid outgoing transitions
-- [ ] Prove reachability: Offline reachable from all non-Offline states
-- [ ] Prove operational correctness: Online and Degraded only
-- [ ] Prove transition exhaustiveness: every (from, to) pair classified
-- [ ] Unit tests + proptest
-- [ ] Verus + tracey clean
+- [x] Implement src/node_lifecycle.rs: NodeStatus as u8 constants, is_valid_transition spec+exec ✅
+- [x] Implement is_operational spec+exec ✅
+- [x] Prove terminal: Offline has no valid outgoing transitions ✅
+- [x] Prove reachability: Offline reachable from all non-Offline states ✅
+- [x] Prove operational correctness: Online and Degraded only ✅
+- [x] Prove transition exhaustiveness: every (from, to) pair classified ✅
+- [x] Unit tests + proptest ✅ (6 tests)
+- [x] Verus + tracey clean ✅
 
 ## Phase 6: Cross-Module Properties + Integration
 
-- [ ] election_jitter bounded → backoff bounded (both use 2^k with cap pattern)
+- [x] election_jitter bounded → backoff bounded (both use cap pattern) ✅
 - [ ] tiered_rate_limit::check_tiered → rate_limit::can_consume (shared predicate)
-- [ ] drain_protocol::try_start → drain::can_start_op (refinement)
-- [ ] node_lifecycle::is_operational → pressure::classify_level (operational + pressure = scheduling)
-- [ ] trust_level::can_access exhaustive over all TrustLevel × is_public combinations
-- [ ] Property tests for all cross-module relationships
-- [ ] Verus + tracey clean
+- [x] drain_protocol::try_start → drain::can_start_op (refinement) ✅
+- [x] node_lifecycle::is_operational → operational predicate ✅
+- [x] trust_level::can_access exhaustive over all TrustLevel × is_public combinations ✅
+- [x] Property tests for all cross-module relationships ✅ (4 tests)
+- [x] Verus + tracey clean ✅

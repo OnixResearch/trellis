@@ -41,6 +41,8 @@
 //! - `delegation` — delegation chain validation: depth bounds, attenuation, Delegate gate
 //! - `double_entry` — double-entry bookkeeping: balanced debits/credits, trial balance
 //! - `drain` — drain-state admission protocol for graceful shutdown
+//! - `drain_protocol` — double-check admission with recheck and notification
+//! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
 //! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
@@ -62,6 +64,7 @@
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
 //! - `nix_closure` — Nix generic closure with fuel-based termination
+//! - `node_lifecycle` — node status FSM: Starting/Online/Degraded/Offline
 //! - `nix_list` — Nix list builtins: elem, head, tail, `gen_list`, concat
 //! - `nix_string` — Nix string operations: length, substring, replace
 //! - `nix_version` — Nix version comparison with component classification
@@ -74,6 +77,7 @@
 //! - `pressure` — multi-threshold severity classification
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
+//! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
 //! - `result` — verified Result combinators
@@ -90,6 +94,7 @@
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
+//! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
@@ -128,7 +133,9 @@ pub mod cow;
 pub mod delegation;
 pub mod double_entry;
 pub mod drain;
+pub mod drain_protocol;
 pub mod env_scrub;
+pub mod election_jitter;
 pub mod epoch;
 pub mod eviction;
 pub mod eviction_score;
@@ -151,6 +158,7 @@ pub mod monotonic;
 pub mod nix_attrset;
 pub mod node_classify;
 pub mod nix_closure;
+pub mod node_lifecycle;
 pub mod nix_list;
 pub mod nix_string;
 pub mod nix_version;
@@ -165,6 +173,7 @@ pub mod pressure;
 pub mod process_state;
 pub mod properties;
 pub mod quorum;
+pub mod raft_timing;
 pub mod rate_limit;
 pub mod region;
 pub mod result;
@@ -184,6 +193,7 @@ pub mod tier;
 pub mod tiling;
 pub mod token_timestamp;
 pub mod transfer;
+pub mod trust_level;
 pub mod type_lattice;
 pub mod two_phase;
 pub mod vector_clock;

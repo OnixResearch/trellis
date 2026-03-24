@@ -2383,6 +2383,103 @@ axioms — both use the same uninterpreted function pattern.
 r[properties.constant-time-eq-agreement]
 constant_time_eq agrees with direct byte-by-byte equality.
 
+## Election Jitter
+
+r[election-jitter.compute]
+compute_jitter MUST return a deterministic jitter value derived from
+node_id via Knuth multiplicative hash modulo jitter_range.
+
+r[election-jitter.bounded]
+The jitter value MUST be strictly less than jitter_range. When
+jitter_range is zero, jitter MUST be zero.
+
+r[election-jitter.deterministic]
+The same node_id and jitter_range MUST always produce the same jitter.
+
+## Raft Timing
+
+r[raft-timing.validate-heartbeat]
+validate_heartbeat MUST return true if and only if heartbeat_ms > 0.
+
+r[raft-timing.validate-election-range]
+validate_election_range MUST return true if and only if election_min > 0
+AND election_max > election_min.
+
+r[raft-timing.validate-order]
+validate_timing_order MUST return true if and only if
+heartbeat_ms < election_min. The heartbeat interval MUST be strictly
+less than the minimum election timeout.
+
+r[raft-timing.validate-all]
+validate_all MUST return true if and only if all three validators pass.
+It MUST use fail-fast evaluation.
+
+## Trust Level
+
+r[trust-level.resolve]
+resolve_trust MUST return Blocked when in_blocked is true (regardless
+of in_trusted). It MUST return Trusted when in_trusted and not in_blocked.
+It MUST return Public otherwise.
+
+r[trust-level.block-precedence]
+Blocked status MUST take precedence over Trusted status. A node that
+is both blocked and trusted MUST resolve to Blocked.
+
+r[trust-level.can-access]
+can_access MUST return true for Trusted nodes. For Public nodes, it
+MUST return true only when is_public is true. For Blocked nodes, it
+MUST always return false.
+
+r[trust-level.mutual-exclusivity]
+Adding to trusted MUST remove from blocked. Blocking MUST remove from
+trusted. The add/block operations MUST maintain mutual exclusivity.
+
+## Node Lifecycle
+
+r[node-lifecycle.valid-transition]
+is_valid_transition MUST return true for: Starting→Online,
+Online→Degraded, Degraded→Online, Online→Offline, Degraded→Offline,
+Starting→Offline. All other transitions MUST return false.
+
+r[node-lifecycle.is-operational]
+is_operational MUST return true for Online and Degraded only.
+
+r[node-lifecycle.terminal]
+Offline MUST have no valid outgoing transitions.
+
+r[node-lifecycle.reachability]
+Offline MUST be reachable from every non-Offline state.
+
+## Drain Protocol
+
+r[drain-protocol.try-start-recheck]
+try_start_with_recheck MUST increment in_flight only if both the
+initial check and the recheck find draining == false.
+
+r[drain-protocol.finish-notify]
+finish_with_notify MUST decrement in_flight and return should_notify
+true when in_flight reaches zero while draining.
+
+r[drain-protocol.fully-drained]
+is_fully_drained MUST return true if and only if is_draining is true
+AND in_flight is zero.
+
+## Cross-Module: Cluster Coordination
+
+r[properties.jitter-bounded-like-backoff]
+Election jitter bounded by range mirrors backoff bounded by cap.
+
+r[properties.drain-protocol-extends-drain]
+drain_protocol try_start refines drain::can_start_op.
+
+r[properties.lifecycle-operational-pressure]
+node_lifecycle is_operational combined with pressure classification
+determines scheduling eligibility.
+
+r[properties.trust-access-exhaustive]
+trust_level can_access is exhaustive over all TrustLevel × is_public
+combinations.
+
 ## Cross-Module: Cluster Membership
 
 r[properties.promote-preserves-quorum]
