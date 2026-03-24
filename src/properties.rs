@@ -3389,6 +3389,110 @@ mod tests {
     }
 }
 
+// --- KV storage cross-module properties ---
+
+#[cfg(verus_keep_ghost)]
+mod kv_storage_proofs {
+    use vstd::prelude::*;
+
+    use crate::kv_version::compute_kv_versions_spec;
+    use crate::monotonic::is_advance_spec;
+
+    verus! {
+
+    // r[impl properties.kv-version-mod-revision-advance]
+    // r[verify properties.kv-version-mod-revision-advance]
+    /// When log_index increases, mod_revision satisfies is_advance.
+    proof fn prove_mod_revision_advance(
+        prev: Option<(u64, u64)>,
+        li1: u64,
+        li2: u64,
+    )
+        requires li1 <= li2
+        ensures is_advance_spec(
+            compute_kv_versions_spec(prev, li1).mod_revision,
+            compute_kv_versions_spec(prev, li2).mod_revision,
+        )
+    {}
+
+    // r[impl properties.kv-version-version-advance]
+    // r[verify properties.kv-version-version-advance]
+    /// For successive updates, version satisfies is_advance.
+    proof fn prove_version_advance(
+        create_rev: u64,
+        v1: u64,
+        v2: u64,
+        li1: u64,
+        li2: u64,
+    )
+        requires
+            v1 >= 1,
+            v2 == compute_kv_versions_spec(Some((create_rev, v1)), li1).version,
+        ensures is_advance_spec(v1, v2)
+    {}
+
+    // r[impl properties.constant-time-eq-agreement]
+    // r[verify properties.constant-time-eq-agreement]
+    /// constant_time_eq agrees with extensional equality.
+    proof fn prove_constant_time_eq_agreement(a: Seq<u8>, b: Seq<u8>)
+        requires a.len() == 32, b.len() == 32
+        ensures crate::constant_time_eq::constant_time_eq_spec(a, b) <==> (a =~= b)
+    {
+        crate::constant_time_eq::equivalence_to_equality(a, b);
+    }
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod kv_storage_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.kv-version-mod-revision-advance]
+        #[test]
+        fn prop_mod_revision_advance(
+            prev_cr in proptest::option::of((any::<u64>(), any::<u64>())),
+            li1: u64,
+            li2: u64,
+        ) {
+            if li1 <= li2 {
+                let r1 = crate::kv_version::compute_kv_versions(prev_cr, li1);
+                let r2 = crate::kv_version::compute_kv_versions(prev_cr, li2);
+                prop_assert!(crate::monotonic::is_advance(r1.mod_revision, r2.mod_revision));
+            }
+        }
+
+        // r[verify properties.kv-version-version-advance]
+        #[test]
+        fn prop_version_advance(
+            create_rev: u64,
+            v1 in 1u64..u64::MAX,
+            li1: u64,
+        ) {
+            let r = crate::kv_version::compute_kv_versions(Some((create_rev, v1)), li1);
+            prop_assert!(crate::monotonic::is_advance(v1, r.version));
+        }
+
+        // r[verify properties.constant-time-eq-agreement]
+        #[test]
+        fn prop_constant_time_eq_agreement(
+            a in prop::array::uniform32(any::<u8>()),
+            b in prop::array::uniform32(any::<u8>()),
+        ) {
+            prop_assert_eq!(crate::constant_time_eq::constant_time_eq(&a, &b), a == b);
+        }
+
+        // r[verify properties.snapshot-chain-consistency]
+        #[test]
+        fn prop_snapshot_round_trip(data_hash: u64, meta_hash: u64, chain_hash: u64) {
+            let integrity = crate::snapshot_integrity::compute_integrity(data_hash, meta_hash, chain_hash);
+            prop_assert!(crate::snapshot_integrity::verify_integrity(&integrity));
+            prop_assert!(crate::snapshot_integrity::verify_with_chain_hash(&integrity, chain_hash));
+        }
+    }
+}
+
 // --- Cluster membership cross-module properties ---
 // The individual module proofs (voter_set, bounded_peers, node_classify)
 // verify all core properties. Cross-module relationships are validated

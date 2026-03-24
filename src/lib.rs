@@ -35,6 +35,7 @@
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
 //! - `collections` — sorted insert, binary search
+//! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
 //! - `delegation` — delegation chain validation: depth bounds, attenuation, Delegate gate
@@ -51,6 +52,7 @@
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
 //! - `journal` — append-only transaction journal with running balances and seq num monotonicity
+//! - `kv_version` — KV entry version computation: create/update with saturation
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
@@ -78,6 +80,7 @@
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
@@ -118,6 +121,7 @@ pub mod chain;
 pub mod chunk;
 pub mod circuit_breaker;
 pub mod collections;
+pub mod constant_time_eq;
 pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
@@ -137,6 +141,7 @@ pub mod hash_bucket;
 pub mod integer;
 pub mod interval;
 pub mod journal;
+pub mod kv_version;
 pub mod layout_constraint;
 pub mod lease;
 pub mod log;
@@ -171,6 +176,7 @@ pub mod seq_set;
 pub mod sequential;
 pub mod session_tree;
 pub mod signal;
+pub mod snapshot_integrity;
 pub mod slab;
 pub mod slice;
 pub mod subsumption;

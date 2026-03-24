@@ -688,3 +688,22 @@
     `if chain1[k].hash == chain2[k].hash { prove_chain_agreement(...); assert(chain1[j] == chain2[j]); }`
   - hash_collision_free is external_body axiom (same as hash_deterministic) — hash_spec is closed/uninterpreted
   - 1640 Verus proofs, 1109 cargo tests — all gates green
+- KV storage verification modules added: kv_version, snapshot_integrity, constant_time_eq
+  - kv_version: all proofs automatic — pure integer logic, Z3 handles trivially
+  - snapshot_integrity: collision-resistance axiom (external_body) for tamper-detection proofs;
+    dual_hash_spec as closed uninterpreted fn (same pattern as chain.rs hash_spec);
+    round-trip proof calls deterministic axiom, tamper proofs call collision-resistant axiom
+    with contradiction pattern (if hashes equal → inputs equal → contradicts requires)
+  - constant_time_eq: "remaining fold" invariant is the key insight —
+    `xor_fold_spec(a, b, i, acc) == xor_fold_spec(a, b, 0, 0)` maintained by definition
+    of the recursive spec (each step unfolds one position). No helper lemmas needed for
+    the exec loop. Previous attempt with partial_fold_spec + extend lemma failed (inductive
+    split across Seq elements requires bit_vector proofs that can't see Seq indexing).
+  - constant_time_eq bit_vector proofs: MUST extract Seq elements into local `let` vars
+    before the `by(bit_vector)` block — bit_vector solver can't handle Seq::index expressions.
+    Pattern: `let ai: u8 = a[from]; assert((ai ^ bi) == 0u8) by(bit_vector) requires ai == bi;`
+  - constant_time_eq fold_visits_all_bytes: reformulated from vacuous tautology to
+    "any single-byte difference is detected" (calls any_difference_returns_false)
+  - Cross-module: kv_version mod_revision/version → monotonic::is_advance (automatic),
+    constant_time_eq_spec → extensional equality (calls equivalence_to_equality helper)
+  - 3 new modules, ~30 Verus proofs, 29 cargo tests — all new code verifies clean

@@ -2279,6 +2279,110 @@ r[node-classify.no-duplicates]
 The classification output MUST NOT contain duplicate node IDs when the
 input has no duplicates.
 
+## KV Version
+
+r[kv-version.compute-versions]
+compute_kv_versions MUST return a KvVersions struct given an optional
+previous state (create_revision, version) and a log_index. For new keys
+(None), version MUST be 1, create_revision MUST equal log_index. For
+updates (Some), version MUST be previous version + 1 (saturating at
+u64::MAX), and create_revision MUST be preserved from the previous state.
+
+r[kv-version.version-always-positive]
+The output version MUST always be >= 1 for any input.
+
+r[kv-version.create-revision-preserved]
+In the update case, create_revision in the output MUST equal the
+create_revision from the input.
+
+r[kv-version.mod-revision-equals-log-index]
+mod_revision MUST always equal the log_index parameter.
+
+r[kv-version.version-increments]
+In the update case, output version MUST equal input version + 1 when
+input version < u64::MAX.
+
+r[kv-version.version-saturates]
+When input version == u64::MAX, the output version MUST remain u64::MAX.
+
+r[kv-version.deterministic]
+The same inputs MUST always produce the same output.
+
+## Snapshot Integrity
+
+r[snapshot-integrity.compute]
+compute_integrity MUST produce a SnapshotIntegrity struct from data_hash,
+meta_hash, and chain_hash_at_snapshot by combining the two component
+hashes into a combined_hash.
+
+r[snapshot-integrity.verify]
+verify_integrity MUST return true if and only if recomputing the
+combined_hash from the stored data_hash and meta_hash matches the
+stored combined_hash.
+
+r[snapshot-integrity.verify-with-chain-hash]
+verify_with_chain_hash MUST return true if and only if verify_integrity
+succeeds AND the provided chain_hash matches chain_hash_at_snapshot.
+
+r[snapshot-integrity.round-trip]
+Computing integrity then verifying MUST always return true.
+
+r[snapshot-integrity.data-tamper-detected]
+If data_hash differs between compute and verify inputs, verify MUST
+return false (assuming collision resistance).
+
+r[snapshot-integrity.meta-tamper-detected]
+If meta_hash differs between compute and verify inputs, verify MUST
+return false (assuming collision resistance).
+
+r[snapshot-integrity.chain-hash-mismatch-detected]
+If the provided chain_hash does not match chain_hash_at_snapshot,
+verify_with_chain_hash MUST return false.
+
+r[snapshot-integrity.combined-commits-to-both]
+The combined_hash MUST depend on both data_hash and meta_hash — changing
+either one MUST change the combined_hash (assuming collision resistance).
+
+## Constant-Time Equality
+
+r[constant-time-eq.xor-fold]
+xor_fold MUST compute the bitwise OR accumulation of XOR differences
+across all 32 byte positions.
+
+r[constant-time-eq.equality]
+constant_time_eq MUST return true if and only if the two 32-byte inputs
+are identical.
+
+r[constant-time-eq.equal-returns-true]
+When both inputs are identical, constant_time_eq MUST return true.
+
+r[constant-time-eq.any-difference-returns-false]
+When any byte position differs, constant_time_eq MUST return false.
+
+r[constant-time-eq.equivalence-to-equality]
+constant_time_eq(a, b) MUST be equivalent to (a == b) pointwise.
+
+r[constant-time-eq.fold-visits-all-bytes]
+The fold MUST visit all 32 byte positions regardless of intermediate
+accumulator values.
+
+## Cross-Module: KV Storage
+
+r[properties.kv-version-mod-revision-advance]
+When log_index increases, the mod_revision output satisfies
+monotonic::is_advance.
+
+r[properties.kv-version-version-advance]
+For successive updates with increasing log_index, the version output
+satisfies monotonic::is_advance.
+
+r[properties.snapshot-chain-consistency]
+The snapshot integrity hash axioms are consistent with chain.rs hash
+axioms — both use the same uninterpreted function pattern.
+
+r[properties.constant-time-eq-agreement]
+constant_time_eq agrees with direct byte-by-byte equality.
+
 ## Cross-Module: Cluster Membership
 
 r[properties.promote-preserves-quorum]
