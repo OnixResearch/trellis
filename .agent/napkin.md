@@ -641,3 +641,8 @@
     `j == p1@.len()` after break-exited loop. Instead use `if !found && p1[j] == target`
     and always increment j. For existential negation: `assert forall|idx| #![trigger p1m[idx]] !(0 <= idx < p1m.len() && p1m[idx] == target) by {}` — the empty body works because
     Z3 has the universal from the inner loop invariant covering all indices.
+  - buddy::order_for_size: shift-loop invariant `s == sub(size, 1u64) >> order` works with
+    by(bit_vector) shift composition proof, BUT the postcondition `block_size_spec(result) >= size`
+    can't be derived. Z3's bit_vector theory proves `(1u64 << order) >= size` but the spec
+    fn `block_size_spec(order) = (1u64 << order)` uses int-level `<<`, not bitvector `<<`.
+    Z3 can't bridge between theories — same class as hash_bucket::pow2_mask_is_mod. Kept external_body.
