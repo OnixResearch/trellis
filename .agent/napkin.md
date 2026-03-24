@@ -4,10 +4,10 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1609 Verus proofs + 1101 cargo tests = all gates green
+- 1635 Verus proofs + 1101 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
+- 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 other modules (0 in forest/seq_set/session_tree)
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
 
 ## Recent Changes
@@ -625,3 +625,19 @@
     idx > keys.len(), spec returns 0 but `keys.len() - idx < 0` fails the ensures
   - All 31 new Verus proofs automatic — no external_body, no nonlinear_arith needed
   - 0 new external_body items (fully open blocklist approach)
+- Closing external_body gaps (26 → 17):
+  - eviction_score::weighted_score_monotonic_s1: as u64 monotonicity needs individual
+    product bounds via by(nonlinear_arith) + call to existing weighted_score_bounded —
+    Z3 can then derive ordering through the as u64 cast. DON'T put `as int` casts in
+    `by(nonlinear_arith) requires` clauses — they fail. Use plain u64 comparisons.
+  - delegation::chain_valid: loop invariant `chain_valid_spec(chain@, 0) <==> chain_valid_spec(chain@, i)`
+    peels off one level per iteration. Overflow safety: track `chain@[i].depth <= 8` to ensure
+    parent.depth + 1 won't overflow. Use the existing level_valid exec fn instead of inlining checks.
+  - markov::confidence_meets: the large-total fallback branch needs fundamental_div_mod to decompose
+    `total = q * 100 + r`, then nonlinear_arith for `total * threshold == main * 100 + frac`.
+    Each sub-branch (count < main, diff overflow, normal) needs its own connecting assertions.
+  - markov::best_prediction_index: standard argmax loop invariant with `forall|j| 0 <= j < i ==> counts[j] <= counts[best_idx]`. Trigger on `counts@[j]`.
+  - pattern::pattern_contains: inner membership loop must NOT use `break` — Verus can't prove
+    `j == p1@.len()` after break-exited loop. Instead use `if !found && p1[j] == target`
+    and always increment j. For existential negation: `assert forall|idx| #![trigger p1m[idx]] !(0 <= idx < p1m.len() && p1m[idx] == target) by {}` — the empty body works because
+    Z3 has the universal from the inner loop invariant covering all indices.
