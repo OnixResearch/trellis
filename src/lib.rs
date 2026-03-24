@@ -14,6 +14,7 @@
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `backoff` — exponential backoff with cap and jitter bounds
+//! - `balance` — credit/debit with overflow protection and conservation proofs
 //! - `ballot` — vote tracking for Raft elections with quorum intersection safety
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
@@ -36,6 +37,7 @@
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
 //! - `delegation` — delegation chain validation: depth bounds, attenuation, Delegate gate
+//! - `double_entry` — double-entry bookkeeping: balanced debits/credits, trial balance
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
@@ -47,6 +49,7 @@
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
+//! - `journal` — append-only transaction journal with running balances and seq num monotonicity
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
@@ -81,6 +84,7 @@
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
+//! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
@@ -92,6 +96,7 @@ pub mod approval;
 pub mod authorize;
 pub mod arithmetic;
 pub mod backoff;
+pub mod balance;
 pub mod ballot;
 pub mod batch;
 pub mod bitmap;
@@ -113,6 +118,7 @@ pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
 pub mod delegation;
+pub mod double_entry;
 pub mod drain;
 pub mod env_scrub;
 pub mod epoch;
@@ -126,6 +132,7 @@ pub mod gossip;
 pub mod hash_bucket;
 pub mod integer;
 pub mod interval;
+pub mod journal;
 pub mod layout_constraint;
 pub mod lease;
 pub mod log;
@@ -164,6 +171,7 @@ pub mod subsumption;
 pub mod tier;
 pub mod tiling;
 pub mod token_timestamp;
+pub mod transfer;
 pub mod type_lattice;
 pub mod two_phase;
 pub mod vector_clock;

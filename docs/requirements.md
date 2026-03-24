@@ -2051,3 +2051,155 @@ within the viewport.
 r[tiling.scroll-bounds]
 A scroll offset is valid when the viewport does not extend past the
 content, or when the content fits within the viewport.
+
+## Balance
+
+r[balance.credit]
+credit(balance, amount) MUST return balance + amount when the result fits
+in u64, None otherwise. Credit MUST be monotonic: the result is always
+>= balance. Crediting zero MUST be the identity function.
+
+r[balance.debit]
+debit(balance, amount) MUST return balance - amount when amount <= balance,
+None otherwise. Debit MUST be monotonic: the result is always <= balance
+when defined. Debiting zero MUST be the identity function.
+
+r[balance.has-funds]
+has_funds MUST return true if and only if amount <= balance. has_funds(b, 0)
+MUST always return true. has_funds and debit failure MUST be complementary.
+
+r[balance.valid-amount]
+is_valid_amount MUST return true if and only if amount > 0.
+
+r[balance.credit-debit-inverse]
+Credit and debit MUST be inverses: debit(credit(b, a), a) == b when credit
+does not overflow, and credit(debit(b, a), a) == b when debit does not
+underflow.
+
+r[balance.conservation]
+For any balance b and amount a: credit_spec(b, a) - a == b and
+debit_spec(b, a) + a == b. Value is neither created nor destroyed.
+
+r[balance.net-change]
+net_change MUST return the signed difference credits - debits as a
+(is_positive, abs_value) pair using abs_diff.
+
+## Transfer
+
+r[transfer.valid]
+transfer_valid MUST return true if and only if amount > 0, sender has
+sufficient funds, and receiver balance will not overflow. All three
+conditions MUST hold.
+
+r[transfer.conservation]
+After a valid transfer, sender_balance + receiver_balance MUST equal the
+same total as before. Value MUST be neither created nor destroyed. Two
+successive valid transfers MUST preserve the three-account total.
+
+r[transfer.execute]
+execute_transfer MUST return (from - amount, to + amount) when the
+transfer is valid. The sender decreases by exactly amount; the receiver
+increases by exactly amount. Transferring zero changes nothing.
+
+r[transfer.idempotency]
+is_duplicate MUST return true when request_id <= last_processed_id.
+Duplicate transfers MUST be rejected before any balance check. A
+non-duplicate request MUST have a strictly higher id.
+
+r[transfer.validate-exhaustive]
+validate_transfer MUST return exactly one of: OK (0), INSUFFICIENT_FUNDS
+(1), INVALID_AMOUNT (2), RECEIVER_OVERFLOW (3), or DUPLICATE_TRANSFER (4).
+The status codes MUST be mutually exclusive and exhaustive. OK if and only
+if transfer_valid and not duplicate.
+
+## Double Entry
+
+r[double-entry.sum]
+sum_amounts MUST return the sum of all amounts in the sequence. The sum
+MUST be non-negative. Sum of an empty sequence MUST be zero. Sum MUST
+distribute over concatenation: sum(a ++ b) == sum(a) + sum(b). Appending
+an element increases the sum by that element.
+
+r[double-entry.balanced]
+is_balanced MUST return true if and only if sum(debits) == sum(credits).
+Balanced MUST be symmetric: is_balanced(d, c) == is_balanced(c, d).
+Empty sequences MUST be balanced. Adding equal amounts to both sides
+MUST preserve balance. Concatenating two balanced pairs MUST stay balanced.
+
+r[double-entry.trial-balance]
+trial_balance MUST return sum(debits) - sum(credits). Trial balance
+MUST be zero if and only if the entry is balanced. Trial balance MUST
+be additive across concatenated entries.
+
+r[double-entry.all-positive]
+all_positive MUST return true if and only if every amount in the
+sequence is greater than zero. Empty sequences MUST satisfy all_positive
+vacuously.
+
+r[double-entry.simple-entry]
+is_simple_entry MUST return true when debit and credit amounts are equal
+and positive. A simple entry is always balanced.
+
+## Journal
+
+r[journal.apply-entry]
+apply_entry MUST return prior_balance - amount for debits, prior_balance
++ amount for credits. Returns None on underflow (debit exceeds balance)
+or overflow (credit exceeds u64::MAX). Credits increase balance; debits
+decrease balance.
+
+r[journal.entry-balance-correct]
+A journal entry's running_balance MUST equal the result of applying its
+operation to the prior balance. The running balance MUST be non-negative
+and fit in u64.
+
+r[journal.seq-nums-monotonic]
+Sequence numbers in a valid journal MUST be strictly increasing.
+Appending an entry with a higher sequence number MUST preserve
+monotonicity.
+
+r[journal.valid]
+A journal is valid when all running balances are correct (computed from
+initial_balance through each entry in order). Empty journals MUST be
+valid. Validity of a prefix is preserved.
+
+r[journal.append-preserves]
+Appending a valid entry to a valid journal MUST produce a valid journal.
+The prefix of the extended journal MUST equal the original journal.
+
+r[journal.final-balance]
+final_balance MUST return the running_balance of the last entry, or
+initial_balance if the journal is empty. After append, final balance is
+the new entry's running balance.
+
+r[journal.credit-debit-roundtrip]
+A credit of amount a followed by a debit of amount a (or vice versa)
+MUST return to the original balance.
+
+## Cross-Module: Ledger
+
+r[properties.balance-credit-is-saturating-add]
+When credit does not overflow, credit_spec(b, a) as u64 MUST equal
+saturating_add_spec(b, a). The two agree in the non-saturating range.
+
+r[properties.balance-has-funds-is-in-range]
+has_funds_spec(b, a) MUST equal in_range_spec(a, 0, b). The sufficient-
+funds predicate is a range check.
+
+r[properties.transfer-uses-debit-credit]
+A valid transfer's sender_after equals balance::debit_spec and
+receiver_after equals balance::credit_spec. Transfer composes balance
+operations.
+
+r[properties.transfer-idempotency-is-fencing]
+A non-duplicate request (request_id > last_processed_id) satisfies
+fencing::is_valid_write_spec. Idempotency keys are fencing tokens.
+
+r[properties.journal-seq-num-is-strict-advance]
+Monotonic sequence numbers in a journal satisfy
+monotonic::is_strict_advance_spec for every pair i < j.
+
+r[properties.balanced-simple-is-transfer]
+A simple balanced entry (equal debit and credit of amount a) implies
+transfer_valid_spec(a, 0, a). Simple bookkeeping entries correspond
+to valid transfers.

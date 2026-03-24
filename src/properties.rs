@@ -1991,6 +1991,78 @@ mod bloom_length_proofs {
     } // verus!
 }
 
+// --- Cross-module: Ledger ---
+
+#[cfg(verus_keep_ghost)]
+mod ledger_proofs {
+    use vstd::prelude::*;
+
+    use crate::arithmetic::saturating_add_spec;
+    use crate::balance::credit_spec;
+    use crate::balance::debit_spec;
+    use crate::balance::has_funds_spec;
+    use crate::bounds::in_range_spec;
+    use crate::fencing::is_valid_write_spec;
+    use crate::monotonic::is_strict_advance_spec;
+    use crate::transfer::is_duplicate_spec;
+    use crate::transfer::receiver_after_spec;
+    use crate::transfer::sender_after_spec;
+    use crate::transfer::transfer_valid_spec;
+
+    verus! {
+
+    // r[impl properties.balance-credit-is-saturating-add]
+    // r[verify properties.balance-credit-is-saturating-add]
+    /// When credit fits in u64, it agrees with saturating_add.
+    proof fn prove_balance_credit_is_saturating_add(b: u64, a: u64)
+        requires credit_spec(b, a) <= u64::MAX as int
+        ensures credit_spec(b, a) as u64 == saturating_add_spec(b, a)
+    {}
+
+    // r[impl properties.balance-has-funds-is-in-range]
+    // r[verify properties.balance-has-funds-is-in-range]
+    /// Sufficient funds is a range check on the amount.
+    proof fn prove_balance_has_funds_is_in_range(b: u64, a: u64)
+        ensures has_funds_spec(b, a) == in_range_spec(a, 0, b)
+    {}
+
+    // r[impl properties.transfer-uses-debit-credit]
+    // r[verify properties.transfer-uses-debit-credit]
+    /// Transfer sender/receiver match balance debit/credit.
+    proof fn prove_transfer_uses_debit_credit(from: u64, to: u64, amount: u64)
+        requires transfer_valid_spec(from, to, amount)
+        ensures
+            sender_after_spec(from, amount) as int == debit_spec(from, amount),
+            receiver_after_spec(to, amount) as int == credit_spec(to, amount),
+    {}
+
+    // r[impl properties.transfer-idempotency-is-fencing]
+    // r[verify properties.transfer-idempotency-is-fencing]
+    /// Non-duplicate request satisfies fencing validity.
+    proof fn prove_transfer_idempotency_is_fencing(request_id: u64, last_processed_id: u64)
+        requires !is_duplicate_spec(request_id, last_processed_id)
+        ensures is_valid_write_spec(request_id, last_processed_id)
+    {}
+
+    // r[impl properties.journal-seq-num-is-strict-advance]
+    // r[verify properties.journal-seq-num-is-strict-advance]
+    /// Monotonic journal seq nums satisfy strict advance.
+    proof fn prove_journal_seq_num_is_strict_advance(a: u64, b: u64)
+        requires a < b
+        ensures is_strict_advance_spec(a, b)
+    {}
+
+    // r[impl properties.balanced-simple-is-transfer]
+    // r[verify properties.balanced-simple-is-transfer]
+    /// Simple balanced entry corresponds to a valid transfer from a to 0.
+    proof fn prove_balanced_simple_is_transfer(a: u64)
+        requires a > 0, a as int <= u64::MAX as int
+        ensures transfer_valid_spec(a, 0, a)
+    {}
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -3180,6 +3252,67 @@ mod tests {
             let orig_len = bits.len();
             crate::bloom::insert(&mut bits, &positions);
             prop_assert_eq!(bits.len(), orig_len);
+        }
+
+        // --- Ledger cross-module properties ---
+
+        // r[verify properties.balance-credit-is-saturating-add]
+        #[test]
+        fn prop_balance_credit_is_saturating_add(b: u64, a: u64) {
+            if let Some(credited) = crate::balance::credit(b, a) {
+                prop_assert_eq!(credited, saturating_add(b, a));
+            }
+        }
+
+        // r[verify properties.balance-has-funds-is-in-range]
+        #[test]
+        fn prop_balance_has_funds_is_in_range(b: u64, a: u64) {
+            prop_assert_eq!(
+                crate::balance::has_funds(b, a),
+                in_range(a, 0, b),
+            );
+        }
+
+        // r[verify properties.transfer-uses-debit-credit]
+        #[test]
+        fn prop_transfer_uses_debit_credit(
+            from in 1..u64::MAX / 2,
+            to in 0..u64::MAX / 2,
+            amt in 1..u64::MAX / 4,
+        ) {
+            if crate::transfer::transfer_valid(from, to, amt) {
+                let (sender, receiver) = crate::transfer::execute_transfer(from, to, amt);
+                prop_assert_eq!(
+                    crate::balance::debit(from, amt),
+                    Some(sender),
+                );
+                prop_assert_eq!(
+                    crate::balance::credit(to, amt),
+                    Some(receiver),
+                );
+            }
+        }
+
+        // r[verify properties.transfer-idempotency-is-fencing]
+        #[test]
+        fn prop_transfer_idempotency_is_fencing(rid: u64, lid: u64) {
+            if !crate::transfer::is_duplicate(rid, lid) {
+                prop_assert!(crate::fencing::is_valid_write(rid, lid));
+            }
+        }
+
+        // r[verify properties.journal-seq-num-is-strict-advance]
+        #[test]
+        fn prop_journal_seq_num_is_strict_advance(a: u64, b: u64) {
+            if a < b {
+                prop_assert!(crate::monotonic::is_strict_advance(a, b));
+            }
+        }
+
+        // r[verify properties.balanced-simple-is-transfer]
+        #[test]
+        fn prop_balanced_simple_is_transfer(a in 1..u64::MAX) {
+            prop_assert!(crate::transfer::transfer_valid(a, 0, a));
         }
     }
 }
