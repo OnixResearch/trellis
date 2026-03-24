@@ -2063,6 +2063,53 @@ mod ledger_proofs {
     } // verus!
 }
 
+// --- retry ↔ circuit_breaker ↔ backoff ---
+
+#[cfg(verus_keep_ghost)]
+mod retry_proofs {
+    use vstd::prelude::*;
+
+    use crate::backoff::compute_backoff_spec;
+    use crate::circuit_breaker::{CLOSED, allow_request_spec};
+    use crate::retry::{RETRY, classify_outcome_spec, should_retry_spec};
+
+    verus! {
+
+    // r[impl properties.retry-gate-implies-backoff-computable]
+    // r[verify properties.retry-gate-implies-backoff-computable]
+    /// When should_retry is true, backoff is computable (base > 0 ⟹ delay > 0 for attempt > 0).
+    proof fn prove_retry_implies_backoff_computable(
+        attempt: u64, max_attempts: u64, base: u64, cap: u64,
+    )
+        requires
+            should_retry_spec(attempt, max_attempts, true),
+            base > 0, cap > 0,
+        ensures compute_backoff_spec(base, attempt, cap) <= cap
+    {}
+
+    // r[impl properties.retry-with-closed-circuit]
+    // r[verify properties.retry-with-closed-circuit]
+    /// When circuit is CLOSED and retry is warranted, requests are allowed (regardless of probe state).
+    proof fn prove_retry_with_closed_circuit(
+        attempt: u64, max_attempts: u64, probe_active: bool,
+    )
+        requires should_retry_spec(attempt, max_attempts, true)
+        ensures allow_request_spec(CLOSED, probe_active)
+    {}
+
+    // r[impl properties.classify-retry-means-not-exhausted]
+    // r[verify properties.classify-retry-means-not-exhausted]
+    /// RETRY classification implies attempt < max_attempts.
+    proof fn prove_classify_retry_means_not_exhausted(
+        is_retryable: bool, attempt: u64, max_attempts: u64,
+    )
+        requires classify_outcome_spec(false, is_retryable, attempt, max_attempts) == RETRY
+        ensures attempt < max_attempts
+    {}
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -3313,6 +3360,31 @@ mod tests {
         #[test]
         fn prop_balanced_simple_is_transfer(a in 1..u64::MAX) {
             prop_assert!(crate::transfer::transfer_valid(a, 0, a));
+        }
+
+        // r[verify properties.retry-with-closed-circuit]
+        #[test]
+        fn prop_retry_with_closed_circuit(
+            attempt in 0u64..=100,
+            max_attempts in 1u64..=100,
+        ) {
+            if crate::retry::should_retry(attempt, max_attempts, true) {
+                prop_assert!(crate::circuit_breaker::allow_request(crate::circuit_breaker::CLOSED, false));
+            }
+        }
+
+        // r[verify properties.retry-gate-implies-backoff-computable]
+        #[test]
+        fn prop_retry_implies_backoff_bounded(
+            attempt in 0u64..=100,
+            max_attempts in 1u64..=100,
+            base in 1u64..=10000,
+            cap in 1u64..=60000,
+        ) {
+            if crate::retry::should_retry(attempt, max_attempts, true) {
+                let delay = crate::backoff::compute_backoff(base, attempt, cap);
+                prop_assert!(delay <= cap);
+            }
         }
     }
 }

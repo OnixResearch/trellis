@@ -158,6 +158,7 @@ pub mod quorum;
 pub mod rate_limit;
 pub mod region;
 pub mod result;
+pub mod retry;
 pub mod ring_buffer;
 pub mod scope;
 pub mod seq_fold;
