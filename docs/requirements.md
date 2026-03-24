@@ -1986,3 +1986,68 @@ The lookup result is always a node that appears in the ring.
 r[properties.bloom-insert-length-preserved]
 insert_spec(bits, positions) MUST have the same length as bits.
 Bloom filter insertion never changes the bit array size.
+
+## Layout Constraint
+
+r[layout-constraint.satisfies]
+satisfies_constraint MUST return true when the resolved size matches the
+constraint: Fixed(n) requires resolved == n, Proportion always satisfies,
+Min(n) requires resolved >= n, MinMax(lo, hi) requires lo <= resolved <= hi.
+
+r[layout-constraint.clamp]
+clamp_to_constraint MUST produce a value satisfying the constraint.
+Clamping MUST be idempotent: clamp(clamp(x)) == clamp(x). Clamping a
+value that already satisfies the constraint MUST be a no-op.
+
+r[layout-constraint.conservation]
+The sum of resolved sizes plus inter-item gaps MUST NOT exceed the
+available total space. sum(sizes) + (n-1) * gap <= total.
+
+r[layout-constraint.length-preservation]
+The resolver output sequence MUST have the same length as the input
+constraint sequence.
+
+r[layout-constraint.zero-total]
+When total available space is zero, proportional constraints MUST
+resolve to zero.
+
+r[layout-constraint.fixed-conservation]
+When all constraints are Fixed, the sum of resolved sizes MUST equal
+the sum of the fixed values exactly.
+
+## Tiling
+
+r[tiling.rect-end]
+right(x, width) MUST return x + width. bottom(y, height) MUST return
+y + height. Both use widened arithmetic to avoid overflow.
+
+r[tiling.has-area]
+has_area MUST return true if and only if both width > 0 and height > 0.
+
+r[tiling.disjoint]
+rects_disjoint MUST return true when two rectangles do not share any
+point. Disjointness MUST be symmetric. A zero-area rect MUST be
+disjoint from everything.
+
+r[tiling.contained]
+contained_in MUST return true when the inner rect fits entirely within
+the outer rect. Containment MUST be reflexive and transitive. If inner
+is contained in outer and other is disjoint from outer, then other MUST
+be disjoint from inner.
+
+r[tiling.strip-adjacent]
+segments_adjacent MUST return true when one 1D segment ends exactly
+where the next begins. Adjacent non-empty segments MUST NOT overlap.
+
+r[tiling.gapped-position]
+In a uniform gapped strip, items at different indices MUST be disjoint.
+The first item MUST start at position zero.
+
+r[tiling.clip]
+Viewport clipping: a fully visible segment MUST clip to itself. A fully
+outside segment MUST clip to zero size. The clipped segment MUST fit
+within the viewport.
+
+r[tiling.scroll-bounds]
+A scroll offset is valid when the viewport does not extend past the
+content, or when the content fits within the viewport.

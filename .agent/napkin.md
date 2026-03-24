@@ -350,6 +350,35 @@
   - find_latest_leaf uses backward scan (external_body) — simpler than last-child following
   - Cross-module imports need #[cfg(verus_keep_ghost)]
 
+- Layout constraint module added: satisfies_constraint, clamp_to_constraint, conservation specs
+  - Tag constants must use `pub const` inside verus! (not `pub open spec fn`) — spec fns are
+    erased in normal builds, making them invisible to exec fn bodies and test code
+  - Same pattern as circuit_breaker (CLOSED/OPEN/HALF_OPEN as pub const u8)
+  - All proofs automatic — Z3 handles u8 case splits on 4-value domain
+  - Recursive sum_sizes_spec and sum_fixed_spec both need inductive helper proofs
+    for nonneg and exact-sum properties
+- Tiling module added: rects_disjoint, contained_in, has_area, strip partitioning, scroll bounds
+  - First draft of rects_disjoint_spec used separation-test only (right <= left on some axis).
+    Proptest found counterexample: zero-width rect at x=294 vs rect [199, 295) — the intervals
+    "overlap" on the number line even though the zero-width rect contains no points.
+    Fix: add `!has_area_spec(aw, ah) || !has_area_spec(bw, bh)` as leading disjuncts.
+  - Uses u16 coordinates (matching TUI cell space) with u32 for edge arithmetic to avoid overflow
+  - `(0, 0)` literal needs type annotation in Verus ensures: `(0int, 0int)` for spec returning (int, int)
+  - Subtraction in spec fn produces int, must cast: `(content_extent - viewport_size) as u16`
+  - gapped_items_disjoint needs by(nonlinear_arith) for j*(size+gap) >= (i+1)*(size+gap)
+  - 50 new Verus proofs (1635 → 1685), all verified
+- Property tests for rat-scrolltile (subwayrat): 12 proptest properties, 500 cases each
+  - Window.id is pub(crate) — must track IDs from insert_window return values, not struct access
+  - WindowId.0 is pub(crate) — can't sort by inner value, use HashSet for comparison
+  - Cross-axis overflow is by design: visible rects clip on primary (scroll) axis only,
+    windows can exceed viewport on cross axis (e.g., Fixed(57) height in 10-cell viewport)
+  - Zero-width windows from proportional squeeze: when Fixed siblings exceed viewport,
+    Proportion columns get width 0. Zero-width windows don't appear in visible set,
+    even when focused. Focus-visibility property must guard on primary_size > 0.
+  - All 12 properties pass: no-overlap, primary-axis clipping, fixed exactness,
+    minmax bounds, scroll bounds, focus visibility, ID consistency, layout totality,
+    nav roundtrips (left/right, up/down), remove-preserves-focus, column cross-axis non-overlap
+
 ## Architecture
 - `spec fn *_spec(...)` — mathematical definition (ghost, erased at compile time)
 - `exec fn *(...)` with `ensures result == *_spec(args)` — runtime code, verified to match spec

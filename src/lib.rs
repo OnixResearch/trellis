@@ -47,6 +47,7 @@
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
+//! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
@@ -77,6 +78,7 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `tier` — hot/warm/cold tier classification with promote/demote
+//! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
@@ -124,6 +126,7 @@ pub mod gossip;
 pub mod hash_bucket;
 pub mod integer;
 pub mod interval;
+pub mod layout_constraint;
 pub mod lease;
 pub mod log;
 pub mod markov;
@@ -159,6 +162,7 @@ pub mod slab;
 pub mod slice;
 pub mod subsumption;
 pub mod tier;
+pub mod tiling;
 pub mod token_timestamp;
 pub mod type_lattice;
 pub mod two_phase;
