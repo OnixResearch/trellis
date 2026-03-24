@@ -707,3 +707,18 @@
   - Cross-module: kv_version mod_revision/version → monotonic::is_advance (automatic),
     constant_time_eq_spec → extensional equality (calls equivalence_to_equality helper)
   - 3 new modules, ~30 Verus proofs, 29 cargo tests — all new code verifies clean
+- Cluster coordination modules added: election_jitter, raft_timing, trust_level, node_lifecycle, drain_protocol
+  - election_jitter: Knuth hash `node_id.wrapping_mul(PHI_KNUTH) % range` — spec uses
+    `(node_id as int * K as int) % (u64::MAX as int + 1)` for wrapping_mul modeling.
+    node_zero proof needs `by(nonlinear_arith)` with step-by-step assertions:
+    `0 * k == 0`, `0 % m == 0`, `0u64 % range == 0u64` — Z3 can't simplify through
+    the chain of modular arithmetic without explicit intermediate steps.
+  - raft_timing: pure boolean logic — all proofs automatic
+  - trust_level: u8 tag constants (BLOCKED/TRUSTED/PUBLIC), same pattern as circuit_breaker.
+    All proofs automatic — Z3 handles the small domain case splits.
+  - node_lifecycle: 6-edge transition graph over 4 u8 states. Offline terminal,
+    bidirectional Online↔Degraded recovery. All proofs automatic.
+  - drain_protocol: extends drain module with double-check admission and notification.
+    Cross-module proof: `!can_start_op_spec(true)` implies try_start rejects — automatic.
+    Uses `#[cfg(verus_keep_ghost)]` import of drain::can_start_op_spec.
+  - 5 new modules, ~40 Verus proofs, 37 new cargo tests
