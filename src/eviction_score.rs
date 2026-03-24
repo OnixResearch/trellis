@@ -136,9 +136,6 @@ proof fn weighted_score_min(w1: u64, w2: u64, w3: u64, w4: u64)
 
 // r[verify eviction-score.weighted-score]
 /// Increasing any factor score does not decrease the weighted score.
-/// Marked external_body: Z3 can't derive `(x as u64) <= (y as u64)` from
-/// `x <= y <= 10000` through the spec's `as u64` cast. Proptest covers this.
-#[verifier::external_body]
 proof fn weighted_score_monotonic_s1(
     w1: u64, w2: u64, w3: u64, w4: u64,
     s1a: u64, s1b: u64, s2: u64, s3: u64, s4: u64,
@@ -150,7 +147,19 @@ proof fn weighted_score_monotonic_s1(
     ensures
         weighted_score_spec(w1, w2, w3, w4, s1a, s2, s3, s4)
         <= weighted_score_spec(w1, w2, w3, w4, s1b, s2, s3, s4),
-{}
+{
+    // Individual product bounds (nonlinear: a*b <= 100*100 when a,b <= 100)
+    assert(w1 as int * s1a as int <= 10000) by(nonlinear_arith) requires w1 <= 100, s1a <= 100;
+    assert(w1 as int * s1b as int <= 10000) by(nonlinear_arith) requires w1 <= 100, s1b <= 100;
+    assert(w2 as int * s2 as int <= 10000) by(nonlinear_arith) requires w2 <= 100, s2 <= 100;
+    assert(w3 as int * s3 as int <= 10000) by(nonlinear_arith) requires w3 <= 100, s3 <= 100;
+    assert(w4 as int * s4 as int <= 10000) by(nonlinear_arith) requires w4 <= 100, s4 <= 100;
+    // w1 * s1a <= w1 * s1b since s1a <= s1b
+    assert(w1 as int * s1a as int <= w1 as int * s1b as int) by(nonlinear_arith)
+        requires s1a <= s1b;
+    // Z3 can add up product bounds (linear) and derive int-level sum ordering.
+    // Then the as u64 casts are identity since sums are in [0, 40000] < u64::MAX.
+}
 
 // --- priority_multiplier ---
 

@@ -121,9 +121,6 @@ pub open spec fn pattern_contains_spec(p1: Seq<int>, p2: Seq<int>) -> bool {
 
 // r[impl pattern.containment-subset]
 /// Returns true if p1 contains p2 (every item in p2 is in p1, or p1 is wildcard).
-/// Z3 can't close the existential negation through Seq.map indirection — marked
-/// `external_body` with proptest coverage.
-#[verifier::external_body]
 pub fn pattern_contains(p1: &[i64], p2: &[i64]) -> (result: bool)
     ensures result == pattern_contains_spec(
         p1@.map(|_i: int, x: i64| x as int),
@@ -133,10 +130,48 @@ pub fn pattern_contains(p1: &[i64], p2: &[i64]) -> (result: bool)
     if p1.len() == 1 && p1[0] == -1 {
         return true;
     }
-    for &target in p2 {
-        if !p1.contains(&target) {
+    let ghost p1m = p1@.map(|_i: int, x: i64| x as int);
+    let ghost p2m = p2@.map(|_i: int, x: i64| x as int);
+    let mut k: usize = 0;
+    while k < p2.len()
+        invariant
+            k <= p2@.len(),
+            p1m =~= p1@.map(|_i: int, x: i64| x as int),
+            p2m =~= p2@.map(|_i: int, x: i64| x as int),
+            !is_wildcard_spec(p1m),
+            forall|i: int| #![trigger p2m[i]]
+                0 <= i < k as int ==> seq_contains_int(p1m, p2m[i]),
+        decreases p2@.len() - k,
+    {
+        let target = p2[k];
+        let mut found = false;
+        let mut j: usize = 0;
+        while j < p1.len()
+            invariant
+                j <= p1@.len(),
+                p1m =~= p1@.map(|_i: int, x: i64| x as int),
+                found ==> seq_contains_int(p1m, target as int),
+                !found ==> forall|idx: int| #![trigger p1m[idx]]
+                    0 <= idx < j as int ==> p1m[idx] != target as int,
+            decreases p1@.len() - j,
+        {
+            if !found && p1[j] == target {
+                assert(p1m[j as int] == target as int);
+                found = true;
+            }
+            j += 1;
+        }
+        if !found {
+            assert(p2m[k as int] == target as int);
+            // j == p1@.len(), so the invariant covers all indices
+            assert forall|idx: int| #![trigger p1m[idx]]
+                !(0 <= idx < p1m.len() && p1m[idx] == target as int) by {
+            };
             return false;
         }
+        assert(p2m[k as int] == target as int);
+        assert(seq_contains_int(p1m, p2m[k as int]));
+        k += 1;
     }
     true
 }

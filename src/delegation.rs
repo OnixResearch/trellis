@@ -185,8 +185,6 @@ pub open spec fn chain_fully_valid_spec(chain: Seq<ChainLevel>) -> bool {
 
 // r[impl delegation.chain-valid]
 /// Validates a delegation chain.
-/// @verified-logic:no-ensures
-#[verifier::external_body]
 pub fn chain_valid(chain: &[ChainLevel]) -> (result: bool)
     ensures result == chain_fully_valid_spec(chain@),
 {
@@ -201,24 +199,29 @@ pub fn chain_valid(chain: &[ChainLevel]) -> (result: bool)
         return false;
     }
     let mut i: usize = 0;
-    while i < chain.len() - 1 {
+    while i < chain.len() - 1
+        invariant
+            i <= chain@.len() - 1,
+            chain@.len() > 0,
+            is_root_spec(chain@[0].depth),
+            depth_valid_spec(chain@[chain@.len() - 1 as int].depth),
+            chain@[i as int].depth <= 8,
+            chain_valid_spec(chain@, 0) <==> chain_valid_spec(chain@, i as int),
+        decreases chain@.len() - 1 - i,
+    {
         let parent = &chain[i];
         let child = &chain[i + 1];
-        if !parent.has_delegate {
+        // parent.depth <= 8 from invariant, so parent.depth + 1 <= 9 < u64::MAX
+        if !level_valid(
+            parent.has_delegate, parent.depth, parent.variant, parent.mode,
+            child.depth, child.variant, child.mode,
+        ) {
+            // level_valid_spec is false, so chain_valid_spec(chain@, i) is false,
+            // so by invariant chain_valid_spec(chain@, 0) is false.
             return false;
         }
-        if child.depth != parent.depth + 1 {
-            return false;
-        }
-        if child.depth > 8 {
-            return false;
-        }
-        if !crate::subsumption::subsumes(parent.variant, child.variant) {
-            return false;
-        }
-        if !crate::access_mode::mode_le(child.mode, parent.mode) {
-            return false;
-        }
+        // level_valid_spec is true, which includes depth_valid_spec(child.depth),
+        // so child.depth <= 8 — maintaining the invariant for i+1.
         i += 1;
     }
     true

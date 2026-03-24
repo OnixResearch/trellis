@@ -24,9 +24,7 @@ pub open spec fn confidence_meets_spec(count: u64, total: u64, threshold_pct: u6
 /// Returns true if the transition confidence meets the threshold.
 ///
 /// Uses cross-multiplication to avoid division: count * 100 >= total * `threshold_pct`.
-/// Marked `external_body`: the overflow-safe large-total fallback branch is too complex
-/// for Z3 to connect to the int-based spec. Proptest verifies correctness.
-#[verifier::external_body]
+/// Returns true if the transition confidence meets the threshold.
 pub fn confidence_meets(count: u64, total: u64, threshold_pct: u64) -> (result: bool)
     requires total > 0, threshold_pct <= 100, count <= total
     ensures result == confidence_meets_spec(count, total, threshold_pct)
@@ -93,20 +91,46 @@ pub fn confidence_meets(count: u64, total: u64, threshold_pct: u64) -> (result: 
             }
             let main = q * threshold_pct;
             let frac = r * threshold_pct;
-            // We need: count * 100 >= total * threshold_pct
-            // = count * 100 >= main * 100 + frac
-            // = (count - main) * 100 >= frac  (when count >= main)
+            proof {
+                // Key identity: total * threshold_pct == main * 100 + frac
+                // From fundamental_div_mod: total == q * 100 + r
+                vstd::arithmetic::div_mod::lemma_fundamental_div_mod(total as int, 100);
+                // total * tp = (q*100 + r) * tp = q*tp*100 + r*tp = main*100 + frac
+                assert(total as int * threshold_pct as int
+                    == main as int * 100 + frac as int) by(nonlinear_arith)
+                    requires total as int == q as int * 100 + r as int,
+                             main == q * threshold_pct, frac == r * threshold_pct;
+            }
+            // count * 100 >= total * threshold_pct
+            // <==> count * 100 >= main * 100 + frac
+            // <==> (count - main) * 100 >= frac  (when count >= main)
             if count < main {
+                proof {
+                    // count < main ==> count * 100 < main * 100 <= main * 100 + frac
+                    assert(count as int * 100 < main as int * 100) by(nonlinear_arith)
+                        requires count < main;
+                }
                 false
             } else {
                 let diff = count - main;
                 if diff > u64::MAX / 100 {
-                    // diff * 100 would overflow, but diff * 100 > u64::MAX >= frac
+                    proof {
+                        // diff * 100 > (u64::MAX/100) * 100 >= u64::MAX - 99 > frac
+                        assert(diff as int * 100 > frac as int) by(nonlinear_arith)
+                            requires diff as int > u64::MAX as int / 100,
+                                     frac as int <= 99 * 100;
+                        // count * 100 = main * 100 + diff * 100 >= main * 100 + frac
+                        assert(count as int * 100 == main as int * 100 + diff as int * 100)
+                            by(nonlinear_arith) requires count == main + diff;
+                    }
                     true
                 } else {
                     proof {
                         assert(diff as int * 100 <= u64::MAX as int) by(nonlinear_arith)
                             requires diff <= u64::MAX / 100;
+                        // count * 100 = main * 100 + diff * 100
+                        assert(count as int * 100 == main as int * 100 + diff as int * 100)
+                            by(nonlinear_arith) requires count == main + diff;
                     }
                     diff * 100 >= frac
                 }
@@ -285,10 +309,8 @@ pub open spec fn best_prediction_index_from_spec(counts: Seq<u64>, from: int, be
 /// Returns the index of the highest count in the slice.
 /// If multiple entries tie, returns the first one.
 ///
-/// Marked `external_body`: the iterative loop invariant for linking to the
-/// recursive `best_prediction_index_from_spec` is hard for Z3 (same pattern
-/// as `consistent_hash::lookup`). Proptest verifies correctness.
-#[verifier::external_body]
+/// Returns the index of the highest count in the slice.
+/// If multiple entries tie, returns the first one.
 pub fn best_prediction_index(counts: &[u64]) -> (result: usize)
     requires counts@.len() > 0
     ensures
@@ -297,7 +319,15 @@ pub fn best_prediction_index(counts: &[u64]) -> (result: usize)
 {
     let mut best_idx: usize = 0;
     let mut i: usize = 1;
-    while i < counts.len() {
+    while i < counts.len()
+        invariant
+            1 <= i <= counts@.len(),
+            best_idx < counts@.len(),
+            best_idx < i,
+            forall|j: int| #![trigger counts@[j]]
+                0 <= j < i as int ==> counts@[j] <= counts@[best_idx as int],
+        decreases counts@.len() - i,
+    {
         if counts[i] > counts[best_idx] {
             best_idx = i;
         }
