@@ -22,6 +22,7 @@
 //! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
+//! - `bounded_peers` — bounded peer collection: capacity cap, self-exclusion, order preservation
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `buddy` — buddy system: block sizes, buddy addresses, coalescing, parent blocks
 //! - `causal_order` — causal delivery and consistent snapshots
@@ -57,6 +58,7 @@
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
+//! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
 //! - `nix_closure` — Nix generic closure with fuel-based termination
 //! - `nix_list` — Nix list builtins: elem, head, tail, `gen_list`, concat
 //! - `nix_string` — Nix string operations: length, substring, replace
@@ -87,6 +89,7 @@
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
+//! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 
 pub mod access_mode;
@@ -108,6 +111,7 @@ pub mod causal_order;
 pub mod containment;
 pub mod consistent_hash;
 pub mod crdt;
+pub mod bounded_peers;
 pub mod bounds;
 pub mod cas;
 pub mod chain;
@@ -140,6 +144,7 @@ pub mod markov;
 pub mod merkle;
 pub mod monotonic;
 pub mod nix_attrset;
+pub mod node_classify;
 pub mod nix_closure;
 pub mod nix_list;
 pub mod nix_string;
@@ -176,4 +181,5 @@ pub mod transfer;
 pub mod type_lattice;
 pub mod two_phase;
 pub mod vector_clock;
+pub mod voter_set;
 pub mod watermark;

@@ -77,7 +77,7 @@ pub fn is_quorum(count: u64, total: u64) -> (result: bool)
 
 // r[verify quorum.is-quorum]
 /// A full set always forms a quorum.
-proof fn full_is_quorum(n: u64)
+pub proof fn full_is_quorum(n: u64)
     requires n > 0
     ensures is_quorum_spec(n, n)
 {

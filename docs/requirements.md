@@ -2203,3 +2203,88 @@ r[properties.balanced-simple-is-transfer]
 A simple balanced entry (equal debit and credit of amount a) implies
 transfer_valid_spec(a, 0, a). Simple bookkeeping entries correspond
 to valid transfers.
+
+## Voter Set
+
+r[voter-set.promote]
+Promoting a learner MUST add the learner's ID to the voter set. If
+the learner is already a voter, the set MUST be unchanged (idempotent).
+The result MUST contain no duplicate IDs.
+
+r[voter-set.replace]
+When promoting with a replacement target, the replaced node MUST be
+absent from the result. All voters other than the replaced node MUST
+be preserved. The learner MUST be present in the result.
+
+r[voter-set.no-duplicates]
+The result of any promotion operation MUST contain no duplicate node
+IDs, regardless of whether the learner was already in the voter set.
+
+r[voter-set.quorum-preserved]
+If the previous voter set had size > 0, promotion without replacement
+MUST preserve quorum. Promotion with replacement MUST preserve quorum
+when the previous size satisfies can_remove_safely.
+
+r[voter-set.learner-present]
+The learner ID MUST appear in the result of every promotion operation.
+
+r[voter-set.replaced-absent]
+When replace_id is Some, the replaced ID MUST NOT appear in the result.
+
+r[voter-set.others-preserved]
+Every voter in the previous set that is not the replaced node MUST
+appear in the result.
+
+## Bounded Peers
+
+r[bounded-peers.collect]
+Building a bootstrap peer list from candidates MUST add candidates in
+order until the capacity is reached. The result MUST be a subsequence
+of the input candidates (minus self).
+
+r[bounded-peers.bounded]
+The result size MUST never exceed max_peers.
+
+r[bounded-peers.self-excluded]
+The node's own endpoint ID MUST NOT appear in the bootstrap peer list.
+
+r[bounded-peers.non-empty]
+When at least one non-self candidate exists and max_peers > 0, the
+result MUST contain at least one peer.
+
+r[bounded-peers.no-duplicates]
+The result MUST NOT contain duplicate node IDs when the input candidates
+have no duplicates.
+
+## Node Classification
+
+r[node-classify.voter-equivalence]
+A node MUST be classified as a voter if and only if its ID is in the
+member set. A node MUST be classified as a learner if and only if it is
+not a voter. is_voter and is_learner MUST be mutually exclusive and
+exhaustive.
+
+r[node-classify.leader-is-voter]
+If a node is classified as leader, it MUST also be classified as voter.
+A learner MUST NOT be the leader.
+
+r[node-classify.at-most-one-leader]
+At most one node in the classification output MUST have is_leader set
+to true. If leader_id is None, zero nodes MUST be marked as leader.
+
+r[node-classify.bounded-output]
+The classification output MUST contain at most MAX_NODES entries.
+
+r[node-classify.no-duplicates]
+The classification output MUST NOT contain duplicate node IDs when the
+input has no duplicates.
+
+## Cross-Module: Cluster Membership
+
+r[properties.promote-preserves-quorum]
+Promotion without replacement MUST preserve quorum: the full result set
+always forms a quorum of itself when the input was non-empty.
+
+r[properties.replace-quorum-guard]
+Promotion with replacement produces a result whose size is at least
+voters.len() - 1. Combined with can_remove_safely, quorum holds.

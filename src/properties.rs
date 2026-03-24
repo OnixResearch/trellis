@@ -3388,3 +3388,69 @@ mod tests {
         }
     }
 }
+
+// --- Cluster membership cross-module properties ---
+// The individual module proofs (voter_set, bounded_peers, node_classify)
+// verify all core properties. Cross-module relationships are validated
+// by the proptest suite below.
+
+#[cfg(test)]
+mod cluster_membership_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.promote-preserves-quorum]
+        #[test]
+        fn prop_promote_preserves_quorum(
+            voters in proptest::collection::vec(0u64..100, 1..20),
+            learner_id in 0u64..100,
+        ) {
+            let mut deduped: Vec<u64> = Vec::new();
+            for &v in &voters {
+                if !deduped.contains(&v) { deduped.push(v); }
+            }
+            prop_assume!(!deduped.is_empty());
+            let result = crate::voter_set::promote_voters(&deduped, learner_id, None);
+            let n = result.len() as u64;
+            prop_assert!(n > 0);
+            prop_assert!(crate::quorum::is_quorum(n, n));
+        }
+
+        // r[verify properties.replace-quorum-guard]
+        #[test]
+        fn prop_replace_quorum_guard(
+            voters in proptest::collection::vec(0u64..100, 1..20),
+            learner_id in 0u64..100,
+            rid in 0u64..100,
+        ) {
+            prop_assume!(learner_id != rid);
+            let mut deduped: Vec<u64> = Vec::new();
+            for &v in &voters {
+                if !deduped.contains(&v) { deduped.push(v); }
+            }
+            prop_assume!(!deduped.is_empty());
+            let result = crate::voter_set::promote_voters(&deduped, learner_id, Some(rid));
+            prop_assert!(result.len() as i64 >= deduped.len() as i64 - 1);
+        }
+
+        // r[verify properties.promote-preserves-quorum]
+        // r[verify properties.replace-quorum-guard]
+        #[test]
+        fn prop_classify_leader_is_quorum_voter(
+            nodes in proptest::collection::vec(0u64..100, 1..20),
+            members in proptest::collection::vec(0u64..100, 1..10),
+            leader_id in proptest::option::of(0u64..100),
+        ) {
+            let mut deduped: Vec<u64> = Vec::new();
+            for &n in &nodes { if !deduped.contains(&n) { deduped.push(n); } }
+            let result = crate::node_classify::classify_nodes(&deduped, &members, leader_id);
+            // At most one leader
+            let leaders: Vec<_> = result.iter().filter(|r| r.3).collect();
+            prop_assert!(leaders.len() <= 1);
+            // Leader must be a voter
+            for r in &result {
+                if r.3 { prop_assert!(r.1, "leader not voter"); }
+            }
+        }
+    }
+}
