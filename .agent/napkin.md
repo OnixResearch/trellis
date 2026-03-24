@@ -646,3 +646,16 @@
     can't be derived. Z3's bit_vector theory proves `(1u64 << order) >= size` but the spec
     fn `block_size_spec(order) = (1u64 << order)` uses int-level `<<`, not bitvector `<<`.
     Z3 can't bridge between theories — same class as hash_bucket::pow2_mask_is_mod. Kept external_body.
+- Chain hash chaining proofs: collision-free axiom, agreement theorem, divergence, single-entry
+  - Recursive proof with quantified ensures hits rlimit — Z3 can't handle combining recursive
+    quantified results (quantifier instantiation explosion across recursion levels)
+  - Solution: split into non-quantified recursive helper (`agreement_at`) that proves one
+    position at a time by peeling from k down to i, then non-recursive wrapper
+    (`prove_chain_agreement`) uses `assert forall ... by { agreement_at(...) }` to assemble
+    the full quantifier. No recursive function has a quantified ensures.
+  - `agreement_step` (non-recursive) isolates collision-free reasoning: proves chain1[k] == chain2[k]
+    and predecessor hash propagation. Z3 verifies instantly.
+  - Divergence proof (contrapositive of agreement) uses if-then-contradiction pattern:
+    `if chain1[k].hash == chain2[k].hash { prove_chain_agreement(...); assert(chain1[j] == chain2[j]); }`
+  - hash_collision_free is external_body axiom (same as hash_deterministic) — hash_spec is closed/uninterpreted
+  - 1640 Verus proofs, 1109 cargo tests — all gates green

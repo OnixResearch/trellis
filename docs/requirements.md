@@ -387,6 +387,27 @@ r[chain.append-preserves]
 Appending a correctly-hashed entry to a valid chain MUST produce a valid
 chain. All prior entries MUST remain valid.
 
+r[chain.collision-free]
+The hash function MUST be collision-free: if two calls to hash_spec
+produce the same output, all four inputs MUST be identical. This is an
+idealized cryptographic assumption (trusted axiom) modeling the
+collision resistance of Blake3.
+
+r[chain.agreement]
+If two valid chains have matching hashes at position k, all entries at
+positions 0 through k MUST be identical. This is the fundamental
+security guarantee: the hash at any position commits to the entire
+chain prefix.
+
+r[chain.divergence-detected]
+If two valid chains differ at any position j, their hashes at every
+position k >= j MUST differ. Hash chains are tamper-evident: any
+modification to any entry is detectable by comparing tip hashes.
+
+r[chain.single-entry-valid]
+A single entry correctly hashed from the genesis hash MUST form a
+valid chain of length one.
+
 ## Batch Limits
 
 r[batch.check-limits]
