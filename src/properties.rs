@@ -1769,6 +1769,15 @@ mod gossip_proofs {
         infection_lower_bound_spec(cluster_size, fanout, rounds) <= cluster_size
     }
 
+    // r[impl properties.gossip-infection-monotonic-rounds]
+    pub open spec fn gossip_infection_monotonic_rounds_prop(
+        cluster_size: u64, fanout: u64, rounds_a: u64, rounds_b: u64,
+    ) -> bool {
+        rounds_a <= rounds_b ==>
+            infection_lower_bound_spec(cluster_size, fanout, rounds_a)
+                <= infection_lower_bound_spec(cluster_size, fanout, rounds_b)
+    }
+
     // r[verify properties.gossip-infection-bounded]
     proof fn prove_gossip_infection_bounded(
         cluster_size: u64, fanout: u64, rounds: u64,
@@ -2862,7 +2871,7 @@ mod tests {
         fn prop_page_aligned_is_align_down_fixpoint(addr: u64, ps in 1u64..=10000) {
             prop_assert_eq!(
                 crate::page::is_page_aligned(addr, ps),
-                (crate::integer::align_down(addr, ps) == addr),
+                crate::integer::align_down(addr, ps) == addr,
             );
         }
 
@@ -2931,7 +2940,8 @@ mod tests {
         // r[verify properties.two-phase-unanimity-implies-quorum]
         #[test]
         fn prop_two_phase_unanimity_implies_quorum(n in 1u64..=100) {
-            let votes: Vec<Option<bool>> = vec![Some(true); n as usize];
+            let len: usize = n.try_into().unwrap();
+            let votes: Vec<Option<bool>> = vec![Some(true); len];
             if crate::two_phase::can_commit(&votes) {
                 prop_assert!(crate::quorum::is_quorum(n, n));
             }
@@ -3134,7 +3144,7 @@ mod tests {
                 prop_assert!(
                     crate::eviction_score::full_score(
                         w1, w2, w3, w4, s1, s2, s3, s4, priority, tier,
-                    ) <= 800000,
+                    ) <= 800_000,
                 );
             }
         }
