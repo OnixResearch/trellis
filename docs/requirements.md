@@ -1927,3 +1927,41 @@ the eviction decision.
 r[properties.eviction-score-cold-minimum]
 tier_multiplier(COLD) MUST be the minimum multiplier value. Cold
 entries get the lowest protection score, making them first to evict.
+
+## Cross-Module Properties (Wave 3)
+
+r[properties.evictable-count-is-saturating-sub]
+evictable_count(count, protected) MUST equal saturating_sub(count, protected).
+Both compute max(a - b, 0) — the eviction module's counter agrees with
+the arithmetic module's generic subtraction.
+
+r[properties.gossip-infection-bounded]
+infection_lower_bound(n, fanout, rounds) MUST be <= n for all inputs.
+Gossip infection never exceeds the cluster size.
+
+r[properties.gossip-infection-monotonic-rounds]
+If rounds_a <= rounds_b, then infection_lower_bound(n, f, rounds_a)
+<= infection_lower_bound(n, f, rounds_b). More rounds never reduce
+the number of infected nodes.
+
+r[properties.acid-empty-commit-identity]
+commit(state, empty) MUST equal state for all states. Committing no
+writes is a no-op.
+
+r[properties.priority-multiplier-monotonic]
+If a <= b and both are valid priorities (0-3), then
+priority_multiplier(a) MUST be <= priority_multiplier(b).
+Higher priority always produces a higher or equal multiplier.
+
+r[properties.full-score-bounded]
+With valid weights (sum 100, each <= 100), factor scores in [0, 100],
+priority in [0, 3], and tier in [0, 2], full_score MUST be <= 800000.
+The eviction score has a known maximum.
+
+r[properties.consistent-hash-lookup-in-ring]
+For a non-empty ring, lookup(ring, key_hash) MUST equal some ring[i].1.
+The lookup result is always a node that appears in the ring.
+
+r[properties.bloom-insert-length-preserved]
+insert_spec(bits, positions) MUST have the same length as bits.
+Bloom filter insertion never changes the bit array size.

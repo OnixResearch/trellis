@@ -1724,6 +1724,264 @@ mod pressure_eviction_proofs {
     } // verus!
 }
 
+// --- evictable_count ↔ saturating_sub ---
+
+#[cfg(verus_keep_ghost)]
+mod eviction_arithmetic_proofs {
+    use vstd::prelude::*;
+
+    use crate::arithmetic::saturating_sub_spec;
+    use crate::eviction::evictable_count_spec;
+
+    verus! {
+
+    // r[impl properties.evictable-count-is-saturating-sub]
+    pub open spec fn evictable_count_is_saturating_sub_prop(count: u64, protected: u64) -> bool {
+        evictable_count_spec(count, protected) == saturating_sub_spec(count, protected)
+    }
+
+    // r[verify properties.evictable-count-is-saturating-sub]
+    proof fn prove_evictable_count_is_saturating_sub(count: u64, protected: u64)
+        ensures evictable_count_is_saturating_sub_prop(count, protected)
+    {
+        // evictable: if count >= protected { count - protected } else { 0 }
+        // saturating_sub: if b > a { 0 } else { a - b }
+        // count >= protected <==> !(protected > count) — automatic
+    }
+
+    } // verus!
+}
+
+// --- gossip properties ---
+
+#[cfg(verus_keep_ghost)]
+mod gossip_proofs {
+    use vstd::prelude::*;
+
+    use crate::gossip::infection_lower_bound_spec;
+
+    verus! {
+
+    // r[impl properties.gossip-infection-bounded]
+    pub open spec fn gossip_infection_bounded_prop(
+        cluster_size: u64, fanout: u64, rounds: u64,
+    ) -> bool {
+        infection_lower_bound_spec(cluster_size, fanout, rounds) <= cluster_size
+    }
+
+    // r[verify properties.gossip-infection-bounded]
+    proof fn prove_gossip_infection_bounded(
+        cluster_size: u64, fanout: u64, rounds: u64,
+    )
+        ensures gossip_infection_bounded_prop(cluster_size, fanout, rounds)
+    {
+        // infection_lower_bound_spec:
+        //   let bound = saturating_pow_spec(fanout, rounds);
+        //   if bound > cluster_size as int { cluster_size } else { bound as u64 }
+        // Need: saturating_pow result >= 0 for the cast to be safe
+        // Then: both branches return <= cluster_size
+        crate::gossip::saturating_pow_nonneg(fanout, rounds);
+    }
+
+    } // verus!
+}
+
+// --- acid: empty commit identity ---
+
+#[cfg(verus_keep_ghost)]
+mod acid_proofs {
+    use vstd::prelude::*;
+
+    use crate::acid::commit_spec;
+    use crate::acid::WriteOp;
+
+    verus! {
+
+    // r[impl properties.acid-empty-commit-identity]
+    pub open spec fn acid_empty_commit_identity_prop(state: Seq<u64>) -> bool {
+        commit_spec(state, seq![]) =~= state
+    }
+
+    // r[verify properties.acid-empty-commit-identity]
+    proof fn prove_acid_empty_commit_identity(state: Seq<u64>)
+        ensures acid_empty_commit_identity_prop(state)
+    {
+        // commit_spec(state, writes, 0) with writes.len() == 0:
+        // from >= writes.len() is 0 >= 0 → returns state
+    }
+
+    } // verus!
+}
+
+// --- eviction_score: priority monotonic + score bounded ---
+
+#[cfg(verus_keep_ghost)]
+mod score_bound_proofs {
+    use vstd::prelude::*;
+
+    use crate::eviction_score::full_score_spec;
+    use crate::eviction_score::priority_multiplier_spec;
+    use crate::eviction_score::weighted_score_spec;
+    use crate::eviction_score::weights_valid_spec;
+
+    verus! {
+
+    // r[impl properties.priority-multiplier-monotonic]
+    pub open spec fn priority_multiplier_monotonic_prop(a: u8, b: u8) -> bool {
+        (a <= b && a <= 3 && b <= 3) ==>
+            priority_multiplier_spec(a) <= priority_multiplier_spec(b)
+    }
+
+    // r[verify properties.priority-multiplier-monotonic]
+    proof fn prove_priority_multiplier_monotonic(a: u8, b: u8)
+        ensures priority_multiplier_monotonic_prop(a, b)
+    {
+        // 4 valid priorities, Z3 exhaustive case split on 16 pairs
+    }
+
+    // r[impl properties.full-score-bounded]
+    pub open spec fn full_score_bounded_prop(
+        w1: u64, w2: u64, w3: u64, w4: u64,
+        s1: u64, s2: u64, s3: u64, s4: u64,
+        priority: u8, tier: u8,
+    ) -> bool
+        recommends
+            weights_valid_spec(w1, w2, w3, w4),
+            s1 <= 100, s2 <= 100, s3 <= 100, s4 <= 100,
+            priority <= 3, tier <= 2,
+    {
+        full_score_spec(w1, w2, w3, w4, s1, s2, s3, s4, priority, tier)
+            <= 800000
+    }
+
+    // r[verify properties.full-score-bounded]
+    proof fn prove_full_score_bounded(
+        w1: u64, w2: u64, w3: u64, w4: u64,
+        s1: u64, s2: u64, s3: u64, s4: u64,
+        priority: u8, tier: u8,
+    )
+        requires
+            weights_valid_spec(w1, w2, w3, w4),
+            s1 <= 100, s2 <= 100, s3 <= 100, s4 <= 100,
+            priority <= 3, tier <= 2,
+        ensures full_score_bounded_prop(
+            w1, w2, w3, w4, s1, s2, s3, s4, priority, tier,
+        )
+    {
+        // weighted_score <= 100*100 + 100*100 + 100*100 + 100*100 = 10000
+        // (actually w1*s1 + w2*s2 + w3*s3 + w4*s4 <= (w1+w2+w3+w4)*100 = 100*100 = 10000)
+        // priority_multiplier <= 20, tier_multiplier <= 4
+        // 10000 * 20 * 4 = 800000
+        assert(w1 * s1 + w2 * s2 + w3 * s3 + w4 * s4 <= 10000) by(nonlinear_arith)
+            requires
+                w1 + w2 + w3 + w4 == 100,
+                w1 <= 100, w2 <= 100, w3 <= 100, w4 <= 100,
+                s1 <= 100u64, s2 <= 100u64, s3 <= 100u64, s4 <= 100u64;
+        assert(priority_multiplier_spec(priority) <= 20);
+        assert(crate::eviction_score::tier_multiplier_spec(tier) <= 4);
+        assert(10000int * 20 * 4 == 800000) by(nonlinear_arith);
+        assert(weighted_score_spec(w1, w2, w3, w4, s1, s2, s3, s4) as int
+            * priority_multiplier_spec(priority) as int
+            * crate::eviction_score::tier_multiplier_spec(tier) as int
+            <= 800000) by(nonlinear_arith)
+            requires
+                weighted_score_spec(w1, w2, w3, w4, s1, s2, s3, s4) as int <= 10000,
+                priority_multiplier_spec(priority) as int <= 20,
+                crate::eviction_score::tier_multiplier_spec(tier) as int <= 4;
+    }
+
+    } // verus!
+}
+
+// --- consistent hash: lookup exists in ring ---
+
+#[cfg(verus_keep_ghost)]
+mod consistent_hash_proofs {
+    use vstd::prelude::*;
+
+    use crate::consistent_hash::first_ge_index_spec;
+    use crate::consistent_hash::lookup_spec;
+
+    verus! {
+
+    // r[impl properties.consistent-hash-lookup-in-ring]
+    pub open spec fn consistent_hash_lookup_in_ring_prop(
+        ring: Seq<(u64, u64)>, key_hash: u64,
+    ) -> bool
+        recommends ring.len() > 0
+    {
+        let result = lookup_spec(ring, key_hash);
+        let idx = first_ge_index_spec(ring, key_hash);
+        if idx < ring.len() as int {
+            ring[idx].1 == result
+        } else {
+            ring[0int].1 == result
+        }
+    }
+
+    // r[verify properties.consistent-hash-lookup-in-ring]
+    proof fn prove_consistent_hash_lookup_in_ring(
+        ring: Seq<(u64, u64)>, key_hash: u64,
+    )
+        requires ring.len() > 0
+        ensures consistent_hash_lookup_in_ring_prop(ring, key_hash)
+    {
+        // lookup_spec directly unfolds to the same case split — automatic
+    }
+
+    } // verus!
+}
+
+// --- bloom: insert preserves length ---
+
+#[cfg(verus_keep_ghost)]
+mod bloom_length_proofs {
+    use vstd::prelude::*;
+
+    use crate::bloom::insert_spec;
+
+    verus! {
+
+    // r[impl properties.bloom-insert-length-preserved]
+    pub open spec fn bloom_insert_length_preserved_prop(
+        bits: Seq<bool>, positions: Seq<int>,
+    ) -> bool
+        recommends
+            forall|i: int| 0 <= i < positions.len() as int
+                ==> 0 <= #[trigger] positions[i] < bits.len() as int,
+    {
+        insert_spec(bits, positions).len() == bits.len()
+    }
+
+    // r[verify properties.bloom-insert-length-preserved]
+    proof fn prove_bloom_insert_length_preserved(
+        bits: Seq<bool>, positions: Seq<int>,
+    )
+        requires
+            forall|i: int| 0 <= i < positions.len() as int
+                ==> 0 <= #[trigger] positions[i] < bits.len() as int,
+        ensures bloom_insert_length_preserved_prop(bits, positions)
+        decreases positions.len()
+    {
+        if positions.len() == 0 {
+            // insert_spec returns bits unchanged
+        } else {
+            // Inductive step: insert on drop_last, then one update
+            let shorter = positions.drop_last();
+            // All positions in shorter are valid indices into bits
+            assert forall|i: int| 0 <= i < shorter.len() as int
+                implies 0 <= #[trigger] shorter[i] < bits.len() as int by {
+                // shorter[i] == positions[i] for i < positions.len() - 1
+            }
+            prove_bloom_insert_length_preserved(bits, shorter);
+            // After recursion: insert_spec(bits, shorter).len() == bits.len()
+            // Then one Seq::update preserves length
+        }
+    }
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod tests {
     use proptest::prelude::*;
@@ -2800,6 +3058,113 @@ mod tests {
         #[test]
         fn prop_eviction_score_cold_minimum(tier in 0u8..=3) {
             prop_assert!(crate::eviction_score::tier_multiplier(0) <= crate::eviction_score::tier_multiplier(tier));
+        }
+
+        // --- Wave 3 cross-module proptests ---
+
+        // r[verify properties.evictable-count-is-saturating-sub]
+        #[test]
+        fn prop_evictable_count_is_saturating_sub(count: u64, protected: u64) {
+            prop_assert_eq!(
+                crate::eviction::evictable_count(count, protected),
+                crate::arithmetic::saturating_sub(count, protected),
+            );
+        }
+
+        // r[verify properties.gossip-infection-bounded]
+        #[test]
+        fn prop_gossip_infection_bounded(
+            cluster_size: u64, fanout in 1u64..=10, rounds in 0u64..=100,
+        ) {
+            prop_assert!(
+                crate::gossip::infection_lower_bound(cluster_size, fanout, rounds)
+                    <= cluster_size,
+            );
+        }
+
+        // r[verify properties.gossip-infection-monotonic-rounds]
+        #[test]
+        fn prop_gossip_infection_monotonic_rounds(
+            cluster_size in 1u64..=1000,
+            fanout in 1u64..=10,
+            rounds_a in 0u64..=50,
+            rounds_b in 0u64..=50,
+        ) {
+            if rounds_a <= rounds_b {
+                prop_assert!(
+                    crate::gossip::infection_lower_bound(cluster_size, fanout, rounds_a)
+                        <= crate::gossip::infection_lower_bound(cluster_size, fanout, rounds_b),
+                );
+            }
+        }
+
+        // r[verify properties.acid-empty-commit-identity]
+        #[test]
+        fn prop_acid_empty_commit_identity(len in 0usize..=100) {
+            let state: Vec<u64> = (0..len).map(|i| i as u64).collect();
+            let mut result = state.clone();
+            let empty_writes: Vec<crate::acid::WriteOp> = vec![];
+            crate::acid::apply_writes(&mut result, &empty_writes);
+            prop_assert_eq!(result, state);
+        }
+
+        // r[verify properties.priority-multiplier-monotonic]
+        #[test]
+        fn prop_priority_multiplier_monotonic(a in 0u8..=3, b in 0u8..=3) {
+            if a <= b {
+                prop_assert!(
+                    crate::eviction_score::priority_multiplier(a)
+                        <= crate::eviction_score::priority_multiplier(b),
+                );
+            }
+        }
+
+        // r[verify properties.full-score-bounded]
+        #[test]
+        fn prop_full_score_bounded(
+            w1 in 0u64..=100, w2 in 0u64..=100,
+            w3 in 0u64..=100, w4 in 0u64..=100,
+            s1 in 0u64..=100, s2 in 0u64..=100,
+            s3 in 0u64..=100, s4 in 0u64..=100,
+            priority in 0u8..=3, tier in 0u8..=2,
+        ) {
+            if w1 + w2 + w3 + w4 == 100
+                && w1 <= 100 && w2 <= 100 && w3 <= 100 && w4 <= 100
+            {
+                prop_assert!(
+                    crate::eviction_score::full_score(
+                        w1, w2, w3, w4, s1, s2, s3, s4, priority, tier,
+                    ) <= 800000,
+                );
+            }
+        }
+
+        // r[verify properties.consistent-hash-lookup-in-ring]
+        #[test]
+        fn prop_consistent_hash_lookup_in_ring(
+            key_hash: u64,
+            ring_size in 1usize..=20,
+        ) {
+            let ring: Vec<(u64, u64)> = (0..ring_size)
+                .map(|i| (i as u64 * 1000, i as u64))
+                .collect();
+            let result = crate::consistent_hash::lookup(&ring, key_hash);
+            prop_assert!(ring.iter().any(|&(_, node)| node == result));
+        }
+
+        // r[verify properties.bloom-insert-length-preserved]
+        #[test]
+        fn prop_bloom_insert_length_preserved(
+            bits_len in 1usize..=100,
+            num_positions in 0usize..=10,
+        ) {
+            let mut bits = vec![false; bits_len];
+            let positions: Vec<usize> = (0..num_positions)
+                .map(|i| i % bits_len)
+                .collect();
+            let orig_len = bits.len();
+            crate::bloom::insert(&mut bits, &positions);
+            prop_assert_eq!(bits.len(), orig_len);
         }
     }
 }

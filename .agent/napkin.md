@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1599 Verus proofs + 1093 cargo tests = all gates green
+- 1609 Verus proofs + 1101 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 15 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 9 other modules (0 in forest/seq_set/session_tree)
@@ -502,6 +502,22 @@
   `index < capacity/slot_size ==> index * slot_size < capacity`
 - pressure → eviction pipeline: automatic — both check `count >= capacity`
 - eviction_score cold minimum: automatic — `tier_multiplier(0) = 1 <= all others`
+- Wave 3:
+- evictable_count = saturating_sub: automatic — same computation `if a >= b { a-b } else { 0 }`
+- gossip infection bounded: needs `saturating_pow_nonneg` helper lemma (was private, made pub)
+  - Z3 can't determine bound >= 0 from recursive spec without inductive proof
+- acid empty commit identity: automatic — `apply_writes_spec(state, seq![], 0)` hits base case
+- priority_multiplier monotonic: automatic — 4 values, Z3 case-splits 16 pairs
+- full_score bounded by 800000: needs `by(nonlinear_arith)` in two places:
+  - weighted_score <= 10000 from weights summing to 100 and scores <= 100
+  - final product bounded by 10000 * 20 * 4 = 800000
+- consistent_hash lookup in ring: reformulated spec as case split (not existential) —
+  existential with `#![trigger ring[i]]` failed because Z3 couldn't provide witness
+  through recursive `first_ge_index_helper`. Direct case split on `idx < ring.len()`
+  matches the spec's own structure, so Z3 handles it automatically.
+- bloom insert preserves length: inductive proof with `decreases positions.len()`
+  - `drop_last` precondition: `shorter[i] == positions[i]` for i < len-1
+  - `Seq::update` preserves length — vstd axiom
 
 ## Mistakes & Corrections
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.

@@ -283,7 +283,7 @@ pub fn convergence_rounds(cluster_size: u64, fanout: u64) -> (result: u64)
 
 // r[verify gossip.infection-lower-bound]
 /// Helper: saturating_pow_spec is always >= 0.
-proof fn saturating_pow_nonneg(base: u64, exp: u64)
+pub proof fn saturating_pow_nonneg(base: u64, exp: u64)
     ensures saturating_pow_spec(base, exp) >= 0
     decreases exp as int
 {
