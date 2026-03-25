@@ -2797,3 +2797,72 @@ r[noop-commit.commit-index]
 noop_commit_index(log_len_before_noop) MUST return log_len_before_noop + 1.
 Once committed, all entries at indices [0, log_len_before_noop) MUST be
 below the commit index (committed as prefix).
+
+## Leader Completeness
+
+r[leader-completeness.quorum-overlap]
+The commitment quorum and election quorum MUST overlap (pigeonhole via
+quorum::prove_quorum_intersection). Two joint quorums sharing a voter
+ensures the new leader has the committed entry.
+
+r[leader-completeness.log-freshness]
+A leader whose log is at least as up-to-date as the committed entry's
+epoch (by epoch_ge) MUST have that entry. Vote granting requires epoch_ge,
+so transitivity through the shared voter proves the leader has the entry.
+
+## State Machine Safety
+
+r[state-machine-safety.index-agreement]
+If two logs have the same term at index i, they agree at that index (by
+definition of agree_at). Same-term entries at the same index are identical.
+
+r[state-machine-safety.prefix-agreement]
+If two logs match on prefix [0, k), every entry in that prefix agrees.
+Committed entries within a matching prefix are safe.
+
+r[state-machine-safety.commit-safety]
+If logs match through the commit point and an entry is committed (index <
+commit_index), that entry is identical across both logs.
+
+## Pre-Vote Protocol
+
+r[pre-vote.grant]
+can_grant_pre_vote MUST return true when candidate_term >= my_term AND the
+candidate's log is at least as up-to-date (epoch_ge). MUST reject stale
+candidates and outdated logs. The voter's term MUST NOT change.
+
+r[pre-vote.start-election]
+should_start_real_election MUST return true when pre-votes form a quorum.
+Delegates to quorum::is_quorum.
+
+## Read Index
+
+r[read-index.confirm-authority]
+confirm_read_authority MUST return true when ack_count forms a quorum.
+Delegates to quorum::is_quorum. A deposed leader with only self-ack
+MUST fail the check.
+
+r[read-index.safe-at]
+read_safe_at(read_index, commit_index) MUST return true when commit_index
+>= read_index. MUST be monotonic in commit_index. The exact commit point
+MUST be safe.
+
+## Joint Consensus
+
+r[joint-consensus.dual-quorum]
+is_joint_quorum MUST return true when BOTH old and new configurations
+independently form quorums. Two joint quorums MUST overlap in both configs.
+Full clusters MUST always form a joint quorum.
+
+## Install Snapshot
+
+r[install-snapshot.trigger]
+should_install_snapshot MUST return true when next_index <= first_log_index.
+
+r[install-snapshot.apply]
+apply_snapshot_commit MUST return max(current_commit, snapshot_index). The
+commit index MUST never decrease.
+
+r[install-snapshot.matching-entry]
+has_matching_entry MUST return true when the log has an entry at
+snapshot_index with the given term.

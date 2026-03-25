@@ -56,12 +56,15 @@
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
+//! - `install_snapshot` — snapshot trigger and commit advancement for log compaction
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
+//! - `joint_consensus` — dual-quorum membership changes with intersection proof
 //! - `journal` — append-only transaction journal with running balances and seq num monotonicity
 //! - `kv_version` — KV entry version computation: create/update with saturation
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
 //! - `leader_append_only` — leader log immutability invariant: only grows, never overwrites
+//! - `leader_completeness` — committed entries survive elections (quorum intersection + epoch_ge)
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
@@ -84,11 +87,13 @@
 //! - `partition` — verified non-overlapping gap-free interval partitions
 //! - `peer_spec` — peer specification parsing: `node_id@endpoint` format
 //! - `permission` — Unix file permission bits: has/set/clear, umask
+//! - `pre_vote` — pre-vote protocol without term inflation for partitioned nodes
 //! - `pressure` — multi-threshold severity classification
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
+//! - `read_index` — linearizable read confirmation via quorum heartbeat acks
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
@@ -97,6 +102,7 @@
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
+//! - `state_machine_safety` — no two servers apply different entries at the same index
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
@@ -164,12 +170,15 @@ pub mod forest;
 pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;
+pub mod install_snapshot;
 pub mod integer;
 pub mod interval;
+pub mod joint_consensus;
 pub mod journal;
 pub mod kv_version;
 pub mod layout_constraint;
 pub mod leader_append_only;
+pub mod leader_completeness;
 pub mod lease;
 pub mod log;
 pub mod log_conflict;
@@ -193,12 +202,14 @@ pub mod pattern;
 pub mod peer_spec;
 pub mod permission;
 pub mod pointwise;
+pub mod pre_vote;
 pub mod pressure;
 pub mod process_state;
 pub mod properties;
 pub mod quorum;
 pub mod raft_timing;
 pub mod rate_limit;
+pub mod read_index;
 pub mod region;
 pub mod result;
 pub mod retry;
@@ -212,6 +223,7 @@ pub mod sequential;
 pub mod session_tree;
 pub mod signal;
 pub mod snapshot_integrity;
+pub mod state_machine_safety;
 pub mod slab;
 pub mod slice;
 pub mod subsumption;
