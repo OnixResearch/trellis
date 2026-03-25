@@ -443,7 +443,7 @@ mod tests {
                 }
                 if log[n - 1].term == current_term {
                     let count = match_vals.iter().filter(|&&m| m >= n_u64).count() as u64;
-                    if count >= cluster_size / 2 + 1 {
+                    if count > cluster_size / 2 {
                         expected = n_u64;
                         break;
                     }

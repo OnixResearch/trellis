@@ -222,7 +222,7 @@ mod tests {
 
         // r[verify distributed-lock.backoff]
         #[test]
-        fn prop_jitter_bounded(cap in 1u64..100000, seed: u64) {
+        fn prop_jitter_bounded(cap in 1u64..100_000, seed: u64) {
             prop_assert!(compute_jittered_delay(cap, seed) < cap);
         }
     }

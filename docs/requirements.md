@@ -3355,3 +3355,193 @@ r[properties.snapshot-transfer-triggers-install]
 After a complete snapshot transfer (all chunks received), the follower
 applies install_snapshot::apply_snapshot_commit. The transfer layer
 feeds into the installation layer.
+
+## Follower Commit Update
+
+r[follower-commit.update]
+follower_update_commit(current_commit, leader_commit, last_new_entry_index)
+MUST return min(leader_commit, last_new_entry_index) when that value exceeds
+current_commit, otherwise current_commit. This is the follower-side commit
+advancement from Raft's AppendEntries receiver (§5.3).
+
+r[follower-commit.monotonic]
+The result of follower_update_commit MUST always be >= current_commit. The
+follower's commit index MUST never decrease.
+
+r[follower-commit.bounded-by-leader]
+The result MUST always be <= leader_commit. A follower MUST NOT commit
+beyond what the leader has committed.
+
+r[follower-commit.bounded-by-log]
+The result MUST always be <= last_new_entry_index. A follower MUST NOT
+commit beyond the last entry it actually has in its log.
+
+## Election Timer
+
+r[election-timer.reset-on-append-entries]
+should_reset_on_append_entries(msg_term, current_term, is_success) MUST
+return true when msg_term >= current_term AND is_success is true. A valid
+AppendEntries from the current leader resets the follower's election timer.
+Stale-term messages MUST NOT reset the timer.
+
+r[election-timer.reset-on-vote-grant]
+should_reset_on_vote_grant(voted) MUST return true when voted is true.
+Granting a vote resets the election timer because a valid candidate exists.
+
+r[election-timer.reset-on-election-start]
+should_reset_on_election_start(became_candidate) MUST return true when
+became_candidate is true. Starting an election resets the timer so the
+candidate waits a full timeout before retrying.
+
+r[election-timer.expired]
+is_election_timer_expired(elapsed_ms, election_timeout_ms) MUST return
+true when elapsed_ms >= election_timeout_ms. The timer fires when the
+full timeout has elapsed without a reset event.
+
+r[election-timer.should-start-election]
+should_start_election(is_follower, timer_expired) MUST return true when
+both conditions hold. Only followers with expired timers start elections.
+Leaders and candidates MUST NOT start new elections via timer.
+
+## Candidate Election Initiation
+
+r[election-init.new-term]
+init_election_term(current_term) MUST return current_term + 1. The
+candidate increments its term before requesting votes. MUST return None
+when current_term == u64::MAX (overflow protection).
+
+r[election-init.self-vote]
+init_self_vote(candidate_id, new_term) MUST return a VoteState with
+voted_term == new_term and voted_for == candidate_id. The candidate
+votes for itself as the first step of the election.
+
+r[election-init.initial-vote-count]
+init_vote_count() MUST return 1. The candidate starts with one vote
+(its own self-vote).
+
+r[election-init.new-state]
+init_election_state() MUST return STATE_TRANSITIONING. The candidate
+transitions from Follower to Transitioning (candidate) state.
+
+r[election-init.self-vote-is-valid]
+The self-vote produced by init_self_vote MUST satisfy
+can_grant_vote_spec when the candidate's log is compared against
+itself. A node always considers its own log up-to-date enough.
+
+## Vote Response Tally
+
+r[vote-tally.record-vote]
+record_vote(votes, server_id, cluster_size) MUST set votes[server_id]
+to true when server_id < cluster_size. The operation MUST NOT modify
+any other server's vote. Duplicate votes for the same server MUST be
+idempotent (already true stays true).
+
+r[vote-tally.count-votes]
+count_votes(votes) MUST return the number of true entries in the vote
+array. The count MUST be <= votes.len().
+
+r[vote-tally.has-won]
+has_won_election(votes, cluster_size) MUST return true when
+count_votes(votes) constitutes a quorum of cluster_size. Delegates
+to quorum::is_quorum.
+
+r[vote-tally.is-stale-response]
+is_stale_vote_response(response_term, current_term) MUST return true
+when response_term != current_term. Votes from a different term MUST
+be ignored. Only same-term votes count toward election victory.
+
+r[vote-tally.init-votes]
+init_vote_tally(cluster_size) MUST return a sequence of cluster_size
+false values. No server has voted yet.
+
+r[vote-tally.init-with-self-vote]
+init_with_self_vote(cluster_size, self_id) MUST return a tally with
+votes[self_id] set to true and all others false. The candidate starts
+with its own vote counted.
+
+## AppendEntries Response Dispatch
+
+r[append-response.classify]
+classify_append_response(response_term, current_term, success) MUST
+return: HIGHER_TERM (0) when response_term > current_term, STALE (1)
+when response_term < current_term, SUCCESS (2) when response_term ==
+current_term and success is true, FAILURE (3) when response_term ==
+current_term and success is false. The four cases MUST be exhaustive
+and mutually exclusive.
+
+r[append-response.on-success]
+on_append_success(match_index, next_index, entries_sent) MUST return
+(new_match, new_next) where new_match = match_index + entries_sent and
+new_next = new_match + 1. The match index advances to cover the
+acknowledged entries. The next index moves past them.
+
+r[append-response.on-failure]
+on_append_failure(next_index) MUST return max(next_index - 1, 1).
+The leader backs off by one index, with a floor of 1. This is the
+basic (non-accelerated) backtrack from §5.3.
+
+r[append-response.match-advances]
+After on_append_success, the new match index MUST be >= the old match
+index. Match indices are monotonic.
+
+r[append-response.next-after-success]
+After on_append_success, new_next MUST equal new_match + 1. The next
+index always points one past the match index after success.
+
+## Log Entry Type Routing
+
+r[entry-type.classify]
+classify_entry(entry) MUST return ENTRY_NORMAL (0) when entry.value !=
+NOOP_VALUE and entry.value != CONFIG_CHANGE_SENTINEL, ENTRY_NOOP (1)
+when entry.value == NOOP_VALUE, ENTRY_CONFIG (2) when entry.value ==
+CONFIG_CHANGE_SENTINEL. The three types MUST be exhaustive.
+
+r[entry-type.should-apply]
+should_apply_to_state_machine(entry_type) MUST return true for
+ENTRY_NORMAL, false for ENTRY_NOOP and ENTRY_CONFIG. Only normal
+command entries affect state machine output. No-ops and config changes
+are handled separately.
+
+r[entry-type.is-config-change]
+is_config_change(entry_type) MUST return true only for ENTRY_CONFIG.
+Config changes take effect when appended to the log, not when committed.
+
+r[entry-type.takes-effect-on-append]
+takes_effect_on_append(entry_type) MUST return true for ENTRY_CONFIG,
+false for ENTRY_NORMAL and ENTRY_NOOP. Config entries are the only
+type that changes system behavior on append rather than commit.
+
+r[entry-type.is-noop]
+is_noop_entry(entry_type) MUST return true only for ENTRY_NOOP. No-op
+entries are identity operations inserted by new leaders.
+
+## Cross-Module: Follower Commit
+
+r[properties.follower-commit-monotonic-is-advance]
+follower_update_commit result satisfies monotonic::is_advance on the
+commit index. The follower's commit cursor never moves backward.
+
+## Cross-Module: Election Timer
+
+r[properties.election-timer-heartbeat-resets]
+If should_reset_on_append_entries returns true and the follower resets
+its timer, then is_election_timer_expired returns false (timer not
+expired immediately after reset).
+
+## Cross-Module: Vote Tally
+
+r[properties.vote-tally-quorum-is-quorum]
+has_won_election delegates to quorum::is_quorum. Election victory
+requires the same majority threshold as any other quorum decision.
+
+## Cross-Module: AppendEntries Response
+
+r[properties.append-response-success-advances-match]
+on_append_success produces a match index that satisfies
+monotonic::is_advance on the previous match index.
+
+## Cross-Module: Entry Type
+
+r[properties.entry-type-noop-agrees]
+classify_entry with NOOP_VALUE produces ENTRY_NOOP, which agrees with
+noop_commit::is_noop_spec.

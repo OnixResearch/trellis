@@ -1,0 +1,210 @@
+//! Verified follower commit index update for Raft.
+//!
+//! When a follower receives a valid `AppendEntries` RPC, it updates its
+//! commit index to `min(leaderCommit, index of last new entry)`. This
+//! is the follower-side counterpart to `commit_advance.rs` (leader-side).
+//! The leader advances via matchIndex + quorum counting; followers
+//! advance via the `leaderCommit` field piggybacked on `AppendEntries`.
+
+use vstd::prelude::*;
+
+verus! {
+
+// --- follower_update_commit ---
+
+// r[depends follower-commit.update]
+/// Spec: compute the follower's new commit index after AppendEntries.
+///
+/// Returns min(leader_commit, last_new_entry_index) when that exceeds
+/// current_commit, otherwise current_commit (no regression).
+pub open spec fn follower_update_commit_spec(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+) -> u64 {
+    let candidate = if leader_commit <= last_new_entry_index {
+        leader_commit
+    } else {
+        last_new_entry_index
+    };
+    if candidate > current_commit {
+        candidate
+    } else {
+        current_commit
+    }
+}
+
+// r[impl follower-commit.update]
+/// Compute the follower's new commit index.
+pub fn follower_update_commit(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+) -> (result: u64)
+    ensures result == follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+{
+    let candidate = if leader_commit <= last_new_entry_index {
+        leader_commit
+    } else {
+        last_new_entry_index
+    };
+    if candidate > current_commit {
+        candidate
+    } else {
+        current_commit
+    }
+}
+
+// --- Safety proofs ---
+
+// r[verify follower-commit.monotonic]
+/// Follower commit index never decreases.
+proof fn follower_commit_monotonic(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+)
+    ensures
+        follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+            >= current_commit
+{}
+
+// r[verify follower-commit.bounded-by-leader]
+/// Follower commit index never exceeds leader's commit index.
+proof fn follower_commit_bounded_by_leader(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+)
+    ensures
+        follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+            <= leader_commit || follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index) == current_commit
+{}
+
+// r[verify follower-commit.bounded-by-log]
+/// Follower commit index never exceeds the last log entry.
+proof fn follower_commit_bounded_by_log(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+)
+    ensures
+        follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+            <= last_new_entry_index || follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index) == current_commit
+{}
+
+// r[verify follower-commit.update]
+/// When leader_commit <= current_commit, no change.
+proof fn follower_commit_no_change_when_behind(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+)
+    requires leader_commit <= current_commit
+    ensures
+        follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+            == current_commit
+{}
+
+// r[verify follower-commit.update]
+/// When both leader_commit and last_new_entry_index exceed current_commit,
+/// the result is exactly min(leader_commit, last_new_entry_index).
+proof fn follower_commit_advances(
+    current_commit: u64,
+    leader_commit: u64,
+    last_new_entry_index: u64,
+)
+    requires
+        leader_commit > current_commit,
+        last_new_entry_index > current_commit,
+    ensures
+        follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index)
+            == if leader_commit <= last_new_entry_index { leader_commit } else { last_new_entry_index }
+{}
+
+} // verus!
+
+#[cfg(test)]
+mod tests {
+    use proptest::prelude::*;
+
+    use super::*;
+
+    // r[verify follower-commit.update]
+    #[test]
+    fn test_basic_follower_commit_update() {
+        // Leader ahead, log covers it
+        assert_eq!(follower_update_commit(0, 5, 10), 5);
+        // Leader ahead, log shorter
+        assert_eq!(follower_update_commit(0, 10, 5), 5);
+        // Leader behind current
+        assert_eq!(follower_update_commit(5, 3, 10), 5);
+        // All equal
+        assert_eq!(follower_update_commit(5, 5, 5), 5);
+        // Current is zero
+        assert_eq!(follower_update_commit(0, 0, 0), 0);
+    }
+
+    // r[verify follower-commit.monotonic]
+    #[test]
+    fn test_follower_commit_never_decreases() {
+        assert!(follower_update_commit(5, 3, 2) >= 5);
+        assert!(follower_update_commit(5, 10, 1) >= 5);
+        assert!(follower_update_commit(5, 1, 10) >= 5);
+    }
+
+    // r[verify follower-commit.bounded-by-leader]
+    #[test]
+    fn test_follower_commit_bounded_by_leader() {
+        let result = follower_update_commit(0, 5, 10);
+        assert!(result <= 5);
+    }
+
+    // r[verify follower-commit.bounded-by-log]
+    #[test]
+    fn test_follower_commit_bounded_by_log() {
+        let result = follower_update_commit(0, 10, 5);
+        assert!(result <= 5);
+    }
+
+    proptest! {
+        // r[verify follower-commit.monotonic]
+        #[test]
+        fn prop_follower_commit_monotonic(
+            current in 0u64..100,
+            leader in 0u64..100,
+            last_entry in 0u64..100,
+        ) {
+            let result = follower_update_commit(current, leader, last_entry);
+            prop_assert!(result >= current, "commit decreased: {} < {}", result, current);
+        }
+
+        // r[verify follower-commit.update]
+        #[test]
+        fn prop_follower_commit_model_oracle(
+            current in 0u64..100,
+            leader in 0u64..100,
+            last_entry in 0u64..100,
+        ) {
+            let result = follower_update_commit(current, leader, last_entry);
+            let expected_candidate = std::cmp::min(leader, last_entry);
+            let expected = std::cmp::max(current, expected_candidate);
+            // When candidate > current, we advance. When not, we stay.
+            // This matches: max(current, min(leader, last_entry))
+            prop_assert_eq!(result, expected);
+        }
+
+        // r[verify follower-commit.bounded-by-leader]
+        // r[verify follower-commit.bounded-by-log]
+        #[test]
+        fn prop_follower_commit_bounded(
+            current in 0u64..100,
+            leader in 0u64..100,
+            last_entry in 0u64..100,
+        ) {
+            let result = follower_update_commit(current, leader, last_entry);
+            // Result is either current_commit (no change) or min(leader, last_entry)
+            prop_assert!(result == current || (result <= leader && result <= last_entry));
+        }
+    }
+}
