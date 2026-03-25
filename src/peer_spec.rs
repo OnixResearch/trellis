@@ -48,7 +48,8 @@ pub fn find_separator(s: &[u8]) -> (result: i64)
 {
     for i in 0..s.len() {
         if s[i] == b'@' {
-            return i as i64;
+            // i < s.len() which fits in usize; i64::MAX >= isize::MAX >= max slice len
+            return i64::try_from(i).unwrap_or(i64::MAX);
         }
     }
     -1
@@ -74,6 +75,7 @@ pub open spec fn parse_peer_spec_spec(s: Seq<u8>) -> (u8, int) {
 
 // r[impl peer-spec.parse]
 /// Parse a peer spec string. Returns (error_code, separator_index).
+#[allow(clippy::cast_possible_wrap)] // s.len() <= isize::MAX (Rust slice invariant) fits in i64
 pub fn parse_peer_spec(s: &[u8]) -> (result: (u8, i64))
     ensures
         result.0 == OK || result.0 == ERR_NO_SEPARATOR
@@ -84,7 +86,7 @@ pub fn parse_peer_spec(s: &[u8]) -> (result: (u8, i64))
         (ERR_NO_SEPARATOR, -1)
     } else if sep == 0 {
         (ERR_EMPTY_NODE_ID, sep)
-    } else if sep as u64 == s.len() as u64 - 1 {
+    } else if s.len() > 0 && sep == (s.len() - 1) as i64 {
         (ERR_EMPTY_ENDPOINT, sep)
     } else {
         (OK, sep)

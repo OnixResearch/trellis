@@ -105,7 +105,10 @@ pub fn classify_nodes(
 ) -> (result: Vec<(u64, bool, bool, bool)>)
     ensures result@ == classify_nodes_spec(node_ids@, member_ids@, leader_id),
 {
-    let limit = core::cmp::min(node_ids.len(), MAX_NODES as usize);
+    let limit = core::cmp::min(
+        node_ids.len(),
+        usize::try_from(MAX_NODES).unwrap_or(usize::MAX),
+    );
     let mut result = Vec::with_capacity(limit);
     for i in 0..limit {
         let nid = node_ids[i];
