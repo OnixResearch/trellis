@@ -233,3 +233,5 @@
 {"text":"lets keep going","timestamp":1774475187085}
 {"text":"what raft consensus primitives do we not cover yet","timestamp":1774475739841}
 {"text":"write a spec to do them all","timestamp":1774476015866}
+{"text":"comit","timestamp":1774476234132}
+{"text":"implement openspec/changes/raft-replication-primitives/","timestamp":1774476393587}
