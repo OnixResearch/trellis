@@ -2695,3 +2695,105 @@ expiration::is_expired semantics.
 r[properties.sequence-overflow-returns-none]
 sequence::compute_batch_end and compute_range_start return None exactly
 when addition would overflow u64.
+
+## AppendEntries Consistency Check
+
+r[append-entries.check]
+check_append_entries(log, prev_log_index, prev_log_term) MUST return true
+if and only if prev_log_index == 0 (empty prefix) OR the log has an entry
+at prev_log_index - 1 whose term equals prev_log_term. MUST return false
+when the log is too short or the term does not match. If two logs both
+pass the check for the same (prev_log_index, prev_log_term), they MUST
+agree at that index (same term).
+
+## Log Conflict Resolution
+
+r[log-conflict.find-conflict]
+find_conflict(follower, leader_entries, start_index) MUST return the first
+relative offset where the follower's log and leader's entries disagree on
+term. MUST return None when all overlapping entries agree or when the
+leader extends beyond the follower. The conflict offset MUST be within
+leader_entries range. At the conflict point, terms MUST differ. Before
+the conflict point, all terms MUST agree.
+
+r[log-conflict.resolve]
+resolve_conflict MUST truncate the follower log at the conflict point and
+append leader entries from that point onward. When no conflict exists,
+MUST append leader entries that extend beyond the follower. Entries before
+the conflict point MUST be unchanged. The result MUST match leader entries
+at all covered indices.
+
+## Match Index Tracking
+
+r[match-index.init]
+init_match_indices(cluster_size) MUST return a sequence of cluster_size zeros.
+init_next_indices(cluster_size, last_log_index) MUST return a sequence where
+every element is last_log_index + 1.
+
+r[match-index.update]
+update_match_index(matches, server, new_match) MUST set matches[server] to
+new_match. new_match MUST be >= matches[server] (monotonic). The update MUST
+NOT modify any other server's match index. Length MUST be preserved.
+
+r[match-index.backtrack]
+backtrack_next_index(nexts, server) MUST decrement nexts[server] by 1, with
+a floor of 1. The update MUST NOT modify any other server's next index.
+
+r[match-index.count-replicated]
+count_replicated(matches, index) MUST return the count of servers with
+matchIndex >= index. The count MUST be non-negative and bounded by the
+array length.
+
+## Commit Index Advancement
+
+r[commit-advance.term-guard]
+can_commit_at(log, index, current_term) MUST return true only when
+log[index-1].term == current_term. Prior-term entries MUST NOT be directly
+committable. Index 0 MUST never be committable. This is the §5.4.2 rule.
+
+r[commit-advance.quorum-check]
+has_quorum_at(match_indices, index, cluster_size) MUST return true if and
+only if the count of matchIndex[i] >= index constitutes a quorum. Delegates
+to quorum::is_quorum.
+
+r[commit-advance.advance]
+advance_commit_index MUST return the largest index N where N > current_commit
+AND can_commit_at(log, N, current_term) AND has_quorum_at(match_indices, N,
+cluster_size). If no such N exists, MUST return current_commit. The result
+MUST always be >= current_commit (monotonic). Empty log means no advancement.
+
+## Term Authority
+
+r[term-authority.step-down]
+apply_higher_term(current_term, current_state, voted_for, message_term)
+MUST adopt message_term, become follower, and clear votedFor when
+message_term > current_term. MUST be a no-op when message_term <=
+current_term. The resulting term MUST always be >= current_term.
+
+## Leader Append-Only
+
+r[leader-append-only.invariant]
+leader_log_invariant(old_log, new_log) MUST return true if and only if
+new_log.len() >= old_log.len() AND all entries at [0, old_log.len()) are
+unchanged. The invariant MUST be reflexive and transitive. Truncation of
+a non-empty log MUST violate the invariant.
+
+r[leader-append-only.append]
+leader_append_entry MUST append an entry with the given term and value.
+The appended entry's term MUST equal current_term. Appending MUST
+satisfy the leader log invariant. Multiple appends MUST compose.
+
+## No-Op Commitment
+
+r[noop-commit.make-noop]
+make_noop_entry(current_term) MUST return a log entry with term ==
+current_term and value == NOOP_VALUE (0). The entry MUST be recognized
+by is_noop. Appending a no-op MUST preserve all prior log entries.
+
+r[noop-commit.is-noop]
+is_noop MUST return true if and only if entry.value == NOOP_VALUE.
+
+r[noop-commit.commit-index]
+noop_commit_index(log_len_before_noop) MUST return log_len_before_noop + 1.
+Once committed, all entries at indices [0, log_len_before_noop) MUST be
+below the commit index (committed as prefix).

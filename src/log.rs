@@ -10,6 +10,7 @@ use vstd::prelude::*;
 verus! {
 
 /// A log entry: (term, value).
+#[derive(Copy, Clone)]
 pub struct LogEntry {
     /// The election term that created this entry.
     pub term: u64,

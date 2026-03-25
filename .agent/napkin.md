@@ -460,6 +460,37 @@
   - All proofs automatic — no nonlinear_arith, no external_body
   - Cross-module: region ↔ interval agreement (contains, disjoint, adjacent) all automatic
 
+- Raft replication Phase 1: append_entries_check + log_conflict
+  - LogEntry needs `#[derive(Copy, Clone)]` inside verus! block — Verus preserves derive attrs,
+    needed for Vec::clone and slice indexing (Copy) in test code
+  - `as int < log.len()` parse ambiguity: `((prev_log_index - 1) as int) < log.len()` — parens required,
+    same as the known `as int` before `<` pattern (parser reads `<` as generic parameter start)
+  - `None::<int>` type annotation needed when comparing Option<int> in Verus ensures clauses
+  - Seq::len() returns nat, subtraction produces int — explicit `as int` casts in spec if/else branches,
+    e.g., `let overlap: int = if ... { leader_entries.len() as int } else { 0int }`
+  - `prev_log_index as usize` cast needs `requires prev_log_index as int <= usize::MAX as int`
+    for Verus to accept it without truncation warnings
+  - Recursive find_conflict_from_spec inductive proofs need stronger ensures (offset bounds + follower length)
+    for the wrapper to satisfy quantifier triggers — Z3 can't derive `j < leader_entries.len()` from
+    `j < offset` without knowing `offset < leader_entries.len()`
+  - resolve_conflict exec marked external_body: connecting mutation-state loop invariant to recursive
+    append_entries_spec is hard — the "remaining work" pattern from bounded_peers works for simple
+    concatenation but not for the find-then-truncate-then-append composition. Proptest covers correctness.
+  - 2196 Verus proofs (+11 new), 25 new cargo tests (13 append_entries_check + 12 log_conflict)
+- Raft replication Phase 2: match_index + commit_advance
+  - Seq::len() returns nat, not int — `log.len() as int` needed when passing to specs that take int params
+  - count_replicated_bounded_from: `matches.len() - from` is nat minus int — when from > len, result is 0
+    but `len - from` is negative. Fix: use implication `from <= len ==> count <= len - from`
+  - backtrack_decrements_by_one: nextIndex floor at 1 means backtrack(0) = 1 > 0 = old.
+    The `<= old` ensures only holds when old >= 1. Added `requires nexts[server] >= 1`.
+  - advance_monotonic_scan: spec returns `candidate as u64` in the found branch. Z3 needs
+    `candidate <= u64::MAX` to verify the cast preserves the ordering. Added requires.
+  - init loop pattern: `assert(v@ =~= Seq::new((i + 1) as nat, ...))` extensional equality
+    hint needed after each push to connect the loop state to the spec
+  - commit_advance backward scan: `while n > current_commit as usize && n > 0` maps to
+    recursive `advance_scan_spec(... n as int)` — clean invariant
+  - 2229 Verus proofs (+33 new), 23 new cargo tests (12 match_index + 11 commit_advance)
+
 ## Enforcement Scripts
 - `check-coverage.sh` — scans for `pub fn` without `r[impl]`, exits 1 on violation
 - `check-ensures.sh` — scans for `pub fn` inside `verus!` without `ensures`, exits 1

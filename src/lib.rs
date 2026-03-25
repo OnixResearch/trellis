@@ -11,6 +11,7 @@
 //! ## Modules
 //!
 //! - `access_mode` — access mode partial order: read/write/delete/full with no-escalation
+//! - `append_entries_check` — Raft AppendEntries consistency: prevLogIndex/prevLogTerm validation
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
 //! - `backoff` — exponential backoff with cap and jitter bounds
@@ -36,6 +37,7 @@
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
 //! - `collections` — sorted insert, binary search
+//! - `commit_advance` — Raft commit index advancement with §5.4.2 current-term guard
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -59,12 +61,16 @@
 //! - `journal` — append-only transaction journal with running balances and seq num monotonicity
 //! - `kv_version` — KV entry version computation: create/update with saturation
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
+//! - `leader_append_only` — leader log immutability invariant: only grows, never overwrites
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `log` — append-only log with Log Matching Property
+//! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
+//! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
+//! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
 //! - `nix_closure` — Nix generic closure with fuel-based termination
 //! - `node_lifecycle` — node status FSM: Starting/Online/Degraded/Offline
@@ -95,6 +101,7 @@
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
+//! - `term_authority` — step-down on higher term: adopt, revert to follower, clear vote
 //! - `tier` — hot/warm/cold tier classification with promote/demote
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
@@ -108,6 +115,7 @@
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 
 pub mod access_mode;
+pub mod append_entries_check;
 pub mod acid;
 pub mod algebraic;
 pub mod approval;
@@ -134,6 +142,7 @@ pub mod chain;
 pub mod chunk;
 pub mod circuit_breaker;
 pub mod collections;
+pub mod commit_advance;
 pub mod constant_time_eq;
 pub mod conversion;
 pub mod cost_tracker;
@@ -160,12 +169,16 @@ pub mod interval;
 pub mod journal;
 pub mod kv_version;
 pub mod layout_constraint;
+pub mod leader_append_only;
 pub mod lease;
 pub mod log;
+pub mod log_conflict;
 pub mod markov;
+pub mod match_index;
 pub mod merkle;
 pub mod monotonic;
 pub mod nix_attrset;
+pub mod noop_commit;
 pub mod node_classify;
 pub mod nix_closure;
 pub mod node_lifecycle;
@@ -202,6 +215,7 @@ pub mod snapshot_integrity;
 pub mod slab;
 pub mod slice;
 pub mod subsumption;
+pub mod term_authority;
 pub mod tier;
 pub mod tiered_rate_limit;
 pub mod tiling;
