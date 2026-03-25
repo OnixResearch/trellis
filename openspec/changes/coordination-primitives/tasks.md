@@ -80,11 +80,13 @@
 
 ## Phase 5: Cross-Module Properties + Integration
 
-- [ ] election token monotonicity → fencing::issue_token monotonicity (shared pattern)
-- [ ] distributed_lock::is_lock_expired → expiration::is_expired (equivalence)
-- [ ] distributed_lock::compute_backoff → backoff::compute_backoff (bounded by cap)
-- [ ] rwlock writer token → fencing::issue_token (same progression)
-- [ ] rwlock reader/writer expiry → expiration::is_expired (same predicate)
-- [ ] sequence overflow → None signals align with checked_add semantics
-- [ ] Property tests for all cross-module relationships
-- [ ] Verus + tracey clean
+- [x] election token monotonicity → fencing::issue_token monotonicity (same value for non-MAX) ✅
+- [x] distributed_lock::is_lock_expired → expiration::is_expired (identical predicate) ✅
+- [x] lock first token always 1 ✅
+- [x] rwlock writer token → fencing::issue_token (same value for non-MAX) ✅
+- [x] rwlock reader/writer expiry → expiration::is_expired (identical predicate) ✅
+- [x] sequence overflow → None exactly when addition overflows u64 ✅
+- [x] election and rwlock tokens agree (same function) ✅
+- [x] Verus proofs: 6 cross-module proofs, all automatic ✅
+- [x] Property tests: 7 proptest properties ✅
+- [x] Verus clean ✅

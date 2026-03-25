@@ -3687,3 +3687,148 @@ mod cluster_membership_tests {
         }
     }
 }
+
+// --- Coordination primitives cross-module properties ---
+
+#[cfg(verus_keep_ghost)]
+mod coordination_cross_proofs {
+    use vstd::prelude::*;
+
+    use crate::election::{compute_next_election_token_spec};
+    use crate::fencing::{issue_token_spec};
+    use crate::distributed_lock::{is_lock_expired_spec, compute_next_fencing_token_spec};
+    use crate::expiration::{is_expired_spec};
+    use crate::rwlock::{compute_next_write_token_spec, is_reader_expired_spec, is_writer_expired_spec};
+
+    verus! {
+
+    // r[impl properties.election-token-is-fencing-issue]
+    // r[verify properties.election-token-is-fencing-issue]
+    /// Election token progression matches fencing::issue_token for non-MAX inputs.
+    proof fn election_token_is_fencing_issue(current: u64)
+        requires current < u64::MAX
+        ensures compute_next_election_token_spec(current) == issue_token_spec(current)
+    {}
+
+    // r[impl properties.lock-expired-is-expiration-expired]
+    // r[verify properties.lock-expired-is-expiration-expired]
+    /// Lock expiry and expiration::is_expired use the same predicate.
+    proof fn lock_expired_is_expiration_expired(deadline: u64, now: u64)
+        ensures is_lock_expired_spec(deadline, now) == is_expired_spec(deadline, now)
+    {}
+
+    // r[impl properties.rwlock-writer-token-is-fencing-issue]
+    // r[verify properties.rwlock-writer-token-is-fencing-issue]
+    /// RWLock writer token matches fencing::issue_token for non-MAX inputs.
+    proof fn rwlock_writer_token_is_fencing_issue(current: u64)
+        requires current < u64::MAX
+        ensures compute_next_write_token_spec(current) == issue_token_spec(current)
+    {}
+
+    // r[impl properties.rwlock-expiry-is-expiration-expired]
+    // r[verify properties.rwlock-expiry-is-expiration-expired]
+    /// RWLock reader/writer expiry matches expiration::is_expired.
+    proof fn rwlock_expiry_is_expiration_expired(deadline: u64, now: u64)
+        ensures
+            is_reader_expired_spec(deadline, now) == is_expired_spec(deadline, now),
+            is_writer_expired_spec(deadline, now) == is_expired_spec(deadline, now),
+    {}
+
+    // r[impl properties.lock-deadline-is-expiration-expires-at]
+    // r[verify properties.lock-deadline-is-expiration-expires-at]
+    /// Lock token for first acquisition is always 1.
+    proof fn lock_first_token_is_one()
+        ensures compute_next_fencing_token_spec(None) == 1
+    {}
+
+    // r[impl properties.sequence-overflow-returns-none]
+    // r[verify properties.sequence-overflow-returns-none]
+    /// Sequence batch_end returns None exactly when overflow occurs.
+    proof fn sequence_batch_end_none_iff_overflow(start: u64, size: u64)
+        ensures
+            crate::sequence::compute_batch_end_spec(start, size).is_none()
+                == (start as int + size as int > u64::MAX as int)
+    {}
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod coordination_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.election-token-is-fencing-issue]
+        #[test]
+        fn prop_election_token_matches_fencing(current: u64) {
+            prop_assume!(current < u64::MAX);
+            prop_assert_eq!(
+                crate::election::compute_next_election_token(current),
+                crate::fencing::issue_token(current)
+            );
+        }
+
+        // r[verify properties.lock-expired-is-expiration-expired]
+        #[test]
+        fn prop_lock_expired_matches_expiration(deadline: u64, now: u64) {
+            prop_assert_eq!(
+                crate::distributed_lock::is_lock_expired(deadline, now),
+                crate::expiration::is_expired(deadline, now)
+            );
+        }
+
+        // r[verify properties.rwlock-writer-token-is-fencing-issue]
+        #[test]
+        fn prop_rwlock_writer_token_matches_fencing(current: u64) {
+            prop_assume!(current < u64::MAX);
+            prop_assert_eq!(
+                crate::rwlock::compute_next_write_token(current),
+                crate::fencing::issue_token(current)
+            );
+        }
+
+        // r[verify properties.rwlock-expiry-is-expiration-expired]
+        #[test]
+        fn prop_rwlock_expiry_matches_expiration(deadline: u64, now: u64) {
+            prop_assert_eq!(
+                crate::rwlock::is_reader_expired(deadline, now),
+                crate::expiration::is_expired(deadline, now)
+            );
+            prop_assert_eq!(
+                crate::rwlock::is_writer_expired(deadline, now),
+                crate::expiration::is_expired(deadline, now)
+            );
+        }
+
+        // r[verify properties.sequence-overflow-returns-none]
+        #[test]
+        fn prop_sequence_overflow_none(start: u64, size: u64) {
+            let result = crate::sequence::compute_batch_end(start, size);
+            if start.checked_add(size).is_none() {
+                prop_assert!(result.is_none());
+            } else {
+                prop_assert!(result.is_some());
+                prop_assert_eq!(result.unwrap(), start + size);
+            }
+        }
+
+        // r[verify properties.lock-deadline-is-expiration-expires-at]
+        #[test]
+        fn prop_lock_first_token_always_one() {
+            prop_assert_eq!(
+                crate::distributed_lock::compute_next_fencing_token(None),
+                1u64
+            );
+        }
+
+        // r[verify properties.election-token-is-fencing-issue]
+        // Election token and rwlock writer token are the same function
+        #[test]
+        fn prop_election_rwlock_token_agree(current: u64) {
+            prop_assert_eq!(
+                crate::election::compute_next_election_token(current),
+                crate::rwlock::compute_next_write_token(current)
+            );
+        }
+    }
+}

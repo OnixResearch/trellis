@@ -2669,3 +2669,29 @@ are monotonically increasing.
 
 r[rwlock.expiry]
 is_reader_expired and is_writer_expired return true when now > deadline.
+
+## Cross-Module: Coordination
+
+r[properties.election-token-is-fencing-issue]
+election::compute_next_election_token and fencing::issue_token compute
+the same value (current + 1, saturating at MAX).
+
+r[properties.lock-expired-is-expiration-expired]
+distributed_lock::is_lock_expired and expiration::is_expired use the
+same predicate (now > deadline).
+
+r[properties.lock-deadline-is-expiration-expires-at]
+distributed_lock::compute_lock_deadline uses saturating addition like
+expiration::expires_at (though with ms vs seconds granularity).
+
+r[properties.rwlock-writer-token-is-fencing-issue]
+rwlock::compute_next_write_token and fencing::issue_token compute the
+same value.
+
+r[properties.rwlock-expiry-is-expiration-expired]
+rwlock::is_reader_expired and rwlock::is_writer_expired match
+expiration::is_expired semantics.
+
+r[properties.sequence-overflow-returns-none]
+sequence::compute_batch_end and compute_range_start return None exactly
+when addition would overflow u64.
