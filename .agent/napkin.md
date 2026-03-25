@@ -722,3 +722,14 @@
     Cross-module proof: `!can_start_op_spec(true)` implies try_start rejects — automatic.
     Uses `#[cfg(verus_keep_ghost)]` import of drain::can_start_op_spec.
   - 5 new modules, ~40 Verus proofs, 37 new cargo tests
+  - Remaining cluster modules: tiered_rate_limit, peer_spec, trust capacity predicates
+  - tiered_rate_limit: check_tiered composes rate_limit::try_consume for global-first
+    ordering. Rollback pattern: on peer denial, don't consume global tokens (return
+    original values). Z3 handles all proofs automatically via spec unfolding.
+  - peer_spec: find_separator is external_body (Verus can't handle for+if loop over
+    &[u8]). parse_peer_spec checks sep position for error classification. The `choose`
+    operator in find_separator_spec doesn't propagate bounds well — proof that
+    `sep < s.len() - 1` fails because Z3 can't extract the `0 <= i < s.len()` constraint
+    from the existential witness. Simplified proof to just `sep > 0`.
+  - trust capacity: trivial is_bounded predicate with add/block maintenance proofs
+  - Cross-module: tiered→try_consume link automatic
