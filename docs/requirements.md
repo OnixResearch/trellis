@@ -2866,3 +2866,373 @@ commit index MUST never decrease.
 r[install-snapshot.matching-entry]
 has_matching_entry MUST return true when the log has an entry at
 snapshot_index with the given term.
+
+## Last Applied Tracking
+
+r[last-applied.advance]
+advance_last_applied(last_applied, commit_index) MUST return
+min(last_applied + 1, commit_index) when last_applied < commit_index,
+and last_applied otherwise. The result MUST always be >= last_applied
+(monotonic) and <= commit_index (never applied past committed).
+
+r[last-applied.can-apply]
+can_apply(last_applied, commit_index) MUST return true if and only if
+last_applied < commit_index. There is at least one committed entry
+waiting to be applied.
+
+r[last-applied.apply-count]
+pending_apply_count(last_applied, commit_index) MUST return
+commit_index - last_applied when commit_index >= last_applied, else 0.
+This is the number of entries waiting to be applied.
+
+r[last-applied.invariant]
+The last-applied invariant MUST hold: last_applied <= commit_index.
+Advancing last_applied MUST preserve the invariant. Advancing
+commit_index (via commit_advance) MUST preserve the invariant.
+
+r[last-applied.apply-entry-index]
+next_apply_index(last_applied) MUST return last_applied + 1 (1-based
+log index of the next entry to apply). The caller MUST ensure
+can_apply is true before calling.
+
+r[last-applied.batch-apply]
+batch_apply_end(last_applied, commit_index, max_batch) MUST return
+min(last_applied + max_batch, commit_index). The result MUST be
+>= last_applied and <= commit_index. The batch size MUST NOT exceed
+max_batch.
+
+## Leadership Transfer
+
+r[leadership-transfer.can-start]
+can_start_transfer(state, target_id, self_id) MUST return true if and
+only if state == Leader AND target_id != self_id. A non-leader MUST
+NOT initiate transfer. Self-transfer MUST be rejected.
+
+r[leadership-transfer.target-caught-up]
+is_target_caught_up(target_match_index, last_log_index) MUST return
+true if and only if target_match_index >= last_log_index. The leader
+MUST NOT send TimeoutNow until the target has replicated all entries.
+
+r[leadership-transfer.should-send-timeout-now]
+should_send_timeout_now(is_leader, target_caught_up, transfer_deadline,
+now) MUST return true when all of: state is leader, target is caught
+up, and now <= transfer_deadline (transfer has not expired). An expired
+transfer MUST return false.
+
+r[leadership-transfer.transfer-expired]
+is_transfer_expired(transfer_deadline, now) MUST return true when
+now > transfer_deadline. An expired transfer MUST be abandoned —
+the leader resumes normal operation.
+
+r[leadership-transfer.blocks-new-proposals]
+should_reject_proposal(transfer_in_progress) MUST return true when a
+transfer is in progress. The leader MUST NOT accept new client proposals
+during transfer.
+
+r[leadership-transfer.abort]
+can_abort_transfer(is_leader, transfer_in_progress) MUST return true
+when both hold. Aborting clears the transfer state and resumes normal
+operation. Aborting a non-existent transfer MUST be a no-op.
+
+## Log Compaction
+
+r[log-compaction.should-compact]
+should_compact(log_len, snapshot_threshold) MUST return true when
+log_len >= snapshot_threshold. A threshold of 0 MUST always trigger.
+A log shorter than the threshold MUST NOT trigger.
+
+r[log-compaction.compact]
+compact_log(log, snapshot_index) MUST discard all entries at indices
+[0, snapshot_index) and return the suffix starting at snapshot_index.
+The result length MUST equal log.len() - snapshot_index when
+snapshot_index <= log.len(). If snapshot_index > log.len(), the
+result MUST be empty.
+
+r[log-compaction.prefix-removed]
+After compaction, no entry from the original [0, snapshot_index) range
+is present in the result. The first entry of the result (if non-empty)
+corresponds to the original entry at snapshot_index.
+
+r[log-compaction.suffix-preserved]
+All entries at indices [snapshot_index, log.len()) MUST be preserved
+in the result, with their terms and values unchanged. For all i in
+[0, result.len()): result[i] == original[snapshot_index + i].
+
+r[log-compaction.first-index-after]
+first_log_index_after_compaction(prev_first_index, snapshot_index) MUST
+return max(prev_first_index, snapshot_index). The first log index MUST
+never decrease.
+
+r[log-compaction.offset-translation]
+translate_index(absolute_index, first_log_index) MUST return
+absolute_index - first_log_index when absolute_index >= first_log_index,
+and None otherwise. Indices before the compacted region are inaccessible.
+
+r[log-compaction.compact-preserves-commit]
+Compacting entries below the commit index MUST NOT change the commit
+index. snapshot_index MUST be <= commit_index (never compact uncommitted
+entries).
+
+## Heartbeat
+
+r[heartbeat.is-heartbeat]
+is_heartbeat(entry_count) MUST return true if and only if entry_count == 0.
+A heartbeat is an AppendEntries RPC carrying no log entries.
+
+r[heartbeat.should-send]
+should_send_heartbeat(elapsed_ms, heartbeat_interval_ms) MUST return true
+when elapsed_ms >= heartbeat_interval_ms. The leader MUST send heartbeats
+at the configured interval.
+
+r[heartbeat.reset-election-timer]
+should_reset_election_timer(msg_term, current_term, from_leader) MUST
+return true when msg_term >= current_term AND from_leader is true. A
+valid heartbeat from the current leader resets the follower's election
+timer. Messages from non-leaders or stale terms MUST NOT reset the timer.
+
+r[heartbeat.leader-alive]
+is_leader_alive(last_heartbeat_time, now, election_timeout) MUST return
+true when now - last_heartbeat_time < election_timeout (using saturating
+subtraction). A follower considers the leader alive while heartbeats
+arrive within the election timeout.
+
+r[heartbeat.ack]
+heartbeat_ack_valid(ack_term, leader_term) MUST return true when
+ack_term == leader_term. Stale acks (ack_term < leader_term) MUST be
+ignored. Higher-term acks trigger step-down via term_authority.
+
+## Client Session
+
+r[client-session.register]
+register_session(next_session_id) MUST return (session_id, next_id + 1).
+Session IDs MUST be monotonically increasing. Registration MUST be
+logged as a Raft entry so all replicas track the same sessions.
+
+r[client-session.is-duplicate]
+is_duplicate_request(session_table_seq, request_seq) MUST return true
+when request_seq <= session_table_seq. A request with a sequence number
+at or below the last processed sequence for that session MUST be
+treated as duplicate.
+
+r[client-session.advance-seq]
+advance_session_seq(current_seq, request_seq) MUST return request_seq
+when request_seq > current_seq. The session's sequence number MUST
+only move forward.
+
+r[client-session.lookup]
+session_exists(table_len, session_id) MUST return true when session_id
+< table_len. Sessions are densely packed from 0.
+
+r[client-session.expire]
+is_session_expired(last_activity, now, session_timeout) MUST return
+true when now - last_activity >= session_timeout (saturating
+subtraction). Expired sessions MAY be reclaimed.
+
+r[client-session.response-cache]
+cached_response_valid(cached_seq, request_seq) MUST return true when
+cached_seq == request_seq. The cached response for a duplicate request
+MUST be returned without re-executing the command.
+
+r[client-session.table-bounded]
+session_count_within_limit(count, max_sessions) MUST return true when
+count < max_sessions. Registration MUST be rejected when the table
+is full.
+
+## Lease Read
+
+r[lease-read.is-valid]
+is_lease_valid(lease_start, election_timeout, clock_drift_bound, now)
+MUST return true when now < lease_start + election_timeout -
+clock_drift_bound (all saturating arithmetic). The lease MUST expire
+strictly before any other server's election timeout fires, accounting
+for worst-case clock drift.
+
+r[lease-read.start]
+start_lease(now) MUST record now as the lease start time. The lease
+begins when the leader confirms authority via a quorum of heartbeat
+responses.
+
+r[lease-read.disjoint]
+Two leases from different leaders MUST NOT overlap in time. If leader A's
+lease ends at time T_a and leader B's lease starts at T_b, then T_b >=
+T_a. This follows from: the new leader's election required a quorum,
+which includes at least one node that would have let leader A's lease
+expire before voting.
+
+r[lease-read.requires-commit]
+lease_read_safe(lease_valid, commit_index, read_index) MUST return true
+only when lease_valid AND commit_index >= read_index. A valid lease alone
+is insufficient — the read must also wait for its commit point, same as
+read_index.
+
+r[lease-read.leader-only]
+Only a node in Leader state MUST be permitted to serve lease reads.
+Followers and candidates MUST reject lease read requests.
+
+## Follower Redirect
+
+r[follower-redirect.should-redirect]
+should_redirect(state, known_leader_id) MUST return true when state !=
+Leader AND known_leader_id is Some. Followers and candidates with a known
+leader MUST redirect clients. A follower with no known leader MUST NOT
+redirect (return error instead).
+
+r[follower-redirect.leader-hint]
+leader_hint(known_leader_id) MUST return the leader's node ID when known,
+or a sentinel (u64::MAX) when unknown. The hint is best-effort — it MAY
+be stale after a leader change.
+
+r[follower-redirect.hint-freshness]
+is_hint_fresh(hint_term, current_term) MUST return true when hint_term ==
+current_term. A hint from a prior term MUST be considered stale. Clients
+receiving a stale hint MUST retry discovery.
+
+r[follower-redirect.leader-accepts]
+should_accept_request(state) MUST return true if and only if state ==
+Leader. Only the leader processes client requests directly.
+
+## Snapshot Transfer
+
+r[snapshot-transfer.chunk-valid]
+is_chunk_valid(offset, chunk_size, total_size) MUST return true when
+offset + chunk_size <= total_size (saturating addition to avoid overflow).
+A zero-size chunk MUST be invalid. Offset beyond total_size MUST be
+invalid.
+
+r[snapshot-transfer.is-first-chunk]
+is_first_chunk(offset) MUST return true if and only if offset == 0.
+The first chunk starts at the beginning of the snapshot data.
+
+r[snapshot-transfer.is-last-chunk]
+is_last_chunk(offset, chunk_size, total_size) MUST return true when
+offset + chunk_size == total_size. The last chunk ends exactly at
+the snapshot boundary.
+
+r[snapshot-transfer.next-offset]
+next_expected_offset(current_offset, chunk_size) MUST return
+current_offset + chunk_size. The receiver tracks the next expected
+offset for in-order delivery. Returns None on overflow.
+
+r[snapshot-transfer.all-chunks-cover]
+For a complete transfer, the chunks MUST cover [0, total_size) with
+no gaps and no overlaps. The sum of all chunk sizes MUST equal
+total_size.
+
+r[snapshot-transfer.chunk-count]
+chunk_count(total_size, chunk_size) MUST return ceil(total_size /
+chunk_size) when chunk_size > 0. This is the number of chunks needed
+to transfer the full snapshot.
+
+r[snapshot-transfer.progress]
+transfer_progress(received_bytes, total_size) MUST return a value in
+[0, 100] representing the percentage complete. 0 when received == 0.
+100 when received >= total_size. Monotonically increasing as bytes
+arrive.
+
+## Cross-Module: Last Applied
+
+r[properties.last-applied-bounded-by-commit]
+advance_last_applied result MUST always be <= commit_index. The
+apply cursor never overshoots the commit cursor.
+
+r[properties.last-applied-advance-is-monotonic]
+advance_last_applied satisfies monotonic::is_advance on last_applied.
+The apply cursor never moves backward.
+
+r[properties.pending-apply-is-saturating-sub]
+pending_apply_count(last_applied, commit_index) MUST equal
+arithmetic::saturating_sub_spec(commit_index, last_applied). The
+pending count is the gap computed by generic saturating subtraction.
+
+## Cross-Module: Leadership Transfer
+
+r[properties.transfer-caught-up-is-advance]
+is_target_caught_up(match, last) is equivalent to
+monotonic::is_advance(last, match) — the target's match index has
+reached the leader's log end.
+
+r[properties.transfer-blocks-like-drain]
+should_reject_proposal(true) mirrors drain::can_start_op(true) == false.
+Both gate new work during a shutdown/transfer protocol.
+
+r[properties.transfer-timeout-is-expiration]
+is_transfer_expired(deadline, now) MUST equal
+expiration::is_expired(deadline, now). Transfer timeout uses the same
+predicate as lease/lock expiration.
+
+## Cross-Module: Log Compaction
+
+r[properties.compact-suffix-length-is-saturating-sub]
+The length of compact_log result MUST equal
+arithmetic::saturating_sub_spec(log.len(), snapshot_index). Compaction
+length is a saturating subtraction.
+
+r[properties.compact-first-index-is-max]
+first_log_index_after_compaction(prev, snap) MUST equal
+ordering::max_spec(prev, snap). The first index is the max of old and
+new.
+
+r[properties.compact-offset-uses-checked-sub]
+translate_index returns None exactly when the absolute index is below
+first_log_index — same condition as a checked subtraction underflow.
+
+r[properties.compact-preserves-install-snapshot-trigger]
+After compaction with snapshot_index S, should_install_snapshot(next, S)
+holds for any follower with next <= S. Compaction creates the exact
+condition that triggers snapshot installation.
+
+## Cross-Module: Heartbeat
+
+r[properties.heartbeat-interval-less-than-election]
+raft_timing::validate_timing_order(heartbeat, election_min) ensures
+heartbeat < election_min. Combined with heartbeat::should_send, a
+leader sends multiple heartbeats per election timeout period.
+
+r[properties.heartbeat-reset-prevents-election]
+If should_reset_election_timer returns true and the follower resets,
+then is_leader_alive returns true (leader still considered alive).
+Valid heartbeats prevent spurious elections.
+
+r[properties.heartbeat-ack-stale-triggers-step-down]
+A heartbeat ack with ack_term > leader_term triggers
+term_authority::apply_higher_term, which returns a TermUpdate with
+new_state == FOLLOWER.
+
+## Cross-Module: Client Session
+
+r[properties.session-register-is-strict-advance]
+Successive register_session calls produce session IDs satisfying
+monotonic::is_strict_advance. Session IDs never repeat.
+
+r[properties.session-duplicate-is-fencing]
+is_duplicate_request(table_seq, req_seq) mirrors
+fencing::is_valid_write(req_seq, table_seq) == false when req_seq
+<= table_seq. Duplicate detection is stale-write rejection.
+
+r[properties.session-expire-is-expiration]
+is_session_expired(last_activity, now, timeout) MUST match
+expiration::is_expired(last_activity + timeout, now). Session expiry
+uses the same temporal predicate.
+
+## Cross-Module: Lease Read
+
+r[properties.lease-read-implies-read-index-safe]
+When lease_read_safe returns true, read_index::read_safe_at(read_index,
+commit_index) also returns true. Lease reads are strictly stronger than
+ReadIndex — they add a lease validity check on top of the commit check.
+
+r[properties.lease-disjoint-is-lease-disjointness]
+The lease-read disjointness property relies on lease::leases_disjoint
+when the same resource_id is used. The two modules agree on temporal
+non-overlap.
+
+## Cross-Module: Snapshot Transfer
+
+r[properties.snapshot-chunk-count-is-div-ceil]
+chunk_count(total, chunk_size) MUST equal arithmetic::div_ceil(total,
+chunk_size). Chunking and ceiling division are the same computation.
+
+r[properties.snapshot-transfer-triggers-install]
+After a complete snapshot transfer (all chunks received), the follower
+applies install_snapshot::apply_snapshot_commit. The transfer layer
+feeds into the installation layer.

@@ -231,3 +231,5 @@
 {"text":"yes","timestamp":1774474086467}
 {"text":"yes","timestamp":1774474842053}
 {"text":"lets keep going","timestamp":1774475187085}
+{"text":"what raft consensus primitives do we not cover yet","timestamp":1774475739841}
+{"text":"write a spec to do them all","timestamp":1774476015866}
