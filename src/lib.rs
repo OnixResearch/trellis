@@ -18,6 +18,7 @@
 //! - `ballot` — vote tracking for Raft elections with quorum intersection safety
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
+//! - `bitfield` — multi-bit field extraction and insertion with round-trip proofs
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
@@ -40,8 +41,10 @@
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
 //! - `delegation` — delegation chain validation: depth bounds, attenuation, Delegate gate
 //! - `double_entry` — double-entry bookkeeping: balanced debits/credits, trial balance
+//! - `distributed_lock` — distributed lock tokens, deadlines, expiry, backoff
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `drain_protocol` — double-check admission with recheck and notification
+//! - `election` — leader election state machine: transitions, tokens, timing
 //! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
@@ -83,6 +86,8 @@
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
+//! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
+//! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
@@ -112,6 +117,7 @@ pub mod backoff;
 pub mod balance;
 pub mod ballot;
 pub mod batch;
+pub mod bitfield;
 pub mod bitmap;
 pub mod bitwise;
 pub mod bloom;
@@ -134,9 +140,11 @@ pub mod cost_tracker;
 pub mod cow;
 pub mod delegation;
 pub mod double_entry;
+pub mod distributed_lock;
 pub mod drain;
 pub mod drain_protocol;
 pub mod env_scrub;
+pub mod election;
 pub mod election_jitter;
 pub mod epoch;
 pub mod eviction;
@@ -182,9 +190,11 @@ pub mod region;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
+pub mod rwlock;
 pub mod scope;
 pub mod seq_fold;
 pub mod seq_set;
+pub mod sequence;
 pub mod sequential;
 pub mod session_tree;
 pub mod signal;

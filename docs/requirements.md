@@ -2527,3 +2527,145 @@ always forms a quorum of itself when the input was non-empty.
 r[properties.replace-quorum-guard]
 Promotion with replacement produces a result whose size is at least
 voters.len() - 1. Combined with can_remove_safely, quorum holds.
+
+## Bitfield
+
+r[bitfield.field-mask]
+field_mask MUST return a bitmask with exactly `width` consecutive 1-bits
+starting at position `offset`. When width is 0 the result MUST be 0.
+Requires offset + width <= 64.
+
+r[bitfield.extract-field]
+extract_field MUST return bits [offset, offset+width) of the value,
+right-shifted to the least-significant position. The result MUST be
+less than 2^width.
+
+r[bitfield.insert-field]
+insert_field MUST replace bits [offset, offset+width) of the value with
+the given field, leaving all other bits unchanged. The field MUST fit
+within width bits.
+
+r[bitfield.clear-field]
+clear_field MUST zero bits [offset, offset+width) of the value, leaving
+all other bits unchanged.
+
+r[bitfield.round-trip]
+Extracting a field after inserting it MUST return the original field value:
+extract_field(insert_field(v, f, o, w), o, w) == f when f < 2^width.
+
+r[bitfield.non-interference]
+Inserting a field MUST NOT change bits outside [offset, offset+width).
+
+r[bitfield.clear-then-extract]
+Extracting from a cleared field MUST return 0.
+
+r[bitfield.extract-bounded]
+The result of extract_field MUST be less than 2^width.
+
+## Election
+
+r[election.state-predicates]
+is_leader, is_follower, is_transitioning MUST return true for exactly
+one of the three states. States are Follower (0), Transitioning (1),
+Leader (2).
+
+r[election.valid-transition]
+is_valid_state_transition MUST permit: Follower→Transitioning,
+Transitioning→Leader, Transitioning→Follower, Leader→Follower,
+and self-transitions. Leader→Leader self-transition MUST require
+the same fencing token. All other transitions MUST be rejected.
+
+r[election.preconditions]
+can_start_election MUST require Follower state and running=true.
+can_win_election MUST require Transitioning and new_token > max_token.
+can_lose_election MUST require Transitioning.
+can_stepdown MUST require Leader.
+can_lose_leadership MUST require Leader.
+
+r[election.state-after]
+get_state_after_start MUST return Transitioning.
+get_state_after_win(token) MUST return Leader.
+get_state_after_lose MUST return Follower.
+get_state_after_stepdown MUST return Follower.
+
+r[election.token-monotonicity]
+compute_next_election_token MUST return current + 1 (saturating).
+compute_max_token_after_win MUST return max(token, max_token).
+Tokens MUST never decrease.
+
+r[election.well-formedness]
+A leader is well-formed iff fencing_token > 0 AND fencing_token <=
+max_fencing_token. Non-leaders are always well-formed.
+
+r[election.timing]
+calculate_election_timeout MUST return a value in
+[base, base + jitter_range] using saturating arithmetic.
+is_renewal_time MUST return true when elapsed >= interval.
+should_start_election MUST return true when elapsed >= timeout.
+should_maintain_leadership MUST return true when elapsed < timeout.
+
+## Distributed Lock
+
+r[distributed-lock.token-always-positive]
+compute_next_fencing_token MUST return >= 1. No previous entry
+produces 1. Previous entry produces prev + 1 (saturating).
+
+r[distributed-lock.token-monotonicity]
+Fencing tokens MUST never decrease across acquisitions.
+
+r[distributed-lock.expiry]
+is_lock_expired returns true when now > deadline.
+remaining_ttl returns deadline - now when not expired, else 0.
+compute_lock_deadline returns acquired_at + ttl (saturating).
+
+r[distributed-lock.backoff]
+compute_backoff_with_jitter returns delay in [0, min(current*2, max)].
+Next base = min(current*2, max).
+
+## Sequence
+
+r[sequence.monotonic-values]
+compute_new_sequence_value MUST return > current. Overflow returns
+an error indicator, never wraps.
+
+r[sequence.batch-state]
+should_refill_batch returns true when next >= batch_end.
+batch_remaining returns batch_end - next when next < batch_end, else 0.
+
+r[sequence.batch-computation]
+compute_batch_end returns start + size, None on overflow.
+compute_next_after_refill returns start + 1, None on overflow.
+
+r[sequence.range-start]
+compute_range_start returns current + 1, None on overflow.
+is_initial_reservation returns true iff current == start_value.
+
+r[sequence.cas-expected]
+compute_cas_expected returns None for initial, Some(current) otherwise.
+
+## RWLock
+
+r[rwlock.mutual-exclusion]
+Write mode and Read mode MUST NOT coexist. Write mode requires
+active_readers == 0.
+
+r[rwlock.mode-transitions]
+can_acquire_read is true when Free, or Read with no pending writers,
+or writer expired. can_acquire_write is true only when Free or all
+expired.
+
+r[rwlock.mode-after]
+mode_after_read_acquire returns Read. mode_after_read_release returns
+Free when count drops to 0, Read otherwise. mode_after_write_release
+returns Free.
+
+r[rwlock.reader-count]
+increment_reader_count saturates at u32::MAX.
+decrement_reader_count saturates at 0.
+
+r[rwlock.writer-token]
+compute_next_write_token returns current + 1 (saturating). Tokens
+are monotonically increasing.
+
+r[rwlock.expiry]
+is_reader_expired and is_writer_expired return true when now > deadline.
