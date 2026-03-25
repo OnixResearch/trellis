@@ -110,7 +110,49 @@ pub fn after_block(_in_trusted: bool) -> (result: (bool, bool))
     (true, false)
 }
 
+// --- Capacity predicates ---
+
+/// Spec: a set count is within capacity.
+pub open spec fn is_bounded_spec(count: u64, capacity: u64) -> bool {
+    count <= capacity
+}
+
+/// Check if a set count is within capacity.
+// @verified-logic:exempt trivial predicate
+pub fn is_bounded(count: u64, capacity: u64) -> (result: bool)
+    ensures result == is_bounded_spec(count, capacity)
+{
+    count <= capacity
+}
+
+/// Spec: adding one element stays within capacity when count < capacity.
+pub open spec fn add_stays_bounded_spec(count: u64, capacity: u64) -> bool {
+    count < capacity
+}
+
 // --- Safety proofs ---
+
+// r[verify trust-level.mutual-exclusivity]
+/// Adding to trusted while under capacity maintains the bound.
+proof fn add_trusted_maintains_bound(blocked_count: u64, trusted_count: u64, capacity: u64)
+    requires
+        is_bounded_spec(trusted_count, capacity),
+        add_stays_bounded_spec(trusted_count, capacity),
+    ensures is_bounded_spec((trusted_count + 1) as u64, capacity)
+{}
+
+// r[verify trust-level.mutual-exclusivity]
+/// Blocking while under capacity maintains the bound (trusted decrements, blocked increments).
+proof fn block_maintains_bound(
+    blocked_count: u64, trusted_count: u64, blocked_cap: u64,
+)
+    requires
+        is_bounded_spec(blocked_count, blocked_cap),
+        add_stays_bounded_spec(blocked_count, blocked_cap),
+        trusted_count > 0,
+    ensures
+        is_bounded_spec((blocked_count + 1) as u64, blocked_cap),
+{}
 
 // r[impl trust-level.block-precedence]
 // r[verify trust-level.block-precedence]

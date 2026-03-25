@@ -3489,6 +3489,18 @@ mod cluster_coordination_proofs {
         ensures is_operational_spec(status) <==> (status == ONLINE || status == DEGRADED)
     {}
 
+    // r[impl properties.tiered-rate-limit-uses-try-consume]
+    // r[verify properties.tiered-rate-limit-uses-try-consume]
+    /// Tiered rate limit ALLOWED means both try_consume calls succeeded.
+    proof fn prove_tiered_uses_try_consume(global: u64, peer: u64, cost: u64)
+        requires
+            crate::rate_limit::try_consume_spec(global, cost).0,
+            crate::rate_limit::try_consume_spec(peer, cost).0,
+        ensures
+            crate::tiered_rate_limit::check_tiered_spec(global, peer, cost).0
+                == crate::tiered_rate_limit::ALLOWED,
+    {}
+
     } // verus!
 }
 
@@ -3540,6 +3552,22 @@ mod cluster_coordination_tests {
                 prop_assert!(access);
             } else {
                 prop_assert_eq!(access, is_public);
+            }
+        }
+
+        // r[verify properties.tiered-rate-limit-uses-try-consume]
+        #[test]
+        fn prop_tiered_uses_try_consume(
+            global in 100u64..1000,
+            peer in 100u64..1000,
+            cost in 0u64..100,
+        ) {
+            // When both try_consume succeed, tiered gives ALLOWED
+            let (g_ok, _) = crate::rate_limit::try_consume(global, cost);
+            let (p_ok, _) = crate::rate_limit::try_consume(peer, cost);
+            if g_ok && p_ok {
+                let (code, _, _) = crate::tiered_rate_limit::check_tiered(global, peer, cost);
+                prop_assert_eq!(code, crate::tiered_rate_limit::ALLOWED);
             }
         }
     }

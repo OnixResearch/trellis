@@ -2464,7 +2464,45 @@ r[drain-protocol.fully-drained]
 is_fully_drained MUST return true if and only if is_draining is true
 AND in_flight is zero.
 
+## Tiered Rate Limit
+
+r[tiered-rate-limit.check-tiered]
+check_tiered MUST check the global bucket first, then per-peer. If global
+denies, the result MUST be GLOBAL_DENIED without evaluating per-peer.
+
+r[tiered-rate-limit.global-first]
+When global tokens < cost, the result MUST be GLOBAL_DENIED and both
+token counts MUST remain unchanged.
+
+r[tiered-rate-limit.peer-map-bounded]
+The peer map count MUST be tracked and bounded by max_peers.
+
+r[tiered-rate-limit.capacity-invariant]
+After eviction, the peer map count MUST remain within bounds.
+
+r[tiered-rate-limit.evict-reduces]
+Evicting one entry MUST reduce the count by 1 (or stay at 0).
+
+## Peer Spec
+
+r[peer-spec.find-separator]
+find_separator MUST return the index of the first `@` byte, or -1 if
+no `@` is present.
+
+r[peer-spec.parse]
+parse_peer_spec MUST split the input at the first `@` into node_id
+and endpoint parts. It MUST reject inputs with no `@`, empty node_id,
+or empty endpoint.
+
+r[peer-spec.error-completeness]
+Every input MUST map to exactly one of: OK, ERR_NO_SEPARATOR,
+ERR_EMPTY_NODE_ID, or ERR_EMPTY_ENDPOINT.
+
 ## Cross-Module: Cluster Coordination
+
+r[properties.tiered-rate-limit-uses-try-consume]
+Tiered rate limit ALLOWED result means both underlying try_consume
+calls succeeded.
 
 r[properties.jitter-bounded-like-backoff]
 Election jitter bounded by range mirrors backoff bounded by cap.

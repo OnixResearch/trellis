@@ -73,6 +73,7 @@
 //! - `pattern` — wildcard and set-membership pattern matching for capabilities
 //! - `page` — virtual address decomposition: frame number, offset, alignment
 //! - `partition` — verified non-overlapping gap-free interval partitions
+//! - `peer_spec` — peer specification parsing: `node_id@endpoint` format
 //! - `permission` — Unix file permission bits: has/set/clear, umask
 //! - `pressure` — multi-threshold severity classification
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
@@ -90,6 +91,7 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `tier` — hot/warm/cold tier classification with promote/demote
+//! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
@@ -167,6 +169,7 @@ pub mod ordering;
 pub mod page;
 pub mod partition;
 pub mod pattern;
+pub mod peer_spec;
 pub mod permission;
 pub mod pointwise;
 pub mod pressure;
@@ -190,6 +193,7 @@ pub mod slab;
 pub mod slice;
 pub mod subsumption;
 pub mod tier;
+pub mod tiered_rate_limit;
 pub mod tiling;
 pub mod token_timestamp;
 pub mod transfer;
