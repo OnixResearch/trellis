@@ -11,6 +11,7 @@
 //! ## Modules
 //!
 //! - `access_mode` — access mode partial order: read/write/delete/full with no-escalation
+//! - `append_entries_build` — Raft leader-side AppendEntries construction: prev_log, entries, batching
 //! - `append_entries_check` — Raft AppendEntries consistency: prevLogIndex/prevLogTerm validation
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
@@ -37,6 +38,9 @@
 //! - `check_quorum` — leader liveness: step down when quorum contact lost
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
+//! - `client_routing` — Raft client request routing: accept/redirect/reject by node role
+//! - `client_session` — Raft client session deduplication for exactly-once semantics (§8)
+//! - `config_change` — Raft configuration change protocol FSM: stable↔joint transitions (§6)
 //! - `collections` — sorted insert, binary search
 //! - `commit_advance` — Raft commit index advancement with §5.4.2 current-term guard
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
@@ -52,6 +56,7 @@
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
 //! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
+//! - `fast_backtrack` — Raft accelerated log backtracking: skip conflicting terms in one RPC (§5.3)
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
@@ -91,6 +96,7 @@
 //! - `partition` — verified non-overlapping gap-free interval partitions
 //! - `peer_spec` — peer specification parsing: `node_id@endpoint` format
 //! - `permission` — Unix file permission bits: has/set/clear, umask
+//! - `persistent_state` — Raft crash recovery: durable state, persist-before-respond, vote safety
 //! - `pre_vote` — pre-vote protocol without term inflation for partitioned nodes
 //! - `pressure` — multi-threshold severity classification
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
@@ -106,6 +112,7 @@
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `snapshot_compaction` — Raft log compaction trigger: when to snapshot, prefix discard, metadata
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
 //! - `snapshot_transfer` — chunked snapshot streaming: validation, ordering, progress
 //! - `state_machine_safety` — no two servers apply different entries at the same index
@@ -127,6 +134,7 @@
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 
 pub mod access_mode;
+pub mod append_entries_build;
 pub mod append_entries_check;
 pub mod acid;
 pub mod algebraic;
@@ -153,6 +161,9 @@ pub mod cas;
 pub mod chain;
 pub mod check_quorum;
 pub mod chunk;
+pub mod client_routing;
+pub mod client_session;
+pub mod config_change;
 pub mod circuit_breaker;
 pub mod collections;
 pub mod commit_advance;
@@ -172,6 +183,7 @@ pub mod epoch;
 pub mod eviction;
 pub mod eviction_score;
 pub mod expiration;
+pub mod fast_backtrack;
 pub mod fencing;
 pub mod forest;
 pub mod glob;
@@ -211,6 +223,7 @@ pub mod partition;
 pub mod pattern;
 pub mod peer_spec;
 pub mod permission;
+pub mod persistent_state;
 pub mod pointwise;
 pub mod pre_vote;
 pub mod pressure;
@@ -233,6 +246,7 @@ pub mod sequence;
 pub mod sequential;
 pub mod session_tree;
 pub mod signal;
+pub mod snapshot_compaction;
 pub mod snapshot_integrity;
 pub mod snapshot_transfer;
 pub mod state_machine_safety;
