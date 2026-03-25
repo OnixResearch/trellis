@@ -34,6 +34,7 @@
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
 //! - `chain` — chain hash integrity with append-preserves proof
+//! - `check_quorum` — leader liveness: step down when quorum contact lost
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
 //! - `collections` — sorted insert, binary search
@@ -65,7 +66,10 @@
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
 //! - `leader_append_only` — leader log immutability invariant: only grows, never overwrites
 //! - `leader_completeness` — committed entries survive elections (quorum intersection + epoch_ge)
+//! - `leadership_transfer` — voluntary leadership transfer: catch-up, `TimeoutNow`, deadline
+//! - `learner_readiness` — learner catch-up readiness for safe voter promotion
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
+//! - `lease_read` — lease-based linearizable reads with clock drift compensation
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
 //! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
@@ -95,6 +99,7 @@
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `read_index` — linearizable read confirmation via quorum heartbeat acks
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
+//! - `replication_pipeline` — flow control for pipelined `AppendEntries`
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
@@ -102,6 +107,7 @@
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
+//! - `snapshot_transfer` — chunked snapshot streaming: validation, ordering, progress
 //! - `state_machine_safety` — no two servers apply different entries at the same index
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
@@ -145,6 +151,7 @@ pub mod bounded_peers;
 pub mod bounds;
 pub mod cas;
 pub mod chain;
+pub mod check_quorum;
 pub mod chunk;
 pub mod circuit_breaker;
 pub mod collections;
@@ -179,7 +186,10 @@ pub mod kv_version;
 pub mod layout_constraint;
 pub mod leader_append_only;
 pub mod leader_completeness;
+pub mod leadership_transfer;
+pub mod learner_readiness;
 pub mod lease;
+pub mod lease_read;
 pub mod log;
 pub mod log_conflict;
 pub mod markov;
@@ -211,6 +221,7 @@ pub mod raft_timing;
 pub mod rate_limit;
 pub mod read_index;
 pub mod region;
+pub mod replication_pipeline;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
@@ -223,6 +234,7 @@ pub mod sequential;
 pub mod session_tree;
 pub mod signal;
 pub mod snapshot_integrity;
+pub mod snapshot_transfer;
 pub mod state_machine_safety;
 pub mod slab;
 pub mod slice;

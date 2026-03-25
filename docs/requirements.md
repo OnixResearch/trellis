@@ -3226,6 +3226,125 @@ The lease-read disjointness property relies on lease::leases_disjoint
 when the same resource_id is used. The two modules agree on temporal
 non-overlap.
 
+## Check Quorum
+
+r[check-quorum.recent-contact]
+has_recent_contact(last_contact, now, election_timeout) MUST return
+true when now - last_contact < election_timeout (saturating
+subtraction). A follower that has contacted the leader within the
+election timeout is considered recent.
+
+r[check-quorum.count-recent]
+count_recent_contacts(contacts, now, election_timeout, cluster_size)
+MUST return the count of servers (including self) with recent contact.
+The leader always counts itself (contact time == now).
+
+r[check-quorum.should-step-down]
+should_step_down(recent_count, cluster_size) MUST return true when
+recent_count < majority(cluster_size). A leader that cannot confirm
+a quorum of recent contacts MUST step down to prevent serving stale
+data from a network partition.
+
+r[check-quorum.leader-counts-self]
+The leader's own contact time is always current (now), so it always
+counts as 1 towards the recent quorum. A singleton cluster (size 1)
+MUST never step down.
+
+r[check-quorum.partitioned-leader]
+A fully partitioned leader (only self responding) with cluster_size > 1
+MUST step down. recent_count == 1 < majority(n) for n >= 2.
+
+## Learner Readiness
+
+r[learner-readiness.is-caught-up]
+is_caught_up(learner_match, leader_log_len) MUST return true when
+learner_match >= leader_log_len. The learner has replicated all
+entries the leader currently has.
+
+r[learner-readiness.replication-gap]
+replication_gap(learner_match, leader_log_len) MUST return
+leader_log_len - learner_match when leader_log_len >= learner_match,
+else 0. This is the number of entries the learner still needs.
+
+r[learner-readiness.is-within-threshold]
+is_within_threshold(learner_match, leader_log_len, threshold) MUST
+return true when replication_gap <= threshold. The learner is close
+enough to be promoted without significant downtime.
+
+r[learner-readiness.promotion-safe]
+promotion_safe(learner_match, leader_log_len, cluster_size) MUST
+return true when is_caught_up AND cluster_size > 0. Promotion requires
+both replication completeness and a valid cluster.
+
+r[learner-readiness.gap-monotonic]
+If learner_match increases (more entries replicated), the replication
+gap MUST decrease or stay the same. Monotonic progress toward readiness.
+
+## Replication Pipeline
+
+r[replication-pipeline.inflight-count]
+inflight_count(next_index, match_index) MUST return next_index -
+match_index - 1 when next_index > match_index + 1, else 0. This is
+the number of entries sent but not yet acknowledged.
+
+r[replication-pipeline.can-send-more]
+can_send_more(next_index, match_index, max_inflight) MUST return true
+when inflight_count < max_inflight. The leader can pipeline more
+entries without exceeding the flow control window.
+
+r[replication-pipeline.window-after-send]
+window_after_send(next_index, match_index, entries_sent, max_inflight)
+MUST return the new next_index (next_index + entries_sent). The caller
+MUST ensure entries_sent <= available window (max_inflight -
+inflight_count).
+
+r[replication-pipeline.window-after-ack]
+window_after_ack(match_index, new_match) MUST return new_match when
+new_match > match_index. Acknowledging entries frees window capacity.
+The new inflight count MUST be <= the old inflight count.
+
+r[replication-pipeline.full-window-blocks]
+When inflight_count >= max_inflight, can_send_more MUST return false.
+A full pipeline blocks further sends until acks arrive.
+
+r[replication-pipeline.empty-window]
+When next_index == match_index + 1, inflight_count MUST be 0 and
+can_send_more MUST return true (assuming max_inflight > 0). A fully
+acknowledged pipeline has full capacity.
+
+## Cross-Module: Check Quorum
+
+r[properties.check-quorum-uses-quorum]
+should_step_down delegates to !is_quorum(recent_count, cluster_size).
+The step-down decision is the negation of the quorum predicate.
+
+r[properties.check-quorum-singleton-safe]
+A singleton cluster (size 1) with leader counting self MUST have
+recent_count == 1 == majority(1), so should_step_down returns false.
+Singletons never step down.
+
+## Cross-Module: Learner Readiness
+
+r[properties.learner-caught-up-is-advance]
+is_caught_up(match, len) is equivalent to monotonic::is_advance(len,
+match). The learner's match index has reached the leader's log length.
+
+r[properties.learner-gap-is-saturating-sub]
+replication_gap(match, len) equals arithmetic::saturating_sub_spec(len,
+match). The gap is a saturating subtraction.
+
+## Cross-Module: Replication Pipeline
+
+r[properties.pipeline-inflight-is-saturating-sub]
+inflight_count(next, match) equals
+arithmetic::saturating_sub_spec(next, match + 1) when next > match.
+Inflight tracking is a saturating subtraction.
+
+r[properties.pipeline-empty-after-full-ack]
+When new_match == next_index - 1 (all sent entries acknowledged),
+inflight_count(next_index, new_match) == 0. Full acknowledgment
+empties the pipeline.
+
 ## Cross-Module: Snapshot Transfer
 
 r[properties.snapshot-chunk-count-is-div-ceil]
