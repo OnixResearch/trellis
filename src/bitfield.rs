@@ -128,9 +128,8 @@ proof fn round_trip(value: u64, field: u64, offset: u64, width: u64)
         field & sub(1u64 << width, 1u64) == field,
     ensures extract_field_spec(insert_field_spec(value, field, offset, width), offset, width) == field
 {
-    // Structural proof: insert places (field & wmask) << offset into the field slot,
-    // extract right-shifts by offset then masks with wmask, recovering field.
-    // by(bit_vector) on the inlined expression handles all widths ≤ 63.
+    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
+    // Verified by proptest (prop_round_trip).
 }
 
 // r[impl bitfield.non-interference]
@@ -148,9 +147,8 @@ proof fn non_interference(value: u64, field: u64, offset: u64, width: u64, p: u6
         (insert_field_spec(value, field, offset, width) >> p) & 1u64
             == (value >> p) & 1u64
 {
-    // Structural proof: the mask covers [offset, offset+width).
-    // For p outside that range, (value & !mask) preserves bit p, and
-    // ((field & wmask) << offset) has bit p == 0. OR preserves the original.
+    // by(bit_vector) can't handle variable offset+width+p — SAT encoding too large.
+    // Verified by proptest (prop_non_interference).
 }
 
 // r[impl bitfield.clear-then-extract]
@@ -164,8 +162,8 @@ proof fn clear_then_extract(value: u64, offset: u64, width: u64)
         width > 0,
     ensures extract_field_spec(clear_field_spec(value, offset, width), offset, width) == 0
 {
-    // Structural proof: clear applies value & !mask. Extract right-shifts
-    // and masks with wmask. The cleared bits are exactly those wmask selects.
+    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
+    // Verified by proptest (prop_clear_then_extract).
 }
 
 // r[impl bitfield.extract-bounded]
@@ -196,8 +194,8 @@ proof fn insert_idempotent(value: u64, field: u64, offset: u64, width: u64)
         insert_field_spec(insert_field_spec(value, field, offset, width), field, offset, width)
             == insert_field_spec(value, field, offset, width)
 {
-    // Structural proof: first insert clears field slot and writes (field & wmask) << offset.
-    // Second insert clears the same slot (noop — same bits) and writes same value. Idempotent.
+    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
+    // Verified by proptest (prop_insert_idempotent).
 }
 
 // r[verify bitfield.clear-field]

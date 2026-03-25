@@ -52,7 +52,6 @@ pub open spec fn classify_node_spec(
 // r[impl node-classify.voter-equivalence]
 // r[impl node-classify.leader-is-voter]
 /// Classify a single node given member set and leader.
-#[verifier::external_body]
 pub fn classify_node(
     node_id: u64,
     member_ids: &[u64],
@@ -60,9 +59,24 @@ pub fn classify_node(
 ) -> (result: (bool, bool, bool))
     ensures result == classify_node_spec(node_id, member_ids@, leader_id),
 {
-    let is_voter = member_ids.contains(&node_id);
+    let mut is_voter = false;
+    let mut i: usize = 0;
+    while i < member_ids.len()
+        invariant
+            0 <= i <= member_ids@.len(),
+            is_voter == exists|j: int| #![trigger member_ids@[j]] 0 <= j < i as int && member_ids@[j] == node_id,
+        decreases member_ids@.len() - i,
+    {
+        if member_ids[i] == node_id {
+            is_voter = true;
+        }
+        i = i + 1;
+    }
     let is_learner = !is_voter;
-    let is_leader = is_voter && leader_id.is_some_and(|lid| node_id == lid);
+    let is_leader = is_voter && match leader_id {
+        Some(lid) => node_id == lid,
+        None => false,
+    };
     (is_voter, is_learner, is_leader)
 }
 
@@ -97,7 +111,6 @@ pub open spec fn classify_nodes_spec(
 // r[impl node-classify.bounded-output]
 // r[impl node-classify.no-duplicates]
 /// Classify a batch of nodes. Truncates at MAX_NODES.
-#[verifier::external_body]
 pub fn classify_nodes(
     node_ids: &[u64],
     member_ids: &[u64],
@@ -105,16 +118,31 @@ pub fn classify_nodes(
 ) -> (result: Vec<(u64, bool, bool, bool)>)
     ensures result@ == classify_nodes_spec(node_ids@, member_ids@, leader_id),
 {
-    let limit = core::cmp::min(
-        node_ids.len(),
-        usize::try_from(MAX_NODES).unwrap_or(usize::MAX),
-    );
-    let mut result = Vec::with_capacity(limit);
-    for i in 0..limit {
+    let limit: usize = if node_ids.len() <= MAX_NODES as usize {
+        node_ids.len()
+    } else {
+        MAX_NODES as usize
+    };
+    let mut result: Vec<(u64, bool, bool, bool)> = Vec::new();
+    let mut i: usize = 0;
+    while i < limit
+        invariant
+            0 <= i <= limit,
+            limit as int == if node_ids@.len() <= MAX_NODES as int { node_ids@.len() as int } else { MAX_NODES as int },
+            result@.len() == i as int,
+            forall|j: int| #![trigger result@[j]] 0 <= j < i as int ==> ({
+                let nid = node_ids@[j];
+                let (v, l, ld) = classify_node_spec(nid, member_ids@, leader_id);
+                result@[j] == (nid, v, l, ld)
+            }),
+        decreases limit - i,
+    {
         let nid = node_ids[i];
         let (v, l, ld) = classify_node(nid, member_ids, leader_id);
         result.push((nid, v, l, ld));
+        i = i + 1;
     }
+    assert(result@ =~= classify_nodes_spec(node_ids@, member_ids@, leader_id));
     result
 }
 

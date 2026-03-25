@@ -38,19 +38,27 @@ pub open spec fn find_separator_spec(s: Seq<u8>) -> int {
 
 // r[impl peer-spec.find-separator]
 /// Find the first `@` byte. Returns -1 (as i64) if not found.
-#[verifier::external_body]
 pub fn find_separator(s: &[u8]) -> (result: i64)
+    requires s@.len() <= i64::MAX as int
     ensures
-        result == find_separator_spec(s@) || (result == -1 && find_separator_spec(s@) == -1int),
         result >= -1,
-        result < s@.len() as int ==> result >= 0 && s@[result as int] == SEPARATOR,
+        result == -1 || (result >= 0 && (result as int) < s@.len()),
+        result >= 0 ==> s@[result as int] == SEPARATOR,
+        result >= 0 ==> forall|j: int| #![trigger s@[j]] 0 <= j < result as int ==> s@[j] != SEPARATOR,
         result == -1 ==> forall|i: int| 0 <= i < s@.len() ==> s@[i] != SEPARATOR,
 {
-    for i in 0..s.len() {
-        if s[i] == b'@' {
-            // i < s.len() which fits in usize; i64::MAX >= isize::MAX >= max slice len
-            return i64::try_from(i).unwrap_or(i64::MAX);
+    let mut i: usize = 0;
+    while i < s.len()
+        invariant
+            0 <= i <= s@.len(),
+            s@.len() <= i64::MAX as int,
+            forall|j: int| #![trigger s@[j]] 0 <= j < i as int ==> s@[j] != SEPARATOR,
+        decreases s@.len() - i,
+    {
+        if s[i] == SEPARATOR {
+            return i as i64;
         }
+        i = i + 1;
     }
     -1
 }
@@ -77,6 +85,7 @@ pub open spec fn parse_peer_spec_spec(s: Seq<u8>) -> (u8, int) {
 /// Parse a peer spec string. Returns (error_code, separator_index).
 #[allow(clippy::cast_possible_wrap)] // s.len() <= isize::MAX (Rust slice invariant) fits in i64
 pub fn parse_peer_spec(s: &[u8]) -> (result: (u8, i64))
+    requires s@.len() <= i64::MAX as int
     ensures
         result.0 == OK || result.0 == ERR_NO_SEPARATOR
             || result.0 == ERR_EMPTY_NODE_ID || result.0 == ERR_EMPTY_ENDPOINT,

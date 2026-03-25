@@ -90,7 +90,6 @@ pub open spec fn promote_voters_spec(
 // r[impl voter-set.others-preserved]
 // r[impl voter-set.quorum-preserved]
 /// Promote `learner_id` into `voters`, optionally replacing `replace_id`.
-#[verifier::external_body]
 pub fn promote_voters(
     voters: &[u64],
     learner_id: u64,
@@ -102,14 +101,29 @@ pub fn promote_voters(
     ensures
         result@ == promote_voters_spec(voters@, learner_id, replace_id),
 {
-    let mut result = Vec::new();
-    for &v in voters {
-        let skip = v == learner_id
-            || replace_id.is_some_and(|rid| v == rid);
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    let ghost full = promote_voters_spec(voters@, learner_id, replace_id);
+    while i < voters.len()
+        invariant
+            0 <= i <= voters@.len(),
+            full == promote_voters_spec(voters@, learner_id, replace_id),
+            result@ + promote_build_spec(voters@, learner_id, replace_id, i as int)
+                =~= full,
+        decreases voters@.len() - i,
+    {
+        let v = voters[i];
+        let skip = v == learner_id || match replace_id {
+            Some(rid) => v == rid,
+            None => false,
+        };
         if !skip {
             result.push(v);
         }
+        i = i + 1;
     }
+    // After loop: promote_build_spec(..., voters.len()) == seq![learner_id]
+    // So result@ + seq![learner_id] =~= full
     result.push(learner_id);
     result
 }

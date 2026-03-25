@@ -733,3 +733,28 @@
     from the existential witness. Simplified proof to just `sep > 0`.
   - trust capacity: trivial is_bounded predicate with add/block maintenance proofs
   - Cross-module: tiered→try_consume link automatic
+- Closing external_body gaps (26 → 21):
+  - peer_spec::find_separator: standard "find first" while loop with forall j < i invariant.
+    Original ensures had unsatisfiable postcondition (`result < s.len() ==> result >= 0` fails
+    when result==-1 and s is non-empty). Fixed ensures to separate found/not-found cases.
+    Added `requires s@.len() <= i64::MAX` for i64 cast safety.
+  - node_classify::classify_node: membership check via while loop over member_ids with
+    existential invariant `is_voter == exists|j| 0 <= j < i && member_ids[j] == node_id`.
+    Z3 handles the existential tracking automatically.
+  - node_classify::classify_nodes: batch loop building Vec with per-element invariant.
+    Final `assert(result@ =~= classify_nodes_spec(...))` via extensional equality.
+  - bounded_peers::collect_peers: "remaining work" concatenation invariant:
+    `result@ + collect_build_spec(cands, self_id, i, max_peers - count) =~= full`.
+    Z3 unfolds the recursive spec one step per iteration — handles skip (self_id),
+    keep (non-self), and both termination conditions (count >= max or i >= len).
+  - voter_set::promote_voters: same "remaining work" pattern as bounded_peers.
+    `result@ + promote_build_spec(voters, learner_id, replace_id, i) =~= full`.
+    After loop: promote_build_spec at end position returns seq![learner_id],
+    so push(learner_id) completes the result.
+  - bitfield proofs (4): confirmed SAT encoding too large for variable offset+width.
+    by(bit_vector) on `((v & !mask) | ((f & wmask) << offset)) >> offset) & wmask == f`
+    with unconstrained offset/width creates exponential SAT problem. Permanent external_body.
+  - buddy::order_for_size: theory bridge issue — bit_vector proves `1u64 << order >= size`
+    but spec uses int-level `<<` via block_size_spec. Z3 can't bridge. Permanent external_body.
+  - glob::glob_match: spec is degenerate (`true` for starred patterns). Can't close without
+    writing full recursive glob spec. Low priority.

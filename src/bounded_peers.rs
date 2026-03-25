@@ -78,7 +78,6 @@ pub open spec fn collect_peers_spec(
 // r[impl bounded-peers.non-empty]
 // r[impl bounded-peers.no-duplicates]
 /// Collect up to `max_peers` from `candidates`, excluding `self_id`.
-#[verifier::external_body]
 pub fn collect_peers(
     candidates: &[u64],
     self_id: u64,
@@ -86,17 +85,29 @@ pub fn collect_peers(
 ) -> (result: Vec<u64>)
     ensures result@ == collect_peers_spec(candidates@, self_id, max_peers),
 {
-    let mut result = Vec::new();
-    let mut count = 0u64;
-    for &c in candidates {
-        if count >= max_peers {
-            break;
-        }
+    let mut result: Vec<u64> = Vec::new();
+    let mut count: u64 = 0;
+    let mut i: usize = 0;
+    let ghost full = collect_peers_spec(candidates@, self_id, max_peers);
+    while i < candidates.len() && count < max_peers
+        invariant
+            0 <= i <= candidates@.len(),
+            0 <= count <= max_peers,
+            full == collect_peers_spec(candidates@, self_id, max_peers),
+            result@ + collect_build_spec(candidates@, self_id, i as int, (max_peers - count) as int)
+                =~= full,
+        decreases candidates@.len() - i,
+    {
+        let c = candidates[i];
         if c != self_id {
             result.push(c);
-            count += 1;
+            count = count + 1;
         }
+        i = i + 1;
     }
+    // Loop exited: either i >= len or count >= max_peers
+    // In both cases, collect_build_spec(...) == seq![]
+    // So result@ + seq![] =~= full, hence result@ =~= full
     result
 }
 
