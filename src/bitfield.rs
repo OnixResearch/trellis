@@ -118,8 +118,46 @@ pub fn clear_field(value: u64, offset: u64, width: u64) -> (result: u64)
 
 // r[impl bitfield.round-trip]
 // r[verify bitfield.round-trip]
+/// Helper: cleared region extracts to zero.
+proof fn clear_extracts_zero(value: u64, offset: u64, width: u64)
+    requires offset + width <= 64, width <= 63, width > 0
+    ensures ((value & !(sub(1u64 << width, 1u64) << offset)) >> offset) & sub(1u64 << width, 1u64) == 0u64
+{
+    assert(
+        ((value & !(sub(1u64 << width, 1u64) << offset)) >> offset) & sub(1u64 << width, 1u64) == 0u64
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0;
+}
+
+/// Helper: shift-left then shift-right recovers field within mask.
+proof fn shift_roundtrip(field: u64, offset: u64, width: u64)
+    requires
+        offset + width <= 64, width <= 63, width > 0,
+        field & sub(1u64 << width, 1u64) == field,
+    ensures (((field & sub(1u64 << width, 1u64)) << offset) >> offset) & sub(1u64 << width, 1u64) == field
+{
+    assert(
+        (((field & sub(1u64 << width, 1u64)) << offset) >> offset) & sub(1u64 << width, 1u64) == field
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0,
+                 field & sub(1u64 << width, 1u64) == field;
+}
+
+/// Helper: OR distributes through extract when regions don't overlap.
+proof fn or_extract_distribute(a: u64, b: u64, offset: u64, width: u64)
+    requires offset + width <= 64, width <= 63, width > 0
+    ensures
+        ((a | b) >> offset) & sub(1u64 << width, 1u64)
+            == (((a >> offset) & sub(1u64 << width, 1u64)) | ((b >> offset) & sub(1u64 << width, 1u64)))
+{
+    assert(
+        ((a | b) >> offset) & sub(1u64 << width, 1u64)
+            == (((a >> offset) & sub(1u64 << width, 1u64)) | ((b >> offset) & sub(1u64 << width, 1u64)))
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0;
+}
+
 /// Round-trip: extract(insert(v, f, o, w), o, w) == f when f fits in width bits.
-#[verifier::external_body]
 proof fn round_trip(value: u64, field: u64, offset: u64, width: u64)
     requires
         offset + width <= 64,
@@ -128,14 +166,48 @@ proof fn round_trip(value: u64, field: u64, offset: u64, width: u64)
         field & sub(1u64 << width, 1u64) == field,
     ensures extract_field_spec(insert_field_spec(value, field, offset, width), offset, width) == field
 {
-    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
-    // Verified by proptest (prop_round_trip).
+    let wmask = sub(1u64 << width, 1u64);
+    let mask = wmask << offset;
+    let a = value & !mask;
+    let b = (field & wmask) << offset;
+    // Step 1: OR distributes through extract
+    or_extract_distribute(a, b, offset, width);
+    // Now: ((a | b) >> offset) & wmask == ((a >> offset) & wmask) | ((b >> offset) & wmask)
+    // Step 2: cleared part extracts to 0
+    clear_extracts_zero(value, offset, width);
+    // Now: (a >> offset) & wmask == 0
+    // Step 3: shifted field recovers original
+    shift_roundtrip(field, offset, width);
+    // Now: (b >> offset) & wmask == field
+    // Combine: 0 | field == field
+    assert(0u64 | field == field) by(bit_vector);
 }
 
 // r[impl bitfield.non-interference]
 // r[verify bitfield.non-interference]
+/// Helper: bit p of (v & !mask) equals bit p of v when p is outside [offset, offset+width).
+proof fn clear_preserves_outside(value: u64, offset: u64, width: u64, p: u64)
+    requires offset + width <= 64, width <= 63, width > 0, p < 64, p < offset || p >= offset + width
+    ensures ((value & !(sub(1u64 << width, 1u64) << offset)) >> p) & 1u64 == (value >> p) & 1u64
+{
+    assert(
+        ((value & !(sub(1u64 << width, 1u64) << offset)) >> p) & 1u64 == (value >> p) & 1u64
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0, p < 64, p < offset || p >= offset + width;
+}
+
+/// Helper: bit p of ((f & wmask) << offset) is 0 when p is outside [offset, offset+width).
+proof fn shifted_field_zero_outside(field: u64, offset: u64, width: u64, p: u64)
+    requires offset + width <= 64, width <= 63, width > 0, p < 64, p < offset || p >= offset + width
+    ensures ((((field & sub(1u64 << width, 1u64)) << offset)) >> p) & 1u64 == 0u64
+{
+    assert(
+        (((field & sub(1u64 << width, 1u64)) << offset) >> p) & 1u64 == 0u64
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0, p < 64, p < offset || p >= offset + width;
+}
+
 /// Non-interference: insert preserves bits outside the field.
-#[verifier::external_body]
 proof fn non_interference(value: u64, field: u64, offset: u64, width: u64, p: u64)
     requires
         offset + width <= 64,
@@ -147,14 +219,22 @@ proof fn non_interference(value: u64, field: u64, offset: u64, width: u64, p: u6
         (insert_field_spec(value, field, offset, width) >> p) & 1u64
             == (value >> p) & 1u64
 {
-    // by(bit_vector) can't handle variable offset+width+p — SAT encoding too large.
-    // Verified by proptest (prop_non_interference).
+    let wmask = sub(1u64 << width, 1u64);
+    let a = value & !(wmask << offset);
+    let b = (field & wmask) << offset;
+    // OR distributes through single-bit extract
+    assert(((a | b) >> p) & 1u64 == ((a >> p) & 1u64) | ((b >> p) & 1u64)) by(bit_vector);
+    // Cleared value preserves bit p outside field
+    clear_preserves_outside(value, offset, width, p);
+    // Shifted field has bit p == 0 outside field
+    shifted_field_zero_outside(field, offset, width, p);
+    // Combine: original_bit | 0 == original_bit
+    assert(((value >> p) & 1u64) | 0u64 == (value >> p) & 1u64) by(bit_vector);
 }
 
 // r[impl bitfield.clear-then-extract]
 // r[verify bitfield.clear-then-extract]
 /// Clear-then-extract: extracting from a cleared field gives 0.
-#[verifier::external_body]
 proof fn clear_then_extract(value: u64, offset: u64, width: u64)
     requires
         offset + width <= 64,
@@ -162,8 +242,8 @@ proof fn clear_then_extract(value: u64, offset: u64, width: u64)
         width > 0,
     ensures extract_field_spec(clear_field_spec(value, offset, width), offset, width) == 0
 {
-    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
-    // Verified by proptest (prop_clear_then_extract).
+    // Reuses the clear_extracts_zero helper (which verifies by bit_vector)
+    clear_extracts_zero(value, offset, width);
 }
 
 // r[impl bitfield.extract-bounded]
@@ -183,8 +263,21 @@ proof fn extract_bounded(value: u64, offset: u64, width: u64)
 }
 
 // r[verify bitfield.insert-field]
+/// Helper: shifted field has no bits outside the mask region.
+proof fn shifted_field_outside_mask_zero(field: u64, offset: u64, width: u64)
+    requires offset + width <= 64, width <= 63, width > 0
+    ensures ((field & sub(1u64 << width, 1u64)) << offset) & !(sub(1u64 << width, 1u64) << offset) == 0u64
+{
+    assert(
+        ((field & sub(1u64 << width, 1u64)) << offset) & !(sub(1u64 << width, 1u64) << offset) == 0u64
+    ) by(bit_vector)
+        requires offset + width <= 64, width <= 63, width > 0;
+}
+
 /// Insert idempotent: inserting the same field twice is the same as once.
-#[verifier::external_body]
+/// Key decomposition: insert(x,f,o,w) = (x & !mask) | f_shifted.
+/// After first insert: only bits outside mask come from x.
+/// Second insert: clears same mask region, writes same field → identical result.
 proof fn insert_idempotent(value: u64, field: u64, offset: u64, width: u64)
     requires
         offset + width <= 64,
@@ -194,8 +287,53 @@ proof fn insert_idempotent(value: u64, field: u64, offset: u64, width: u64)
         insert_field_spec(insert_field_spec(value, field, offset, width), field, offset, width)
             == insert_field_spec(value, field, offset, width)
 {
-    // by(bit_vector) can't handle variable offset+width — SAT encoding too large.
-    // Verified by proptest (prop_insert_idempotent).
+    // Step 1: f_shifted has no bits outside mask
+    shifted_field_outside_mask_zero(field, offset, width);
+
+    // Step 2: AND distributes over OR
+    assert(
+        ((value & !(sub(1u64 << width, 1u64) << offset))
+         | ((field & sub(1u64 << width, 1u64)) << offset))
+        & !(sub(1u64 << width, 1u64) << offset)
+        == (value & !(sub(1u64 << width, 1u64) << offset)) & !(sub(1u64 << width, 1u64) << offset)
+         | (((field & sub(1u64 << width, 1u64)) << offset) & !(sub(1u64 << width, 1u64) << offset))
+    ) by(bit_vector);
+
+    // Step 3: & !mask is idempotent
+    assert(
+        (value & !(sub(1u64 << width, 1u64) << offset)) & !(sub(1u64 << width, 1u64) << offset)
+        == value & !(sub(1u64 << width, 1u64) << offset)
+    ) by(bit_vector);
+
+    // Step 4: Connect to spec fns.
+    // Z3 needs: once & !mask == value & !mask (the only thing insert reads from x is x & !mask)
+    // Since steps 1+2+3 prove ((v&!M)|f_s)&!M == (v&!M), assert it directly:
+    let wmask = sub(1u64 << width, 1u64);
+    let mask = wmask << offset;
+    let f_s = (field & wmask) << offset;
+    let cleared = value & !mask;
+    // Z3 knows from step 1: f_s & !mask == 0
+    // Z3 knows from step 2: (cleared | f_s) & !mask == (cleared & !mask) | (f_s & !mask)
+    // Z3 knows from step 3: cleared & !mask == cleared
+    // Chain: (cleared | f_s) & !mask == cleared | 0 == cleared
+    // Spell it out for Z3:
+    assert((cleared | f_s) & !mask == cleared) by {
+        // distribute
+        assert((cleared | f_s) & !mask == (cleared & !mask) | (f_s & !mask));
+        // idempotent: cleared & !mask == cleared
+        assert(cleared & !mask == cleared) by {
+            assert((value & !(sub(1u64 << width, 1u64) << offset)) & !(sub(1u64 << width, 1u64) << offset)
+                == value & !(sub(1u64 << width, 1u64) << offset)) by(bit_vector);
+        };
+        // zero: f_s & !mask == 0
+        assert(f_s & !mask == 0u64);
+        // combine
+        assert(cleared | 0u64 == cleared) by(bit_vector);
+    };
+
+    // Now Z3 can see: once == cleared | f_s, and once & !mask == cleared
+    // So insert(once, f) == (once & !mask) | f_s == cleared | f_s == once
+    assert(field_mask_spec(offset, width) == mask);
 }
 
 // r[verify bitfield.clear-field]

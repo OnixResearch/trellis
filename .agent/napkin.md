@@ -758,3 +758,31 @@
     but spec uses int-level `<<` via block_size_spec. Z3 can't bridge. Permanent external_body.
   - glob::glob_match: spec is degenerate (`true` for starred patterns). Can't close without
     writing full recursive glob spec. Low priority.
+- Closing external_body via decomposition (21 → 16):
+  - hash_bucket::pow2_mask_is_mod: 64-way case split on power-of-two values.
+    pow2_cases helper proves `n > 0 && n & (n-1) == 0` implies n is one of 64 values
+    (single by(bit_vector) on one variable). Each case: `x & (c-1) == x % c` with
+    constant c is trivial SAT. Total: 65 new by(bit_vector) assertions, all instant.
+  - bitfield::round_trip: decomposed into 3 sub-lemmas:
+    (A) clear_extracts_zero: cleared bits extract to 0
+    (B) shift_roundtrip: shift-left then shift-right recovers field within mask
+    (C) or_extract_distribute: OR distributes through shift+mask
+    Each sub-lemma is simpler SAT (fewer operations per assertion). Main proof chains
+    them with `assert(0u64 | field == field) by(bit_vector)`.
+  - bitfield::non_interference: decomposed into:
+    (A) clear_preserves_outside: bit p of (v & !mask) equals bit p of v outside field
+    (B) shifted_field_zero_outside: bit p of f_shifted is 0 outside field
+    (C) OR single-bit distribute: `((a|b)>>p)&1 == ((a>>p)&1)|((b>>p)&1)`
+  - bitfield::clear_then_extract: delegates to clear_extracts_zero (already proven)
+  - bitfield::insert_idempotent: decomposed into 4 steps:
+    (1) shifted_field_outside_mask_zero: f_shifted & !mask == 0
+    (2) AND distributes over OR (inline by(bit_vector))
+    (3) AND-with-!mask is idempotent (inline by(bit_vector))
+    (4) Chain via `assert((cleared | f_s) & !mask == cleared) by { ... }`
+    Key insight: let bindings are invisible to by(bit_vector) — must inline the full
+    expressions. The chaining proof uses nested `assert ... by { ... }` to give Z3
+    the intermediate facts in the right order.
+  - Key decomposition principle: by(bit_vector) fails when the circuit has too many
+    variable shifts composed. Decomposing into sub-lemmas with fewer shift operations
+    per assertion makes each SAT problem tractable. The connecting logic uses Z3's
+    standard arithmetic reasoning (no by(bit_vector) needed for equality chaining).

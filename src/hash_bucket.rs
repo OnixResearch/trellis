@@ -99,12 +99,125 @@ proof fn assign_bucket_pow2_deterministic(hash: u64, num_buckets: u64)
 // r[verify hash-bucket.assign-pow2]
 // r[verify hash-bucket.assign]
 /// For power of two n, hash & (n-1) == hash % n.
-// Trusted: 64-bit SAT encoding exceeds rlimit. Verified by proptest.
-#[verifier::external_body]
+/// Decomposed into per-power cases: constant masks make SAT trivial.
 proof fn pow2_mask_is_mod(x: u64, n: u64)
     requires n > 0, n & sub(n, 1) == 0
     ensures x & sub(n, 1) == x % n
-{}
+{
+    // n > 0 && n & (n-1) == 0 means n is a power of 2.
+    // Enumerate all 64 possible values.
+    pow2_cases(n);
+    if n == 1u64 { assert(x & sub(1u64, 1u64) == x % 1u64) by(bit_vector); }
+    else if n == 2u64 { assert(x & sub(2u64, 1u64) == x % 2u64) by(bit_vector); }
+    else if n == 4u64 { assert(x & sub(4u64, 1u64) == x % 4u64) by(bit_vector); }
+    else if n == 8u64 { assert(x & sub(8u64, 1u64) == x % 8u64) by(bit_vector); }
+    else if n == 16u64 { assert(x & sub(16u64, 1u64) == x % 16u64) by(bit_vector); }
+    else if n == 32u64 { assert(x & sub(32u64, 1u64) == x % 32u64) by(bit_vector); }
+    else if n == 64u64 { assert(x & sub(64u64, 1u64) == x % 64u64) by(bit_vector); }
+    else if n == 128u64 { assert(x & sub(128u64, 1u64) == x % 128u64) by(bit_vector); }
+    else if n == 256u64 { assert(x & sub(256u64, 1u64) == x % 256u64) by(bit_vector); }
+    else if n == 512u64 { assert(x & sub(512u64, 1u64) == x % 512u64) by(bit_vector); }
+    else if n == 1024u64 { assert(x & sub(1024u64, 1u64) == x % 1024u64) by(bit_vector); }
+    else if n == 2048u64 { assert(x & sub(2048u64, 1u64) == x % 2048u64) by(bit_vector); }
+    else if n == 4096u64 { assert(x & sub(4096u64, 1u64) == x % 4096u64) by(bit_vector); }
+    else if n == 8192u64 { assert(x & sub(8192u64, 1u64) == x % 8192u64) by(bit_vector); }
+    else if n == 16384u64 { assert(x & sub(16384u64, 1u64) == x % 16384u64) by(bit_vector); }
+    else if n == 32768u64 { assert(x & sub(32768u64, 1u64) == x % 32768u64) by(bit_vector); }
+    else if n == 65536u64 { assert(x & sub(65536u64, 1u64) == x % 65536u64) by(bit_vector); }
+    else if n == 0x2_0000u64 { assert(x & sub(0x2_0000u64, 1u64) == x % 0x2_0000u64) by(bit_vector); }
+    else if n == 0x4_0000u64 { assert(x & sub(0x4_0000u64, 1u64) == x % 0x4_0000u64) by(bit_vector); }
+    else if n == 0x8_0000u64 { assert(x & sub(0x8_0000u64, 1u64) == x % 0x8_0000u64) by(bit_vector); }
+    else if n == 0x10_0000u64 { assert(x & sub(0x10_0000u64, 1u64) == x % 0x10_0000u64) by(bit_vector); }
+    else if n == 0x20_0000u64 { assert(x & sub(0x20_0000u64, 1u64) == x % 0x20_0000u64) by(bit_vector); }
+    else if n == 0x40_0000u64 { assert(x & sub(0x40_0000u64, 1u64) == x % 0x40_0000u64) by(bit_vector); }
+    else if n == 0x80_0000u64 { assert(x & sub(0x80_0000u64, 1u64) == x % 0x80_0000u64) by(bit_vector); }
+    else if n == 0x100_0000u64 { assert(x & sub(0x100_0000u64, 1u64) == x % 0x100_0000u64) by(bit_vector); }
+    else if n == 0x200_0000u64 { assert(x & sub(0x200_0000u64, 1u64) == x % 0x200_0000u64) by(bit_vector); }
+    else if n == 0x400_0000u64 { assert(x & sub(0x400_0000u64, 1u64) == x % 0x400_0000u64) by(bit_vector); }
+    else if n == 0x800_0000u64 { assert(x & sub(0x800_0000u64, 1u64) == x % 0x800_0000u64) by(bit_vector); }
+    else if n == 0x1000_0000u64 { assert(x & sub(0x1000_0000u64, 1u64) == x % 0x1000_0000u64) by(bit_vector); }
+    else if n == 0x2000_0000u64 { assert(x & sub(0x2000_0000u64, 1u64) == x % 0x2000_0000u64) by(bit_vector); }
+    else if n == 0x4000_0000u64 { assert(x & sub(0x4000_0000u64, 1u64) == x % 0x4000_0000u64) by(bit_vector); }
+    else if n == 0x8000_0000u64 { assert(x & sub(0x8000_0000u64, 1u64) == x % 0x8000_0000u64) by(bit_vector); }
+    else if n == 0x1_0000_0000u64 { assert(x & sub(0x1_0000_0000u64, 1u64) == x % 0x1_0000_0000u64) by(bit_vector); }
+    else if n == 0x2_0000_0000u64 { assert(x & sub(0x2_0000_0000u64, 1u64) == x % 0x2_0000_0000u64) by(bit_vector); }
+    else if n == 0x4_0000_0000u64 { assert(x & sub(0x4_0000_0000u64, 1u64) == x % 0x4_0000_0000u64) by(bit_vector); }
+    else if n == 0x8_0000_0000u64 { assert(x & sub(0x8_0000_0000u64, 1u64) == x % 0x8_0000_0000u64) by(bit_vector); }
+    else if n == 0x10_0000_0000u64 { assert(x & sub(0x10_0000_0000u64, 1u64) == x % 0x10_0000_0000u64) by(bit_vector); }
+    else if n == 0x20_0000_0000u64 { assert(x & sub(0x20_0000_0000u64, 1u64) == x % 0x20_0000_0000u64) by(bit_vector); }
+    else if n == 0x40_0000_0000u64 { assert(x & sub(0x40_0000_0000u64, 1u64) == x % 0x40_0000_0000u64) by(bit_vector); }
+    else if n == 0x80_0000_0000u64 { assert(x & sub(0x80_0000_0000u64, 1u64) == x % 0x80_0000_0000u64) by(bit_vector); }
+    else if n == 0x100_0000_0000u64 { assert(x & sub(0x100_0000_0000u64, 1u64) == x % 0x100_0000_0000u64) by(bit_vector); }
+    else if n == 0x200_0000_0000u64 { assert(x & sub(0x200_0000_0000u64, 1u64) == x % 0x200_0000_0000u64) by(bit_vector); }
+    else if n == 0x400_0000_0000u64 { assert(x & sub(0x400_0000_0000u64, 1u64) == x % 0x400_0000_0000u64) by(bit_vector); }
+    else if n == 0x800_0000_0000u64 { assert(x & sub(0x800_0000_0000u64, 1u64) == x % 0x800_0000_0000u64) by(bit_vector); }
+    else if n == 0x1000_0000_0000u64 { assert(x & sub(0x1000_0000_0000u64, 1u64) == x % 0x1000_0000_0000u64) by(bit_vector); }
+    else if n == 0x2000_0000_0000u64 { assert(x & sub(0x2000_0000_0000u64, 1u64) == x % 0x2000_0000_0000u64) by(bit_vector); }
+    else if n == 0x4000_0000_0000u64 { assert(x & sub(0x4000_0000_0000u64, 1u64) == x % 0x4000_0000_0000u64) by(bit_vector); }
+    else if n == 0x8000_0000_0000u64 { assert(x & sub(0x8000_0000_0000u64, 1u64) == x % 0x8000_0000_0000u64) by(bit_vector); }
+    else if n == 0x1_0000_0000_0000u64 { assert(x & sub(0x1_0000_0000_0000u64, 1u64) == x % 0x1_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x2_0000_0000_0000u64 { assert(x & sub(0x2_0000_0000_0000u64, 1u64) == x % 0x2_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x4_0000_0000_0000u64 { assert(x & sub(0x4_0000_0000_0000u64, 1u64) == x % 0x4_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x8_0000_0000_0000u64 { assert(x & sub(0x8_0000_0000_0000u64, 1u64) == x % 0x8_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x10_0000_0000_0000u64 { assert(x & sub(0x10_0000_0000_0000u64, 1u64) == x % 0x10_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x20_0000_0000_0000u64 { assert(x & sub(0x20_0000_0000_0000u64, 1u64) == x % 0x20_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x40_0000_0000_0000u64 { assert(x & sub(0x40_0000_0000_0000u64, 1u64) == x % 0x40_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x80_0000_0000_0000u64 { assert(x & sub(0x80_0000_0000_0000u64, 1u64) == x % 0x80_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x100_0000_0000_0000u64 { assert(x & sub(0x100_0000_0000_0000u64, 1u64) == x % 0x100_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x200_0000_0000_0000u64 { assert(x & sub(0x200_0000_0000_0000u64, 1u64) == x % 0x200_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x400_0000_0000_0000u64 { assert(x & sub(0x400_0000_0000_0000u64, 1u64) == x % 0x400_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x800_0000_0000_0000u64 { assert(x & sub(0x800_0000_0000_0000u64, 1u64) == x % 0x800_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x1000_0000_0000_0000u64 { assert(x & sub(0x1000_0000_0000_0000u64, 1u64) == x % 0x1000_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x2000_0000_0000_0000u64 { assert(x & sub(0x2000_0000_0000_0000u64, 1u64) == x % 0x2000_0000_0000_0000u64) by(bit_vector); }
+    else if n == 0x4000_0000_0000_0000u64 { assert(x & sub(0x4000_0000_0000_0000u64, 1u64) == x % 0x4000_0000_0000_0000u64) by(bit_vector); }
+    // n == 0x8000_0000_0000_0000 is the last power of 2 in u64
+    else { assert(x & sub(0x8000_0000_0000_0000u64, 1u64) == x % 0x8000_0000_0000_0000u64) by(bit_vector); }
+}
+
+/// Helper: n > 0 && n & (n-1) == 0 implies n is one of the 64 powers of 2.
+proof fn pow2_cases(n: u64)
+    requires n > 0, n & sub(n, 1) == 0
+    ensures
+        n == 1u64 || n == 2u64 || n == 4u64 || n == 8u64
+        || n == 16u64 || n == 32u64 || n == 64u64 || n == 128u64
+        || n == 256u64 || n == 512u64 || n == 1024u64 || n == 2048u64
+        || n == 4096u64 || n == 8192u64 || n == 16384u64 || n == 32768u64
+        || n == 65536u64 || n == 0x2_0000u64 || n == 0x4_0000u64 || n == 0x8_0000u64
+        || n == 0x10_0000u64 || n == 0x20_0000u64 || n == 0x40_0000u64 || n == 0x80_0000u64
+        || n == 0x100_0000u64 || n == 0x200_0000u64 || n == 0x400_0000u64 || n == 0x800_0000u64
+        || n == 0x1000_0000u64 || n == 0x2000_0000u64 || n == 0x4000_0000u64 || n == 0x8000_0000u64
+        || n == 0x1_0000_0000u64 || n == 0x2_0000_0000u64 || n == 0x4_0000_0000u64 || n == 0x8_0000_0000u64
+        || n == 0x10_0000_0000u64 || n == 0x20_0000_0000u64 || n == 0x40_0000_0000u64 || n == 0x80_0000_0000u64
+        || n == 0x100_0000_0000u64 || n == 0x200_0000_0000u64 || n == 0x400_0000_0000u64 || n == 0x800_0000_0000u64
+        || n == 0x1000_0000_0000u64 || n == 0x2000_0000_0000u64 || n == 0x4000_0000_0000u64 || n == 0x8000_0000_0000u64
+        || n == 0x1_0000_0000_0000u64 || n == 0x2_0000_0000_0000u64 || n == 0x4_0000_0000_0000u64 || n == 0x8_0000_0000_0000u64
+        || n == 0x10_0000_0000_0000u64 || n == 0x20_0000_0000_0000u64 || n == 0x40_0000_0000_0000u64 || n == 0x80_0000_0000_0000u64
+        || n == 0x100_0000_0000_0000u64 || n == 0x200_0000_0000_0000u64 || n == 0x400_0000_0000_0000u64 || n == 0x800_0000_0000_0000u64
+        || n == 0x1000_0000_0000_0000u64 || n == 0x2000_0000_0000_0000u64 || n == 0x4000_0000_0000_0000u64
+        || n == 0x8000_0000_0000_0000u64
+{
+    assert(
+        n > 0u64 && n & sub(n, 1u64) == 0u64 ==> (
+            n == 1u64 || n == 2u64 || n == 4u64 || n == 8u64
+            || n == 16u64 || n == 32u64 || n == 64u64 || n == 128u64
+            || n == 256u64 || n == 512u64 || n == 1024u64 || n == 2048u64
+            || n == 4096u64 || n == 8192u64 || n == 16384u64 || n == 32768u64
+            || n == 65536u64 || n == 0x2_0000u64 || n == 0x4_0000u64 || n == 0x8_0000u64
+            || n == 0x10_0000u64 || n == 0x20_0000u64 || n == 0x40_0000u64 || n == 0x80_0000u64
+            || n == 0x100_0000u64 || n == 0x200_0000u64 || n == 0x400_0000u64 || n == 0x800_0000u64
+            || n == 0x1000_0000u64 || n == 0x2000_0000u64 || n == 0x4000_0000u64 || n == 0x8000_0000u64
+            || n == 0x1_0000_0000u64 || n == 0x2_0000_0000u64 || n == 0x4_0000_0000u64 || n == 0x8_0000_0000u64
+            || n == 0x10_0000_0000u64 || n == 0x20_0000_0000u64 || n == 0x40_0000_0000u64 || n == 0x80_0000_0000u64
+            || n == 0x100_0000_0000u64 || n == 0x200_0000_0000u64 || n == 0x400_0000_0000u64 || n == 0x800_0000_0000u64
+            || n == 0x1000_0000_0000u64 || n == 0x2000_0000_0000u64 || n == 0x4000_0000_0000u64 || n == 0x8000_0000_0000u64
+            || n == 0x1_0000_0000_0000u64 || n == 0x2_0000_0000_0000u64 || n == 0x4_0000_0000_0000u64 || n == 0x8_0000_0000_0000u64
+            || n == 0x10_0000_0000_0000u64 || n == 0x20_0000_0000_0000u64 || n == 0x40_0000_0000_0000u64 || n == 0x80_0000_0000_0000u64
+            || n == 0x100_0000_0000_0000u64 || n == 0x200_0000_0000_0000u64 || n == 0x400_0000_0000_0000u64 || n == 0x800_0000_0000_0000u64
+            || n == 0x1000_0000_0000_0000u64 || n == 0x2000_0000_0000_0000u64 || n == 0x4000_0000_0000_0000u64
+            || n == 0x8000_0000_0000_0000u64
+        )
+    ) by(bit_vector);
+}
 
 /// Power-of-two assignment is equivalent to modular assignment.
 proof fn assign_bucket_pow2_equivalent(hash: u64, num_buckets: u64)
