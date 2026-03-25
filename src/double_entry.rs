@@ -47,11 +47,13 @@ pub fn sum_amounts(amounts: &[u64]) -> (result: Option<u64>)
             0 <= i <= amounts@.len(),
             acc as int == sum_spec(amounts@, 0) - sum_spec(amounts@, i as int),
             acc as int <= u64::MAX as int,
+        decreases amounts@.len() - i,
     {
         if amounts[i] > u64::MAX - acc {
             proof {
-                // sum_spec(amounts@, i) >= amounts@[i] >= amounts@[i] > u64::MAX - acc
-                // so sum_spec(amounts@, 0) = acc + sum_spec(amounts@, i) > u64::MAX
+                // Unfold: sum_spec(amounts@, i) = amounts@[i] + sum_spec(amounts@, i+1)
+                // sum_spec(amounts@, i+1) >= 0, so sum_spec(amounts@, i) >= amounts@[i]
+                sum_nonneg(amounts@, (i + 1) as int);
                 assert(sum_spec(amounts@, i as int) >= amounts@[i as int] as int);
             }
             return None;
@@ -146,6 +148,7 @@ pub fn all_positive(amounts: &[u64]) -> (result: bool)
             0 <= i <= amounts@.len(),
             forall|j: int| #![trigger amounts@[j]]
                 0 <= j < i as int ==> amounts@[j] > 0,
+        decreases amounts@.len() - i,
     {
         if amounts[i] == 0 {
             return false;
@@ -195,6 +198,7 @@ pub proof fn sum_append(amounts: Seq<u64>, x: u64)
 
 /// Helper: sum_append from arbitrary index.
 proof fn sum_append_from(amounts: Seq<u64>, x: u64, from: int)
+    requires from >= 0
     ensures sum_spec(amounts.push(x), from) == sum_spec(amounts, from) + if from <= amounts.len() as int { x as int } else { 0 }
     decreases amounts.len() - from
 {
@@ -245,7 +249,10 @@ proof fn sum_empty()
 /// Sum of single element is that element.
 proof fn sum_single(x: u64)
     ensures sum_all_spec(seq![x]) == x as int
-{}
+{
+    // Unfold: sum_spec(seq![x], 0) = x + sum_spec(seq![x], 1) = x + 0
+    assert(sum_spec(seq![x], 1) == 0);
+}
 
 // r[verify double-entry.balanced]
 /// Balanced implies zero trial balance.

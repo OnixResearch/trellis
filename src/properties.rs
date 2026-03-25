@@ -3812,15 +3812,6 @@ mod coordination_cross_tests {
             }
         }
 
-        // r[verify properties.lock-deadline-is-expiration-expires-at]
-        #[test]
-        fn prop_lock_first_token_always_one() {
-            prop_assert_eq!(
-                crate::distributed_lock::compute_next_fencing_token(None),
-                1u64
-            );
-        }
-
         // r[verify properties.election-token-is-fencing-issue]
         // Election token and rwlock writer token are the same function
         #[test]
@@ -3830,5 +3821,14 @@ mod coordination_cross_tests {
                 crate::rwlock::compute_next_write_token(current)
             );
         }
+    }
+
+    // r[verify properties.lock-deadline-is-expiration-expires-at]
+    #[test]
+    fn lock_first_token_always_one() {
+        assert_eq!(
+            crate::distributed_lock::compute_next_fencing_token(None),
+            1u64
+        );
     }
 }

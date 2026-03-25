@@ -110,6 +110,7 @@ pub fn journal_valid(entries: &[JournalEntry], initial_balance: u64) -> (result:
             0 <= i <= entries@.len(),
             journal_valid_from_spec(entries@, initial_balance, 0)
                 <==> journal_valid_from_spec(entries@, initial_balance, i as int),
+        decreases entries@.len() - i,
     {
         let prior = if i == 0 { initial_balance } else { entries[i - 1].running_balance };
         let expected = apply_entry(prior, entries[i].amount, entries[i].is_debit);
@@ -311,6 +312,8 @@ proof fn append_validity_helper(
         }
         // The prior is final_balance_spec(entries, initial_balance)
         // and entry_balance_correct_spec(entry, prior) holds by precondition
+        // Tail: from+1 >= extended.len(), so trivially valid
+        append_validity_helper(entries, initial_balance, entry, from + 1);
     } else {
         // from < entries.len(): existing entry
         assert(extended[from] == entries[from]);

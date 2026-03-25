@@ -199,7 +199,10 @@ proof fn sum_empty()
 /// Sum of a single element is that element.
 proof fn sum_singleton(v: u16)
     ensures sum_sizes_spec(seq![v], 0) == v as int
-{}
+{
+    // Unfold: sum(seq![v], 0) = v + sum(seq![v], 1) = v + 0
+    assert(sum_sizes_spec(seq![v], 1) == 0);
+}
 
 // r[verify layout-constraint.conservation]
 /// Sum is non-negative.

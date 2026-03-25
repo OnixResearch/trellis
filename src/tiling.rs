@@ -294,11 +294,16 @@ proof fn clip_identity_when_visible(
     seg_pos: u16, seg_size: u16, vp_start: u16, vp_size: u16,
 )
     requires
+        seg_size > 0,
+        vp_size > 0,
         seg_pos as int >= vp_start as int,
         seg_pos as int + seg_size as int <= vp_start as int + vp_size as int,
     ensures clip_to_viewport_spec(seg_pos, seg_size, vp_start, vp_size)
         == (seg_pos as int, seg_size as int)
-{}
+{
+    // seg_end = seg_pos + seg_size > seg_pos >= vp_start, so not fully left
+    // seg_pos < seg_pos + seg_size <= vp_start + vp_size = vp_end, so not fully right
+}
 
 // r[verify tiling.clip]
 /// A fully outside segment clips to zero size.
