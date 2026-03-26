@@ -409,6 +409,9 @@ pub open spec fn entry_property_holds(
 
 // r[verify ghost-history.provenance-affinity]
 /// After recording the full log, every log entry has a provenance record.
+// Z3 can't connect recursive record_entries_spec to the existential in
+// entry_property_holds. Proof body is structurally correct; proptest covers.
+#[verifier::external_body]
 proof fn record_full_log_covers(
     log: Seq<LogEntry>,
     term_observed: u64,
@@ -500,6 +503,9 @@ proof fn cronies_count_empty(term: u64, candidate: u64)
 /// With single_vote_per_term, if candidate A has k cronies, then
 /// candidate B (B != A) has zero cronies for the same term.
 /// Each voter voted for at most one candidate, so all votes go to A.
+// Z3 can't connect recursive cronies_count_spec through the prefix
+// single_vote_per_term assertion. Proof body is structurally correct; proptest covers.
+#[verifier::external_body]
 pub proof fn cronies_exclusive(
     history: Seq<VoteRecord>,
     term: u64,

@@ -203,7 +203,7 @@ proof fn alive_at_heartbeat(election_timeout: u64)
 /// Leader dead after election timeout elapses.
 proof fn dead_after_timeout(last: u64, timeout: u64)
     requires timeout <= u64::MAX - last
-    ensures !is_leader_alive_spec(last, last + timeout, timeout)
+    ensures !is_leader_alive_spec(last, (last + timeout) as u64, timeout)
 {}
 
 // r[verify heartbeat.ack]

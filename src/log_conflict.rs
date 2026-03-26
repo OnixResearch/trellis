@@ -148,8 +148,6 @@ pub open spec fn append_entries_spec(
 
 // r[impl log-conflict.resolve]
 /// Resolve a log conflict: find divergence, truncate, and append.
-// @verified-logic:exempt — loop invariant connects to recursive spec via resolve_start_state
-#[verifier::external_body]
 pub fn resolve_conflict(
     follower: &mut Vec<LogEntry>,
     leader_entries: &[LogEntry],
@@ -163,6 +161,7 @@ pub fn resolve_conflict(
             old(follower)@, leader_entries@, start_index as int,
         )
 {
+    let ghost original = follower@;
     let conflict = find_conflict(follower, leader_entries, start_index);
     let append_from: usize;
 
@@ -173,6 +172,26 @@ pub fn resolve_conflict(
                 follower.truncate(trunc_len);
             }
             append_from = offset;
+
+            // After truncation, follower is the conflict-case prefix
+            proof {
+                conflict_in_range(original, leader_entries@, start_index as int);
+                let spec_conflict = find_conflict_spec(original, leader_entries@, start_index as int);
+                assert(spec_conflict == Some(offset as int));
+
+                let spec_trunc = start_index as int + offset as int;
+                if spec_trunc <= original.len() {
+                    // follower was truncated to subrange(0, spec_trunc)
+                    assert(follower@ =~= original.subrange(0, spec_trunc));
+                    assert(resolve_start_state(original, leader_entries@, start_index as int, offset as int)
+                        == original.subrange(0, spec_trunc));
+                } else {
+                    assert(follower@ =~= original);
+                    assert(resolve_start_state(original, leader_entries@, start_index as int, offset as int)
+                        == original);
+                }
+                assert(follower@ == resolve_start_state(original, leader_entries@, start_index as int, offset as int));
+            }
         }
         None => {
             let overlap: usize;
@@ -184,7 +203,23 @@ pub fn resolve_conflict(
                 overlap = 0;
             }
             append_from = overlap;
+
+            // No truncation happened — follower is unchanged
+            proof {
+                assert(follower@ =~= original);
+                let spec_conflict = find_conflict_spec(original, leader_entries@, start_index as int);
+                assert(spec_conflict is None);
+                assert(resolve_start_state(original, leader_entries@, start_index as int, overlap as int)
+                    == original);
+                assert(follower@ == resolve_start_state(original, leader_entries@, start_index as int, overlap as int));
+            }
         }
+    }
+
+    // At this point: follower@ == resolve_start_state(original, leader_entries@, start_index, append_from)
+    // Now prove that resolve_conflict_spec == append_entries_spec(resolve_start_state(...), entries, append_from)
+    proof {
+        resolve_equals_append_from_start(original, leader_entries@, start_index as int);
     }
 
     // Append leader_entries[append_from..]
@@ -193,17 +228,32 @@ pub fn resolve_conflict(
         invariant
             append_from as int <= j as int <= leader_entries@.len(),
             follower@ == append_entries_spec(
-                resolve_start_state(old(follower)@, leader_entries@, start_index as int, append_from as int),
+                resolve_start_state(original, leader_entries@, start_index as int, append_from as int),
                 leader_entries@,
                 j as int,
             ),
             start_index as int + leader_entries@.len() <= usize::MAX as int,
-            old(follower)@.len() + leader_entries@.len() <= usize::MAX as int,
+            original.len() + leader_entries@.len() <= usize::MAX as int,
         decreases leader_entries@.len() - j,
     {
+        proof {
+            append_entries_step(
+                follower@,
+                leader_entries@,
+                j as int,
+            );
+        }
         follower.push(leader_entries[j]);
         j = j + 1;
     }
+
+    // Post-loop: j == leader_entries.len()
+    // follower@ == append_entries_spec(resolve_start_state(...), entries, entries.len())
+    //           == resolve_start_state(...)  [by append_entries_empty]
+    // Wait — that's wrong. We need:
+    // follower@ == append_entries_spec(rss, entries, append_from)
+    //           == resolve_conflict_spec(original, entries, start_index)
+    // which is what resolve_equals_append_from_start proves.
 }
 
 /// Helper spec: the state of the follower log after truncation but before
@@ -396,6 +446,81 @@ proof fn append_entries_empty(prefix: Seq<LogEntry>, leader_entries: Seq<LogEntr
     requires from >= leader_entries.len()
     ensures append_entries_spec(prefix, leader_entries, from) == prefix
 {}
+
+// r[verify log-conflict.resolve]
+/// One-step unrolling: append_entries_spec at `from` equals
+/// append_entries_spec at `from + 1` with the element pushed.
+/// This is the definition itself, but stated as a lemma so Z3
+/// can use it in loop invariant proofs.
+proof fn append_entries_step(
+    prefix: Seq<LogEntry>,
+    leader_entries: Seq<LogEntry>,
+    from: int,
+)
+    requires 0 <= from < leader_entries.len()
+    ensures
+        append_entries_spec(prefix, leader_entries, from)
+        == append_entries_spec(prefix.push(leader_entries[from]), leader_entries, from + 1)
+{}
+
+// r[verify log-conflict.resolve]
+/// resolve_conflict_spec equals append_entries_spec applied to
+/// resolve_start_state with the correct append_from.
+///
+/// In the conflict case: append_from == offset
+/// In the no-conflict case: append_from == overlap
+proof fn resolve_equals_append_from_start(
+    follower: Seq<LogEntry>,
+    leader_entries: Seq<LogEntry>,
+    start_index: int,
+)
+    ensures
+        resolve_conflict_spec(follower, leader_entries, start_index)
+        == ({
+            let conflict = find_conflict_spec(follower, leader_entries, start_index);
+            let append_from: int = match conflict {
+                Some(offset) => offset,
+                None => {
+                    if start_index + leader_entries.len() <= follower.len() {
+                        leader_entries.len() as int
+                    } else if start_index <= follower.len() {
+                        (follower.len() - start_index) as int
+                    } else {
+                        0int
+                    }
+                }
+            };
+            append_entries_spec(
+                resolve_start_state(follower, leader_entries, start_index, append_from),
+                leader_entries,
+                append_from,
+            )
+        })
+{
+    // Both sides unfold to the same expression by definition.
+    // resolve_conflict_spec computes the prefix inline, resolve_start_state
+    // computes the same prefix given the same conflict/offset.
+    let conflict = find_conflict_spec(follower, leader_entries, start_index);
+    match conflict {
+        Some(offset) => {
+            // resolve_conflict_spec: prefix = subrange(0, si+offset), then append from offset
+            // resolve_start_state: same subrange
+            // They're definitionally equal.
+            let trunc_len = start_index + offset;
+            let prefix = if trunc_len <= follower.len() {
+                follower.subrange(0, trunc_len)
+            } else {
+                follower
+            };
+            assert(resolve_start_state(follower, leader_entries, start_index, offset) == prefix);
+        }
+        None => {
+            // resolve_conflict_spec: prefix = follower, append from overlap
+            // resolve_start_state with None conflict: follower
+            assert(resolve_start_state(follower, leader_entries, start_index, 0) == follower);
+        }
+    }
+}
 
 // r[verify log-conflict.resolve]
 /// Append increases length by (leader_entries.len() - from).
