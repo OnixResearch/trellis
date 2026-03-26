@@ -1,9 +1,12 @@
 ## Phase 1: Rate limit nonlinear arithmetic
 
-- [ ] Close `tokens_after_refill` — split identity via vstd div/mul lemmas
-- [ ] Close `tokens_to_wait_ms` — ceiling division overflow proof
-- [ ] Close `wait_enables_consumption` — chain refill+consume specs
-- [ ] Verus + cargo test green
+- [x] Close `tokens_after_refill` — u128 intermediate pattern ✅
+- [x] Close `tokens_to_wait_ms` — u128 intermediate pattern ✅
+- [x] Close `wait_enables_consumption` — strengthened requires with non-saturation guard ✅
+  - Added `tokens_to_wait_ms_spec(tokens, cost, rate_per_sec) < u64::MAX` to requires
+  - Proof: ceiling property (fundamental_div_mod) → division monotonicity (div_is_ordered) → refill ≥ shortage
+  - Saturation case (wait_ms == u64::MAX) excluded — counterexample: tokens=0, cost=u64::MAX, rate=1
+- [x] Verus + cargo test green ✅ (3077 verified, 0 errors; 20/20 rate_limit tests pass)
 
 ## Phase 2: Glob recursive spec
 

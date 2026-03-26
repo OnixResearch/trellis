@@ -277,39 +277,62 @@ proof fn refill_bounded_by_capacity(
 /// so wait_ms * rate / 1000 >= shortage. If the refill exceeds burst, the
 /// capped result (burst) >= cost. Otherwise tokens + refill >= cost.
 ///
-/// The saturation case (wait_ms == u64::MAX) is handled by the burst cap:
-/// if the refill result exceeds burst, the function returns burst >= cost.
-#[verifier::external_body]
+/// Requires the wait time to not saturate at u64::MAX. When wait_ms
+/// saturates, u64::MAX milliseconds may be insufficient to earn the
+/// shortage tokens (e.g., tokens=0, cost=u64::MAX, rate=1).
 proof fn wait_enables_consumption(
     tokens: u64,
     cost: u64,
     rate_per_sec: u64,
     burst: u64,
 )
-    requires rate_per_sec > 0, tokens < cost, cost <= burst
+    requires
+        rate_per_sec > 0,
+        tokens < cost,
+        cost <= burst,
+        tokens_to_wait_ms_spec(tokens, cost, rate_per_sec) < u64::MAX,
     ensures ({
         let wait_ms = tokens_to_wait_ms_spec(tokens, cost, rate_per_sec);
         let refilled = tokens_after_refill_spec(tokens, wait_ms, rate_per_sec, burst);
         try_consume_spec(refilled, cost).0 == true
     })
 {
-    // The proof requires nonlinear arithmetic across two spec functions
-    // (ceiling division in wait_ms, then multiplication/division in refill).
-    // The mathematical argument is:
-    //   1. s = cost - tokens >= 1.
-    //   2. wait_int = ceil(s * 1000 / rate) => wait_int * rate >= s * 1000.
-    //   3. wait_int * rate / 1000 >= s (by division monotonicity).
-    //   4. refill_amount = wait_ms * rate / 1000 >= s (when wait_ms >= wait_int).
-    //   5. tokens + refill_amount >= tokens + s = cost.
-    //   6. If tokens + refill > burst: returns burst >= cost. Done.
-    //   7. Otherwise: returns tokens + refill >= cost. Done.
-    // When wait_ms saturates at u64::MAX (wait_int > u64::MAX):
-    //   refill_amount = u64::MAX * rate / 1000. If tokens + this > burst,
-    //   returns burst >= cost. Otherwise, the property relies on
-    //   u64::MAX * rate / 1000 >= s, which may not hold for all (rate, s) pairs.
-    //   However, the refill is capped at burst, and burst >= cost, so the capped
-    //   path (returning burst) always satisfies the postcondition.
-    // This proof is verified by proptest (prop_lifecycle oracle).
+    // Proof outline:
+    //   1. wait_int = ceil(shortage * 1000 / rate) — ceiling division
+    //   2. wait_int * rate >= shortage * 1000 — ceiling property
+    //   3. wait_int * rate / 1000 >= shortage — division monotonicity
+    //   4. refill >= shortage, so tokens + refill >= cost
+    //   5. If tokens + refill > burst: returns burst >= cost
+    //      Otherwise: returns tokens + refill >= cost
+
+    let s: int = cost as int - tokens as int;   // shortage >= 1
+    let r: int = rate_per_sec as int;            // rate >= 1
+    let n: int = s * 1000 + r - 1;              // ceiling div numerator
+    let wait_int: int = n / r;                  // = ceil(s * 1000 / r)
+
+    // Step 1: ceiling property — wait_int * r >= s * 1000
+    // From fundamental_div_mod: n == wait_int * r + (n % r), 0 <= n % r < r
+    // So wait_int * r = n - n%r >= n - (r-1) = s*1000 + r - 1 - r + 1 = s*1000
+    vstd::arithmetic::div_mod::lemma_fundamental_div_mod(n, r);
+    assert(wait_int * r >= s * 1000) by(nonlinear_arith)
+        requires
+            n == wait_int * r + (n % r),
+            0 <= n % r < r,
+            n == s * 1000 + r - 1,
+            s >= 1int,
+            r >= 1int,
+    ;
+
+    // Step 2: exact division — s * 1000 / 1000 == s
+    assert(s * 1000 / 1000 == s) by(nonlinear_arith)
+        requires s >= 1int
+    ;
+
+    // Step 3: division monotonicity — wait_int * r / 1000 >= s
+    vstd::arithmetic::div_mod::lemma_div_is_ordered(s * 1000, wait_int * r, 1000);
+
+    // Z3 connects: refill = wait_ms * rate / 1000 >= s = cost - tokens
+    // tokens_after_refill returns min(tokens + refill, burst), both >= cost
 }
 
 } // verus!
