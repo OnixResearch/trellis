@@ -67,6 +67,7 @@
 //! - `fee` — proportional fee computation: basis points, tiered, conservation
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
+//! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry provenance
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
@@ -97,6 +98,7 @@
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
+//! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
 //! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
@@ -123,6 +125,7 @@
 //! - `raft_step` — Raft step decomposition for modular invariant proofs
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
+//! - `rcu` — read-copy-update: grace periods, quiescent state detection, safe reclamation
 //! - `read_index` — linearizable read confirmation via quorum heartbeat acks
 //! - `ref_count` — reference counting: increment/decrement, weak upgrade, dealloc trigger
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
@@ -136,6 +139,7 @@
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `snapshot_compaction` — Raft log compaction trigger: when to snapshot, prefix discard, metadata
+//! - `spin_backoff` — spin-wait backoff: two-phase (spin then yield), exponential spin count
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
 //! - `snapshot_transfer` — chunked snapshot streaming: validation, ordering, progress
 //! - `state_machine_safety` — no two servers apply different entries at the same index
@@ -227,6 +231,7 @@ pub mod fencing;
 pub mod follower_commit;
 pub mod follower_redirect;
 pub mod follower_read;
+pub mod futex_state;
 pub mod forest;
 pub mod ghost_history;
 pub mod glob;
@@ -262,6 +267,7 @@ pub mod markov;
 pub mod match_index;
 pub mod merkle;
 pub mod monotonic;
+pub mod mpsc_bounds;
 pub mod nix_attrset;
 pub mod noop_commit;
 pub mod node_classify;
@@ -290,6 +296,7 @@ pub mod quorum;
 pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
+pub mod rcu;
 pub mod read_index;
 pub mod ref_count;
 pub mod region;
@@ -310,6 +317,7 @@ pub mod session_tree;
 pub mod settlement;
 pub mod signal;
 pub mod snapshot_compaction;
+pub mod spin_backoff;
 pub mod snapshot_integrity;
 pub mod snapshot_transfer;
 pub mod state_machine_safety;

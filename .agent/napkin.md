@@ -1090,3 +1090,16 @@
   `arrive_spec((expected - 1) as u64)` not `arrive_spec(expected - 1)`
 - Same for `top + 1` in spec: `after_pop_spec((top + 1) as u64)`
 - All 90 new Verus proofs automatic — total across both waves: 171 new proofs, 0 external_body
+- spin_backoff, rcu, mpsc_bounds, futex_state — 4 more modules (wave 3)
+- `ensures { let ... }` block syntax → Verus error "block followed by another block" —
+  must use `ensures ({ let ... })` with parens (same pattern as commit_notify)
+- spin_count_for_step with `1u64 << capped` in spec: Z3 can't reason about spec-level
+  shift on variables. Workaround: make the exec fn @verified-logic:no-ensures, test empirically.
+  The interesting proofs are about phases, not exact spin counts.
+- advance_from_spinning needs `spin_limit < yield_limit` (strict), not `<=`.
+  When spin_limit == yield_limit, advancing past spin goes directly to completed,
+  skipping the yield phase entirely.
+- mpsc_bounds::receive_makes_not_full needs `occupancy <= capacity` in requires.
+  Without it, after_receive(40) = 39, is_full(39, 1) = true — counterexample.
+  proptest range must also guard: `if occ <= cap { ... }`
+- futex_state: u32 constants (not u64) for futex word — matches Linux futex API
