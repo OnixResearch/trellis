@@ -4604,3 +4604,125 @@ ABA generation tracking unnecessary.
 
 r[properties.ticket-lock-release-reduces-waiters]
 Releasing a ticket lock MUST reduce the waiter count by exactly one.
+
+## Paxos
+
+r[paxos.ballot-gt]
+ballot_gt MUST return true if and only if ballot a is strictly greater
+than ballot b in lexicographic (round, proposer_id) order. The relation
+MUST be irreflexive, transitive, and asymmetric. Trichotomy MUST hold:
+exactly one of gt(a,b), eq(a,b), gt(b,a) is true for any pair.
+
+r[paxos.ballot-eq]
+ballot_eq MUST return true if and only if both round and proposer_id match.
+
+r[paxos.ballot-ge]
+ballot_ge MUST return true if and only if a is greater than or equal to b.
+The relation MUST be reflexive, transitive, and antisymmetric.
+
+r[paxos.can-promise]
+can_promise MUST return true if and only if the ballot is strictly greater
+than the acceptor's current promised ballot. After promising ballot b,
+the acceptor MUST reject any ballot strictly less than b.
+
+r[paxos.promise-next]
+promise_next MUST update the promised ballot to the new ballot and
+preserve the accepted value. The new promised ballot MUST be strictly
+greater than the previous one.
+
+r[paxos.can-accept]
+can_accept MUST return true if and only if the ballot is at least as
+high as the acceptor's current promised ballot. Acceptance of the same
+ballot MUST be idempotent. Accepting a ballot MUST not block any higher
+ballot from being accepted later.
+
+r[paxos.accept-next]
+accept_next MUST record the ballot and value, setting has_accepted to
+true. Both the promised and accepted ballots MUST equal the acceptance
+ballot. The accepted value MUST equal the provided value.
+
+r[paxos.pick-value]
+pick_value MUST return the accepted value when one exists, and the
+proposer's own value otherwise.
+
+r[paxos.higher-accepted]
+higher_accepted MUST return the value associated with the higher
+accepted ballot when comparing two promise responses. When neither
+has accepted, it MUST return own_value. When exactly one has accepted,
+it MUST return that value.
+
+## Lease Mutex
+
+r[lease-mutex.is-available]
+is_available MUST return true if and only if the current time is at or
+past the lock's lease expiry.
+
+r[lease-mutex.can-acquire]
+can_acquire MUST return true only when the lock is available, the TTL
+is positive, the new expiry will not overflow, and the fence token can
+be incremented.
+
+r[lease-mutex.try-acquire]
+try_acquire MUST succeed only when can_acquire holds. On success, it
+MUST set the holder, compute expiry as now + ttl, and increment the
+fence token by exactly one.
+
+r[lease-mutex.is-owner]
+is_owner MUST return true only when the requester matches the holder
+AND the lease has not expired (now < expiry).
+
+r[lease-mutex.write-permitted]
+write_permitted MUST return true only when the requester is the current
+owner AND the request's fence token is at least as high as the lock's.
+
+r[lease-mutex.release]
+release MUST set the expiry to now, immediately terminating the lease.
+The fence token MUST be preserved on release. After release, the lock
+MUST be available and the former holder MUST NOT be the owner.
+
+r[lease-mutex.safety]
+If is_owner returns true for node A at time t, then is_owner MUST
+return false for any different node B at the same time t (mutual
+exclusion). Successive leases MUST NOT overlap: if acquisition happens
+at or after the old expiry, no point in time falls in both validity
+windows. A previous holder's writes MUST be rejected after a new
+acquisition due to the incremented fence token.
+
+## Two-Phase Locking
+
+r[two-phase-lock.valid-phase]
+is_valid_phase MUST return true only for GROWING and SHRINKING.
+
+r[two-phase-lock.can-acquire]
+can_acquire MUST return true only in the growing phase.
+
+r[two-phase-lock.after-acquire]
+after_acquire MUST increment the held count by one and keep the phase
+as GROWING. The phase MUST remain GROWING after any acquisition.
+
+r[two-phase-lock.can-release]
+can_release MUST return true only when held count is greater than zero.
+
+r[two-phase-lock.after-release]
+after_release MUST decrement the held count by one and set the phase
+to SHRINKING.
+
+r[two-phase-lock.phase-monotonic]
+Once the phase transitions to SHRINKING, it MUST never return to
+GROWING. Acquiring in the SHRINKING phase MUST be detected as a
+violation and rejected.
+
+r[two-phase-lock.is-complete]
+is_complete MUST return true if and only if held count is zero and the
+phase is SHRINKING. After acquiring, the transaction MUST NOT be
+complete. Releasing the last lock MUST make the transaction complete.
+
+r[two-phase-lock.would-violate]
+would_violate MUST return true if and only if the operation is an
+acquire in the shrinking phase. This is the only 2PL violation.
+
+r[two-phase-lock.transition]
+transition MUST apply one lock operation and return the new state, or
+None if the operation is invalid. Valid transitions MUST preserve phase
+validity. A balanced lifecycle (n acquires followed by n releases)
+MUST end in the complete state.
