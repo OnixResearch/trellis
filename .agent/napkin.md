@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 3182 Verus proofs + 1918 cargo tests = all gates green
+- 3701 Verus proofs + 2249 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 13 remaining external_body items: 6 crypto axioms (permanent), 4 nix_version Z3 limits (permanent), 3 log_invariant_inductive (permanent — unsound without system-level invariant)
@@ -1103,3 +1103,15 @@
   Without it, after_receive(40) = 39, is_full(39, 1) = true — counterexample.
   proptest range must also guard: `if occ <= cap { ... }`
 - futex_state: u32 constants (not u64) for futex word — matches Linux futex API
+- ticket_lock, cas_loop, bounded_mpmc, memory_order — 4 more modules (wave 4)
+- `(x as u64) < capacity` in spec needs parens: `((x) as u64) < capacity` — Verus reads
+  `as u64 <` as start of generic parameters (same `as int <` pattern in napkin)
+- Chained comparisons like `0 <= x < y` not supported in `by(nonlinear_arith) requires` —
+  must split into `0 <= x, x < y` as separate requires clauses
+- cas_loop ABA pack/unpack: `by(bit_vector)` handles `(v | (g << 32)) & 0xFFFF_FFFF == v`
+  and generation extraction roundtrip automatically — single variable SAT is tractable
+- bounded_mpmc consecutive_laps_different: `lemma_div_is_ordered` + `lemma_fundamental_div_mod`
+  then `by(nonlinear_arith)` with the fundamental_div_mod decomposition as requires
+- memory_order: Acquire ⊁ Release (incomparable in lattice) — NOT a total order.
+  combine_orderings is the join operation (least upper bound). All proofs automatic — Z3
+  handles the 5-element domain by case splitting on u8 constants.
