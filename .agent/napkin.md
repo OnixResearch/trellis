@@ -1176,3 +1176,33 @@
   Still need `invariant i <= deps@.len()` and `invariant i < deps@.len()` (inner loop)
   for Verus to verify array bounds on `deps[i]`. Without the inner invariant, Verus
   can't prove `i < deps.len()` inside the inner while body.
+
+## Session 2026-03-26 (continued): closing gaps + distributed modules
+
+### Closing no-ensures gaps
+- Right-to-left scanning is the key technique for closing max-scan and count-scan gaps.
+  When the spec is `f(seq, from) = op(seq[from], f(seq, from+1))`, scanning from
+  `i = seq.len()` down to 0 with invariant `acc == f(seq, i)` matches the recursive
+  spec structure exactly. Each step unrolls one level of the recursion.
+- fair_share::total_weight overflow branch: call `total_weight_nonneg_from(weights@, (i+1) as int)`
+  in the overflow path to prove total >= partial_sum + current_weight > u64::MAX.
+- job_dag::all_deps_satisfied inner loop: `found <==> exists|k: int| 0 <= k < j && completed@[k] == deps@[i]`
+  tracks membership search. Outer invariant: `all_deps_satisfied_spec <==> all_deps_satisfied_from_spec(i)`.
+- quorum_cert::vote_count: right-to-left scan with `count as int == vote_count_from_spec(votes@, view, seq_num, i)`.
+  The `as u64` cast in ensures is tricky — use `result as int == spec(...)` instead.
+
+### View change consecutive leaders proof
+- `v%n != (v+1)%n` when n > 1 is true but Z3 can't discharge it. Modular arithmetic
+  with variable divisor hits the nonlinear-arith wall. Even with fundamental_div_mod
+  and mod_pos_bound results in scope, Z3 can't combine them through the `let`-bound
+  quotient and remainder. The `let q = v as int / n as int` binding makes q an opaque
+  variable — Z3 won't substitute back to `v / n` for nonlinear reasoning.
+- Workaround attempted: inline `v as int / n as int` directly in by(nonlinear_arith) requires.
+  Still fails because the standard solver checks the requires first, and it can't derive
+  `v == (v/n)*n + v%n` from the lemma result without nonlinear reasoning.
+- Resolution: removed the proof, covered by proptest. Same class as nix_version cv_fuel proofs.
+
+### Cross-module patterns
+- two_phase module takes `&Vec<Option<bool>>` not `&[Option<bool>]` — must construct a Vec
+  in proptest code.
+- `as int <` parse ambiguity in `by(nonlinear_arith) requires` — always parenthesize.
