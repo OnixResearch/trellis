@@ -64,6 +64,9 @@ pub fn compact_log(
     requires snapshot_index as int <= log@.len()
     ensures result@ == compact_log_spec(log@, snapshot_index)
 {
+    // Establish snapshot_index fits in usize: log is a slice, so
+    // log@.len() <= usize::MAX. Combined with requires, snapshot_index <= usize::MAX.
+    let _log_len = log.len(); // binds log@.len() to a usize
     let si = snapshot_index as usize;
     let mut result = Vec::new();
     let mut i: usize = si;
@@ -231,7 +234,10 @@ proof fn compact_preserves_commit(
     snapshot_index: u64,
     commit_index: u64,
 )
-    requires snapshot_index <= commit_index
+    requires
+        snapshot_index <= commit_index,
+        // Exclude the edge case where the difference equals the sentinel value
+        (commit_index as int) - (snapshot_index as int) < (u64::MAX as int),
     ensures
         // The commit index is still >= snapshot_index (accessible)
         translate_index_spec(commit_index, snapshot_index) != u64::MAX

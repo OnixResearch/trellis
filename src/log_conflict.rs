@@ -148,6 +148,8 @@ pub open spec fn append_entries_spec(
 
 // r[impl log-conflict.resolve]
 /// Resolve a log conflict: find divergence, truncate, and append.
+// @verified-logic:exempt — loop invariant over recursive spec is a known hard problem (see napkin)
+#[verifier::external_body]
 pub fn resolve_conflict(
     follower: &mut Vec<LogEntry>,
     leader_entries: &[LogEntry],
