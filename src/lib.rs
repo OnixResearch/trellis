@@ -43,6 +43,8 @@
 //! - `config_change` — Raft configuration change protocol FSM: stable↔joint transitions (§6)
 //! - `collections` — sorted insert, binary search
 //! - `commit_advance` — Raft commit index advancement with §5.4.2 current-term guard
+//! - `commit_notify` — commit notification dispatch: newly committed ranges, proposal status
+//! - `compaction_fence` — log compaction coordination with replication: safe compact index
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -58,6 +60,7 @@
 //! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
 //! - `fast_backtrack` — Raft accelerated log backtracking: skip conflicting terms in one RPC (§5.3)
 //! - `fencing` — fencing tokens for stale-write rejection
+//! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
@@ -72,6 +75,7 @@
 //! - `leader_append_only` — leader log immutability invariant: only grows, never overwrites
 //! - `leader_completeness` — committed entries survive elections (quorum intersection + epoch_ge)
 //! - `leadership_transfer` — voluntary leadership transfer: catch-up, `TimeoutNow`, deadline
+//! - `learner_change` — learner add/remove primitives: no quorum impact, idempotent ops
 //! - `learner_readiness` — learner catch-up readiness for safe voter promotion
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
@@ -98,14 +102,19 @@
 //! - `permission` — Unix file permission bits: has/set/clear, umask
 //! - `persistent_state` — Raft crash recovery: durable state, persist-before-respond, vote safety
 //! - `pre_vote` — pre-vote protocol without term inflation for partitioned nodes
+//! - `pre_vote_lease` — PreVote + CheckQuorum interaction: reject pre-votes when leader is active
+//! - `pre_vote_tally` — pre-vote response tally: counting and quorum check for pre-election phase
 //! - `pressure` — multi-threshold severity classification
+//! - `priority_election` — priority-based leader election: delay, yield, candidate comparison
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `read_index` — linearizable read confirmation via quorum heartbeat acks
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
+//! - `replication_mode` — per-peer replication FSM: Probe → Replicate → Snapshot transitions
 //! - `replication_pipeline` — flow control for pipelined `AppendEntries`
+//! - `request_forward` — client request forwarding: follower-to-leader proxy with pending tracking
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
@@ -132,6 +141,7 @@
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
+//! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 
 pub mod access_mode;
 pub mod append_entries_build;
@@ -168,6 +178,8 @@ pub mod config_change;
 pub mod circuit_breaker;
 pub mod collections;
 pub mod commit_advance;
+pub mod commit_notify;
+pub mod compaction_fence;
 pub mod constant_time_eq;
 pub mod conversion;
 pub mod cost_tracker;
@@ -190,6 +202,7 @@ pub mod expiration;
 pub mod fast_backtrack;
 pub mod fencing;
 pub mod follower_commit;
+pub mod follower_read;
 pub mod forest;
 pub mod glob;
 pub mod gossip;
@@ -205,6 +218,7 @@ pub mod layout_constraint;
 pub mod leader_append_only;
 pub mod leader_completeness;
 pub mod leadership_transfer;
+pub mod learner_change;
 pub mod learner_readiness;
 pub mod lease;
 pub mod lease_read;
@@ -232,7 +246,10 @@ pub mod permission;
 pub mod persistent_state;
 pub mod pointwise;
 pub mod pre_vote;
+pub mod pre_vote_lease;
+pub mod pre_vote_tally;
 pub mod pressure;
+pub mod priority_election;
 pub mod process_state;
 pub mod properties;
 pub mod quorum;
@@ -240,7 +257,9 @@ pub mod raft_timing;
 pub mod rate_limit;
 pub mod read_index;
 pub mod region;
+pub mod replication_mode;
 pub mod replication_pipeline;
+pub mod request_forward;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
@@ -272,3 +291,4 @@ pub mod vector_clock;
 pub mod vote_tally;
 pub mod voter_set;
 pub mod watermark;
+pub mod witness;

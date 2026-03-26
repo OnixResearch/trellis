@@ -3545,3 +3545,255 @@ monotonic::is_advance on the previous match index.
 r[properties.entry-type-noop-agrees]
 classify_entry with NOOP_VALUE produces ENTRY_NOOP, which agrees with
 noop_commit::is_noop_spec.
+
+## Replication Mode
+
+r[replication-mode.valid-mode]
+is_valid_mode MUST return true if and only if mode is PROBE (0),
+REPLICATE (1), or SNAPSHOT (2). All transitions MUST preserve validity.
+
+r[replication-mode.can-pipeline]
+can_pipeline MUST return true if and only if mode is REPLICATE. Probe
+and Snapshot modes MUST NOT allow pipelining.
+
+r[replication-mode.can-send-entries]
+can_send_entries MUST return true for PROBE and REPLICATE, false for
+SNAPSHOT. Snapshot mode sends snapshot chunks, not log entries.
+
+r[replication-mode.transition-on-success]
+transition_on_success MUST move PROBE to REPLICATE (match point
+discovered). REPLICATE stays in REPLICATE. SNAPSHOT is unchanged.
+
+r[replication-mode.transition-on-reject]
+transition_on_reject MUST move REPLICATE back to PROBE (match point
+wrong). PROBE stays in PROBE. SNAPSHOT is unchanged.
+
+r[replication-mode.transition-to-snapshot]
+should_send_snapshot MUST return true when next_index <= first_log_index.
+The follower needs entries that have been compacted.
+
+r[replication-mode.enter-snapshot]
+enter_snapshot MUST switch PROBE or REPLICATE to SNAPSHOT. Already in
+SNAPSHOT is unchanged.
+
+r[replication-mode.snapshot-complete]
+snapshot_complete MUST switch SNAPSHOT to PROBE (resume probing from
+snapshot's last index). Other modes unchanged.
+
+r[replication-mode.entries-per-message]
+entries_per_message MUST return 1 for PROBE, max_batch for REPLICATE,
+and 0 for SNAPSHOT.
+
+## Pre-Vote Tally
+
+r[pre-vote-tally.init]
+init_pre_vote_tally MUST create a boolean sequence of cluster_size
+with all values false.
+
+r[pre-vote-tally.init-with-self]
+init_with_self_pre_vote MUST create a tally with only the candidate's
+own position set to true.
+
+r[pre-vote-tally.record]
+record_pre_vote MUST set the server's position to true. Recording MUST
+be idempotent. Other positions MUST be unchanged.
+
+r[pre-vote-tally.count]
+count_pre_votes MUST return the number of true entries. The count MUST
+be bounded by the tally length.
+
+r[pre-vote-tally.has-quorum]
+has_pre_vote_quorum MUST return true if and only if the pre-vote count
+constitutes a quorum of cluster_size.
+
+r[pre-vote-tally.stale-response]
+is_stale_pre_vote_response MUST return true when the response term
+differs from the prospective term.
+
+## Follower Read
+
+r[follower-read.register]
+register_read MUST return the follower's current commit_index as the
+read's minimum freshness guarantee.
+
+r[follower-read.leader-confirms]
+safe_read_point MUST return max(read_index, leader_commit). The safe
+point MUST be >= both the original read_index and the leader's commit.
+
+r[follower-read.can-serve]
+can_serve_read MUST return true if and only if last_applied >= safe_point.
+can_serve and entries_behind == 0 MUST be equivalent.
+
+r[follower-read.stale-leader]
+is_leader_stale MUST return true when the response term differs from
+the registered term. Same term MUST return false.
+
+r[follower-read.timeout]
+is_read_timed_out MUST return true when now >= registered_at + timeout.
+At registration time with timeout > 0, MUST return false.
+
+r[follower-read.entries-behind]
+entries_behind MUST return safe_point - last_applied when behind, 0 when
+caught up. Applying entries MUST reduce the behind count.
+
+## Request Forward
+
+r[request-forward.can-forward]
+can_forward MUST return true only when is_follower AND leader_known AND
+pending_count < max_pending. Non-followers MUST NOT forward.
+
+r[request-forward.after-forward]
+after_forward MUST return pending_count + 1.
+
+r[request-forward.after-response]
+after_response MUST return pending_count - 1 when positive, 0 when zero.
+Forward then response MUST be a roundtrip.
+
+r[request-forward.expired]
+is_forward_expired MUST return true when now >= forward_time + timeout.
+
+r[request-forward.clear-on-leader-change]
+should_clear_pending MUST return true when new_term > old_leader_term.
+Same term MUST return false.
+
+r[request-forward.decision]
+forward_decision MUST return ACCEPT for leaders, FORWARD when
+can_forward holds, REJECT otherwise. The result MUST be 0, 1, or 2.
+
+## Commit Notify
+
+r[commit-notify.count]
+newly_committed_count MUST return new_commit - old_commit when
+advanced, 0 otherwise. No advancement means zero.
+
+r[commit-notify.is-newly-committed]
+is_newly_committed MUST return true for indices in (old_commit,
+new_commit]. The old commit and indices beyond new_commit MUST be false.
+
+r[commit-notify.first-committed]
+first_newly_committed MUST return old_commit + 1.
+
+r[commit-notify.should-notify]
+should_notify MUST return true if and only if newly_committed_count > 0.
+
+r[commit-notify.proposal-status]
+proposal_status MUST return COMMITTED when index <= commit_index (wins
+over expired), EXPIRED when not committed and expired, PENDING otherwise.
+Committed MUST be monotonic: once committed, stays committed.
+
+r[commit-notify.count-ready]
+count_ready_proposals MUST count proposals that are committed or expired.
+The count MUST be bounded by the input length.
+
+## Compaction Fence
+
+r[compaction-fence.safe-to-compact]
+is_safe_to_compact MUST return true when compact_index < min_next_index.
+Compaction at 0 MUST always be safe.
+
+r[compaction-fence.min-next-index]
+min_active_next MUST return the minimum next_index across followers that
+are NOT in snapshot mode, excluding self. All-snapshot MUST return MAX.
+
+r[compaction-fence.needs-snapshot]
+needs_snapshot_switch MUST return true when follower_next <= first_log_index.
+Within-log followers MUST return false.
+
+r[compaction-fence.safe-compact-index]
+safe_compact_index MUST return min(desired, min_next - 1). The result
+MUST be < min_next and <= desired.
+
+## Witness
+
+r[witness.valid-role]
+is_valid_role MUST return true for VOTER (0), WITNESS (1), LEARNER (2).
+
+r[witness.can-vote]
+can_vote MUST return true for VOTER and WITNESS, false for LEARNER.
+
+r[witness.can-be-leader]
+can_be_leader MUST return true only for VOTER. Leader implies voter.
+Leader implies full log.
+
+r[witness.receives-log]
+receives_full_log MUST return true for VOTER and LEARNER, false for
+WITNESS.
+
+r[witness.can-ack-heartbeat]
+can_ack_heartbeat MUST return true for VOTER and WITNESS when
+leader_term >= my_term. Stale heartbeats MUST be rejected.
+
+r[witness.entry-retained]
+entry_retained MUST return true when entry_index >= snapshot_index.
+
+r[witness.quorum-with-witnesses]
+quorum_members MUST return voter_count + witness_count. Witnesses
+contribute to quorum count.
+
+r[witness.reject-witness-candidate]
+should_reject_candidate MUST return true for WITNESS and LEARNER.
+Voter candidates MUST NOT be rejected.
+
+## Priority Election
+
+r[priority-election.should-yield]
+should_yield MUST return true when other_priority > my_priority AND
+other_log_current. Same priority MUST NOT yield. Outdated log MUST NOT
+cause yield.
+
+r[priority-election.delay]
+election_delay MUST return base_timeout + (max_priority - my_priority)
+* delay_per_level (saturating). Highest priority MUST get base_timeout.
+Lower priority MUST get >= base_timeout.
+
+r[priority-election.step-down]
+should_step_down_for_priority MUST return true when a higher-priority
+node is ready AND the grace period has expired.
+
+r[priority-election.compare-candidates]
+compare_candidates MUST prefer the candidate with the fresher log
+regardless of priority. When logs are equal, higher priority wins.
+Equal candidates MUST return 0.
+
+r[priority-election.is-highest]
+is_highest_priority MUST return true when my_priority >= max_cluster_priority.
+
+## Learner Change
+
+r[learner-change.can-add]
+can_add_learner MUST return false for voters, during pending config
+changes, and when at max learners. Adding an existing learner MUST
+always be allowed (idempotent).
+
+r[learner-change.add-result]
+add_learner_result MUST return count + 1 for new learners, count for
+existing learners (idempotent).
+
+r[learner-change.can-remove]
+can_remove_learner MUST return false for non-learners, promoting
+learners, and during pending config changes.
+
+r[learner-change.remove-result]
+remove_learner_result MUST return count - 1 for learners with count > 0,
+count for non-learners. Add then remove MUST be a roundtrip.
+
+r[learner-change.quorum-unaffected]
+quorum_unchanged MUST verify voter_count_before == voter_count_after.
+Learner operations MUST NOT change the quorum calculation.
+
+## Pre-Vote Lease
+
+r[pre-vote-lease.reject]
+should_reject_pre_vote MUST return true when has_leader_contact AND
+candidate_term <= my_term. No contact MUST NOT reject. Higher candidate
+term MUST bypass the check. Partitioned same-term nodes MUST be blocked.
+
+r[pre-vote-lease.combined-decision]
+combined_pre_vote_decision MUST compose CheckQuorum rejection with
+standard pre-vote check. Rejection prevents grant. Without CheckQuorum,
+reduces to standard pre-vote.
+
+r[pre-vote-lease.leader-contact]
+has_leader_within_timeout MUST return true when now - last_contact <
+election_timeout. Zero elapsed with timeout > 0 MUST be true. Elapsed
+>= timeout MUST be false.

@@ -817,3 +817,20 @@
     variable shifts composed. Decomposing into sub-lemmas with fewer shift operations
     per assertion makes each SAT problem tractable. The connecting logic uses Z3's
     standard arithmetic reasoning (no by(bit_vector) needed for equality chaining).
+- 10 new Raft consensus primitive modules added:
+  - replication_mode: per-peer FSM (Probe/Replicate/Snapshot) with transition functions
+  - pre_vote_tally: pre-vote response tracking, mirrors vote_tally for pre-election phase
+  - follower_read: follower-side linearizable reads via leader commit confirmation
+  - request_forward: follower→leader write forwarding with pending tracking
+  - commit_notify: commit notification dispatch, newly committed ranges, proposal status
+  - compaction_fence: log compaction coordination with replication, safe compact index
+  - witness: witness replicas — vote without full log, role taxonomy (Voter/Witness/Learner)
+  - priority_election: priority-based elections with delay, yield, candidate comparison
+  - learner_change: learner add/remove without quorum impact, idempotent operations
+  - pre_vote_lease: PreVote + CheckQuorum interaction, reject pre-votes when leader active
+  - Verus `ensures { let ... }` block syntax must use parentheses: `ensures ({ let ... })`
+    Without parens, Verus parser reads `{ ... }` as function body, not spec expression
+  - Spec subtraction of u64 produces int — `(now - last_contact) as u64` fails in spec
+    because Verus reads `} else {` after `as u64 <` as generic parse ambiguity. Use plain
+    subtraction in spec (int comparison works fine): `now - last_contact < election_timeout`
+  - 96 new tests (1669 → 1765), all passing. All proofs automatic (no nonlinear_arith, no external_body)
