@@ -4271,3 +4271,179 @@ Z3 cannot bridge between bit_vector and int-level reasoning.
 
 - `buddy::order_for_size` — bit_vector proves `1u64 << order >= size` but
   spec uses int-level `<<` via `block_size_spec`; theories don't connect
+
+## WAL Segment
+
+r[wal-segment.is-contiguous]
+is_contiguous(prev_seq, current_seq) MUST return true if and only if
+current_seq == prev_seq + 1. WAL entries MUST have consecutive sequence
+numbers with no gaps. prev_seq MUST be less than u64::MAX.
+
+r[wal-segment.space-remaining]
+space_remaining(written, capacity) MUST return capacity - written when
+written <= capacity, 0 otherwise. When written == 0, remaining MUST
+equal capacity. When written == capacity, remaining MUST be 0.
+
+r[wal-segment.entry-fits]
+entry_fits(written, entry_size, capacity) MUST return true if and only if
+written + entry_size <= capacity (using saturating addition to avoid
+overflow). A zero-size entry always fits when written <= capacity. An
+entry larger than the full capacity MUST NOT fit.
+
+r[wal-segment.should-rotate]
+should_rotate(written, capacity) MUST return true when written >= capacity.
+A full segment MUST trigger rotation. An empty segment (written == 0) with
+nonzero capacity MUST NOT trigger rotation.
+
+r[wal-segment.write-advance]
+write_advance(written, entry_size) MUST return written + entry_size, or
+None on overflow. The result MUST be > written when entry_size > 0. The
+result MUST equal written when entry_size == 0.
+
+r[wal-segment.truncate-safe]
+is_truncate_safe(truncate_to, committed_seq, applied_seq) MUST return true
+if and only if truncate_to <= committed_seq AND truncate_to <= applied_seq.
+Truncation MUST NOT discard committed-but-unapplied entries nor unapplied
+entries. Truncating to 0 MUST always be safe.
+
+r[wal-segment.replay-count]
+replay_count(checkpoint_seq, end_seq) MUST return end_seq - checkpoint_seq
+when end_seq >= checkpoint_seq, 0 otherwise. This is the number of entries
+to replay during crash recovery. Replay from the same point MUST yield 0.
+
+r[wal-segment.checkpoint-valid]
+is_checkpoint_valid(checkpoint_seq, committed_seq) MUST return true if and
+only if checkpoint_seq <= committed_seq. A checkpoint MUST NOT advance past
+the committed sequence number.
+
+## Cross-Module: WAL Segment
+
+r[properties.wal-advance-is-monotonic]
+write_advance(written, entry_size) when defined MUST satisfy
+monotonic::is_advance(written, result). WAL write position is monotonic.
+
+r[properties.wal-replay-is-saturating-sub]
+replay_count(checkpoint, end) MUST equal
+arithmetic::saturating_sub_spec(end, checkpoint). Replay count is a
+saturating subtraction.
+
+r[properties.wal-truncate-uses-min]
+is_truncate_safe(t, c, a) MUST equal (t <= ordering::min_spec(c, a)).
+Truncation safety is a comparison against the minimum of committed and
+applied sequence numbers.
+
+r[properties.wal-contiguous-is-strict-advance]
+If is_contiguous(prev, current), then monotonic::is_strict_advance(prev,
+current) holds. Contiguous WAL entries form a strictly advancing sequence.
+
+## B-tree Balance
+
+r[btree-balance.fill-pct]
+fill_pct(count, capacity) MUST return count * 100 / capacity (integer
+percentage). fill_pct MUST be 0 when count is 0 and 100 when count
+equals capacity. capacity MUST be nonzero.
+
+r[btree-balance.is-underfull]
+is_underfull(count, capacity) MUST return true when count < capacity / 2.
+A node with fewer than half its capacity is underfull. capacity MUST be
+>= 2.
+
+r[btree-balance.is-overfull]
+is_overfull(count, capacity) MUST return true when count > capacity. A
+node exceeding its capacity MUST be split.
+
+r[btree-balance.should-split]
+should_split(count, capacity) MUST return true if and only if count >
+capacity. Splitting is required when the node exceeds its maximum.
+
+r[btree-balance.should-merge]
+should_merge(count, sibling_count, capacity) MUST return true when
+count + sibling_count <= capacity. Two underfull nodes that together fit
+in one node MUST be merged. count + sibling_count MUST NOT overflow.
+
+r[btree-balance.split-point]
+split_point(count) MUST return count / 2. The split divides the node
+into two halves. split_point MUST be >= 1 when count >= 2.
+
+r[btree-balance.split-left-size]
+split_left_size(count) MUST return split_point(count). The left node
+takes the first half.
+
+r[btree-balance.split-right-size]
+split_right_size(count) MUST return count - split_point(count). The
+right node takes the remainder. left_size + right_size MUST equal count.
+
+r[btree-balance.min-keys]
+min_keys(capacity) MUST return capacity / 2. This is the minimum key
+count for a non-root internal node (the B-tree invariant). capacity
+MUST be >= 2.
+
+r[btree-balance.can-borrow]
+can_borrow(sibling_count, capacity) MUST return true when sibling_count >
+min_keys(capacity). The sibling has keys to spare for redistribution.
+
+## Cross-Module: B-tree Balance
+
+r[properties.btree-split-conserves]
+split_left_size(n) + split_right_size(n) MUST equal n for all n. No keys
+are lost or created during a split.
+
+r[properties.btree-fill-bounded]
+fill_pct(count, capacity) MUST be in [0, 100] for count <= capacity.
+The fill percentage is always a valid percentage.
+
+r[properties.btree-min-keys-is-underfull-threshold]
+is_underfull(min_keys(cap), cap) MUST be false. A node at exactly the
+minimum key count is NOT underfull.
+
+## LSM Level
+
+r[lsm-level.target-size]
+level_target_size(level, base_size, size_ratio) MUST return
+base_size * size_ratio^level, saturating at u64::MAX. Level 0 MUST
+return base_size. size_ratio MUST be >= 2. base_size MUST be > 0.
+
+r[lsm-level.needs-compaction]
+needs_compaction(level_size, target_size) MUST return true when
+level_size > target_size. A level exceeding its target MUST trigger
+compaction. An empty level MUST NOT need compaction.
+
+r[lsm-level.space-amp-pct]
+space_amp_pct(total_size, live_size) MUST return total_size * 100 /
+live_size when live_size > 0. This is the space amplification as a
+percentage. 100 means no amplification (total == live). live_size
+MUST be nonzero.
+
+r[lsm-level.write-amp-per-level]
+write_amp_per_level(size_ratio) MUST return size_ratio. Each level
+compaction rewrites approximately size_ratio times the data.
+
+r[lsm-level.total-write-amp]
+total_write_amp(num_levels, size_ratio) MUST return num_levels *
+size_ratio, saturating at u64::MAX. Total write amplification is
+the sum across levels.
+
+r[lsm-level.level-count]
+level_count_for_size(total_size, base_size, size_ratio) MUST return
+the minimum number of levels k such that base_size * size_ratio^k >=
+total_size. Returns 0 when total_size <= base_size. base_size > 0
+and size_ratio >= 2.
+
+r[lsm-level.size-ratio-valid]
+is_valid_size_ratio(ratio) MUST return true if and only if ratio >= 2.
+A ratio below 2 degenerates the LSM structure.
+
+## Cross-Module: LSM Level
+
+r[properties.lsm-target-monotonic]
+If level_a <= level_b, level_target_size(level_a, base, ratio) MUST be <=
+level_target_size(level_b, base, ratio). Higher levels have equal or
+larger targets.
+
+r[properties.lsm-space-amp-ge-100]
+space_amp_pct(total, live) MUST be >= 100 when total >= live. Space
+amplification is always at least 100%.
+
+r[properties.lsm-write-amp-is-checked-mul]
+total_write_amp(levels, ratio) MUST agree with
+arithmetic::checked_mul_spec(levels, ratio) in the non-overflow case.

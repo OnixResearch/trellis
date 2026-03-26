@@ -21,6 +21,7 @@
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitfield` — multi-bit field extraction and insertion with round-trip proofs
+//! - `btree_balance` — B-tree node balance: fill factor, split/merge triggers, redistribution
 //! - `bitmap` — verified fixed-size bit set using bitwise ops
 //! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
@@ -85,6 +86,7 @@
 //! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
 //! - `settlement` — bilateral obligation netting: net positions, sum-to-zero, valid settlement
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
+//! - `lsm_level` — LSM-tree level management: target sizing, compaction triggers, amplification
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
 //! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
@@ -147,6 +149,7 @@
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
+//! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 
@@ -168,6 +171,7 @@ pub mod bitmap;
 pub mod bitwise;
 pub mod bloom;
 pub mod bounded_range;
+pub mod btree_balance;
 pub mod buddy;
 pub mod causal_order;
 pub mod containment;
@@ -240,6 +244,7 @@ pub mod lease_read;
 pub mod linearizability;
 pub mod log;
 pub mod log_compaction;
+pub mod lsm_level;
 pub mod log_conflict;
 pub mod log_invariant_inductive;
 pub mod markov;
@@ -311,5 +316,6 @@ pub mod two_phase;
 pub mod vector_clock;
 pub mod vote_tally;
 pub mod voter_set;
+pub mod wal_segment;
 pub mod watermark;
 pub mod witness;
