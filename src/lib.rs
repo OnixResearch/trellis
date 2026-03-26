@@ -110,6 +110,7 @@
 //! - `priority_election` — priority-based leader election: delay, yield, candidate comparison
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
+//! - `raft_step` — Raft step decomposition for modular invariant proofs
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `read_index` — linearizable read confirmation via quorum heartbeat acks
@@ -231,6 +232,7 @@ pub mod lease_read;
 pub mod log;
 pub mod log_compaction;
 pub mod log_conflict;
+pub mod log_invariant_inductive;
 pub mod markov;
 pub mod match_index;
 pub mod merkle;
@@ -260,6 +262,7 @@ pub mod priority_election;
 pub mod process_state;
 pub mod properties;
 pub mod quorum;
+pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
 pub mod read_index;
