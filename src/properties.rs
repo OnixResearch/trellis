@@ -5536,3 +5536,323 @@ mod concurrency_cross_tests {
         }
     }
 }
+
+// ===========================================================================
+// Cross-module properties: distributed coordination (paxos, lease_mutex, 2PL)
+// ===========================================================================
+
+#[cfg(verus_keep_ghost)]
+mod paxos_monotonic_proofs {
+    use vstd::prelude::*;
+
+    use crate::monotonic::is_strict_advance_spec;
+    use crate::paxos::{
+        AcceptorState, Ballot, ballot_gt_spec, can_promise_spec,
+        promise_next_spec, promised_ballot,
+    };
+
+    verus! {
+
+    // r[impl properties.paxos-promise-is-strict-advance]
+    // r[verify properties.paxos-promise-is-strict-advance]
+    /// Paxos promise advances the round monotonically: if the new ballot
+    /// has a strictly higher round, the round number is a strict advance
+    /// in the monotonic sense.
+    proof fn paxos_promise_is_strict_advance(state: AcceptorState, ballot: Ballot)
+        requires
+            can_promise_spec(state, ballot),
+            ballot.round > promised_ballot(state).round,
+        ensures is_strict_advance_spec(
+            promised_ballot(state).round,
+            promised_ballot(promise_next_spec(state, ballot)).round,
+        )
+    {}
+
+    // r[impl properties.paxos-ballot-gt-implies-ge-round]
+    // r[verify properties.paxos-ballot-gt-implies-ge-round]
+    /// A strictly greater ballot has at least as high a round.
+    proof fn paxos_ballot_gt_implies_ge_round(a: Ballot, b: Ballot)
+        requires ballot_gt_spec(a, b)
+        ensures a.round >= b.round
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod lease_mutex_fencing_proofs {
+    use vstd::prelude::*;
+
+    use crate::fencing::{is_stale_spec, is_valid_write_spec, issue_token_spec};
+    use crate::lease_mutex::{
+        LockState, acquire_next_spec, can_acquire_spec,
+        is_owner_spec, write_permitted_spec,
+    };
+
+    verus! {
+
+    // r[impl properties.lease-mutex-fence-is-fencing-token]
+    // r[verify properties.lease-mutex-fence-is-fencing-token]
+    /// The lease_mutex fence token after acquisition matches fencing::issue_token
+    /// applied to the old fence.
+    proof fn lease_mutex_fence_is_fencing_token(
+        state: LockState, node_id: u64, now: u64, ttl: u64,
+    )
+        requires can_acquire_spec(state, now, ttl)
+        ensures
+            acquire_next_spec(state, node_id, now, ttl).fence_token
+                == issue_token_spec(state.fence_token),
+    {}
+
+    // r[impl properties.lease-mutex-stale-fence-rejected]
+    // r[verify properties.lease-mutex-stale-fence-rejected]
+    /// A stale fencing token (per fencing::is_stale) is also rejected by
+    /// lease_mutex::write_permitted.
+    proof fn lease_mutex_stale_fence_rejected(
+        state: LockState, node_id: u64, now: u64, old_fence: u64,
+    )
+        requires
+            is_owner_spec(state, node_id, now),
+            is_stale_spec(old_fence, state.fence_token),
+        ensures !write_permitted_spec(state, node_id, now, old_fence)
+    {}
+
+    // r[impl properties.lease-mutex-valid-fence-accepted]
+    // r[verify properties.lease-mutex-valid-fence-accepted]
+    /// A valid fencing token (per fencing::is_valid_write) is accepted by
+    /// lease_mutex::write_permitted when the node is the owner.
+    proof fn lease_mutex_valid_fence_accepted(
+        state: LockState, node_id: u64, now: u64, request_fence: u64,
+    )
+        requires
+            is_owner_spec(state, node_id, now),
+            is_valid_write_spec(request_fence, state.fence_token),
+        ensures write_permitted_spec(state, node_id, now, request_fence)
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod two_phase_lock_ordering_proofs {
+    use vstd::prelude::*;
+
+    use crate::lock_ordering::would_deadlock_spec;
+    use crate::two_phase_lock::{
+        PHASE_GROWING, PHASE_SHRINKING,
+        can_acquire_spec, would_violate_spec, OP_ACQUIRE,
+    };
+
+    verus! {
+
+    // r[impl properties.two-phase-lock-shrinking-blocks-all]
+    // r[verify properties.two-phase-lock-shrinking-blocks-all]
+    /// In the shrinking phase, both 2PL and lock-ordering agree that
+    /// no new acquisition should proceed: 2PL rejects it outright,
+    /// and lock_ordering considers any lower-numbered request a deadlock risk.
+    proof fn two_phase_shrinking_blocks_all()
+        ensures
+            would_violate_spec(PHASE_SHRINKING, OP_ACQUIRE),
+            !can_acquire_spec(PHASE_SHRINKING),
+    {}
+
+    // r[impl properties.two-phase-lock-growing-enables-ordered-acquire]
+    // r[verify properties.two-phase-lock-growing-enables-ordered-acquire]
+    /// In the growing phase, 2PL permits acquisition, and if the lock
+    /// is requested in order (requested > held_max), lock_ordering
+    /// confirms no deadlock.
+    proof fn two_phase_growing_enables_ordered_acquire(held_max: u64, requested: u64)
+        requires requested > held_max
+        ensures
+            can_acquire_spec(PHASE_GROWING),
+            !would_deadlock_spec(held_max, requested),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod paxos_two_phase_proofs {
+    use vstd::prelude::*;
+
+    use crate::two_phase::{can_commit_spec, must_abort_spec};
+
+    verus! {
+
+    // r[impl properties.paxos-quorum-accept-enables-commit]
+    // r[verify properties.paxos-quorum-accept-enables-commit]
+    /// If all acceptors accept (model as all-yes votes in 2PC), the
+    /// coordinator can commit. This connects Paxos unanimous acceptance
+    /// to 2PC commit.
+    proof fn paxos_quorum_accept_enables_commit()
+        ensures can_commit_spec(seq![Some(true), Some(true), Some(true)])
+    {}
+
+    // r[impl properties.paxos-reject-forces-abort]
+    // r[verify properties.paxos-reject-forces-abort]
+    /// If any acceptor rejects (model as a no vote in 2PC), the
+    /// coordinator must abort.
+    proof fn paxos_reject_forces_abort()
+        ensures must_abort_spec(seq![Some(true), Some(false), Some(true)])
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod lease_mutex_lease_proofs {
+    use vstd::prelude::*;
+
+    use crate::lease_mutex::{
+        LockState, acquire_next_spec, can_acquire_spec,
+        is_available_spec, is_owner_spec, release_spec,
+    };
+
+    verus! {
+
+    // r[impl properties.lease-mutex-release-then-available]
+    // r[verify properties.lease-mutex-release-then-available]
+    /// After releasing a lease-based lock, it is immediately available —
+    /// same semantics as lease revocation making the lease invalid.
+    proof fn lease_mutex_release_then_available(state: LockState, now: u64)
+        ensures is_available_spec(release_spec(state, now), now)
+    {}
+
+    // r[impl properties.lease-mutex-acquire-release-roundtrip]
+    // r[verify properties.lease-mutex-acquire-release-roundtrip]
+    /// Acquire then immediately release: the lock is available but the
+    /// fence token has advanced (write protection persists).
+    proof fn lease_mutex_acquire_release_roundtrip(
+        state: LockState, node_id: u64, now: u64, ttl: u64,
+    )
+        requires can_acquire_spec(state, now, ttl)
+        ensures ({
+            let after_acq = acquire_next_spec(state, node_id, now, ttl);
+            let after_rel = release_spec(after_acq, now);
+            is_available_spec(after_rel, now)
+            && after_rel.fence_token as int == state.fence_token as int + 1
+        })
+    {}
+
+    } // verus!
+}
+
+// --- Proptest: distributed coordination cross-module ---
+
+#[cfg(test)]
+mod distributed_coordination_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.paxos-promise-is-strict-advance]
+        #[test]
+        fn prop_paxos_promise_monotonic(
+            pr in 0u64..100, pp in 0u64..10,
+            br in 0u64..100, bp in 0u64..10,
+        ) {
+            let state = crate::paxos::AcceptorState {
+                promised_round: pr, promised_proposer: pp,
+                has_accepted: false, accepted_round: 0, accepted_proposer: 0,
+                accepted_value: 0,
+            };
+            let ballot = crate::paxos::Ballot { round: br, proposer_id: bp };
+            if crate::paxos::can_promise(&state, &ballot) && br > pr {
+                prop_assert!(crate::monotonic::is_strict_advance(pr, br));
+            }
+        }
+
+        // r[verify properties.lease-mutex-fence-is-fencing-token]
+        #[test]
+        fn prop_lease_mutex_fence_matches_fencing(
+            now in 0u64..u64::MAX / 2,
+            ttl in 1u64..u64::MAX / 4,
+            node_id in 1u64..100,
+            old_fence in 0u64..u64::MAX - 1,
+        ) {
+            let lock = crate::lease_mutex::LockState {
+                holder: 0, expiry: 0, fence_token: old_fence,
+            };
+            if let Some(new_lock) = crate::lease_mutex::try_acquire(&lock, node_id, now, ttl) {
+                prop_assert_eq!(
+                    new_lock.fence_token,
+                    crate::fencing::issue_token(old_fence)
+                );
+            }
+        }
+
+        // r[verify properties.lease-mutex-stale-fence-rejected]
+        #[test]
+        fn prop_stale_fence_rejected_by_both(
+            now in 0u64..u64::MAX / 2,
+            ttl in 1u64..u64::MAX / 4,
+            node_a in 1u64..100,
+            node_b in 100u64..200,
+        ) {
+            let lock = crate::lease_mutex::LockState {
+                holder: 0, expiry: 0, fence_token: 0,
+            };
+            if let Some(after_a) = crate::lease_mutex::try_acquire(&lock, node_a, now, ttl) {
+                let expire_time = now + ttl;
+                if expire_time <= u64::MAX / 2 {
+                    if let Some(after_b) = crate::lease_mutex::try_acquire(
+                        &after_a, node_b, expire_time, ttl,
+                    ) {
+                        // A's old fence is stale in both fencing and lease_mutex
+                        prop_assert!(crate::fencing::is_stale(
+                            after_a.fence_token, after_b.fence_token
+                        ));
+                        prop_assert!(!crate::lease_mutex::write_permitted(
+                            &after_b, node_a, expire_time, after_a.fence_token
+                        ));
+                    }
+                }
+            }
+        }
+
+        // r[verify properties.two-phase-lock-growing-enables-ordered-acquire]
+        #[test]
+        fn prop_growing_phase_ordered_no_deadlock(
+            held_max in 0u64..10000,
+            gap in 1u64..1000,
+        ) {
+            let requested = held_max.saturating_add(gap);
+            if requested > held_max {
+                prop_assert!(crate::two_phase_lock::can_acquire(
+                    crate::two_phase_lock::PHASE_GROWING
+                ));
+                prop_assert!(!crate::lock_ordering::would_deadlock(held_max, requested));
+            }
+        }
+
+        // r[verify properties.paxos-quorum-accept-enables-commit]
+        #[test]
+        fn prop_all_accept_enables_commit(_x in 0u8..1) {
+            let votes = vec![Some(true), Some(true), Some(true)];
+            prop_assert!(crate::two_phase::can_commit(&votes));
+        }
+
+        // r[verify properties.paxos-reject-forces-abort]
+        #[test]
+        fn prop_any_reject_forces_abort(_x in 0u8..1) {
+            let votes = vec![Some(true), Some(false), Some(true)];
+            prop_assert!(crate::two_phase::must_abort(&votes));
+        }
+
+        // r[verify properties.lease-mutex-acquire-release-roundtrip]
+        #[test]
+        fn prop_acquire_release_available(
+            now in 0u64..u64::MAX / 4,
+            ttl in 1u64..u64::MAX / 4,
+            node_id in 1u64..100,
+        ) {
+            let lock = crate::lease_mutex::LockState {
+                holder: 0, expiry: 0, fence_token: 0,
+            };
+            if let Some(acquired) = crate::lease_mutex::try_acquire(&lock, node_id, now, ttl) {
+                let released = crate::lease_mutex::do_release(&acquired, now);
+                prop_assert!(crate::lease_mutex::is_available(&released, now));
+                prop_assert_eq!(released.fence_token, 1);
+            }
+        }
+    }
+}

@@ -112,18 +112,22 @@ pub open spec fn highest_waiter_spec(waiters: Seq<u64>) -> u64 {
 
 // r[impl priority-inversion.highest-waiter]
 /// Find the highest priority among waiting tasks.
-/// @verified-logic:no-ensures exec max-scan connects to recursive highest_waiter_from_spec; covered by proptest
-#[verifier::exec_allows_no_decreases_clause]
 pub fn highest_waiter(waiters: &[u64]) -> (result: u64)
+    ensures result == highest_waiter_spec(waiters@)
 {
+    // Scan right-to-left to match the recursive spec direction.
     let mut best: u64 = 0;
-    let mut i: usize = 0;
-    while i < waiters.len()
+    let mut i: usize = waiters.len();
+    while i > 0
+        invariant
+            0 <= i <= waiters@.len(),
+            best == highest_waiter_from_spec(waiters@, i as int),
+        decreases i,
     {
+        i = i - 1;
         if waiters[i] > best {
             best = waiters[i];
         }
-        i = i + 1;
     }
     best
 }

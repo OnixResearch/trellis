@@ -33,8 +33,12 @@ pub open spec fn total_weight_spec(weights: Seq<u64>) -> int {
 
 // r[impl fair-share.total-weight]
 /// Compute the total weight of all consumers.
-/// @verified-logic:no-ensures overflow branch can't connect to recursive spec without inductive invariant; covered by proptest
 pub fn total_weight(weights: &[u64]) -> (result: Option<u64>)
+    ensures
+        match result {
+            Some(v) => total_weight_spec(weights@) == v as int,
+            None => total_weight_spec(weights@) > u64::MAX as int,
+        },
 {
     let mut sum: u64 = 0;
     let mut i: usize = 0;
@@ -45,6 +49,11 @@ pub fn total_weight(weights: &[u64]) -> (result: Option<u64>)
         decreases weights@.len() - i,
     {
         if sum > u64::MAX - weights[i] {
+            // sum + weights[i] > u64::MAX. Remaining tail is nonneg,
+            // so total >= sum + weights[i] > u64::MAX.
+            proof {
+                total_weight_nonneg_from(weights@, (i + 1) as int);
+            }
             return None;
         }
         sum = sum + weights[i];

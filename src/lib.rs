@@ -32,6 +32,7 @@
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `buddy` — buddy system: block sizes, buddy addresses, coalescing, parent blocks
 //! - `causal_order` — causal delivery and consistent snapshots
+//! - `consistent_snapshot` — consistent cuts with lattice operations (join/meet) and message consistency
 //! - `containment` — delegation containment: scope + mode + subsumption
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
@@ -162,6 +163,8 @@
 //! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
+//! - `view_change` — view-based reconfiguration: view monotonicity, leader rotation, quorum-gated transitions
+//! - `quorum_cert` — quorum certificate: vote counting, QC ordering, commit rule via consecutive certificates
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
 //! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
@@ -192,6 +195,8 @@ pub mod buddy;
 pub mod causal_order;
 pub mod containment;
 pub mod consistent_hash;
+pub mod consistent_snapshot;
+
 pub mod crdt;
 pub mod bounded_mpmc;
 pub mod bounded_peers;
@@ -306,6 +311,7 @@ pub mod priority_inversion;
 pub mod process_state;
 pub mod properties;
 pub mod quorum;
+pub mod quorum_cert;
 pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
@@ -351,6 +357,7 @@ pub mod two_phase;
 pub mod two_phase_lock;
 pub mod vector_clock;
 pub mod vote_tally;
+pub mod view_change;
 pub mod voter_set;
 pub mod wal_segment;
 pub mod watermark;

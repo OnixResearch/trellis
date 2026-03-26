@@ -39,18 +39,26 @@ pub open spec fn all_deps_satisfied_spec(deps: Seq<u64>, completed: Seq<u64>) ->
 
 // r[impl job-dag.all-deps-satisfied]
 /// Check if all dependencies of a job are satisfied.
-/// @verified-logic:no-ensures exec loop connects to recursive spec via membership search; covered by proptest
-#[verifier::exec_allows_no_decreases_clause]
 pub fn all_deps_satisfied(deps: &[u64], completed: &[u64]) -> (result: bool)
+    ensures result == all_deps_satisfied_spec(deps@, completed@)
 {
     let mut i: usize = 0;
     while i < deps.len()
-        invariant i <= deps@.len(),
+        invariant
+            0 <= i <= deps@.len(),
+            all_deps_satisfied_spec(deps@, completed@)
+                <==> all_deps_satisfied_from_spec(deps@, completed@, i as int),
+        decreases deps@.len() - i,
     {
         let mut found = false;
         let mut j: usize = 0;
         while j < completed.len()
-            invariant j <= completed@.len(), i < deps@.len(),
+            invariant
+                0 <= j <= completed@.len(),
+                i < deps@.len(),
+                found <==> exists|k: int| #![trigger completed@[k]]
+                    0 <= k < j as int && completed@[k] == deps@[i as int],
+            decreases completed@.len() - j,
         {
             if completed[j] == deps[i] {
                 found = true;
@@ -125,19 +133,30 @@ pub open spec fn unsatisfied_count_spec(deps: Seq<u64>, completed: Seq<u64>) -> 
 
 // r[impl job-dag.dep-count]
 /// Count unsatisfied dependencies.
-/// @verified-logic:no-ensures exec loop connects to recursive spec via membership search; covered by proptest
-#[verifier::exec_allows_no_decreases_clause]
 pub fn unsatisfied_count(deps: &[u64], completed: &[u64]) -> (result: u64)
+    requires deps@.len() <= u64::MAX as int
+    ensures result == unsatisfied_count_spec(deps@, completed@) as u64
 {
     let mut count: u64 = 0;
     let mut i: usize = 0;
     while i < deps.len()
-        invariant i <= deps@.len(),
+        invariant
+            0 <= i <= deps@.len(),
+            deps@.len() <= u64::MAX as int,
+            count as int == unsatisfied_count_from_spec(deps@, completed@, 0)
+                - unsatisfied_count_from_spec(deps@, completed@, i as int),
+            count as int <= i as int,
+        decreases deps@.len() - i,
     {
         let mut found = false;
         let mut j: usize = 0;
         while j < completed.len()
-            invariant j <= completed@.len(), i < deps@.len(),
+            invariant
+                0 <= j <= completed@.len(),
+                i < deps@.len(),
+                found <==> exists|k: int| #![trigger completed@[k]]
+                    0 <= k < j as int && completed@[k] == deps@[i as int],
+            decreases completed@.len() - j,
         {
             if completed[j] == deps[i] {
                 found = true;
@@ -145,9 +164,7 @@ pub fn unsatisfied_count(deps: &[u64], completed: &[u64]) -> (result: u64)
             j = j + 1;
         }
         if !found {
-            if count < u64::MAX {
-                count = count + 1;
-            }
+            count = count + 1;
         }
         i = i + 1;
     }
@@ -242,28 +259,25 @@ pub open spec fn max_of_from_spec(levels: Seq<u64>, from: int) -> u64
 
 // r[impl job-dag.topo-level]
 /// Compute the topological level of a job.
-/// @verified-logic:no-ensures exec max-scan connects to recursive max_of_from_spec; covered by proptest
-#[verifier::exec_allows_no_decreases_clause]
 pub fn topo_level(dep_levels: &[u64]) -> (result: u64)
+    ensures result == topo_level_spec(dep_levels@)
 {
     if dep_levels.is_empty() {
         return 0;
     }
+    // Scan right-to-left to match the recursive spec direction.
     let mut max_dep: u64 = 0;
-    let mut i: usize = 0;
-    while i < dep_levels.len()
+    let mut i: usize = dep_levels.len();
+    while i > 0
         invariant
             0 <= i <= dep_levels@.len(),
-            forall|j: int| #![trigger dep_levels@[j]]
-                0 <= j < i as int ==> dep_levels@[j] <= max_dep,
-            i > 0 ==> (exists|j: int| 0 <= j < i as int && dep_levels@[j] == max_dep),
-            i == 0 ==> max_dep == 0u64,
-        decreases dep_levels@.len() - i,
+            max_dep == max_of_from_spec(dep_levels@, i as int),
+        decreases i,
     {
+        i = i - 1;
         if dep_levels[i] > max_dep {
             max_dep = dep_levels[i];
         }
-        i = i + 1;
     }
     if max_dep == u64::MAX {
         u64::MAX
