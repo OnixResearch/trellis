@@ -10,11 +10,17 @@
 
 ## Phase 2: Glob recursive spec
 
-- [ ] Replace degenerate `glob_match_spec` with recursive definition
-- [ ] Add `glob_segments_spec` helper for multi-segment matching
-- [ ] Close `glob_match` exec fn with loop invariant
-- [ ] Add proof fns for key structural cases
-- [ ] Verus + cargo test green
+- [x] Replace degenerate `glob_match_spec` with recursive definition ✅ (prior session)
+- [x] Add `glob_segments_spec` helper for multi-segment matching ✅ (prior session)
+- [x] Close `glob_match` exec fn — full rewrite with verified exec helpers ✅
+  - 8 new exec helpers: has_star, bytes_eq, segment_end, substr_at, starts_with, ends_with, find_segment_in, slice_to_vec
+  - build_segments: loop with deep_view+split_by_star_spec "done+rest=full" invariant
+  - segments_match_exec: recursive exec mirroring segments_match_spec via Ghost<Seq<Seq<u8>>>
+  - segment_end_bounded proof lemma (inductive, needed for slice bounds)
+  - deep_view_push proof lemma (extensional equality for Vec push)
+  - Removed find_substr_runtime (replaced by find_segment_in_exec inside verus!)
+- [x] Proof fns for key structural cases ✅ (wildcard_matches_all, exact_match, exact_rejects, non_match)
+- [x] Verus + cargo test green ✅ (3099 verified, 0 errors; 14/14 glob tests pass)
 
 ## Phase 3: Replace strings
 

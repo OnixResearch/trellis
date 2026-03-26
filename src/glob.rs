@@ -183,76 +183,379 @@ pub open spec fn glob_match_spec(pattern: Seq<u8>, input: Seq<u8>) -> bool {
 }
 
 // ============================================================
-// Exec: external_body with split-by-star algorithm
+// Deep view: bridge Vec<Vec<u8>>@ (= Seq<Vec<u8>>) to Seq<Seq<u8>>
+// ============================================================
+
+/// Convert a Seq<Vec<u8>> to Seq<Seq<u8>> by taking the view of each element.
+pub open spec fn deep_view(v: Seq<Vec<u8>>) -> Seq<Seq<u8>> {
+    Seq::new(v.len(), |i: int| v[i]@)
+}
+
+// ============================================================
+// Verified exec helpers
+// ============================================================
+
+/// Exec: check if pattern contains a `*` byte.
+fn has_star_exec(pattern: &[u8]) -> (result: bool)
+    ensures result == has_star_spec(pattern@)
+{
+    let mut i: usize = 0;
+    while i < pattern.len()
+        invariant
+            i <= pattern.len(),
+            forall|j: int| #![trigger pattern@[j]] 0 <= j < i as int ==> pattern@[j] != STAR(),
+        decreases pattern.len() - i,
+    {
+        if pattern[i] == 42u8 {
+            return true;
+        }
+        i = i + 1;
+    }
+    false
+}
+
+/// Exec: byte-by-byte equality of two slices.
+fn bytes_eq_exec(a: &[u8], b: &[u8]) -> (result: bool)
+    ensures result == (a@ =~= b@)
+{
+    if a.len() != b.len() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < a.len()
+        invariant
+            i <= a.len(),
+            a@.len() == b@.len(),
+            forall|j: int| #![trigger a@[j]] 0 <= j < i as int ==> a@[j] == b@[j],
+        decreases a.len() - i,
+    {
+        if a[i] != b[i] {
+            return false;
+        }
+        i = i + 1;
+    }
+    assert(a@ =~= b@);
+    true
+}
+
+/// Exec: find the end of a non-star segment starting at `from`.
+fn segment_end_exec(pattern: &[u8], from: usize) -> (result: usize)
+    requires from as int <= pattern@.len()
+    ensures result as int == segment_end(pattern@, from as int)
+{
+    let mut i: usize = from;
+    while i < pattern.len()
+        invariant
+            from <= i,
+            i <= pattern.len(),
+            segment_end(pattern@, from as int) == segment_end(pattern@, i as int),
+        decreases pattern.len() - i,
+    {
+        if pattern[i] == 42u8 {
+            return i;
+        }
+        i = i + 1;
+    }
+    i
+}
+
+/// Exec: does `needle` appear at position `pos` in `haystack`?
+fn substr_at_exec(haystack: &[u8], needle: &[u8], pos: usize) -> (result: bool)
+    requires pos as int + needle@.len() <= haystack@.len()
+    ensures result == substr_at_spec(haystack@, needle@, pos as int)
+{
+    let mut i: usize = 0;
+    while i < needle.len()
+        invariant
+            i <= needle.len(),
+            pos + needle.len() <= haystack.len(),
+            forall|j: int| #![trigger needle@[j]] 0 <= j < i as int
+                ==> haystack@[pos as int + j] == needle@[j],
+        decreases needle.len() - i,
+    {
+        if haystack[pos + i] != needle[i] {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+/// Exec: does input[from..to] start with `seg`?
+fn starts_with_exec(input: &[u8], from: usize, to: usize, seg: &[u8]) -> (result: bool)
+    requires from as int <= to as int, to as int <= input@.len()
+    ensures result == starts_with_spec(input@.subrange(from as int, to as int), seg@)
+{
+    let region_len: usize = to - from;
+    if region_len < seg.len() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < seg.len()
+        invariant
+            i <= seg.len(),
+            seg.len() <= region_len,
+            from + seg.len() <= to,
+            to <= input.len(),
+            forall|j: int| #![trigger seg@[j]] 0 <= j < i as int
+                ==> input@[from as int + j] == seg@[j],
+        decreases seg.len() - i,
+    {
+        if input[from + i] != seg[i] {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+/// Exec: does input[from..to] end with `seg`?
+fn ends_with_exec(input: &[u8], from: usize, to: usize, seg: &[u8]) -> (result: bool)
+    requires from as int <= to as int, to as int <= input@.len()
+    ensures result == ends_with_spec(input@.subrange(from as int, to as int), seg@)
+{
+    let region_len: usize = to - from;
+    if region_len < seg.len() {
+        return false;
+    }
+    let suffix_start: usize = to - seg.len();
+    let mut i: usize = 0;
+    while i < seg.len()
+        invariant
+            i <= seg.len(),
+            seg.len() <= region_len,
+            suffix_start == to - seg.len(),
+            suffix_start >= from,
+            to <= input.len(),
+            forall|j: int| #![trigger seg@[j]] 0 <= j < i as int
+                ==> input@[suffix_start as int + j] == seg@[j],
+        decreases seg.len() - i,
+    {
+        if input[suffix_start + i] != seg[i] {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+/// Exec: find `needle` in `input[pos..end]`. Returns `None` if not found.
+fn find_segment_in_exec(
+    input: &[u8], needle: &[u8], pos: usize, end: usize,
+) -> (result: Option<usize>)
+    requires
+        pos as int <= end as int,
+        end as int <= input@.len(),
+        needle@.len() > 0,
+    ensures
+        result.is_some() ==> find_segment_in(input@, needle@, pos as int, end as int)
+            == result.unwrap() as int,
+        result.is_some() ==> result.unwrap() as int + needle@.len() <= end as int,
+        result.is_none() ==> find_segment_in(input@, needle@, pos as int, end as int)
+            == -1int,
+{
+    if end < needle.len() {
+        // Can't fit needle at all.
+        return None;
+    }
+    let limit: usize = end - needle.len();
+    let mut p: usize = pos;
+    while p <= limit
+        invariant
+            pos <= p,
+            limit == end - needle.len(),
+            end <= input.len(),
+            needle.len() > 0,
+            find_segment_in(input@, needle@, pos as int, end as int)
+                == find_segment_in(input@, needle@, p as int, end as int),
+        decreases limit + 1 - p,
+    {
+        if substr_at_exec(input, needle, p) {
+            return Some(p);
+        }
+        p = p + 1;
+    }
+    None
+}
+
+/// Exec: copy `data[from..to]` into a new Vec.
+fn slice_to_vec(data: &[u8], from: usize, to: usize) -> (result: Vec<u8>)
+    requires from as int <= to as int, to as int <= data@.len()
+    ensures result@ =~= data@.subrange(from as int, to as int)
+{
+    let mut v: Vec<u8> = Vec::new();
+    let mut j: usize = from;
+    while j < to
+        invariant
+            from <= j,
+            j <= to,
+            to <= data.len(),
+            v@.len() == (j - from) as int,
+            forall|k: int| #![trigger v@[k]] 0 <= k < v@.len()
+                ==> v@[k] == data@[from as int + k],
+        decreases to - j,
+    {
+        v.push(data[j]);
+        j = j + 1;
+    }
+    assert(v@ =~= data@.subrange(from as int, to as int));
+    v
+}
+
+// ============================================================
+// Build segments + match segments
+// ============================================================
+
+/// Proof: segment_end always returns a value in [from, pattern.len()].
+proof fn segment_end_bounded(pattern: Seq<u8>, from: int)
+    requires 0 <= from, from <= pattern.len()
+    ensures
+        from <= segment_end(pattern, from),
+        segment_end(pattern, from) <= pattern.len(),
+    decreases pattern.len() - from
+{
+    if from < pattern.len() && pattern[from] != STAR() {
+        segment_end_bounded(pattern, from + 1);
+    }
+}
+
+/// Proof: deep_view distributes over push.
+proof fn deep_view_push(v: Seq<Vec<u8>>, x: Vec<u8>)
+    ensures deep_view(v.push(x)) =~= deep_view(v).push(x@)
+{
+    assert(deep_view(v.push(x)) =~= deep_view(v).push(x@));
+}
+
+/// Exec: split pattern by `*` into a Vec of segments.
+fn build_segments(pattern: &[u8]) -> (result: Vec<Vec<u8>>)
+    requires has_star_spec(pattern@)
+    ensures deep_view(result@) =~= split_by_star_spec(pattern@, 0)
+{
+    let mut segs: Vec<Vec<u8>> = Vec::new();
+    let mut pat_from: usize = 0;
+
+    // Invariant: deep_view(segs@) ++ split_by_star_spec(pattern@, pat_from) == full split.
+    loop
+        invariant_except_break
+            pat_from <= pattern.len(),
+            deep_view(segs@) + split_by_star_spec(pattern@, pat_from as int)
+                =~= split_by_star_spec(pattern@, 0),
+        ensures
+            deep_view(segs@) =~= split_by_star_spec(pattern@, 0),
+        decreases pattern.len() + 1 - pat_from,
+    {
+        if pat_from == pattern.len() {
+            // split_by_star_spec(pattern, len) == seq![Seq::<u8>::empty()]
+            let empty: Vec<u8> = Vec::new();
+            proof { deep_view_push(segs@, empty); }
+            segs.push(empty);
+            break;
+        }
+
+        let se: usize = segment_end_exec(pattern, pat_from);
+        proof { segment_end_bounded(pattern@, pat_from as int); }
+
+        let seg: Vec<u8> = slice_to_vec(pattern, pat_from, se);
+        proof { deep_view_push(segs@, seg); }
+        segs.push(seg);
+
+        if se >= pattern.len() {
+            break;
+        }
+
+        pat_from = se + 1;
+    }
+
+    segs
+}
+
+/// Exec: match segments against input, mirroring `segments_match_spec`.
+///
+/// Takes `segs: &[Vec<u8>]` and a ghost `segs_spec: Seq<Seq<u8>>` for the ensures.
+/// The caller must establish `deep_view(segs@) =~= segs_spec`.
+fn segments_match_exec(
+    segs: &[Vec<u8>],
+    input: &[u8],
+    idx: usize,
+    pos: usize,
+    end: usize,
+    segs_spec: Ghost<Seq<Seq<u8>>>,
+) -> (result: bool)
+    requires
+        0 <= pos as int,
+        pos as int <= end as int,
+        end as int <= input@.len(),
+        idx as int <= segs@.len(),
+        segs@.len() == segs_spec@.len(),
+        forall|i: int| #![trigger segs_spec@[i]] 0 <= i < segs@.len()
+            ==> segs@[i]@ =~= segs_spec@[i],
+    ensures
+        result == segments_match_spec(segs_spec@, input@, idx as int, pos as int, end as int)
+    decreases segs.len() - idx
+{
+    if idx >= segs.len() {
+        return true;
+    }
+
+    let seg: &Vec<u8> = &segs[idx];
+    let is_first: bool = idx == 0;
+    let is_last: bool = idx == segs.len() - 1;
+
+    if seg.len() == 0 {
+        // Empty segment — skip.
+        return segments_match_exec(segs, input, idx + 1, pos, end, Ghost(segs_spec@));
+    }
+
+    if is_first {
+        // First segment: prefix match.
+        if !starts_with_exec(input, pos, end, seg.as_slice()) {
+            return false;
+        }
+        // starts_with succeeded: end - pos >= seg.len(), so pos + seg.len() <= end
+        return segments_match_exec(
+            segs, input, idx + 1, pos + seg.len(), end, Ghost(segs_spec@),
+        );
+    }
+
+    if is_last {
+        // Last segment: suffix match.
+        return ends_with_exec(input, pos, end, seg.as_slice());
+    }
+
+    // Middle segment: find in input[pos..end].
+    match find_segment_in_exec(input, seg.as_slice(), pos, end) {
+        None => false,
+        Some(found) => {
+            // find_segment_in_exec ensures: found + seg.len() <= end
+            segments_match_exec(
+                segs, input, idx + 1, found + seg.len(), end, Ghost(segs_spec@),
+            )
+        }
+    }
+}
+
+// ============================================================
+// Main glob_match: verified exec
 // ============================================================
 
 // r[impl glob.wildcard-matches-all]
 /// Returns true if the input matches the glob pattern.
-/// Exec uses split-by-star algorithm outside verus! (iterators/closures).
-/// Spec is now a full recursive definition; exec marked external_body because
-/// connecting the imperative algorithm to the recursive spec is hard for Z3.
-/// @verified-logic:no-ensures
-#[verifier::external_body]
 pub fn glob_match(pattern: &[u8], input: &[u8]) -> (result: bool)
-    ensures result == glob_match_spec(pattern@, input@),
+    ensures result == glob_match_spec(pattern@, input@)
 {
-    // No wildcard: exact match.
-    if !pattern.contains(&b'*') {
-        return pattern == input;
-    }
-    // Pure wildcard.
-    if pattern == b"*" {
-        return true;
-    }
-    // Split pattern by '*'.
-    let segments: Vec<&[u8]> = pattern.split(|&b| b == b'*').collect();
-    if segments.is_empty() {
-        return true;
+    // Step 1: check for star.
+    if !has_star_exec(pattern) {
+        return bytes_eq_exec(pattern, input);
     }
 
-    let mut pos: usize = 0;
+    // Step 2: build segments.
+    let segs: Vec<Vec<u8>> = build_segments(pattern);
 
-    // First segment: must be prefix.
-    if !segments[0].is_empty() {
-        if input.len() < segments[0].len() {
-            return false;
-        }
-        if &input[..segments[0].len()] != segments[0] {
-            return false;
-        }
-        pos = segments[0].len();
-    }
-
-    // Last segment: must be suffix.
-    let last = segments.len() - 1;
-    let mut end = input.len();
-    if last > 0 && !segments[last].is_empty() {
-        if end < segments[last].len() + pos {
-            return false;
-        }
-        if &input[end - segments[last].len()..end] != segments[last] {
-            return false;
-        }
-        end = end - segments[last].len();
-    }
-
-    // Middle segments: find in order.
-    let mut seg = 1;
-    while seg < last {
-        if segments[seg].is_empty() {
-            seg += 1;
-            continue;
-        }
-        match find_substr_runtime(input, segments[seg], pos, end) {
-            Some(p) => {
-                pos = p + segments[seg].len();
-            }
-            None => return false,
-        }
-        seg += 1;
-    }
-
-    true
+    // Step 3: match segments against input.
+    proof { let _ = deep_view(segs@); }
+    segments_match_exec(
+        segs.as_slice(), input, 0, 0, input.len(), Ghost(deep_view(segs@)),
+    )
 }
 
 // ============================================================
@@ -316,23 +619,6 @@ proof fn glob_non_match(pattern: Seq<u8>, input: Seq<u8>)
 {}
 
 } // verus!
-
-/// Find substring in a bounded region (runtime helper, outside verus!).
-fn find_substr_runtime(haystack: &[u8], needle: &[u8], from: usize, end: usize) -> Option<usize> {
-    if needle.is_empty() {
-        return Some(from);
-    }
-    let region = &haystack[..end];
-    if from + needle.len() > region.len() {
-        return None;
-    }
-    for pos in from..=(region.len() - needle.len()) {
-        if &region[pos..pos + needle.len()] == needle {
-            return Some(pos);
-        }
-    }
-    None
-}
 
 #[cfg(test)]
 mod tests {
