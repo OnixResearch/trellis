@@ -1066,3 +1066,21 @@
 - noop_commit_index_spec returns log_len + 1, not log_len (1-based commit index)
 - is_last_chunk checks offset + chunk_size == total_size (exact equality, not <=)
 - Always read the actual spec fn signatures before writing cross-module proofs
+
+## Concurrency Modules (2026-03-26)
+- lock_ordering, epoch_reclaim, hazard_pointer — 3 new modules
+- Verus while loops MUST have `decreases` clauses — every time, no exceptions
+- Counting loop overflow: `count + 1` needs proof that count < u64::MAX.
+  Add `count as int <= i as int` to invariant — count of matching elements
+  in [0..i) can't exceed i. Use int-level comparison, NOT `as usize` (triggers
+  Verus cast recommendations).
+- Seq-based recursive count specs (count_active_from_spec, count_reclaimable_from_spec)
+  need the count <= index invariant for the exec loop to verify `count + 1`
+- hazard_pointer: HP_EMPTY sentinel (u64::MAX) makes is_protected_spec clean —
+  `addr != HP_EMPTY` in the existential avoids matching sentinel slots
+- epoch_reclaim: three-epoch scheme (0,1,2) with cyclic gap. Core safety proof
+  (safe_reclaim_no_active_at_retire) is automatic — Z3 derives retire_epoch != global_epoch
+  from gap >= 2, then can_advance gives all active threads at global_epoch
+- lock_ordering: valid_order_chain inductive helper proves locks[i] < locks[j] for i < j,
+  then wraps into valid_order_implies_distinct and last_is_max
+- All 81 new Verus proofs automatic — no nonlinear_arith, no external_body, no bit_vector

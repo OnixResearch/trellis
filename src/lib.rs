@@ -54,6 +54,7 @@
 //! - `distributed_lock` — distributed lock tokens, deadlines, expiry, backoff
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `drain_protocol` — double-check admission with recheck and notification
+//! - `epoch_reclaim` — epoch-based memory reclamation: pin/unpin, three-epoch cycling, safe-to-reclaim
 //! - `election` — leader election state machine: transitions, tokens, timing
 //! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
 //! - `election_safety_proof` — system-level election safety: at most one leader per term
@@ -70,6 +71,7 @@
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
+//! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free proof
 //! - `install_snapshot` — snapshot trigger and commit advancement for log compaction
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
@@ -86,6 +88,7 @@
 //! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
 //! - `settlement` — bilateral obligation netting: net positions, sum-to-zero, valid settlement
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
+//! - `lock_ordering` — lock acquisition ordering for deadlock prevention: strict total order, cycle freedom
 //! - `lsm_level` — LSM-tree level management: target sizing, compaction triggers, amplification
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
@@ -201,6 +204,7 @@ pub mod distributed_lock;
 pub mod drain;
 pub mod drain_protocol;
 pub mod env_scrub;
+pub mod epoch_reclaim;
 pub mod election;
 pub mod escrow;
 pub mod fee;
@@ -223,6 +227,7 @@ pub mod ghost_history;
 pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;
+pub mod hazard_pointer;
 pub mod heartbeat;
 pub mod install_snapshot;
 pub mod integer;
@@ -242,6 +247,7 @@ pub mod lease;
 pub mod ledger;
 pub mod lease_read;
 pub mod linearizability;
+pub mod lock_ordering;
 pub mod log;
 pub mod log_compaction;
 pub mod lsm_level;
