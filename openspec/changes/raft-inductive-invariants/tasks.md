@@ -54,15 +54,15 @@
 
 ## Phase 3: Close Verification Gaps
 
-- [ ] Remove #[verifier::external_body] from log_conflict::resolve_conflict (deferred — loop invariant over recursive spec is a known hard problem, documented in napkin)
-- [ ] Prove truncation branch: after truncate(follower, start_index + offset), follower == resolve_start_state(...)
-- [ ] Prove no-conflict branch: after computing overlap, follower state == resolve_start_state(...)
-- [ ] Prove append loop invariant: at iteration j, follower@ == append_entries_spec(resolve_start_state(...), leader_entries@, j)
-- [ ] Prove loop base: at j == append_from, follower equals resolve_start_state
-- [ ] Prove loop step: push(leader_entries[j]) advances append_entries_spec from j to j+1
-- [ ] Prove loop termination: at j == leader_entries.len(), append_entries_spec returns the prefix (identity)
-- [ ] Verify the full resolve_conflict function without external_body
-- [ ] Update verification-gaps spec to remove resolve_conflict entry
+- [x] Remove #[verifier::external_body] from log_conflict::resolve_conflict ✅
+- [x] Prove truncation branch: after truncate(follower, start_index + offset), follower == resolve_start_state(...) ✅
+- [x] Prove no-conflict branch: after computing overlap, follower state == resolve_start_state(...) ✅
+- [x] Prove append loop invariant: inverted form — append_entries_spec(follower@, entries, j) == full_result ✅
+- [x] Prove loop base: at j == append_from, append_entries_spec(rss, entries, append_from) == full_result ✅ (by definition)
+- [x] Prove loop step: push(leader_entries[j]) advances via append_entries_step ✅
+- [x] Prove loop termination: at j == entries.len(), append_entries_spec(follower@, entries, len) == follower@ ✅ (base case)
+- [x] Verify the full resolve_conflict function without external_body ✅ (2949 verified, 0 errors)
+- [x] Key fix: original loop invariant was WRONG direction — used "remaining work" form instead ✅
 - [x] Close leader_completeness precondition: create leader_completeness_ghost.rs ✅
 - [x] Proof: prove_shared_voter_exists — quorum intersection gives overlap ✅
 - [x] Proof: voter_has_committed_epoch_spec — shared voter has committed entry ✅
