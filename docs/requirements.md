@@ -4133,3 +4133,56 @@ For a valid fee split, fee + net = amount mirrors transfer conservation
 r[properties.fee-zero-rate-identity]
 compute_net(amount, 0) MUST equal amount, matching the identity
 property of zero-amount transfers.
+
+## Multi-Account Ledger
+
+r[ledger.total]
+total_balance MUST return the sum of all account balances. Empty ledger
+total MUST be zero. Single-account total MUST equal that balance. Sum
+MUST be non-negative. Returns None on overflow.
+
+r[ledger.balance-at]
+balance_at MUST return the balance at the given account index.
+
+r[ledger.account-count]
+account_count MUST return the number of accounts in the ledger.
+
+r[ledger.can-transfer]
+can_transfer MUST return true if and only if: both indices are in range,
+indices differ (no self-transfer), amount > 0, sender has sufficient funds,
+and receiver won't overflow. Self-transfer MUST always be rejected. Zero
+amount MUST always be rejected.
+
+r[ledger.transfer-result]
+ledger_transfer MUST return (new_sender, new_receiver) where sender is
+debited by amount and receiver is credited by amount. The ledger length
+MUST be preserved. Only the sender and receiver accounts change — all
+others MUST be identical to the original.
+
+r[ledger.conservation]
+After any valid transfer, the sum of all account balances MUST equal the
+sum before the transfer. Two successive valid transfers MUST preserve the
+total. A transfer with fee (sender pays amount, receiver gets amount - fee,
+fee collector gets fee) also MUST preserve the total.
+
+r[ledger.transfer-with-fee]
+ledger_transfer_with_fee MUST debit sender by amount, credit receiver by
+amount - fee, and credit fee collector by fee. All three indices MUST be
+distinct. Fee MUST be <= amount. The total across all accounts MUST be
+preserved.
+
+r[ledger.batch]
+apply_transfers applies a sequence of transfers in order. When all
+transfers are valid (all_transfers_valid), the batch MUST preserve the
+total balance. The batch MUST preserve ledger length.
+
+## Cross-Module: Ledger
+
+r[properties.ledger-transfer-uses-balance]
+Ledger transfer sender result MUST equal balance::debit_spec and receiver
+result MUST equal balance::credit_spec. The ledger composes balance
+operations.
+
+r[properties.ledger-conservation-is-double-entry]
+A ledger transfer debiting and crediting the same amount is a balanced
+entry in the double_entry sense: is_balanced_spec(seq![amount], seq![amount]).

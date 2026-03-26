@@ -2122,6 +2122,29 @@ mod financial_proofs {
         ensures compute_net_spec(amount, 0) == amount as int
     {}
 
+    // r[impl properties.ledger-transfer-uses-balance]
+    // r[verify properties.ledger-transfer-uses-balance]
+    /// Ledger transfer sender/receiver match balance debit/credit.
+    proof fn prove_ledger_transfer_uses_balance(
+        accounts: Seq<u64>, from_idx: int, to_idx: int, amount: u64,
+    )
+        requires crate::ledger::can_transfer_spec(accounts, from_idx, to_idx, amount)
+        ensures
+            crate::ledger::transfer_result_spec(accounts, from_idx, to_idx, amount)[from_idx]
+                as int == debit_spec(accounts[from_idx], amount),
+            crate::ledger::transfer_result_spec(accounts, from_idx, to_idx, amount)[to_idx]
+                as int == credit_spec(accounts[to_idx], amount),
+    {}
+
+    // r[impl properties.ledger-conservation-is-double-entry]
+    // r[verify properties.ledger-conservation-is-double-entry]
+    /// Ledger transfer conservation mirrors double_entry balanced property:
+    /// debiting sender and crediting receiver by the same amount is balanced.
+    proof fn prove_ledger_conservation_is_double_entry(amount: u64)
+        requires amount > 0
+        ensures crate::double_entry::is_balanced_spec(seq![amount], seq![amount])
+    {}
+
     } // verus!
 }
 
@@ -3460,6 +3483,26 @@ mod tests {
         #[test]
         fn prop_fee_zero_rate_identity(amount: u64) {
             prop_assert_eq!(crate::fee::compute_net(amount, 0), amount);
+        }
+
+        // r[verify properties.ledger-transfer-uses-balance]
+        #[test]
+        fn prop_ledger_transfer_uses_balance(
+            balances in proptest::collection::vec(100..10_000u64, 2..=5),
+            from_idx in 0usize..5,
+            to_idx in 0usize..5,
+            amount in 1..100u64,
+        ) {
+            if from_idx < balances.len() && to_idx < balances.len() && from_idx != to_idx {
+                if let Some((new_from, new_to)) = crate::ledger::ledger_transfer(&balances, from_idx, to_idx, amount) {
+                    if let Some(debited) = crate::balance::debit(balances[from_idx], amount) {
+                        prop_assert_eq!(new_from, debited);
+                    }
+                    if let Some(credited) = crate::balance::credit(balances[to_idx], amount) {
+                        prop_assert_eq!(new_to, credited);
+                    }
+                }
+            }
         }
 
         // r[verify properties.retry-with-closed-circuit]

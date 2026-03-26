@@ -82,6 +82,7 @@
 //! - `learner_change` — learner add/remove primitives: no quorum impact, idempotent ops
 //! - `learner_readiness` — learner catch-up readiness for safe voter promotion
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
+//! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
@@ -233,6 +234,7 @@ pub mod leadership_transfer;
 pub mod learner_change;
 pub mod learner_readiness;
 pub mod lease;
+pub mod ledger;
 pub mod lease_read;
 pub mod linearizability;
 pub mod log;

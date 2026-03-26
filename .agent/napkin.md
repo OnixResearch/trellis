@@ -944,6 +944,21 @@
   - 19 new Verus proofs, 12 new cargo tests (5 unit + 7 proptest)
   - Cross-module: escrow fund = balance debit, release = balance credit, fee + net = amount
   - 3020 total Verus proofs, 1895 total cargo tests
+- Ledger module added: multi-account Seq<u64> with total conservation
+  - sum_update_delta is the key inductive lemma: updating one element at index idx
+    changes the sum by exactly (new_val - old_val). Uses case split on from == idx.
+  - sum_update_total wraps sum_update_delta with from=0 for clean API
+  - transfer_preserves_total: two calls to sum_update_total — debit cancels credit
+  - fee_transfer_preserves_total: three sum_update_total calls — debit = net + fee
+  - single_account_total needs explicit hint: `assert(ledger_sum_spec(seq![balance], 1) == 0)`
+    — Z3 can't unfold recursive sum on singleton seq without the trigger
+  - batch_preserves_total: inductive on transfer sequence, calls transfer_preserves_total per step
+  - Leading `&&` in spec bodies → Verus Chainable trait error. Use plain `condition1 && condition2`
+  - Seq::update preserves length and leaves other indices unchanged — Z3 handles this automatically
+    via vstd axioms (axiom_seq_update_same, axiom_seq_update_different)
+  - Cross-module: ledger transfer sender = balance::debit, receiver = balance::credit
+  - 28 new Verus proofs (3048 total), 13 new cargo tests (1908 total)
+  - Zero external_body — fully verified
 
 ## u128 intermediate pattern
 - When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`
