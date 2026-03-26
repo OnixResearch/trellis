@@ -18,6 +18,7 @@
 //! - `backoff` — exponential backoff with cap and jitter bounds
 //! - `balance` — credit/debit with overflow protection and conservation proofs
 //! - `ballot` — vote tracking for Raft elections with quorum intersection safety
+//! - `barrier` — thread barrier: arrive, release on Nth arrival, generation counter
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitfield` — multi-bit field extraction and insertion with round-trip proofs
@@ -123,6 +124,7 @@
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
 //! - `read_index` — linearizable read confirmation via quorum heartbeat acks
+//! - `ref_count` — reference counting: increment/decrement, weak upgrade, dealloc trigger
 //! - `region` — address region arithmetic: contains, disjoint, adjacent, merge, split
 //! - `replication_mode` — per-peer replication FSM: Probe → Replicate → Snapshot transitions
 //! - `replication_pipeline` — flow control for pipelined `AppendEntries`
@@ -139,6 +141,7 @@
 //! - `state_machine_safety` — no two servers apply different entries at the same index
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
+//! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `term_authority` — step-down on higher term: adopt, revert to follower, clear vote
@@ -155,6 +158,7 @@
 //! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
+//! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
 
 pub mod access_mode;
 pub mod append_entries_build;
@@ -168,6 +172,7 @@ pub mod arithmetic;
 pub mod backoff;
 pub mod balance;
 pub mod ballot;
+pub mod barrier;
 pub mod batch;
 pub mod bitfield;
 pub mod bitmap;
@@ -286,6 +291,7 @@ pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
 pub mod read_index;
+pub mod ref_count;
 pub mod region;
 pub mod replication_mode;
 pub mod replication_pipeline;
@@ -295,6 +301,7 @@ pub mod retry;
 pub mod ring_buffer;
 pub mod rwlock;
 pub mod scope;
+pub mod seqlock;
 pub mod seq_fold;
 pub mod seq_set;
 pub mod sequence;
@@ -325,3 +332,4 @@ pub mod voter_set;
 pub mod wal_segment;
 pub mod watermark;
 pub mod witness;
+pub mod work_stealing;

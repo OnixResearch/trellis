@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**3407 Verus proofs · 2067 tests · 969 requirements · 170 modules · 13 trusted axioms**
+**3497 Verus proofs · 2130 tests · 969 requirements · 174 modules · 13 trusted axioms**
 
 ## How it works
 
@@ -156,6 +156,10 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `lock_ordering` | lock acquisition order, deadlock detection, cycle freedom via strict total order |
 | `epoch_reclaim` | epoch-based reclamation: three-epoch cycling, pin/unpin, safe-to-reclaim gap proof |
 | `hazard_pointer` | hazard pointer protocol: protect/unprotect, no-use-after-free, reclaimable scan |
+| `seqlock` | sequence lock: even/odd counter, valid read detection, writer versioning |
+| `ref_count` | reference counting: strong/weak, dealloc trigger, upgrade conditions |
+| `work_stealing` | work-stealing deque: push/pop/steal bounds, circular buffer index |
+| `barrier` | thread barrier: arrive/release, generation counter, leader detection |
 
 ### Financial accounting
 
@@ -293,7 +297,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 2067 tests (unit + property)
+cargo test                 # 2130 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -301,7 +305,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (3407 proofs)
+./scripts/verus.sh         # verus only (3497 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -309,7 +313,7 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 170 module declarations
+src/lib.rs              ← crate root, 174 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
 docs/requirements.md    ← 969 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths

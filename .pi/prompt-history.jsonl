@@ -282,3 +282,5 @@
 {"text":"what next","timestamp":1774555556110}
 {"text":"3, 4, 5","timestamp":1774555795306}
 {"text":"what next","timestamp":1774556707395}
+{"text":"- Concurrency — lock ordering, epoch-based reclamation, hazard pointers","timestamp":1774556798031}
+{"text":"what next","timestamp":1774558520964}

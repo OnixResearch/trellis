@@ -1084,3 +1084,9 @@
 - lock_ordering: valid_order_chain inductive helper proves locks[i] < locks[j] for i < j,
   then wraps into valid_order_implies_distinct and last_is_max
 - All 81 new Verus proofs automatic — no nonlinear_arith, no external_body, no bit_vector
+- seqlock, ref_count, work_stealing, barrier — 4 more modules (wave 2)
+- `gen` is reserved keyword in Rust 2024 — use `generation` (napkin already warned!)
+- `expected - 1` in spec context (ensures/requires) produces int, not u64 — must cast:
+  `arrive_spec((expected - 1) as u64)` not `arrive_spec(expected - 1)`
+- Same for `top + 1` in spec: `after_pop_spec((top + 1) as u64)`
+- All 90 new Verus proofs automatic — total across both waves: 171 new proofs, 0 external_body
