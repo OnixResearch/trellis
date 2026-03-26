@@ -57,9 +57,11 @@
 //! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
 //! - `election_safety_proof` — system-level election safety: at most one leader per term
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
+//! - `escrow` — conditional value holding: fund, release, refund, dispute with conservation
 //! - `eviction` — LRU eviction with protected entries
 //! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
 //! - `fast_backtrack` — Raft accelerated log backtracking: skip conflicting terms in one RPC (§5.3)
+//! - `fee` — proportional fee computation: basis points, tiered, conservation
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry provenance
@@ -194,6 +196,8 @@ pub mod drain;
 pub mod drain_protocol;
 pub mod env_scrub;
 pub mod election;
+pub mod escrow;
+pub mod fee;
 pub mod election_init;
 pub mod election_jitter;
 pub mod election_safety_proof;

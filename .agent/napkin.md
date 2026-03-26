@@ -919,6 +919,32 @@
     is too strong at module level (counterexample: log_a=[term=1], log_b=[term=2,term=3],
     push term=3 → LMP breaks at new entry because prior entries don't match).
 
+- Escrow module added: fund, release, refund, dispute state machine
+  - Uses pub const u8 state constants (same pattern as circuit_breaker, batch)
+  - Conservation proofs: fund-then-release and fund-then-refund preserve three-party total
+  - Fund-refund roundtrip returns buyer to original balance
+  - Terminal states (Released, Refunded) block all transitions — proved exhaustively
+  - Dispute is state-only transition, no balance changes
+  - total_value uses u128 — three u64 values can't overflow u128
+  - Cross-module: fund_buyer_after_spec == debit_spec, release_seller_after_spec == credit_spec
+  - All proofs automatic — no nonlinear_arith, no external_body
+  - 17 new Verus proofs, 15 new cargo tests (8 unit + 7 proptest)
+- Fee module added: compute_fee, compute_net, split_with_fee, tiered_fee
+  - Basis points: rate_bps in [0, 10000], fee = floor(amount * rate_bps / 10000)
+  - u128 intermediate for amount * rate_bps (same pattern as rate_limit)
+  - Overflow proof: amount * rate_bps <= u64::MAX * 10000 << u128::MAX — by(nonlinear_arith)
+  - Result bound: fee = product / 10000 <= amount — by(nonlinear_arith) with rate_bps <= 10000
+  - Monotonicity in both amount and rate: uses vstd::arithmetic::div_mod::lemma_div_is_ordered
+  - fee_bounded proof: two-step — first prove product ordering, then apply div_is_ordered
+  - full_rate_takes_all: needs lemma_fundamental_div_mod + nonlinear_arith for mod == 0
+  - Conservation: fee + net = amount — trivially automatic from spec definitions
+  - Tiered fee: max(proportional, min_fee) capped at amount — all proofs automatic
+  - proptest! format strings can't capture outer variables (proptest macro limitation) —
+    use plain prop_assert_eq!/prop_assert! without format messages
+  - 19 new Verus proofs, 12 new cargo tests (5 unit + 7 proptest)
+  - Cross-module: escrow fund = balance debit, release = balance credit, fee + net = amount
+  - 3020 total Verus proofs, 1895 total cargo tests
+
 ## u128 intermediate pattern
 - When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`
 - Verus needs explicit overflow proof: `assert((a as int) * (b as int) <= (u128::MAX as int)) by(nonlinear_arith) requires ...`

@@ -2063,6 +2063,68 @@ mod ledger_proofs {
     } // verus!
 }
 
+// --- escrow ↔ balance, fee ↔ transfer ---
+
+#[cfg(verus_keep_ghost)]
+mod financial_proofs {
+    use vstd::prelude::*;
+
+    use crate::balance::credit_spec;
+    use crate::balance::debit_spec;
+    use crate::escrow::fund_buyer_after_spec;
+    use crate::escrow::release_seller_after_spec;
+    use crate::escrow::is_terminal_spec;
+    use crate::escrow::{ESCROW_RELEASED, ESCROW_REFUNDED};
+    use crate::fee::compute_fee_spec;
+    use crate::fee::compute_net_spec;
+    use crate::fee::MAX_RATE_BPS;
+    use crate::process_state::is_terminal_spec as ps_is_terminal_spec;
+
+    verus! {
+
+    // r[impl properties.escrow-fund-uses-debit]
+    // r[verify properties.escrow-fund-uses-debit]
+    /// Escrow funding is a balance debit.
+    proof fn prove_escrow_fund_uses_debit(buyer: u64, amount: u64)
+        ensures fund_buyer_after_spec(buyer, amount) == debit_spec(buyer, amount)
+    {}
+
+    // r[impl properties.escrow-release-uses-credit]
+    // r[verify properties.escrow-release-uses-credit]
+    /// Escrow release is a balance credit.
+    proof fn prove_escrow_release_uses_credit(seller: u64, amount: u64)
+        ensures release_seller_after_spec(seller, amount) == credit_spec(seller, amount)
+    {}
+
+    // r[impl properties.escrow-terminal-like-process]
+    // r[verify properties.escrow-terminal-like-process]
+    /// Both escrow and process_state have terminal absorbing states.
+    proof fn prove_escrow_terminal_like_process()
+        ensures
+            is_terminal_spec(ESCROW_RELEASED),
+            is_terminal_spec(ESCROW_REFUNDED),
+            ps_is_terminal_spec(4u64),
+    {}
+
+    // r[impl properties.fee-conservation-matches-transfer]
+    // r[verify properties.fee-conservation-matches-transfer]
+    /// Fee split conserves value: fee + net = amount.
+    proof fn prove_fee_conservation_matches_transfer(amount: u64, rate_bps: u64)
+        requires rate_bps <= MAX_RATE_BPS
+        ensures compute_fee_spec(amount, rate_bps)
+            + compute_net_spec(amount, rate_bps) == amount as int
+    {}
+
+    // r[impl properties.fee-zero-rate-identity]
+    // r[verify properties.fee-zero-rate-identity]
+    /// Zero-rate fee leaves amount unchanged.
+    proof fn prove_fee_zero_rate_identity(amount: u64)
+        ensures compute_net_spec(amount, 0) == amount as int
+    {}
+
+    } // verus!
+}
+
 // --- retry ↔ circuit_breaker ↔ backoff ---
 
 #[cfg(verus_keep_ghost)]
@@ -3360,6 +3422,44 @@ mod tests {
         #[test]
         fn prop_balanced_simple_is_transfer(a in 1..u64::MAX) {
             prop_assert!(crate::transfer::transfer_valid(a, 0, a));
+        }
+
+        // r[verify properties.escrow-fund-uses-debit]
+        #[test]
+        fn prop_escrow_fund_uses_debit(buyer: u64, amount: u64) {
+            if let Some(debited) = crate::balance::debit(buyer, amount) {
+                if let Some((escrowed, _)) = crate::escrow::fund(
+                    crate::escrow::ESCROW_CREATED, buyer, amount
+                ) {
+                    prop_assert_eq!(escrowed, debited);
+                }
+            }
+        }
+
+        // r[verify properties.escrow-release-uses-credit]
+        #[test]
+        fn prop_escrow_release_uses_credit(seller in 0..u64::MAX / 2, amount in 1..u64::MAX / 2) {
+            if let Some(credited) = crate::balance::credit(seller, amount) {
+                if let Some((released, _)) = crate::escrow::release(
+                    crate::escrow::ESCROW_FUNDED, seller, amount
+                ) {
+                    prop_assert_eq!(released, credited);
+                }
+            }
+        }
+
+        // r[verify properties.fee-conservation-matches-transfer]
+        #[test]
+        fn prop_fee_conservation(amount: u64, rate_bps in 0..=10000u64) {
+            let fee = crate::fee::compute_fee(amount, rate_bps);
+            let net = crate::fee::compute_net(amount, rate_bps);
+            prop_assert_eq!(fee as u128 + net as u128, amount as u128);
+        }
+
+        // r[verify properties.fee-zero-rate-identity]
+        #[test]
+        fn prop_fee_zero_rate_identity(amount: u64) {
+            prop_assert_eq!(crate::fee::compute_net(amount, 0), amount);
         }
 
         // r[verify properties.retry-with-closed-circuit]

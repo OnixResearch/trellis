@@ -4038,3 +4038,98 @@ r[client-routing.route-read]
 route_read_request MUST return ACCEPT_LOCAL for leaders, FORWARD for
 non-leaders with a known leader (when follower reads are enabled),
 and REJECT otherwise.
+
+## Escrow
+
+r[escrow.valid-state]
+is_valid_state MUST return true for exactly: CREATED (0), FUNDED (1),
+RELEASED (2), REFUNDED (3), DISPUTED (4). All transitions MUST
+preserve validity.
+
+r[escrow.terminal]
+RELEASED and REFUNDED MUST be terminal — no outgoing transitions.
+Terminal states MUST block all transitions.
+
+r[escrow.transition]
+Valid transitions: Created→Funded, Funded→Released, Funded→Refunded,
+Funded→Disputed, Disputed→Released, Disputed→Refunded. All other
+transitions MUST be rejected. Created has exactly one outgoing edge.
+Funded has three. Disputed has two (both terminal).
+
+r[escrow.fund]
+fund MUST debit the buyer and transition to FUNDED. Requires state ==
+CREATED, amount > 0, and buyer has sufficient funds. The buyer's new
+balance MUST equal old - amount. Fund-then-refund MUST return the buyer
+to the original balance.
+
+r[escrow.release]
+release MUST credit the seller and transition to RELEASED. Requires
+state == FUNDED or DISPUTED, amount > 0, and seller balance won't
+overflow. The seller's new balance MUST equal old + amount.
+
+r[escrow.refund]
+refund MUST credit the buyer and transition to REFUNDED. Requires
+state == FUNDED or DISPUTED, amount > 0, and buyer balance won't
+overflow. The buyer's new balance MUST equal old + amount.
+
+r[escrow.dispute]
+dispute MUST transition FUNDED to DISPUTED. All other states MUST
+reject. Dispute is a state-only operation — no balance changes.
+
+r[escrow.conservation]
+Total value (buyer + seller + escrow) MUST be constant across all
+operations. Fund-then-release preserves the three-party total.
+Fund-then-refund preserves the three-party total. Fund-dispute-release
+and fund-dispute-refund also preserve totals.
+
+## Fee Computation
+
+r[fee.compute]
+compute_fee MUST return floor(amount * rate_bps / 10000). Fee MUST be
+bounded: 0 <= fee <= amount. Zero amount yields zero fee. Zero rate
+yields zero fee. Full rate (10000 bps) takes the entire amount. Fee
+MUST be monotonic in both amount and rate.
+
+r[fee.net]
+compute_net MUST return amount - fee. Net MUST be non-negative. Zero
+rate means net equals amount. Full rate means net equals zero.
+
+r[fee.conservation]
+fee + net MUST equal amount for all valid inputs. Value is neither
+created nor destroyed by fee computation.
+
+r[fee.valid-rate]
+is_valid_rate MUST return true if and only if rate_bps <= 10000.
+
+r[fee.split]
+split_with_fee MUST return (fee, net) where fee + net = amount. Split
+conservation MUST hold for all valid rates.
+
+r[fee.tiered]
+tiered_fee MUST return max(proportional_fee, min_fee) capped at amount.
+When proportional exceeds min, use proportional. When min exceeds
+proportional but not amount, use min. When min exceeds amount, use
+amount. Tiered fee MUST never exceed amount. When amount >= min_fee,
+the tiered fee MUST be >= min_fee.
+
+## Cross-Module: Financial
+
+r[properties.escrow-fund-uses-debit]
+Escrow fund_buyer_after_spec(buyer, amount) MUST equal
+balance::debit_spec(buyer, amount). Escrow funding is a balance debit.
+
+r[properties.escrow-release-uses-credit]
+Escrow release_seller_after_spec(seller, amount) MUST equal
+balance::credit_spec(seller, amount). Escrow release is a balance credit.
+
+r[properties.escrow-terminal-like-process]
+Escrow is_terminal mirrors process_state::is_terminal — both define
+absorbing states with no outgoing transitions.
+
+r[properties.fee-conservation-matches-transfer]
+For a valid fee split, fee + net = amount mirrors transfer conservation
+(sender + receiver = total). Fee computation preserves value.
+
+r[properties.fee-zero-rate-identity]
+compute_net(amount, 0) MUST equal amount, matching the identity
+property of zero-amount transfers.
