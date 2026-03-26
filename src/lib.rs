@@ -83,6 +83,7 @@
 //! - `learner_readiness` — learner catch-up readiness for safe voter promotion
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
 //! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
+//! - `settlement` — bilateral obligation netting: net positions, sum-to-zero, valid settlement
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
@@ -288,6 +289,7 @@ pub mod seq_set;
 pub mod sequence;
 pub mod sequential;
 pub mod session_tree;
+pub mod settlement;
 pub mod signal;
 pub mod snapshot_compaction;
 pub mod snapshot_integrity;

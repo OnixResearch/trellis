@@ -960,6 +960,27 @@
   - 28 new Verus proofs (3048 total), 13 new cargo tests (1908 total)
   - Zero external_body — fully verified
 
+- Settlement module added: bilateral obligation netting with conservation proofs
+  - Position computation: apply_from_spec applies obligations left-to-right to Seq<int> positions
+  - Core theorem: positions_sum_zero — inductive proof that each obligation preserves the int sum
+    (apply_obligation_preserves_sum uses int_sum_update_total, same pattern as ledger)
+  - int_sum_update_delta mirrors ledger's sum_update_delta but for Seq<int> instead of Seq<u64>
+  - int_sum_zeros_from helper: proves sum of all-zeros Seq is 0 from any starting index
+  - Exec uses i128 for positions — bounded by obligations_count * u64::MAX. Loop invariant:
+    `positions@[k] >= -(i as int) * (u64::MAX as int) && positions@[k] <= (i as int) * (u64::MAX as int)`
+  - Overflow proof: `(i+1) * u64::MAX == i * u64::MAX + u64::MAX` via by(nonlinear_arith)
+  - obligation_count_spec takes Seq<(int,int,u64)> but exec takes &[(usize,usize,u64)] — can't
+    reference spec from exec ensures due to type mismatch. Use `result == obligations@.len()` instead.
+  - is_valid_settlement exec exempted from ensures (no-ensures) — type mismatch between
+    (usize,usize,u64) exec and (int,int,u64) spec makes direct ensures impossible. Covered by proptest.
+  - swap_negates_position: postcondition must use apply_obligation_spec on zeros directly,
+    not compute_positions_spec (which wraps apply_from_spec and Z3 can't unfold through it)
+  - single_obligation_sum_zero needs explicit `assert(all_obligations_valid_spec(obs, n, 1))` then
+    `assert(all_obligations_valid_spec(obs, n, 0))` — Z3 can't unfold both at once
+  - Leading `&&` in spec bodies: same Chainable trait error as ledger — use plain `condition && ...`
+  - 26 new Verus proofs (3074 total), 10 new cargo tests (1918 total)
+  - Zero external_body
+
 ## u128 intermediate pattern
 - When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`
 - Verus needs explicit overflow proof: `assert((a as int) * (b as int) <= (u128::MAX as int)) by(nonlinear_arith) requires ...`

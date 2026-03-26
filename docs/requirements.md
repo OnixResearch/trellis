@@ -4186,3 +4186,53 @@ operations.
 r[properties.ledger-conservation-is-double-entry]
 A ledger transfer debiting and crediting the same amount is a balanced
 entry in the double_entry sense: is_balanced_spec(seq![amount], seq![amount]).
+
+## Settlement and Netting
+
+r[settlement.int-sum]
+int_sum_spec MUST compute the recursive sum of a Seq<int>. Sum of empty
+is zero. Sum of all-zeros is zero.
+
+r[settlement.obligation-valid]
+An obligation is valid when both party indices are in range, distinct,
+and amount > 0. Swapping sender and receiver negates both parties'
+positions.
+
+r[settlement.all-valid]
+all_obligations_valid MUST check every obligation in the sequence against
+obligation_valid.
+
+r[settlement.apply-obligation]
+apply_obligation MUST debit the sender and credit the receiver in the
+position vector. The operation MUST preserve the sum of positions.
+
+r[settlement.compute-positions]
+compute_positions MUST compute net positions by applying all obligations
+to an all-zeros vector. The result length MUST equal num_parties. Empty
+obligations produce all-zero positions.
+
+r[settlement.positions-sum-zero]
+Net positions MUST always sum to zero. This is the fundamental conservation
+theorem: each obligation contributes +amount to one party and -amount to
+another. Single obligations also sum to zero.
+
+r[settlement.valid-settlement]
+A settlement is valid when it produces the same net positions as the
+original obligations. The original is always a valid settlement of
+itself. A valid settlement preserves every party's net position.
+
+r[settlement.obligation-count]
+obligation_count MUST return the number of obligations.
+
+r[settlement.net-position-at]
+net_position_at MUST return the net position for a single party.
+
+r[settlement.apply-preserves-sum]
+Applying one obligation preserves the sum of positions. By induction,
+applying all obligations preserves the sum.
+
+r[settlement.apply-preserves-length]
+Applying obligations preserves the position vector length.
+
+r[settlement.self-settlement]
+Every set of obligations is a valid settlement of itself (reflexivity).
