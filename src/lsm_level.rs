@@ -238,7 +238,7 @@ proof fn target_ge_base(level: u64, base_size: u64, size_ratio: u64)
 
 /// Target size is monotonic: higher levels have larger or equal targets.
 // r[verify lsm-level.target-size]
-proof fn target_monotonic(level: u64, base_size: u64, size_ratio: u64)
+pub proof fn target_monotonic(level: u64, base_size: u64, size_ratio: u64)
     requires
         base_size > 0,
         size_ratio >= 2,
@@ -295,7 +295,7 @@ proof fn space_amp_no_amplification(size: u64)
 
 /// Space amp is at least 100% when total >= live.
 // r[verify lsm-level.space-amp-pct]
-proof fn space_amp_ge_100(total: u64, live: u64)
+pub proof fn space_amp_ge_100(total: u64, live: u64)
     requires live > 0, total >= live,
     ensures space_amp_pct_spec(total, live) >= 100,
 {

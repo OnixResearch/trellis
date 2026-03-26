@@ -4096,6 +4096,275 @@ mod log_compaction_cross_tests {
     }
 }
 
+// --- Cross-module: Storage Primitives ---
+
+#[cfg(verus_keep_ghost)]
+mod storage_cross_proofs {
+    use vstd::prelude::*;
+
+    use crate::wal_segment::{
+        is_contiguous_spec, write_advance_spec, replay_count_spec,
+        is_truncate_safe_spec,
+    };
+    use crate::btree_balance::{
+        fill_pct_spec, split_left_size_spec, split_right_size_spec,
+        is_underfull_spec, min_keys_spec,
+    };
+    use crate::lsm_level::{
+        level_target_size_spec, space_amp_pct_spec, total_write_amp_spec,
+    };
+    use crate::monotonic::{is_advance_spec, is_strict_advance_spec};
+    use crate::arithmetic::{saturating_sub_spec, checked_mul_spec};
+    use crate::ordering::min_spec;
+
+    verus! {
+
+    // ─── WAL Segment ─────────────────────────────────────────────────
+
+    /// write_advance is a monotonic advance on the write position.
+    // r[impl properties.wal-advance-is-monotonic]
+    pub open spec fn wal_advance_is_monotonic_prop(written: u64, entry_size: u64) -> bool {
+        write_advance_spec(written, entry_size).is_some() ==>
+            is_advance_spec(written, write_advance_spec(written, entry_size).unwrap())
+    }
+
+    // r[verify properties.wal-advance-is-monotonic]
+    proof fn prove_wal_advance_is_monotonic(written: u64, entry_size: u64)
+        ensures wal_advance_is_monotonic_prop(written, entry_size),
+    {}
+
+    /// replay_count equals saturating_sub.
+    // r[impl properties.wal-replay-is-saturating-sub]
+    pub open spec fn wal_replay_is_saturating_sub_prop(checkpoint: u64, end: u64) -> bool {
+        replay_count_spec(checkpoint, end) == saturating_sub_spec(end, checkpoint)
+    }
+
+    // r[verify properties.wal-replay-is-saturating-sub]
+    proof fn prove_wal_replay_is_saturating_sub(checkpoint: u64, end: u64)
+        ensures wal_replay_is_saturating_sub_prop(checkpoint, end),
+    {}
+
+    /// Truncation safety is a comparison against min(committed, applied).
+    // r[impl properties.wal-truncate-uses-min]
+    pub open spec fn wal_truncate_uses_min_prop(t: u64, c: u64, a: u64) -> bool {
+        is_truncate_safe_spec(t, c, a) == (t <= min_spec(c, a))
+    }
+
+    // r[verify properties.wal-truncate-uses-min]
+    proof fn prove_wal_truncate_uses_min(t: u64, c: u64, a: u64)
+        ensures wal_truncate_uses_min_prop(t, c, a),
+    {}
+
+    /// Contiguous WAL entries form a strictly advancing sequence.
+    // r[impl properties.wal-contiguous-is-strict-advance]
+    pub open spec fn wal_contiguous_is_strict_advance_prop(prev: u64, current: u64) -> bool {
+        is_contiguous_spec(prev, current) ==> is_strict_advance_spec(prev, current)
+    }
+
+    // r[verify properties.wal-contiguous-is-strict-advance]
+    proof fn prove_wal_contiguous_is_strict_advance(prev: u64, current: u64)
+        ensures wal_contiguous_is_strict_advance_prop(prev, current),
+    {}
+
+    // ─── B-tree Balance ──────────────────────────────────────────────
+
+    /// Split conserves: left + right == count.
+    // r[impl properties.btree-split-conserves]
+    pub open spec fn btree_split_conserves_prop(count: u64) -> bool {
+        split_left_size_spec(count) + split_right_size_spec(count) == count
+    }
+
+    // r[verify properties.btree-split-conserves]
+    proof fn prove_btree_split_conserves(count: u64)
+        ensures btree_split_conserves_prop(count),
+    {
+        vstd::arithmetic::div_mod::lemma_fundamental_div_mod(count as int, 2);
+    }
+
+    /// Fill percentage is in [0, 100] for valid inputs.
+    // r[impl properties.btree-fill-bounded]
+    pub open spec fn btree_fill_bounded_prop(count: u64, capacity: u64) -> bool
+        recommends capacity > 0, count <= capacity,
+    {
+        fill_pct_spec(count, capacity) >= 0 && fill_pct_spec(count, capacity) <= 100
+    }
+
+    // r[verify properties.btree-fill-bounded]
+    proof fn prove_btree_fill_bounded(count: u64, capacity: u64)
+        requires capacity > 0, count <= capacity,
+        ensures btree_fill_bounded_prop(count, capacity),
+    {
+        assert(count as int * 100 / capacity as int <= 100) by(nonlinear_arith)
+            requires capacity > 0u64, count <= capacity;
+        assert(count as int * 100 / capacity as int >= 0) by(nonlinear_arith)
+            requires capacity > 0u64;
+    }
+
+    /// A node at exactly min_keys is NOT underfull.
+    // r[impl properties.btree-min-keys-is-underfull-threshold]
+    pub open spec fn btree_min_keys_threshold_prop(capacity: u64) -> bool
+        recommends capacity >= 2,
+    {
+        !is_underfull_spec(min_keys_spec(capacity), capacity)
+    }
+
+    // r[verify properties.btree-min-keys-is-underfull-threshold]
+    proof fn prove_btree_min_keys_threshold(capacity: u64)
+        requires capacity >= 2,
+        ensures btree_min_keys_threshold_prop(capacity),
+    {}
+
+    // ─── LSM Level ───────────────────────────────────────────────────
+
+    /// Target size is monotonic: higher levels have equal or larger targets.
+    // r[impl properties.lsm-target-monotonic]
+    pub open spec fn lsm_target_monotonic_prop(level: u64, base: u64, ratio: u64) -> bool
+        recommends base > 0, ratio >= 2, level < u64::MAX,
+    {
+        level_target_size_spec(level, base, ratio)
+            <= level_target_size_spec((level + 1) as u64, base, ratio)
+    }
+
+    // r[verify properties.lsm-target-monotonic]
+    proof fn prove_lsm_target_monotonic(level: u64, base: u64, ratio: u64)
+        requires base > 0, ratio >= 2, level < u64::MAX,
+        ensures lsm_target_monotonic_prop(level, base, ratio),
+    {
+        crate::lsm_level::target_monotonic(level, base, ratio);
+    }
+
+    /// Space amp is at least 100% when total >= live.
+    // r[impl properties.lsm-space-amp-ge-100]
+    pub open spec fn lsm_space_amp_ge_100_prop(total: u64, live: u64) -> bool
+        recommends live > 0, total >= live,
+    {
+        space_amp_pct_spec(total, live) >= 100
+    }
+
+    // r[verify properties.lsm-space-amp-ge-100]
+    proof fn prove_lsm_space_amp_ge_100(total: u64, live: u64)
+        requires live > 0, total >= live,
+        ensures lsm_space_amp_ge_100_prop(total, live),
+    {
+        crate::lsm_level::space_amp_ge_100(total, live);
+    }
+
+    /// Total write amp agrees with checked_mul in the non-overflow case.
+    // r[impl properties.lsm-write-amp-is-checked-mul]
+    pub open spec fn lsm_write_amp_is_checked_mul_prop(levels: u64, ratio: u64) -> bool
+        recommends
+            levels as int * ratio as int <= u64::MAX as int,
+    {
+        total_write_amp_spec(levels, ratio) == checked_mul_spec(levels, ratio).unwrap()
+    }
+
+    // r[verify properties.lsm-write-amp-is-checked-mul]
+    proof fn prove_lsm_write_amp_is_checked_mul(levels: u64, ratio: u64)
+        requires levels as int * ratio as int <= u64::MAX as int,
+        ensures lsm_write_amp_is_checked_mul_prop(levels, ratio),
+    {}
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod storage_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.wal-advance-is-monotonic]
+        #[test]
+        fn prop_wal_advance_monotonic(written: u64, entry_size: u64) {
+            if let Some(new_written) = crate::wal_segment::write_advance(written, entry_size) {
+                prop_assert!(new_written >= written);
+            }
+        }
+
+        // r[verify properties.wal-replay-is-saturating-sub]
+        #[test]
+        fn prop_wal_replay_is_sat_sub(checkpoint: u64, end: u64) {
+            let replay = crate::wal_segment::replay_count(checkpoint, end);
+            let sat_sub = crate::arithmetic::saturating_sub(end, checkpoint);
+            prop_assert_eq!(replay, sat_sub);
+        }
+
+        // r[verify properties.wal-truncate-uses-min]
+        #[test]
+        fn prop_wal_truncate_uses_min(t: u64, c: u64, a: u64) {
+            let safe = crate::wal_segment::is_truncate_safe(t, c, a);
+            let min_ca = crate::ordering::min(c, a);
+            prop_assert_eq!(safe, t <= min_ca);
+        }
+
+        // r[verify properties.wal-contiguous-is-strict-advance]
+        #[test]
+        fn prop_wal_contiguous_strict_advance(prev in 0..u64::MAX - 1) {
+            let current = prev + 1;
+            prop_assert!(crate::wal_segment::is_contiguous(prev, current));
+            prop_assert!(current > prev); // strict advance
+        }
+
+        // r[verify properties.btree-split-conserves]
+        #[test]
+        fn prop_btree_split_conserves(count: u64) {
+            let left = crate::btree_balance::split_left_size(count);
+            let right = crate::btree_balance::split_right_size(count);
+            prop_assert_eq!(left + right, count);
+        }
+
+        // r[verify properties.btree-fill-bounded]
+        #[test]
+        fn prop_btree_fill_bounded(count in 0u64..10000, capacity in 1u64..10000) {
+            if count <= capacity {
+                let pct = crate::btree_balance::fill_pct(count, capacity);
+                prop_assert!(pct <= 100);
+            }
+        }
+
+        // r[verify properties.btree-min-keys-is-underfull-threshold]
+        #[test]
+        fn prop_btree_min_keys_threshold(capacity in 2u64..10000) {
+            let mk = crate::btree_balance::min_keys(capacity);
+            prop_assert!(!crate::btree_balance::is_underfull(mk, capacity));
+        }
+
+        // r[verify properties.lsm-target-monotonic]
+        #[test]
+        fn prop_lsm_target_monotonic(
+            level in 0u64..62,
+            base in 1u64..1_000_000,
+            ratio in 2u64..20,
+        ) {
+            let t_lo = crate::lsm_level::level_target_size(level, base, ratio);
+            let t_hi = crate::lsm_level::level_target_size(level + 1, base, ratio);
+            prop_assert!(t_hi >= t_lo);
+        }
+
+        // r[verify properties.lsm-space-amp-ge-100]
+        #[test]
+        fn prop_lsm_space_amp_ge_100(
+            total in 1u64..1_000_000,
+            live in 1u64..1_000_000,
+        ) {
+            if total >= live {
+                prop_assert!(crate::lsm_level::space_amp_pct(total, live) >= 100);
+            }
+        }
+
+        // r[verify properties.lsm-write-amp-is-checked-mul]
+        #[test]
+        fn prop_lsm_write_amp_is_checked_mul(
+            levels in 0u64..1000,
+            ratio in 0u64..1000,
+        ) {
+            let wa = crate::lsm_level::total_write_amp(levels, ratio);
+            if let Some(cm) = crate::arithmetic::checked_mul(levels, ratio) {
+                prop_assert_eq!(wa, cm);
+            }
+        }
+    }
+}
+
 // --- Cross-module: Follower Redirect ---
 
 #[cfg(test)]
