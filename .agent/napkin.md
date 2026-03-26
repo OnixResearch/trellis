@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 3701 Verus proofs + 2249 cargo tests = all gates green
+- 3832 Verus proofs + 2302 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 13 remaining external_body items: 6 crypto axioms (permanent), 4 nix_version Z3 limits (permanent), 3 log_invariant_inductive (permanent — unsound without system-level invariant)
@@ -1145,3 +1145,34 @@
 - Constants are prefixed: FUTEX_IDLE not IDLE, ORD_RELEASE not RELEASE, ORD_ACQUIRE not ACQUIRE
   Always grep for the actual constant names before using them in cross-module proofs.
 - 3714 Verus proofs (+125), 2262 tests (+77), 984 requirements (+15)
+
+## Scheduling Primitives (2026-03-26)
+- 5 new modules: deadline_queue, fair_share, priority_inversion, weighted_round_robin, job_dag
+- fair_alloc: `requires weight <= total_weight` needed for result to fit in u64.
+  Without this guard, `total_tokens * weight / total_weight` can exceed u64::MAX,
+  and the `as u64` cast truncates, breaking monotonicity. Proptest caught this
+  (tokens=6.2e18, w1=1, w2=488, tw=41 → w2 > tw, result wraps).
+- u128 overflow proof pattern: `assert(a as int * b as int <= u128::MAX as int)
+  by(nonlinear_arith) requires a as int <= u64::MAX as int, b as int <= u64::MAX as int,
+  (u64::MAX as int) * (u64::MAX as int) <= u128::MAX as int;`
+  The third requires clause gives Z3 the concrete bound it needs.
+  Using `requires a <= u64::MAX` (on u64 type) doesn't work — Verus treats u64 <= u64::MAX
+  as tautological and doesn't pass it to nonlinear_arith.
+- `by(nonlinear_arith) requires` can't reference `let`-bound int variables directly.
+  Use the actual expressions: `requires t >= 0, a >= 0, a <= b` not `requires p1 >= 0`.
+- higher_weight_more_tokens proof: needs explicit chain:
+  (1) t*a <= t*b (nonlinear_arith, t >= 0, a <= b)
+  (2) div_is_ordered(t*a, t*b, d)
+  (3) div_pos_is_pos for both (nonneg products)
+  Z3 can't bridge from int-level division ordering to the `as u64` cast in fair_alloc_spec
+  without knowing both results are nonneg and <= u64::MAX.
+- `num_consumers - 1` in spec context produces int, not u64. Must cast:
+  `next_consumer_spec((num_consumers - 1) as u64, num_consumers)`.
+  Same pattern as all other u64 subtraction in specs.
+- `0..0` is invalid in proptest::collection::vec — panics at runtime.
+  Use a dummy parameter and construct the empty vec manually.
+- job_dag, priority_inversion exec fns with recursive-spec + membership-search loops:
+  marked `#[verifier::exec_allows_no_decreases_clause]` and `@verified-logic:no-ensures`.
+  Still need `invariant i <= deps@.len()` and `invariant i < deps@.len()` (inner loop)
+  for Verus to verify array bounds on `deps[i]`. Without the inner invariant, Verus
+  can't prove `i < deps.len()` inside the inner while body.
