@@ -55,12 +55,14 @@
 //! - `drain_protocol` — double-check admission with recheck and notification
 //! - `election` — leader election state machine: transitions, tokens, timing
 //! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
+//! - `election_safety_proof` — system-level election safety: at most one leader per term
 //! - `epoch` — lexicographic (term, index) comparison for Raft elections
 //! - `eviction` — LRU eviction with protected entries
 //! - `eviction_score` — multi-factor eviction scoring: weighted factors × priority × tier
 //! - `fast_backtrack` — Raft accelerated log backtracking: skip conflicting terms in one RPC (§5.3)
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
+//! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry provenance
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
@@ -193,6 +195,7 @@ pub mod env_scrub;
 pub mod election;
 pub mod election_init;
 pub mod election_jitter;
+pub mod election_safety_proof;
 pub mod election_timer;
 pub mod entry_type;
 pub mod epoch;
@@ -205,6 +208,7 @@ pub mod follower_commit;
 pub mod follower_redirect;
 pub mod follower_read;
 pub mod forest;
+pub mod ghost_history;
 pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;

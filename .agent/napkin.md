@@ -846,3 +846,28 @@
     (received / (total/100)) doesn't match int-level spec (received * 100 / total)
   - lease_read proofs needed physical time constraints (now >= start)
   - compaction_fence invariant simplified from disjunction to single accumulator form
+- Ghost history module added: VoteRecord, LeaderLogSnapshot, EntryProvenance
+  - Epoch doesn't derive Copy/Clone — stored epoch fields inline in VoteRecord
+    (voter_last_term, voter_last_index) instead of Epoch struct
+  - single_vote_per_term_spec uses double quantifier with trigger on history[i], history[j]
+  - append_fresh_preserves_single_vote proof: case-split on i/j being the new element vs old,
+    with explicit `assert forall ... implies ... by { if ... { } else { } }` pattern
+  - append_revote_preserves_single_vote: same pattern, but the same-term case uses the
+    precondition that existing records for that term have the same candidate
+  - cronies_exclusive inductive proof: must first prove prefix satisfies single_vote_per_term
+    by asserting forall on prefix[i], prefix[j] and showing they equal history[i], history[j]
+  - record_entries_spec recursive: needs explicit decreases on entries.len(), helper proofs
+    for length and preservation also recursive with same pattern
+  - record_entries_preserves needs two-step proof: inner assertion that next_prov[i] == provenance[i]
+    plus recursive call establishing the same for the accumulated provenance
+- Election safety proof module added: election_safe_spec, election_safety_theorem
+  - cronies-based approach (not message-counting): count votes in ghost history, check quorum
+  - quorum::majority_ge_one is not pub — inlined as `assert(cluster_size / 2 + 1 >= 1)
+    by(nonlinear_arith) requires cluster_size > 0u64` in election_safety_proof
+  - election_safety_theorem uses `assert forall ... implies ... by { if ... { } }` pattern
+    with cronies_exclusive + inlined majority_ge_one
+  - quorum_winner_unique: direct corollary of cronies_exclusive — if winner has quorum,
+    challenger has zero cronies (by exclusivity), zero < majority (by majority_ge_one)
+  - Pre-existing check_quorum type error (E0308) unrelated to new modules — Verus verification
+    of ghost_history and election_safety_proof has zero errors
+  - 1819 cargo tests passing (23 new: 13 ghost_history + 10 election_safety_proof)
