@@ -1115,3 +1115,33 @@
 - memory_order: Acquire ⊁ Release (incomparable in lattice) — NOT a total order.
   combine_orderings is the join operation (least upper bound). All proofs automatic — Z3
   handles the 5-element domain by case splitting on u8 constants.
+
+## Closing gaps + cross-module wave 5 (2026-03-26)
+- spin_backoff::spin_iterations: added `ensures result == spin_iterations_spec(step, limit)`.
+  With `requires limit < 64`, capped < 64, so spec always takes the `(1u64 << capped) as u64`
+  branch. Exec's `1u64 << capped` matches directly. Z3 handles automatically.
+- trust_level::is_bounded: removed `@verified-logic:exempt`, added `r[impl trust-level.capacity-bounded]`.
+  Already had ensures — was just missing the coverage annotation.
+- settlement::is_valid_settlement: NOT closeable — exec uses `(usize,usize,u64)` tuples,
+  spec uses `(int,int,u64)`. Bridging requires proving compute_positions exec (i128 arithmetic)
+  matches spec (int arithmetic) at every loop iteration. Needs invasive loop invariant changes
+  to compute_positions. Left as no-ensures.
+- nix_closure::generic_closure: NOT closeable — exec is outside verus!{}, uses dyn Fn + HashSet.
+  Fundamentally incompatible with Verus verification.
+- Cross-module wave 5: 13 concurrency cross-module properties
+  - mpmc_occupancy == mpsc_occupancy for same inputs (automatic)
+  - work_stealing deque_size == mpmc occupancy (automatic)
+  - spin_backoff completed ⟹ cas_loop no retries (automatic)
+  - seqlock write needs Release ordering, read needs Acquire ordering (automatic)
+  - RCU grace advance == epoch next_epoch for epochs 0,1 (NOT for epoch 2 — RCU increments,
+    epoch_reclaim wraps to 0. Initial proof was wrong, caught by Verus.)
+  - ref_count zero + not hazard-protected ⟹ reclaimable (automatic)
+  - lock_ordering prevents ticket_lock deadlock (automatic)
+  - barrier all_arrived ⟹ quorum (automatic)
+  - futex notify → consume roundtrip returns to IDLE (automatic)
+  - mpsc drained ⟹ mpmc empty (automatic)
+  - CAS idempotent always succeeds (automatic)
+  - ticket_lock release reduces waiters by 1 (automatic)
+- Constants are prefixed: FUTEX_IDLE not IDLE, ORD_RELEASE not RELEASE, ORD_ACQUIRE not ACQUIRE
+  Always grep for the actual constant names before using them in cross-module proofs.
+- 3714 Verus proofs (+125), 2262 tests (+77), 984 requirements (+15)

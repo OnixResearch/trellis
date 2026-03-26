@@ -117,8 +117,8 @@ pub open spec fn is_bounded_spec(count: u64, capacity: u64) -> bool {
     count <= capacity
 }
 
+// r[impl trust-level.capacity-bounded]
 /// Check if a set count is within capacity.
-// @verified-logic:exempt trivial predicate
 pub fn is_bounded(count: u64, capacity: u64) -> (result: bool)
     ensures result == is_bounded_spec(count, capacity)
 {

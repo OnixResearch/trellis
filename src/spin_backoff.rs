@@ -91,18 +91,18 @@ pub fn reset() -> (result: u64)
 // r[depends spin_backoff.spin-iterations]
 /// Number of spin-loop iterations for the current step.
 /// Doubles each step up to the limit, capped at 2^limit.
-/// @verified-logic:no-ensures
 pub open spec fn spin_iterations_spec(step: u64, limit: u64) -> u64 {
     let capped = if step < limit { step } else { limit };
     if capped >= 64 { u64::MAX } else { (1u64 << capped) as u64 }
 }
 
 // r[impl spin_backoff.spin-iterations]
-/// @verified-logic:no-ensures
 pub fn spin_iterations(step: u64, limit: u64) -> (result: u64)
     requires limit < 64
+    ensures result == spin_iterations_spec(step, limit)
 {
     let capped = if step < limit { step } else { limit };
+    assert(capped < 64u64);
     1u64 << capped
 }
 

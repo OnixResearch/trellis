@@ -2434,6 +2434,10 @@ r[trust-level.mutual-exclusivity]
 Adding to trusted MUST remove from blocked. Blocking MUST remove from
 trusted. The add/block operations MUST maintain mutual exclusivity.
 
+r[trust-level.capacity-bounded]
+is_bounded MUST return true when the set count does not exceed the
+capacity limit.
+
 ## Node Lifecycle
 
 r[node-lifecycle.valid-transition]
@@ -4546,3 +4550,57 @@ Offset zero MUST be identified as the first chunk.
 r[properties.single-chunk-transfer]
 A transfer where chunk_size == total MUST have offset=0 be both the
 first and last chunk.
+
+## Cross-Module: Concurrency Wave 5
+
+r[properties.mpmc-occupancy-matches-mpsc]
+bounded_mpmc occupancy (tail - head) MUST equal mpsc_bounds queue_occupancy
+(total_sent - total_received) when given equivalent inputs.
+
+r[properties.work-stealing-occupancy-matches-mpmc]
+work_stealing deque_size (bottom - top) MUST equal bounded_mpmc occupancy
+(tail - head) when given equivalent inputs.
+
+r[properties.spin-completed-implies-cas-no-retry]
+When spin_backoff is_completed, a CAS loop that respects the backoff MUST
+stop retrying (attempts exhausted).
+
+r[properties.seqlock-write-needs-release]
+A seqlock write protocol requires at least Release memory ordering for
+the store that ends the write.
+
+r[properties.seqlock-read-needs-acquire]
+A seqlock read protocol requires at least Acquire memory ordering for
+the load that begins the read.
+
+r[properties.rcu-grace-matches-epoch-advance]
+For epochs 0 and 1, RCU grace period advance MUST produce the same result
+as epoch_reclaim next_epoch (both return epoch + 1). They diverge at
+epoch 2 where epoch_reclaim wraps to 0.
+
+r[properties.ref-count-zero-implies-reclaimable]
+When ref_count should_deallocate (strong_count == 0) and the address is
+not protected by any hazard pointer, the address MUST be reclaimable.
+
+r[properties.lock-ordering-prevents-ticket-deadlock]
+When two threads acquire ticket locks in lock_ordering order, the
+would_deadlock predicate MUST be false for the second acquisition.
+
+r[properties.barrier-all-arrived-is-quorum]
+When all threads arrive at a barrier (arrived == expected), the number
+of arrivals MUST satisfy the quorum majority threshold.
+
+r[properties.futex-notify-enables-consume]
+After futex notify, the notified state MUST allow consume_notification
+to return to idle.
+
+r[properties.mpsc-drained-implies-mpmc-empty]
+An MPSC channel that is drained (closed + empty) MUST also register as
+empty in the bounded_mpmc model.
+
+r[properties.cas-idempotent-needs-no-aba]
+An idempotent CAS update (desired == current) always succeeds, making
+ABA generation tracking unnecessary.
+
+r[properties.ticket-lock-release-reduces-waiters]
+Releasing a ticket lock MUST reduce the waiter count by exactly one.

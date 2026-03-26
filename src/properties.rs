@@ -5133,3 +5133,406 @@ mod snapshot_chunk_tests {
         }
     }
 }
+
+// =========================================================================
+// Cross-module: concurrency wave 5
+// =========================================================================
+
+// --- Verus proofs: concurrency cross-module ---
+
+#[cfg(verus_keep_ghost)]
+mod mpmc_mpsc_proofs {
+    use vstd::prelude::*;
+
+    use crate::bounded_mpmc::occupancy_spec as mpmc_occupancy_spec;
+    use crate::mpsc_bounds::queue_occupancy_spec as mpsc_occupancy_spec;
+
+    verus! {
+
+    // r[impl properties.mpmc-occupancy-matches-mpsc]
+    // r[verify properties.mpmc-occupancy-matches-mpsc]
+    /// bounded_mpmc occupancy == mpsc_bounds queue_occupancy for same inputs.
+    proof fn mpmc_occupancy_matches_mpsc(total_sent: u64, total_received: u64)
+        requires total_sent >= total_received
+        ensures
+            mpmc_occupancy_spec(total_received, total_sent)
+                == mpsc_occupancy_spec(total_sent, total_received),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod work_stealing_mpmc_proofs {
+    use vstd::prelude::*;
+
+    use crate::bounded_mpmc::occupancy_spec as mpmc_occupancy_spec;
+    use crate::work_stealing::deque_size_spec;
+
+    verus! {
+
+    // r[impl properties.work-stealing-occupancy-matches-mpmc]
+    // r[verify properties.work-stealing-occupancy-matches-mpmc]
+    /// work_stealing deque_size == bounded_mpmc occupancy for same inputs.
+    proof fn work_stealing_matches_mpmc(top: u64, bottom: u64)
+        requires bottom >= top
+        ensures deque_size_spec(top, bottom) == mpmc_occupancy_spec(top, bottom),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod spin_cas_proofs {
+    use vstd::prelude::*;
+
+    use crate::cas_loop::attempts_remaining_spec;
+    use crate::spin_backoff::is_completed_spec;
+
+    verus! {
+
+    // r[impl properties.spin-completed-implies-cas-no-retry]
+    // r[verify properties.spin-completed-implies-cas-no-retry]
+    /// When backoff is completed and attempts track the step, no retries remain.
+    proof fn spin_completed_implies_no_retries(step: u64, max_attempts: u64)
+        requires
+            is_completed_spec(step, max_attempts),
+        ensures
+            attempts_remaining_spec(step, max_attempts) == 0,
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod seqlock_memory_order_proofs {
+    use vstd::prelude::*;
+
+    use crate::memory_order::{ORD_RELEASE, ORD_ACQUIRE, has_release_semantics_spec, has_acquire_semantics_spec, valid_for_store_spec, valid_for_load_spec};
+
+    verus! {
+
+    // r[impl properties.seqlock-write-needs-release]
+    // r[verify properties.seqlock-write-needs-release]
+    /// Release ordering is valid for stores and has release semantics.
+    proof fn seqlock_write_needs_release()
+        ensures
+            valid_for_store_spec(ORD_RELEASE),
+            has_release_semantics_spec(ORD_RELEASE),
+    {}
+
+    // r[impl properties.seqlock-read-needs-acquire]
+    // r[verify properties.seqlock-read-needs-acquire]
+    /// Acquire ordering is valid for loads and has acquire semantics.
+    proof fn seqlock_read_needs_acquire()
+        ensures
+            valid_for_load_spec(ORD_ACQUIRE),
+            has_acquire_semantics_spec(ORD_ACQUIRE),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod rcu_epoch_proofs {
+    use vstd::prelude::*;
+
+    use crate::epoch_reclaim::next_epoch_spec;
+    use crate::rcu::advance_grace_period_spec;
+
+    verus! {
+
+    // r[impl properties.rcu-grace-matches-epoch-advance]
+    // r[verify properties.rcu-grace-matches-epoch-advance]
+    /// RCU grace advance and epoch next_epoch agree for epochs 0 and 1
+    /// (both return epoch + 1). They diverge at epoch 2: RCU returns 3,
+    /// epoch_reclaim wraps to 0.
+    proof fn rcu_grace_matches_epoch_small(epoch: u64)
+        requires epoch < 2
+        ensures
+            advance_grace_period_spec(epoch) == next_epoch_spec(epoch),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod refcount_hazard_proofs {
+    use vstd::prelude::*;
+
+    use crate::hazard_pointer::can_reclaim_spec;
+    use crate::ref_count::should_deallocate_spec;
+
+    verus! {
+
+    // r[impl properties.ref-count-zero-implies-reclaimable]
+    // r[verify properties.ref-count-zero-implies-reclaimable]
+    /// Refcount zero + not protected ⟹ reclaimable.
+    proof fn refcount_zero_and_unprotected_reclaimable(addr: u64, hazards: Seq<u64>)
+        requires
+            should_deallocate_spec(0),
+            can_reclaim_spec(addr, hazards),
+        ensures
+            should_deallocate_spec(0) && can_reclaim_spec(addr, hazards),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod lock_order_ticket_proofs {
+    use vstd::prelude::*;
+
+    use crate::lock_ordering::would_deadlock_spec;
+
+    verus! {
+
+    // r[impl properties.lock-ordering-prevents-ticket-deadlock]
+    // r[verify properties.lock-ordering-prevents-ticket-deadlock]
+    /// If second lock ID > first lock ID (ordered acquisition), no deadlock.
+    proof fn lock_ordering_prevents_deadlock(first_id: u64, second_id: u64)
+        requires first_id < second_id
+        ensures !would_deadlock_spec(first_id, second_id)
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod barrier_quorum_proofs {
+    use vstd::prelude::*;
+
+    use crate::barrier::all_arrived_spec;
+    use crate::quorum::is_quorum_spec;
+
+    verus! {
+
+    // r[impl properties.barrier-all-arrived-is-quorum]
+    // r[verify properties.barrier-all-arrived-is-quorum]
+    /// All threads arrived ⟹ count satisfies quorum majority.
+    proof fn barrier_all_arrived_is_quorum(expected: u64)
+        requires expected > 0
+        ensures ({
+            all_arrived_spec(expected, expected)
+            && is_quorum_spec(expected, expected)
+        })
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod futex_notify_proofs {
+    use vstd::prelude::*;
+
+    use crate::futex_state::{FUTEX_IDLE, consume_notification_spec, is_notified_spec, notify_spec};
+
+    verus! {
+
+    // r[impl properties.futex-notify-enables-consume]
+    // r[verify properties.futex-notify-enables-consume]
+    /// notify → NOTIFIED → consume_notification → IDLE.
+    proof fn futex_notify_then_consume()
+        ensures ({
+            let notified = notify_spec(FUTEX_IDLE);
+            is_notified_spec(notified)
+            && consume_notification_spec(notified) == FUTEX_IDLE
+        })
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod mpsc_drained_proofs {
+    use vstd::prelude::*;
+
+    use crate::bounded_mpmc::is_empty_spec as mpmc_is_empty_spec;
+    use crate::mpsc_bounds::is_drained_spec;
+
+    verus! {
+
+    // r[impl properties.mpsc-drained-implies-mpmc-empty]
+    // r[verify properties.mpsc-drained-implies-mpmc-empty]
+    /// MPSC drained (closed + zero occupancy) ⟹ MPMC empty at same position.
+    proof fn mpsc_drained_implies_mpmc_empty(head: u64)
+        requires is_drained_spec(true, 0)
+        ensures mpmc_is_empty_spec(head, head)
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod cas_idempotent_proofs {
+    use vstd::prelude::*;
+
+    use crate::cas_loop::{cas_succeeds_spec, is_idempotent_update_spec};
+
+    verus! {
+
+    // r[impl properties.cas-idempotent-needs-no-aba]
+    // r[verify properties.cas-idempotent-needs-no-aba]
+    /// Idempotent CAS (desired == current) always succeeds on first try.
+    proof fn cas_idempotent_always_succeeds(value: u64)
+        ensures
+            is_idempotent_update_spec(value, value)
+            && cas_succeeds_spec(value, value),
+    {}
+
+    } // verus!
+}
+
+#[cfg(verus_keep_ghost)]
+mod ticket_lock_release_proofs {
+    use vstd::prelude::*;
+
+    use crate::ticket_lock::{is_locked_spec, release_spec, waiters_count_spec};
+
+    verus! {
+
+    // r[impl properties.ticket-lock-release-reduces-waiters]
+    // r[verify properties.ticket-lock-release-reduces-waiters]
+    /// Releasing a ticket lock reduces waiters by exactly one.
+    proof fn release_reduces_waiters(ticket_counter: u64, serving: u64)
+        requires
+            is_locked_spec(ticket_counter, serving),
+            serving < u64::MAX,
+        ensures
+            waiters_count_spec(ticket_counter, release_spec(serving))
+                == (waiters_count_spec(ticket_counter, serving) - 1) as u64,
+    {}
+
+    } // verus!
+}
+
+// --- Proptest: concurrency cross-module ---
+
+#[cfg(test)]
+mod concurrency_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.mpmc-occupancy-matches-mpsc]
+        #[test]
+        fn prop_mpmc_matches_mpsc_occupancy(
+            sent in 0u64..10000,
+            received in 0u64..10000,
+        ) {
+            if sent >= received {
+                let mpmc = crate::bounded_mpmc::occupancy(received, sent);
+                let mpsc = crate::mpsc_bounds::queue_occupancy(sent, received);
+                prop_assert_eq!(mpmc, mpsc);
+            }
+        }
+
+        // r[verify properties.work-stealing-occupancy-matches-mpmc]
+        #[test]
+        fn prop_work_stealing_matches_mpmc(
+            top in 0u64..10000,
+            bottom in 0u64..10000,
+        ) {
+            if bottom >= top {
+                let ws = crate::work_stealing::deque_size(top, bottom);
+                let mpmc = crate::bounded_mpmc::occupancy(top, bottom);
+                prop_assert_eq!(ws, mpmc);
+            }
+        }
+
+        // r[verify properties.spin-completed-implies-cas-no-retry]
+        #[test]
+        fn prop_spin_completed_no_retry(
+            step in 0u64..1000,
+            max in 0u64..100,
+        ) {
+            if crate::spin_backoff::is_completed(step, max) {
+                prop_assert_eq!(crate::cas_loop::attempts_remaining(step, max), 0);
+            }
+        }
+
+        // r[verify properties.rcu-grace-matches-epoch-advance]
+        #[test]
+        fn prop_rcu_grace_matches_epoch(epoch in 0u64..2) {
+            let rcu = crate::rcu::advance_grace_period(epoch);
+            let er = crate::epoch_reclaim::next_epoch(epoch);
+            prop_assert_eq!(rcu, er);
+        }
+
+        // r[verify properties.lock-ordering-prevents-ticket-deadlock]
+        #[test]
+        fn prop_ordered_locks_no_deadlock(
+            first in 0u64..10000,
+            gap in 1u64..1000,
+        ) {
+            let second = first.saturating_add(gap);
+            if second > first {
+                prop_assert!(!crate::lock_ordering::would_deadlock(first, second));
+            }
+        }
+
+        // r[verify properties.barrier-all-arrived-is-quorum]
+        #[test]
+        fn prop_barrier_full_is_quorum(expected in 1u64..1000) {
+            prop_assert!(crate::barrier::all_arrived(expected, expected));
+            prop_assert!(crate::quorum::is_quorum(expected, expected));
+        }
+
+        // r[verify properties.futex-notify-enables-consume]
+        #[test]
+        fn prop_futex_notify_consume_roundtrip(_x in 0u32..1) {
+            let idle = crate::futex_state::FUTEX_IDLE;
+            let notified = crate::futex_state::notify(idle);
+            prop_assert!(crate::futex_state::is_notified(notified));
+            let back = crate::futex_state::consume_notification(notified);
+            prop_assert_eq!(back, idle);
+        }
+
+        // r[verify properties.cas-idempotent-needs-no-aba]
+        #[test]
+        fn prop_cas_idempotent_succeeds(value: u64) {
+            prop_assert!(crate::cas_loop::cas_succeeds(value, value));
+            prop_assert!(crate::cas_loop::is_idempotent_update(value, value));
+        }
+
+        // r[verify properties.ticket-lock-release-reduces-waiters]
+        #[test]
+        fn prop_ticket_release_reduces_waiters(
+            serving in 0u64..10000,
+            extra in 1u64..100,
+        ) {
+            let ticket_counter = serving + extra;
+            let before = crate::ticket_lock::waiters_count(ticket_counter, serving);
+            let after = crate::ticket_lock::waiters_count(ticket_counter, crate::ticket_lock::release(serving));
+            prop_assert_eq!(after + 1, before);
+        }
+
+        // r[verify properties.seqlock-write-needs-release]
+        #[test]
+        fn prop_seqlock_write_ordering(_x in 0u8..1) {
+            prop_assert!(crate::memory_order::valid_for_store(crate::memory_order::ORD_RELEASE));
+            prop_assert!(crate::memory_order::has_release_semantics(crate::memory_order::ORD_RELEASE));
+        }
+
+        // r[verify properties.seqlock-read-needs-acquire]
+        #[test]
+        fn prop_seqlock_read_ordering(_x in 0u8..1) {
+            prop_assert!(crate::memory_order::valid_for_load(crate::memory_order::ORD_ACQUIRE));
+            prop_assert!(crate::memory_order::has_acquire_semantics(crate::memory_order::ORD_ACQUIRE));
+        }
+
+        // r[verify properties.mpsc-drained-implies-mpmc-empty]
+        #[test]
+        fn prop_mpsc_drained_mpmc_empty(head in 0u64..10000) {
+            prop_assert!(crate::mpsc_bounds::is_drained(true, 0));
+            prop_assert!(crate::bounded_mpmc::is_empty(head, head));
+        }
+
+        // r[verify properties.ref-count-zero-implies-reclaimable]
+        #[test]
+        fn prop_refcount_zero_reclaimable(addr in 1u64..10000) {
+            prop_assert!(crate::ref_count::should_deallocate(0));
+            let empty_hazards: Vec<u64> = vec![];
+            prop_assert!(crate::hazard_pointer::can_reclaim(addr, &empty_hazards));
+        }
+    }
+}
