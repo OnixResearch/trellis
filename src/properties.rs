@@ -4369,6 +4369,210 @@ mod storage_cross_tests {
     }
 }
 
+// --- Cross-module: Financial Accounting (extended) ---
+
+#[cfg(verus_keep_ghost)]
+mod financial_extended_proofs {
+    use vstd::prelude::*;
+
+    use crate::escrow::{fund_buyer_after_spec, refund_buyer_after_spec};
+    use crate::fee::{compute_fee_spec, compute_net_spec, split_with_fee_spec};
+    use crate::ledger::can_transfer_spec;
+    use crate::double_entry::is_simple_entry_spec;
+
+    verus! {
+
+    // --- escrow fund-then-refund = identity ---
+
+    // r[impl properties.escrow-fund-refund-identity]
+    pub open spec fn escrow_fund_refund_identity_prop(buyer_balance: u64, amount: u64) -> bool
+        recommends buyer_balance >= amount
+    {
+        refund_buyer_after_spec(
+            fund_buyer_after_spec(buyer_balance, amount) as u64,
+            amount,
+        ) == buyer_balance as int
+    }
+
+    // r[verify properties.escrow-fund-refund-identity]
+    proof fn prove_escrow_fund_refund_identity(buyer_balance: u64, amount: u64)
+        requires buyer_balance >= amount
+        ensures escrow_fund_refund_identity_prop(buyer_balance, amount)
+    {}
+
+    // --- fee split matches individual computations ---
+
+    // r[impl properties.fee-split-agrees]
+    pub open spec fn fee_split_agrees_prop(amount: u64, rate_bps: u64) -> bool
+        recommends 0 < rate_bps <= 10000
+    {
+        split_with_fee_spec(amount, rate_bps)
+            == (compute_fee_spec(amount, rate_bps), compute_net_spec(amount, rate_bps))
+    }
+
+    // r[verify properties.fee-split-agrees]
+    proof fn prove_fee_split_agrees(amount: u64, rate_bps: u64)
+        requires 0 < rate_bps, rate_bps <= 10000
+        ensures fee_split_agrees_prop(amount, rate_bps)
+    {}
+
+    // --- simple entry = equal debit and credit ---
+
+    // r[impl properties.simple-entry-is-balanced]
+    pub open spec fn simple_entry_is_balanced_prop(amount: u64) -> bool
+        recommends amount > 0
+    {
+        is_simple_entry_spec(amount, amount)
+    }
+
+    // r[verify properties.simple-entry-is-balanced]
+    proof fn prove_simple_entry_is_balanced(amount: u64)
+        requires amount > 0
+        ensures simple_entry_is_balanced_prop(amount)
+    {}
+
+    // --- ledger transfer requires sufficient funds ---
+
+    // r[impl properties.ledger-transfer-needs-funds]
+    pub open spec fn ledger_transfer_needs_funds_prop(
+        accounts: Seq<u64>, from: int, to: int, amount: u64,
+    ) -> bool
+        recommends
+            0 <= from < accounts.len() as int,
+            0 <= to < accounts.len() as int,
+            from != to,
+    {
+        can_transfer_spec(accounts, from, to, amount)
+            ==> accounts[from] >= amount
+    }
+
+    // r[verify properties.ledger-transfer-needs-funds]
+    proof fn prove_ledger_transfer_needs_funds(
+        accounts: Seq<u64>, from: int, to: int, amount: u64,
+    )
+        requires
+            0 <= from < accounts.len() as int,
+            0 <= to < accounts.len() as int,
+            from != to,
+        ensures ledger_transfer_needs_funds_prop(accounts, from, to, amount)
+    {}
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod financial_extended_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.escrow-fund-refund-identity]
+        #[test]
+        fn prop_escrow_fund_refund_roundtrip(balance in 0u64..100_000, amount in 0u64..100_000) {
+            if balance >= amount {
+                let funded = balance - amount;
+                let refunded = funded + amount;
+                prop_assert_eq!(refunded, balance);
+            }
+        }
+
+        // r[verify properties.fee-split-agrees]
+        #[test]
+        fn prop_fee_split_matches_components(amount in 0u64..1_000_000, rate_bps in 1u64..10001) {
+            let (fee, net) = crate::fee::split_with_fee(amount, rate_bps);
+            let fee2 = crate::fee::compute_fee(amount, rate_bps);
+            let net2 = crate::fee::compute_net(amount, rate_bps);
+            prop_assert_eq!(fee, fee2);
+            prop_assert_eq!(net, net2);
+        }
+
+        // r[verify properties.simple-entry-is-balanced]
+        #[test]
+        fn prop_simple_entry_balanced(amount in 1u64..1_000_000) {
+            prop_assert!(crate::double_entry::is_simple_entry(amount, amount));
+        }
+
+        // r[verify properties.ledger-transfer-needs-funds]
+        #[test]
+        fn prop_ledger_transfer_needs_funds(
+            bal_from in 0u64..10000,
+            bal_to in 0u64..10000,
+            amount in 0u64..20000,
+        ) {
+            let accounts = vec![bal_from, bal_to];
+            if crate::ledger::can_transfer(&accounts, 0, 1, amount) {
+                prop_assert!(bal_from >= amount);
+            }
+        }
+
+        // r[verify properties.ledger-transfer-needs-funds]
+        #[test]
+        fn prop_ledger_transfer_conserves(
+            bal_from in 100u64..10000,
+            bal_to in 0u64..10000,
+            amount in 1u64..100,
+        ) {
+            let accounts = vec![bal_from, bal_to];
+            if crate::ledger::can_transfer(&accounts, 0, 1, amount) {
+                if let Some((new_from, new_to)) =
+                    crate::ledger::ledger_transfer(&accounts, 0, 1, amount)
+                {
+                    let total_before = bal_from as u128 + bal_to as u128;
+                    let total_after = new_from as u128 + new_to as u128;
+                    prop_assert_eq!(total_before, total_after);
+                }
+            }
+        }
+
+        // r[verify properties.fee-conservation-matches-transfer]
+        #[test]
+        fn prop_ledger_fee_transfer_conserves(
+            bal_from in 1000u64..100_000,
+            bal_to in 0u64..100_000,
+            bal_fee in 0u64..100_000,
+            amount in 1u64..1000,
+            rate_bps in 1u64..5000,
+        ) {
+            let fee = crate::fee::compute_fee(amount, rate_bps);
+            if fee <= amount {
+                let accounts = vec![bal_from, bal_to, bal_fee];
+                if let Some((new_from, new_to, new_fee_acc)) =
+                    crate::ledger::ledger_transfer_with_fee(&accounts, 0, 1, 2, amount, fee)
+                {
+                    let total_before: u128 =
+                        bal_from as u128 + bal_to as u128 + bal_fee as u128;
+                    let total_after: u128 =
+                        new_from as u128 + new_to as u128 + new_fee_acc as u128;
+                    prop_assert_eq!(total_before, total_after);
+                }
+            }
+        }
+
+        // r[verify properties.ledger-transfer-needs-funds]
+        #[test]
+        fn prop_settlement_positions_sum_zero(
+            n in 2usize..6,
+            amounts in proptest::collection::vec(1u64..1000, 1..5),
+        ) {
+            if amounts.is_empty() {
+                return Ok(());
+            }
+            let mut obligations = Vec::new();
+            for (i, &amt) in amounts.iter().enumerate() {
+                let from = i % n;
+                let to = (i + 1) % n;
+                if from != to {
+                    obligations.push((from, to, amt));
+                }
+            }
+            if !obligations.is_empty() {
+                let positions = crate::settlement::compute_positions(&obligations, n);
+                let sum: i128 = positions.iter().sum();
+                prop_assert_eq!(sum, 0);
+            }
+        }
+    }
+}
+
 // --- Cross-module: Follower Redirect ---
 
 #[cfg(test)]

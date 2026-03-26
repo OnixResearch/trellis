@@ -4447,3 +4447,21 @@ amplification is always at least 100%.
 r[properties.lsm-write-amp-is-checked-mul]
 total_write_amp(levels, ratio) MUST agree with
 arithmetic::checked_mul_spec(levels, ratio) in the non-overflow case.
+
+## Cross-Module: Financial Accounting (Extended)
+
+r[properties.escrow-fund-refund-identity]
+Funding an escrow then refunding MUST return the buyer to the original
+balance. fund-then-refund is the identity on buyer balance.
+
+r[properties.fee-split-agrees]
+split_with_fee(amount, rate_bps) MUST return the same (fee, net)
+as calling compute_fee and compute_net individually.
+
+r[properties.simple-entry-is-balanced]
+A double-entry with equal positive debit and credit amounts MUST be a
+simple entry: is_simple_entry(amount, amount) is true when amount > 0.
+
+r[properties.ledger-transfer-needs-funds]
+If can_transfer returns true, the source account MUST have balance >=
+amount. Transfers are only possible with sufficient funds.

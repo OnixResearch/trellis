@@ -4,8 +4,8 @@
 # Default file: src/lib.rs
 set -euo pipefail
 
-VERUS_ROOT=/nix/store/7hr3z8ss29pxl29pllv6kchlk9kbckys-verus-root-0.2026.01.30
-RUST_TOOLCHAIN=/nix/store/2i2rgbachy91xi97xfc07y4s3abgksq5-rust-default-1.93.0
+VERUS_ROOT=/nix/store/940vcfw4pkd9khabcm9wlljbadlmmx5f-verus-0.2026.03.22
+RUST_TOOLCHAIN=/nix/store/038bps96h9h5plzsjdq6a2nhwz57rv2v-rust-default-1.94.0
 
 FILE="${1:-src/lib.rs}"
 shift 2>/dev/null || true

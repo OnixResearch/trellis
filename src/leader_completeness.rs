@@ -170,6 +170,7 @@ proof fn leader_completeness_theorem(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     // r[verify leader-completeness.quorum-overlap]
     #[test]
@@ -209,19 +210,63 @@ mod tests {
     // r[verify leader-completeness.quorum-overlap]
     #[test]
     fn test_concrete_leader_completeness() {
-        // Scenario: entry committed at (2, 5) with quorum 3/5
-        // New leader elected in term 3 with quorum 3/5
-        // Shared voter has log epoch >= (2, 5)
-        // Leader's log epoch >= voter's epoch (vote was granted)
-        // Therefore leader's epoch >= (2, 5) ✓
-        let voter_epoch = (2u64, 8u64); // voter has more entries than committed
-        let leader_epoch = (3u64, 2u64); // leader in higher term
-
-        // Voter has committed entry
+        let voter_epoch = (2u64, 8u64);
+        let leader_epoch = (3u64, 2u64);
         assert!(leader_has_committed_entry(2, 5, voter_epoch.0, voter_epoch.1));
-        // Leader's log >= voter's (higher term wins)
         assert!(leader_has_committed_entry(voter_epoch.0, voter_epoch.1, leader_epoch.0, leader_epoch.1));
-        // Therefore leader has committed entry (transitivity)
         assert!(leader_has_committed_entry(2, 5, leader_epoch.0, leader_epoch.1));
+    }
+
+    proptest! {
+        // r[verify leader-completeness.log-freshness]
+        #[test]
+        fn prop_higher_term_always_has_entry(
+            commit_term in 0u64..1000,
+            commit_index in 0u64..10000,
+            leader_index in 0u64..10000,
+        ) {
+            // Leader in strictly higher term always has the committed entry
+            let leader_term = commit_term + 1;
+            prop_assert!(leader_has_committed_entry(commit_term, commit_index, leader_term, leader_index));
+        }
+
+        // r[verify leader-completeness.log-freshness]
+        #[test]
+        fn prop_same_term_ge_index(
+            term in 0u64..1000,
+            commit_index in 0u64..10000,
+            extra in 0u64..10000,
+        ) {
+            // Same term: leader index >= commit index means entry is present
+            let leader_index = commit_index.saturating_add(extra);
+            prop_assert!(leader_has_committed_entry(term, commit_index, term, leader_index));
+        }
+
+        // r[verify leader-completeness.log-freshness]
+        #[test]
+        fn prop_lower_term_never_has_entry(
+            commit_term in 1u64..1000,
+            commit_index in 0u64..10000,
+            leader_index in 0u64..10000,
+        ) {
+            // Leader in strictly lower term never has the committed entry
+            let leader_term = commit_term - 1;
+            prop_assert!(!leader_has_committed_entry(commit_term, commit_index, leader_term, leader_index));
+        }
+
+        // r[verify leader-completeness.log-freshness]
+        #[test]
+        fn prop_transitivity(
+            t_a in 0u64..100, i_a in 0u64..1000,
+            t_b in 0u64..100, i_b in 0u64..1000,
+            t_c in 0u64..100, i_c in 0u64..1000,
+        ) {
+            // If A >= B and B >= C, then A >= C (epoch_ge transitivity)
+            if leader_has_committed_entry(t_b, i_b, t_a, i_a)
+                && leader_has_committed_entry(t_c, i_c, t_b, i_b)
+            {
+                prop_assert!(leader_has_committed_entry(t_c, i_c, t_a, i_a));
+            }
+        }
     }
 }

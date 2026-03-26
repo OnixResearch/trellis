@@ -60,18 +60,18 @@
         # --- Verification tools ---
 
         # Verus: fetch release binary + rustc 1.93.0 for shared libs
-        rustc-1_93 = pkgs.rust-bin.stable."1.93.0".default;
+        rustc-1_94 = pkgs.rust-bin.stable."1.94.0".default;
 
         verus = pkgs.stdenv.mkDerivation {
           pname = "verus";
-          version = "0.2026.01.30";
+          version = "0.2026.03.22";
           src = pkgs.fetchzip {
-            url = "https://github.com/verus-lang/verus/releases/download/release/0.2026.01.30.44ebdee/verus-0.2026.01.30.44ebdee-x86-linux.zip";
-            hash = "sha256-FEdsMtZpl23i8qkKhFpc13GguDj6o0UHB1v0U78bcXs=";
+            url = "https://github.com/verus-lang/verus/releases/download/release/0.2026.03.22.5e66329/verus-0.2026.03.22.5e66329-x86-linux.zip";
+            hash = "sha256-/rSsNizWruoGgAJciXt8oWUfLUqqs8vBhcSKqxWzhl8=";
             stripRoot = true;
           };
           nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-          buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.zlib rustc-1_93 ];
+          buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.zlib rustc-1_94 ];
           installPhase = ''
             mkdir -p $out
             cp -r . $out/
@@ -80,7 +80,7 @@
             cat > $out/bin/verus-verify <<WRAPPER
             #!/usr/bin/env bash
             export VERUS_Z3_PATH="$out/z3"
-            export LD_LIBRARY_PATH="${rustc-1_93}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+            export LD_LIBRARY_PATH="${rustc-1_94}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
             exec "$out/rust_verify" "\$@"
             WRAPPER
             chmod +x $out/bin/verus-verify

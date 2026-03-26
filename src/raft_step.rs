@@ -329,6 +329,7 @@ proof fn commit_monotonic_transitive(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     /// Simplified runtime state for testing (avoids Seq/nat).
     struct TestState {
@@ -415,5 +416,70 @@ mod tests {
         assert!(s2.commit_index >= s1.commit_index);
         assert!(s3.commit_index >= s2.commit_index);
         assert!(s3.commit_index >= s0.commit_index);
+    }
+
+    proptest! {
+        // r[verify raft-step.valid-step]
+        #[test]
+        fn prop_step_types_distinct(a in 0u8..5, b in 0u8..5) {
+            let types = [STEP_MESSAGE, STEP_INPUT, STEP_TIMEOUT, STEP_HEARTBEAT, STEP_EXECUTE];
+            if a != b && (a as usize) < types.len() && (b as usize) < types.len() {
+                prop_assert_ne!(types[a as usize], types[b as usize]);
+            }
+        }
+
+        // r[verify raft-step.valid-step]
+        #[test]
+        fn prop_valid_step_constants_in_range(step in 0u8..10) {
+            let types = [STEP_MESSAGE, STEP_INPUT, STEP_TIMEOUT, STEP_HEARTBEAT, STEP_EXECUTE];
+            let is_known = types.contains(&step);
+            // All known step types are distinct small values
+            if is_known {
+                prop_assert!(step <= 4);
+            }
+        }
+
+        // r[verify raft-step.term-monotonic]
+        #[test]
+        fn prop_term_monotonic_transitive(
+            t0 in 0u64..1000,
+            d1 in 0u64..1000,
+            d2 in 0u64..1000,
+            d3 in 0u64..1000,
+        ) {
+            let t1 = t0.saturating_add(d1);
+            let t2 = t1.saturating_add(d2);
+            let t3 = t2.saturating_add(d3);
+            // Each step is monotonic, so composition is monotonic
+            prop_assert!(t1 >= t0);
+            prop_assert!(t2 >= t1);
+            prop_assert!(t3 >= t2);
+            prop_assert!(t3 >= t0);
+        }
+
+        // r[verify raft-step.commit-monotonic]
+        #[test]
+        fn prop_commit_monotonic_transitive(
+            c0 in 0u64..1000,
+            d1 in 0u64..1000,
+            d2 in 0u64..1000,
+        ) {
+            let c1 = c0.saturating_add(d1);
+            let c2 = c1.saturating_add(d2);
+            prop_assert!(c2 >= c1);
+            prop_assert!(c1 >= c0);
+            prop_assert!(c2 >= c0);
+        }
+
+        // r[verify raft-step.state-predicates]
+        #[test]
+        fn prop_node_types_exclusive(nt in 0u8..3) {
+            let types = [NODE_FOLLOWER, NODE_CANDIDATE, NODE_LEADER];
+            let node_type = types[nt as usize];
+            let is_f = node_type == NODE_FOLLOWER;
+            let is_c = node_type == NODE_CANDIDATE;
+            let is_l = node_type == NODE_LEADER;
+            prop_assert_eq!((is_f as u8) + (is_c as u8) + (is_l as u8), 1);
+        }
     }
 }

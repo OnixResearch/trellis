@@ -147,16 +147,52 @@ proof fn verify_deterministic(leaf_hash: u64, index: u64, siblings: Seq<u64>, ro
 mod tests {
     use super::*;
     use crate::chain::compute_entry_hash;
+    use proptest::prelude::*;
 
     /// Runtime hash matching `compute_entry_hash(a, b, 0, 0)`.
     fn test_hash(a: u64, b: u64) -> u64 {
         compute_entry_hash(a, b, 0, 0)
     }
 
+    /// Build a merkle root from leaves and return (root, proofs).
+    fn build_tree(leaves: &[u64]) -> (u64, Vec<(u64, Vec<u64>)>) {
+        if leaves.is_empty() {
+            return (0, vec![]);
+        }
+        if leaves.len() == 1 {
+            return (leaves[0], vec![(leaves[0], vec![])]);
+        }
+        // Pad to power of two
+        let mut padded = leaves.to_vec();
+        while padded.len().count_ones() != 1 {
+            padded.push(0);
+        }
+        let n = padded.len();
+        let mut tree = vec![0u64; 2 * n];
+        for i in 0..n {
+            tree[n + i] = padded[i];
+        }
+        for i in (1..n).rev() {
+            tree[i] = test_hash(tree[2 * i], tree[2 * i + 1]);
+        }
+        let root = tree[1];
+        let mut proofs = Vec::new();
+        for i in 0..leaves.len() {
+            let mut siblings = Vec::new();
+            let mut pos = n + i;
+            while pos > 1 {
+                let sib = if pos % 2 == 0 { pos + 1 } else { pos - 1 };
+                siblings.push(tree[sib]);
+                pos /= 2;
+            }
+            proofs.push((leaves[i], siblings));
+        }
+        (root, proofs)
+    }
+
     // r[verify merkle.verify-proof]
     #[test]
     fn test_empty_proof() {
-        // With no siblings, leaf_hash must equal root
         assert!(verify_proof(42, 0, &vec![], 42));
         assert!(!verify_proof(42, 0, &vec![], 99));
     }
@@ -164,10 +200,9 @@ mod tests {
     // r[verify merkle.verify-proof]
     #[test]
     fn test_verify_proof_single_level() {
-        // Build a single-level tree: hash(leaf, sibling) = root
         let leaf = 10u64;
         let sibling = 20u64;
-        let root = test_hash(leaf, sibling); // index=0 → left
+        let root = test_hash(leaf, sibling);
         assert!(verify_proof(leaf, 0, &vec![sibling], root));
     }
 
@@ -176,7 +211,56 @@ mod tests {
     fn test_wrong_root_rejects() {
         let leaf = 10u64;
         let sibling = 20u64;
-        // Wrong root should fail
         assert!(!verify_proof(leaf, 0, &vec![sibling], 999));
+    }
+
+    proptest! {
+        // r[verify merkle.verify-proof]
+        #[test]
+        fn prop_empty_proof_iff_equal(leaf in 0u64..10000, root in 0u64..10000) {
+            prop_assert_eq!(verify_proof(leaf, 0, &vec![], root), leaf == root);
+        }
+
+        // r[verify merkle.verify-proof]
+        #[test]
+        fn prop_valid_proof_verifies(
+            a in 0u64..1000,
+            b in 0u64..1000,
+        ) {
+            // 2-leaf tree: leaf a at index 0, leaf b at index 1
+            let root = test_hash(a, b);
+            prop_assert!(verify_proof(a, 0, &vec![b], root));
+            prop_assert!(verify_proof(b, 1, &vec![a], root));
+        }
+
+        // r[verify merkle.verify-proof]
+        #[test]
+        fn prop_wrong_leaf_rejects(
+            a in 0u64..1000,
+            b in 0u64..1000,
+            wrong in 0u64..1000,
+        ) {
+            let root = test_hash(a, b);
+            if wrong != a {
+                prop_assert!(!verify_proof(wrong, 0, &vec![b], root));
+            }
+        }
+
+        // r[verify merkle.verify-proof]
+        #[test]
+        fn prop_four_leaf_tree(
+            l0 in 0u64..500,
+            l1 in 0u64..500,
+            l2 in 0u64..500,
+            l3 in 0u64..500,
+        ) {
+            let leaves = [l0, l1, l2, l3];
+            let (root, proofs) = build_tree(&leaves);
+            for (i, (leaf, siblings)) in proofs.iter().enumerate() {
+                prop_assert!(
+                    verify_proof(*leaf, i as u64, siblings, root)
+                );
+            }
+        }
     }
 }

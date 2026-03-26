@@ -151,6 +151,7 @@ proof fn committed_agreement_persists(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use proptest::prelude::*;
 
     fn entry(term: u64, value: u64) -> LogEntry {
         LogEntry { term, value }
@@ -161,7 +162,6 @@ mod tests {
     fn test_same_term_entries_agree() {
         let log_a = vec![entry(1, 10), entry(2, 20), entry(3, 30)];
         let log_b = vec![entry(1, 99), entry(2, 88), entry(3, 77)];
-        // Same terms at all indices — entries agree
         for i in 0..3 {
             assert!(crate::log::agree_at(&log_a, &log_b, i));
         }
@@ -172,9 +172,7 @@ mod tests {
     fn test_prefix_agreement() {
         let log_a = vec![entry(1, 10), entry(2, 20), entry(3, 30)];
         let log_b = vec![entry(1, 99), entry(2, 88), entry(3, 77)];
-        // Prefix matches through index 3
         assert!(crate::log::logs_match_prefix(&log_a, &log_b, 3));
-        // All entries in [0, 3) agree
         for i in 0..3 {
             assert!(crate::log::agree_at(&log_a, &log_b, i));
         }
@@ -185,9 +183,7 @@ mod tests {
     fn test_committed_entries_safe() {
         let log_a = vec![entry(1, 10), entry(2, 20), entry(3, 30)];
         let log_b = vec![entry(1, 99), entry(2, 88), entry(3, 77), entry(4, 66)];
-        // Prefix matches through 3 (commit index)
         assert!(crate::log::logs_match_prefix(&log_a, &log_b, 3));
-        // All committed entries (index < 3) are safe
         for i in 0..3 {
             assert!(crate::log::agree_at(&log_a, &log_b, i));
         }
@@ -197,8 +193,81 @@ mod tests {
     #[test]
     fn test_divergent_terms_disagree() {
         let log_a = vec![entry(1, 10), entry(2, 20)];
-        let log_b = vec![entry(1, 10), entry(3, 20)]; // different term at index 1
-        assert!(crate::log::agree_at(&log_a, &log_b, 0)); // agree at 0
-        assert!(!crate::log::agree_at(&log_a, &log_b, 1)); // disagree at 1
+        let log_b = vec![entry(1, 10), entry(3, 20)];
+        assert!(crate::log::agree_at(&log_a, &log_b, 0));
+        assert!(!crate::log::agree_at(&log_a, &log_b, 1));
+    }
+
+    /// Generate a log with monotonically non-decreasing terms (valid Raft log).
+    fn arb_log(max_len: usize) -> impl Strategy<Value = Vec<LogEntry>> {
+        proptest::collection::vec((1u64..20, 0u64..1000), 0..max_len).prop_map(|pairs| {
+            let mut term = 0u64;
+            pairs
+                .into_iter()
+                .map(|(dt, val)| {
+                    term = term.saturating_add(dt);
+                    entry(term, val)
+                })
+                .collect()
+        })
+    }
+
+    proptest! {
+        // r[verify state-machine-safety.index-agreement]
+        #[test]
+        fn prop_same_terms_agree(terms in proptest::collection::vec(1u64..100, 1..10)) {
+            // Two logs with identical term sequences agree at every index
+            let log_a: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let log_b: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 999)).collect();
+            for i in 0..log_a.len() {
+                prop_assert!(crate::log::agree_at(&log_a, &log_b, i));
+            }
+        }
+
+        // r[verify state-machine-safety.prefix-agreement]
+        #[test]
+        fn prop_prefix_match_implies_agreement(log in arb_log(8)) {
+            // A log matches its own prefix at every position
+            let n = log.len();
+            if n > 0 {
+                prop_assert!(crate::log::logs_match_prefix(&log, &log, n));
+                for i in 0..n {
+                    prop_assert!(crate::log::agree_at(&log, &log, i));
+                }
+            }
+        }
+
+        // r[verify state-machine-safety.commit-safety]
+        #[test]
+        fn prop_commit_advance_safe(
+            terms in proptest::collection::vec(1u64..20, 2..8),
+            commit in 1usize..7,
+        ) {
+            let n = terms.len();
+            if commit <= n {
+                let log_a: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+                let log_b: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 42)).collect();
+                prop_assert!(crate::log::logs_match_prefix(&log_a, &log_b, commit));
+                for i in 0..commit {
+                    prop_assert!(crate::log::agree_at(&log_a, &log_b, i));
+                }
+            }
+        }
+
+        // r[verify state-machine-safety.index-agreement]
+        #[test]
+        fn prop_different_terms_disagree(
+            t_a in 1u64..100,
+            t_b in 1u64..100,
+            idx in 0usize..5,
+        ) {
+            if t_a != t_b {
+                let log_a = vec![entry(t_a, 0)];
+                let log_b = vec![entry(t_b, 0)];
+                if idx == 0 {
+                    prop_assert!(!crate::log::agree_at(&log_a, &log_b, idx));
+                }
+            }
+        }
     }
 }

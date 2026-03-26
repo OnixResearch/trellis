@@ -995,6 +995,30 @@
   - Key principle: by(bit_vector) with ONE variable + concrete constants is tractable SAT;
     by(bit_vector) with variable shift amounts composed is the problem. Case splits fix it.
 
+## Verus Upgrade 0.2026.01.30 → 0.2026.03.22
+- New Verus requires Rust toolchain 1.94.0 (was 1.93.0)
+- `librustc_driver-24b10b5e3eb5af70.so` linker error: need to update `rustc-1_93` → `rustc-1_94`
+  in flake.nix (three references: definition, buildInputs, wrapper LD_LIBRARY_PATH)
+- All 3309 proofs pass on new Verus with zero code changes (3182 → 3309 verified items
+  because new Verus counts more items per function)
+- verus.sh paths must be updated manually after nix builds new store paths
+
+## Proptest Hardening
+- `LogEntry` needs `#[derive(Debug)]` for proptest (proptest macro requires Debug on all types)
+- Spec-only fns (e.g. `is_valid_step_type_spec`) can't be called in proptest — use concrete
+  constants and inline the logic instead
+- `split_with_fee` returns (fee, net) not (net, fee) — check ensures clause order
+- `is_simple_entry_spec(amount, amount)` requires `amount > 0` — zero is not a valid entry
+- `is_valid_settlement` takes (original, settlement, num_parties) — 3 args not 2
+- `ledger_transfer` returns `Option<(u64, u64)>` not `Vec<u64>` — use `if let Some((a,b))`
+
+## Cross-Module Properties
+- Existing `financial_proofs` module in properties.rs already covers escrow-fund-uses-debit,
+  escrow-release-uses-credit, fee-conservation-matches-transfer, ledger-transfer-uses-balance,
+  ledger-conservation-is-double-entry. Don't duplicate — name new module differently.
+- New additions: escrow-fund-refund-identity, fee-split-agrees, simple-entry-is-balanced,
+  ledger-transfer-needs-funds, settlement-positions-sum-zero (proptest only)
+
 ## u128 intermediate pattern
 - When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`
 - Verus needs explicit overflow proof: `assert((a as int) * (b as int) <= (u128::MAX as int)) by(nonlinear_arith) requires ...`
