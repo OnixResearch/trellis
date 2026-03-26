@@ -3832,3 +3832,159 @@ mod coordination_cross_tests {
         );
     }
 }
+
+// --- Cross-module: Heartbeat ---
+
+#[cfg(test)]
+mod heartbeat_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.heartbeat-interval-less-than-election]
+        /// The timing constraint heartbeat < election_min ensures
+        /// multiple heartbeats per election timeout period.
+        #[test]
+        fn prop_heartbeat_interval_less_than_election(
+            heartbeat in 1u64..100,
+            election_min in 101u64..500,
+        ) {
+            // Timing validation enforces heartbeat < election_min
+            prop_assert!(crate::raft_timing::validate_timing_order(heartbeat, election_min));
+            // Within one election timeout, the leader can send multiple heartbeats
+            prop_assert!(election_min / heartbeat >= 1);
+        }
+
+        // r[verify properties.heartbeat-reset-prevents-election]
+        /// A valid heartbeat resets the timer, which keeps the leader alive.
+        #[test]
+        fn prop_heartbeat_reset_prevents_election(
+            msg_term in 0u64..100,
+            current_term in 0u64..100,
+            election_timeout in 1u64..500,
+        ) {
+            if msg_term >= current_term {
+                // Valid heartbeat from leader resets the timer
+                let resets = crate::heartbeat::should_reset_election_timer(
+                    msg_term, current_term, true,
+                );
+                prop_assert!(resets);
+                // After reset, leader is alive (elapsed = 0 < timeout)
+                prop_assert!(crate::heartbeat::is_leader_alive(0, 0, election_timeout));
+            }
+        }
+
+        // r[verify properties.heartbeat-ack-stale-triggers-step-down]
+        /// A higher-term ack is invalid and triggers step-down.
+        #[test]
+        fn prop_higher_term_ack_triggers_step_down(
+            leader_term in 0u64..100,
+            ack_term in 101u64..200,
+        ) {
+            // Ack is invalid
+            prop_assert!(!crate::heartbeat::heartbeat_ack_valid(ack_term, leader_term));
+            // term_authority step-down triggers
+            let update = crate::term_authority::apply_higher_term(
+                leader_term, 2, // STATE_LEADER
+                u64::MAX, // voted_for (irrelevant)
+                ack_term,
+            );
+            prop_assert_eq!(update.new_term, ack_term);
+            prop_assert_eq!(update.new_state, 0); // STATE_FOLLOWER
+        }
+    }
+}
+
+// --- Cross-module: Log Compaction ---
+
+#[cfg(test)]
+mod log_compaction_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.compact-suffix-length-is-saturating-sub]
+        /// Compacted log length is a saturating subtraction.
+        #[test]
+        fn prop_compact_suffix_is_saturating_sub(
+            terms in proptest::collection::vec(1u64..10, 0..20),
+            snap_idx in 0u64..25,
+        ) {
+            let log: Vec<crate::log::LogEntry> = terms.iter()
+                .map(|&t| crate::log::LogEntry { term: t, value: 0 })
+                .collect();
+            let snap = std::cmp::min(snap_idx, log.len() as u64);
+            let result = crate::log_compaction::compact_log(&log, snap);
+            let expected = crate::arithmetic::saturating_sub(log.len() as u64, snap);
+            prop_assert_eq!(result.len() as u64, expected);
+        }
+
+        // r[verify properties.compact-first-index-is-max]
+        /// first_log_index_after_compaction agrees with ordering::max.
+        #[test]
+        fn prop_compact_first_index_is_max(prev: u64, snap: u64) {
+            let result = crate::log_compaction::first_log_index_after_compaction(prev, snap);
+            let expected = crate::ordering::max(prev, snap);
+            prop_assert_eq!(result, expected);
+        }
+
+        // r[verify properties.compact-offset-uses-checked-sub]
+        /// translate_index returns sentinel exactly when abs < first.
+        #[test]
+        fn prop_compact_offset_checked_sub(abs: u64, first: u64) {
+            let result = crate::log_compaction::translate_index(abs, first);
+            if abs >= first {
+                prop_assert_ne!(result, u64::MAX);
+                prop_assert_eq!(result, abs - first);
+            } else {
+                prop_assert_eq!(result, u64::MAX);
+            }
+        }
+
+        // r[verify properties.compact-preserves-install-snapshot-trigger]
+        /// After compaction at S, followers with next <= S need a snapshot.
+        #[test]
+        fn prop_compact_preserves_install_trigger(
+            snap in 1u64..100,
+            next in 0u64..100,
+        ) {
+            if next <= snap {
+                prop_assert!(crate::install_snapshot::should_install_snapshot(next, snap));
+            }
+        }
+    }
+}
+
+// --- Cross-module: Follower Redirect ---
+
+#[cfg(test)]
+mod follower_redirect_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify follower-redirect.should-redirect]
+        // r[verify follower-redirect.leader-accepts]
+        /// Redirect and accept are never both true.
+        #[test]
+        fn prop_redirect_accept_exclusive(
+            state in 0u8..3,
+            leader_id in 0u64..100,
+        ) {
+            let accepts = crate::follower_redirect::should_accept_request(state);
+            let redirects = crate::follower_redirect::should_redirect(state, leader_id);
+            prop_assert!(!(accepts && redirects));
+        }
+
+        // r[verify follower-redirect.should-redirect]
+        /// For followers specifically, follower_redirect and client_routing agree.
+        /// follower_redirect covers all non-leaders; client_routing only covers
+        /// followers (candidates neither accept nor redirect in client_routing).
+        #[test]
+        fn prop_follower_redirect_agrees_with_client_routing(
+            leader_id in 0u64..100,
+        ) {
+            let has_known = leader_id != crate::follower_redirect::LEADER_UNKNOWN;
+            let fr_redirect = crate::follower_redirect::should_redirect(0, leader_id); // STATE_FOLLOWER
+            let cr_redirect = crate::client_routing::should_redirect(0, has_known);
+            prop_assert_eq!(fr_redirect, cr_redirect);
+        }
+    }
+}

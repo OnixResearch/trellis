@@ -3797,3 +3797,244 @@ r[pre-vote-lease.leader-contact]
 has_leader_within_timeout MUST return true when now - last_contact <
 election_timeout. Zero elapsed with timeout > 0 MUST be true. Elapsed
 >= timeout MUST be false.
+
+## Heartbeat
+
+r[heartbeat.is-heartbeat]
+is_heartbeat(entry_count) MUST return true if and only if entry_count == 0.
+A heartbeat is an AppendEntries RPC carrying no log entries.
+
+r[heartbeat.should-send]
+should_send_heartbeat(elapsed_ms, heartbeat_interval_ms) MUST return true
+when elapsed_ms >= heartbeat_interval_ms. The leader MUST send heartbeats
+at the configured interval.
+
+r[heartbeat.reset-election-timer]
+should_reset_election_timer(msg_term, current_term, from_leader) MUST
+return true when msg_term >= current_term AND from_leader is true. A
+valid heartbeat from the current leader resets the follower's election
+timer. Messages from non-leaders or stale terms MUST NOT reset the timer.
+
+r[heartbeat.leader-alive]
+is_leader_alive(last_heartbeat_time, now, election_timeout) MUST return
+true when now - last_heartbeat_time < election_timeout (using saturating
+subtraction). A follower considers the leader alive while heartbeats
+arrive within the election timeout.
+
+r[heartbeat.ack]
+heartbeat_ack_valid(ack_term, leader_term) MUST return true when
+ack_term == leader_term. Stale acks (ack_term < leader_term) MUST be
+ignored. Higher-term acks trigger step-down via term_authority.
+
+## Cross-Module: Heartbeat
+
+r[properties.heartbeat-interval-less-than-election]
+raft_timing::validate_timing_order(heartbeat, election_min) ensures
+heartbeat < election_min. Combined with heartbeat::should_send, a
+leader sends multiple heartbeats per election timeout period.
+
+r[properties.heartbeat-reset-prevents-election]
+If should_reset_election_timer returns true and the follower resets,
+then is_leader_alive returns true (leader still considered alive).
+Valid heartbeats prevent spurious elections.
+
+r[properties.heartbeat-ack-stale-triggers-step-down]
+A heartbeat ack with ack_term > leader_term triggers
+term_authority::apply_higher_term, which returns a TermUpdate with
+new_state == FOLLOWER.
+
+## Log Compaction
+
+r[log-compaction.should-compact]
+should_compact(log_len, snapshot_threshold) MUST return true when
+log_len >= snapshot_threshold. A threshold of 0 MUST always trigger.
+A log shorter than the threshold MUST NOT trigger.
+
+r[log-compaction.compact]
+compact_log(log, snapshot_index) MUST discard all entries at indices
+[0, snapshot_index) and return the suffix starting at snapshot_index.
+The result length MUST equal log.len() - snapshot_index when
+snapshot_index <= log.len(). If snapshot_index > log.len(), the
+result MUST be empty.
+
+r[log-compaction.prefix-removed]
+After compaction, no entry from the original [0, snapshot_index) range
+is present in the result. The first entry of the result (if non-empty)
+corresponds to the original entry at snapshot_index.
+
+r[log-compaction.suffix-preserved]
+All entries at indices [snapshot_index, log.len()) MUST be preserved
+in the result, with their terms and values unchanged. For all i in
+[0, result.len()): result[i] == original[snapshot_index + i].
+
+r[log-compaction.first-index-after]
+first_log_index_after_compaction(prev_first_index, snapshot_index) MUST
+return max(prev_first_index, snapshot_index). The first log index MUST
+never decrease.
+
+r[log-compaction.offset-translation]
+translate_index(absolute_index, first_log_index) MUST return
+absolute_index - first_log_index when absolute_index >= first_log_index,
+and None otherwise. Indices before the compacted region are inaccessible.
+
+r[log-compaction.compact-preserves-commit]
+Compacting entries below the commit index MUST NOT change the commit
+index. snapshot_index MUST be <= commit_index (never compact uncommitted
+entries).
+
+## Cross-Module: Log Compaction
+
+r[properties.compact-suffix-length-is-saturating-sub]
+The length of compact_log result MUST equal
+arithmetic::saturating_sub_spec(log.len(), snapshot_index). Compaction
+length is a saturating subtraction.
+
+r[properties.compact-first-index-is-max]
+first_log_index_after_compaction(prev, snap) MUST equal
+ordering::max_spec(prev, snap). The first index is the max of old and
+new.
+
+r[properties.compact-offset-uses-checked-sub]
+translate_index returns None exactly when the absolute index is below
+first_log_index — same condition as a checked subtraction underflow.
+
+r[properties.compact-preserves-install-snapshot-trigger]
+After compaction with snapshot_index S, should_install_snapshot(next, S)
+holds for any follower with next <= S. Compaction creates the exact
+condition that triggers snapshot installation.
+
+## Follower Redirect
+
+r[follower-redirect.should-redirect]
+should_redirect(state, known_leader_id) MUST return true when state !=
+Leader AND known_leader_id is Some. Followers and candidates with a known
+leader MUST redirect clients. A follower with no known leader MUST NOT
+redirect (return error instead).
+
+r[follower-redirect.leader-hint]
+leader_hint(known_leader_id) MUST return the leader's node ID when known,
+or a sentinel (u64::MAX) when unknown. The hint is best-effort — it MAY
+be stale after a leader change.
+
+r[follower-redirect.hint-freshness]
+is_hint_fresh(hint_term, current_term) MUST return true when hint_term ==
+current_term. A hint from a prior term MUST be considered stale. Clients
+receiving a stale hint MUST retry discovery.
+
+r[follower-redirect.leader-accepts]
+should_accept_request(state) MUST return true if and only if state ==
+Leader. Only the leader processes client requests directly.
+
+## Configuration Change
+
+r[config-change.is-valid-phase]
+is_valid_phase MUST return true if and only if phase is STABLE (0) or
+JOINT (1). All transitions MUST preserve validity.
+
+r[config-change.can-start]
+can_start_config_change MUST return true if and only if current_phase is
+STABLE AND new_config_size > 0. A change MUST NOT start during the joint
+phase. An empty new config MUST be rejected.
+
+r[config-change.enter-joint]
+enter_joint MUST return PHASE_JOINT. Requires current_phase == STABLE.
+
+r[config-change.leave-joint]
+leave_joint MUST return PHASE_STABLE. Requires current_phase == JOINT.
+
+r[config-change.is-joint-committed]
+is_joint_committed MUST return true when commit_index >= joint_entry_index.
+
+r[config-change.can-leave-joint]
+can_leave_joint MUST return true when phase is JOINT AND the joint config
+entry is committed.
+
+r[config-change.config-for-quorum]
+config_for_quorum MUST return QUORUM_JOINT for PHASE_JOINT, QUORUM_SINGLE
+for PHASE_STABLE.
+
+r[config-change.leader-in-new-config]
+leader_in_new_config MUST return true if the leader's ID appears in the
+new config member list.
+
+r[config-change.should-step-down]
+should_leader_step_down MUST return true when phase is STABLE, C_new is
+committed, and the leader is NOT in the new config. The leader must step
+down after completing a config change that removes it.
+
+## Persistent State
+
+r[persistent-state.vote-response]
+must_persist_before_vote_response MUST return PERSIST_TERM | PERSIST_VOTED_FOR
+when vote_granted is true (must persist term and votedFor before acking a
+grant). MUST return PERSIST_TERM when vote is denied (persist updated term).
+
+r[persistent-state.append-response]
+must_persist_before_append_response MUST return PERSIST_LOG | PERSIST_TERM
+when entries were appended (entries_appended true). MUST return PERSIST_TERM
+when only the term changed (no new entries).
+
+r[persistent-state.needs-persist]
+needs_persist(persist_set, component) MUST return true when the component
+bit is set in the persist_set bitmask. Components: PERSIST_TERM (1),
+PERSIST_VOTED_FOR (2), PERSIST_LOG (4).
+
+r[persistent-state.recover]
+is_recovered_state_valid MUST check that recovered state is internally
+consistent: term >= voted_term (cannot have voted in a future term).
+
+r[persistent-state.vote-safety]
+vote_safe_after_recovery MUST return true only when the recovered votedFor
+for the given term allows voting. If the node already voted in this term
+for a different candidate, it MUST return false.
+
+r[persistent-state.term-recovery]
+term_after_recovery MUST return the recovered term. The recovered term MUST
+be >= any term seen before the crash.
+
+## Fast Backtrack
+
+r[fast-backtrack.conflict-hint]
+conflict_hint MUST return the term and first index of the conflicting entry
+from the follower's log. When the log is too short (no entry at prev_log_index),
+MUST return conflict_term=0 and first_index=0 with the log length.
+
+r[fast-backtrack.first-index-of-term]
+first_index_of_term MUST scan backward from a starting position to find
+the first entry with the given term. Used to build conflict hints.
+
+r[fast-backtrack.fast-backtrack]
+fast_backtrack MUST compute the new next_index using the conflict hint.
+When the leader has entries with the conflicting term, next_index advances
+to just past the leader's last entry for that term. When the leader has
+no entry with the conflicting term, next_index jumps to the follower's
+first_index_for_term. When the follower's log was too short,
+next_index jumps to follower_log_length + 1.
+
+r[fast-backtrack.leader-find-last]
+leader_find_last_index_for_term MUST scan the leader's log to find the
+last entry with the given term. Returns 0 when no entry with that term
+exists.
+
+## Client Routing
+
+r[client-routing.route]
+route_client_request MUST return ACCEPT for leaders, REDIRECT for
+non-leaders with a known leader, and REJECT for non-leaders with no
+known leader.
+
+r[client-routing.should-accept]
+should_accept MUST return true if and only if state == Leader.
+
+r[client-routing.should-redirect]
+should_redirect MUST return true when the node is not a leader and a
+leader ID is known (leader_id != sentinel).
+
+r[client-routing.leader-stale]
+is_leader_stale MUST return true when the leader hint was learned in a
+prior term (hint_term < current_term).
+
+r[client-routing.route-read]
+route_read_request MUST return ACCEPT_LOCAL for leaders, FORWARD for
+non-leaders with a known leader (when follower reads are enabled),
+and REJECT otherwise.
