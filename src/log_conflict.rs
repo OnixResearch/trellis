@@ -148,8 +148,6 @@ pub open spec fn append_entries_spec(
 
 // r[impl log-conflict.resolve]
 /// Resolve a log conflict: find divergence, truncate, and append.
-// @verified-logic:exempt — loop invariant over recursive spec is a known hard problem (see napkin)
-#[verifier::external_body]
 pub fn resolve_conflict(
     follower: &mut Vec<LogEntry>,
     leader_entries: &[LogEntry],
@@ -169,6 +167,10 @@ pub fn resolve_conflict(
 
     match conflict {
         Some(offset) => {
+            proof {
+                conflict_in_range(original, leader_entries@, start_index as int);
+                // offset < leader_entries.len(), so start_index + offset < start_index + leader_entries.len() <= usize::MAX.
+            }
             let trunc_len = start_index + offset;
             if trunc_len < follower.len() {
                 follower.truncate(trunc_len);
@@ -225,37 +227,45 @@ pub fn resolve_conflict(
     }
 
     // Append leader_entries[append_from..]
+    // Invariant: append_entries_spec(follower@, entries, j) == full_result
+    // where full_result = append_entries_spec(rss, entries, append_from)
+    //                    = resolve_conflict_spec(original, entries, start_index).
+    let ghost rss = resolve_start_state(original, leader_entries@, start_index as int, append_from as int);
+    let ghost full_result = append_entries_spec(rss, leader_entries@, append_from as int);
+
+    proof {
+        // Before loop: follower@ == rss, j == append_from.
+        // append_entries_spec(rss, entries, append_from) == full_result. ✓
+    }
+
     let mut j = append_from;
     while j < leader_entries.len()
         invariant
             append_from as int <= j as int <= leader_entries@.len(),
-            follower@ == append_entries_spec(
-                resolve_start_state(original, leader_entries@, start_index as int, append_from as int),
-                leader_entries@,
-                j as int,
-            ),
+            append_entries_spec(follower@, leader_entries@, j as int) == full_result,
             start_index as int + leader_entries@.len() <= usize::MAX as int,
             original.len() + leader_entries@.len() <= usize::MAX as int,
+            follower@.len() + leader_entries@.len() - j <= usize::MAX as int,
         decreases leader_entries@.len() - j,
     {
         proof {
-            append_entries_step(
-                follower@,
-                leader_entries@,
-                j as int,
-            );
+            // append_entries_spec(follower@, entries, j)
+            //   = append_entries_spec(follower@.push(entries[j]), entries, j+1)  [by definition]
+            append_entries_step(follower@, leader_entries@, j as int);
         }
         follower.push(leader_entries[j]);
+        // Now follower@ = old_follower@.push(entries[j])
+        // append_entries_spec(follower@, entries, j+1) = append_entries_spec(old_follower@, entries, j) = full_result ✓
         j = j + 1;
     }
 
-    // Post-loop: j == leader_entries.len()
-    // follower@ == append_entries_spec(resolve_start_state(...), entries, entries.len())
-    //           == resolve_start_state(...)  [by append_entries_empty]
-    // Wait — that's wrong. We need:
-    // follower@ == append_entries_spec(rss, entries, append_from)
-    //           == resolve_conflict_spec(original, entries, start_index)
-    // which is what resolve_equals_append_from_start proves.
+    // Post-loop: j == entries.len().
+    // append_entries_spec(follower@, entries, entries.len()) == full_result.
+    // But append_entries_spec(x, entries, entries.len()) == x (base case).
+    // So follower@ == full_result == resolve_conflict_spec(original, entries, start_index).
+    proof {
+        append_entries_empty(follower@, leader_entries@, j as int);
+    }
 }
 
 /// Helper spec: the state of the follower log after truncation but before

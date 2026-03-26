@@ -50,7 +50,7 @@ pub open spec fn substr_at_spec(haystack: Seq<u8>, needle: Seq<u8>, pos: int) ->
 }
 
 // ============================================================
-// Glob match spec: recursive over segment count
+// Glob match spec: segment-based recursive definition
 // ============================================================
 
 /// Count `*` bytes in a pattern from position `from`.
@@ -66,19 +66,119 @@ pub open spec fn star_count(pattern: Seq<u8>, from: int) -> nat
     }
 }
 
+/// Find the first occurrence of `needle` in `input` starting at `pos`,
+/// searching up to position `end - needle.len()`. Returns -1 if not found.
+pub open spec fn find_segment_in(input: Seq<u8>, needle: Seq<u8>, pos: int, end: int) -> int
+    decreases end - pos,
+{
+    if needle.len() == 0 {
+        pos
+    } else if pos + needle.len() > end {
+        -1int
+    } else if substr_at_spec(input, needle, pos) {
+        pos
+    } else {
+        find_segment_in(input, needle, pos + 1, end)
+    }
+}
+
+/// Match a sequence of segments against input[pos..end].
+///
+/// Segments are the result of splitting a glob pattern by `*`.
+/// - First segment (idx 0): must be prefix of input.
+/// - Last segment (idx n-1): must be suffix of input.
+/// - Middle segments: found in order via greedy left-to-right search.
+/// - Empty segments (from adjacent `*`s) are skipped.
+pub open spec fn segments_match_spec(
+    segs: Seq<Seq<u8>>,
+    input: Seq<u8>,
+    idx: int,
+    pos: int,
+    end: int,
+) -> bool
+    recommends 0 <= pos, pos <= end, end <= input.len(), 0 <= idx
+    decreases segs.len() - idx,
+    when 0 <= pos && pos <= end && end <= input.len() && 0 <= idx
+{
+    if idx >= segs.len() {
+        true  // All segments matched; remaining input consumed by trailing `*`.
+    } else {
+        let seg = segs[idx];
+        let is_first = idx == 0;
+        let is_last = idx == segs.len() - 1;
+
+        if seg.len() == 0 {
+            // Empty segment — skip.
+            segments_match_spec(segs, input, idx + 1, pos, end)
+        } else if is_first {
+            // First segment: must be prefix.
+            starts_with_spec(input.subrange(pos, end), seg)
+            && segments_match_spec(segs, input, idx + 1, pos + seg.len(), end)
+        } else if is_last {
+            // Last segment: must be suffix.
+            ends_with_spec(input.subrange(pos, end), seg)
+        } else {
+            // Middle segment: find in input[pos..end].
+            let found = find_segment_in(input, seg, pos, end);
+            found >= 0
+            && segments_match_spec(segs, input, idx + 1, found + seg.len(), end)
+        }
+    }
+}
+
+/// Split pattern by STAR into segments, from position `from`.
+pub open spec fn segment_end(pattern: Seq<u8>, from: int) -> int
+    decreases pattern.len() - from,
+{
+    if from >= pattern.len() {
+        from
+    } else if pattern[from] == STAR() {
+        from
+    } else {
+        segment_end(pattern, from + 1)
+    }
+}
+
+/// Split a pattern by `*` into a sequence of segments.
+pub open spec fn split_by_star_spec(pattern: Seq<u8>, from: int) -> Seq<Seq<u8>>
+    recommends 0 <= from
+    decreases pattern.len() - from + 1,
+    when 0 <= from
+{
+    if from > pattern.len() {
+        Seq::<Seq<u8>>::empty()
+    } else if from == pattern.len() {
+        seq![Seq::<u8>::empty()]
+    } else {
+        let se = segment_end(pattern, from);
+        if se > pattern.len() || se < from {
+            // Guard: segment_end always returns >= from and <= len, but
+            // Verus needs this explicit guard for termination.
+            Seq::<Seq<u8>>::empty()
+        } else {
+            let seg = pattern.subrange(from, se);
+            if se >= pattern.len() {
+                seq![seg]
+            } else {
+                // se points at a `*`. Skip it. se + 1 > from, so we decrease.
+                seq![seg] + split_by_star_spec(pattern, se + 1)
+            }
+        }
+    }
+}
+
 // r[depends glob.wildcard-matches-all]
 /// Spec: does the input match the glob pattern?
 ///
-/// Decomposed by `*` count:
-/// - 0 stars: exact equality.
-/// - 1+ stars: split at first `*`, prefix must match start,
-///   remaining segments handled by `glob_segments_spec`.
+/// - No stars: exact equality.
+/// - Has stars: split by `*` into segments, then match:
+///   first segment = prefix, last = suffix, middle = greedy search.
 pub open spec fn glob_match_spec(pattern: Seq<u8>, input: Seq<u8>) -> bool {
     if !has_star_spec(pattern) {
         pattern =~= input
     } else {
-        true // The full recursive spec is complex; we trust external_body exec + proptest.
-             // The spec for proofs covers the key structural cases below.
+        let segs = split_by_star_spec(pattern, 0);
+        segments_match_spec(segs, input, 0, 0, input.len() as int)
     }
 }
 
@@ -88,8 +188,9 @@ pub open spec fn glob_match_spec(pattern: Seq<u8>, input: Seq<u8>) -> bool {
 
 // r[impl glob.wildcard-matches-all]
 /// Returns true if the input matches the glob pattern.
-/// Glob matching with multi-segment `*` wildcards is complex for Z3 —
-/// marked `external_body` with proptest coverage.
+/// Exec uses split-by-star algorithm outside verus! (iterators/closures).
+/// Spec is now a full recursive definition; exec marked external_body because
+/// connecting the imperative algorithm to the recursive spec is hard for Z3.
 /// @verified-logic:no-ensures
 #[verifier::external_body]
 pub fn glob_match(pattern: &[u8], input: &[u8]) -> (result: bool)
@@ -163,8 +264,30 @@ pub fn glob_match(pattern: &[u8], input: &[u8]) -> (result: bool)
 proof fn glob_wildcard_matches_all(input: Seq<u8>)
     ensures glob_match_spec(seq![STAR()], input)
 {
-    // has_star_spec holds, and the spec returns true for any pattern with stars.
-    assert(seq![STAR()][0] == STAR());
+    let pattern = seq![STAR()];
+    // has_star_spec: pattern[0] == STAR().
+    assert(pattern[0] == STAR());
+    // Unfold split_by_star_spec step by step.
+    let se0 = segment_end(pattern, 0);
+    assert(pattern[0] == STAR());
+    assert(se0 == 0);
+    let seg0 = pattern.subrange(0int, 0int);
+    assert(seg0 =~= Seq::<u8>::empty());
+    // se0 = 0 < pattern.len() = 1, so we recurse with from = se0 + 1 = 1.
+    let segs1 = split_by_star_spec(pattern, 1);
+    // from=1, len=1: from == len, returns seq![empty].
+    assert(segs1 =~= seq![Seq::<u8>::empty()]);
+    let segs = split_by_star_spec(pattern, 0);
+    // pattern.subrange(0, 0) = seg0 = empty. Concat: seq![empty] + seq![empty].
+    assert(segs =~= seq![seg0] + segs1);
+    assert(segs.len() == 2);
+    // Unfold segments_match_spec.
+    assert(segs[0] =~= Seq::<u8>::empty());
+    assert(segs[1] =~= Seq::<u8>::empty());
+    // idx=0: seg=empty, skip. idx=1: seg=empty, skip. idx=2: done.
+    assert(segments_match_spec(segs, input, 2, 0, input.len() as int));
+    assert(segments_match_spec(segs, input, 1, 0, input.len() as int));
+    assert(segments_match_spec(segs, input, 0, 0, input.len() as int));
 }
 
 // r[impl glob.exact-match]

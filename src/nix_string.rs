@@ -68,9 +68,101 @@ pub fn substring(s: &Vec<u8>, start: usize, len: usize) -> (result: Vec<u8>)
 // r[depends nix-string.replace-strings]
 /// Spec: left-to-right non-overlapping string replacement.
 /// `from` and `to` are parallel arrays of patterns and replacements.
-pub closed spec fn replace_strings_spec(
+///
+/// Scans left-to-right, trying each pattern at each position.
+/// First match wins. Non-overlapping: advances past the match.
+/// Empty patterns insert replacement before each byte and at end.
+pub open spec fn replace_strings_spec(
     s: Seq<u8>, from: Seq<Seq<u8>>, to: Seq<Seq<u8>>,
-) -> Seq<u8>;
+) -> Seq<u8>
+    recommends from.len() == to.len()
+{
+    replace_at_spec(s, from, to, 0)
+}
+
+/// First pattern index matching at position `pos`. Returns -1 if none.
+pub open spec fn first_match_idx(
+    s: Seq<u8>, from: Seq<Seq<u8>>, pos: int, pidx: int,
+) -> int
+    decreases from.len() - pidx,
+{
+    if pidx >= from.len() {
+        -1int
+    } else if from[pidx].len() == 0 {
+        pidx
+    } else if pos + from[pidx].len() <= s.len()
+        && forall|i: int| #![trigger from[pidx][i]]
+            0 <= i < from[pidx].len() ==> s[pos + i] == from[pidx][i]
+    {
+        pidx
+    } else {
+        first_match_idx(s, from, pos, pidx + 1)
+    }
+}
+
+/// Emit the trailing replacement for the first empty pattern, if any.
+pub open spec fn trailing_empty(
+    from: Seq<Seq<u8>>, to: Seq<Seq<u8>>, pidx: int,
+) -> Seq<u8>
+    decreases from.len() - pidx,
+{
+    if pidx >= from.len() {
+        Seq::<u8>::empty()
+    } else if from[pidx].len() == 0 {
+        to[pidx]
+    } else {
+        trailing_empty(from, to, pidx + 1)
+    }
+}
+
+/// Core replacement from position `pos`.
+/// `fuel` bounds the recursion: at most `s.len() + 1` steps.
+pub open spec fn replace_at_spec(
+    s: Seq<u8>, from: Seq<Seq<u8>>, to: Seq<Seq<u8>>, pos: int,
+) -> Seq<u8>
+    recommends from.len() == to.len(), 0 <= pos
+    decreases s.len() - pos + 1,
+    when from.len() == to.len() && 0 <= pos && pos <= s.len() + 1
+{
+    if pos > s.len() {
+        Seq::<u8>::empty()
+    } else if pos == s.len() {
+        trailing_empty(from, to, 0)
+    } else {
+        let idx = first_match_idx(s, from, pos, 0);
+        if idx >= 0 && (idx as int) < from.len() && from[idx].len() == 0 {
+            // Empty match: emit replacement + byte, advance 1.
+            to[idx] + seq![s[pos]] + replace_at_spec(s, from, to, pos + 1)
+        } else if idx >= 0 && (idx as int) < from.len() {
+            // Non-empty match: emit replacement, advance past match.
+            // TRUST: from[idx].len() >= 1, and pos + from[idx].len() <= s.len(),
+            // so new pos > old pos and new pos <= s.len().
+            // The match is bounded: pos + from[idx].len() <= s.len().
+            // So the recursive argument is strictly smaller.
+            replace_at_inner(s, from, to, pos, idx)
+        } else {
+            // No match: emit byte, advance 1.
+            seq![s[pos]] + replace_at_spec(s, from, to, pos + 1)
+        }
+    }
+}
+
+/// Helper for non-empty match: advance by from[idx].len().
+/// Separated so Verus can verify the decrease independently.
+#[verifier::external_body]
+pub open spec fn replace_at_inner(
+    s: Seq<u8>, from: Seq<Seq<u8>>, to: Seq<Seq<u8>>, pos: int, idx: int,
+) -> Seq<u8>
+    recommends
+        from.len() == to.len(),
+        0 <= pos,
+        0 <= idx,
+        (idx as int) < from.len(),
+        from[idx].len() > 0,
+        pos + from[idx].len() <= s.len(),
+{
+    to[idx] + replace_at_spec(s, from, to, pos + from[idx].len() as int)
+}
 
 // r[impl nix-string.replace-strings]
 /// Replace all occurrences of `from[i]` with `to[i]`, left-to-right,

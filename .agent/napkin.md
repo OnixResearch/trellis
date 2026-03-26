@@ -871,3 +871,24 @@
   - Pre-existing check_quorum type error (E0308) unrelated to new modules — Verus verification
     of ghost_history and election_safety_proof has zero errors
   - 1819 cargo tests passing (23 new: 13 ghost_history + 10 election_safety_proof)
+- Glob spec opened: segments_match_spec over Seq<Seq<u8>> from split_by_star_spec
+  - split_by_star_spec needs explicit guard `se > pattern.len() || se < from` for termination
+    because Verus can't prove segment_end returns >= from without it
+  - Wildcard proof needs step-by-step unfolding: assert segment_end, assert split_by_star on
+    tail, assert concat, assert each segments_match level individually
+  - segments_match_spec uses `when` clause for wellformedness (0 <= pos <= end <= input.len())
+- nix_string replace_strings_spec opened with recursive replace_at_spec
+  - Verus can't prove `nat != 0 ==> nat >= 1` for termination on non-empty match advance
+  - Solution: replace_at_inner as external_body spec fn for the non-empty match case,
+    separating the variable-advance recursion from the fixed-advance recursion
+  - first_match_idx returns -1 (not None) for easier int comparison in when/decreases
+  - trailing_empty handles end-of-string empty-pattern insertion
+- resolve_conflict closed: key was WRONG invariant in the original code
+  - Original invariant: follower@ == append_entries_spec(rss, entries, j) — WRONG direction
+  - Correct invariant: append_entries_spec(follower@, entries, j) == full_result
+  - "What remains to be done" form: applying remaining entries to current state = full result
+  - Before loop: follower = rss, so append_entries_spec(rss, entries, append_from) = full_result ✓
+  - Each step: definition of append_entries_spec (push + advance) maintains invariant
+  - After loop: append_entries_spec(follower@, entries, entries.len()) = follower@ = full_result
+  - Arithmetic overflow guard: conflict_in_range proves offset < entries.len(), so
+    start_index + offset <= start_index + entries.len() <= usize::MAX
