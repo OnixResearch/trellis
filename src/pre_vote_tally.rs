@@ -96,11 +96,11 @@ pub fn record_pre_vote(
 )
     requires
         (server_id as int) < old(pre_votes)@.len(),
+        old(pre_votes)@.len() <= usize::MAX as int,
     ensures
         pre_votes@ == record_pre_vote_spec(old(pre_votes)@, server_id),
         pre_votes@.len() == old(pre_votes)@.len(),
 {
-    #[allow(clippy::cast_possible_truncation)]
     pre_votes.set(server_id as usize, true);
 }
 
@@ -127,6 +127,17 @@ pub open spec fn count_pre_votes_from_spec(pre_votes: Seq<bool>, from: int) -> u
     }
 }
 
+// Helper: count_pre_votes_from is bounded by remaining length.
+proof fn count_pre_votes_from_bounded(pre_votes: Seq<bool>, from: int)
+    requires 0 <= from, pre_votes.len() <= u64::MAX as int
+    ensures count_pre_votes_from_spec(pre_votes, from) <= (pre_votes.len() - from) as u64
+    decreases pre_votes.len() - from,
+{
+    if from < pre_votes.len() {
+        count_pre_votes_from_bounded(pre_votes, from + 1);
+    }
+}
+
 // r[impl pre-vote-tally.count]
 /// Count pre-vote grants.
 pub fn count_pre_votes(pre_votes: &[bool]) -> (result: u64)
@@ -139,11 +150,11 @@ pub fn count_pre_votes(pre_votes: &[bool]) -> (result: u64)
         invariant
             0 <= i <= pre_votes@.len(),
             pre_votes@.len() <= u64::MAX as int,
-            count as int == count as int,
             count_pre_votes_spec(pre_votes@) == count + count_pre_votes_from_spec(pre_votes@, i as int),
             count <= i as u64,
         decreases pre_votes.len() - i,
     {
+        proof { count_pre_votes_from_bounded(pre_votes@, i as int + 1); }
         if pre_votes[i] {
             count = count + 1;
         }

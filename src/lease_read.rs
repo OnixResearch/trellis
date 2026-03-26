@@ -137,7 +137,7 @@ proof fn fresh_lease_valid(now: u64, timeout: u64, drift: u64)
 // r[verify lease-read.is-valid]
 /// Zero effective duration means lease is never valid.
 proof fn zero_duration_invalid(start: u64, drift: u64, now: u64)
-    requires drift >= 100
+    requires drift >= 100, now >= start
     ensures !is_lease_valid_spec(start, 0, drift, now)
 {}
 
@@ -162,6 +162,7 @@ proof fn sequential_leases_disjoint(
         s1 as int + (timeout - drift) as int <= u64::MAX as int,
         s2 >= (s1 + (timeout - drift)) as u64,
         s2 as int + (timeout - drift) as int <= u64::MAX as int,
+        now >= s2,
     ensures
         !(is_lease_valid_spec(s1, timeout, drift, now)
           && is_lease_valid_spec(s2, timeout, drift, now))

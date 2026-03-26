@@ -7,6 +7,8 @@
 
 use vstd::prelude::*;
 
+verus! {
+
 /// Normal command entry — applied to state machine on commit.
 pub const ENTRY_NORMAL: u8 = 0u8;
 /// No-op entry — identity operation inserted by new leaders.
@@ -20,8 +22,6 @@ pub const NOOP_VALUE: u64 = 0u64;
 /// Sentinel value for configuration change entries.
 /// Must differ from NOOP_VALUE (0) and any normal command value.
 pub const CONFIG_CHANGE_SENTINEL: u64 = u64::MAX;
-
-verus! {
 
 // --- classify_entry ---
 

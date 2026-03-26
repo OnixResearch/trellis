@@ -193,6 +193,19 @@ pub open spec fn count_ready_spec(
     count_ready_from_spec(indices, expired, commit_index, 0)
 }
 
+// Helper: count_ready_from is bounded by remaining length.
+proof fn count_ready_from_bounded(
+    indices: Seq<u64>, expired: Seq<bool>, commit_index: u64, from: int,
+)
+    requires 0 <= from, indices.len() == expired.len(), indices.len() <= u64::MAX as int
+    ensures count_ready_from_spec(indices, expired, commit_index, from) <= (indices.len() - from) as u64
+    decreases indices.len() - from,
+{
+    if from < indices.len() {
+        count_ready_from_bounded(indices, expired, commit_index, from + 1);
+    }
+}
+
 // r[impl commit-notify.count-ready]
 /// Count proposals that are ready for notification.
 pub fn count_ready_proposals(
@@ -217,6 +230,8 @@ pub fn count_ready_proposals(
             count <= i as u64,
         decreases indices.len() - i,
     {
+        // Prove the remaining count fits in u64 (needed for `(rest + 1) as u64` cast)
+        proof { count_ready_from_bounded(indices@, expired@, commit_index, i as int + 1); }
         let status = proposal_status(indices[i], commit_index, expired[i]);
         if status != STATUS_PENDING {
             count = count + 1;
@@ -238,7 +253,7 @@ proof fn no_advance_zero(old_commit: u64)
 /// Single step commits one entry.
 proof fn single_step(old_commit: u64)
     requires old_commit < u64::MAX
-    ensures newly_committed_count_spec(old_commit, old_commit + 1) == 1
+    ensures newly_committed_count_spec(old_commit, (old_commit + 1) as u64) == 1
 {}
 
 // r[verify commit-notify.is-newly-committed]
@@ -247,7 +262,7 @@ proof fn first_is_committed(old_commit: u64, new_commit: u64)
     requires
         new_commit > old_commit,
         old_commit < u64::MAX,
-    ensures is_newly_committed_spec(old_commit + 1, old_commit, new_commit)
+    ensures is_newly_committed_spec((old_commit + 1) as u64, old_commit, new_commit)
 {}
 
 // r[verify commit-notify.is-newly-committed]

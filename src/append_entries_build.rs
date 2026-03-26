@@ -213,15 +213,16 @@ proof fn entries_bounded_by_max(log_length: u64, next_index: u64, max_entries: u
 // r[verify append-entries-build.entries-count]
 /// Caught-up follower gets zero entries.
 proof fn caught_up_no_entries(log_length: u64, max_entries: u64)
-    ensures build_entries_count_spec(log_length, log_length + 1, max_entries) == 0
+    requires log_length < u64::MAX
+    ensures build_entries_count_spec(log_length, (log_length + 1) as u64, max_entries) == 0
 {}
 
 // r[verify append-entries-build.is-heartbeat]
 /// Caught-up follower receives heartbeat.
 proof fn caught_up_is_heartbeat(log: Seq<LogEntry>, max_entries: u64)
-    requires log.len() <= u64::MAX as int
+    requires log.len() < u64::MAX as int
     ensures is_heartbeat_spec(
-        build_append_entries_spec(log, log.len() as u64 + 1, max_entries)
+        build_append_entries_spec(log, (log.len() as u64 + 1) as u64, max_entries)
     )
 {}
 

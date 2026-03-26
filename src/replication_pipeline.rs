@@ -36,7 +36,7 @@ pub fn inflight_count(
 ) -> (result: u64)
     ensures result == inflight_count_spec(next_index, match_index)
 {
-    if next_index > match_index + 1 {
+    if next_index > 0 && next_index - 1 > match_index {
         next_index - match_index - 1
     } else {
         0
@@ -126,14 +126,14 @@ pub fn window_after_ack(
 // r[verify replication-pipeline.empty-window]
 /// Fully acknowledged pipeline has zero inflight.
 proof fn empty_pipeline(match_index: u64)
-    ensures inflight_count_spec(match_index + 1, match_index) == 0
+    ensures inflight_count_spec((match_index + 1) as u64, match_index) == 0
 {}
 
 // r[verify replication-pipeline.empty-window]
 /// Empty pipeline can always send (if max > 0).
 proof fn empty_can_send(match_index: u64, max_inflight: u64)
     requires max_inflight > 0
-    ensures can_send_more_spec(match_index + 1, match_index, max_inflight)
+    ensures can_send_more_spec((match_index + 1) as u64, match_index, max_inflight)
 {}
 
 // r[verify replication-pipeline.full-window-blocks]
@@ -183,13 +183,13 @@ proof fn ack_decreases_inflight(
 /// Full ack empties the pipeline.
 proof fn full_ack_empties(next_index: u64, match_index: u64)
     requires next_index > 0
-    ensures inflight_count_spec(next_index, next_index - 1) == 0
+    ensures inflight_count_spec(next_index, (next_index - 1) as u64) == 0
 {}
 
 // r[verify replication-pipeline.inflight-count]
 /// Inflight is zero when next == match + 1.
 proof fn adjacent_is_zero(match_index: u64)
-    ensures inflight_count_spec(match_index + 1, match_index) == 0
+    ensures inflight_count_spec((match_index + 1) as u64, match_index) == 0
 {}
 
 // r[verify replication-pipeline.can-send-more]

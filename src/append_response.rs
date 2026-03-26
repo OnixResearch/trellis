@@ -8,6 +8,8 @@
 
 use vstd::prelude::*;
 
+verus! {
+
 /// Response from a server with a higher term — must step down.
 pub const RESP_HIGHER_TERM: u8 = 0u8;
 /// Response from a server with a stale (lower) term — ignore.
@@ -16,8 +18,6 @@ pub const RESP_STALE: u8 = 1u8;
 pub const RESP_SUCCESS: u8 = 2u8;
 /// Same-term failure — log consistency check failed.
 pub const RESP_FAILURE: u8 = 3u8;
-
-verus! {
 
 // --- classify_append_response ---
 

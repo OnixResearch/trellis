@@ -269,7 +269,7 @@ proof fn applying_reduces_behind(
         applied > 0,
         last_applied as int + applied as int <= safe_point as int,
     ensures
-        entries_behind_spec(last_applied + applied, safe_point)
+        entries_behind_spec((last_applied + applied) as u64, safe_point)
             < entries_behind_spec(last_applied, safe_point)
 {}
 

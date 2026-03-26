@@ -226,7 +226,9 @@ proof fn grant_persists_voted_for()
         must_persist_before_vote_response_spec(true),
         PERSIST_VOTED_FOR,
     )
-{}
+{
+    assert(((1u8 | 2u8) & 2u8) != 0u8) by(bit_vector);
+}
 
 // r[verify persistent-state.vote-response]
 /// Granting a vote always requires persisting term.
@@ -235,7 +237,9 @@ proof fn grant_persists_term()
         must_persist_before_vote_response_spec(true),
         PERSIST_TERM,
     )
-{}
+{
+    assert(((1u8 | 2u8) & 1u8) != 0u8) by(bit_vector);
+}
 
 // r[verify persistent-state.vote-response]
 /// Vote rejection still requires persisting term.
@@ -244,7 +248,9 @@ proof fn reject_persists_term()
         must_persist_before_vote_response_spec(false),
         PERSIST_TERM,
     )
-{}
+{
+    assert((1u8 & 1u8) != 0u8) by(bit_vector);
+}
 
 // r[verify persistent-state.append-response]
 /// Accepting entries requires persisting the log.
@@ -253,7 +259,9 @@ proof fn accept_persists_log()
         must_persist_before_append_response_spec(true, false),
         PERSIST_LOG,
     )
-{}
+{
+    assert((4u8 & 4u8) != 0u8) by(bit_vector);
+}
 
 // r[verify persistent-state.append-response]
 /// Term change requires persisting the term.
@@ -262,7 +270,9 @@ proof fn term_change_persists_term()
         must_persist_before_append_response_spec(false, true),
         PERSIST_TERM,
     )
-{}
+{
+    assert((1u8 & 1u8) != 0u8) by(bit_vector);
+}
 
 // r[verify persistent-state.append-response]
 /// No change needs no persistence.

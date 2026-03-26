@@ -65,13 +65,13 @@ pub open spec fn election_delay_spec(
     recommends my_priority <= max_priority
 {
     let levels = (max_priority - my_priority) as u64;
-    let extra = if delay_per_level > 0 && levels > 0 {
+    let extra: u64 = if delay_per_level > 0 && levels > 0 {
         if levels > u64::MAX as u64 / delay_per_level {
-            u64::MAX as u64 - base_timeout
+            (u64::MAX as u64 - base_timeout) as u64
         } else {
             let product = (levels * delay_per_level) as u64;
             if product > u64::MAX as u64 - base_timeout {
-                u64::MAX as u64 - base_timeout
+                (u64::MAX as u64 - base_timeout) as u64
             } else {
                 product
             }
@@ -98,6 +98,8 @@ pub fn election_delay(
         if levels > u64::MAX / delay_per_level {
             u64::MAX - base_timeout
         } else {
+            assert(levels as int * delay_per_level as int <= u64::MAX as int) by(nonlinear_arith)
+                requires levels <= u64::MAX / delay_per_level, delay_per_level > 0u64;
             let product = levels * delay_per_level;
             if product > u64::MAX - base_timeout {
                 u64::MAX - base_timeout

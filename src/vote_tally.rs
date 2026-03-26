@@ -93,11 +93,11 @@ pub fn record_vote(
 )
     requires
         (server_id as int) < old(votes)@.len(),
+        old(votes)@.len() <= usize::MAX as int,
     ensures
         votes@ == record_vote_spec(old(votes)@, server_id),
         votes@.len() == old(votes)@.len(),
 {
-    #[allow(clippy::cast_possible_truncation)] // server_id < votes.len(), both fit in usize
     votes.set(server_id as usize, true);
 }
 
@@ -124,6 +124,17 @@ pub open spec fn count_votes_from_spec(votes: Seq<bool>, from: int) -> u64
     }
 }
 
+// Helper: count_votes_from is bounded by remaining length.
+proof fn count_votes_from_bounded(votes: Seq<bool>, from: int)
+    requires 0 <= from, votes.len() <= u64::MAX as int
+    ensures count_votes_from_spec(votes, from) <= (votes.len() - from) as u64
+    decreases votes.len() - from,
+{
+    if from < votes.len() {
+        count_votes_from_bounded(votes, from + 1);
+    }
+}
+
 // r[impl vote-tally.count-votes]
 /// Count the number of votes granted.
 pub fn count_votes(votes: &[bool]) -> (result: u64)
@@ -136,11 +147,13 @@ pub fn count_votes(votes: &[bool]) -> (result: u64)
         invariant
             0 <= i <= votes@.len(),
             votes@.len() <= u64::MAX as int,
-            count as int == count as int,
             count_votes_spec(votes@) == count + count_votes_from_spec(votes@, i as int),
             count <= i as u64,
         decreases votes.len() - i,
     {
+        // Unfold the recursive spec one step to help Z3
+        // Prove the remaining count fits in u64 (needed for `(rest + 1) as u64` cast)
+        proof { count_votes_from_bounded(votes@, i as int + 1); }
         if votes[i] {
             count = count + 1;
         }

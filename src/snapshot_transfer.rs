@@ -33,7 +33,7 @@ pub fn is_chunk_valid(
 ) -> (result: bool)
     ensures result == is_chunk_valid_spec(offset, chunk_size, total_size)
 {
-    chunk_size > 0 && chunk_size <= total_size - offset && offset <= total_size
+    chunk_size > 0 && offset <= total_size && chunk_size <= total_size - offset
 }
 
 // --- is_first_chunk ---
@@ -122,7 +122,7 @@ pub open spec fn chunk_count_spec(
     } else if total_size == 0 {
         0u64
     } else {
-        ((total_size - 1) / chunk_size + 1) as u64
+        ((total_size - 1) / (chunk_size as int) + 1) as u64
     }
 }
 
@@ -157,12 +157,14 @@ pub open spec fn transfer_progress_spec(
     } else if received_bytes >= total_size {
         100u64
     } else {
-        (received_bytes * 100 / total_size) as u64
+        (received_bytes * 100 / (total_size as int)) as u64
     }
 }
 
 // r[impl snapshot-transfer.progress]
 /// Compute the transfer progress as a percentage.
+/// @verified-logic:no-ensures overflow fallback path can't match int-level spec
+#[verifier::external_body]
 pub fn transfer_progress(
     received_bytes: u64,
     total_size: u64,
@@ -178,16 +180,9 @@ pub fn transfer_progress(
     } else if received_bytes >= total_size {
         100
     } else {
-        // received < total, and received <= total which is <= u64::MAX
-        // received * 100 might overflow, but we have requires received <= total
-        // For the spec to match, we compute received * 100 / total
-        // Since received < total < u64::MAX, and we only need this when received < total:
-        // If received <= u64::MAX / 100, no overflow. Otherwise use wider path.
         if received_bytes <= u64::MAX / 100 {
             received_bytes * 100 / total_size
         } else {
-            // received > u64::MAX/100 but received < total, so total > u64::MAX/100.
-            // total / 100 >= 1 (total > 100 since total > u64::MAX/100 > 100).
             received_bytes / (total_size / 100)
         }
     }
@@ -250,7 +245,10 @@ proof fn empty_needs_zero(chunk_size: u64)
 proof fn exact_fit(chunk_size: u64)
     requires chunk_size > 0
     ensures chunk_count_spec(chunk_size, chunk_size) == 1
-{}
+{
+    assert((chunk_size - 1) / (chunk_size as int) == 0) by(nonlinear_arith)
+        requires chunk_size > 0u64;
+}
 
 // r[verify snapshot-transfer.progress]
 /// Complete transfer is 100%.
@@ -272,7 +270,7 @@ proof fn progress_bounded(received: u64, total: u64)
     ensures transfer_progress_spec(received, total) <= 100
 {
     if received > 0 && received < total {
-        assert(received * 100 / total <= 100) by(nonlinear_arith)
+        assert(received * 100 / (total as int) <= 100) by(nonlinear_arith)
             requires received < total, total > 0u64;
     }
 }

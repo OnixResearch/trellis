@@ -101,16 +101,14 @@ pub fn min_active_next(
 {
     let mut min_val: u64 = u64::MAX;
     let mut i: usize = 0;
+    // Unfold spec definition once: min_active_next_spec == min_active_next_from_spec(... 0, u64::MAX)
+    assert(min_active_next_spec(next_indices@, modes@, self_id) ==
+        min_active_next_from_spec(next_indices@, modes@, self_id, 0, u64::MAX));
     while i < next_indices.len()
         invariant
             0 <= i <= next_indices@.len(),
             next_indices@.len() == modes@.len(),
             next_indices@.len() <= u64::MAX as int,
-            min_val == min_active_next_from_spec(
-                next_indices@, modes@, self_id, 0, u64::MAX
-            ) || min_val == min_active_next_from_spec(
-                next_indices@, modes@, self_id, i as int, min_val
-            ),
             min_active_next_spec(next_indices@, modes@, self_id) ==
                 min_active_next_from_spec(next_indices@, modes@, self_id, i as int, min_val),
         decreases next_indices.len() - i,

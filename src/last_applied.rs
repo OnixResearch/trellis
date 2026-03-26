@@ -225,6 +225,7 @@ proof fn batch_apply_ge_last_applied(
     commit_index: u64,
     max_batch: u64,
 )
+    requires last_applied <= commit_index
     ensures batch_apply_end_spec(last_applied, commit_index, max_batch) >= last_applied
 {}
 

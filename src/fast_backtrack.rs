@@ -165,10 +165,10 @@ pub open spec fn fast_backtrack_spec(
 ) -> u64 {
     if hint.conflict_term == 0 {
         // Follower's log is too short.
-        if hint.log_length == 0 { 1 } else { hint.log_length + 1 }
+        if hint.log_length == 0 { 1 } else { (hint.log_length + 1) as u64 }
     } else if leader_has_conflict_term {
         // Leader has the term — skip to one past the leader's last entry.
-        if leader_last_index_for_term == 0 { 1 }
+        if leader_last_index_for_term == 0 { 1u64 }
         else { (leader_last_index_for_term + 1) as u64 }
     } else {
         // Leader doesn't have the term — skip to the first index.
@@ -252,6 +252,7 @@ pub fn leader_find_last_index_for_term(
     loop
         invariant
             i < log@.len(),
+            i < usize::MAX,
         decreases i,
     {
         if log[i].term == term {

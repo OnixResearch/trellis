@@ -285,8 +285,8 @@ proof fn update_makes_current_duplicate(old_last_seq: u64, new_seq: u64, respons
 proof fn update_next_sequence(old_last_seq: u64, response: u64)
     requires old_last_seq + 1 < u64::MAX
     ensures is_next_in_sequence_spec(
-        update_session_spec(old_last_seq, old_last_seq + 1, response).last_seq,
-        old_last_seq + 2,
+        update_session_spec(old_last_seq, (old_last_seq + 1) as u64, response).last_seq,
+        (old_last_seq + 2) as u64,
     )
 {}
 
