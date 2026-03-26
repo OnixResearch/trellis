@@ -224,6 +224,7 @@ pub mod last_applied;
 pub mod layout_constraint;
 pub mod leader_append_only;
 pub mod leader_completeness;
+pub mod leader_completeness_ghost;
 pub mod leadership_transfer;
 pub mod learner_change;
 pub mod learner_readiness;
