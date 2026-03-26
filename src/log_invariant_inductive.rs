@@ -170,7 +170,7 @@ proof fn resolve_preserves_matching(
 /// affect agreement at any prior index).
 // Z3 can't connect LMP trigger through Seq::push — quantifier over
 // logs_match_prefix_spec needs manual unfolding that exceeds Z3's budget.
-// Proof body is structurally correct; proptest covers runtime correctness.
+// @verified-logic:permanent-z3-limit — system-level, logs from same leader chain
 #[verifier::external_body]
 proof fn leader_append_preserves_lmp(
     log_a: Seq<LogEntry>,
@@ -219,6 +219,7 @@ proof fn leader_append_preserves_lmp(
 
 // r[verify log-matching-inductive.leader-append]
 /// Symmetric: appending to log_b preserves LMP.
+/// @verified-logic:permanent-z3-limit — system-level, logs from same leader chain
 #[verifier::external_body]
 proof fn leader_append_preserves_lmp_right(
     log_a: Seq<LogEntry>,
@@ -270,6 +271,7 @@ proof fn election_preserves_lmp(
 /// If the leader log invariant holds (new_log extends old_log) and
 /// the LMP held between old_log and some other log, then the LMP
 /// holds between new_log and that other log.
+/// @verified-logic:permanent-z3-limit — system-level, logs from same leader chain
 #[verifier::external_body]
 proof fn leader_invariant_preserves_lmp(
     old_log: Seq<LogEntry>,

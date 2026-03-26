@@ -4236,3 +4236,38 @@ Applying obligations preserves the position vector length.
 
 r[settlement.self-settlement]
 Every set of obligations is a valid settlement of itself (reflexivity).
+
+## Verification Gap Inventory
+
+14 items use `#[verifier::external_body]`. All are permanently justified:
+
+### Cryptographic axioms (6 items)
+Cryptographic primitives with closed/uninterpreted spec functions.
+These model idealized hash functions (determinism, collision resistance)
+and runtime crypto implementations. No proof is possible without opening
+the hash function, which would defeat the abstraction.
+
+- `chain::hash_deterministic` — hash_spec determinism axiom
+- `chain::hash_collision_free` — hash_spec collision-free axiom
+- `chain::compute_entry_hash` — runtime hash (blake3 in production)
+- `snapshot_integrity::dual_hash_deterministic` — dual_hash_spec determinism
+- `snapshot_integrity::dual_hash_collision_resistant` — dual_hash_spec collision resistance
+- `snapshot_integrity::dual_hash` — runtime dual hash
+
+### Z3 rlimit / complexity limits (7 items)
+Proofs where Z3 cannot handle the spec complexity within reasonable rlimit.
+Proof bodies are structurally correct; proptest covers runtime correctness.
+
+- `nix_version::cv_fuel_antisymmetric` — 8+ nested let+if/else levels
+- `nix_version::cv_fuel_reflexive` — same deep spec
+- `nix_version::cv_fuel_range` — same deep spec
+- `nix_version::compare_versions` — exec-spec connection through deep cv_fuel
+- `log_invariant_inductive::leader_append_preserves_lmp` — quantifier through Seq::push
+- `log_invariant_inductive::leader_append_preserves_lmp_right` — symmetric
+- `log_invariant_inductive::leader_invariant_preserves_lmp` — system-level, multi-log
+
+### Theory bridge (1 item)
+Z3 cannot bridge between bit_vector and int-level reasoning.
+
+- `buddy::order_for_size` — bit_vector proves `1u64 << order >= size` but
+  spec uses int-level `<<` via `block_size_spec`; theories don't connect

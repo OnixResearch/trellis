@@ -39,6 +39,7 @@ pub struct SnapshotIntegrity {
 pub closed spec fn dual_hash_spec(a: u64, b: u64) -> u64;
 
 /// Axiom: the dual hash is deterministic.
+/// @verified-logic:permanent-axiom — dual_hash_spec is closed/uninterpreted
 #[verifier::external_body]
 pub proof fn dual_hash_deterministic(a1: u64, b1: u64, a2: u64, b2: u64)
     requires a1 == a2, b1 == b2
@@ -49,6 +50,7 @@ pub proof fn dual_hash_deterministic(a1: u64, b1: u64, a2: u64, b2: u64)
 ///
 /// This is the standard cryptographic assumption. In practice, Blake3's
 /// 256-bit output makes collisions computationally infeasible.
+/// @verified-logic:permanent-axiom — cryptographic collision resistance
 #[verifier::external_body]
 pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)
     requires dual_hash_spec(a1, b1) == dual_hash_spec(a2, b2)
@@ -56,6 +58,7 @@ pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)
 {}
 
 /// Exec wrapper for the hash function (external body — runtime uses a mix).
+/// @verified-logic:permanent-axiom — crypto primitive, runtime-only
 // r[impl snapshot-integrity.compute]
 #[verifier::external_body]
 pub fn dual_hash(a: u64, b: u64) -> (result: u64)

@@ -266,6 +266,8 @@ pub open spec fn order_for_size_spec(size: u64) -> u64
 
 // r[impl buddy.order-for-size]
 /// Returns the minimum order where `block_size` >= size.
+/// @verified-logic:permanent-theory-bridge — bit_vector proves 1u64 << order >= size
+/// but spec uses int-level << via block_size_spec; Z3 can't bridge theories.
 #[verifier::external_body]
 pub fn order_for_size(size: u64) -> (result: u64)
     requires size > 0, size <= (1u64 << 63)

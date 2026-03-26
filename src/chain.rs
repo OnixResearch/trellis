@@ -38,6 +38,7 @@ pub closed spec fn hash_spec(prev: u64, index: u64, term: u64, data_id: u64) -> 
 
 // r[verify chain.hash-deterministic]
 /// Axiom: the hash function is deterministic.
+/// @verified-logic:permanent-axiom — hash_spec is closed/uninterpreted
 #[verifier::external_body]
 pub proof fn hash_deterministic(
     prev1: u64, idx1: u64, term1: u64, data1: u64,
@@ -65,6 +66,7 @@ pub open spec fn compute_entry_hash_spec(
 ///
 /// Trusted external body — in production this is blake3. Verus trusts
 /// the ensures clause and verifies all callers against the spec.
+/// @verified-logic:permanent-axiom — crypto primitive, runtime-only
 #[verifier::external_body]
 pub fn compute_entry_hash(
     prev_hash: u64, index: u64, term: u64, data_id: u64,
@@ -201,6 +203,7 @@ pub open spec fn hash_collision_free_prop(
 // r[verify chain.collision-free]
 /// Axiom: hash_spec is collision-free (idealized cryptographic assumption).
 /// Trusted — mirrors the real-world assumption that Blake3 is collision-resistant.
+/// @verified-logic:permanent-axiom — cryptographic collision resistance
 #[verifier::external_body]
 pub proof fn hash_collision_free(
     a1: u64, b1: u64, c1: u64, d1: u64,

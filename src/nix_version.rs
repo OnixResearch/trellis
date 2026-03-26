@@ -203,7 +203,7 @@ proof fn comp_end_bounds(s: Seq<u8>, i: int, numeric: bool)
 // --- Main proofs ---
 
 /// cv_fuel antisymmetry: cv_fuel(a,b) == -cv_fuel(b,a).
-
+/// @verified-logic:permanent-z3-limit — 8+ levels of nested let+if/else exceed rlimit
 #[verifier::external_body]
 proof fn cv_fuel_antisymmetric(
     a: Seq<u8>, ai: int, b: Seq<u8>, bi: int, fuel: nat,
@@ -263,7 +263,7 @@ pub proof fn compare_versions_antisymmetric(a: Seq<u8>, b: Seq<u8>)
 }
 
 /// cv_fuel reflexivity: cv_fuel(a, a) == 0.
-
+/// @verified-logic:permanent-z3-limit — 8+ levels of nested let+if/else exceed rlimit
 #[verifier::external_body]
 proof fn cv_fuel_reflexive(a: Seq<u8>, ai: int, fuel: nat)
     requires 0 <= ai, ai <= a.len()
@@ -296,7 +296,7 @@ pub proof fn compare_versions_reflexive(a: Seq<u8>)
 }
 
 /// cv_fuel range: result is in {-1, 0, 1}.
-
+/// @verified-logic:permanent-z3-limit — 8+ levels of nested let+if/else exceed rlimit
 #[verifier::external_body]
 proof fn cv_fuel_range(
     a: Seq<u8>, ai: int, b: Seq<u8>, bi: int, fuel: nat,
@@ -361,6 +361,7 @@ pub proof fn compare_versions_range(a: Seq<u8>, b: Seq<u8>)
 /// Compare two Nix version strings.
 /// Exec remains trusted: the open spec is machine-checked, the exec's
 /// correspondence is verified by comprehensive proptest oracles.
+/// @verified-logic:permanent-z3-limit — cv_fuel spec too deep for exec-spec connection
 #[verifier::external_body]
 pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
     ensures result as int == compare_versions_spec(a@, b@),

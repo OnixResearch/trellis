@@ -41,8 +41,9 @@
 
 ## Phase 4: Document permanent gaps
 
-- [ ] Add `@verified-logic:permanent-axiom` markers to crypto items (6)
-- [ ] Add `@verified-logic:permanent-z3-limit` markers to version items (4)
-- [ ] Add `@verified-logic:permanent-theory-bridge` marker to buddy (1)
-- [ ] Update docs/requirements.md with verification gap inventory
+- [x] Add `@verified-logic:permanent-axiom` markers to crypto items (6) ✅
+- [x] Add `@verified-logic:permanent-z3-limit` markers to version (4) + log_invariant (3) items ✅
+- [x] Add `@verified-logic:permanent-theory-bridge` marker to buddy (1) ✅
+- [x] Update docs/requirements.md with verification gap inventory ✅
+  - 14 items: 6 crypto axioms + 7 Z3 limits + 1 theory bridge
 - [ ] Archive change
