@@ -1001,3 +1001,35 @@
 - The `as int` before `<` parse ambiguity applies: always parenthesize `(u64::MAX as int)`
 - u128 division matches int division for non-negative values — no additional proof needed
 - This pattern eliminated all the complex overflow-splitting exec code in rate_limit
+
+## by(nonlinear_arith) requires and the u64↔int gap
+- `by(nonlinear_arith) requires ...` — the requires are checked by Z3's standard solver,
+  then the nonlinear solver gets ONLY the requires as assumptions
+- Z3's standard solver CAN'T verify `q * d + r == x` when q, d, r are variables
+  (multiplication is nonlinear). Even if `lemma_fundamental_div_mod` was called.
+- Fix: use a **proof fn** where `let q = x as int / d as int` (int-level division).
+  Inside the proof fn, Z3 CAN verify `q * d + r == x` because it matches the
+  fundamental_div_mod output directly (same int expressions, no u64↔int bridging).
+- Then the proof fn's `ensures` provide the facts to exec code via int-level postconditions.
+- Example: `level_count_step` establishes `remaining/ratio < remaining` and `r > 0 ==> q+1 < remaining`
+  using by(nonlinear_arith) inside a proof fn, then the exec calls it.
+- The `as int` before `<` parse ambiguity applies in ensures too: use `(remaining as int)`.
+
+## uninterp spec fn
+- Bodiless spec fns (`pub closed spec fn foo() -> T;`) now need `pub uninterp spec fn`
+- `closed spec fn` without a body triggers "will become a hard error" warning
+- Changed hash_spec (chain.rs) and dual_hash_spec (snapshot_integrity.rs)
+
+## Closing lsm_level external_body (16 → 14)
+- level_target_size: while loop invariant `current == level_target_size_spec(i, base, ratio)`
+  - Saturation helper: once `prev * ratio > MAX`, all subsequent levels return MAX
+  - `target_saturated_stays` inductive proof: prove level i+1 = MAX, then MAX * ratio > MAX
+    propagates forward
+- level_count_for_size: "remaining work" invariant with `level_count_step` proof fn
+  - `level_count_bounded(x, base, ratio)` lemma: `lcfs(x) <= x` by induction
+  - `level_count_step` proves ceil_div progress + lcfs >= 1 in int-land
+  - Exec splits `if r == 0 { q } else { q + 1 }` matching spec's branch structure
+  - Overflow safety: `lcfs(remaining) >= 1` so `levels < lcfs(total) <= total <= u64::MAX`
+- space_amp_ge_100, space_amp_monotonic: added `(total * 100) / live <= u64::MAX` requires
+  - Without this, the `as u64` cast in `space_amp_pct_spec` truncates for large quotients
+  - Counterexample: total=184467440737095517, live=1 → result wraps to 84 < 100
