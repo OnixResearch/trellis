@@ -4,10 +4,10 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 2823 Verus proofs + 1765 cargo tests = all gates green
+- 3182 Verus proofs + 1918 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 other modules (0 in forest/seq_set/session_tree)
+- 13 remaining external_body items: 6 crypto axioms (permanent), 4 nix_version Z3 limits (permanent), 3 log_invariant_inductive (permanent — unsound without system-level invariant)
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
 
 ## Recent Changes
@@ -980,6 +980,20 @@
   - Leading `&&` in spec bodies: same Chainable trait error as ledger — use plain `condition && ...`
   - 26 new Verus proofs (3074 total), 10 new cargo tests (1918 total)
   - Zero external_body
+
+- buddy::order_for_size closed (14 → 13 external_body):
+  - Same 64-way case split technique as hash_bucket::pow2_mask_is_mod
+  - shift_zero_means_ge helper: for each concrete k in 0..63, proves
+    `sub(size, 1u64) >> k == 0u64 ==> (1u64 << k) >= size` via by(bit_vector)
+  - With concrete k, block_size_spec(k) unfolds to (1u64 << k), which Z3 evaluates
+    to a concrete value, bridging the bitvector ↔ spec-level << theories
+  - Loop invariant: `s == sub(size, 1u64) >> order` (u64 equality in bitvector theory)
+  - Shift composition: `(x >> k) >> 1 == x >> (k+1)` proved by(bit_vector) with variable k
+  - Safety cap: `order == 63 ==> s == 0` because `size <= 2^63` means `(size-1) >> 63 == 0`
+  - Post-loop: s == 0, so sub(size, 1u64) >> order == 0, then shift_zero_means_ge bridges
+  - 72 new Verus verified items (3110 → 3182), 0 new tests (exec behavior unchanged)
+  - Key principle: by(bit_vector) with ONE variable + concrete constants is tractable SAT;
+    by(bit_vector) with variable shift amounts composed is the problem. Case splits fix it.
 
 ## u128 intermediate pattern
 - When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`

@@ -264,26 +264,142 @@ pub open spec fn order_for_size_spec(size: u64) -> u64
     else { 64u64 }  // over 64K: returns 64 (sentinel for proptest, exec handles all sizes)
 }
 
+/// Helper: if (size-1) >> order == 0 and order <= 63, then block_size(order) >= size.
+/// Uses 64-way case split on concrete order values to bridge bitvector shift to spec.
+/// Same decomposition technique as hash_bucket::pow2_mask_is_mod.
+proof fn shift_zero_means_ge(size: u64, order: u64)
+    requires
+        size > 0,
+        order <= 63,
+        sub(size, 1u64) >> order == 0u64,
+    ensures
+        block_size_spec(order) >= size
+{
+    // For each concrete k, (size-1)>>k == 0 implies 1<<k >= size.
+    // With concrete k, the bitvector SAT problem is small (one variable: size).
+    // block_size_spec(k) is open and unfolds to (1u64 << k), which Z3 evaluates
+    // to a concrete value for concrete k, bridging the theories.
+    if order == 0u64 { assert(sub(size, 1u64) >> 0u64 == 0u64 ==> (1u64 << 0u64) >= size) by(bit_vector); }
+    else if order == 1u64 { assert(sub(size, 1u64) >> 1u64 == 0u64 ==> (1u64 << 1u64) >= size) by(bit_vector); }
+    else if order == 2u64 { assert(sub(size, 1u64) >> 2u64 == 0u64 ==> (1u64 << 2u64) >= size) by(bit_vector); }
+    else if order == 3u64 { assert(sub(size, 1u64) >> 3u64 == 0u64 ==> (1u64 << 3u64) >= size) by(bit_vector); }
+    else if order == 4u64 { assert(sub(size, 1u64) >> 4u64 == 0u64 ==> (1u64 << 4u64) >= size) by(bit_vector); }
+    else if order == 5u64 { assert(sub(size, 1u64) >> 5u64 == 0u64 ==> (1u64 << 5u64) >= size) by(bit_vector); }
+    else if order == 6u64 { assert(sub(size, 1u64) >> 6u64 == 0u64 ==> (1u64 << 6u64) >= size) by(bit_vector); }
+    else if order == 7u64 { assert(sub(size, 1u64) >> 7u64 == 0u64 ==> (1u64 << 7u64) >= size) by(bit_vector); }
+    else if order == 8u64 { assert(sub(size, 1u64) >> 8u64 == 0u64 ==> (1u64 << 8u64) >= size) by(bit_vector); }
+    else if order == 9u64 { assert(sub(size, 1u64) >> 9u64 == 0u64 ==> (1u64 << 9u64) >= size) by(bit_vector); }
+    else if order == 10u64 { assert(sub(size, 1u64) >> 10u64 == 0u64 ==> (1u64 << 10u64) >= size) by(bit_vector); }
+    else if order == 11u64 { assert(sub(size, 1u64) >> 11u64 == 0u64 ==> (1u64 << 11u64) >= size) by(bit_vector); }
+    else if order == 12u64 { assert(sub(size, 1u64) >> 12u64 == 0u64 ==> (1u64 << 12u64) >= size) by(bit_vector); }
+    else if order == 13u64 { assert(sub(size, 1u64) >> 13u64 == 0u64 ==> (1u64 << 13u64) >= size) by(bit_vector); }
+    else if order == 14u64 { assert(sub(size, 1u64) >> 14u64 == 0u64 ==> (1u64 << 14u64) >= size) by(bit_vector); }
+    else if order == 15u64 { assert(sub(size, 1u64) >> 15u64 == 0u64 ==> (1u64 << 15u64) >= size) by(bit_vector); }
+    else if order == 16u64 { assert(sub(size, 1u64) >> 16u64 == 0u64 ==> (1u64 << 16u64) >= size) by(bit_vector); }
+    else if order == 17u64 { assert(sub(size, 1u64) >> 17u64 == 0u64 ==> (1u64 << 17u64) >= size) by(bit_vector); }
+    else if order == 18u64 { assert(sub(size, 1u64) >> 18u64 == 0u64 ==> (1u64 << 18u64) >= size) by(bit_vector); }
+    else if order == 19u64 { assert(sub(size, 1u64) >> 19u64 == 0u64 ==> (1u64 << 19u64) >= size) by(bit_vector); }
+    else if order == 20u64 { assert(sub(size, 1u64) >> 20u64 == 0u64 ==> (1u64 << 20u64) >= size) by(bit_vector); }
+    else if order == 21u64 { assert(sub(size, 1u64) >> 21u64 == 0u64 ==> (1u64 << 21u64) >= size) by(bit_vector); }
+    else if order == 22u64 { assert(sub(size, 1u64) >> 22u64 == 0u64 ==> (1u64 << 22u64) >= size) by(bit_vector); }
+    else if order == 23u64 { assert(sub(size, 1u64) >> 23u64 == 0u64 ==> (1u64 << 23u64) >= size) by(bit_vector); }
+    else if order == 24u64 { assert(sub(size, 1u64) >> 24u64 == 0u64 ==> (1u64 << 24u64) >= size) by(bit_vector); }
+    else if order == 25u64 { assert(sub(size, 1u64) >> 25u64 == 0u64 ==> (1u64 << 25u64) >= size) by(bit_vector); }
+    else if order == 26u64 { assert(sub(size, 1u64) >> 26u64 == 0u64 ==> (1u64 << 26u64) >= size) by(bit_vector); }
+    else if order == 27u64 { assert(sub(size, 1u64) >> 27u64 == 0u64 ==> (1u64 << 27u64) >= size) by(bit_vector); }
+    else if order == 28u64 { assert(sub(size, 1u64) >> 28u64 == 0u64 ==> (1u64 << 28u64) >= size) by(bit_vector); }
+    else if order == 29u64 { assert(sub(size, 1u64) >> 29u64 == 0u64 ==> (1u64 << 29u64) >= size) by(bit_vector); }
+    else if order == 30u64 { assert(sub(size, 1u64) >> 30u64 == 0u64 ==> (1u64 << 30u64) >= size) by(bit_vector); }
+    else if order == 31u64 { assert(sub(size, 1u64) >> 31u64 == 0u64 ==> (1u64 << 31u64) >= size) by(bit_vector); }
+    else if order == 32u64 { assert(sub(size, 1u64) >> 32u64 == 0u64 ==> (1u64 << 32u64) >= size) by(bit_vector); }
+    else if order == 33u64 { assert(sub(size, 1u64) >> 33u64 == 0u64 ==> (1u64 << 33u64) >= size) by(bit_vector); }
+    else if order == 34u64 { assert(sub(size, 1u64) >> 34u64 == 0u64 ==> (1u64 << 34u64) >= size) by(bit_vector); }
+    else if order == 35u64 { assert(sub(size, 1u64) >> 35u64 == 0u64 ==> (1u64 << 35u64) >= size) by(bit_vector); }
+    else if order == 36u64 { assert(sub(size, 1u64) >> 36u64 == 0u64 ==> (1u64 << 36u64) >= size) by(bit_vector); }
+    else if order == 37u64 { assert(sub(size, 1u64) >> 37u64 == 0u64 ==> (1u64 << 37u64) >= size) by(bit_vector); }
+    else if order == 38u64 { assert(sub(size, 1u64) >> 38u64 == 0u64 ==> (1u64 << 38u64) >= size) by(bit_vector); }
+    else if order == 39u64 { assert(sub(size, 1u64) >> 39u64 == 0u64 ==> (1u64 << 39u64) >= size) by(bit_vector); }
+    else if order == 40u64 { assert(sub(size, 1u64) >> 40u64 == 0u64 ==> (1u64 << 40u64) >= size) by(bit_vector); }
+    else if order == 41u64 { assert(sub(size, 1u64) >> 41u64 == 0u64 ==> (1u64 << 41u64) >= size) by(bit_vector); }
+    else if order == 42u64 { assert(sub(size, 1u64) >> 42u64 == 0u64 ==> (1u64 << 42u64) >= size) by(bit_vector); }
+    else if order == 43u64 { assert(sub(size, 1u64) >> 43u64 == 0u64 ==> (1u64 << 43u64) >= size) by(bit_vector); }
+    else if order == 44u64 { assert(sub(size, 1u64) >> 44u64 == 0u64 ==> (1u64 << 44u64) >= size) by(bit_vector); }
+    else if order == 45u64 { assert(sub(size, 1u64) >> 45u64 == 0u64 ==> (1u64 << 45u64) >= size) by(bit_vector); }
+    else if order == 46u64 { assert(sub(size, 1u64) >> 46u64 == 0u64 ==> (1u64 << 46u64) >= size) by(bit_vector); }
+    else if order == 47u64 { assert(sub(size, 1u64) >> 47u64 == 0u64 ==> (1u64 << 47u64) >= size) by(bit_vector); }
+    else if order == 48u64 { assert(sub(size, 1u64) >> 48u64 == 0u64 ==> (1u64 << 48u64) >= size) by(bit_vector); }
+    else if order == 49u64 { assert(sub(size, 1u64) >> 49u64 == 0u64 ==> (1u64 << 49u64) >= size) by(bit_vector); }
+    else if order == 50u64 { assert(sub(size, 1u64) >> 50u64 == 0u64 ==> (1u64 << 50u64) >= size) by(bit_vector); }
+    else if order == 51u64 { assert(sub(size, 1u64) >> 51u64 == 0u64 ==> (1u64 << 51u64) >= size) by(bit_vector); }
+    else if order == 52u64 { assert(sub(size, 1u64) >> 52u64 == 0u64 ==> (1u64 << 52u64) >= size) by(bit_vector); }
+    else if order == 53u64 { assert(sub(size, 1u64) >> 53u64 == 0u64 ==> (1u64 << 53u64) >= size) by(bit_vector); }
+    else if order == 54u64 { assert(sub(size, 1u64) >> 54u64 == 0u64 ==> (1u64 << 54u64) >= size) by(bit_vector); }
+    else if order == 55u64 { assert(sub(size, 1u64) >> 55u64 == 0u64 ==> (1u64 << 55u64) >= size) by(bit_vector); }
+    else if order == 56u64 { assert(sub(size, 1u64) >> 56u64 == 0u64 ==> (1u64 << 56u64) >= size) by(bit_vector); }
+    else if order == 57u64 { assert(sub(size, 1u64) >> 57u64 == 0u64 ==> (1u64 << 57u64) >= size) by(bit_vector); }
+    else if order == 58u64 { assert(sub(size, 1u64) >> 58u64 == 0u64 ==> (1u64 << 58u64) >= size) by(bit_vector); }
+    else if order == 59u64 { assert(sub(size, 1u64) >> 59u64 == 0u64 ==> (1u64 << 59u64) >= size) by(bit_vector); }
+    else if order == 60u64 { assert(sub(size, 1u64) >> 60u64 == 0u64 ==> (1u64 << 60u64) >= size) by(bit_vector); }
+    else if order == 61u64 { assert(sub(size, 1u64) >> 61u64 == 0u64 ==> (1u64 << 61u64) >= size) by(bit_vector); }
+    else if order == 62u64 { assert(sub(size, 1u64) >> 62u64 == 0u64 ==> (1u64 << 62u64) >= size) by(bit_vector); }
+    // order == 63: the only remaining case
+    else { assert(sub(size, 1u64) >> 63u64 == 0u64 ==> (1u64 << 63u64) >= size) by(bit_vector); }
+}
+
 // r[impl buddy.order-for-size]
 /// Returns the minimum order where `block_size` >= size.
-/// @verified-logic:permanent-theory-bridge — bit_vector proves 1u64 << order >= size
-/// but spec uses int-level << via block_size_spec; Z3 can't bridge theories.
-#[verifier::external_body]
+/// Loop computes ceil_log2(size) by right-shifting (size-1) until zero.
+/// Post-loop 64-way case split bridges bitvector result to spec-level block_size.
 pub fn order_for_size(size: u64) -> (result: u64)
     requires size > 0, size <= (1u64 << 63)
     ensures result < 64, block_size_spec(result) >= size
 {
     if size <= 1 {
+        proof {
+            assert(1u64 << 0u64 >= 1u64) by(bit_vector);
+        }
         return 0;
     }
     let mut order: u64 = 0;
     let mut s: u64 = size - 1;
-    while s > 0 {
-        s >>= 1_u64;
-        order += 1;
-        if order >= 63 {
-            break;
+
+    proof {
+        // Initial: (size-1) >> 0 == size-1 == s
+        assert(sub(size, 1u64) >> 0u64 == sub(size, 1u64)) by(bit_vector);
+    }
+
+    while s > 0
+        invariant
+            order <= 63,
+            s == sub(size, 1u64) >> order,
+            size > 1u64,
+            size <= (1u64 << 63u64),
+            // When order reaches 63, s must be 0 (size-1 < 2^63)
+            order == 63u64 ==> s == 0u64,
+        decreases s,
+    {
+        proof {
+            // Termination: right-shift of positive value is strictly smaller
+            assert(s > 0u64 ==> (s >> 1u64) < s) by(bit_vector);
+            // Shift composition: (x >> k) >> 1 == x >> (k + 1) when k < 63
+            assert(
+                order < 63u64 ==>
+                (sub(size, 1u64) >> order) >> 1u64 == sub(size, 1u64) >> add(order, 1u64)
+            ) by(bit_vector);
+            // At order 63, the right-shift zeroes out (size <= 2^63)
+            assert(
+                size <= (1u64 << 63u64) && size > 1u64 ==>
+                sub(size, 1u64) >> 63u64 == 0u64
+            ) by(bit_vector);
         }
+        s = s >> 1u64;
+        order = order + 1;
+    }
+
+    proof {
+        // Post-loop: s == 0, so sub(size, 1u64) >> order == 0.
+        // Bridge to block_size_spec via 64-way case split.
+        shift_zero_means_ge(size, order);
     }
     order
 }
