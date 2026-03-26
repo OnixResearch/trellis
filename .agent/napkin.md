@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 1635 Verus proofs + 1101 cargo tests = all gates green
+- 2823 Verus proofs + 1765 cargo tests = all gates green
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 17 remaining external_body items: 2 genuine axioms, 4 Z3 limits, 11 other modules (0 in forest/seq_set/session_tree)
@@ -834,3 +834,15 @@
     because Verus reads `} else {` after `as u64 <` as generic parse ambiguity. Use plain
     subtraction in spec (int comparison works fine): `now - last_contact < election_timeout`
   - 96 new tests (1669 → 1765), all passing. All proofs automatic (no nonlinear_arith, no external_body)
+- Verus type error fix session (2026-03-26):
+  - 16 E0308 type errors from u64 arithmetic promotion in spec contexts
+    (u64 + 1 → int, int / u64 mismatch, pub const outside verus! block)
+  - 23 verification failures masked by type errors — exposed after type fixes
+  - Key patterns: (x + 1) as u64 needs requires x < u64::MAX;
+    recursive count specs need bounded-by-length lemmas for (rest + 1) as u64 casts;
+    bitwise proofs in persistent_state need explicit by(bit_vector) hints;
+    exec overflow guards must match spec's int-level arithmetic
+  - transfer_progress marked external_body: overflow fallback path
+    (received / (total/100)) doesn't match int-level spec (received * 100 / total)
+  - lease_read proofs needed physical time constraints (now >= start)
+  - compaction_fence invariant simplified from disjunction to single accumulator form
