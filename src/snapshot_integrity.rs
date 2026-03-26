@@ -56,6 +56,7 @@ pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)
 {}
 
 /// Exec wrapper for the hash function (external body — runtime uses a mix).
+// r[impl snapshot-integrity.compute]
 #[verifier::external_body]
 pub fn dual_hash(a: u64, b: u64) -> (result: u64)
     ensures result == dual_hash_spec(a, b)

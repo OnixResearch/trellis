@@ -163,8 +163,7 @@ pub open spec fn transfer_progress_spec(
 
 // r[impl snapshot-transfer.progress]
 /// Compute the transfer progress as a percentage.
-/// @verified-logic:no-ensures overflow fallback path can't match int-level spec
-#[verifier::external_body]
+/// Uses u128 intermediate to avoid overflow in `received_bytes * 100`.
 pub fn transfer_progress(
     received_bytes: u64,
     total_size: u64,
@@ -180,11 +179,16 @@ pub fn transfer_progress(
     } else if received_bytes >= total_size {
         100
     } else {
-        if received_bytes <= u64::MAX / 100 {
-            received_bytes * 100 / total_size
-        } else {
-            received_bytes / (total_size / 100)
-        }
+        // u64 * 100 fits in u128 trivially.
+        // received_bytes < total_size, so received_bytes * 100 < total_size * 100,
+        // thus received_bytes * 100 / total_size < 100.
+        assert((received_bytes as int) * 100 / (total_size as int) < 100) by(nonlinear_arith)
+            requires
+                0 < received_bytes as int,
+                (received_bytes as int) < (total_size as int),
+                0 < total_size as int,
+        ;
+        (received_bytes as u128 * 100 / total_size as u128) as u64
     }
 }
 

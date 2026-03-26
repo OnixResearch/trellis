@@ -892,3 +892,36 @@
   - After loop: append_entries_spec(follower@, entries, entries.len()) = follower@ = full_result
   - Arithmetic overflow guard: conflict_in_range proves offset < entries.len(), so
     start_index + offset <= start_index + entries.len() <= usize::MAX
+- Closing external_body gaps (25 → 18):
+  - ghost_history::record_full_log_covers: key was record_entries_at_position helper —
+    proves result[prov.len() + k].entry == entries[k] by induction, then provides
+    existential witness j = prov.len() + i for the forall in entry_property_holds.
+    Uses record_entries_preserves (existing) to show push doesn't disturb earlier elements.
+  - ghost_history::cronies_exclusive: decomposed with cronies_count_zero_if_no_match helper —
+    if no record matches (term, candidate), count is 0. Main proof uses single_vote_per_term
+    to derive that if last record has candidate_a, ALL records with that term have candidate_a
+    (by the quantified uniqueness property), so candidate_b has zero matches.
+  - rate_limit::tokens_after_refill: rewrote exec to use u128 intermediate arithmetic.
+    u64 * u64 fits in u128: (2^64-1)^2 < 2^128-1. The u128 division matches the
+    int-level spec exactly (both are truncating division on non-negative values).
+    Overflow proof needs by(nonlinear_arith) with explicit requires on bounds.
+  - rate_limit::tokens_to_wait_ms: same u128 trick for shortage * 1000 + rate - 1.
+    u64 * 1000 << u128::MAX, so no overflow.
+  - snapshot_transfer::transfer_progress: u128 for received_bytes * 100. Added
+    by(nonlinear_arith) for result <= 100 postcondition (a < b ==> a*100/b < 100).
+  - snapshot_integrity::dual_hash: just needed r[impl] annotation (coverage gate fix)
+  - rate_limit::wait_enables_consumption: NOT closeable — ensures is unsound in the
+    saturation case. When wait_int > u64::MAX and rate_per_sec is small (e.g., 1),
+    u64::MAX milliseconds is insufficient to earn shortage tokens. Counterexample:
+    tokens=0, cost=u64::MAX, rate=1, burst=u64::MAX → refill = u64::MAX/1000 < cost.
+  - log_invariant_inductive (3 items): NOT closeable — system-level lemmas requiring
+    all logs come from same leader chain. The ensures for leader_append_preserves_lmp
+    is too strong at module level (counterexample: log_a=[term=1], log_b=[term=2,term=3],
+    push term=3 → LMP breaks at new entry because prior entries don't match).
+
+## u128 intermediate pattern
+- When exec needs `a: u64 * b: u64` without overflow: use `a as u128 * b as u128`
+- Verus needs explicit overflow proof: `assert((a as int) * (b as int) <= (u128::MAX as int)) by(nonlinear_arith) requires ...`
+- The `as int` before `<` parse ambiguity applies: always parenthesize `(u64::MAX as int)`
+- u128 division matches int division for non-negative values — no additional proof needed
+- This pattern eliminated all the complex overflow-splitting exec code in rate_limit

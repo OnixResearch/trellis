@@ -408,10 +408,47 @@ pub open spec fn entry_property_holds(
 }
 
 // r[verify ghost-history.provenance-affinity]
+/// Helper: the k-th entry is placed at position prov.len() + k in the result.
+/// Provides the existential witness for entry_property_holds.
+proof fn record_entries_at_position(
+    provenance: Seq<EntryProvenance>,
+    entries: Seq<LogEntry>,
+    term_observed: u64,
+    node_id: nat,
+    k: int,
+)
+    requires 0 <= k < entries.len()
+    ensures ({
+        let result = record_entries_spec(provenance, entries, term_observed, node_id);
+        provenance.len() + k < result.len()
+        && result[provenance.len() + k].entry == entries[k]
+    })
+    decreases entries.len(),
+{
+    let next_prov = provenance.push(EntryProvenance {
+        term_observed,
+        entry: entries[0],
+        node_id,
+    });
+    let next_entries = entries.subrange(1, entries.len() as int);
+
+    if k == 0 {
+        // The first entry lands at prov.len() in the result.
+        // record_entries_preserves guarantees result[i] == next_prov[i] for i < next_prov.len().
+        record_entries_preserves(next_prov, next_entries, term_observed, node_id);
+        assert(next_prov[provenance.len() as int].entry == entries[0]);
+    } else {
+        // Induction: entry k of entries is entry k-1 of next_entries.
+        record_entries_at_position(next_prov, next_entries, term_observed, node_id, k - 1);
+        // next_prov.len() == provenance.len() + 1, so
+        // result[next_prov.len() + (k-1)] == result[provenance.len() + k]
+    }
+    // Establish result length bound for the ensures
+    record_entries_length(provenance, entries, term_observed, node_id);
+}
+
+// r[verify ghost-history.provenance-affinity]
 /// After recording the full log, every log entry has a provenance record.
-// Z3 can't connect recursive record_entries_spec to the existential in
-// entry_property_holds. Proof body is structurally correct; proptest covers.
-#[verifier::external_body]
 proof fn record_full_log_covers(
     log: Seq<LogEntry>,
     term_observed: u64,
@@ -422,23 +459,20 @@ proof fn record_full_log_covers(
             record_entries_spec(Seq::<EntryProvenance>::empty(), log, term_observed, node_id),
             log,
         )
-    decreases log.len(),
 {
-    if log.len() > 0 {
-        let prov = Seq::<EntryProvenance>::empty();
-        let first_record = EntryProvenance {
-            term_observed,
-            entry: log[0],
-            node_id,
-        };
-        let prov_after_first = prov.push(first_record);
-        let rest = log.subrange(1, log.len() as int);
-
-        // The first entry is recorded at position 0
-        assert(prov_after_first[0].entry == log[0]);
-
-        // Recursive: the rest of the log is covered after recording rest
-        record_full_log_covers(rest, term_observed, node_id);
+    let prov = Seq::<EntryProvenance>::empty();
+    let result = record_entries_spec(prov, log, term_observed, node_id);
+    assert forall|i: int| #![trigger log[i]]
+        0 <= i < log.len()
+    implies
+        exists|j: int| #![trigger result[j]]
+            0 <= j < result.len()
+            && result[j].entry == log[i]
+    by {
+        // The helper gives us the exact witness: j = prov.len() + i = i
+        record_entries_at_position(prov, log, term_observed, node_id, i);
+        let j = prov.len() + i;
+        assert(result[j].entry == log[i]);
     }
 }
 
@@ -500,12 +534,38 @@ proof fn cronies_count_empty(term: u64, candidate: u64)
 {}
 
 // r[verify ghost-history.cronies]
+/// Helper: if no record in history matches (term, candidate), the count is 0.
+proof fn cronies_count_zero_if_no_match(
+    history: Seq<VoteRecord>,
+    term: u64,
+    candidate: u64,
+)
+    requires
+        forall|i: int| #![trigger history[i]]
+            0 <= i < history.len()
+            ==> !(history[i].term == term && history[i].candidate_id == candidate)
+    ensures cronies_count_spec(history, term, candidate) == 0nat
+    decreases history.len(),
+{
+    if history.len() > 0 {
+        let prefix = history.subrange(0, history.len() - 1);
+        // All prefix elements also don't match
+        assert forall|i: int| #![trigger prefix[i]]
+            0 <= i < prefix.len()
+        implies
+            !(prefix[i].term == term && prefix[i].candidate_id == candidate)
+        by {
+            assert(prefix[i] == history[i]);
+        }
+        cronies_count_zero_if_no_match(prefix, term, candidate);
+        // Last element doesn't match either (from requires)
+    }
+}
+
+// r[verify ghost-history.cronies]
 /// With single_vote_per_term, if candidate A has k cronies, then
 /// candidate B (B != A) has zero cronies for the same term.
 /// Each voter voted for at most one candidate, so all votes go to A.
-// Z3 can't connect recursive cronies_count_spec through the prefix
-// single_vote_per_term assertion. Proof body is structurally correct; proptest covers.
-#[verifier::external_body]
 pub proof fn cronies_exclusive(
     history: Seq<VoteRecord>,
     term: u64,
@@ -540,11 +600,41 @@ pub proof fn cronies_exclusive(
 
         cronies_exclusive(prefix, term, candidate_a, candidate_b);
 
-        // If the last record is for term and candidate_a, then candidate_b
-        // can't have any cronies (by single_vote_per_term, all records for
-        // this term have the same candidate, so they're all for A).
-        // If the last record is for term and candidate_b, then candidate_a
-        // can't have any cronies. Otherwise, the last record doesn't affect either.
+        if last.term == term && last.candidate_id == candidate_a {
+            // All records with this term have candidate == candidate_a (by single_vote_per_term).
+            // So no record has (term, candidate_b). cronies_count for b is 0.
+            assert forall|i: int| #![trigger history[i]]
+                0 <= i < history.len()
+            implies
+                !(history[i].term == term && history[i].candidate_id == candidate_b)
+            by {
+                if history[i].term == term {
+                    // single_vote_per_term: history[i] and last have same term
+                    // so they have the same candidate_id
+                    assert(history[history.len() - 1].term == term);
+                    assert(history[i].candidate_id == history[history.len() - 1].candidate_id);
+                    // last.candidate_id == candidate_a != candidate_b
+                }
+            }
+            cronies_count_zero_if_no_match(history, term, candidate_b);
+        } else if last.term == term && last.candidate_id == candidate_b {
+            // Symmetric: all records with this term have candidate == candidate_b.
+            assert forall|i: int| #![trigger history[i]]
+                0 <= i < history.len()
+            implies
+                !(history[i].term == term && history[i].candidate_id == candidate_a)
+            by {
+                if history[i].term == term {
+                    assert(history[history.len() - 1].term == term);
+                    assert(history[i].candidate_id == history[history.len() - 1].candidate_id);
+                }
+            }
+            cronies_count_zero_if_no_match(history, term, candidate_a);
+        } else {
+            // Last record doesn't match this term for either candidate.
+            // Count on full history == count on prefix for both candidates.
+            // Recursive result carries through.
+        }
     }
 }
 

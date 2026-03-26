@@ -30,11 +30,7 @@ pub open spec fn tokens_after_refill_spec(
 
 // r[impl rate-limit.refill]
 /// Returns tokens available after refill: tokens + `elapsed_ms` * `rate_per_sec` / 1000,
-/// capped at burst. Handles overflow by saturating to burst.
-// Trusted: exec splits the computation to avoid u64 overflow; proving the split
-// identity (a*c/b == (a/b)*c + (a%b)*c/b) requires nonlinear_arith that Z3 can't
-// bridge to the int-based spec. Verified by proptest lifecycle oracle.
-#[verifier::external_body]
+/// capped at burst. Uses u128 intermediate to avoid overflow splitting.
 pub fn tokens_after_refill(
     tokens: u64,
     elapsed_ms: u64,
@@ -43,41 +39,31 @@ pub fn tokens_after_refill(
 ) -> (result: u64)
     ensures result == tokens_after_refill_spec(tokens, elapsed_ms, rate_per_sec, burst)
 {
-    // Split: elapsed_ms * rate / 1000 = (elapsed_ms / 1000) * rate + (elapsed_ms % 1000) * rate / 1000
-    let full_secs = elapsed_ms / 1000;
-    let frac_ms = elapsed_ms % 1000;
+    // u64 * u64 fits in u128: (2^64-1)^2 = 2^128 - 2^65 + 1 < 2^128 - 1
+    assert((elapsed_ms as int) * (rate_per_sec as int) <= (u128::MAX as int)) by(nonlinear_arith)
+        requires
+            0 <= elapsed_ms as int <= u64::MAX as int,
+            0 <= rate_per_sec as int <= u64::MAX as int,
+            (u64::MAX as int) * (u64::MAX as int) <= (u128::MAX as int),
+    ;
+    let product: u128 = elapsed_ms as u128 * rate_per_sec as u128;
+    let refill_128: u128 = product / 1000;
 
-    // full_secs * rate: may overflow
-    let base = if full_secs > 0 && rate_per_sec > u64::MAX / full_secs {
-        // Overflows u64 => refill > u64::MAX > any burst. Return burst.
+    // If refill exceeds burst, the spec returns burst (new_tokens > burst since tokens >= 0).
+    if refill_128 > burst as u128 {
         return burst;
-    } else {
-        full_secs * rate_per_sec
-    };
-
-    // frac_ms * rate / 1000: frac_ms < 1000. Split further if needed.
-    let frac = if frac_ms == 0 {
-        0
-    } else if rate_per_sec <= u64::MAX / frac_ms {
-        frac_ms * rate_per_sec / 1000
-    } else {
-        // frac_ms * rate overflows. Use: frac_ms * (rate/1000) + frac_ms * (rate%1000) / 1000
-        let rd = rate_per_sec / 1000;
-        let rm = rate_per_sec % 1000;
-        // frac_ms < 1000 and rd <= u64::MAX/1000: might still overflow for huge rd
-        let a = if rd > 0 && frac_ms > u64::MAX / rd { return burst; } else { frac_ms * rd };
-        let b = frac_ms * rm / 1000; // both < 1000, product < 10^6
-        if a > u64::MAX - b { return burst; }
-        a + b
-    };
-
-    let refill = if base > u64::MAX - frac { return burst; } else { base + frac };
-    if tokens > u64::MAX - refill {
-        burst
-    } else {
-        let new_tokens = tokens + refill;
-        if new_tokens > burst { burst } else { new_tokens }
     }
+    // refill_128 <= burst <= u64::MAX, so the cast is safe.
+    let refill: u64 = refill_128 as u64;
+
+    // Check addition overflow.
+    if tokens > u64::MAX - refill {
+        // tokens + refill > u64::MAX >= burst, so spec returns burst.
+        return burst;
+    }
+
+    let new_tokens: u64 = tokens + refill;
+    if new_tokens > burst { burst } else { new_tokens }
 }
 
 // r[verify rate-limit.refill]
@@ -212,9 +198,7 @@ pub open spec fn tokens_to_wait_ms_spec(
 /// Returns milliseconds to wait until cost can be afforded.
 /// If tokens >= cost, returns 0. Otherwise calculates ceiling division.
 /// Requires `rate_per_sec` > 0 to avoid division by zero.
-// Trusted: exec overflow detection path (u64 division-based guards) can't be
-// connected to the int-based spec without nonlinear reasoning. Verified by proptest.
-#[verifier::external_body]
+/// Uses u128 intermediate to avoid overflow splitting.
 pub fn tokens_to_wait_ms(
     tokens: u64,
     cost: u64,
@@ -226,18 +210,16 @@ pub fn tokens_to_wait_ms(
     if tokens >= cost {
         0
     } else {
-        let shortage = cost - tokens;
-        if shortage > u64::MAX / 1000 {
+        let shortage: u64 = cost - tokens;
+        // Ceiling division: (shortage * 1000 + rate - 1) / rate.
+        // Use u128 to avoid overflow: shortage * 1000 <= u64::MAX * 1000 << u128::MAX.
+        assert((u64::MAX as int) * 1000 <= (u128::MAX as int)) by(nonlinear_arith);
+        let numerator: u128 = shortage as u128 * 1000 + rate_per_sec as u128 - 1;
+        let result_128: u128 = numerator / rate_per_sec as u128;
+        if result_128 > u64::MAX as u128 {
             u64::MAX
         } else {
-            let numerator = shortage * 1000;
-            if numerator > u64::MAX - (rate_per_sec - 1) {
-                let q = numerator / rate_per_sec;
-                let r = numerator % rate_per_sec;
-                if r > 0 { q + 1 } else { q }
-            } else {
-                (numerator + rate_per_sec - 1) / rate_per_sec
-            }
+            result_128 as u64
         }
     }
 }
