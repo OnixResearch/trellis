@@ -4233,17 +4233,21 @@ mod storage_cross_proofs {
         crate::lsm_level::target_monotonic(level, base, ratio);
     }
 
-    /// Space amp is at least 100% when total >= live.
+    /// Space amp is at least 100% when total >= live (and result fits in u64).
     // r[impl properties.lsm-space-amp-ge-100]
     pub open spec fn lsm_space_amp_ge_100_prop(total: u64, live: u64) -> bool
         recommends live > 0, total >= live,
+            (total as int * 100) / (live as int) <= u64::MAX as int,
     {
         space_amp_pct_spec(total, live) >= 100
     }
 
     // r[verify properties.lsm-space-amp-ge-100]
     proof fn prove_lsm_space_amp_ge_100(total: u64, live: u64)
-        requires live > 0, total >= live,
+        requires
+            live > 0,
+            total >= live,
+            (total as int * 100) / (live as int) <= u64::MAX as int,
         ensures lsm_space_amp_ge_100_prop(total, live),
     {
         crate::lsm_level::space_amp_ge_100(total, live);

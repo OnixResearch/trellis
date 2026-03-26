@@ -36,7 +36,7 @@ pub struct SnapshotIntegrity {
 /// In practice this is blake3(a || b). Modeled as uninterpreted with
 /// determinism and collision-resistance axioms.
 // r[depends snapshot-integrity.compute]
-pub closed spec fn dual_hash_spec(a: u64, b: u64) -> u64;
+pub uninterp spec fn dual_hash_spec(a: u64, b: u64) -> u64;
 
 /// Axiom: the dual hash is deterministic.
 /// @verified-logic:permanent-axiom — dual_hash_spec is closed/uninterpreted

@@ -46,9 +46,33 @@ pub open spec fn level_target_size_spec(level: u64, base_size: u64, size_ratio: 
     }
 }
 
+/// Once the target overflows, all subsequent levels saturate at MAX.
+proof fn target_saturated_stays(k: u64, sat_level: u64, base_size: u64, size_ratio: u64)
+    requires
+        base_size > 0,
+        size_ratio >= 2,
+        sat_level < k,
+        level_target_size_spec(sat_level, base_size, size_ratio) as int
+            * size_ratio as int > u64::MAX as int,
+    ensures
+        level_target_size_spec(k, base_size, size_ratio) == u64::MAX,
+    decreases k - sat_level,
+{
+    if k == (sat_level + 1) as u64 {
+        // Direct: spec unfolds prev * ratio > MAX → returns MAX
+    } else {
+        // First show sat_level + 1 gives MAX
+        target_saturated_stays((sat_level + 1) as u64, sat_level, base_size, size_ratio);
+        // MAX * ratio > MAX for ratio >= 2
+        assert(u64::MAX as int * size_ratio as int > u64::MAX as int) by(nonlinear_arith)
+            requires size_ratio >= 2u64;
+        // Recurse with the new saturation point
+        target_saturated_stays(k, (sat_level + 1) as u64, base_size, size_ratio);
+    }
+}
+
 /// Target size for a level: base_size * size_ratio^level, saturating at MAX.
 // r[impl lsm-level.target-size]
-#[verifier::external_body]
 pub fn level_target_size(level: u64, base_size: u64, size_ratio: u64) -> (result: u64)
     requires
         base_size > 0,
@@ -56,11 +80,37 @@ pub fn level_target_size(level: u64, base_size: u64, size_ratio: u64) -> (result
     ensures result == level_target_size_spec(level, base_size, size_ratio),
 {
     let mut current = base_size;
-    for _ in 0..level {
+    let mut i: u64 = 0;
+    while i < level
+        invariant
+            i <= level,
+            base_size > 0,
+            size_ratio >= 2u64,
+            current == level_target_size_spec(i, base_size, size_ratio),
+        decreases level - i,
+    {
         if current > u64::MAX / size_ratio {
+            proof {
+                vstd::arithmetic::div_mod::lemma_fundamental_div_mod(
+                    u64::MAX as int, size_ratio as int,
+                );
+                assert(current as int * size_ratio as int > u64::MAX as int)
+                    by(nonlinear_arith)
+                    requires current > u64::MAX / size_ratio, size_ratio >= 2u64;
+                target_saturated_stays(level, i, base_size, size_ratio);
+            }
             return u64::MAX;
         }
+        proof {
+            vstd::arithmetic::div_mod::lemma_fundamental_div_mod(
+                u64::MAX as int, size_ratio as int,
+            );
+            assert(current as int * size_ratio as int <= u64::MAX as int)
+                by(nonlinear_arith)
+                requires current <= u64::MAX / size_ratio, size_ratio >= 2u64;
+        }
         current = current * size_ratio;
+        i = i + 1;
     }
     current
 }
@@ -182,9 +232,82 @@ pub open spec fn level_count_for_size_spec(
     }
 }
 
+/// The level count never exceeds the input size (used for overflow safety).
+proof fn level_count_bounded(total_size: u64, base_size: u64, size_ratio: u64)
+    requires base_size > 0, size_ratio >= 2,
+    ensures level_count_for_size_spec(total_size, base_size, size_ratio) as int
+        <= total_size as int,
+    decreases total_size,
+{
+    if total_size <= base_size {
+        // Returns 0
+    } else {
+        let q = total_size as int / size_ratio as int;
+        let r = total_size as int % size_ratio as int;
+        let reduced_int = if r == 0 { q } else { q + 1 };
+        let reduced = reduced_int as u64;
+
+        vstd::arithmetic::div_mod::lemma_fundamental_div_mod(
+            total_size as int, size_ratio as int,
+        );
+        // total_size = q * size_ratio + r, 0 <= r < size_ratio
+        // q < total_size since size_ratio >= 2 and total_size >= 2
+        assert(q < total_size as int) by(nonlinear_arith)
+            requires
+                q * (size_ratio as int) + r == total_size as int,
+                size_ratio >= 2int,
+                r >= 0int,
+                total_size >= 2int;
+        assert(r > 0int ==> q + 1 < total_size as int) by(nonlinear_arith)
+            requires
+                q * (size_ratio as int) + r == total_size as int,
+                size_ratio >= 2int,
+                total_size >= 2int;
+
+        if reduced >= total_size {
+            // Spec returns 1 <= total_size (since total_size >= 2)
+        } else {
+            level_count_bounded(reduced, base_size, size_ratio);
+            // level_count_for_size_spec(reduced, ...) <= reduced < total_size
+            // 1 + that <= 1 + reduced <= total_size
+        }
+    }
+}
+
+/// One-step unfolding of level_count_for_size_spec: the quotient decreases,
+/// and the spec returns at least 1 when total_size > base_size.
+proof fn level_count_step(remaining: u64, base_size: u64, size_ratio: u64)
+    requires remaining > base_size, base_size > 0, size_ratio >= 2,
+    ensures
+        (remaining as int) / (size_ratio as int) < (remaining as int),
+        (remaining as int) % (size_ratio as int) > 0
+            ==> (remaining as int) / (size_ratio as int) + 1 < (remaining as int),
+        level_count_for_size_spec(remaining, base_size, size_ratio) >= 1u64,
+{
+    vstd::arithmetic::div_mod::lemma_fundamental_div_mod(
+        remaining as int, size_ratio as int,
+    );
+    let q = remaining as int / size_ratio as int;
+    let r = remaining as int % size_ratio as int;
+    assert(q < remaining as int) by(nonlinear_arith)
+        requires q * (size_ratio as int) + r == remaining as int,
+                 size_ratio >= 2int, r >= 0int, remaining >= 2int;
+    assert(r > 0int ==> q + 1 < remaining as int) by(nonlinear_arith)
+        requires q * (size_ratio as int) + r == remaining as int,
+                 size_ratio >= 2int, remaining >= 2int;
+
+    // Prove lcfs >= 1: spec returns 1 (guard) or (1 + lcfs(reduced)) as u64
+    // For the else branch, need 1 + lcfs(reduced) <= u64::MAX so the cast >= 1
+    let reduced_int = if r == 0 { q } else { q + 1 };
+    if reduced_int < remaining as int {
+        let reduced = reduced_int as u64;
+        level_count_bounded(reduced, base_size, size_ratio);
+        // lcfs(reduced) <= reduced < remaining, so 1 + lcfs(reduced) <= remaining <= u64::MAX
+    }
+}
+
 /// Minimum number of levels to hold total_size with given base and ratio.
 // r[impl lsm-level.level-count]
-#[verifier::external_body]
 pub fn level_count_for_size(
     total_size: u64,
     base_size: u64,
@@ -200,10 +323,43 @@ pub fn level_count_for_size(
     }
     let mut remaining = total_size;
     let mut levels: u64 = 0;
-    while remaining > base_size {
-        remaining = (remaining + size_ratio - 1) / size_ratio;
-        levels += 1;
+
+    proof { level_count_bounded(total_size, base_size, size_ratio); }
+
+    while remaining > base_size
+        invariant
+            remaining <= total_size,
+            base_size > 0u64,
+            size_ratio >= 2u64,
+            total_size > base_size,
+            levels as int
+                + level_count_for_size_spec(remaining, base_size, size_ratio) as int
+                == level_count_for_size_spec(total_size, base_size, size_ratio) as int,
+            level_count_for_size_spec(total_size, base_size, size_ratio) as int
+                <= total_size as int,
+        decreases remaining,
+    {
+        let q = remaining / size_ratio;
+        let r = remaining % size_ratio;
+
+        proof {
+            // Establishes: q < remaining, (r > 0 ==> q + 1 < remaining), lcfs >= 1
+            level_count_step(remaining, base_size, size_ratio);
+            vstd::arithmetic::div_mod::lemma_fundamental_div_mod(
+                remaining as int, size_ratio as int,
+            );
+        }
+
+        if r == 0 {
+            proof { level_count_bounded(q, base_size, size_ratio); }
+            remaining = q;
+        } else {
+            proof { level_count_bounded((q + 1) as u64, base_size, size_ratio); }
+            remaining = q + 1;
+        }
+        levels = levels + 1;
     }
+    // remaining <= base_size, so level_count_for_size_spec(remaining, ..) == 0
     levels
 }
 
@@ -293,33 +449,29 @@ proof fn space_amp_no_amplification(size: u64)
         requires size > 0u64;
 }
 
-/// Space amp is at least 100% when total >= live.
+/// Space amp is at least 100% when total >= live (and result fits in u64).
 // r[verify lsm-level.space-amp-pct]
 pub proof fn space_amp_ge_100(total: u64, live: u64)
-    requires live > 0, total >= live,
+    requires
+        live > 0,
+        total >= live,
+        (total as int * 100) / (live as int) <= u64::MAX as int,
     ensures space_amp_pct_spec(total, live) >= 100,
 {
-    // live * 100 / live == 100
-    vstd::arithmetic::div_mod::lemma_fundamental_div_mod(live as int * 100, live as int);
     assert(live as int * 100 / live as int == 100) by(nonlinear_arith)
         requires live > 0u64;
-    // total * 100 >= live * 100
     assert(total as int * 100 >= live as int * 100) by(nonlinear_arith)
         requires total >= live;
-    // Therefore total * 100 / live >= live * 100 / live == 100
     vstd::arithmetic::div_mod::lemma_div_is_ordered(live as int * 100, total as int * 100, live as int);
-    // Bound the quotient: total * 100 / live <= total * 100 <= u64::MAX * 100
-    // Since total <= u64::MAX and live >= 1: q <= total * 100 which fits in int
-    // and q >= 100 >= 0, so the as u64 cast preserves the value
-    assert(total as int * 100 / live as int <= total as int * 100) by(nonlinear_arith)
-        requires live > 0u64;
-    assert(total as int * 100 <= u64::MAX as int * 100) by(nonlinear_arith);
 }
 
-/// Space amp is monotonic in total_size.
+/// Space amp is monotonic in total_size (when the larger result fits in u64).
 // r[verify lsm-level.space-amp-pct]
 proof fn space_amp_monotonic(t1: u64, t2: u64, live: u64)
-    requires live > 0, t1 <= t2,
+    requires
+        live > 0,
+        t1 <= t2,
+        (t2 as int * 100) / (live as int) <= u64::MAX as int,
     ensures space_amp_pct_spec(t1, live) <= space_amp_pct_spec(t2, live),
 {
     assert(t1 as int * 100 <= t2 as int * 100) by(nonlinear_arith)

@@ -34,7 +34,7 @@ pub struct ChainEntry {
 /// The axioms below assert determinism — Verus treats it as opaque.
 // r[depends chain.hash-deterministic]
 // r[impl chain.hash-deterministic]
-pub closed spec fn hash_spec(prev: u64, index: u64, term: u64, data_id: u64) -> u64;
+pub uninterp spec fn hash_spec(prev: u64, index: u64, term: u64, data_id: u64) -> u64;
 
 // r[verify chain.hash-deterministic]
 /// Axiom: the hash function is deterministic.
