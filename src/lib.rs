@@ -27,6 +27,7 @@
 //! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
+//! - `bounded_mpmc` — bounded MPMC queue: head/tail occupancy, enqueue/dequeue, slot generation, capacity conservation
 //! - `bounded_peers` — bounded peer collection: capacity cap, self-exclusion, order preservation
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `buddy` — buddy system: block sizes, buddy addresses, coalescing, parent blocks
@@ -36,6 +37,7 @@
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
+//! - `cas_loop` — CAS retry loop modeling: success/failure, ABA detection via generation counters, retry bounds
 //! - `chain` — chain hash integrity with append-preserves proof
 //! - `check_quorum` — leader liveness: step down when quorum contact lost
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
@@ -96,6 +98,7 @@
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
 //! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
+//! - `memory_order` — memory ordering lattice: Relaxed/Acquire/Release/AcqRel/SeqCst, fence composition, load/store validity
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
@@ -149,6 +152,7 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `term_authority` — step-down on higher term: adopt, revert to follower, clear vote
+//! - `ticket_lock` — FIFO-fair ticket lock: take/release, waiter counting, mutual exclusion, queue position
 //! - `tier` — hot/warm/cold tier classification with promote/demote
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
@@ -189,9 +193,11 @@ pub mod causal_order;
 pub mod containment;
 pub mod consistent_hash;
 pub mod crdt;
+pub mod bounded_mpmc;
 pub mod bounded_peers;
 pub mod bounds;
 pub mod cas;
+pub mod cas_loop;
 pub mod chain;
 pub mod check_quorum;
 pub mod chunk;
@@ -265,6 +271,7 @@ pub mod log_conflict;
 pub mod log_invariant_inductive;
 pub mod markov;
 pub mod match_index;
+pub mod memory_order;
 pub mod merkle;
 pub mod monotonic;
 pub mod mpsc_bounds;
@@ -325,6 +332,7 @@ pub mod slab;
 pub mod slice;
 pub mod subsumption;
 pub mod term_authority;
+pub mod ticket_lock;
 pub mod tier;
 pub mod tiered_rate_limit;
 pub mod tiling;
