@@ -24,10 +24,20 @@
 
 ## Phase 3: Replace strings
 
-- [ ] Open `replace_strings_spec` — recursive left-to-right scan
-- [ ] Add `first_match_spec` helper for pattern priority
-- [ ] Close `replace_strings` exec fn
-- [ ] Verus + cargo test green
+- [x] Open `replace_strings_spec` — recursive left-to-right scan ✅ (prior session)
+- [x] Add `first_match_spec` helper for pattern priority ✅ (prior session: first_match_idx)
+- [x] Close `replace_at_inner` spec — inlined into replace_at_spec with explicit bound check ✅
+  - Added `pos + from[idx].len() <= s.len()` to non-empty match branch condition
+  - Verus termination checker now sees the decrease (explicit bound > implicit from first_match_idx)
+  - Added `first_match_bounded` proof lemma (inductive, proves match fits in bounds)
+- [x] Close `replace_strings` exec — full rewrite with 4 verified helpers ✅
+  - `append_vec`: loop-based Vec concatenation with old(dst)@ tracking
+  - `pattern_at`: byte-by-byte match check at position
+  - `first_match_exec`: linear scan over patterns, invariant: first_match_idx(s, fs, pos, 0) == first_match_idx(s, fs, pos, pidx)
+  - `trailing_empty_append`: find empty pattern, append replacement, chain proof via 4 assertions
+  - Main loop: "done + remaining = full" invariant: result@ + replace_at_spec(s, fs, ts, pos) =~= full
+  - Ghost<Seq<Seq<u8>>> parameters bridge Vec<Vec<u8>>@ to spec Seq<Seq<u8>>
+- [x] Verus + cargo test green ✅ (3110 verified, 0 errors; 18/18 nix_string tests pass)
 
 ## Phase 4: Document permanent gaps
 

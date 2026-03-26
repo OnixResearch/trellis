@@ -115,8 +115,29 @@ pub open spec fn trailing_empty(
     }
 }
 
+/// Proof: when first_match_idx returns a non-empty match, the match fits in bounds.
+proof fn first_match_bounded(
+    s: Seq<u8>, from: Seq<Seq<u8>>, pos: int, pidx: int,
+)
+    requires 0 <= pidx, pidx <= from.len(), 0 <= pos, pos <= s.len()
+    ensures ({
+        let idx = first_match_idx(s, from, pos, pidx);
+        idx >= 0 && idx < from.len() && from[idx].len() > 0
+            ==> pos + from[idx].len() <= s.len()
+    })
+    decreases from.len() - pidx,
+{
+    if pidx < from.len() && from[pidx].len() != 0 {
+        if !(pos + from[pidx].len() <= s.len()
+            && forall|i: int| #![trigger from[pidx][i]]
+                0 <= i < from[pidx].len() ==> s[pos + i] == from[pidx][i])
+        {
+            first_match_bounded(s, from, pos, pidx + 1);
+        }
+    }
+}
+
 /// Core replacement from position `pos`.
-/// `fuel` bounds the recursion: at most `s.len() + 1` steps.
 pub open spec fn replace_at_spec(
     s: Seq<u8>, from: Seq<Seq<u8>>, to: Seq<Seq<u8>>, pos: int,
 ) -> Seq<u8>
@@ -133,13 +154,13 @@ pub open spec fn replace_at_spec(
         if idx >= 0 && (idx as int) < from.len() && from[idx].len() == 0 {
             // Empty match: emit replacement + byte, advance 1.
             to[idx] + seq![s[pos]] + replace_at_spec(s, from, to, pos + 1)
-        } else if idx >= 0 && (idx as int) < from.len() {
+        } else if idx >= 0 && (idx as int) < from.len()
+            && pos + (from[idx].len() as int) <= s.len() {
             // Non-empty match: emit replacement, advance past match.
-            // TRUST: from[idx].len() >= 1, and pos + from[idx].len() <= s.len(),
-            // so new pos > old pos and new pos <= s.len().
-            // The match is bounded: pos + from[idx].len() <= s.len().
-            // So the recursive argument is strictly smaller.
-            replace_at_inner(s, from, to, pos, idx)
+            // Bound is always satisfied (first_match_idx guarantees it for non-empty
+            // patterns), but making it explicit lets the termination checker see
+            // that the decrease metric strictly decreases.
+            to[idx] + replace_at_spec(s, from, to, pos + from[idx].len() as int)
         } else {
             // No match: emit byte, advance 1.
             seq![s[pos]] + replace_at_spec(s, from, to, pos + 1)
@@ -147,65 +168,195 @@ pub open spec fn replace_at_spec(
     }
 }
 
-/// Helper for non-empty match: advance by from[idx].len().
-/// Separated so Verus can verify the decrease independently.
-#[verifier::external_body]
-pub open spec fn replace_at_inner(
-    s: Seq<u8>, from: Seq<Seq<u8>>, to: Seq<Seq<u8>>, pos: int, idx: int,
-) -> Seq<u8>
-    recommends
-        from.len() == to.len(),
-        0 <= pos,
-        0 <= idx,
-        (idx as int) < from.len(),
-        from[idx].len() > 0,
-        pos + from[idx].len() <= s.len(),
+// ---- Exec helpers for replace_strings ----
+
+/// Exec: append all bytes from src to dst.
+fn append_vec(dst: &mut Vec<u8>, src: &Vec<u8>)
+    ensures dst@ =~= old(dst)@ + src@
 {
-    to[idx] + replace_at_spec(s, from, to, pos + from[idx].len() as int)
+    let ghost old_dst = dst@;
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            i <= src.len(),
+            dst@ =~= old_dst + src@.subrange(0, i as int),
+        decreases src.len() - i,
+    {
+        dst.push(src[i]);
+        i = i + 1;
+    }
+    assert(src@.subrange(0, src@.len() as int) =~= src@);
+}
+
+/// Exec: does `pat` match at position `pos` in `s`?
+fn pattern_at(s: &Vec<u8>, pat: &Vec<u8>, pos: usize) -> (result: bool)
+    requires pos as int + pat@.len() <= s@.len()
+    ensures result == (forall|i: int| #![trigger pat@[i]]
+        0 <= i < pat@.len() ==> s@[pos as int + i] == pat@[i])
+{
+    let mut i: usize = 0;
+    while i < pat.len()
+        invariant
+            i <= pat.len(),
+            pos + pat.len() <= s.len(),
+            forall|j: int| #![trigger pat@[j]] 0 <= j < i as int
+                ==> s@[pos as int + j] == pat@[j],
+        decreases pat.len() - i,
+    {
+        if s[pos + i] != pat[i] {
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+/// Exec: find first matching pattern at `pos`. Returns `None` if no match.
+fn first_match_exec(
+    s: &Vec<u8>, from: &Vec<Vec<u8>>, pos: usize,
+    fs: Ghost<Seq<Seq<u8>>>,
+) -> (result: Option<usize>)
+    requires
+        pos as int <= s@.len(),
+        from@.len() == fs@.len(),
+        forall|i: int| #![trigger fs@[i]] 0 <= i < from@.len()
+            ==> from@[i]@ =~= fs@[i],
+    ensures
+        result.is_some() ==> first_match_idx(s@, fs@, pos as int, 0)
+            == result.unwrap() as int,
+        result.is_some() ==> (result.unwrap() as int) < from@.len(),
+        result.is_none() ==> first_match_idx(s@, fs@, pos as int, 0) < 0,
+{
+    let mut pidx: usize = 0;
+    while pidx < from.len()
+        invariant
+            pidx <= from.len(),
+            from@.len() == fs@.len(),
+            forall|i: int| #![trigger fs@[i]] 0 <= i < from@.len()
+                ==> from@[i]@ =~= fs@[i],
+            pos as int <= s@.len(),
+            first_match_idx(s@, fs@, pos as int, 0)
+                == first_match_idx(s@, fs@, pos as int, pidx as int),
+        decreases from.len() - pidx,
+    {
+        let pat: &Vec<u8> = &from[pidx];
+        if pat.len() == 0 {
+            return Some(pidx);
+        }
+        if s.len() - pos >= pat.len() {
+            if pattern_at(s, pat, pos) {
+                return Some(pidx);
+            }
+        }
+        pidx = pidx + 1;
+    }
+    None
+}
+
+/// Exec: append the trailing empty-pattern replacement to result.
+fn trailing_empty_append(
+    from: &Vec<Vec<u8>>, to: &Vec<Vec<u8>>, result: &mut Vec<u8>,
+    fs: Ghost<Seq<Seq<u8>>>, ts: Ghost<Seq<Seq<u8>>>,
+)
+    requires
+        from@.len() == to@.len(),
+        from@.len() == fs@.len(),
+        to@.len() == ts@.len(),
+        forall|i: int| #![trigger fs@[i]] 0 <= i < from@.len()
+            ==> from@[i]@ =~= fs@[i],
+        forall|i: int| #![trigger ts@[i]] 0 <= i < to@.len()
+            ==> to@[i]@ =~= ts@[i],
+    ensures result@ =~= old(result)@ + trailing_empty(fs@, ts@, 0)
+{
+    let mut pidx: usize = 0;
+    while pidx < from.len()
+        invariant
+            pidx <= from.len(),
+            from@.len() == to@.len(),
+            from@.len() == fs@.len(),
+            to@.len() == ts@.len(),
+            forall|i: int| #![trigger fs@[i]] 0 <= i < from@.len()
+                ==> from@[i]@ =~= fs@[i],
+            forall|i: int| #![trigger ts@[i]] 0 <= i < to@.len()
+                ==> to@[i]@ =~= ts@[i],
+            result@ =~= old(result)@,
+            trailing_empty(fs@, ts@, 0) =~= trailing_empty(fs@, ts@, pidx as int),
+        decreases from.len() - pidx,
+    {
+        if from[pidx].len() == 0 {
+            // trailing_empty(fs, ts, pidx) == ts[pidx] since fs[pidx] is empty
+            assert(from@[pidx as int]@ =~= fs@[pidx as int]);
+            assert(fs@[pidx as int].len() == 0);
+            assert(trailing_empty(fs@, ts@, pidx as int) =~= ts@[pidx as int]);
+            assert(to@[pidx as int]@ =~= ts@[pidx as int]);
+            assert(trailing_empty(fs@, ts@, 0) =~= to@[pidx as int]@);
+            append_vec(result, &to[pidx]);
+            return;
+        }
+        pidx = pidx + 1;
+    }
+    // No empty pattern: trailing_empty returns empty.
 }
 
 // r[impl nix-string.replace-strings]
 /// Replace all occurrences of `from[i]` with `to[i]`, left-to-right,
 /// non-overlapping. First match wins when patterns overlap at a position.
-/// Trusted: complex byte-level scanning. Verified by proptest.
-#[verifier::external_body]
 pub fn replace_strings(
     s: &Vec<u8>, from: &Vec<Vec<u8>>, to: &Vec<Vec<u8>>,
 ) -> (result: Vec<u8>)
     requires from.len() == to.len()
-    ensures result@ == replace_strings_spec(s@,
+    ensures result@ =~= replace_strings_spec(s@,
         from@.map_values(|v: Vec<u8>| v@),
         to@.map_values(|v: Vec<u8>| v@))
 {
-    let mut result = Vec::new();
-    let mut pos = 0usize;
-    'outer: while pos < s.len() {
-        for i in 0..from.len() {
-            let pat = &from[i];
-            if pat.is_empty() {
-                // Empty pattern matches everywhere; insert replacement and advance by 1
-                result.extend_from_slice(&to[i]);
+    let fs: Ghost<Seq<Seq<u8>>> = Ghost(from@.map_values(|v: Vec<u8>| v@));
+    let ts: Ghost<Seq<Seq<u8>>> = Ghost(to@.map_values(|v: Vec<u8>| v@));
+    let ghost full = replace_at_spec(s@, fs@, ts@, 0);
+
+    let mut result: Vec<u8> = Vec::new();
+    let mut pos: usize = 0;
+
+    while pos < s.len()
+        invariant
+            pos <= s.len(),
+            from@.len() == to@.len(),
+            fs@.len() == from@.len(),
+            ts@.len() == to@.len(),
+            forall|i: int| #![trigger fs@[i]] 0 <= i < from@.len()
+                ==> from@[i]@ =~= fs@[i],
+            forall|i: int| #![trigger ts@[i]] 0 <= i < to@.len()
+                ==> to@[i]@ =~= ts@[i],
+            result@ + replace_at_spec(s@, fs@, ts@, pos as int) =~= full,
+        decreases s.len() - pos,
+    {
+        let ghost old_result = result@;
+        let matched: Option<usize> = first_match_exec(s, from, pos, fs);
+
+        match matched {
+            Some(pidx) => {
+                let pat: &Vec<u8> = &from[pidx];
+                if pat.len() == 0 {
+                    // Empty match: append replacement + byte, advance 1.
+                    append_vec(&mut result, &to[pidx]);
+                    result.push(s[pos]);
+                    pos = pos + 1;
+                } else {
+                    // Non-empty match: append replacement, advance by pat.len().
+                    proof { first_match_bounded(s@, fs@, pos as int, 0); }
+                    append_vec(&mut result, &to[pidx]);
+                    pos = pos + pat.len();
+                }
+            }
+            None => {
+                // No match: append byte, advance 1.
                 result.push(s[pos]);
-                pos += 1;
-                continue 'outer;
-            }
-            if pos + pat.len() <= s.len() && &s[pos..pos + pat.len()] == pat.as_slice() {
-                result.extend_from_slice(&to[i]);
-                pos += pat.len();
-                continue 'outer;
+                pos = pos + 1;
             }
         }
-        // No pattern matched at this position
-        result.push(s[pos]);
-        pos += 1;
     }
-    // Handle empty-pattern matches at the end
-    for i in 0..from.len() {
-        if from[i].is_empty() {
-            result.extend_from_slice(&to[i]);
-            break;
-        }
-    }
+
+    // Handle trailing empty pattern.
+    trailing_empty_append(from, to, &mut result, fs, ts);
     result
 }
 
