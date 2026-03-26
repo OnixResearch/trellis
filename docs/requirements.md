@@ -4465,3 +4465,84 @@ simple entry: is_simple_entry(amount, amount) is true when amount > 0.
 r[properties.ledger-transfer-needs-funds]
 If can_transfer returns true, the source account MUST have balance >=
 amount. Transfers are only possible with sufficient funds.
+
+## Cross-Module: Raft Consensus Pipeline
+
+r[properties.election-win-implies-quorum]
+Winning an election (has_won_election) MUST imply the vote count
+reaches quorum (is_quorum). Election victory requires majority.
+
+r[properties.heartbeat-resets-follower-timer]
+A heartbeat from the current leader in the current term MUST trigger
+an election timer reset.
+
+## Cross-Module: Lock ↔ Lease ↔ Expiration
+
+r[properties.lock-expired-matches-general-expired]
+is_lock_expired(deadline, now) MUST equal is_expired(deadline, now).
+Lock expiration is a special case of general expiration.
+
+r[properties.lock-deadline-saturates]
+compute_lock_deadline(acquired_at, ttl_ms) MUST be >= acquired_at.
+On overflow, the deadline saturates to u64::MAX (never goes backward).
+
+## Cross-Module: Drain ↔ Node Lifecycle
+
+r[properties.draining-blocks-operations]
+can_start_op(true) MUST return false. Draining blocks all new
+operations regardless of node lifecycle status.
+
+r[properties.operational-allows-non-drain-ops]
+An operational node (online or degraded) that is not draining MUST
+allow new operations via can_start_op(false).
+
+## Cross-Module: Retry ↔ Circuit Breaker
+
+r[properties.exhausted-means-no-retry]
+When attempts are exhausted (is_exhausted), should_retry MUST return
+false even if the error is retryable.
+
+r[properties.open-circuit-blocks-requests]
+An open circuit breaker MUST block all requests via allow_request.
+
+r[properties.closed-circuit-allows-requests]
+A closed circuit breaker MUST allow all requests via allow_request.
+
+## Cross-Module: CAS ↔ Fencing ↔ Distributed Lock
+
+r[properties.fencing-token-monotonic]
+compute_next_fencing_token(Some(prev)) MUST return a value strictly
+greater than prev, ensuring monotonic token advancement.
+
+r[properties.valid-write-excludes-stale]
+A valid write (is_valid_write) MUST NOT be stale (is_stale). These
+predicates are mutually exclusive.
+
+## Cross-Module: Vector Clock ↔ CRDT
+
+r[properties.vc-merge-dominates-both]
+After merging two vector clocks, each input clock's entries MUST be
+<= the corresponding entry in the merged result.
+
+r[properties.vc-merge-equals-gcounter-merge]
+Vector clock merge and G-Counter merge MUST produce identical results
+(both are pointwise max).
+
+## Cross-Module: Noop Commit ↔ Log
+
+r[properties.noop-roundtrip]
+A noop entry constructed via make_noop_entry MUST be recognized as a
+noop by is_noop.
+
+r[properties.noop-commit-index-is-new-tail]
+The noop commit index for a log of length n MUST be n+1 (the 1-based
+position where the noop lands after append).
+
+## Cross-Module: Snapshot Transfer ↔ Chunk
+
+r[properties.first-chunk-zero-offset]
+Offset zero MUST be identified as the first chunk.
+
+r[properties.single-chunk-transfer]
+A transfer where chunk_size == total MUST have offset=0 be both the
+first and last chunk.

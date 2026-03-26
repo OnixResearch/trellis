@@ -4608,3 +4608,528 @@ mod follower_redirect_cross_tests {
         }
     }
 }
+
+// --- Cross-module: Raft consensus pipeline ---
+// election → vote_tally → quorum → heartbeat → check_quorum
+
+#[cfg(verus_keep_ghost)]
+mod raft_pipeline_proofs {
+    use vstd::prelude::*;
+
+    use crate::election::{can_win_election_spec, STATE_LEADER, STATE_TRANSITIONING};
+    use crate::vote_tally::{has_won_election_spec, count_votes_spec, count_votes_from_spec};
+    use crate::quorum::{majority_spec, is_quorum_spec};
+    use crate::heartbeat::should_reset_election_timer_spec;
+
+    verus! {
+
+    // r[impl properties.election-win-implies-quorum]
+    /// Winning an election implies the vote count reaches quorum.
+    pub open spec fn election_win_implies_quorum_prop(
+        votes: Seq<bool>, cluster_size: u64,
+    ) -> bool
+        recommends cluster_size > 0, votes.len() == cluster_size as int
+    {
+        has_won_election_spec(votes, cluster_size)
+            ==> is_quorum_spec(count_votes_spec(votes), cluster_size)
+    }
+
+    // r[verify properties.election-win-implies-quorum]
+    proof fn prove_election_win_implies_quorum(votes: Seq<bool>, cluster_size: u64)
+        requires cluster_size > 0, votes.len() == cluster_size as int
+        ensures election_win_implies_quorum_prop(votes, cluster_size)
+    {}
+
+    // r[impl properties.heartbeat-resets-follower-timer]
+    /// A heartbeat from the current term (from_leader=true, same term) resets the timer.
+    pub open spec fn heartbeat_resets_follower_timer_prop(
+        term: u64, from_leader: bool,
+    ) -> bool {
+        from_leader ==> should_reset_election_timer_spec(term, term, from_leader)
+    }
+
+    // r[verify properties.heartbeat-resets-follower-timer]
+    proof fn prove_heartbeat_resets_follower_timer(term: u64, from_leader: bool)
+        ensures heartbeat_resets_follower_timer_prop(term, from_leader)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: Lock ↔ lease ↔ expiration ---
+
+#[cfg(verus_keep_ghost)]
+mod lock_lease_proofs {
+    use vstd::prelude::*;
+
+    use crate::distributed_lock::{compute_lock_deadline_spec, is_lock_expired_spec};
+    use crate::expiration::is_expired_spec;
+
+    verus! {
+
+    // r[impl properties.lock-expired-matches-general-expired]
+    /// Lock expiration check matches the general is_expired predicate.
+    pub open spec fn lock_expired_matches_general_expired_prop(
+        deadline: u64, now: u64,
+    ) -> bool {
+        is_lock_expired_spec(deadline, now) == is_expired_spec(deadline, now)
+    }
+
+    // r[verify properties.lock-expired-matches-general-expired]
+    proof fn prove_lock_expired_matches_general_expired(deadline: u64, now: u64)
+        ensures lock_expired_matches_general_expired_prop(deadline, now)
+    {}
+
+    // r[impl properties.lock-deadline-saturates]
+    /// Lock deadline saturates to u64::MAX on overflow (same pattern as expires_at).
+    pub open spec fn lock_deadline_saturates_prop(
+        acquired_at: u64, ttl_ms: u64,
+    ) -> bool {
+        compute_lock_deadline_spec(acquired_at, ttl_ms) >= acquired_at
+    }
+
+    // r[verify properties.lock-deadline-saturates]
+    proof fn prove_lock_deadline_saturates(acquired_at: u64, ttl_ms: u64)
+        ensures lock_deadline_saturates_prop(acquired_at, ttl_ms)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: Drain ↔ node_lifecycle ---
+
+#[cfg(verus_keep_ghost)]
+mod drain_lifecycle_proofs {
+    use vstd::prelude::*;
+
+    use crate::drain::can_start_op_spec;
+    use crate::node_lifecycle::{is_operational_spec, ONLINE, DEGRADED};
+
+    verus! {
+
+    // r[impl properties.draining-blocks-operations]
+    /// When draining, no new operations start — regardless of node lifecycle status.
+    pub open spec fn draining_blocks_operations_prop() -> bool {
+        !can_start_op_spec(true)
+    }
+
+    // r[verify properties.draining-blocks-operations]
+    proof fn prove_draining_blocks_operations()
+        ensures draining_blocks_operations_prop()
+    {}
+
+    // r[impl properties.operational-allows-non-drain-ops]
+    /// An operational (online or degraded) node that isn't draining can accept ops.
+    pub open spec fn operational_allows_non_drain_ops_prop(status: u8) -> bool {
+        is_operational_spec(status) ==> can_start_op_spec(false)
+    }
+
+    // r[verify properties.operational-allows-non-drain-ops]
+    proof fn prove_operational_allows_non_drain_ops(status: u8)
+        ensures operational_allows_non_drain_ops_prop(status)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: Retry ↔ backoff ↔ circuit_breaker ---
+
+#[cfg(verus_keep_ghost)]
+mod retry_circuit_proofs {
+    use vstd::prelude::*;
+
+    use crate::retry::{should_retry_spec, is_exhausted_spec};
+    use crate::circuit_breaker::{allow_request_spec, OPEN, CLOSED};
+
+    verus! {
+
+    // r[impl properties.exhausted-means-no-retry]
+    /// Exhausted attempts means no more retries, regardless of retryability.
+    pub open spec fn exhausted_means_no_retry_prop(attempt: u64, max: u64) -> bool
+        recommends max > 0
+    {
+        is_exhausted_spec(attempt, max) ==> !should_retry_spec(attempt, max, true)
+    }
+
+    // r[verify properties.exhausted-means-no-retry]
+    proof fn prove_exhausted_means_no_retry(attempt: u64, max: u64)
+        requires max > 0
+        ensures exhausted_means_no_retry_prop(attempt, max)
+    {}
+
+    // r[impl properties.open-circuit-blocks-requests]
+    /// An open circuit breaker blocks all requests (probe or not).
+    pub open spec fn open_circuit_blocks_requests_prop(probe: bool) -> bool {
+        !allow_request_spec(OPEN, probe)
+    }
+
+    // r[verify properties.open-circuit-blocks-requests]
+    proof fn prove_open_circuit_blocks_requests(probe: bool)
+        ensures open_circuit_blocks_requests_prop(probe)
+    {}
+
+    // r[impl properties.closed-circuit-allows-requests]
+    /// A closed circuit breaker allows all requests (probe or not).
+    pub open spec fn closed_circuit_allows_requests_prop(probe: bool) -> bool {
+        allow_request_spec(CLOSED, probe)
+    }
+
+    // r[verify properties.closed-circuit-allows-requests]
+    proof fn prove_closed_circuit_allows_requests(probe: bool)
+        ensures closed_circuit_allows_requests_prop(probe)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: CAS ↔ fencing ↔ distributed_lock ---
+
+#[cfg(verus_keep_ghost)]
+mod cas_fencing_proofs {
+    use vstd::prelude::*;
+
+    use crate::cas::check_cas_spec;
+    use crate::fencing::{is_valid_write_spec, is_stale_spec};
+    use crate::distributed_lock::compute_next_fencing_token_spec;
+
+    verus! {
+
+    // r[impl properties.fencing-token-monotonic]
+    /// Each fencing token is strictly greater than the previous.
+    pub open spec fn fencing_token_monotonic_prop(prev: u64) -> bool
+        recommends prev < u64::MAX
+    {
+        compute_next_fencing_token_spec(Some(prev)) > prev
+    }
+
+    // r[verify properties.fencing-token-monotonic]
+    proof fn prove_fencing_token_monotonic(prev: u64)
+        requires prev < u64::MAX
+        ensures fencing_token_monotonic_prop(prev)
+    {}
+
+    // r[impl properties.valid-write-excludes-stale]
+    /// A valid write is never stale — these predicates are mutually exclusive.
+    pub open spec fn valid_write_excludes_stale_prop(token: u64, fence: u64) -> bool {
+        is_valid_write_spec(token, fence) ==> !is_stale_spec(token, fence)
+    }
+
+    // r[verify properties.valid-write-excludes-stale]
+    proof fn prove_valid_write_excludes_stale(token: u64, fence: u64)
+        ensures valid_write_excludes_stale_prop(token, fence)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: vector_clock ↔ causal_order ↔ crdt ---
+
+#[cfg(verus_keep_ghost)]
+mod causality_proofs {
+    use vstd::prelude::*;
+
+    use crate::vector_clock::{happens_before_spec, merge_spec as vc_merge_spec};
+    use crate::crdt::g_counter_merge_spec;
+
+    verus! {
+
+    // r[impl properties.vc-merge-dominates-both]
+    /// After merging two vector clocks, each original happens-before or equals the result.
+    pub open spec fn vc_merge_dominates_both_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len(), a.len() > 0
+    {
+        let m = vc_merge_spec(a, b);
+        // a[i] <= m[i] for all i — which is the definition of happens_before_or_equal
+        forall|i: int| #![trigger m[i]] 0 <= i < a.len() ==> a[i] <= m[i] && b[i] <= m[i]
+    }
+
+    // r[verify properties.vc-merge-dominates-both]
+    proof fn prove_vc_merge_dominates_both(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len(), a.len() > 0
+        ensures vc_merge_dominates_both_prop(a, b)
+    {}
+
+    // r[impl properties.vc-merge-equals-gcounter-merge]
+    /// Vector clock merge is identical to G-Counter merge (both are pointwise max).
+    pub open spec fn vc_merge_equals_gcounter_merge_prop(a: Seq<u64>, b: Seq<u64>) -> bool
+        recommends a.len() == b.len()
+    {
+        vc_merge_spec(a, b) =~= g_counter_merge_spec(a, b)
+    }
+
+    // r[verify properties.vc-merge-equals-gcounter-merge]
+    proof fn prove_vc_merge_equals_gcounter_merge(a: Seq<u64>, b: Seq<u64>)
+        requires a.len() == b.len()
+        ensures vc_merge_equals_gcounter_merge_prop(a, b)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: noop_commit ↔ log ---
+
+#[cfg(verus_keep_ghost)]
+mod noop_log_proofs {
+    use vstd::prelude::*;
+
+    use crate::noop_commit::{make_noop_entry_spec, is_noop_spec, noop_commit_index_spec};
+    use crate::log::log_append_spec;
+
+    verus! {
+
+    // r[impl properties.noop-roundtrip]
+    /// A constructed noop entry is recognized as a noop.
+    pub open spec fn noop_roundtrip_prop(term: u64) -> bool {
+        is_noop_spec(make_noop_entry_spec(term))
+    }
+
+    // r[verify properties.noop-roundtrip]
+    proof fn prove_noop_roundtrip(term: u64)
+        ensures noop_roundtrip_prop(term)
+    {}
+
+    // r[impl properties.noop-commit-index-is-new-tail]
+    /// The noop commit index is one past the old log length (where the noop lands).
+    pub open spec fn noop_commit_index_is_new_tail_prop(log: Seq<LogEntry>) -> bool {
+        noop_commit_index_spec(log.len() as int) == log.len() as int + 1
+    }
+
+    // r[verify properties.noop-commit-index-is-new-tail]
+    proof fn prove_noop_commit_index_is_new_tail(log: Seq<LogEntry>)
+        ensures noop_commit_index_is_new_tail_prop(log)
+    {}
+
+    } // verus!
+    use crate::log::LogEntry;
+}
+
+// --- Cross-module: snapshot_transfer ↔ chunk ---
+
+#[cfg(verus_keep_ghost)]
+mod snapshot_chunk_proofs {
+    use vstd::prelude::*;
+
+    use crate::snapshot_transfer::{chunk_count_spec as st_chunk_count_spec, is_first_chunk_spec, is_last_chunk_spec};
+
+    verus! {
+
+    // r[impl properties.first-chunk-zero-offset]
+    /// The first chunk always has offset zero.
+    pub open spec fn first_chunk_zero_offset_prop() -> bool {
+        is_first_chunk_spec(0)
+    }
+
+    // r[verify properties.first-chunk-zero-offset]
+    proof fn prove_first_chunk_zero_offset()
+        ensures first_chunk_zero_offset_prop()
+    {}
+
+    // r[impl properties.single-chunk-transfer]
+    /// A transfer where the chunk exactly covers the total: offset=0 is both first and last.
+    pub open spec fn single_chunk_transfer_prop(total: u64) -> bool
+        recommends total > 0
+    {
+        is_first_chunk_spec(0) && is_last_chunk_spec(0, total, total)
+    }
+
+    // r[verify properties.single-chunk-transfer]
+    proof fn prove_single_chunk_transfer(total: u64)
+        requires total > 0
+        ensures single_chunk_transfer_prop(total)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module proptest: Raft pipeline, locking, causality ---
+
+#[cfg(test)]
+mod raft_pipeline_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.election-win-implies-quorum]
+        #[test]
+        fn prop_election_win_implies_quorum(
+            cluster_size in 3u64..20,
+            voter_count in 0usize..20,
+        ) {
+            let cs = cluster_size as usize;
+            if voter_count > cs { return Ok(()); }
+            let mut votes = vec![false; cs];
+            for i in 0..voter_count.min(cs) {
+                votes[i] = true;
+            }
+            let won = crate::vote_tally::has_won_election(&votes, cluster_size);
+            let count = crate::vote_tally::count_votes(&votes);
+            if won {
+                prop_assert!(crate::quorum::is_quorum(count, cluster_size));
+            }
+        }
+
+        // r[verify properties.heartbeat-resets-follower-timer]
+        #[test]
+        fn prop_heartbeat_resets_timer(term in 0u64..1000, from_leader: bool) {
+            if from_leader {
+                // Same term, from leader → timer must reset
+                prop_assert!(crate::heartbeat::should_reset_election_timer(term, term, from_leader));
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod lock_lease_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.lock-expired-matches-general-expired]
+        #[test]
+        fn prop_lock_expired_matches_general(deadline in 0u64..1_000_000, now in 0u64..1_000_000) {
+            let lock_exp = crate::distributed_lock::is_lock_expired(deadline, now);
+            let gen_exp = crate::expiration::is_expired(deadline, now);
+            prop_assert_eq!(lock_exp, gen_exp);
+        }
+
+        // r[verify properties.lock-deadline-saturates]
+        #[test]
+        fn prop_lock_deadline_saturates(acquired_at in 0u64..u64::MAX, ttl_ms in 0u64..u64::MAX) {
+            let deadline = crate::distributed_lock::compute_lock_deadline(acquired_at, ttl_ms);
+            prop_assert!(deadline >= acquired_at);
+        }
+    }
+}
+
+#[cfg(test)]
+mod drain_lifecycle_tests {
+    #[test]
+    fn draining_blocks_regardless_of_node_status() {
+        // Draining always blocks
+        assert!(!crate::drain::can_start_op(true));
+        // All operational statuses allow ops when not draining
+        assert!(crate::drain::can_start_op(false));
+        assert!(crate::node_lifecycle::is_operational(1)); // ONLINE
+        assert!(crate::node_lifecycle::is_operational(2)); // DEGRADED
+    }
+}
+
+#[cfg(test)]
+mod retry_circuit_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.exhausted-means-no-retry]
+        #[test]
+        fn prop_exhausted_means_no_retry(attempt in 0u64..1000, max in 1u64..100) {
+            if crate::retry::is_exhausted(attempt, max) {
+                prop_assert!(!crate::retry::should_retry(attempt, max, true));
+            }
+        }
+    }
+
+    #[test]
+    fn open_circuit_blocks_closed_allows() {
+        // OPEN (1) blocks regardless of probe status
+        assert!(!crate::circuit_breaker::allow_request(1, false));
+        assert!(!crate::circuit_breaker::allow_request(1, true));
+        // CLOSED (0) allows regardless
+        assert!(crate::circuit_breaker::allow_request(0, false));
+        assert!(crate::circuit_breaker::allow_request(0, true));
+    }
+}
+
+#[cfg(test)]
+mod cas_fencing_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.fencing-token-monotonic]
+        #[test]
+        fn prop_fencing_token_monotonic(prev in 0u64..u64::MAX - 1) {
+            let next = crate::distributed_lock::compute_next_fencing_token(Some(prev));
+            prop_assert!(next > prev);
+        }
+
+        // r[verify properties.valid-write-excludes-stale]
+        #[test]
+        fn prop_valid_write_excludes_stale(token in 0u64..10000, fence in 0u64..10000) {
+            if crate::fencing::is_valid_write(token, fence) {
+                prop_assert!(!crate::fencing::is_stale(token, fence));
+            }
+        }
+    }
+}
+
+#[cfg(test)]
+mod causality_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.vc-merge-dominates-both]
+        #[test]
+        fn prop_vc_merge_dominates(
+            a in proptest::collection::vec(0u64..1000, 3..6),
+            b in proptest::collection::vec(0u64..1000, 3..6),
+        ) {
+            let len = a.len().min(b.len());
+            let a = &a[..len];
+            let b = &b[..len];
+            let m = crate::vector_clock::merge(&a.to_vec(), &b.to_vec());
+            for i in 0..len {
+                prop_assert!(m[i] >= a[i]);
+                prop_assert!(m[i] >= b[i]);
+            }
+        }
+
+        // r[verify properties.vc-merge-equals-gcounter-merge]
+        #[test]
+        fn prop_vc_merge_equals_gcounter_merge(
+            a in proptest::collection::vec(0u64..1000, 3..6),
+            b in proptest::collection::vec(0u64..1000, 3..6),
+        ) {
+            let len = a.len().min(b.len());
+            let a = a[..len].to_vec();
+            let b = b[..len].to_vec();
+            let vc = crate::vector_clock::merge(&a, &b);
+            let gc = crate::crdt::g_counter_merge(&a, &b);
+            prop_assert_eq!(vc, gc);
+        }
+    }
+}
+
+#[cfg(test)]
+mod noop_log_tests {
+    #[test]
+    fn noop_roundtrip() {
+        let entry = crate::noop_commit::make_noop_entry(5);
+        assert!(crate::noop_commit::is_noop(&entry));
+    }
+
+    #[test]
+    fn noop_commit_index_is_one_past() {
+        for len in 0u64..20 {
+            assert_eq!(crate::noop_commit::noop_commit_index(len), len + 1);
+        }
+    }
+}
+
+#[cfg(test)]
+mod snapshot_chunk_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.single-chunk-transfer]
+        #[test]
+        fn prop_single_chunk_is_first_and_last(total in 1u64..10000) {
+            // Single chunk where chunk_size == total
+            prop_assert!(crate::snapshot_transfer::is_first_chunk(0));
+            prop_assert!(crate::snapshot_transfer::is_last_chunk(0, total, total));
+        }
+
+        // r[verify properties.first-chunk-zero-offset]
+        #[test]
+        fn prop_first_chunk_offset_zero(_x in 0u64..1) {
+            prop_assert!(crate::snapshot_transfer::is_first_chunk(0));
+        }
+    }
+}

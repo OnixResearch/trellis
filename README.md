@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**3309 Verus proofs · 1999 tests · 917 requirements · 163 modules · 13 trusted axioms**
+**3326 Verus proofs · 2014 tests · 969 requirements · 166 modules · 13 trusted axioms**
 
 ## How it works
 
@@ -162,6 +162,15 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `settlement` | bilateral netting with positions-sum-zero theorem |
 | `transfer` | value transfer between accounts, duplicate detection |
 
+### Storage engine primitives
+
+| Module | What it verifies |
+|---|---|
+| `btree_balance` | B-tree node fill percentage, split/merge sizing, underfull detection |
+| `lsm_level` | LSM level target sizing, level count, space/write amplification |
+| `wal_segment` | WAL entry sequencing, segment space, truncation, contiguity |
+| `compaction_fence` | log compaction coordination with replication, safe compact index |
+
 ### Distributed systems
 
 | Module | What it verifies |
@@ -247,7 +256,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 | Module | What it verifies |
 |---|---|
-| `properties` | 80+ proofs linking modules: signal↔bitwise agreement, permission independence, page↔arithmetic, lease↔monotonic, tier↔score monotonicity, escrow↔balance, ledger↔transfer, slab↔region, bloom↔insert monotonicity, gossip↔infection bounds, and more |
+| `properties` | 100+ proofs linking modules: signal↔bitwise agreement, permission independence, page↔arithmetic, lease↔monotonic, tier↔score monotonicity, escrow↔balance, ledger↔transfer, slab↔region, bloom↔insert monotonicity, gossip↔infection bounds, election↔quorum, lock↔expiration, drain↔lifecycle, retry↔circuit breaker, fencing↔CAS, vector clock↔CRDT, noop↔log, snapshot↔chunk |
 
 ## Usage
 
@@ -276,7 +285,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 1918 tests (unit + property)
+cargo test                 # 2014 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -284,7 +293,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (3182 proofs)
+./scripts/verus.sh         # verus only (3326 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -292,9 +301,9 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 163 module declarations
+src/lib.rs              ← crate root, 166 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 913 tracey requirements
+docs/requirements.md    ← 969 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

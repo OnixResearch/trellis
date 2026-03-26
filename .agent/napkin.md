@@ -1057,3 +1057,12 @@
 - space_amp_ge_100, space_amp_monotonic: added `(total * 100) / live <= u64::MAX` requires
   - Without this, the `as u64` cast in `space_amp_pct_spec` truncates for large quotients
   - Counterexample: total=184467440737095517, live=1 → result wraps to 84 < 100
+
+## Cross-module property wave 4 (2026-03-26)
+- circuit_breaker: OPEN=1, CLOSED=0, HALF_OPEN=2 — NOT OPEN=2
+- allow_request_spec takes (state, probe_active) — two params, not one
+- should_reset_election_timer takes (msg_term, current_term, from_leader) — 3 params
+- compute_lock_deadline takes ttl_ms (milliseconds), expires_at converts ttl_seconds*1000 — different units!
+- noop_commit_index_spec returns log_len + 1, not log_len (1-based commit index)
+- is_last_chunk checks offset + chunk_size == total_size (exact equality, not <=)
+- Always read the actual spec fn signatures before writing cross-module proofs
