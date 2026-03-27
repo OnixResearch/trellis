@@ -333,6 +333,7 @@ pub mod seq_set;
 pub mod sequence;
 pub mod sequential;
 pub mod session_tree;
+pub mod serialize_inj;
 pub mod settlement;
 pub mod signal;
 pub mod snapshot_compaction;

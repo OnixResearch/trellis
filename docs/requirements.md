@@ -4726,3 +4726,63 @@ transition MUST apply one lock operation and return the new state, or
 None if the operation is invalid. Valid transitions MUST preserve phase
 validity. A balanced lifecycle (n acquires followed by n releases)
 MUST end in the complete state.
+
+## Serialization Injectivity
+
+r[serialize-inj.encode-u64]
+encode_u64 MUST produce an 8-byte little-endian encoding of a u64 value.
+The encoding MUST be injective: equal byte sequences imply equal values.
+
+r[serialize-inj.decode-u64]
+decode_u64 MUST recover the original u64 from an 8-byte little-endian
+encoding. decode(encode(v)) MUST equal v for all v.
+
+r[serialize-inj.encode-u64-length]
+encode_u64 output MUST be exactly 8 bytes for all inputs.
+
+r[serialize-inj.encode-tagged]
+encode_tagged MUST prepend a single tag byte to the payload. Different
+tags MUST produce different encodings regardless of payload content.
+
+r[serialize-inj.encode-tagged-injective]
+Same tag with equal encodings MUST imply equal payloads.
+
+r[serialize-inj.tag-disjoint]
+Different tag bytes MUST produce different encodings for all payload
+combinations.
+
+r[serialize-inj.encode-len-prefixed]
+encode_len_prefixed MUST prepend an 8-byte little-endian length header
+to the data. The encoding MUST be injective.
+
+r[serialize-inj.encode-pair]
+encode_pair MUST concatenate two fixed-width u64 encodings into exactly
+16 bytes. The encoding MUST be injective: equal byte sequences imply
+equal field values.
+
+r[serialize-inj.encode-quad]
+encode_quad MUST concatenate four fixed-width u64 encodings into exactly
+32 bytes. The encoding MUST be injective: equal byte sequences imply all
+four fields are pairwise equal.
+
+r[serialize-inj.chain-hash-compose]
+The composition of encode_quad injectivity with chain hash collision
+resistance MUST prove that equal chain hashes imply equal (prev, index,
+term, data_id) fields.
+
+r[serialize-inj.dual-hash-compose]
+The composition of encode_pair injectivity with dual hash collision
+resistance MUST prove that equal dual hashes imply equal (a, b) fields.
+
+r[properties.chain-hash-implies-field-equality]
+Chain hash equality MUST imply all four fields (prev, index, term, data_id)
+are pairwise equal. This composes collision resistance with encoding
+injectivity.
+
+r[properties.dual-hash-implies-field-equality]
+Dual hash equality MUST imply both fields (a, b) are equal. This composes
+collision resistance with encoding injectivity.
+
+r[properties.quad-encoding-matches-chain-layout]
+Quad encoding MUST produce exactly 32 bytes for all inputs, matching the
+chain hash field layout.

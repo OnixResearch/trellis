@@ -1206,3 +1206,15 @@
 - two_phase module takes `&Vec<Option<bool>>` not `&[Option<bool>]` — must construct a Vec
   in proptest code.
 - `as int <` parse ambiguity in `by(nonlinear_arith) requires` — always parenthesize.
+
+## Serialization Injectivity Module (2026-03-27)
+- by(bit_vector) CANNOT handle Seq::index — extract to local `let` vars first (same as constant_time_eq pattern)
+- `(i + 1) as int` in loop invariants causes Verus overflow errors — use `1 + i as int` instead
+  (int addition doesn't overflow; the `as int` on i is nat→int, which is safe)
+- `Vec::with_capacity(payload.len() + 1)` needs `requires payload@.len() < usize::MAX`
+- `Vec::with_capacity(8 + data.len())` needs `requires data@.len() <= usize::MAX - 8`
+- Seq concatenation equality (`seq![tag] + p1 == seq![tag] + p2`) does NOT imply `p1 =~= p2`
+  for Z3 automatically. Need explicit `assert forall|i| ... p1[i] == p2[i]` with trigger
+  on `e1[1+i] == p1[i]` and `e2[1+i] == p2[i]` to chain the equality through.
+- encode_u64_roundtrip proof: requires block needs all 8 bytes as separate requires clauses
+  (one per byte), not as a single Seq expression

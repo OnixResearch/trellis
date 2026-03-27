@@ -298,3 +298,9 @@
 {"text":"- Distributed coordination — Paxos primitives, lease-based mutual exclusion,\n two-phase locking","timestamp":1774565681983}
 {"text":"what next","timestamp":1774567002859}
 {"text":"2, 3, 4","timestamp":1774567506416}
+{"text":"what do you think of htis repo? what ideas should we adopt from it? https://github.com/SamuelSchlesinger/HashMath","timestamp":1774604198948}
+{"text":"explain phantom type trick for layer enforcement and the explicit injectivity proof targets for serialization","timestamp":1774604398990}
+{"text":"make an openspec to implement","timestamp":1774604566604}
+{"text":"lets impelemnt","timestamp":1774604807011}
+{"text":"are you ujsing  openspec/changes/serialization-injectivity/","timestamp":1774604875087}
+{"text":"yes","timestamp":1774605804812}
