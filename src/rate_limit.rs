@@ -5,6 +5,8 @@
 //! consumption, burst checking, and wait time calculation with
 //! overflow safety and machine-checked correctness proofs.
 
+// Verus proofs guarantee u128→u64 casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
 #![allow(clippy::manual_div_ceil)]
 
 use vstd::prelude::*;

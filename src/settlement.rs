@@ -498,6 +498,7 @@ proof fn swap_negates_position(
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

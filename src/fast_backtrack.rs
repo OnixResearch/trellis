@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified accelerated log backtracking for Raft.
 //!
 //! When AppendEntries fails, the basic protocol decrements nextIndex by 1.

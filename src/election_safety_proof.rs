@@ -185,6 +185,7 @@ proof fn fresh_vote_preserves_other_terms(
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

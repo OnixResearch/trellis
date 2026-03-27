@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified AppendEntries construction for Raft leaders.
 //!
 //! `append_entries_check.rs` covers follower-side validation. This module

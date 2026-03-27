@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified pre-vote response tally for Raft elections.
 //!
 //! A candidate tracks pre-votes separately from real votes. Pre-vote

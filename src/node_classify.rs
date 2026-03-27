@@ -1,3 +1,6 @@
+// MAX_NODES is a small constant (1024), safe to cast u64→usize
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified node classification for cluster state reporting.
 //!
 //! Given a set of member IDs and an optional leader ID, classify each

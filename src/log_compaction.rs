@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified log compaction (prefix truncation) for Raft.
 //!
 //! `snapshot_compaction.rs` covers when to trigger compaction and what
@@ -246,6 +249,7 @@ proof fn compact_preserves_commit(
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

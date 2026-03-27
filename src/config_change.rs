@@ -342,6 +342,7 @@ proof fn transitions_produce_valid_phases()
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

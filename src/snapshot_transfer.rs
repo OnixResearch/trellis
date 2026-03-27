@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds (percentage < 100)
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified snapshot chunked transfer for Raft.
 //!
 //! Real Raft implementations stream large snapshots in chunks rather

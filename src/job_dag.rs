@@ -320,6 +320,7 @@ proof fn max_of_nonneg(levels: Seq<u64>, from: int)
 // ============================================================
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod test {
     use super::*;
 

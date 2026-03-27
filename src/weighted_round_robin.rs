@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified weighted round-robin scheduling.
 //!
 //! Each consumer has a weight. In each round, consumers are served in order;

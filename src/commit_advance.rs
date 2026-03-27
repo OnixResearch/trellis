@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified commit index advancement for Raft.
 //!
 //! The leader advances its commit index to the largest N where:

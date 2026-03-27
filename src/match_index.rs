@@ -313,6 +313,7 @@ proof fn count_replicated_bounded_from(matches: Seq<u64>, index: u64, from: int)
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

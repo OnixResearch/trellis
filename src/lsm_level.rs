@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! LSM-tree level management.
 //!
 //! Pure functions for level-based compaction: target sizing via geometric
@@ -528,6 +531,7 @@ proof fn count_empty(base: u64, ratio: u64)
 // ─── Tests ───────────────────────────────────────────────────────────
 
 #[cfg(test)]
+    #[allow(clippy::default_numeric_fallback)]
 mod tests {
     use super::*;
 

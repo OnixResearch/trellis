@@ -90,7 +90,7 @@ pub fn try_acquire(state: &LockState, node_id: u64, now: u64, ttl: u64) -> (resu
         },
 {
     if !is_available(state, now) || ttl == 0 || ttl > u64::MAX - now
-        || state.fence_token >= u64::MAX
+        || state.fence_token == u64::MAX
     {
         None
     } else {

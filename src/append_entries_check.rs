@@ -1,3 +1,6 @@
+// Verus preconditions guarantee u64→usize casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified AppendEntries consistency check.
 //!
 //! Follower-side validation for Raft's AppendEntries RPC: before accepting

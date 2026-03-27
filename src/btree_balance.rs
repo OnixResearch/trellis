@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds (count <= capacity)
+#![allow(clippy::cast_possible_truncation)]
+
 //! B-tree node balance management.
 //!
 //! Pure functions for B-tree node capacity: fill percentage, split/merge

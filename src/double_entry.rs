@@ -328,6 +328,7 @@ proof fn simple_entry_balanced(amount: u64)
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

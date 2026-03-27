@@ -269,6 +269,7 @@ proof fn zero_threshold_always_valid(
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

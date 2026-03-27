@@ -168,6 +168,7 @@ proof fn leader_completeness_theorem(
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::default_numeric_fallback)]
 mod tests {
     use super::*;
     use proptest::prelude::*;

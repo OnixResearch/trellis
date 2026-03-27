@@ -2196,6 +2196,7 @@ mod retry_proofs {
 }
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 mod tests {
     use proptest::prelude::*;
 
@@ -3771,6 +3772,7 @@ mod kv_storage_tests {
 // by the proptest suite below.
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
 mod cluster_membership_tests {
     use proptest::prelude::*;
 
@@ -4944,6 +4946,7 @@ mod snapshot_chunk_proofs {
 // --- Cross-module proptest: Raft pipeline, locking, causality ---
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod raft_pipeline_tests {
     use proptest::prelude::*;
 

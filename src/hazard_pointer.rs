@@ -335,6 +335,7 @@ proof fn singleton_empty_all_empty()
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

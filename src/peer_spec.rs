@@ -7,7 +7,9 @@
 //! Error codes: 0 = ok, 1 = no separator, 2 = empty node_id, 3 = empty endpoint,
 //! 4 = invalid node_id.
 
-#![allow(clippy::cast_possible_truncation)] // u64 loop index to usize, bounded by len
+// Verus preconditions guarantee casts are in bounds
+#![allow(clippy::cast_possible_truncation)]
+#![allow(clippy::cast_possible_wrap)] // usize→i64: len <= i64::MAX by requires
 
 use vstd::prelude::*;
 
@@ -139,6 +141,7 @@ proof fn empty_input_fails()
 } // verus!
 
 #[cfg(test)]
+    #[allow(clippy::cast_sign_loss)]
 mod tests {
     use proptest::prelude::*;
 

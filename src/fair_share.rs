@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds (weight <= total_weight)
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified fair-share scheduling primitives.
 //!
 //! Weighted fair scheduling divides a shared resource (CPU time, bandwidth,

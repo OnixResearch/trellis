@@ -1,3 +1,6 @@
+// Verus proofs guarantee u128→u64 casts are in bounds (fee <= amount)
+#![allow(clippy::cast_possible_truncation)]
+
 //! Verified fee computation with basis-point precision.
 //!
 //! Computes proportional fees using basis points (1 bp = 0.01%).
