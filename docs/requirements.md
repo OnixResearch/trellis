@@ -4786,3 +4786,32 @@ collision resistance with encoding injectivity.
 r[properties.quad-encoding-matches-chain-layout]
 Quad encoding MUST produce exactly 32 bytes for all inputs, matching the
 chain hash field layout.
+
+## Typed State
+
+r[typed-state.stamp]
+stamp MUST wrap raw data as Stamped<Unverified, T> preserving the
+inner value. stamp(v).inner() MUST equal v.
+
+r[typed-state.verify]
+verify_with MUST transition from Unverified to Verified if and only if
+the predicate returns true. It MUST return None when the predicate fails.
+
+r[typed-state.unwrap]
+unwrap_verified MUST extract the inner value from Stamped<Verified, T>.
+It MUST only accept verified data.
+
+r[typed-state.roundtrip]
+stamp then verify_with(true predicate) then unwrap_verified MUST return
+the original value.
+
+r[typed-state.predicate-holds]
+If verify_with returns Some, the predicate MUST have returned true for
+the inner value.
+
+r[typed-state.inner]
+inner MUST give read access to the wrapped value regardless of state.
+
+r[properties.snapshot-typed-verify]
+verify_snapshot composing typed_state with snapshot_integrity MUST
+return Some if and only if verify_integrity holds for the inner data.

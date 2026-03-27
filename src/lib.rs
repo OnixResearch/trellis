@@ -356,6 +356,7 @@ pub mod trust_level;
 pub mod type_lattice;
 pub mod two_phase;
 pub mod two_phase_lock;
+pub mod typed_state;
 pub mod vector_clock;
 pub mod vote_tally;
 pub mod view_change;
