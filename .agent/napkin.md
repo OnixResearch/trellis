@@ -1218,3 +1218,20 @@
   on `e1[1+i] == p1[i]` and `e2[1+i] == p2[i]` to chain the equality through.
 - encode_u64_roundtrip proof: requires block needs all 8 bytes as separate requires clauses
   (one per byte), not as a single Seq expression
+
+## Job Runner Primitives (2026-03-29)
+- `pub open spec fn` cannot reference private constants — if the spec uses `const COMPLETED: u8 = 3`,
+  the constant must be `pub const`. Error: "in pub open spec function, cannot refer to private const item"
+- Dep indices as `usize` not `u64` when used as array indices: `dep_id as usize` triggers
+  truncation warnings in Verus and the postcondition fails because Verus can't bridge
+  `dep_id as usize < job_states.len()` to `dep_id as int < job_states@.len() as int`.
+  Using `usize` directly avoids the cast entirely — Verus trusts `idx < slice.len()` on usize.
+- Right-to-left scan for select_highest_priority: `while i > 0` with `decreases i`, matching
+  the recursive spec `select_highest_from_spec(classes, seqs, from)` which recurses on from+1.
+  Loop invariant needs `classes@.len() == seqs@.len()` even though it's in requires —
+  Verus doesn't propagate requires into loop invariants automatically.
+- properties.rs cross-module Verus proofs need `#[cfg(verus_keep_ghost)]` on the module
+  and `bash scripts/verus.sh src/lib.rs` for the full crate. Individual file verification
+  fails with 218 import errors.
+- Spec fns (e.g. `is_terminal_spec`) erased in `#[cfg(test)]` builds — proptests must use
+  exec fns or inline the logic.
