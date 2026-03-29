@@ -4994,3 +4994,107 @@ borrow_right MUST take the first key from the right sibling and append it
 to the node. Combined count MUST be unchanged.
 A committed write at index N is visible to any subsequent read with
 read_index > N, provided logs match through the commit point.
+
+## Concurrent Data Structure Composition
+
+r[concurrent-composition.rwlock-write-excludes-readers]
+In write mode with mutual exclusion, active readers MUST be zero — the
+writer has exclusive access to the protected data structure.
+
+r[concurrent-composition.rwlock-read-excludes-writer]
+In read mode with mutual exclusion, no writer MUST hold the lock.
+
+r[concurrent-composition.rwlock-write-release-to-free]
+Releasing a write lock MUST transition to FREE mode, enabling subsequent
+acquisitions by readers or writers.
+
+r[concurrent-composition.rwlock-writer-token-is-strict-advance]
+The writer fencing token MUST strictly advance on each write acquisition,
+composing with monotonic::is_strict_advance.
+
+r[concurrent-composition.rwlock-writer-token-is-fencing-advance]
+The rwlock writer token advance MUST agree with fencing::issue_token.
+
+r[concurrent-composition.rwlock-last-reader-frees]
+When the last reader releases, mode MUST return to FREE and reader count
+MUST drop to zero.
+
+r[concurrent-composition.seqlock-write-cycle-strict-advance]
+A complete seqlock write cycle MUST produce a strict advance in the
+sequence counter.
+
+r[concurrent-composition.seqlock-version-strict-advance]
+Each write cycle MUST strictly advance the writer version.
+
+r[concurrent-composition.seqlock-valid-read-no-write]
+A valid seqlock read MUST imply no write was in progress at the sample
+time.
+
+r[concurrent-composition.seqlock-write-invalidates-read]
+A begin_write between a reader's before/after samples MUST invalidate
+the read.
+
+r[concurrent-composition.cas-pack-succeed-unpack-roundtrip]
+Pack → CAS succeed → unpack MUST recover the desired value and generation.
+
+r[concurrent-composition.cas-aba-detected-by-generation]
+ABA scenario (same value, different generation) MUST be detected by CAS
+because packed words differ.
+
+r[concurrent-composition.cas-retry-progress]
+Each failed CAS retry MUST decrease attempts_remaining, guaranteeing
+termination.
+
+r[concurrent-composition.cas-success-with-generation-bump]
+A successful CAS with bumped generation MUST produce a packed word
+distinguishable from the old one.
+
+r[concurrent-composition.hp-protected-blocks-rcu-free]
+A hazard-protected address MUST NOT be reclaimable regardless of RCU
+grace period status.
+
+r[concurrent-composition.all-quiescent-all-empty-everything-reclaimable]
+When all threads are RCU-quiescent AND all hazard slots are empty,
+every retired address MUST be reclaimable under both protocols.
+
+r[concurrent-composition.rcu-advance-enables-reclamation]
+Advancing the RCU grace period MUST be a strict advance in the counter.
+
+r[concurrent-composition.hp-unprotect-enables-reclaim]
+After unprotecting a hazard slot (sole protector), the address MUST
+become reclaimable.
+
+r[concurrent-composition.2pl-growing-respects-ordering]
+During the growing phase of 2PL, if lock ordering is respected, the
+acquisition MUST be valid under both protocols.
+
+r[concurrent-composition.2pl-shrinking-no-acquire]
+In the shrinking phase, no acquisition MUST be permitted regardless of
+lock ordering.
+
+r[concurrent-composition.2pl-phase-irreversible]
+The transition from growing to shrinking MUST be one-way.
+
+r[concurrent-composition.ticket-take-is-strict-advance]
+Taking a ticket MUST strictly advance the ticket counter.
+
+r[concurrent-composition.ticket-release-is-strict-advance]
+Releasing (advancing the serving counter) MUST be a strict advance.
+
+r[concurrent-composition.ticket-fifo-order]
+An earlier ticket holder MUST be served before a later one (FIFO).
+
+r[concurrent-composition.mpmc-occupancy-bounded]
+MPMC queue occupancy MUST NOT exceed capacity.
+
+r[concurrent-composition.mpmc-full-blocks-enqueue]
+A full MPMC queue MUST prevent enqueue.
+
+r[concurrent-composition.mpmc-empty-blocks-dequeue]
+An empty MPMC queue MUST prevent dequeue.
+
+r[concurrent-composition.mpmc-enqueue-dequeue-occupancy-roundtrip]
+Enqueue then dequeue MUST preserve occupancy (net effect zero).
+
+r[concurrent-composition.mpmc-remaining-plus-occupancy]
+Remaining capacity plus occupancy MUST equal total capacity.

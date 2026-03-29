@@ -1254,3 +1254,18 @@
 - Cross-module proofs: timeout→Failed, result→Completed/Failed, retryable⊥success
   all automatic — the state transition specs are disjunctions over constants.
 - 4165 total Verus verified items, 45 new tests (13+14+13+5)
+
+## Concurrent Data Structure Composition (2026-03-29)
+- Proof-only module (no new exec fns): chains concurrency protocol specs with
+  data structure invariant specs across 7 groups
+- by(bit_vector) can't call spec fns — must inline the expressions:
+  `aba_unpack_value_spec(new_packed)` fails, but the raw expression
+  `((new_packed & 0xFFFF_FFFFu64) as u32)` works. Bridge with a non-bit_vector
+  assert after to connect inline result to spec fn.
+- `gen` is a reserved keyword in Rust 2024 — use `next_gen` instead
+- Ambiguous glob imports: both cas_loop and seqlock export `should_retry_spec`.
+  Use explicit imports instead of `use crate::module::*`.
+- Module-qualified spec fn calls: `lock_ordering::can_acquire_spec` and
+  `two_phase_lock::can_acquire_spec` conflict — use import aliases
+  (`lock_ordering_can_acquire_spec`, `twopl_can_acquire_spec`)
+- All 28 proof fns verified automatically (4258 total, +28 new), 9 proptests pass
