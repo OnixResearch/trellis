@@ -77,6 +77,7 @@
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free proof
+//! - `heap_index` — binary heap index arithmetic: parent/child navigation, leaf detection, roundtrip proofs
 //! - `install_snapshot` — snapshot trigger and commit advancement for log compaction
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
@@ -125,6 +126,7 @@
 //! - `pressure` — multi-threshold severity classification
 //! - `priority_election` — priority-based leader election: delay, yield, candidate comparison
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
+//! - `quota` — resource quota enforcement: remaining capacity, admission, consume/release, utilization
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `raft_step` — Raft step decomposition for modular invariant proofs
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
@@ -256,6 +258,7 @@ pub mod glob;
 pub mod gossip;
 pub mod hash_bucket;
 pub mod hazard_pointer;
+pub mod heap_index;
 pub mod heartbeat;
 pub mod install_snapshot;
 pub mod integer;
@@ -323,6 +326,7 @@ pub mod priority_election;
 pub mod priority_inversion;
 pub mod process_state;
 pub mod properties;
+pub mod quota;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod raft_step;

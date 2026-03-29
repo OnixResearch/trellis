@@ -5130,3 +5130,60 @@ r[semaphore.acquired-count]
 acquired_count MUST return `capacity - available`. Acquiring k permits
 MUST increase the acquired count by k. Releasing k permits MUST
 decrease the acquired count by k.
+
+## Binary Heap Index Arithmetic
+
+r[heap-index.parent]
+parent_index(i) MUST return (i - 1) / 2 for nodes with i > 0. The
+parent index MUST always be strictly less than i.
+
+r[heap-index.left-child]
+left_child(i) MUST return 2 * i + 1. The left child index MUST always
+be strictly greater than i.
+
+r[heap-index.right-child]
+right_child(i) MUST return 2 * i + 2. The right child index MUST always
+be strictly greater than i.
+
+r[heap-index.is-leaf]
+is_leaf(i, size) MUST return true when node i has no children in a heap
+of the given size. A node is a leaf when its left child index would be
+at or beyond the heap size.
+
+r[heap-index.has-parent]
+has_parent(i) MUST return true for all nodes except the root (i > 0).
+
+r[heap-index.is-left-child]
+is_left_child(i) MUST return true when i > 0 and i is odd (left children
+occupy odd indices in a zero-based heap array).
+
+r[heap-index.is-right-child]
+is_right_child(i) MUST return true when i > 0 and i is even (right children
+occupy even indices in a zero-based heap array).
+
+## Resource Quota
+
+r[quota.remaining]
+quota_remaining(limit, used) MUST return limit - used when used <= limit,
+and 0 when used exceeds the limit.
+
+r[quota.allows]
+quota_allows(limit, used, request) MUST return true if and only if the
+sum of used and request does not exceed limit.
+
+r[quota.consume]
+quota_consume(used, amount) MUST return used + amount. The caller MUST
+ensure the sum does not overflow.
+
+r[quota.release]
+quota_release(used, amount) MUST return used - amount when amount <= used,
+and 0 when amount exceeds used (saturating subtraction).
+
+r[quota.utilization]
+quota_utilization(limit, used) MUST return the integer percentage of
+quota consumed, clamped to [0, 100]. When limit is 0, MUST return 100
+if used is positive, and 0 otherwise.
+
+r[quota.is-exhausted]
+quota_is_exhausted(limit, used) MUST return true if and only if
+used >= limit.
