@@ -4815,3 +4815,93 @@ inner MUST give read access to the wrapped value regardless of state.
 r[properties.snapshot-typed-verify]
 verify_snapshot composing typed_state with snapshot_integrity MUST
 return Some if and only if verify_integrity holds for the inner data.
+
+## Job Retry
+
+r[job-retry.is-retryable]
+is_retryable_error MUST return true for error codes in [100, 200)
+(transient failures). Error codes in [0, 100) are permanent failures
+(non-retryable). Error codes >= 200 are unknown (non-retryable).
+
+r[job-retry.attempts-remaining]
+attempts_remaining MUST return max_attempts - attempts when attempts
+< max_attempts, and 0 otherwise. The result MUST never be negative.
+
+r[job-retry.cooldown-elapsed]
+is_cooldown_elapsed MUST return true when now >= last_attempt_time +
+cooldown_ms, using saturating addition to prevent overflow.
+
+r[job-retry.should-retry]
+should_retry MUST return true only when the error is retryable AND
+attempts < max_attempts AND cooldown has elapsed. All three conditions
+MUST hold.
+
+r[job-retry.next-attempt]
+next_attempt MUST return min(attempts + 1, max_attempts). The attempt
+counter MUST never exceed max_attempts.
+
+## Job Timeout
+
+r[job-timeout.compute-deadline]
+compute_deadline MUST return start_time + timeout_ms using saturating
+addition. If the sum overflows u64, MUST return u64::MAX.
+
+r[job-timeout.is-timed-out]
+is_timed_out MUST return true when now >= deadline. Once timed out,
+MUST stay timed out for all future time values (monotonic).
+
+r[job-timeout.time-remaining]
+time_remaining MUST return deadline - now when now < deadline, and 0
+when now >= deadline. The result MUST never be negative.
+
+r[job-timeout.elapsed-time]
+elapsed_time MUST return now - start_time when now >= start_time,
+and 0 otherwise.
+
+r[job-timeout.extend-deadline]
+extend_deadline MUST return min(deadline + grace, deadline +
+max_extension) using saturating addition. The result MUST be >=
+deadline (extensions only push forward). The result MUST NOT exceed
+deadline + max_extension.
+
+## Job Result
+
+r[job-result.exit-code-classification]
+Exit code classification MUST be mutually exclusive and exhaustive:
+is_success_code (== 0), is_failure_code (1-127), is_error_code (>= 128).
+Exactly one MUST return true for any u8 input.
+
+r[job-result.output-hash-matches]
+output_hash_matches MUST return true if and only if the computed hash
+equals the expected hash.
+
+r[job-result.output-size-valid]
+output_size_valid MUST return true if and only if
+min_size <= actual_size <= max_size.
+
+r[job-result.validate-result]
+validate_result MUST check exit code, then output hash, then output
+size, returning the first failing criterion: 0=all pass, 1=bad exit,
+2=bad hash, 3=bad size. MUST return 0 if and only if all criteria pass.
+
+## Cross-Module: Job Execution
+
+r[properties.retry-non-retryable-never-retries]
+should_retry with a non-retryable error code MUST always return false,
+regardless of attempt count or cooldown.
+
+r[properties.timeout-triggers-failure]
+is_timed_out returning true for a RUNNING job means the job should
+transition to FAILED (job_state::is_valid_transition(RUNNING, FAILED)).
+
+r[properties.result-success-completes]
+validate_result returning VALID (0) for a RUNNING job means the job
+should transition to COMPLETED.
+
+r[properties.result-failure-fails]
+validate_result returning non-zero for a RUNNING job means the job
+should transition to FAILED.
+
+r[properties.retryable-disjoint-from-success]
+Exit code 0 (success) MUST NOT be in the retryable error range [100,200).
+Success and retryable errors are disjoint categories.

@@ -6243,3 +6243,170 @@ mod job_runner_cross_tests {
         }
     }
 }
+
+// --- Job execution verification cross-module proofs ---
+
+#[cfg(verus_keep_ghost)]
+mod job_execution_proofs {
+    use vstd::prelude::*;
+
+    verus! {
+
+    // r[verify properties.retry-non-retryable-never-retries]
+    /// Non-retryable error codes never trigger retry, regardless of other conditions.
+    proof fn retry_non_retryable_never_retries(
+        error_code: u64,
+        attempts: u64,
+        max_attempts: u64,
+        now: u64,
+        last_attempt_time: u64,
+        cooldown_ms: u64,
+    )
+        requires !crate::job_retry::is_retryable_error_spec(error_code)
+        ensures !crate::job_retry::should_retry_spec(
+            error_code, attempts, max_attempts, now, last_attempt_time, cooldown_ms,
+        )
+    {}
+
+    // r[verify properties.timeout-triggers-failure]
+    /// A timed-out RUNNING job can transition to FAILED.
+    proof fn timeout_triggers_failure(now: u64, deadline: u64)
+        requires crate::job_timeout::is_timed_out_spec(now, deadline)
+        ensures
+            crate::job_state::is_valid_transition_spec(
+                crate::job_state::RUNNING,
+                crate::job_state::FAILED,
+            ),
+    {}
+
+    // r[verify properties.result-success-completes]
+    /// A valid result (exit=0, hash matches, size ok) means RUNNING→COMPLETED.
+    proof fn result_success_completes(
+        exit_code: u8,
+        computed_hash: u64,
+        expected_hash: u64,
+        actual_size: u64,
+        min_size: u64,
+        max_size: u64,
+    )
+        requires
+            crate::job_result::validate_result_spec(
+                exit_code, computed_hash, expected_hash, actual_size, min_size, max_size,
+            ) == crate::job_result::VALID,
+        ensures
+            crate::job_state::is_valid_transition_spec(
+                crate::job_state::RUNNING,
+                crate::job_state::COMPLETED,
+            ),
+    {}
+
+    // r[verify properties.result-failure-fails]
+    /// A failed validation means RUNNING→FAILED.
+    proof fn result_failure_fails(
+        exit_code: u8,
+        computed_hash: u64,
+        expected_hash: u64,
+        actual_size: u64,
+        min_size: u64,
+        max_size: u64,
+    )
+        requires
+            crate::job_result::validate_result_spec(
+                exit_code, computed_hash, expected_hash, actual_size, min_size, max_size,
+            ) != crate::job_result::VALID,
+        ensures
+            crate::job_state::is_valid_transition_spec(
+                crate::job_state::RUNNING,
+                crate::job_state::FAILED,
+            ),
+    {}
+
+    // r[verify properties.retryable-disjoint-from-success]
+    /// Exit code 0 (success) is never in the retryable error range.
+    proof fn retryable_disjoint_from_success()
+        ensures !crate::job_retry::is_retryable_error_spec(0)
+    {}
+
+    } // verus!
+}
+
+// --- Proptest: job execution cross-module ---
+#[cfg(test)]
+mod job_execution_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // r[verify properties.retry-non-retryable-never-retries]
+        #[test]
+        fn prop_non_retryable_never_retries(
+            error_code in (0u64..100).prop_union(200u64..500),
+            attempts in 0u64..10,
+            max_attempts in 1u64..10,
+            now in 5000u64..10000,
+            last_attempt in 0u64..1000,
+            cooldown in 0u64..100,
+        ) {
+            prop_assert!(!crate::job_retry::should_retry(
+                error_code, attempts, max_attempts, now, last_attempt, cooldown,
+            ));
+        }
+
+        // r[verify properties.timeout-triggers-failure]
+        #[test]
+        fn prop_timeout_triggers_failure(
+            start in 0u64..5000,
+            timeout in 1u64..5000,
+            extra in 0u64..5000,
+        ) {
+            let deadline = crate::job_timeout::compute_deadline(start, timeout);
+            let now = deadline.saturating_add(extra);
+            if crate::job_timeout::is_timed_out(now, deadline) {
+                // The Running→Failed transition is valid
+                prop_assert!(crate::job_state::is_valid_transition(
+                    crate::job_state::RUNNING,
+                    crate::job_state::FAILED,
+                ));
+            }
+        }
+
+        // r[verify properties.result-success-completes]
+        #[test]
+        fn prop_result_success_completes(
+            hash in 0u64..1000,
+            size in 100u64..500,
+        ) {
+            let status = crate::job_result::validate_result(0, hash, hash, size, 0, 1000);
+            prop_assert_eq!(status, crate::job_result::VALID);
+            // Running→Completed is valid
+            prop_assert!(crate::job_state::is_valid_transition(
+                crate::job_state::RUNNING,
+                crate::job_state::COMPLETED,
+            ));
+        }
+
+        // r[verify properties.result-failure-fails]
+        #[test]
+        fn prop_result_failure_fails(
+            exit_code in 1u8..=255,
+            hash in 0u64..1000,
+            size in 100u64..500,
+        ) {
+            let status = crate::job_result::validate_result(exit_code, hash, hash, size, 0, 1000);
+            prop_assert_ne!(status, crate::job_result::VALID);
+            // Running→Failed is valid
+            prop_assert!(crate::job_state::is_valid_transition(
+                crate::job_state::RUNNING,
+                crate::job_state::FAILED,
+            ));
+        }
+
+        // r[verify properties.retryable-disjoint-from-success]
+        #[test]
+        fn prop_retryable_disjoint_from_success(_x: u8) {
+            // Exit code 0 is not retryable
+            prop_assert!(!crate::job_retry::is_retryable_error(0));
+            // Success code is 0
+            prop_assert!(crate::job_result::is_success_code(0));
+        }
+    }
+}

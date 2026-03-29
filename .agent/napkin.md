@@ -1235,3 +1235,22 @@
   fails with 218 import errors.
 - Spec fns (e.g. `is_terminal_spec`) erased in `#[cfg(test)]` builds — proptests must use
   exec fns or inline the logic.
+
+## Job Execution Verification (2026-03-29)
+- is_cooldown_elapsed overflow: spec uses int arithmetic (`now as int >= last + cool`),
+  so when `last + cool > u64::MAX`, no u64 value reaches the deadline. The exec must
+  return false on overflow, NOT saturate to u64::MAX. Saturating to u64::MAX creates a
+  discrepancy when `now == u64::MAX` (exec returns true, spec returns false). Same issue
+  class as the token_timestamp module but with the opposite fix — cooldown uses "deadline
+  unreachable" semantics, not "saturating cap" semantics.
+- not_timed_out_at_start needs overflow guard: when `start_time == u64::MAX && timeout > 0`,
+  the deadline saturates to u64::MAX, so `start >= u64::MAX` is trivially true. The job
+  "starts already timed out." Fix: add `requires start + timeout <= u64::MAX as int`.
+- next_attempt_monotonic proof: `next_attempt_spec >= attempts` only holds when
+  `attempts <= max_attempts`. When `attempts > max_attempts`, next returns max_attempts
+  which is less than attempts. Proptest caught this (attempts=6, max_attempts=0).
+- All proofs in job_retry, job_timeout, job_result are automatic — Z3 handles pure
+  integer comparisons, range checks, and boolean conjunctions without hints.
+- Cross-module proofs: timeout→Failed, result→Completed/Failed, retryable⊥success
+  all automatic — the state transition specs are disjunctions over constants.
+- 4165 total Verus verified items, 45 new tests (13+14+13+5)
