@@ -194,6 +194,7 @@ pub mod btree_balance;
 pub mod buddy;
 pub mod causal_order;
 pub mod containment;
+pub mod consensus_path;
 pub mod consistent_hash;
 pub mod consistent_snapshot;
 

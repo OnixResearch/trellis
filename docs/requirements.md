@@ -4905,3 +4905,41 @@ should transition to FAILED.
 r[properties.retryable-disjoint-from-success]
 Exit code 0 (success) MUST NOT be in the retryable error range [100,200).
 Success and retryable errors are disjoint categories.
+
+## Consensus Path Composition
+
+r[consensus-path.append-preserves-invariant]
+Appending an entry via leader_append_entry_spec MUST satisfy the
+leader_log_invariant (new log is a prefix extension of the old).
+
+r[consensus-path.appended-entry-committable]
+An entry appended at the current term MUST create a committable entry:
+can_commit_at_spec holds for the new index with the leader's term.
+
+r[consensus-path.follower-commit-monotonic-bounded]
+follower_update_commit_spec MUST return a value >= current_commit
+(monotonic) and <= leader_commit (bounded by leader).
+
+r[consensus-path.applied-bounded-by-commit]
+advance_last_applied_spec MUST return a value <= commit_index and
+>= last_applied. No entry is applied before it is committed.
+
+r[consensus-path.write-path-end-to-end]
+The write path composes: append preserves invariant, the new entry is
+committable, and applied entries stay within commit bounds.
+
+r[consensus-path.lease-subsumes-read-index]
+lease_read_safe_spec returning true MUST imply read_safe_at_spec also
+returns true. Lease reads are strictly stronger than ReadIndex.
+
+r[consensus-path.committed-read-consistent]
+If two servers have matching log prefixes through the commit point and
+a read is safe, both servers agree on every entry below read_index.
+
+r[consensus-path.read-path-end-to-end]
+Authority confirmation + matching prefix through commit MUST imply
+every entry below read_index agrees on both servers.
+
+r[consensus-path.write-then-read]
+A committed write at index N is visible to any subsequent read with
+read_index > N, provided logs match through the commit point.
