@@ -169,8 +169,13 @@
 //! - `view_change` — view-based reconfiguration: view monotonicity, leader rotation, quorum-gated transitions
 //! - `quorum_cert` — quorum certificate: vote counting, QC ordering, commit rule via consecutive certificates
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
+//! - `wal_recovery` — WAL crash recovery: replay range, idempotent replay, checkpoint advancement
 //! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
+//! - `write_buffer` — memtable flush thresholds, buffer swap, write amplification, flush counting
+//! - `block_cache` — cache slot states: insert, evict, mark-dirty, write-back, clock-hand sweep
+//! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
+//! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write detection
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
 
@@ -383,4 +388,9 @@ pub mod wal_segment;
 pub mod watermark;
 pub mod weighted_round_robin;
 pub mod witness;
+pub mod block_cache;
+pub mod free_space_map;
+pub mod page_checksum;
+pub mod wal_recovery;
+pub mod write_buffer;
 pub mod work_stealing;

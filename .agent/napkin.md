@@ -1269,3 +1269,32 @@
   `two_phase_lock::can_acquire_spec` conflict — use import aliases
   (`lock_ordering_can_acquire_spec`, `twopl_can_acquire_spec`)
 - All 28 proof fns verified automatically (4258 total, +28 new), 9 proptests pass
+
+## Storage Engine Primitives (2026-03-29)
+- 5 new modules: page_checksum, free_space_map, wal_recovery, write_buffer, block_cache
+- `% 256` in spec produces int, not u64 — must cast: `((a + byte as u64) % 256) as u64`
+- `/ free` in spec when left side is int: must cast divisor too: `/ (free as int)`
+- Seq<bool> inductive proofs (free_count, etc.): `_from_bounded` helpers need
+  `requires 0 <= from <= map.len()` — without `<= map.len()`, the postcondition
+  `<= map.len() - from` is false when from > map.len() (base case returns 0)
+- Seq<u8> update-delta proofs (block_cache insert/mark_dirty/evict): need explicit
+  `assert(updated.len() == slots.len())` and `assert(updated[from] == slots[from])`
+  at each induction step — Z3 needs these hints to connect seq::update axioms
+- `lemma_div_multiples_vanish(100, c)` proves `(100 * c) / c == 100` — use this
+  instead of `by(nonlinear_arith)` for `x*100/x == 100` patterns
+- `by(nonlinear_arith)` with let-bound variables: the requires are checked by
+  standard solver which CAN see let bindings, but the assertion expression must
+  also be resolvable. Use plain variable names from function params, not let-bound
+  intermediates: `requires 0 <= dirty, dirty <= capacity` works; 
+  `requires dirty as int <= capacity as int` FAILS (as int in requires)
+- `lemma_small_div` does NOT exist in current vstd. To prove `x / d == 0` when
+  `0 <= x < d`, write a helper: call fundamental_div_mod + div_pos_is_pos, then
+  use `by(nonlinear_arith) requires x/d >= 1, d > 0` to derive contradiction
+  (`x/d * d >= d > x`, but `x/d * d = x - r <= x`)
+- WAL apply_entries loop: spec uses `apply_entry_spec(state, k as int, v)` — key must
+  be int in spec to avoid usize/u64 bridging issues. Exec needs `proof { assert(...) }`
+  block to connect `entries@[i].0` to the loop-local `k` variable
+- write_buffer flush_count overflow: `total_bytes + threshold - 1` — rewrite as
+  `total_bytes + (threshold - 1)` to avoid intermediate overflow (threshold > 0
+  guarantees threshold - 1 >= 0)
+- 4474 Verus proofs (+134), 2677 tests (+76), 0 new external_body
