@@ -4943,3 +4943,54 @@ every entry below read_index agrees on both servers.
 r[consensus-path.write-then-read]
 A committed write at index N is visible to any subsequent read with
 read_index > N, provided logs match through the commit point.
+
+## B-tree Insert
+
+r[btree-insert.is-sorted]
+is_sorted MUST return true iff keys are strictly increasing. Empty and
+singleton sequences MUST always be sorted.
+
+r[btree-insert.find-position]
+find_insert_position MUST return the index where a key should be inserted
+to maintain sortedness. The position MUST be in [0, keys.len()]. All keys
+before it MUST be <= key.
+
+r[btree-insert.insert-at]
+insert_at MUST insert a key at the given position, shifting elements right.
+Length MUST increase by 1. Inserting at the correct position into a sorted
+sequence MUST produce a sorted sequence (when key not already present).
+
+r[btree-insert.split-node]
+split_node MUST split a sorted sequence at a midpoint into two sorted
+subsequences. left.len() + right.len() MUST equal the original length.
+All keys in left MUST be < all keys in right. Split sizes MUST match
+btree_balance::split_left/right_size.
+
+## B-tree Delete
+
+r[btree-delete.contains-key]
+contains_key MUST return true iff the key exists in the sequence.
+
+r[btree-delete.find-key-position]
+find_key_position MUST return the index of the key, or keys.len() if
+not found. The result MUST be in [0, keys.len()].
+
+r[btree-delete.delete-at]
+delete_at MUST remove the element at the given position, shifting left.
+Length MUST decrease by 1. Deleting from a sorted sequence MUST produce
+a sorted sequence.
+
+r[btree-delete.merge-nodes]
+merge_nodes MUST concatenate two sorted sequences where all keys in left
+< all keys in right. The result MUST be sorted and have length
+left.len() + right.len().
+
+r[btree-delete.borrow-left]
+borrow_left MUST take the last key from the left sibling and prepend it
+to the node. Combined count MUST be unchanged.
+
+r[btree-delete.borrow-right]
+borrow_right MUST take the first key from the right sibling and append it
+to the node. Combined count MUST be unchanged.
+A committed write at index N is visible to any subsequent read with
+read_index > N, provided logs match through the commit point.
