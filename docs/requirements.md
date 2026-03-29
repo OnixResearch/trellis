@@ -5098,3 +5098,35 @@ Enqueue then dequeue MUST preserve occupancy (net effect zero).
 
 r[concurrent-composition.mpmc-remaining-plus-occupancy]
 Remaining capacity plus occupancy MUST equal total capacity.
+
+## Counting Semaphore
+
+r[semaphore.can-acquire]
+can_acquire MUST return true if and only if `permits <= available`.
+Zero permits MUST always be acquirable.
+
+r[semaphore.after-acquire]
+after_acquire MUST return `available - permits`. Acquiring a positive
+number of permits MUST strictly decrease the available count.
+Acquiring zero permits MUST be identity. Chained acquisitions
+MUST equal a single combined acquisition of the sum.
+
+r[semaphore.after-release]
+after_release MUST return `available + permits`. Releasing a positive
+number of permits MUST strictly increase the available count.
+Releasing zero permits MUST be identity. The result MUST NOT exceed
+capacity when the release is valid. Chained releases MUST equal
+a single combined release of the sum.
+
+r[semaphore.is-full]
+is_full MUST return true if and only if `available == capacity`.
+A full semaphore MUST have zero acquired permits.
+
+r[semaphore.is-empty]
+is_empty MUST return true if and only if `available == 0`.
+An empty semaphore MUST block any positive acquisition.
+
+r[semaphore.acquired-count]
+acquired_count MUST return `capacity - available`. Acquiring k permits
+MUST increase the acquired count by k. Releasing k permits MUST
+decrease the acquired count by k.

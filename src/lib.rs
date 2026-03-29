@@ -149,6 +149,7 @@
 //! - `state_machine_safety` — no two servers apply different entries at the same index
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
+//! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
@@ -339,6 +340,7 @@ pub mod retry;
 pub mod ring_buffer;
 pub mod rwlock;
 pub mod scope;
+pub mod semaphore;
 pub mod seqlock;
 pub mod seq_fold;
 pub mod seq_set;
