@@ -171,5 +171,105 @@ mod tests {
                 prop_assert!(result_keys.contains(&k));
             }
         }
+
+        // P0: result is closed — applying operator to result items yields no new keys
+        #[test]
+        fn prop_closure_is_closed(
+            adj in proptest::collection::vec(
+                proptest::collection::vec(0u64..10, 0..3), 1..=10
+            ),
+        ) {
+            let n = adj.len() as u64;
+            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
+                let k = item.key;
+                if (k as usize) < adj.len() {
+                    adj[k as usize].iter()
+                        .filter(|&&nbr| nbr < n)
+                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
+                        .collect()
+                } else {
+                    vec![]
+                }
+            };
+            let start = vec![ClosureItem { key: 0, data: 0 }];
+            let result = generic_closure(&start, &operator);
+            let result_keys: std::collections::HashSet<u64> =
+                result.iter().map(|i| i.key).collect();
+            for item in &result {
+                let new_items = operator(item);
+                for new_item in new_items {
+                    prop_assert!(result_keys.contains(&new_item.key));
+                }
+            }
+        }
+
+        // P0: closure(closure(x)) == closure(x) by key set
+        #[test]
+        fn prop_closure_idempotent(
+            adj in proptest::collection::vec(
+                proptest::collection::vec(0u64..8, 0..3), 1..=8
+            ),
+        ) {
+            let n = adj.len() as u64;
+            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
+                let k = item.key;
+                if (k as usize) < adj.len() {
+                    adj[k as usize].iter()
+                        .filter(|&&nbr| nbr < n)
+                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
+                        .collect()
+                } else {
+                    vec![]
+                }
+            };
+            let start = vec![ClosureItem { key: 0, data: 0 }];
+            let first = generic_closure(&start, &operator);
+            let second = generic_closure(&first, &operator);
+            let mut keys1: Vec<u64> = first.iter().map(|i| i.key).collect();
+            let mut keys2: Vec<u64> = second.iter().map(|i| i.key).collect();
+            keys1.sort_unstable();
+            keys2.sort_unstable();
+            prop_assert_eq!(keys1, keys2);
+        }
+
+        // P0: closure matches manual BFS over adjacency graph
+        #[test]
+        fn prop_closure_matches_manual_bfs(
+            adj in proptest::collection::vec(
+                proptest::collection::vec(0u64..10, 0..3), 1..=10
+            ),
+        ) {
+            let n = adj.len() as u64;
+            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
+                let k = item.key;
+                if (k as usize) < adj.len() {
+                    adj[k as usize].iter()
+                        .filter(|&&nbr| nbr < n)
+                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
+                        .collect()
+                } else {
+                    vec![]
+                }
+            };
+            let start = vec![ClosureItem { key: 0, data: 0 }];
+            let result = generic_closure(&start, &operator);
+            let result_keys: std::collections::HashSet<u64> =
+                result.iter().map(|i| i.key).collect();
+            // Manual BFS
+            let mut manual = std::collections::HashSet::new();
+            let mut queue = std::collections::VecDeque::new();
+            manual.insert(0u64);
+            queue.push_back(0u64);
+            while let Some(k) = queue.pop_front() {
+                if (k as usize) < adj.len() {
+                    for &nbr in &adj[k as usize] {
+                        if nbr < n && manual.insert(nbr) {
+                            queue.push_back(nbr);
+                        }
+                    }
+                }
+            }
+            prop_assert_eq!(result_keys, manual);
+        }
     }
 }

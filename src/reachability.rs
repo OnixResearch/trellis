@@ -490,6 +490,61 @@ mod tests {
                     }
                 }
             }
+
+            // P0: for each reachable node, reconstruct and verify a concrete path
+            #[test]
+            fn prop_path_exists_for_reachable((edges, n) in random_graph(12)) {
+                if n > 0 {
+                    let visited = reachable_from(&edges, n, 0);
+                    let mut parent = vec![usize::MAX; n];
+                    let mut seen = vec![false; n];
+                    let mut queue = std::collections::VecDeque::new();
+                    seen[0] = true;
+                    queue.push_back(0usize);
+                    while let Some(u) = queue.pop_front() {
+                        for &(src, dst) in &edges {
+                            if src == u && !seen[dst] {
+                                seen[dst] = true;
+                                parent[dst] = u;
+                                queue.push_back(dst);
+                            }
+                        }
+                    }
+                    for target in 0..n {
+                        if visited[target] && target != 0 {
+                            prop_assert!(seen[target]);
+                            let mut cur = target;
+                            while cur != 0 {
+                                let p = parent[cur];
+                                prop_assert!(edges.contains(&(p, cur)));
+                                cur = p;
+                            }
+                        }
+                    }
+                }
+            }
+
+            // P0: no edges means only source is reachable
+            #[test]
+            fn prop_isolated_source_only_self(n in 2..10usize) {
+                let edges: Vec<(usize, usize)> = vec![];
+                let visited = reachable_from(&edges, n, 0);
+                prop_assert!(visited[0]);
+                for v in 1..n {
+                    prop_assert!(!visited[v]);
+                }
+            }
+
+            // P0: reachable count is in [1, n]
+            #[test]
+            fn prop_reachable_count_in_bounds((edges, n) in random_graph(15)) {
+                if n > 0 {
+                    let visited = reachable_from(&edges, n, 0);
+                    let count = reachable_count(&visited);
+                    prop_assert!(count >= 1);
+                    prop_assert!(count <= n as u64);
+                }
+            }
         }
     }
 }

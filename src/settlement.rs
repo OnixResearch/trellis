@@ -636,5 +636,86 @@ mod tests {
             let positions = compute_positions(&valid, num_parties);
             prop_assert_eq!(positions.len(), num_parties);
         }
+
+        // P0: obligation application order does not affect net positions
+        #[test]
+        fn prop_order_independent(
+            obligations in proptest::collection::vec(
+                (0usize..5, 0usize..5, 1..1000u64), 2..15
+            ),
+        ) {
+            let valid: Vec<(usize, usize, u64)> = obligations
+                .into_iter()
+                .filter(|(f, t, _)| f != t && *f < 5 && *t < 5)
+                .collect();
+            if valid.len() >= 2 {
+                let pos_orig = compute_positions(&valid, 5);
+                let mut reversed = valid.clone();
+                reversed.reverse();
+                let pos_rev = compute_positions(&reversed, 5);
+                for i in 0..5 {
+                    prop_assert_eq!(pos_orig[i], pos_rev[i]);
+                }
+            }
+        }
+
+        // P0: A→B:x and B→A:x cancel to zero for all parties
+        #[test]
+        fn prop_opposite_obligations_cancel(
+            from_p in 0usize..5,
+            to_p in 0usize..5,
+            amount in 1..10_000u64,
+        ) {
+            if from_p != to_p {
+                let obligations = vec![(from_p, to_p, amount), (to_p, from_p, amount)];
+                let positions = compute_positions(&obligations, 5);
+                for i in 0..5 {
+                    prop_assert_eq!(positions[i], 0);
+                }
+            }
+        }
+
+        // P0: exec positions match hand-computed positions
+        #[test]
+        fn prop_settlement_matches_manual(
+            obligations in proptest::collection::vec(
+                (0usize..4, 0usize..4, 1..500u64), 1..10
+            ),
+        ) {
+            let valid: Vec<(usize, usize, u64)> = obligations
+                .into_iter()
+                .filter(|(f, t, _)| f != t && *f < 4 && *t < 4)
+                .collect();
+            let positions = compute_positions(&valid, 4);
+            let mut manual = vec![0i128; 4];
+            for &(f, t, a) in &valid {
+                manual[f] -= a as i128;
+                manual[t] += a as i128;
+            }
+            for i in 0..4 {
+                prop_assert_eq!(positions[i], manual[i]);
+            }
+        }
+
+        // P0: is_valid_settlement agrees with manual position comparison (no-ensures oracle)
+        #[test]
+        fn prop_is_valid_settlement_correct(
+            oblig1 in proptest::collection::vec(
+                (0usize..4, 0usize..4, 1..200u64), 0..8
+            ),
+            oblig2 in proptest::collection::vec(
+                (0usize..4, 0usize..4, 1..200u64), 0..8
+            ),
+        ) {
+            let v1: Vec<_> = oblig1.into_iter()
+                .filter(|(f, t, _)| f != t && *f < 4 && *t < 4).collect();
+            let v2: Vec<_> = oblig2.into_iter()
+                .filter(|(f, t, _)| f != t && *f < 4 && *t < 4).collect();
+            let pos1 = compute_positions(&v1, 4);
+            let pos2 = compute_positions(&v2, 4);
+            let exec_result = is_valid_settlement(&v1, &v2, 4);
+            let expected = (0..4).all(|i| pos1[i] == pos2[i]);
+            prop_assert_eq!(exec_result, expected);
+        }
     }
 }

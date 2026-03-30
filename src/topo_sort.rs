@@ -548,6 +548,44 @@ mod tests {
                     }
                 }
             }
+
+            // P0: directly test is_topo_order checker (assume() soundness oracle)
+            #[test]
+            fn prop_checker_validates_output((edges, n) in random_dag(20)) {
+                if let Some(order) = topo_sort(&edges, n) {
+                    prop_assert!(is_topo_order(&edges, n, &order));
+                }
+            }
+
+            #[test]
+            fn prop_checker_rejects_reversed_pair((edges, n) in random_dag(15)) {
+                if let Some(mut order) = topo_sort(&edges, n) {
+                    if !edges.is_empty() {
+                        let (u, v) = edges[0];
+                        let pu = order.iter().position(|&x| x == u).unwrap();
+                        let pv = order.iter().position(|&x| x == v).unwrap();
+                        order.swap(pu, pv);
+                        prop_assert!(!is_topo_order(&edges, n, &order));
+                    }
+                }
+            }
+
+            #[test]
+            fn prop_checker_rejects_wrong_length((edges, n) in random_dag(15)) {
+                if n > 1 {
+                    let short: Vec<usize> = (0..n - 1).collect();
+                    prop_assert!(!is_topo_order(&edges, n, &short));
+                }
+            }
+
+            #[test]
+            fn prop_checker_rejects_out_of_range((edges, n) in random_dag(15)) {
+                if n > 0 {
+                    let mut bad: Vec<usize> = (0..n).collect();
+                    bad[0] = n;
+                    prop_assert!(!is_topo_order(&edges, n, &bad));
+                }
+            }
         }
     }
 }

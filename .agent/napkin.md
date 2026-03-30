@@ -1321,3 +1321,22 @@
 - i64 overflow: `du + 1` needs `du < i64::MAX - 1`. Guard with `&& du < i64::MAX - 1` in
   the if condition rather than maintaining a strong dist-bounded invariant.
 - 4557 Verus proofs (+83), 2727 tests (+50), 220 modules (+5)
+
+## Closing external_body — CONFIRMED permanent (2026-03-30)
+- All 14 remaining external_body items are permanent:
+  - chain.rs (3): hash axioms — uninterpreted hash_spec, by design
+  - snapshot_integrity.rs (3): hash axioms — uninterpreted dual_hash_spec, by design
+  - log_invariant_inductive.rs (3): system-level proofs requiring all-logs-same-leader-chain
+  - nix_version.rs (4): cv_fuel has 8-deep nested let/if/else in spec body
+- nix_version cv_fuel approaches TRIED AND FAILED:
+  1. Remove external_body (open spec): Z3 postcondition not satisfied — can't process 8 case levels
+  2. closed spec fn + reveal_with_fuel(cv_fuel, 1): still fails — single reveal still exposes
+     the full 8-level case tree to Z3 (reveal controls recursion depth, not per-level complexity)
+  3. Layered decomposition (cv_fuel → cv_dispatch → cv_compare_same): mutual recursion
+     creates termination proof issue — cv_compare_same(fuel) → cv_fuel(fuel) doesn't decrease.
+     Even with lexicographic decreases, Verus can't see fuel decrease across the 3-fn chain.
+  4. spinoff_prover: same failure — structural issue, not resource issue
+- markov.rs grep shows 1 hit but it's in a COMMENT, not an attribute — 0 actual external_body
+- CONCLUSION: 14 external_body is the floor. 8 are intentional axioms (hash, system-level),
+  4 are Z3 structural limits (nix_version cv_fuel nesting), 2 are sound (markov count=0)
+  Wait — markov has 0. Actual: 10 permanent (chain+snapshot+log_invariant+nix_version)

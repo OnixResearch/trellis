@@ -599,5 +599,90 @@ mod tests {
             let idx = parse_drv_name(&v);
             prop_assert!(idx <= v.len());
         }
+
+        // P0: transitivity — if a<=b and b<=c then a<=c
+        #[test]
+        fn prop_compare_transitive(
+            a in "[0-9a-z.]{1,8}",
+            b in "[0-9a-z.]{1,8}",
+            c in "[0-9a-z.]{1,8}",
+        ) {
+            let va = a.into_bytes();
+            let vb = b.into_bytes();
+            let vc = c.into_bytes();
+            let ab = compare_versions(&va, &vb);
+            let bc = compare_versions(&vb, &vc);
+            let ac = compare_versions(&va, &vc);
+            if ab <= 0 && bc <= 0 {
+                prop_assert!(ac <= 0);
+            }
+            if ab >= 0 && bc >= 0 {
+                prop_assert!(ac >= 0);
+            }
+        }
+
+        // P0: large version strings (50+ components) — stress fuel bound
+        #[test]
+        fn prop_compare_large_versions(
+            components in proptest::collection::vec(0u32..100, 50..80),
+        ) {
+            let version: String = components.iter()
+                .map(|c| c.to_string())
+                .collect::<Vec<_>>()
+                .join(".");
+            let v = version.into_bytes();
+            prop_assert_eq!(compare_versions(&v, &v), 0);
+        }
+
+        // P0: all-separator strings behave like empty
+        #[test]
+        fn prop_compare_empty_separators(
+            seps in "[.\\-]{0,10}",
+        ) {
+            let v = seps.into_bytes();
+            let empty: Vec<u8> = Vec::new();
+            prop_assert_eq!(compare_versions(&v, &empty), 0);
+            prop_assert_eq!(compare_versions(&v, &v), 0);
+        }
+
+        // P0: overflow-length numeric components — reflexivity still holds
+        #[test]
+        fn prop_compare_overflow_reflexive(
+            big in "[1-9][0-9]{18,20}",
+        ) {
+            let v = big.into_bytes();
+            prop_assert_eq!(compare_versions(&v, &v), 0);
+        }
+    }
+
+    // P0: concrete Nix version corpus — antisymmetry and known orderings
+    #[test]
+    fn test_nix_version_corpus() {
+        let versions = [
+            "2.3.1", "2.3.10", "2.3.2", "2.4", "2.13.3",
+            "23.05", "23.11", "24.05",
+            "1.0pre1", "1.0pre2", "1.0",
+            "0.1", "0.10", "0.2",
+        ];
+        for &a in &versions {
+            for &b in &versions {
+                let va = a.as_bytes().to_vec();
+                let vb = b.as_bytes().to_vec();
+                let ab = compare_versions(&va, &vb);
+                let ba = compare_versions(&vb, &va);
+                assert_eq!(
+                    i16::from(ab), -i16::from(ba),
+                    "antisymmetry failed for {a} vs {b}"
+                );
+            }
+            let va = a.as_bytes().to_vec();
+            assert_eq!(compare_versions(&va, &va), 0, "reflexivity failed for {a}");
+        }
+        // Known orderings
+        assert_eq!(compare_versions(&v("2.3.1"), &v("2.3.10")), -1);
+        assert_eq!(compare_versions(&v("2.3.2"), &v("2.3.10")), -1);
+        assert_eq!(compare_versions(&v("23.05"), &v("23.11")), -1);
+        assert_eq!(compare_versions(&v("0.1"), &v("0.2")), -1);
+        assert_eq!(compare_versions(&v("0.2"), &v("0.10")), -1);
     }
 }
