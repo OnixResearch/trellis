@@ -37,6 +37,7 @@ verus! {
 // ============================================================
 
 // r[depends consensus-path.append-preserves-invariant]
+// r[impl consensus-path.append-preserves-invariant]
 // r[verify consensus-path.append-preserves-invariant]
 /// Appending an entry satisfies the leader log invariant.
 /// The new log is a prefix extension of the old.
@@ -67,6 +68,7 @@ pub proof fn append_preserves_invariant(
 // ============================================================
 
 // r[depends consensus-path.appended-entry-committable]
+// r[impl consensus-path.appended-entry-committable]
 // r[verify consensus-path.appended-entry-committable]
 /// An entry appended at the current term creates a committable entry.
 /// The new entry is at index log.len() + 1 (1-based) with the leader's term.
@@ -96,6 +98,7 @@ pub proof fn appended_entry_committable(
 // ============================================================
 
 // r[depends consensus-path.follower-commit-monotonic-bounded]
+// r[impl consensus-path.follower-commit-monotonic-bounded]
 // r[verify consensus-path.follower-commit-monotonic-bounded]
 /// Follower commit update is monotonic (>= current) and bounded (<= leader).
 pub proof fn follower_commit_monotonic_bounded(
@@ -115,6 +118,7 @@ pub proof fn follower_commit_monotonic_bounded(
 // ============================================================
 
 // r[depends consensus-path.applied-bounded-by-commit]
+// r[impl consensus-path.applied-bounded-by-commit]
 // r[verify consensus-path.applied-bounded-by-commit]
 /// After advancing last_applied, the result is still <= commit_index.
 /// No entry is applied before it's committed.
@@ -133,6 +137,7 @@ pub proof fn applied_bounded_by_commit(
 // ============================================================
 
 // r[depends consensus-path.write-path-end-to-end]
+// r[impl consensus-path.write-path-end-to-end]
 // r[verify consensus-path.write-path-end-to-end]
 /// End-to-end write path: appending an entry at term T, once committed,
 /// creates a committable entry that can be applied. The log invariant
@@ -169,6 +174,7 @@ pub proof fn write_path_end_to_end(
 // ============================================================
 
 // r[depends consensus-path.lease-subsumes-read-index]
+// r[impl consensus-path.lease-subsumes-read-index]
 // r[verify consensus-path.lease-subsumes-read-index]
 /// lease_read_safe implies read_safe_at. Lease reads are strictly
 /// stronger than ReadIndex — they add a lease validity check on top.
@@ -186,6 +192,7 @@ pub proof fn lease_subsumes_read_index(
 // ============================================================
 
 // r[depends consensus-path.committed-read-consistent]
+// r[impl consensus-path.committed-read-consistent]
 // r[verify consensus-path.committed-read-consistent]
 /// If two servers have matching log prefixes through the commit point,
 /// and a read is safe (commit >= read_index), then both servers agree
@@ -221,6 +228,7 @@ pub proof fn committed_read_consistent(
 // ============================================================
 
 // r[depends consensus-path.read-path-end-to-end]
+// r[impl consensus-path.read-path-end-to-end]
 // r[verify consensus-path.read-path-end-to-end]
 /// End-to-end read path: authority confirmation + matching prefix through
 /// commit → every entry below read_index agrees on both servers.
@@ -256,6 +264,7 @@ pub proof fn read_path_end_to_end(
 // ============================================================
 
 // r[depends consensus-path.write-then-read]
+// r[impl consensus-path.write-then-read]
 // r[verify consensus-path.write-then-read]
 /// A write committed at index N is visible to any subsequent read
 /// with read_index > N, provided logs match through the commit point.

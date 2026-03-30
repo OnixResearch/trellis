@@ -48,6 +48,7 @@ pub open spec fn decode_u64_spec(bs: Seq<u8>) -> u64
         | ((bs[7] as u64) << 56u64)
 }
 
+// r[impl serialize-inj.encode-u64-length]
 // r[verify serialize-inj.encode-u64-length]
 /// Proof: encode_u64 always produces exactly 8 bytes.
 pub proof fn encode_u64_len(v: u64)
@@ -158,6 +159,7 @@ proof fn encode_tagged_len(tag: u8, payload: Seq<u8>)
     ensures encode_tagged_spec(tag, payload).len() == payload.len() + 1
 {}
 
+// r[impl serialize-inj.tag-disjoint]
 // r[verify serialize-inj.tag-disjoint]
 /// Proof: different tags produce different encodings regardless of payload.
 proof fn tag_disjoint(t1: u8, t2: u8, p1: Seq<u8>, p2: Seq<u8>)
@@ -172,6 +174,7 @@ proof fn tag_disjoint(t1: u8, t2: u8, p1: Seq<u8>, p2: Seq<u8>)
     // t1 != t2, so e1 != e2.
 }
 
+// r[impl serialize-inj.encode-tagged-injective]
 // r[verify serialize-inj.encode-tagged-injective]
 /// Proof: same tag with equal encodings implies equal payloads.
 proof fn encode_tagged_injective(tag: u8, p1: Seq<u8>, p2: Seq<u8>)

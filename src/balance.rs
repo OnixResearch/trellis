@@ -129,6 +129,7 @@ proof fn debit_monotonic(balance: u64, amount: u64)
         debit_spec(balance, amount) >= 0,
 {}
 
+// r[impl balance.credit-debit-inverse]
 // r[verify balance.credit-debit-inverse]
 /// Credit then debit is identity.
 proof fn credit_debit_roundtrip(balance: u64, amount: u64)
@@ -179,6 +180,7 @@ proof fn no_funds_implies_debit_fails(balance: u64, amount: u64)
     ensures !has_funds_spec(balance, amount) <==> debit_spec(balance, amount) < 0
 {}
 
+// r[impl balance.conservation]
 // r[verify balance.conservation]
 /// Conservation: credit(b,a) - a == b and debit(b,a) + a == b.
 proof fn conservation_pair(balance: u64, amount: u64)

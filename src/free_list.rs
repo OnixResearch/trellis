@@ -213,6 +213,7 @@ proof fn push_preserves_old(list: Seq<u64>, block: u64, other: u64)
     assert(pushed[i + 1] == other);
 }
 
+// r[impl free-list.all-distinct]
 // r[verify free-list.all-distinct]
 /// Push onto a distinct list with a fresh block produces a distinct list.
 proof fn push_preserves_distinct(list: Seq<u64>, block: u64)
@@ -254,6 +255,7 @@ proof fn pop_preserves_distinct(list: Seq<u64>)
     }
 }
 
+// r[impl free-list.all-within]
 // r[verify free-list.all-within]
 /// Push with a bounded block preserves the bounding invariant.
 proof fn push_preserves_within(list: Seq<u64>, block: u64, bound: u64)

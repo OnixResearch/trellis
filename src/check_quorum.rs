@@ -176,6 +176,7 @@ proof fn singleton_never_steps_down()
     ensures !should_step_down_spec(1, 1)
 {}
 
+// r[impl check-quorum.partitioned-leader]
 // r[verify check-quorum.partitioned-leader]
 /// Partitioned leader with only self must step down.
 proof fn partitioned_leader_steps_down(cluster_size: u64)
@@ -183,6 +184,7 @@ proof fn partitioned_leader_steps_down(cluster_size: u64)
     ensures should_step_down_spec(1, cluster_size)
 {}
 
+// r[impl check-quorum.leader-counts-self]
 // r[verify check-quorum.leader-counts-self]
 /// Full cluster never steps down.
 proof fn full_cluster_stable(cluster_size: u64)

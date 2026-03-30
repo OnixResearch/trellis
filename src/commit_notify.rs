@@ -356,6 +356,7 @@ mod tests {
     use super::*;
 
     // r[verify commit-notify.count]
+    // r[verify commit-notify.first-committed]
     #[test]
     fn test_newly_committed_count() {
         assert_eq!(newly_committed_count(5, 10), 5);

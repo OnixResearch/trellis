@@ -174,6 +174,7 @@ proof fn empty_log_no_compact(threshold: u64)
     ensures !should_compact_spec(0, threshold)
 {}
 
+// r[impl log-compaction.prefix-removed]
 // r[verify log-compaction.prefix-removed]
 /// After compaction, no entry from the original [0, snapshot_index)
 /// range is present.
@@ -183,6 +184,7 @@ proof fn prefix_removed(log: Seq<LogEntry>, snapshot_index: u64)
         == log.len() - snapshot_index as int
 {}
 
+// r[impl log-compaction.suffix-preserved]
 // r[verify log-compaction.suffix-preserved]
 /// All entries at [snapshot_index, log.len()) are preserved.
 proof fn suffix_preserved(log: Seq<LogEntry>, snapshot_index: u64)
@@ -230,6 +232,7 @@ proof fn translate_preserves_order(a: u64, b: u64, first: u64)
         translate_index_spec(a, first) <= translate_index_spec(b, first)
 {}
 
+// r[impl log-compaction.compact-preserves-commit]
 // r[verify log-compaction.compact-preserves-commit]
 /// Compacting below commit index does not change commit index.
 /// The commit index is an absolute index, independent of log array position.

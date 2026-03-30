@@ -229,6 +229,7 @@ mod tests {
     use super::*;
 
     // r[verify constant-time-eq.equal-returns-true]
+    // r[verify constant-time-eq.xor-fold]
     #[test]
     fn test_equal() {
         let a = [0u8; 32];

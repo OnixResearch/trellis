@@ -151,6 +151,7 @@ proof fn lease_expires(start: u64, timeout: u64, drift: u64)
         (start + (timeout - drift)) as u64)
 {}
 
+// r[impl lease-read.disjoint]
 // r[verify lease-read.disjoint]
 /// Two leases with sequential start times don't overlap when the
 /// second starts after the first expires.

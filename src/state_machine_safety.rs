@@ -37,6 +37,7 @@ pub open spec fn committed_entries_agree_spec(
     ==> agree_at_spec(log_a, log_b, index)
 }
 
+// r[impl state-machine-safety.index-agreement]
 // r[verify state-machine-safety.index-agreement]
 /// If two logs have the same term at an index, they agree (by definition
 /// of agree_at which checks term equality).
@@ -64,6 +65,7 @@ pub open spec fn committed_prefix_agrees_spec(
         0 <= i < k ==> agree_at_spec(log_a, log_b, i)
 }
 
+// r[impl state-machine-safety.prefix-agreement]
 // r[verify state-machine-safety.prefix-agreement]
 /// If two logs match on a prefix, every entry in that prefix agrees.
 proof fn committed_prefix_agrees(
@@ -93,6 +95,7 @@ pub open spec fn commit_implies_safe_spec(
     ==> agree_at_spec(log_a, log_b, i)
 }
 
+// r[impl state-machine-safety.commit-safety]
 // r[verify state-machine-safety.commit-safety]
 /// Committed entry safety: if logs match through the commit point,
 /// all committed entries are identical.

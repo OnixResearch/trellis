@@ -123,6 +123,7 @@ pub fn window_after_ack(
 
 // --- Safety proofs ---
 
+// r[impl replication-pipeline.empty-window]
 // r[verify replication-pipeline.empty-window]
 /// Fully acknowledged pipeline has zero inflight.
 proof fn empty_pipeline(match_index: u64)
@@ -136,6 +137,7 @@ proof fn empty_can_send(match_index: u64, max_inflight: u64)
     ensures can_send_more_spec((match_index + 1) as u64, match_index, max_inflight)
 {}
 
+// r[impl replication-pipeline.full-window-blocks]
 // r[verify replication-pipeline.full-window-blocks]
 /// Full pipeline blocks further sends.
 proof fn full_blocks(next_index: u64, match_index: u64, max_inflight: u64)

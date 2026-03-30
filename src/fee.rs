@@ -137,6 +137,7 @@ pub fn tiered_fee(amount: u64, rate_bps: u64, min_fee: u64) -> (result: u64)
 
 // --- Proofs ---
 
+// r[impl fee.conservation]
 // r[verify fee.conservation]
 /// Fee + net = amount. The fundamental conservation property.
 pub proof fn fee_net_conservation(amount: u64, rate_bps: u64)

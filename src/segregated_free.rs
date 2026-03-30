@@ -121,6 +121,8 @@ pub fn seg_total_free(lists: &[Vec<u64>]) -> (result: u64)
 
 // ─── Cross-class uniqueness ──────────────────────────────────────────
 
+// r[impl segregated-free.cross-class-unique]
+// r[verify segregated-free.cross-class-unique]
 // r[depends segregated-free.cross-class-unique]
 /// Spec: no block appears in two different class lists.
 pub open spec fn cross_class_unique_spec(lists: Seq<Seq<u64>>) -> bool {

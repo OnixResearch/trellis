@@ -372,6 +372,8 @@ mod tests {
     use super::*;
 
     // r[verify persistent-state.vote-response]
+    // r[verify persistent-state.recover]
+    // r[verify persistent-state.needs-persist]
     #[test]
     fn test_vote_persist_set() {
         let granted = must_persist_before_vote_response(true);

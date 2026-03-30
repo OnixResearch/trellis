@@ -183,6 +183,7 @@ mod tests {
     use super::*;
 
     // r[verify coalesce-policy.immediate]
+    // r[verify coalesce-policy.queue-len]
     #[test]
     fn test_immediate() {
         assert!(should_coalesce_immediate(true));

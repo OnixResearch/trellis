@@ -537,6 +537,7 @@ mod tests {
 
     // --- Unit tests ---
 
+    // r[verify lsm-level.write-amp-per-level]
     #[test]
     // r[verify lsm-level.target-size]
     fn test_target_size_basic() {

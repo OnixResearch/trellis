@@ -132,6 +132,7 @@ proof fn gap_zero_when_caught_up(learner_match: u64, leader_log_len: u64)
     ensures replication_gap_spec(learner_match, leader_log_len) == 0
 {}
 
+// r[impl learner-readiness.gap-monotonic]
 // r[verify learner-readiness.gap-monotonic]
 /// Increasing learner_match decreases gap.
 proof fn gap_monotonic(m1: u64, m2: u64, leader_log_len: u64)

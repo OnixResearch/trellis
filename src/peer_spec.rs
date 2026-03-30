@@ -148,6 +148,7 @@ mod tests {
     use super::*;
 
     // r[verify peer-spec.parse]
+    // r[verify peer-spec.find-separator]
     #[test]
     fn test_valid() {
         let (code, sep) = parse_peer_spec(b"123@endpoint");

@@ -4,7 +4,8 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 3832 Verus proofs + 2302 cargo tests = all gates green
+- 4809 Verus proofs + 2859 cargo tests = all gates green
+- 0 uncovered + 0 untested = full tracey coverage (1153 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - 13 remaining external_body items: 6 crypto axioms (permanent), 4 nix_version Z3 limits (permanent), 3 log_invariant_inductive (permanent — unsound without system-level invariant)
@@ -1371,3 +1372,17 @@
 - pool::pool_alloc/free and segregated_free::seg_alloc/free also external_body — composition
 - All spec-level proofs fully verified (no external_body on proof fns)
 - 4732 Verus verified items, 2841 cargo tests, 0 verification errors
+
+## Networking Domain (2026-03-30)
+- tcp_state module: TCP connection state machine (RFC 793), 11 states, 18 transitions
+  - Same u8 constant pattern as circuit_breaker, node_lifecycle, process_state
+  - TCP_CLOSED through TCP_TIME_WAIT (0-10)
+  - All 41 Verus proofs automatic — Z3 handles u8 case splits on 11-value domain
+  - No nonlinear_arith, no external_body, no bit_vector needed
+  - 18 new cargo tests (10 unit + 8 proptest)
+  - Key properties: no self-transitions, transition preserves validity,
+    data implies connected, shutdown implies connected, reachability paths
+    (active/passive open, active/passive close, simultaneous open/close)
+  - Proof-only requirements (closed-terminal, established-reachable) need
+    both r[impl] and r[verify] on the proof fn — same pattern as node_lifecycle
+  - 4773 Verus proofs (+41), 2859 cargo tests (+18)

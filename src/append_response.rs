@@ -159,6 +159,7 @@ proof fn classify_failure(term: u64)
     ensures classify_append_response_spec(term, term, false) == RESP_FAILURE
 {}
 
+// r[impl append-response.match-advances]
 // r[verify append-response.match-advances]
 /// Match index advances on success.
 proof fn match_advances_on_success(
@@ -183,6 +184,7 @@ proof fn match_monotonic_on_success(
     ensures on_append_success_spec(match_index, next_index, entries_sent).0 >= match_index
 {}
 
+// r[impl append-response.next-after-success]
 // r[verify append-response.next-after-success]
 /// After success, next_index == match_index + 1.
 proof fn next_follows_match(

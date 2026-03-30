@@ -298,6 +298,7 @@ pub proof fn sum_update_total(accounts: Seq<u64>, idx: int, new_val: u64)
 // Conservation proofs
 // -----------------------------------------------------------------------
 
+// r[impl ledger.conservation]
 // r[verify ledger.conservation]
 /// A valid transfer preserves the total balance across all accounts.
 pub proof fn transfer_preserves_total(
@@ -510,6 +511,7 @@ pub open spec fn all_transfers_valid_spec(
     }
 }
 
+// r[impl ledger.batch]
 // r[verify ledger.batch]
 /// A valid batch of transfers preserves total balance.
 pub proof fn batch_preserves_total(
@@ -561,6 +563,7 @@ mod tests {
     use super::*;
 
     // r[verify ledger.total]
+    // r[verify ledger.account-count]
     #[test]
     fn test_total_balance() {
         assert_eq!(total_balance(&[]), Some(0));

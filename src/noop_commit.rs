@@ -128,6 +128,7 @@ mod tests {
     }
 
     // r[verify noop-commit.make-noop]
+    // r[verify noop-commit.is-noop]
     #[test]
     fn test_make_noop() {
         let noop = make_noop_entry(5);

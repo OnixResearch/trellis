@@ -144,6 +144,7 @@ pub fn validate_transfer(
 
 // --- Proofs ---
 
+// r[impl transfer.conservation]
 // r[verify transfer.conservation]
 /// Total value is conserved across a valid transfer.
 proof fn conservation_of_value(

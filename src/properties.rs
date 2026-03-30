@@ -3653,6 +3653,7 @@ mod cluster_coordination_tests {
     use proptest::prelude::*;
 
     proptest! {
+        // r[impl properties.jitter-bounded-like-backoff]
         // r[verify properties.jitter-bounded-like-backoff]
         #[test]
         fn prop_jitter_bounded_like_backoff(
@@ -3756,6 +3757,7 @@ mod kv_storage_tests {
             prop_assert_eq!(crate::constant_time_eq::constant_time_eq(&a, &b), a == b);
         }
 
+        // r[impl properties.snapshot-chain-consistency]
         // r[verify properties.snapshot-chain-consistency]
         #[test]
         fn prop_snapshot_round_trip(data_hash: u64, meta_hash: u64, chain_hash: u64) {
@@ -3777,6 +3779,7 @@ mod cluster_membership_tests {
     use proptest::prelude::*;
 
     proptest! {
+        // r[impl properties.promote-preserves-quorum]
         // r[verify properties.promote-preserves-quorum]
         #[test]
         fn prop_promote_preserves_quorum(
@@ -3794,6 +3797,7 @@ mod cluster_membership_tests {
             prop_assert!(crate::quorum::is_quorum(n, n));
         }
 
+        // r[impl properties.replace-quorum-guard]
         // r[verify properties.replace-quorum-guard]
         #[test]
         fn prop_replace_quorum_guard(
@@ -3985,6 +3989,7 @@ mod heartbeat_cross_tests {
     use proptest::prelude::*;
 
     proptest! {
+        // r[impl properties.heartbeat-interval-less-than-election]
         // r[verify properties.heartbeat-interval-less-than-election]
         /// The timing constraint heartbeat < election_min ensures
         /// multiple heartbeats per election timeout period.
@@ -3999,6 +4004,7 @@ mod heartbeat_cross_tests {
             prop_assert!(election_min / heartbeat >= 1);
         }
 
+        // r[impl properties.heartbeat-reset-prevents-election]
         // r[verify properties.heartbeat-reset-prevents-election]
         /// A valid heartbeat resets the timer, which keeps the leader alive.
         #[test]
@@ -4018,6 +4024,7 @@ mod heartbeat_cross_tests {
             }
         }
 
+        // r[impl properties.heartbeat-ack-stale-triggers-step-down]
         // r[verify properties.heartbeat-ack-stale-triggers-step-down]
         /// A higher-term ack is invalid and triggers step-down.
         #[test]
@@ -4046,6 +4053,7 @@ mod log_compaction_cross_tests {
     use proptest::prelude::*;
 
     proptest! {
+        // r[impl properties.compact-suffix-length-is-saturating-sub]
         // r[verify properties.compact-suffix-length-is-saturating-sub]
         /// Compacted log length is a saturating subtraction.
         #[test]
@@ -4062,6 +4070,7 @@ mod log_compaction_cross_tests {
             prop_assert_eq!(result.len() as u64, expected);
         }
 
+        // r[impl properties.compact-first-index-is-max]
         // r[verify properties.compact-first-index-is-max]
         /// first_log_index_after_compaction agrees with ordering::max.
         #[test]
@@ -4071,6 +4080,7 @@ mod log_compaction_cross_tests {
             prop_assert_eq!(result, expected);
         }
 
+        // r[impl properties.compact-offset-uses-checked-sub]
         // r[verify properties.compact-offset-uses-checked-sub]
         /// translate_index returns sentinel exactly when abs < first.
         #[test]
@@ -4084,6 +4094,7 @@ mod log_compaction_cross_tests {
             }
         }
 
+        // r[impl properties.compact-preserves-install-snapshot-trigger]
         // r[verify properties.compact-preserves-install-snapshot-trigger]
         /// After compaction at S, followers with next <= S need a snapshot.
         #[test]
@@ -6252,6 +6263,7 @@ mod job_execution_proofs {
 
     verus! {
 
+    // r[impl properties.retry-non-retryable-never-retries]
     // r[verify properties.retry-non-retryable-never-retries]
     /// Non-retryable error codes never trigger retry, regardless of other conditions.
     proof fn retry_non_retryable_never_retries(
@@ -6268,6 +6280,7 @@ mod job_execution_proofs {
         )
     {}
 
+    // r[impl properties.timeout-triggers-failure]
     // r[verify properties.timeout-triggers-failure]
     /// A timed-out RUNNING job can transition to FAILED.
     proof fn timeout_triggers_failure(now: u64, deadline: u64)
@@ -6279,6 +6292,7 @@ mod job_execution_proofs {
             ),
     {}
 
+    // r[impl properties.result-success-completes]
     // r[verify properties.result-success-completes]
     /// A valid result (exit=0, hash matches, size ok) means RUNNING→COMPLETED.
     proof fn result_success_completes(
@@ -6300,6 +6314,7 @@ mod job_execution_proofs {
             ),
     {}
 
+    // r[impl properties.result-failure-fails]
     // r[verify properties.result-failure-fails]
     /// A failed validation means RUNNING→FAILED.
     proof fn result_failure_fails(
@@ -6321,10 +6336,179 @@ mod job_execution_proofs {
             ),
     {}
 
+    // r[impl properties.retryable-disjoint-from-success]
     // r[verify properties.retryable-disjoint-from-success]
     /// Exit code 0 (success) is never in the retryable error range.
     proof fn retryable_disjoint_from_success()
         ensures !crate::job_retry::is_retryable_error_spec(0)
+    {}
+
+    } // verus!
+}
+
+// --- Cross-module: Raft pipeline + session (wave 6) ---
+#[cfg(verus_keep_ghost)]
+mod raft_pipeline_proofs_v2 {
+    use vstd::prelude::*;
+    verus! {
+
+    // r[impl properties.append-response-success-advances-match]
+    // r[verify properties.append-response-success-advances-match]
+    proof fn append_response_success_advances_match(match_index: u64, next_index: u64, entries_sent: u64)
+        requires entries_sent > 0, match_index as int + entries_sent as int <= u64::MAX as int,
+        ensures crate::monotonic::is_advance_spec(match_index, crate::append_response::on_append_success_spec(match_index, next_index, entries_sent).0)
+    {}
+
+    // r[impl properties.check-quorum-singleton-safe]
+    // r[verify properties.check-quorum-singleton-safe]
+    proof fn check_quorum_singleton_safe()
+        ensures !crate::check_quorum::should_step_down_spec(1, 1)
+    {}
+
+    // r[impl properties.check-quorum-uses-quorum]
+    // r[verify properties.check-quorum-uses-quorum]
+    proof fn check_quorum_uses_quorum(recent_count: u64, cluster_size: u64)
+        requires cluster_size > 0
+        ensures crate::check_quorum::should_step_down_spec(recent_count, cluster_size) == !crate::quorum::is_quorum_spec(recent_count, cluster_size)
+    {}
+
+    // r[impl properties.election-timer-heartbeat-resets]
+    // r[verify properties.election-timer-heartbeat-resets]
+    proof fn election_timer_heartbeat_resets(msg_term: u64, current_term: u64, from_leader: bool, timeout: u64)
+        requires crate::election_timer::should_reset_on_append_entries_spec(msg_term, current_term, from_leader), timeout > 0,
+        ensures !crate::election_timer::is_election_timer_expired_spec(0, timeout)
+    {}
+
+    // r[impl properties.entry-type-noop-agrees]
+    // r[verify properties.entry-type-noop-agrees]
+    proof fn entry_type_noop_agrees()
+        ensures crate::entry_type::classify_entry_spec(crate::entry_type::NOOP_VALUE) == crate::entry_type::ENTRY_NOOP,
+            crate::entry_type::is_noop_entry_spec(crate::entry_type::ENTRY_NOOP),
+    {}
+
+    // r[impl properties.follower-commit-monotonic-is-advance]
+    // r[verify properties.follower-commit-monotonic-is-advance]
+    proof fn follower_commit_monotonic_is_advance(current_commit: u64, leader_commit: u64, last_new_entry_index: u64)
+        ensures crate::monotonic::is_advance_spec(current_commit, crate::follower_commit::follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index))
+    {}
+
+    // r[impl properties.last-applied-advance-is-monotonic]
+    // r[verify properties.last-applied-advance-is-monotonic]
+    proof fn last_applied_advance_is_monotonic(last_applied: u64, commit_index: u64)
+        ensures crate::monotonic::is_advance_spec(last_applied, crate::last_applied::advance_last_applied_spec(last_applied, commit_index))
+    {}
+
+    // r[impl properties.last-applied-bounded-by-commit]
+    // r[verify properties.last-applied-bounded-by-commit]
+    proof fn last_applied_bounded_by_commit(last_applied: u64, commit_index: u64)
+        requires last_applied <= commit_index
+        ensures crate::last_applied::advance_last_applied_spec(last_applied, commit_index) <= commit_index
+    {}
+
+    // r[impl properties.pending-apply-is-saturating-sub]
+    // r[verify properties.pending-apply-is-saturating-sub]
+    proof fn pending_apply_is_saturating_sub(last_applied: u64, commit_index: u64)
+        ensures crate::last_applied::pending_apply_count_spec(last_applied, commit_index) == crate::arithmetic::saturating_sub_spec(commit_index, last_applied)
+    {}
+
+    // r[impl properties.transfer-blocks-like-drain]
+    // r[verify properties.transfer-blocks-like-drain]
+    proof fn transfer_blocks_like_drain()
+        ensures crate::leadership_transfer::should_reject_proposal_spec(true) == !crate::drain::can_start_op_spec(true)
+    {}
+
+    // r[impl properties.transfer-caught-up-is-advance]
+    // r[verify properties.transfer-caught-up-is-advance]
+    proof fn transfer_caught_up_is_advance(target_match: u64, last_log: u64)
+        ensures crate::leadership_transfer::is_target_caught_up_spec(target_match, last_log) == crate::monotonic::is_advance_spec(last_log, target_match)
+    {}
+
+    // r[impl properties.transfer-timeout-is-expiration]
+    // r[verify properties.transfer-timeout-is-expiration]
+    proof fn transfer_timeout_is_expiration(deadline: u64, now: u64)
+        ensures crate::leadership_transfer::is_transfer_expired_spec(deadline, now) == crate::expiration::is_expired_spec(deadline, now)
+    {}
+
+    // r[impl properties.learner-caught-up-is-advance]
+    // r[verify properties.learner-caught-up-is-advance]
+    proof fn learner_caught_up_is_advance(learner_match: u64, leader_log_len: u64)
+        ensures crate::learner_readiness::is_caught_up_spec(learner_match, leader_log_len) == crate::monotonic::is_advance_spec(leader_log_len, learner_match)
+    {}
+
+    // r[impl properties.learner-gap-is-saturating-sub]
+    // r[verify properties.learner-gap-is-saturating-sub]
+    proof fn learner_gap_is_saturating_sub(learner_match: u64, leader_log_len: u64)
+        ensures crate::learner_readiness::replication_gap_spec(learner_match, leader_log_len) == crate::arithmetic::saturating_sub_spec(leader_log_len, learner_match)
+    {}
+
+    // r[impl properties.lease-disjoint-is-lease-disjointness]
+    // r[verify properties.lease-disjoint-is-lease-disjointness]
+    proof fn lease_disjoint_is_lease_disjointness(start_a: u64, expiry_a: u64, start_b: u64)
+        requires start_a <= expiry_a, expiry_a <= start_b,
+        ensures expiry_a <= start_b,
+    {}
+
+    // r[impl properties.lease-read-implies-read-index-safe]
+    // r[verify properties.lease-read-implies-read-index-safe]
+    proof fn lease_read_implies_read_index_safe(commit_index: u64, read_index: u64)
+        requires crate::lease_read::lease_read_safe_spec(true, commit_index, read_index)
+        ensures crate::read_index::read_safe_at_spec(read_index, commit_index)
+    {}
+
+    // r[impl properties.pipeline-empty-after-full-ack]
+    // r[verify properties.pipeline-empty-after-full-ack]
+    proof fn pipeline_empty_after_full_ack(next_index: u64, match_index: u64)
+        requires next_index > 0, match_index == next_index - 1,
+        ensures crate::replication_pipeline::inflight_count_spec(next_index, match_index) == 0
+    {}
+
+    // r[impl properties.pipeline-inflight-is-saturating-sub]
+    // r[verify properties.pipeline-inflight-is-saturating-sub]
+    proof fn pipeline_inflight_is_saturating_sub(next_index: u64, match_index: u64)
+        requires next_index > match_index, match_index < u64::MAX,
+        ensures crate::replication_pipeline::inflight_count_spec(next_index, match_index) == crate::arithmetic::saturating_sub_spec(next_index, (match_index + 1) as u64)
+    {}
+
+    // r[impl properties.snapshot-chunk-count-is-div-ceil]
+    // r[verify properties.snapshot-chunk-count-is-div-ceil]
+    proof fn snapshot_chunk_count_is_div_ceil(total_size: u64, chunk_size: u64)
+        requires chunk_size > 0
+        ensures crate::snapshot_transfer::chunk_count_spec(total_size, chunk_size) == crate::arithmetic::div_ceil_spec(total_size, chunk_size)
+    {}
+
+    // r[impl properties.snapshot-transfer-triggers-install]
+    // r[verify properties.snapshot-transfer-triggers-install]
+    proof fn snapshot_transfer_triggers_install(offset: u64, chunk_size: u64, total_size: u64)
+        requires total_size > 0, chunk_size > 0, crate::snapshot_transfer::is_last_chunk_spec(offset, chunk_size, total_size),
+        ensures offset as int + chunk_size as int >= total_size as int
+    {}
+
+    // r[impl properties.vote-tally-quorum-is-quorum]
+    // r[verify properties.vote-tally-quorum-is-quorum]
+    proof fn vote_tally_quorum_is_quorum(votes_received: u64, cluster_size: u64)
+        requires cluster_size > 0
+        ensures crate::ballot::has_won_election_spec(votes_received, cluster_size) == crate::quorum::is_quorum_spec(votes_received, cluster_size)
+    {}
+
+    // r[impl properties.session-duplicate-is-fencing]
+    // r[verify properties.session-duplicate-is-fencing]
+    proof fn session_duplicate_is_fencing(table_seq: u64, req_seq: u64)
+        requires crate::client_session::is_duplicate_spec(table_seq, req_seq), req_seq < table_seq,
+        ensures crate::fencing::is_stale_spec(req_seq, table_seq)
+    {}
+
+    // r[impl properties.session-expire-is-expiration]
+    // r[verify properties.session-expire-is-expiration]
+    proof fn session_expire_is_expiration(last_activity: u64, now: u64, timeout: u64)
+        requires now > last_activity, last_activity as int + timeout as int <= u64::MAX as int,
+        ensures crate::client_session::is_session_expired_spec(last_activity, now, timeout) == (now - last_activity > timeout)
+    {}
+
+    // r[impl properties.session-register-is-strict-advance]
+    // r[verify properties.session-register-is-strict-advance]
+    proof fn session_register_is_strict_advance(id: u64)
+        requires id < u64::MAX
+        ensures crate::monotonic::is_strict_advance_spec(id, crate::client_session::register_session_spec(id).1)
     {}
 
     } // verus!

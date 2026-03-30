@@ -349,6 +349,7 @@ mod tests {
     use super::*;
 
     // r[verify config-change.can-start]
+    // r[verify config-change.is-joint-committed]
     #[test]
     fn test_can_start_config_change() {
         assert!(can_start_config_change(PHASE_STABLE, 3));

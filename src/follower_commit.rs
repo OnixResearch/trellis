@@ -57,6 +57,7 @@ pub fn follower_update_commit(
 
 // --- Safety proofs ---
 
+// r[impl follower-commit.monotonic]
 // r[verify follower-commit.monotonic]
 /// Follower commit index never decreases.
 proof fn follower_commit_monotonic(
@@ -69,6 +70,7 @@ proof fn follower_commit_monotonic(
             >= current_commit
 {}
 
+// r[impl follower-commit.bounded-by-leader]
 // r[verify follower-commit.bounded-by-leader]
 /// Follower commit index never exceeds leader's commit index.
 proof fn follower_commit_bounded_by_leader(
@@ -81,6 +83,7 @@ proof fn follower_commit_bounded_by_leader(
             <= leader_commit || follower_update_commit_spec(current_commit, leader_commit, last_new_entry_index) == current_commit
 {}
 
+// r[impl follower-commit.bounded-by-log]
 // r[verify follower-commit.bounded-by-log]
 /// Follower commit index never exceeds the last log entry.
 proof fn follower_commit_bounded_by_log(

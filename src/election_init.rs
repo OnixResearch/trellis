@@ -141,6 +141,7 @@ proof fn election_state_valid()
     ensures is_valid_state_spec(init_election_state_spec())
 {}
 
+// r[impl election-init.self-vote-is-valid]
 // r[verify election-init.self-vote-is-valid]
 /// The self-vote is a valid vote: a node with no prior vote in the
 /// new term can always vote for itself (its own log is up-to-date

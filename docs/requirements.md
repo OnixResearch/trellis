@@ -5423,3 +5423,38 @@ fragmentation. MUST be strictly less than requested for all sizes > 0.
 r[fragmentation.slab-bound]
 frag_bound_slab(obj_size, slot_size) MUST return slot_size - obj_size.
 MUST be zero when obj_size == slot_size.
+
+## TCP Connection State Machine
+
+r[tcp-state.is-valid]
+is_valid_state MUST return true for exactly the 11 TCP states: CLOSED,
+LISTEN, SYN_SENT, SYN_RECEIVED, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2,
+CLOSE_WAIT, CLOSING, LAST_ACK, TIME_WAIT.
+
+r[tcp-state.can-transition]
+can_transition MUST return true for exactly the valid transitions defined
+in RFC 793. Self-transitions MUST be rejected. Both endpoints of a valid
+transition MUST be valid states.
+
+r[tcp-state.is-data-state]
+is_data_state MUST return true for ESTABLISHED and CLOSE_WAIT only.
+Data transfer is possible only in these states.
+
+r[tcp-state.is-shutdown]
+is_shutdown MUST return true for states in the connection teardown path:
+FIN_WAIT_1, FIN_WAIT_2, CLOSING, TIME_WAIT, LAST_ACK, CLOSE_WAIT.
+
+r[tcp-state.is-connected]
+is_connected MUST return true for states where a connection exists:
+SYN_RECEIVED, ESTABLISHED, FIN_WAIT_1, FIN_WAIT_2, CLOSE_WAIT, CLOSING,
+LAST_ACK, TIME_WAIT. CLOSED, LISTEN, and SYN_SENT are not connected.
+
+r[tcp-state.closed-terminal]
+CLOSED MUST have no outgoing application-driven transitions. The only
+transitions from CLOSED are via passive_open (→LISTEN) or active_open
+(→SYN_SENT), which are initiation functions, not state machine edges.
+
+r[tcp-state.established-reachable]
+A path from CLOSED to ESTABLISHED MUST exist through the normal
+three-way handshake (CLOSED→SYN_SENT→ESTABLISHED or
+CLOSED→LISTEN→SYN_RECEIVED→ESTABLISHED).

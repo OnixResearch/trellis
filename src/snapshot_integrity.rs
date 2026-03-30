@@ -277,6 +277,7 @@ mod tests {
     use super::*;
 
     // r[verify snapshot-integrity.round-trip]
+    // r[verify snapshot-integrity.verify-with-chain-hash]
     #[test]
     fn test_round_trip() {
         let integrity = compute_integrity(42, 99, 7);

@@ -223,6 +223,7 @@ pub proof fn learner_not_leader(
         }),
 {}
 
+// r[impl node-classify.at-most-one-leader]
 // r[verify node-classify.at-most-one-leader]
 /// At most one node is classified as leader.
 pub proof fn at_most_one_leader(

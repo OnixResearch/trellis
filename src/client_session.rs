@@ -188,7 +188,102 @@ pub fn is_session_expired(
     now > last_activity && (now - last_activity) > session_timeout
 }
 
+// --- register_session ---
+
+// r[depends client-session.register]
+pub open spec fn register_session_spec(next_session_id: u64) -> (u64, u64) {
+    (next_session_id, (next_session_id + 1) as u64)
+}
+
+// r[impl client-session.register]
+pub fn register_session(next_session_id: u64) -> (result: (u64, u64))
+    requires next_session_id < u64::MAX
+    ensures result.0 == next_session_id, result.1 == (next_session_id + 1) as u64,
+{ (next_session_id, next_session_id + 1) }
+
+// --- advance_session_seq ---
+
+// r[depends client-session.advance-seq]
+pub open spec fn advance_session_seq_spec(current_seq: u64, request_seq: u64) -> u64 {
+    if request_seq > current_seq { request_seq } else { current_seq }
+}
+
+// r[impl client-session.advance-seq]
+pub fn advance_session_seq(current_seq: u64, request_seq: u64) -> (result: u64)
+    ensures result == advance_session_seq_spec(current_seq, request_seq)
+{ if request_seq > current_seq { request_seq } else { current_seq } }
+
+// --- session_exists ---
+
+// r[depends client-session.lookup]
+pub open spec fn session_exists_spec(table_len: u64, session_id: u64) -> bool { session_id < table_len }
+
+// r[impl client-session.lookup]
+pub fn session_exists(table_len: u64, session_id: u64) -> (result: bool)
+    ensures result == session_exists_spec(table_len, session_id)
+{ session_id < table_len }
+
+// --- session_timed_out ---
+
+// r[depends client-session.expire]
+pub open spec fn session_timed_out_spec(last_activity: u64, now: u64, session_timeout: u64) -> bool {
+    is_session_expired_spec(last_activity, now, session_timeout)
+}
+
+// r[impl client-session.expire]
+pub fn session_timed_out(last_activity: u64, now: u64, session_timeout: u64) -> (result: bool)
+    ensures result == session_timed_out_spec(last_activity, now, session_timeout)
+{ is_session_expired(last_activity, now, session_timeout) }
+
+// --- cached_response_valid ---
+
+// r[depends client-session.response-cache]
+pub open spec fn cached_response_valid_spec(cached_seq: u64, request_seq: u64) -> bool { cached_seq == request_seq }
+
+// r[impl client-session.response-cache]
+pub fn cached_response_valid(cached_seq: u64, request_seq: u64) -> (result: bool)
+    ensures result == cached_response_valid_spec(cached_seq, request_seq)
+{ cached_seq == request_seq }
+
+// --- session_count_within_limit ---
+
+// r[depends client-session.table-bounded]
+pub open spec fn session_count_within_limit_spec(count: u64, max_sessions: u64) -> bool { count < max_sessions }
+
+// r[impl client-session.table-bounded]
+pub fn session_count_within_limit(count: u64, max_sessions: u64) -> (result: bool)
+    ensures result == session_count_within_limit_spec(count, max_sessions)
+{ count < max_sessions }
+
 // --- Safety proofs ---
+
+// r[verify client-session.register]
+proof fn register_advances(id: u64) requires id < u64::MAX
+    ensures register_session_spec(id).0 == id, register_session_spec(id).1 == (id + 1) as u64,
+{}
+
+// r[verify client-session.advance-seq]
+proof fn advance_monotonic(current_seq: u64, request_seq: u64)
+    ensures advance_session_seq_spec(current_seq, request_seq) >= current_seq
+{}
+
+// r[verify client-session.lookup]
+proof fn session_zero_exists(table_len: u64) requires table_len > 0
+    ensures session_exists_spec(table_len, 0)
+{}
+
+// r[verify client-session.expire]
+proof fn just_active_not_timed_out(now: u64, timeout: u64)
+    ensures !session_timed_out_spec(now, now, timeout)
+{}
+
+// r[verify client-session.response-cache]
+proof fn cached_response_exact(seq: u64) ensures cached_response_valid_spec(seq, seq) {}
+
+// r[verify client-session.table-bounded]
+proof fn empty_table_within_limit(max_sessions: u64) requires max_sessions > 0
+    ensures session_count_within_limit_spec(0, max_sessions)
+{}
 
 // r[verify client-session.is-duplicate]
 /// First command (seq 1) on a fresh session is not a duplicate.

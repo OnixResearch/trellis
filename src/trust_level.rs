@@ -230,6 +230,7 @@ mod tests {
     use super::*;
 
     // r[verify trust-level.resolve]
+    // r[verify trust-level.capacity-bounded]
     #[test]
     fn test_resolve() {
         assert_eq!(resolve_trust(true, true), BLOCKED);

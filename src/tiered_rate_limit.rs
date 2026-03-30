@@ -168,6 +168,8 @@ mod tests {
     use super::*;
 
     // r[verify tiered-rate-limit.check-tiered]
+    // r[verify tiered-rate-limit.peer-map-bounded]
+    // r[verify tiered-rate-limit.evict-reduces]
     #[test]
     fn test_both_sufficient() {
         let (code, g, p) = check_tiered(100, 50, 10);

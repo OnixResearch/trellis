@@ -197,6 +197,7 @@ proof fn expired_not_owner(state: LockState, node_id: u64, now: u64)
     ensures !is_owner_spec(state, node_id, now)
 {}
 
+// r[impl lease-mutex.safety]
 // r[verify lease-mutex.safety]
 /// If A is the owner, then no different node B is the owner at the same
 /// time. (The lock has a single holder field — trivially unique.)
@@ -283,6 +284,7 @@ mod tests {
     }
 
     // r[verify lease-mutex.is-available]
+    // r[verify lease-mutex.can-acquire]
     #[test]
     fn test_fresh_lock_available() {
         let lock = fresh_lock();

@@ -57,6 +57,7 @@ verus! {
 // ============================================================
 
 // r[depends concurrent-composition.rwlock-write-excludes-readers]
+// r[impl concurrent-composition.rwlock-write-excludes-readers]
 // r[verify concurrent-composition.rwlock-write-excludes-readers]
 /// In write mode with mutual exclusion satisfied, there are zero active
 /// readers — the writer has exclusive access to the protected data structure.
@@ -68,6 +69,7 @@ pub proof fn rwlock_write_excludes_readers(active_readers: u32)
 {}
 
 // r[depends concurrent-composition.rwlock-read-excludes-writer]
+// r[impl concurrent-composition.rwlock-read-excludes-writer]
 // r[verify concurrent-composition.rwlock-read-excludes-writer]
 /// In read mode with mutual exclusion, no writer holds the lock.
 /// Multiple readers can safely observe the data structure without mutation.
@@ -79,6 +81,7 @@ pub proof fn rwlock_read_excludes_writer(active_readers: u32)
 {}
 
 // r[depends concurrent-composition.rwlock-write-release-to-free]
+// r[impl concurrent-composition.rwlock-write-release-to-free]
 // r[verify concurrent-composition.rwlock-write-release-to-free]
 /// Releasing a write lock transitions to FREE mode, allowing subsequent
 /// readers or writers. The data structure invariant established during
@@ -91,6 +94,7 @@ pub proof fn rwlock_write_release_to_free()
 {}
 
 // r[depends concurrent-composition.rwlock-writer-token-is-strict-advance]
+// r[impl concurrent-composition.rwlock-writer-token-is-strict-advance]
 // r[verify concurrent-composition.rwlock-writer-token-is-strict-advance]
 /// The writer fencing token strictly advances on each write acquisition,
 /// composing with the monotonic module's strict advance predicate.
@@ -101,6 +105,7 @@ pub proof fn rwlock_writer_token_is_strict_advance(current: u64)
 {}
 
 // r[depends concurrent-composition.rwlock-writer-token-is-fencing-advance]
+// r[impl concurrent-composition.rwlock-writer-token-is-fencing-advance]
 // r[verify concurrent-composition.rwlock-writer-token-is-fencing-advance]
 /// The writer token advance composes with fencing::issue_token — both
 /// produce a value strictly greater than the input.
@@ -111,6 +116,7 @@ pub proof fn rwlock_writer_token_is_fencing_advance(current: u64)
 {}
 
 // r[depends concurrent-composition.rwlock-last-reader-frees]
+// r[impl concurrent-composition.rwlock-last-reader-frees]
 // r[verify concurrent-composition.rwlock-last-reader-frees]
 /// When the last reader releases, mode returns to FREE and the reader
 /// count drops to zero — matching the write-mode precondition.
@@ -125,6 +131,7 @@ pub proof fn rwlock_last_reader_frees()
 // ============================================================
 
 // r[depends concurrent-composition.seqlock-write-cycle-strict-advance]
+// r[impl concurrent-composition.seqlock-write-cycle-strict-advance]
 // r[verify concurrent-composition.seqlock-write-cycle-strict-advance]
 /// A complete seqlock write cycle (begin + end) produces a strict advance
 /// in the sequence counter.
@@ -140,6 +147,7 @@ pub proof fn seqlock_write_cycle_strict_advance(seq_num: u64)
 {}
 
 // r[depends concurrent-composition.seqlock-version-strict-advance]
+// r[impl concurrent-composition.seqlock-version-strict-advance]
 // r[verify concurrent-composition.seqlock-version-strict-advance]
 /// Each write cycle strictly advances the writer version.
 pub proof fn seqlock_version_strict_advance(seq_num: u64)
@@ -154,6 +162,7 @@ pub proof fn seqlock_version_strict_advance(seq_num: u64)
 {}
 
 // r[depends concurrent-composition.seqlock-valid-read-no-write]
+// r[impl concurrent-composition.seqlock-valid-read-no-write]
 // r[verify concurrent-composition.seqlock-valid-read-no-write]
 /// A valid seqlock read implies no write was in progress at the sample time.
 /// This guarantees the reader saw a consistent snapshot.
@@ -167,6 +176,7 @@ pub proof fn seqlock_valid_read_no_write(seq_before: u64, seq_after: u64)
 {}
 
 // r[depends concurrent-composition.seqlock-write-invalidates-read]
+// r[impl concurrent-composition.seqlock-write-invalidates-read]
 // r[verify concurrent-composition.seqlock-write-invalidates-read]
 /// A begin_write between a reader's before/after samples invalidates the read.
 /// The reader will detect this and retry.
@@ -188,6 +198,7 @@ pub proof fn seqlock_write_invalidates_read(
 // ============================================================
 
 // r[depends concurrent-composition.cas-pack-succeed-unpack-roundtrip]
+// r[impl concurrent-composition.cas-pack-succeed-unpack-roundtrip]
 // r[verify concurrent-composition.cas-pack-succeed-unpack-roundtrip]
 /// Full CAS cycle with ABA protection: pack a (value, gen) pair, CAS
 /// succeeds, unpack the result — recovered value and generation match
@@ -220,6 +231,7 @@ pub proof fn cas_pack_succeed_unpack_roundtrip(
 }
 
 // r[depends concurrent-composition.cas-aba-detected-by-generation]
+// r[impl concurrent-composition.cas-aba-detected-by-generation]
 // r[verify concurrent-composition.cas-aba-detected-by-generation]
 /// ABA scenario: a value returns to its original state but the generation
 /// counter has changed. CAS detects this because the packed words differ.
@@ -243,6 +255,7 @@ pub proof fn cas_aba_detected_by_generation(
 }
 
 // r[depends concurrent-composition.cas-retry-progress]
+// r[impl concurrent-composition.cas-retry-progress]
 // r[verify concurrent-composition.cas-retry-progress]
 /// Each failed CAS attempt with retry decreases attempts_remaining,
 /// guaranteeing termination of bounded retry loops.
@@ -257,6 +270,7 @@ pub proof fn cas_retry_progress(attempts: u64, max_attempts: u64)
 {}
 
 // r[depends concurrent-composition.cas-success-with-generation-bump]
+// r[impl concurrent-composition.cas-success-with-generation-bump]
 // r[verify concurrent-composition.cas-success-with-generation-bump]
 /// A successful CAS that bumps the generation produces a new packed word
 /// distinguishable from the old one — no ABA ambiguity.
@@ -289,6 +303,7 @@ pub proof fn cas_success_with_generation_bump(
 // ============================================================
 
 // r[depends concurrent-composition.hp-protected-blocks-rcu-free]
+// r[impl concurrent-composition.hp-protected-blocks-rcu-free]
 // r[verify concurrent-composition.hp-protected-blocks-rcu-free]
 /// If an address is hazard-protected, it cannot be reclaimed regardless
 /// of RCU grace period status. Hazard pointer protection is a stronger
@@ -304,6 +319,7 @@ pub proof fn hp_protected_blocks_rcu_free(
 {}
 
 // r[depends concurrent-composition.all-quiescent-all-empty-everything-reclaimable]
+// r[impl concurrent-composition.all-quiescent-all-empty-everything-reclaimable]
 // r[verify concurrent-composition.all-quiescent-all-empty-everything-reclaimable]
 /// When ALL threads are RCU-quiescent AND all hazard slots are empty,
 /// every retired address is reclaimable under both protocols.
@@ -330,6 +346,7 @@ pub proof fn all_quiescent_all_empty_everything_reclaimable(
 }
 
 // r[depends concurrent-composition.rcu-advance-enables-reclamation]
+// r[impl concurrent-composition.rcu-advance-enables-reclamation]
 // r[verify concurrent-composition.rcu-advance-enables-reclamation]
 /// Advancing the RCU grace period is a strict advance in the counter,
 /// composing with the monotonic module.
@@ -340,6 +357,7 @@ pub proof fn rcu_advance_enables_reclamation(grace_counter: u64)
 {}
 
 // r[depends concurrent-composition.hp-unprotect-enables-reclaim]
+// r[impl concurrent-composition.hp-unprotect-enables-reclaim]
 // r[verify concurrent-composition.hp-unprotect-enables-reclaim]
 /// After unprotecting a slot, the address previously in that slot becomes
 /// reclaimable (assuming it was the only slot protecting it).
@@ -364,6 +382,7 @@ pub proof fn hp_unprotect_enables_reclaim(
 // ============================================================
 
 // r[depends concurrent-composition.2pl-growing-respects-ordering]
+// r[impl concurrent-composition.2pl-growing-respects-ordering]
 // r[verify concurrent-composition.2pl-growing-respects-ordering]
 /// During the growing phase of 2PL, if lock ordering is respected
 /// (requested ID > max held ID), the acquisition is valid under both
@@ -382,6 +401,7 @@ pub proof fn twopl_growing_respects_ordering(
 {}
 
 // r[depends concurrent-composition.2pl-shrinking-no-acquire]
+// r[impl concurrent-composition.2pl-shrinking-no-acquire]
 // r[verify concurrent-composition.2pl-shrinking-no-acquire]
 /// In the shrinking phase, no acquisition is permitted — regardless of
 /// lock ordering. This prevents deadlock by construction.
@@ -395,6 +415,7 @@ pub proof fn twopl_shrinking_no_acquire(
 {}
 
 // r[depends concurrent-composition.2pl-phase-irreversible]
+// r[impl concurrent-composition.2pl-phase-irreversible]
 // r[verify concurrent-composition.2pl-phase-irreversible]
 /// The transition from growing to shrinking is one-way: releasing a lock
 /// moves to SHRINKING, and acquiring in SHRINKING is forbidden.
@@ -411,6 +432,7 @@ pub proof fn twopl_phase_irreversible(held: u64)
 // ============================================================
 
 // r[depends concurrent-composition.ticket-take-is-strict-advance]
+// r[impl concurrent-composition.ticket-take-is-strict-advance]
 // r[verify concurrent-composition.ticket-take-is-strict-advance]
 /// Taking a ticket strictly advances the ticket counter, composing
 /// with the monotonic module. This guarantees unique tickets.
@@ -423,6 +445,7 @@ pub proof fn ticket_take_is_strict_advance(ticket_counter: u64)
 {}
 
 // r[depends concurrent-composition.ticket-release-is-strict-advance]
+// r[impl concurrent-composition.ticket-release-is-strict-advance]
 // r[verify concurrent-composition.ticket-release-is-strict-advance]
 /// Releasing (advancing the serving counter) is a strict advance.
 pub proof fn ticket_release_is_strict_advance(serving: u64)
@@ -432,6 +455,7 @@ pub proof fn ticket_release_is_strict_advance(serving: u64)
 {}
 
 // r[depends concurrent-composition.ticket-fifo-order]
+// r[impl concurrent-composition.ticket-fifo-order]
 // r[verify concurrent-composition.ticket-fifo-order]
 /// An earlier ticket holder is served before a later one: if ticket A
 /// was taken before ticket B (A < B), and it's A's turn, then it is
@@ -453,6 +477,7 @@ pub proof fn ticket_fifo_order(
 // ============================================================
 
 // r[depends concurrent-composition.mpmc-occupancy-bounded]
+// r[impl concurrent-composition.mpmc-occupancy-bounded]
 // r[verify concurrent-composition.mpmc-occupancy-bounded]
 /// MPMC queue occupancy never exceeds capacity — same invariant as
 /// ring_buffer count ≤ cap.
@@ -465,6 +490,7 @@ pub proof fn mpmc_occupancy_bounded(head: u64, tail: u64, capacity: u64)
 {}
 
 // r[depends concurrent-composition.mpmc-full-blocks-enqueue]
+// r[impl concurrent-composition.mpmc-full-blocks-enqueue]
 // r[verify concurrent-composition.mpmc-full-blocks-enqueue]
 /// A full MPMC queue prevents enqueue — capacity check agrees with
 /// the ring buffer's is_full concept.
@@ -478,6 +504,7 @@ pub proof fn mpmc_full_blocks_enqueue(head: u64, tail: u64, capacity: u64)
 {}
 
 // r[depends concurrent-composition.mpmc-empty-blocks-dequeue]
+// r[impl concurrent-composition.mpmc-empty-blocks-dequeue]
 // r[verify concurrent-composition.mpmc-empty-blocks-dequeue]
 /// An empty MPMC queue prevents dequeue.
 pub proof fn mpmc_empty_blocks_dequeue(head: u64, tail: u64)
@@ -486,6 +513,7 @@ pub proof fn mpmc_empty_blocks_dequeue(head: u64, tail: u64)
 {}
 
 // r[depends concurrent-composition.mpmc-enqueue-dequeue-occupancy-roundtrip]
+// r[impl concurrent-composition.mpmc-enqueue-dequeue-occupancy-roundtrip]
 // r[verify concurrent-composition.mpmc-enqueue-dequeue-occupancy-roundtrip]
 /// Enqueue then dequeue preserves occupancy: the net effect on the
 /// count is zero.
@@ -502,6 +530,7 @@ pub proof fn mpmc_enqueue_dequeue_occupancy_roundtrip(head: u64, tail: u64)
 {}
 
 // r[depends concurrent-composition.mpmc-remaining-plus-occupancy]
+// r[impl concurrent-composition.mpmc-remaining-plus-occupancy]
 // r[verify concurrent-composition.mpmc-remaining-plus-occupancy]
 /// Remaining capacity + occupancy = total capacity (conservation law).
 pub proof fn mpmc_remaining_plus_occupancy(head: u64, tail: u64, capacity: u64)

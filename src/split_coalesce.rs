@@ -201,6 +201,7 @@ proof fn split_disjoint(addr: u64, order: u64)
         <= addr as int + block_size_spec(order) as int);
 }
 
+// r[impl split-coalesce.split-tree-total]
 // r[verify split-coalesce.split-tree-total]
 /// Single block (order == target): tree is one element.
 proof fn tree_single(addr: u64, order: u64)
@@ -222,6 +223,7 @@ proof fn tree_one_split(addr: u64, order: u64)
     assert(split_tree_total_spec(right, target, target) == seq![(right, target)]);
 }
 
+// r[impl split-coalesce.blocks-cover]
 // r[verify split-coalesce.blocks-cover]
 /// Total size of a single-block list equals that block's size.
 proof fn single_block_total(addr: u64, order: u64)
@@ -369,6 +371,7 @@ mod tests {
             }
         }
 
+        // r[impl split-coalesce.blocks-disjoint]
         // r[verify split-coalesce.blocks-disjoint]
         #[test]
         fn prop_recursive_split_disjoint(order in 2u64..16) {

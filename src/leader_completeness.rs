@@ -41,6 +41,7 @@ pub open spec fn commitment_election_overlap_spec(
     ==> (commit_votes as int + election_votes as int > cluster_size as int)
 }
 
+// r[impl leader-completeness.quorum-overlap]
 // r[verify leader-completeness.quorum-overlap]
 /// The commitment quorum and election quorum always overlap.
 pub proof fn prove_commitment_election_overlap(

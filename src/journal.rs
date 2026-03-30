@@ -62,6 +62,8 @@ pub fn apply_entry(prior_balance: u64, amount: u64, is_debit: bool) -> (result: 
 
 // --- entry_balance_correct ---
 
+// r[impl journal.entry-balance-correct]
+// r[verify journal.entry-balance-correct]
 // r[depends journal.entry-balance-correct]
 /// Spec: entry's running balance matches expected computation.
 pub open spec fn entry_balance_correct_spec(
@@ -74,6 +76,8 @@ pub open spec fn entry_balance_correct_spec(
 
 // --- seq_nums_monotonic ---
 
+// r[impl journal.seq-nums-monotonic]
+// r[verify journal.seq-nums-monotonic]
 // r[depends journal.seq-nums-monotonic]
 /// Spec: sequence numbers are strictly increasing.
 pub open spec fn seq_nums_monotonic_spec(entries: Seq<JournalEntry>) -> bool {
@@ -241,6 +245,7 @@ proof fn final_balance_after_append(entries: Seq<JournalEntry>, initial_balance:
     ensures final_balance_spec(entries.push(entry), initial_balance) == entry.running_balance
 {}
 
+// r[impl journal.credit-debit-roundtrip]
 // r[verify journal.credit-debit-roundtrip]
 /// Credit then debit of same amount returns to original balance.
 proof fn credit_then_debit_roundtrip(balance: u64, amount: u64)

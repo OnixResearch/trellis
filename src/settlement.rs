@@ -14,6 +14,8 @@ verus! {
 // Integer-valued sum (positions are signed)
 // -----------------------------------------------------------------------
 
+// r[impl settlement.int-sum]
+// r[verify settlement.int-sum]
 // r[depends settlement.int-sum]
 /// Spec: recursive sum of Seq<int> from index.
 pub open spec fn int_sum_spec(v: Seq<int>, from: int) -> int
@@ -47,6 +49,8 @@ pub open spec fn obligation_valid_spec(
     && amount > 0
 }
 
+// r[impl settlement.all-valid]
+// r[verify settlement.all-valid]
 // r[depends settlement.all-valid]
 /// Spec: all obligations in the sequence are valid.
 pub open spec fn all_obligations_valid_spec(
@@ -63,6 +67,8 @@ pub open spec fn all_obligations_valid_spec(
     }
 }
 
+// r[impl settlement.apply-obligation]
+// r[verify settlement.apply-obligation]
 // r[depends settlement.apply-obligation]
 /// Spec: apply one obligation to positions — debit sender, credit receiver.
 pub open spec fn apply_obligation_spec(
@@ -250,6 +256,8 @@ pub fn obligation_count(obligations: &[(usize, usize, u64)]) -> (result: usize)
     obligations.len()
 }
 
+// r[impl settlement.net-position-at]
+// r[verify settlement.net-position-at]
 // r[depends settlement.net-position-at]
 /// Spec: net position for a single party — credit sum minus debit sum.
 pub open spec fn net_position_at_spec(
@@ -328,6 +336,7 @@ proof fn int_sum_zeros_from(v: Seq<int>, from: int)
 // Core conservation proofs
 // -----------------------------------------------------------------------
 
+// r[impl settlement.apply-preserves-sum]
 // r[verify settlement.apply-preserves-sum]
 /// Applying one obligation preserves the sum of positions.
 /// Because +amount and -amount cancel.
@@ -355,6 +364,7 @@ proof fn apply_obligation_preserves_sum(
     // int_sum(step2) == int_sum(step1) + amount == int_sum(positions)
 }
 
+// r[impl settlement.positions-sum-zero]
 // r[verify settlement.positions-sum-zero]
 /// Net positions always sum to zero. The fundamental conservation theorem.
 /// Each obligation contributes +amount to one party and -amount to another.
@@ -397,6 +407,7 @@ proof fn apply_from_preserves_sum(
     }
 }
 
+// r[impl settlement.apply-preserves-length]
 // r[verify settlement.apply-preserves-length]
 /// Applying obligations preserves the position vector length.
 proof fn apply_from_preserves_length(
@@ -446,6 +457,7 @@ proof fn empty_obligations_zero_positions(num_parties: int)
             =~= Seq::new(num_parties as nat, |_i: int| 0int),
 {}
 
+// r[impl settlement.self-settlement]
 // r[verify settlement.self-settlement]
 /// The original obligations are a valid settlement of themselves.
 proof fn self_settlement(obligations: Seq<(int, int, u64)>, num_parties: int)
@@ -468,6 +480,7 @@ proof fn single_obligation_sum_zero(from_p: int, to_p: int, amount: u64, num_par
     positions_sum_zero(obs, num_parties);
 }
 
+// r[impl settlement.obligation-valid]
 // r[verify settlement.obligation-valid]
 /// Swapping from and to negates the net position contribution.
 proof fn swap_negates_position(

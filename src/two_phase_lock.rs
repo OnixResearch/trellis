@@ -190,6 +190,7 @@ proof fn growing_allows_acquire()
     ensures can_acquire_spec(PHASE_GROWING)
 {}
 
+// r[impl two-phase-lock.phase-monotonic]
 // r[verify two-phase-lock.phase-monotonic]
 /// The shrinking phase blocks acquisition.
 proof fn shrinking_blocks_acquire()

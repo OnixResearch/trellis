@@ -413,6 +413,9 @@ mod tests {
     use super::*;
 
     // r[verify alloc-bitmap.handle-pack]
+    // r[verify alloc-bitmap.handle-unpack-slot]
+    // r[verify alloc-bitmap.handle-unpack-gen]
+    // r[verify alloc-bitmap.generation]
     #[test]
     fn test_handle_roundtrip() {
         for slot in [0u32, 1, 100, u32::MAX] {

@@ -189,6 +189,7 @@ pub open spec fn conservation_spec(sizes: Seq<u16>, gap: u16, total: u16) -> boo
     sum_sizes_spec(sizes, 0) + total_gaps_spec(sizes.len() as int, gap) <= total as int
 }
 
+// r[impl layout-constraint.conservation]
 // r[verify layout-constraint.conservation]
 /// Sum of an empty sequence is zero.
 proof fn sum_empty()
@@ -237,6 +238,7 @@ pub open spec fn length_preserved_spec(input_len: int, output_len: int) -> bool 
     input_len == output_len
 }
 
+// r[impl layout-constraint.length-preservation]
 // r[verify layout-constraint.length-preservation]
 /// Length preservation is reflexive.
 proof fn length_preserved_reflexive(n: int)
@@ -245,6 +247,8 @@ proof fn length_preserved_reflexive(n: int)
 
 // --- zero total yields zero for proportional ---
 
+// r[impl layout-constraint.zero-total]
+// r[verify layout-constraint.zero-total]
 // r[depends layout-constraint.zero-total]
 /// Spec: proportional constraints resolve to zero when total space is zero.
 pub open spec fn zero_total_proportional_spec(tag: u8, resolved: u16) -> bool {
@@ -267,6 +271,7 @@ pub open spec fn sum_fixed_spec(tags: Seq<u8>, values: Seq<u16>, from: int) -> i
     }
 }
 
+// r[impl layout-constraint.fixed-conservation]
 // r[verify layout-constraint.fixed-conservation]
 /// When all constraints are Fixed, the sum of resolved sizes equals the sum
 /// of the fixed values.

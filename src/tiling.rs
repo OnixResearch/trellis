@@ -244,6 +244,7 @@ pub open spec fn gapped_position_spec(index: u16, size: u16, gap: u16) -> int {
     index as int * (size as int + gap as int)
 }
 
+// r[impl tiling.gapped-position]
 // r[verify tiling.gapped-position]
 /// Items at different indices in a uniform gapped strip are disjoint.
 proof fn gapped_items_disjoint(i: u16, j: u16, size: u16, gap: u16)
@@ -288,6 +289,7 @@ pub open spec fn clip_to_viewport_spec(
     }
 }
 
+// r[impl tiling.clip]
 // r[verify tiling.clip]
 /// A fully visible segment clips to itself.
 proof fn clip_identity_when_visible(
@@ -346,6 +348,7 @@ pub open spec fn scroll_in_bounds_spec(
     || content_extent <= viewport_size
 }
 
+// r[impl tiling.scroll-bounds]
 // r[verify tiling.scroll-bounds]
 /// Zero offset is always valid when content fits in viewport.
 proof fn zero_scroll_when_fits(viewport_size: u16, content_extent: u16)
@@ -373,6 +376,7 @@ mod tests {
     use super::*;
 
     // r[verify tiling.has-area]
+    // r[verify tiling.rect-end]
     #[test]
     fn test_has_area() {
         assert!(has_area(10, 20));

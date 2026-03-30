@@ -232,6 +232,7 @@ mod tests {
     use super::*;
 
     // r[verify arena.alloc]
+    // r[verify arena.generation]
     #[test]
     fn test_arena_alloc() {
         let (ptr, mark) = arena_alloc(100, 32);

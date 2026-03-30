@@ -56,6 +56,8 @@ pub open spec fn conflict_hint_spec(
     }
 }
 
+// r[impl fast-backtrack.first-index-of-term]
+// r[verify fast-backtrack.first-index-of-term]
 // r[depends fast-backtrack.first-index-of-term]
 /// Spec: find the first log index with the given term, scanning backward
 /// from `from` (inclusive).

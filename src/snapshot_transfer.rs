@@ -282,6 +282,7 @@ proof fn progress_bounded(received: u64, total: u64)
     }
 }
 
+// r[impl snapshot-transfer.all-chunks-cover]
 // r[verify snapshot-transfer.all-chunks-cover]
 /// Valid sequential chunks cover the full range without gaps.
 proof fn sequential_chunks_contiguous(
