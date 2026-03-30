@@ -1374,6 +1374,26 @@
 - 4732 Verus verified items, 2841 cargo tests, 0 verification errors
 
 ## Networking Domain (2026-03-30)
+## Database Internals Domain (2026-03-30)
+- 6 new modules: txn_isolation, mvcc, snapshot_isolation, query_cost, index_select, txn_dependency
+- `Seq::len()` returns `nat`, not `int` — must cast `as int` when spec fn returns `int`
+- `from` is reserved in Rust 2024 — use `src`/`dst` in proptest parameter names
+- Zero-param fns can't go inside proptest! macro — move to regular #[test]
+- TS_INFINITY = u64::MAX means `snapshot_ts < end_ts` fails when snapshot_ts == u64::MAX
+  (strict < with equal values). live_version_visible proof needs `requires snapshot_ts < TS_INFINITY`
+- chain_latest returns chain.len() (not -1) for "none visible" — avoids i64 truncation issues
+- Nested `choose` with `exists` inside triggers "Could not automatically infer triggers" —
+  restructure to single-level choose or use witness-based proof helpers
+- best_index minimality proof needs nonlinear cross-multiplication transitivity
+  `(a/b <= c/d) && (c/d <= e/f) ==> a/b <= e/f` via cross-multiply. Z3 can't maintain
+  this through a loop invariant even with by(nonlinear_arith) because the standard solver
+  checks `requires` before delegating to nonlinear solver, and the standard solver can't
+  derive the quantified facts from the invariant. Marked no-ensures, covered by proptest.
+- ts_ordered uses (usize, usize) edges (not u64) to avoid usize↔u64 cast issues in indexing
+- `has_ww_conflict_spec` symmetry proof: can't use nested choose(exists) — restructure
+  to single choose + Seq::contains bridging
+- 4929 Verus proofs (+120), 2930 cargo tests (+71), 0 verification errors
+
 - tcp_state module: TCP connection state machine (RFC 793), 11 states, 18 transitions
   - Same u8 constant pattern as circuit_breaker, node_lifecycle, process_state
   - TCP_CLOSED through TCP_TIME_WAIT (0-10)

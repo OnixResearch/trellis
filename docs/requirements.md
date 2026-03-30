@@ -5458,3 +5458,110 @@ r[tcp-state.established-reachable]
 A path from CLOSED to ESTABLISHED MUST exist through the normal
 three-way handshake (CLOSED→SYN_SENT→ESTABLISHED or
 CLOSED→LISTEN→SYN_RECEIVED→ESTABLISHED).
+
+
+## Transaction Isolation
+
+r[txn-isolation.is-valid]
+is_valid_level MUST return true for levels 0–3 (READ_UNCOMMITTED through SERIALIZABLE).
+
+r[txn-isolation.allows-dirty-read]
+allows_dirty_read MUST return true only for READ_UNCOMMITTED.
+
+r[txn-isolation.allows-non-repeatable-read]
+allows_non_repeatable_read MUST return true for levels below REPEATABLE_READ.
+
+r[txn-isolation.allows-phantom]
+allows_phantom MUST return true for levels below SERIALIZABLE.
+
+r[txn-isolation.prevents-dirty-read]
+prevents_dirty_read MUST be monotonic: higher levels prevent at least as much.
+
+r[txn-isolation.prevents-non-repeatable-read]
+prevents_non_repeatable_read MUST be monotonic.
+
+r[txn-isolation.prevents-phantom]
+prevents_phantom MUST be monotonic.
+
+r[txn-isolation.anomaly-count]
+Higher isolation levels MUST have fewer or equal allowed anomaly classes.
+
+r[txn-isolation.strengthen]
+strengthen MUST return the stricter of two levels and be commutative and idempotent.
+
+r[txn-isolation.weaken]
+weaken MUST return the more permissive of two levels and be commutative and idempotent.
+
+## MVCC
+
+r[mvcc.is-visible]
+A version is visible iff begin_ts <= snapshot_ts < end_ts.
+
+r[mvcc.is-committed]
+A version's creator is committed iff the creator txn is not in the active set.
+
+r[mvcc.snapshot-visible]
+A version is snapshot-visible iff it is both timestamp-visible and committed.
+
+r[mvcc.version-superseded]
+A version is superseded iff its end_ts is not TS_INFINITY.
+
+r[mvcc.can-gc]
+A version can be GC'd iff it is superseded and end_ts <= oldest_active.
+
+r[mvcc.chain-latest]
+chain_latest MUST return the first visible version in a chain, or chain.len() if none.
+
+## Snapshot Isolation
+
+r[snapshot-iso.has-ww-conflict]
+has_ww_conflict MUST return true iff two write sets share any key. MUST be symmetric.
+
+r[snapshot-iso.si-allows-commit]
+SI allows commit when no concurrent committed transaction's write set conflicts.
+
+r[snapshot-iso.write-set-size]
+write_set_size MUST return the number of keys in the write set.
+
+r[snapshot-iso.rw-overlap]
+rw_overlap MUST return true iff read set and write set share any key.
+
+## Query Cost
+
+r[query-cost.seq-scan]
+seq_scan_cost MUST equal num_pages * cost_per_page. MUST be monotonic in both params.
+
+r[query-cost.index-scan]
+index_scan_cost MUST be zero when selectivity is zero.
+
+r[query-cost.selectivity]
+Higher distinct values MUST produce lower selectivity.
+
+## Index Selection
+
+r[index-select.is-covering]
+is_covering MUST return true iff every query column appears in the index.
+
+r[index-select.best-index]
+best_index MUST return a valid index within bounds.
+
+r[index-select.column-count]
+column_count MUST return the number of columns.
+
+## Transaction Dependencies
+
+r[txn-dep.is-valid-type]
+is_valid_dep_type MUST accept WR(0), WW(1), and RW(2).
+
+r[txn-dep.has-dependency]
+has_dependency MUST return true iff the edge (from, to) exists.
+
+r[txn-dep.has-self-dep]
+has_self_dep MUST return true iff any edge has from == to.
+
+r[txn-dep.has-two-cycle]
+has_two_cycle MUST return true iff edges contain A→B and B→A with A≠B.
+
+r[txn-dep.ts-ordered]
+ts_ordered MUST return true iff all edges respect timestamp ordering.
+Timestamp ordering MUST imply no self-loops and no 2-cycles.
