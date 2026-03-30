@@ -178,6 +178,19 @@
 //! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write detection
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
+//!
+//! ### Memory allocator verification
+//!
+//! - `alloc_token` — allocation lifecycle FSM: free → allocated → freed, double-free prevention
+//! - `size_class` — size class bucketing: power-of-two classes, waste bounds, monotonicity
+//! - `free_list` — intrusive free list: LIFO push/pop, no-cycle (all-distinct), containment
+//! - `split_coalesce` — buddy split/coalesce sequences: block conservation, recursive split trees
+//! - `alloc_bitmap` — typed allocation bitmap: generational handles, double-free detection
+//! - `arena` — arena allocation: bump alloc, collective free via generation reset
+//! - `pool` — fixed-size object pool: slab + bitmap composition, slot alignment
+//! - `segregated_free` — segregated free lists by size class: cross-class uniqueness
+//! - `coalesce_policy` — immediate vs deferred coalescing: convergence, total preservation
+//! - `fragmentation` — fragmentation metrics: external/internal bounds, can-satisfy
 
 pub mod access_mode;
 pub mod append_entries_build;
@@ -399,3 +412,13 @@ pub mod cycle_detect;
 pub mod reachability;
 pub mod graph_color;
 pub mod shortest_path;
+pub mod alloc_token;
+pub mod size_class;
+pub mod free_list;
+pub mod split_coalesce;
+pub mod alloc_bitmap;
+pub mod arena;
+pub mod pool;
+pub mod segregated_free;
+pub mod coalesce_policy;
+pub mod fragmentation;

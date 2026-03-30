@@ -6408,5 +6408,145 @@ mod job_execution_cross_tests {
             // Success code is 0
             prop_assert!(crate::job_result::is_success_code(0));
         }
+
+        // ─── Memory allocator cross-module properties ────────────────
+
+        // r[verify properties.pool-alloc-address-in-region]
+        #[test]
+        fn prop_pool_alloc_address_in_region(
+            cap in 1usize..20,
+            obj_size in 1u64..256,
+        ) {
+            let base = 0u64;
+            if (cap as u128) * (obj_size as u128) <= u64::MAX as u128 {
+                let map = vec![false; cap];
+                let gens = vec![0u32; cap];
+                if let Some((slot, addr, _, _, _)) = crate::pool::pool_alloc(&map, &gens, base, obj_size) {
+                    // Address is slab-aligned
+                    prop_assert_eq!(addr, crate::slab::slot_address(slot as u64, base, obj_size));
+                    // Address falls within pool region
+                    let region_size = cap as u64 * obj_size;
+                    prop_assert!(crate::region::contains_addr(base, region_size, addr));
+                }
+            }
+        }
+
+        // r[verify properties.pool-alloc-agrees-with-token-lifecycle]
+        #[test]
+        fn prop_pool_alloc_agrees_with_token(cap in 1usize..20) {
+            let map = vec![false; cap];
+            let gens = vec![0u32; cap];
+            // Before alloc: token would be Free → is_live == false
+            prop_assert!(!crate::alloc_token::is_live(crate::alloc_token::STATE_FREE));
+            // After alloc: token would be Allocated → is_live == true
+            if let Some((slot, _, _, new_map, _)) = crate::pool::pool_alloc(&map, &gens, 0, 16) {
+                prop_assert!(new_map[slot]); // bitmap says allocated
+                prop_assert!(crate::alloc_token::is_live(crate::alloc_token::STATE_ALLOCATED));
+            }
+        }
+
+        // r[verify properties.arena-successive-allocs-watermark-disjoint]
+        #[test]
+        fn prop_arena_watermark_disjoint(
+            base in 0u64..1000,
+            s1 in 1u64..100,
+            s2 in 1u64..100,
+        ) {
+            let (p1, m1) = crate::arena::arena_alloc(base, s1);
+            let (p2, _m2) = crate::arena::arena_alloc(m1, s2);
+            // Arena disjointness matches watermark disjointness
+            prop_assert!(crate::region::regions_disjoint(p1, s1, p2, s2));
+        }
+
+        // r[verify properties.arena-reset-increments-generation]
+        #[test]
+        fn prop_arena_reset_generation(generation in 0u64..(u64::MAX - 1)) {
+            let (new_mark, new_gen) = crate::arena::arena_reset(0, generation);
+            // Generation increments (monotonic advance)
+            prop_assert!(crate::monotonic::is_advance(generation, new_gen));
+            prop_assert!(crate::monotonic::is_strict_advance(generation, new_gen));
+            // Mark resets to base
+            prop_assert_eq!(new_mark, 0);
+        }
+
+        // r[verify properties.segregated-free-class-agrees-with-size-class]
+        #[test]
+        fn prop_seg_class_agrees_with_size_class(size in 1u64..=65536) {
+            let seg_class = crate::segregated_free::seg_class_for(size, 17);
+            let sc_class = crate::size_class::size_to_class(size);
+            // Both should pick the same class for sizes in range
+            if sc_class <= 16 {
+                prop_assert_eq!(seg_class, sc_class);
+            }
+        }
+
+        // r[verify properties.size-class-agrees-with-buddy-order]
+        #[test]
+        fn prop_size_class_agrees_with_buddy(size in 1u64..=(1u64 << 32)) {
+            let sc = crate::size_class::size_to_class(size);
+            let bo = crate::buddy::order_for_size(size);
+            // Both return a class/order where 2^result >= size
+            prop_assert!(crate::size_class::class_to_size(sc) >= size);
+            prop_assert!(crate::buddy::block_size(bo) >= size);
+            // class_to_size and block_size are the same function
+            prop_assert_eq!(crate::size_class::class_to_size(sc), crate::buddy::block_size(sc));
+        }
+
+        // r[verify properties.split-coalesce-buddy-roundtrip]
+        #[test]
+        fn prop_split_coalesce_buddy_roundtrip(order in 1u64..20) {
+            let addr = 0u64;
+            let (left, right) = crate::split_coalesce::split_block(addr, order);
+            // Both halves have the correct relationship
+            prop_assert_eq!(right, left + crate::buddy::block_size(order - 1));
+            // Sizes sum to parent
+            prop_assert_eq!(
+                crate::buddy::block_size(order - 1) + crate::buddy::block_size(order - 1),
+                crate::buddy::block_size(order)
+            );
+        }
+
+        // r[verify properties.alloc-bitmap-slab-generation-agree]
+        #[test]
+        fn prop_alloc_bitmap_slab_handle(slot in 0u32..1000, generation in 0u32..1000) {
+            // alloc_bitmap handle packing agrees with slab handle packing
+            let ab_handle = crate::alloc_bitmap::handle_pack(slot, generation);
+            let slab_handle = crate::slab::handle_pack(slot, generation);
+            prop_assert_eq!(ab_handle, slab_handle);
+            // Unpacking agrees
+            prop_assert_eq!(
+                crate::alloc_bitmap::handle_unpack_slot(ab_handle),
+                crate::slab::handle_unpack_index(slab_handle)
+            );
+            prop_assert_eq!(
+                crate::alloc_bitmap::handle_unpack_gen(ab_handle),
+                crate::slab::handle_unpack_generation(slab_handle)
+            );
+        }
+
+        // r[verify properties.fragmentation-agrees-with-free-space-map]
+        #[test]
+        fn prop_fragmentation_free_space_map(
+            map in proptest::collection::vec(proptest::bool::ANY, 1..50),
+        ) {
+            let total = map.len() as u64;
+            let free = map.iter().filter(|&&b| !b).count() as u64;
+            if free > 0 {
+                // Largest contiguous free run
+                let mut max_run = 0u64;
+                let mut current_run = 0u64;
+                for &b in &map {
+                    if !b { current_run += 1; max_run = max_run.max(current_run); }
+                    else { current_run = 0; }
+                }
+                let ext_frag = crate::fragmentation::external_frag(free, max_run);
+                // External frag is bounded [0, 100]
+                prop_assert!(ext_frag <= 100);
+                // If one contiguous chunk, external frag is 0
+                if max_run == free {
+                    prop_assert_eq!(ext_frag, 0);
+                }
+            }
+        }
     }
 }

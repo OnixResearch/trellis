@@ -5187,3 +5187,239 @@ if used is positive, and 0 otherwise.
 r[quota.is-exhausted]
 quota_is_exhausted(limit, used) MUST return true if and only if
 used >= limit.
+
+## Allocation Token
+
+r[alloc-token.new]
+alloc_token_new(id) MUST return a token in the Free state with the
+given block id.
+
+r[alloc-token.allocate]
+alloc_token_allocate(id, state) MUST transition from Free to Allocated.
+The precondition MUST require state == Free. Double-allocate MUST be
+prevented by the precondition.
+
+r[alloc-token.release]
+alloc_token_release(id, state) MUST transition from Allocated to Freed.
+The precondition MUST require state == Allocated. Double-free MUST be
+prevented by the precondition. Freed is a terminal state.
+
+r[alloc-token.is-live]
+is_live(state) MUST return true if and only if the state is Allocated.
+
+r[alloc-token.valid-state]
+is_valid_state(state) MUST return true for Free, Allocated, and Freed,
+and false for all other values.
+
+## Size Class
+
+r[size-class.class-to-size]
+class_to_size(c) MUST return 2^c — the actual allocation size for class c.
+Class size MUST be positive and MUST double with each class increment.
+
+r[size-class.size-to-class]
+size_to_class(size) MUST return the minimum class index where the class
+size is at least the requested size. MUST be monotonic: larger request
+implies same or larger class. Roundtrip: size_to_class(class_to_size(c))
+MUST equal c.
+
+r[size-class.waste]
+waste(requested, class) MUST return class_to_size(class) - requested.
+Waste MUST be non-negative and strictly less than the requested size
+for any size > 0.
+
+r[size-class.class-count]
+class_count(max_size) MUST return the number of distinct size classes
+needed. MUST be at least 1 for any positive max_size.
+
+## Free List
+
+r[free-list.all-distinct]
+A well-formed free list MUST have all distinct elements (no duplicates).
+This is the acyclicity invariant for linked free lists.
+
+r[free-list.all-within]
+All entries in a free list MUST fall within a bounding region.
+
+r[free-list.contains]
+free_list_contains(list, block) MUST return true if and only if block
+is in the list.
+
+r[free-list.len]
+free_list_len(list) MUST return the number of elements in the list.
+
+r[free-list.push]
+free_list_push(list, block) MUST prepend block to the list. Push then
+pop MUST return the same block (LIFO). Push MUST increment length by 1.
+Push of an already-present block MUST be prevented by the precondition.
+
+r[free-list.pop]
+free_list_pop(list) MUST remove and return the first block. Pop MUST
+decrement length by 1.
+
+r[free-list.remove]
+free_list_remove(list, block) MUST remove the block from the list.
+
+## Split Coalesce
+
+r[split-coalesce.split-block]
+split_block(addr, order) MUST split a block into two buddies at order-1.
+Split then coalesce MUST be identity. The two halves MUST be disjoint
+and their sizes MUST sum to the parent block size.
+
+r[split-coalesce.coalesce-blocks]
+coalesce_blocks(left, right, order) MUST merge two buddy blocks into
+a parent. Coalescing MUST be symmetric.
+
+r[split-coalesce.split-tree-total]
+Recursive split from order k to target order j MUST produce disjoint
+blocks all at the target order, whose sizes sum to 2^k.
+
+r[split-coalesce.blocks-disjoint]
+blocks_disjoint(blocks) MUST return true when no two blocks overlap.
+
+r[split-coalesce.blocks-cover]
+blocks_cover(blocks, addr, order) MUST return true when the blocks'
+total size equals the parent block size 2^order.
+
+## Allocation Bitmap
+
+r[alloc-bitmap.handle-pack]
+handle_pack(slot, gen) MUST pack slot index (low 32) and generation
+(high 32) into a u64. Pack/unpack MUST roundtrip. Different (slot, gen)
+pairs MUST produce different handles (injectivity).
+
+r[alloc-bitmap.handle-unpack-slot]
+handle_unpack_slot(handle) MUST extract the slot index (low 32 bits).
+
+r[alloc-bitmap.handle-unpack-gen]
+handle_unpack_gen(handle) MUST extract the generation (high 32 bits).
+
+r[alloc-bitmap.is-allocated]
+bitmap_is_allocated(map, slot) MUST return true iff the slot is allocated.
+
+r[alloc-bitmap.generation]
+bitmap_generation(gens, slot) MUST return the current generation for slot.
+
+r[alloc-bitmap.utilization]
+bitmap_utilization(map) MUST return (used, total) where used + free == total.
+
+r[alloc-bitmap.alloc]
+bitmap_alloc(map, gens) MUST find the first free slot, mark it allocated,
+increment the generation, and return a handle. MUST return None if full.
+
+r[alloc-bitmap.free]
+bitmap_free(map, gens, handle) MUST free a slot by handle. MUST reject
+double-free (slot not allocated) and stale handles (generation mismatch).
+
+## Arena
+
+r[arena.alloc]
+arena_alloc(mark, size) MUST bump-allocate: return the current mark as
+pointer and advance mark by size. Successive allocs MUST produce disjoint
+regions. Mark MUST advance monotonically.
+
+r[arena.reset]
+arena_reset(base, generation) MUST reset mark to base and increment
+generation. After reset, remaining MUST equal capacity. Reset MUST
+invalidate all pointers from prior generations. Generation MUST
+monotonically increase.
+
+r[arena.remaining]
+arena_remaining(mark, base, capacity) MUST return base + capacity - mark.
+
+r[arena.generation]
+arena_generation(generation) MUST return the current generation.
+
+r[arena.is-valid]
+arena_is_valid(ptr_gen, current_gen) MUST return true iff the generations
+match. Pointer from generation g MUST be invalid in generation g+1.
+
+r[arena.fits]
+arena_fits(mark, size, base, capacity) MUST return true iff size fits
+in remaining space.
+
+## Pool
+
+r[pool.alloc]
+pool_alloc(map, gens, base, obj_size) MUST allocate the first free slot,
+compute its address via slab arithmetic, and return a generational handle.
+MUST return None if full.
+
+r[pool.free]
+pool_free(map, gens, handle) MUST free a slot by generational handle.
+MUST reject double-free and stale handles.
+
+r[pool.is-full]
+pool_is_full(map) MUST return true iff every slot is allocated.
+
+r[pool.count]
+pool_count(map) MUST return (allocated, free) where allocated + free
+equals the total number of slots.
+
+## Segregated Free
+
+r[segregated-free.class-for]
+seg_class_for(size, num_classes) MUST return the class index for a
+requested size. MUST be deterministic and bounded by num_classes.
+
+r[segregated-free.total-free]
+seg_total_free(lists) MUST return the total number of free blocks
+across all class lists. MUST be non-negative.
+
+r[segregated-free.cross-class-unique]
+No block MUST appear in two different class lists simultaneously.
+
+r[segregated-free.alloc]
+seg_alloc(lists, size, num_classes) MUST allocate from the appropriate
+class's free list. MUST return None if that class is empty.
+
+r[segregated-free.free]
+seg_free(lists, block, class) MUST return the block to its class's
+free list. Free to class c MUST NOT modify other classes' lists.
+
+## Coalesce Policy
+
+r[coalesce-policy.immediate]
+should_coalesce_immediate(buddy_is_free) MUST return true iff buddy is
+free. Immediate MUST subsume deferred (any deferred trigger also triggers
+immediate).
+
+r[coalesce-policy.deferred]
+should_coalesce_deferred(buddy_is_free, free_count, threshold) MUST
+return true iff buddy is free AND free_count >= threshold. With threshold
+0 MUST be equivalent to immediate.
+
+r[coalesce-policy.queue-add]
+deferred_queue_add(queue, block) MUST append the block to the queue.
+Queue length MUST increment by 1.
+
+r[coalesce-policy.queue-len]
+deferred_queue_len(queue) MUST return the number of pending blocks.
+
+r[coalesce-policy.preserves-total]
+Coalescing two blocks of size s into one block of size 2s MUST preserve
+the total byte count.
+
+## Fragmentation
+
+r[fragmentation.external]
+external_frag(free_total, largest_free_block) MUST return 0 when
+largest_free == free_total (one contiguous chunk) and 100 when
+largest_free == 0.
+
+r[fragmentation.internal]
+internal_frag(requested, allocated) MUST return allocated - requested.
+MUST be zero for exact-fit allocations.
+
+r[fragmentation.can-satisfy]
+can_satisfy(largest_free, requested) MUST return true iff largest_free
+>= requested. can_satisfy MUST imply free_total >= requested.
+
+r[fragmentation.buddy-bound]
+frag_bound_buddy(requested) MUST return the worst-case buddy internal
+fragmentation. MUST be strictly less than requested for all sizes > 0.
+
+r[fragmentation.slab-bound]
+frag_bound_slab(obj_size, slot_size) MUST return slot_size - obj_size.
+MUST be zero when obj_size == slot_size.

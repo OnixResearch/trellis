@@ -1340,3 +1340,34 @@
 - CONCLUSION: 14 external_body is the floor. 8 are intentional axioms (hash, system-level),
   4 are Z3 structural limits (nix_version cv_fuel nesting), 2 are sound (markov count=0)
   Wait — markov has 0. Actual: 10 permanent (chain+snapshot+log_invariant+nix_version)
+
+## Memory Allocator Verification (2026-03-30)
+- 10 new modules implementing docs/memory-allocator-plan.md:
+  alloc_token, size_class, free_list, split_coalesce, alloc_bitmap,
+  arena, pool, segregated_free, coalesce_policy, fragmentation
+- Phase 1 (standalone): alloc_token (pure u8 FSM, all automatic), size_class (delegates to buddy::order_for_size)
+- Phase 2-3: free_list (Seq<u64> LIFO, push/pop/remove external_body), split_coalesce (buddy arithmetic)
+- Phase 4-5: alloc_bitmap (generational handles, find-first-free external_body), arena (watermark + generation)
+- Phase 6-7: pool (slab + alloc_bitmap composition), segregated_free (per-class lists)
+- Phase 8-9: coalesce_policy (immediate/deferred), fragmentation (external/internal metrics)
+- Phase 10: 9 cross-module proptests in properties.rs
+- `gen` is reserved keyword in Rust 2024 — use `generation` or `g` everywhere (even in proptest params!)
+- `seq![] as Seq<u64>` fails — Seq is not Integer, can't cast. Use `let empty: Seq<u64> = seq![];`
+- split_coalesce by(bit_vector): `x + x == y` works directly (not `2*x == y` then connect)
+- split_coalesce overflow: proving `addr + half <= MAX` requires by(bit_vector) for
+  `1u64 << sub(order, 1u64) <= 1u64 << order` to establish half <= full block size
+- external_frag exec: needs nonlinear_arith proof that `(lfb * 100) / ft <= 100` when lfb <= ft
+- zero_frag_iff_contiguous: needs `by(nonlinear_arith)` for `n * 100 / n == 100`
+- coalesce_blocks_spec recommends can_coalesce_spec — these are NOT enforced by Z3, but
+  recommendation-not-met warnings appear in referencing proofs
+- count_allocated_nonneg/bounded must be `pub proof fn` for pool module to call them
+- seg_free returning `() -> ()` triggers Verus "return value must be named" — remove `-> ()`
+- free_list_pop returns (u64, Vec<u64>) which doesn't == (u64, Seq<u64>) — use component-wise ensures
+- pool_count overflow: needs `count_allocated_bounded` proof to show used <= total
+- size_to_class delegates to buddy::order_for_size — both open specs unfold to `1u64 << c`,
+  so the postcondition `class_to_size_spec(result) >= size` transfers automatically
+- alloc_bitmap::bitmap_alloc/free and free_list::push/pop/remove marked external_body —
+  find-first-free loop + generation tracking + seq prepend invariants are hard for Z3
+- pool::pool_alloc/free and segregated_free::seg_alloc/free also external_body — composition
+- All spec-level proofs fully verified (no external_body on proof fns)
+- 4732 Verus verified items, 2841 cargo tests, 0 verification errors
