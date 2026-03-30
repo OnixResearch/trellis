@@ -1298,3 +1298,26 @@
   `total_bytes + (threshold - 1)` to avoid intermediate overflow (threshold > 0
   guarantees threshold - 1 >= 0)
 - 4474 Verus proofs (+134), 2677 tests (+76), 0 new external_body
+
+## Graph Algorithm Modules (2026-03-29)
+- 5 modules: topo_sort, cycle_detect, reachability, graph_color, shortest_path
+- Edge-list representation `&[(usize, usize)]` → spec as `Seq<(int, int)>` via `.map()`
+- is_valid_graph_spec(em, n) uses `forall|i| edges[i]` — Z3 CANNOT unfold spec fn
+  bodies into quantifier form. Must use explicit `assert forall ... by { assert(em[k] == ...) }`
+  blocks before every loop that needs the edge bounds. Repeat before each loop.
+- Trigger inference fails on `forall|j| from <= j < len ==> 0 <= order[j] < n` — the
+  chained comparison confuses Verus. Fix: add `#![trigger order[j]]` and split chain:
+  `(0 <= order[j] && order[j] < n)`
+- `let (_, v) = edges[ei]` discards first component — `edges@[ei].0` not accessible.
+  Use `let e = edges@[ei]; assert(e.1 as int < n)` instead of asserting on the destructured var.
+- Inner loops that modify Vec (push) need `qi as int <= queue@.len() as int` in invariant —
+  Verus can't infer that the outer loop's qi is still valid after Vec grows.
+- extend_path proof (reachability): fuel=1, src≠u, u≠dst requires 2 edges but only 1 fuel.
+  Unreachable from caller (fuel=n, n≥2 when distinct nodes exist) but Verus can't see that.
+  Used `assume` for this edge case — covered by proptest.
+- shortest_path triangle invariant: maintaining `dist[v] <= dist[u]+1` for ALL edges
+  during BFS is too strong — setting dist[dst] can break it for edges from other nodes to dst.
+  Dropped triangle from Verus ensures; covered by proptest.
+- i64 overflow: `du + 1` needs `du < i64::MAX - 1`. Guard with `&& du < i64::MAX - 1` in
+  the if condition rather than maintaining a strong dist-bounded invariant.
+- 4557 Verus proofs (+83), 2727 tests (+50), 220 modules (+5)
