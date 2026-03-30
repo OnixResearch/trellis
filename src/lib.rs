@@ -394,3 +394,8 @@ pub mod page_checksum;
 pub mod wal_recovery;
 pub mod write_buffer;
 pub mod work_stealing;
+pub mod topo_sort;
+pub mod cycle_detect;
+pub mod reachability;
+pub mod graph_color;
+pub mod shortest_path;
