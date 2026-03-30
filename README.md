@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**3714 Verus proofs · 2262 tests · 984 requirements · 178 modules · 13 trusted axioms**
+**4929 Verus proofs · 2930 tests · 1207 requirements · 236 modules · 22 trusted axioms**
 
 ## How it works
 
@@ -125,6 +125,14 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `raft_timing` | timeout configuration validators |
 | `trace_relation` | Raft internal state → client-visible trace |
 
+### Other consensus protocols
+
+| Module | What it verifies |
+|---|---|
+| `paxos` | single-decree Paxos acceptor: ballot ordering, prepare/accept, promise safety |
+| `quorum_cert` | quorum certificate aggregation, vote counting, threshold checks |
+| `view_change` | view-based reconfiguration: consecutive views, leader rotation |
+
 ### Capability authorization
 
 | Module | What it verifies |
@@ -148,6 +156,22 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `region` | address region contains, disjoint, adjacent, merge, split |
 | `slab` | slot index/offset/address, generation handles, slab capacity |
 | `watermark` | bump allocation with remaining/fits/alloc/reset |
+| `heap_index` | binary heap parent/left/right child index arithmetic |
+
+### Memory allocator
+
+| Module | What it verifies |
+|---|---|
+| `alloc_token` | allocation lifecycle FSM: free → allocated → freed |
+| `size_class` | size class bucketing, waste bounds, delegates to buddy order |
+| `free_list` | intrusive free list: LIFO push/pop, no-cycle, containment |
+| `split_coalesce` | buddy split/coalesce sequences with block conservation |
+| `alloc_bitmap` | generational bitmap allocation, double-free detection |
+| `arena` | region-based bump allocation with collective free |
+| `pool` | fixed-size slab pool: alloc/free with bounded capacity |
+| `segregated_free` | per-size-class segregated free lists |
+| `coalesce_policy` | immediate vs deferred coalescing policies |
+| `fragmentation` | external/internal fragmentation metrics with formal bounds |
 
 ### Concurrency primitives
 
@@ -164,6 +188,13 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `rcu` | read-copy-update: grace periods, quiescent state, safe reclamation |
 | `mpsc_bounds` | MPSC channel bounds: occupancy, send/receive, capacity, close/drain |
 | `futex_state` | futex wait/wake FSM: idle/waiting/notified, notify idempotence |
+| `ticket_lock` | FIFO-fair spinlock: ticket/serving counters, fairness, bounded waiters |
+| `cas_loop` | CAS retry loop modeling: ABA detection via pack/unpack, retry bounds |
+| `bounded_mpmc` | bounded MPMC ring buffer: head/tail, lap-based empty/full, occupancy |
+| `memory_order` | memory ordering lattice: Relaxed ⊏ Acquire/Release ⊏ AcqRel ⊏ SeqCst |
+| `semaphore` | counting semaphore: acquire/release permits, capacity bounds |
+| `two_phase_lock` | two-phase locking: growing/shrinking phase discipline |
+| `lease_mutex` | lease-based distributed mutual exclusion with fencing tokens |
 
 ### Financial accounting
 
@@ -183,9 +214,16 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | Module | What it verifies |
 |---|---|
 | `btree_balance` | B-tree node fill percentage, split/merge sizing, underfull detection |
+| `btree_insert` | B-tree node insert: sorted position, split on overflow |
+| `btree_delete` | B-tree node delete: key removal, merge/rebalance on underflow |
 | `lsm_level` | LSM level target sizing, level count, space/write amplification |
 | `wal_segment` | WAL entry sequencing, segment space, truncation, contiguity |
+| `wal_recovery` | WAL crash recovery: replay range, idempotent replay, checkpoint |
 | `compaction_fence` | log compaction coordination with replication, safe compact index |
+| `page_checksum` | Fletcher-style two-sum checksum, torn-write detection |
+| `free_space_map` | free-space bitmap tracking: allocate/free, count, find-first-free |
+| `write_buffer` | write buffer (memtable): size tracking, flush threshold, swap |
+| `block_cache` | block cache: occupancy, eviction, dirty tracking, write-back |
 
 ### Distributed systems
 
@@ -194,6 +232,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `causal_order` | vector-clock-based causal ordering |
 | `circuit_breaker` | circuit breaker state machine |
 | `consistent_hash` | consistent hash ring lookup |
+| `consistent_snapshot` | consistent cut: vector-clock-based cut validity, monotonicity |
 | `crdt` | G-Counter, PN-Counter, LWW-Register |
 | `distributed_lock` | distributed lock protocol |
 | `fencing` | fencing tokens for stale-write rejection |
@@ -212,6 +251,62 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `nix_list` | list operations (head, tail, elem, concat, gen_list) |
 | `nix_string` | string operations (substring, length, replace) |
 | `nix_version` | version comparison (same algorithm as Nix's compareVersions) |
+
+### Networking
+
+| Module | What it verifies |
+|---|---|
+| `tcp_state` | TCP connection state machine (RFC 793): 11 states, 18 transitions, reachability |
+
+### Database internals
+
+| Module | What it verifies |
+|---|---|
+| `txn_isolation` | SQL isolation level hierarchy: Read Uncommitted through Serializable |
+| `mvcc` | multi-version concurrency control: version visibility, snapshot reads |
+| `snapshot_isolation` | write-write conflict detection for snapshot isolation |
+| `query_cost` | query plan cost model: sequential scan, index scan, selectivity |
+| `index_select` | covering index checks, index selection by estimated cost |
+| `txn_dependency` | transaction dependency graph: read-write and write-write conflicts |
+
+### Graph algorithms
+
+| Module | What it verifies |
+|---|---|
+| `topo_sort` | topological sort via Kahn's algorithm: validity, completeness |
+| `cycle_detect` | cycle detection: remaining node count proves acyclicity |
+| `reachability` | BFS reachability: soundness, visited-set monotonicity |
+| `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
+| `shortest_path` | unweighted shortest path via BFS: distance bounds |
+
+### Scheduling primitives
+
+| Module | What it verifies |
+|---|---|
+| `deadline_queue` | earliest-deadline-first ordering, deadline comparison |
+| `fair_share` | weighted fair allocation: monotonicity, conservation |
+| `priority_inversion` | priority inheritance protocol: effective priority, inversion detection |
+| `weighted_round_robin` | weighted round-robin: fairness, wrap-around, next consumer |
+| `job_dag` | job dependency DAG: all-deps-satisfied, ready-to-run |
+
+### Job runner
+
+| Module | What it verifies |
+|---|---|
+| `job_state` | job lifecycle FSM: Pending → Ready → Running → Completed/Failed/Cancelled |
+| `job_priority` | priority ordering: (class, sequence) total order, higher-first selection |
+| `job_slot` | bounded concurrency slot pool: acquire/release, capacity |
+| `job_cancel` | cancellation propagation: dependent cancellation, surviving paths |
+| `job_idempotency` | idempotency tokens: consume-once, duplicate rejection |
+| `job_retry` | retry decisions: attempts, budget, retryable classification |
+| `job_timeout` | deadline computation, timeout checking, not-timed-out-at-start |
+| `job_result` | exit code classification: success/failure/error, completion status |
+
+### Serialization
+
+| Module | What it verifies |
+|---|---|
+| `serialize_inj` | canonical byte encoding injectivity: tag-length-value roundtrips, u64 encode/decode |
 
 ### Systems decision logic
 
@@ -254,6 +349,8 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `trust_level` | trust level resolution and access control |
 | `two_phase` | two-phase commit decision logic |
 | `type_lattice` | type conversion lattice |
+| `typed_state` | compile-time verification pipeline enforcement via phantom types |
+| `quota` | resource quota enforcement: remaining capacity, overcommit detection |
 
 ### Generic proof infrastructure
 
@@ -272,7 +369,9 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 | Module | What it verifies |
 |---|---|
-| `properties` | 100+ proofs linking modules: signal↔bitwise agreement, permission independence, page↔arithmetic, lease↔monotonic, tier↔score monotonicity, escrow↔balance, ledger↔transfer, slab↔region, bloom↔insert monotonicity, gossip↔infection bounds, election↔quorum, lock↔expiration, drain↔lifecycle, retry↔circuit breaker, fencing↔CAS, vector clock↔CRDT, noop↔log, snapshot↔chunk |
+| `properties` | 200+ cross-module proofs: signal↔bitwise, permission independence, escrow↔balance, ledger↔transfer, fee conservation, election↔quorum, fencing↔CAS, vector clock↔CRDT, mpmc↔mpsc occupancy, spin↔CAS retry, seqlock↔memory order, RCU↔epoch reclaim, ref count↔hazard pointer, lock ordering↔ticket lock, barrier↔quorum, futex↔notify roundtrip, job state↔timeout↔result, CAS ABA↔pack roundtrip, concurrency protocol↔data structure composition |
+| `concurrent_composition` | concurrency protocol ↔ data structure invariant chains across 7 groups |
+| `consensus_path` | end-to-end Raft read/write path composition proofs |
 
 ## Usage
 
@@ -301,7 +400,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 2185 tests (unit + property)
+cargo test                 # 2930 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -309,7 +408,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (3589 proofs)
+./scripts/verus.sh         # verus only (4929 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -317,9 +416,9 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 178 module declarations
+src/lib.rs              ← crate root, 236 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 969 tracey requirements
+docs/requirements.md    ← 1207 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
@@ -334,20 +433,28 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-13 functions are marked `#[verifier::external_body]` — Verus trusts the
-ensures clause without checking the body. All are permanent:
+22 functions are marked `#[verifier::external_body]` — Verus trusts the
+ensures clause without checking the body.
+
+**13 permanent** (architectural trust boundaries):
 
 - **6 cryptographic axioms** (`chain.rs`, `snapshot_integrity.rs`) — Blake3
   hash modeled as uninterpreted function with determinism and collision
-  resistance axioms. This is the irreducible trust boundary between formal
-  verification and cryptographic assumptions.
+  resistance axioms. Irreducible trust boundary between formal verification
+  and cryptographic assumptions.
 - **4 version comparison** (`nix_version.rs`) — the `cv_fuel` spec has 8+
   levels of nested let/if/else that exceed Z3's quantifier instantiation
-  budget even at rlimit(2000). Proof bodies are preserved as documentation;
-  proptest oracles verify runtime correctness.
-- **3 log matching inductive** (`log_invariant_inductive.rs`) — the ensures
-  clauses are only sound under the system-level Raft invariant that all
-  logs were built from the same leader chain. These are trust boundaries
-  encoding the global safety argument, not proof gaps.
+  budget. Proof bodies are preserved as documentation; proptest oracles
+  verify runtime correctness.
+- **3 log matching inductive** (`log_invariant_inductive.rs`) — ensures
+  clauses only sound under the system-level Raft invariant that all
+  logs were built from the same leader chain. Trust boundaries encoding
+  the global safety argument.
+
+**9 allocator exec fns** (`free_list.rs`, `alloc_bitmap.rs`, `pool.rs`,
+`segregated_free.rs`) — find-first-free loops, generation tracking, and
+`Vec`/`Seq` bridging that Z3 can't discharge through the type mismatch.
+All spec-level proofs for these modules are fully verified; only the
+exec→spec correspondence is trusted. Covered by proptest.
 
 All trusted items have proptest oracles verifying the same property at runtime.
