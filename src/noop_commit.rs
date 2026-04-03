@@ -184,5 +184,24 @@ mod tests {
                 prop_assert!(i < commit_idx);
             }
         }
+
+        #[test]
+        fn prop_noop_commit_index_is_len_plus_one(log_len in 0u64..10000) {
+            prop_assert_eq!(noop_commit_index(log_len), log_len + 1);
+        }
+
+        #[test]
+        fn prop_noop_roundtrip(term: u64) {
+            let entry = make_noop_entry(term);
+            prop_assert!(is_noop(&entry));
+            prop_assert_eq!(entry.term, term);
+            prop_assert_eq!(entry.value, NOOP_VALUE);
+        }
+
+        #[test]
+        fn prop_non_noop_rejected(term: u64, value in 1u64..u64::MAX) {
+            let entry = LogEntry { term, value };
+            prop_assert!(!is_noop(&entry));
+        }
     }
 }

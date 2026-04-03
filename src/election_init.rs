@@ -226,6 +226,25 @@ mod tests {
 
         // r[verify election-init.self-vote]
         #[test]
+        fn prop_max_term_returns_none(dummy in 0u8..1) {
+            let _ = dummy;
+            prop_assert!(init_election_term(u64::MAX).is_none());
+        }
+
+        #[test]
+        fn prop_init_state_is_transitioning(dummy in 0u8..1) {
+            let _ = dummy;
+            // STATE_TRANSITIONING = 1
+            prop_assert_eq!(init_election_state(), 1);
+        }
+
+        #[test]
+        fn prop_init_vote_count_is_one(dummy in 0u8..1) {
+            let _ = dummy;
+            prop_assert_eq!(init_vote_count(), 1);
+        }
+
+        #[test]
         fn prop_self_vote_fields(
             candidate_id in 0u64..1000,
             term in 1u64..1000,

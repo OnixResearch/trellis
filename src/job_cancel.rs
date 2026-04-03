@@ -386,5 +386,41 @@ mod tests {
                 prop_assert!(has_surviving_dep(&deps, &states, &marks));
             }
         }
+
+        #[test]
+        fn prop_cancel_idempotent(
+            state in 0u8..6,
+            num_deps in 1usize..5,
+        ) {
+            // CANCELLED=5, COMPLETED=3, FAILED=4 are terminal
+            let states: Vec<u8> = vec![5; num_deps]; // all deps cancelled
+            let marks: Vec<bool> = vec![true; num_deps];
+            let deps: Vec<usize> = (0..num_deps).collect();
+            let first = should_cancel_job(state, &deps, &states, &marks);
+            if first {
+                // Already-cancelled job (state=5) should not cancel again
+                prop_assert!(!should_cancel_job(5, &deps, &states, &marks));
+            }
+        }
+
+        #[test]
+        fn prop_terminal_never_cancels(
+            terminal in proptest::sample::select(vec![3u8, 4, 5]),
+            num_deps in 1usize..5,
+        ) {
+            let states: Vec<u8> = vec![5; num_deps];
+            let marks: Vec<bool> = vec![true; num_deps];
+            let deps: Vec<usize> = (0..num_deps).collect();
+            prop_assert!(!should_cancel_job(terminal, &deps, &states, &marks));
+        }
+
+        #[test]
+        fn prop_no_deps_never_cancels(
+            state in 0u8..3,
+        ) {
+            let states: Vec<u8> = vec![state];
+            let marks: Vec<bool> = vec![false];
+            prop_assert!(!should_cancel_job(state, &[], &states, &marks));
+        }
     }
 }

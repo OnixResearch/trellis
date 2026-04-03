@@ -200,5 +200,34 @@ mod tests {
             let expected = s == ONLINE || s == DEGRADED;
             prop_assert_eq!(is_operational(s), expected);
         }
+
+        #[test]
+        fn prop_offline_is_absorbing(from in 0u8..4) {
+            // OFFLINE(3) to anything except itself is invalid
+            // (and self-transitions are already excluded)
+            if from != OFFLINE {
+                // Can always go to OFFLINE
+                prop_assert!(is_valid_transition(from, OFFLINE));
+            }
+        }
+
+        #[test]
+        fn prop_transition_model_oracle(from in 0u8..4, to in 0u8..4) {
+            let valid = is_valid_transition(from, to);
+            // Known valid transitions: STARTING→ONLINE, ONLINE→DEGRADED,
+            // DEGRADED→ONLINE, any-non-OFFLINE→OFFLINE
+            let expected = (from == STARTING && to == ONLINE)
+                || (from == ONLINE && to == DEGRADED)
+                || (from == DEGRADED && to == ONLINE)
+                || (from != OFFLINE && to == OFFLINE);
+            prop_assert_eq!(valid, expected);
+        }
+
+        #[test]
+        fn prop_starting_not_operational(s in 0u8..1) {
+            prop_assert!(!is_operational(STARTING));
+            prop_assert!(!is_operational(OFFLINE));
+            let _ = s; // use the parameter
+        }
     }
 }

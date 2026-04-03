@@ -290,9 +290,29 @@ mod tests {
             let apply = should_apply_to_state_machine(t);
             let config = is_config_change(t);
             let noop = is_noop_entry(t);
-            // Exactly one is true
+            // At most one of config/noop, normal applies to SM
             let count = apply as u8 + config as u8 + noop as u8;
             prop_assert_eq!(count, 1, "exactly one predicate should be true");
+        }
+
+        #[test]
+        fn prop_noop_sentinel_roundtrip(term: u64) {
+            let entry = crate::log::LogEntry { term, value: NOOP_VALUE };
+            prop_assert!(is_noop_entry(classify_entry(entry.value)));
+        }
+
+        #[test]
+        fn prop_config_sentinel_roundtrip(term: u64) {
+            let entry = crate::log::LogEntry { term, value: CONFIG_CHANGE_SENTINEL };
+            prop_assert!(is_config_change(classify_entry(entry.value)));
+        }
+
+        #[test]
+        fn prop_normal_applies_to_sm(value in 1u64..u64::MAX) {
+            if value != CONFIG_CHANGE_SENTINEL {
+                let t = classify_entry(value);
+                prop_assert!(should_apply_to_state_machine(t));
+            }
         }
     }
 }

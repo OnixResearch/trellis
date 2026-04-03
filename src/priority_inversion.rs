@@ -296,6 +296,26 @@ mod test {
                     prop_assert!(!can_acquire_ceiling(task_prio, 50, held_ceil));
                 }
             }
+
+            #[test]
+            fn prop_boosted_iff_waiter_higher(base: u64, hw: u64) {
+                let boosted = is_boosted(base, hw);
+                prop_assert_eq!(boosted, hw > base);
+            }
+
+            #[test]
+            fn prop_highest_waiter_is_max(
+                waiters in proptest::collection::vec(0u64..1000, 1..=10),
+            ) {
+                let hw = highest_waiter(&waiters);
+                let manual = *waiters.iter().max().unwrap();
+                prop_assert_eq!(hw, manual);
+            }
+
+            #[test]
+            fn prop_ceiling_zero_always_acquirable(task_prio: u64) {
+                prop_assert!(can_acquire_ceiling(task_prio, 50, 0));
+            }
         }
     }
 }

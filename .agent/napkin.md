@@ -1418,3 +1418,13 @@
 - leader_append_entry takes `&mut Vec<LogEntry>` (mutates in place, returns unit), not `&[LogEntry]` → new Vec
 - check_leader_log_invariant takes (old_log, new_log) — two slices, not (log, term)
 - 2930 → 2970 tests (+40), 0 new Verus proofs (test-only change)
+
+## Proptest Hardening P1 Batch 2 (2026-04-03)
+- 8 job/scheduling modules, each from 2-3 proptests → 5-6 proptests
+- fast_backtrack: when leader_has_conflict_term, result = leader_last + 1 which CAN
+  exceed follower log_length. Don't assert result <= log_len.
+- entry_type: LogEntry is in crate::log, not in scope via super::* — use crate::log::LogEntry
+- node_lifecycle: STARTING→ONLINE, ONLINE→DEGRADED, DEGRADED→ONLINE, any-non-OFFLINE→OFFLINE
+  are the only valid transitions. No self-transitions.
+- election_init: init_election_term(u64::MAX) returns None (overflow guard)
+- 2970 → 2994 tests (+24)

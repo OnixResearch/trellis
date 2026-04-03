@@ -396,5 +396,25 @@ mod tests {
                 prop_assert!(satisfies_constraint(TAG_MIN, lo, 0, resolved));
             }
         }
+
+        #[test]
+        fn prop_fixed_ignores_value(lo in 0u16..1000, value in 0u16..2000) {
+            let clamped = clamp_to_constraint(TAG_FIXED, lo, lo, value);
+            prop_assert_eq!(clamped, lo);
+        }
+
+        #[test]
+        fn prop_satisfies_reflexive(tag in 0u8..4, lo in 0u16..500, hi_offset in 0u16..500, value in 0u16..1000) {
+            let hi = lo.saturating_add(hi_offset);
+            let clamped = clamp_to_constraint(tag, lo, hi, value);
+            prop_assert!(satisfies_constraint(tag, lo, hi, clamped));
+        }
+
+        #[test]
+        fn prop_min_only_lower_bound(lo in 0u16..1000, value in 0u16..2000) {
+            if value >= lo {
+                prop_assert!(satisfies_constraint(TAG_MIN, lo, 0, value));
+            }
+        }
     }
 }

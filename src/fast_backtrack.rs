@@ -508,5 +508,58 @@ mod tests {
                 }
             }
         }
+
+        #[test]
+        fn prop_backtrack_model_oracle(
+            conflict_term in 1u64..10,
+            first_idx in 1u64..100,
+            log_len in 1u64..100,
+            leader_has: bool,
+            leader_last in 0u64..100,
+        ) {
+            let hint = ConflictHint {
+                conflict_term,
+                first_index_for_term: first_idx,
+                log_length: log_len,
+            };
+            let result = fast_backtrack(&hint, leader_has, leader_last);
+            if leader_has {
+                prop_assert_eq!(result, leader_last + 1);
+            } else {
+                prop_assert_eq!(result, first_idx);
+            }
+        }
+
+        #[test]
+        fn prop_leader_has_term_skips_to_after(
+            conflict_term in 1u64..10,
+            first_idx in 1u64..50,
+            log_len in 50u64..100,
+            leader_last in 1u64..50,
+        ) {
+            let hint = ConflictHint {
+                conflict_term,
+                first_index_for_term: first_idx,
+                log_length: log_len,
+            };
+            let result = fast_backtrack(&hint, true, leader_last);
+            // When leader has the conflict term, result should be leader_last + 1
+            prop_assert_eq!(result, leader_last + 1);
+        }
+
+        #[test]
+        fn prop_leader_missing_term_uses_first_index(
+            conflict_term in 1u64..10,
+            first_idx in 1u64..100,
+            log_len in 1u64..100,
+        ) {
+            let hint = ConflictHint {
+                conflict_term,
+                first_index_for_term: first_idx,
+                log_length: log_len,
+            };
+            let result = fast_backtrack(&hint, false, 0);
+            prop_assert_eq!(result, first_idx);
+        }
     }
 }

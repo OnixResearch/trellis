@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**4929 Verus proofs · 2970 tests · 1207 requirements · 236 modules · 22 trusted axioms**
+**4929 Verus proofs · 2994 tests · 1207 requirements · 236 modules · 22 trusted axioms**
 
 ## How it works
 
