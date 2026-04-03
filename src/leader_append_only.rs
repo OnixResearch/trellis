@@ -244,6 +244,49 @@ mod tests {
 
         // r[verify leader-append-only.invariant]
         #[test]
+        fn prop_append_preserves_prefix(
+            terms in proptest::collection::vec(1u64..10, 1..=10),
+            new_term in 1u64..10,
+            new_value: u64,
+        ) {
+            let mut log: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let old_log = log.clone();
+            leader_append_entry(&mut log, new_term, new_value);
+            prop_assert_eq!(log.len(), old_log.len() + 1);
+            for i in 0..old_log.len() {
+                prop_assert_eq!(log[i].term, old_log[i].term);
+            }
+        }
+
+        #[test]
+        fn prop_double_append_maintains_invariant(
+            terms in proptest::collection::vec(1u64..5, 0..=5),
+            t1 in 1u64..5, v1: u64,
+            t2 in 1u64..5, v2: u64,
+        ) {
+            let old: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let mut log = old.clone();
+            leader_append_entry(&mut log, t1, v1);
+            if check_leader_log_invariant(&old, &log) {
+                let log_before = log.clone();
+                leader_append_entry(&mut log, t2, v2);
+                if t2 >= t1 {
+                    prop_assert!(check_leader_log_invariant(&log_before, &log));
+                }
+            }
+        }
+
+        #[test]
+        fn prop_empty_log_extends_to_anything(
+            new_term in 1u64..100,
+            new_value: u64,
+        ) {
+            let mut log: Vec<LogEntry> = vec![];
+            leader_append_entry(&mut log, new_term, new_value);
+            prop_assert!(check_leader_log_invariant(&[], &log));
+        }
+
+        #[test]
         fn prop_invariant_transitive(
             terms in proptest::collection::vec(1u64..10, 0..=5),
             t1 in 1u64..10, v1: u64,

@@ -321,5 +321,38 @@ mod tests {
             let needs = needs_snapshot_switch(follower_next, first_log_index);
             prop_assert_eq!(needs, follower_next <= first_log_index);
         }
+
+        #[test]
+        fn prop_safe_index_never_exceeds_applied(
+            desired in 0u64..1000,
+            applied in 0u64..1000,
+        ) {
+            // min_active_next acts like a floor derived from applied state
+            // safe_compact_index never exceeds desired
+            let safe = safe_compact_index(desired, applied.max(1));
+            prop_assert!(safe <= desired);
+        }
+
+        #[test]
+        fn prop_safe_compact_monotonic(
+            desired1 in 0u64..500,
+            desired2 in 0u64..500,
+            min_next in 1u64..100,
+        ) {
+            let s1 = safe_compact_index(desired1, min_next);
+            let s2 = safe_compact_index(desired2, min_next);
+            if desired1 <= desired2 {
+                prop_assert!(s1 <= s2);
+            }
+        }
+
+        #[test]
+        fn prop_is_safe_compact_iff_strict_less(
+            compact in 0u64..100,
+            min_next in 0u64..100,
+        ) {
+            let safe = is_safe_to_compact(compact, min_next);
+            prop_assert_eq!(safe, compact < min_next);
+        }
     }
 }

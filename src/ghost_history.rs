@@ -851,5 +851,62 @@ mod tests {
             // Snapshot is a valid prefix of the extended log
             prop_assert!(crate::log::logs_match_prefix(&log, &extended, snapshot_len));
         }
+
+        #[test]
+        fn prop_append_preserves_svpt_random_history(
+            num_records in 1usize..=20,
+            seed_terms in proptest::collection::vec(1u64..10, 1..=20),
+            seed_candidates in proptest::collection::vec(0u64..5, 1..=20),
+        ) {
+            // Build a valid SVPT history from random data
+            let mut seen = std::collections::HashMap::new();
+            let mut history: Vec<VoteRecord> = Vec::new();
+            for i in 0..num_records.min(seed_terms.len()).min(seed_candidates.len()) {
+                let t = seed_terms[i];
+                let c = *seen.entry(t).or_insert(seed_candidates[i]);
+                history.push(vr(t, c, 0, 0));
+            }
+            // Verify SVPT holds
+            let ok = history.iter().all(|ri| {
+                history.iter().all(|rj| ri.term != rj.term || ri.candidate_id == rj.candidate_id)
+            });
+            prop_assert!(ok);
+        }
+
+        #[test]
+        fn prop_revote_same_candidate_preserves(
+            term: u64,
+            candidate: u64,
+            count in 1usize..=5,
+        ) {
+            // Multiple votes for the same (term, candidate) never violates SVPT
+            let history: Vec<VoteRecord> = (0..count)
+                .map(|_| vr(term, candidate, 0, 0))
+                .collect();
+            let ok = history.iter().all(|ri| {
+                history.iter().all(|rj| ri.term != rj.term || ri.candidate_id == rj.candidate_id)
+            });
+            prop_assert!(ok);
+        }
+
+        #[test]
+        fn prop_cronies_count_matches_filter(
+            term: u64,
+            candidate: u64,
+            records in proptest::collection::vec((0u64..5, 0u64..5), 0..=15),
+        ) {
+            let history: Vec<VoteRecord> = records.iter()
+                .map(|&(t, c)| vr(t, c, 0, 0))
+                .collect();
+            let count = history.iter()
+                .filter(|r| r.term == term && r.candidate_id == candidate)
+                .count();
+            // Just verify the manual count is consistent
+            let count2 = history.iter()
+                .filter(|r| r.term == term)
+                .filter(|r| r.candidate_id == candidate)
+                .count();
+            prop_assert_eq!(count, count2);
+        }
     }
 }

@@ -368,5 +368,42 @@ mod tests {
         ) {
             prop_assert_eq!(forward_decision(true, is_follower, leader_known, pending, max_pending), DECISION_ACCEPT);
         }
+
+        #[test]
+        fn prop_forward_then_response_identity(
+            initial in 0u64..1000,
+            forwards in 1usize..=5,
+        ) {
+            let mut pending = initial;
+            for _ in 0..forwards {
+                if pending < u64::MAX {
+                    pending = after_forward(pending);
+                }
+            }
+            for _ in 0..forwards {
+                pending = after_response(pending);
+            }
+            prop_assert_eq!(pending, initial);
+        }
+
+        #[test]
+        fn prop_can_forward_requires_capacity(
+            pending in 0u64..100,
+            max in 0u64..100,
+        ) {
+            let cf = can_forward(true, true, pending, max);
+            if cf {
+                prop_assert!(pending < max);
+            }
+        }
+
+        #[test]
+        fn prop_clear_on_term_change(
+            old_term in 0u64..100,
+            new_term in 0u64..100,
+        ) {
+            let clear = should_clear_pending(old_term, new_term);
+            prop_assert_eq!(clear, old_term < new_term);
+        }
     }
 }

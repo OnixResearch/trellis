@@ -261,5 +261,41 @@ mod tests {
         fn prop_full_cluster_stable(cluster_size in 1u64..100) {
             prop_assert!(!should_step_down(cluster_size, cluster_size));
         }
+
+        #[test]
+        fn prop_step_down_boundary(
+            cluster_size in 2u64..=50,
+        ) {
+            let majority = cluster_size / 2 + 1;
+            // One below majority: step down
+            if majority > 1 {
+                prop_assert!(should_step_down(majority - 1, cluster_size));
+            }
+            // At majority: stable
+            prop_assert!(!should_step_down(majority, cluster_size));
+        }
+
+        #[test]
+        fn prop_expired_contact_not_recent(
+            last_contact in 0u64..1000,
+            timeout in 1u64..100,
+        ) {
+            // has_recent_contact(last_contact, now, timeout) checks elapsed < timeout
+            let now = last_contact.saturating_add(timeout);
+            if now >= last_contact + timeout {
+                // elapsed = now - last_contact = timeout, timeout < timeout is false
+                prop_assert!(!has_recent_contact(last_contact, now, timeout));
+            }
+        }
+
+        #[test]
+        fn prop_count_recent_bounded(
+            contacts in proptest::collection::vec(0u64..200, 0..=10),
+            now in 0u64..200,
+            timeout in 1u64..50,
+        ) {
+            let count = count_recent_contacts(&contacts, now, timeout);
+            prop_assert!(count as usize <= contacts.len());
+        }
     }
 }

@@ -391,5 +391,61 @@ mod tests {
             let result = has_won_election(&votes, 5);
             prop_assert_eq!(result, expected);
         }
+
+        #[test]
+        fn prop_quorum_threshold_sweep(
+            cluster_size in 1u64..=15,
+        ) {
+            let majority = cluster_size / 2 + 1;
+            // Build tally with exactly majority-1 votes: not won
+            let mut tally_under: Vec<bool> = vec![false; cluster_size as usize];
+            for i in 0..(majority - 1).min(cluster_size) as usize {
+                tally_under[i] = true;
+            }
+            if majority > 1 {
+                prop_assert!(!has_won_election(&tally_under, cluster_size));
+            }
+            // Build tally with exactly majority votes: won
+            let mut tally_at: Vec<bool> = vec![false; cluster_size as usize];
+            for i in 0..majority.min(cluster_size) as usize {
+                tally_at[i] = true;
+            }
+            prop_assert!(has_won_election(&tally_at, cluster_size));
+        }
+
+        #[test]
+        fn prop_record_preserves_others(
+            cluster in 3usize..=10,
+            voter in 0usize..10,
+            other in 0usize..10,
+        ) {
+            if voter < cluster && other < cluster && voter != other {
+                let mut tally = init_vote_tally(cluster as u64);
+                let before = tally[other];
+                record_vote(&mut tally, voter as u64);
+                prop_assert_eq!(tally[other], before);
+            }
+        }
+
+        #[test]
+        fn prop_count_matches_filter(
+            votes in proptest::collection::vec(proptest::bool::ANY, 0..=20),
+        ) {
+            let exec_count = count_votes(&votes);
+            let manual = votes.iter().filter(|&&v| v).count() as u64;
+            prop_assert_eq!(exec_count, manual);
+        }
+
+        #[test]
+        fn prop_self_vote_starts_at_one(
+            cluster in 1u64..=20,
+            self_id in 0u64..20,
+        ) {
+            if self_id < cluster {
+                let tally = init_with_self_vote(cluster, self_id);
+                prop_assert_eq!(count_votes(&tally), 1);
+                prop_assert!(tally[self_id as usize]);
+            }
+        }
     }
 }

@@ -209,5 +209,45 @@ mod tests {
             // Result is either current_commit (no change) or min(leader, last_entry)
             prop_assert!(result == current || (result <= leader && result <= last_entry));
         }
+
+        #[test]
+        fn prop_reorder_independence(
+            current in 0u64..50,
+            l1 in 0u64..50,
+            e1 in 0u64..50,
+            l2 in 0u64..50,
+            e2 in 0u64..50,
+        ) {
+            // Apply two messages in both orders, result is the same
+            let r1 = follower_update_commit(follower_update_commit(current, l1, e1), l2, e2);
+            let r2 = follower_update_commit(follower_update_commit(current, l2, e2), l1, e1);
+            prop_assert_eq!(r1, r2);
+        }
+
+        #[test]
+        fn prop_idempotent(
+            current in 0u64..100,
+            leader in 0u64..100,
+            last_entry in 0u64..100,
+        ) {
+            let once = follower_update_commit(current, leader, last_entry);
+            let twice = follower_update_commit(once, leader, last_entry);
+            prop_assert_eq!(once, twice);
+        }
+
+        #[test]
+        fn prop_higher_leader_commit_advances(
+            current in 0u64..50,
+            leader1 in 0u64..50,
+            leader2 in 0u64..50,
+            last_entry in 50u64..100,
+        ) {
+            // With large log, higher leader commit means higher result
+            let r1 = follower_update_commit(current, leader1, last_entry);
+            let r2 = follower_update_commit(current, leader2, last_entry);
+            if leader1 <= leader2 {
+                prop_assert!(r1 <= r2);
+            }
+        }
     }
 }

@@ -428,6 +428,41 @@ mod tests {
         // r[verify commit-advance.advance]
         /// Model oracle: compute advance manually and compare.
         #[test]
+        fn prop_noop_advance_is_identity(
+            terms in proptest::collection::vec(1u64..5, 1..=5),
+            current_term in 1u64..5,
+        ) {
+            let log: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let log_len = log.len() as u64;
+            // If commit is already at log_len, advance should return log_len
+            let result = advance_commit_index(&log, &[log_len; 5], log_len, current_term, 5);
+            prop_assert_eq!(result, log_len);
+        }
+
+        #[test]
+        fn prop_advance_never_decreases(
+            terms in proptest::collection::vec(1u64..5, 1..=10),
+            match_vals in proptest::collection::vec(0u64..15, 5..=5),
+            current_commit in 0u64..10,
+            current_term in 1u64..5,
+        ) {
+            let log: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let result = advance_commit_index(&log, &match_vals, current_commit, current_term, 5);
+            prop_assert!(result >= current_commit);
+        }
+
+        #[test]
+        fn prop_quorum_at_model(
+            match_vals in proptest::collection::vec(0u64..10, 1..=9),
+            index in 0u64..10,
+        ) {
+            let cs = match_vals.len() as u64;
+            let has = has_quorum_at(&match_vals, index, cs);
+            let manual = match_vals.iter().filter(|&&m| m >= index).count() as u64;
+            prop_assert_eq!(has, manual >= cs / 2 + 1);
+        }
+
+        #[test]
         fn prop_advance_model_oracle(
             terms in proptest::collection::vec(1u64..4, 1..=8),
             match_vals in proptest::collection::vec(0u64..10, 5..=5),

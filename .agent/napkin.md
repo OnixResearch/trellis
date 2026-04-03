@@ -1406,3 +1406,15 @@
   - Proof-only requirements (closed-terminal, established-reachable) need
     both r[impl] and r[verify] on the proof fn — same pattern as node_lifecycle
   - 4773 Verus proofs (+41), 2859 cargo tests (+18)
+
+## Proptest Hardening P1 Batch 1 (2026-04-03)
+- P0 was already complete from a prior session (all `assume()`, `no-ensures`, `external_body` safety nets in place)
+- P1 Batch 1: 13 Raft consensus modules, each from 3 proptests → 6-7 proptests
+- has_recent_contact parameter order: (last_contact, now, timeout), NOT (now, last_contact, timeout)
+  Existing test `has_recent_contact(now, now, timeout)` hides this because both args are `now`
+- has_recent_contact uses STRICT less (`elapsed < timeout`), not `<=`
+- advance_commit_index never decreases: result >= current_commit, even when current_commit > log.len()
+  Do NOT assert result <= log.len() — the function preserves the commit index floor
+- leader_append_entry takes `&mut Vec<LogEntry>` (mutates in place, returns unit), not `&[LogEntry]` → new Vec
+- check_leader_log_invariant takes (old_log, new_log) — two slices, not (log, term)
+- 2930 → 2970 tests (+40), 0 new Verus proofs (test-only change)

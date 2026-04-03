@@ -578,5 +578,44 @@ mod tests {
 
             prop_assert_eq!(check_lmp(&a, &b), expected);
         }
+
+        #[test]
+        fn prop_lmp_symmetric(
+            terms_a in proptest::collection::vec(1u64..5, 0..=8),
+            terms_b in proptest::collection::vec(1u64..5, 0..=8),
+        ) {
+            let a: Vec<LogEntry> = terms_a.iter().map(|&t| entry(t, 0)).collect();
+            let b: Vec<LogEntry> = terms_b.iter().map(|&t| entry(t, 1)).collect();
+            prop_assert_eq!(check_lmp(&a, &b), check_lmp(&b, &a));
+        }
+
+        #[test]
+        fn prop_prefix_preserves_lmp(
+            terms in proptest::collection::vec(1u64..5, 2..=10),
+        ) {
+            let full: Vec<LogEntry> = terms.iter().map(|&t| entry(t, 0)).collect();
+            let half = &full[..full.len() / 2];
+            // A prefix of a log always satisfies LMP with itself
+            prop_assert!(check_lmp(half, &full));
+        }
+
+        #[test]
+        fn prop_random_append_sequence(
+            base_terms in proptest::collection::vec(1u64..3, 1..=5),
+            append_terms in proptest::collection::vec(1u64..3, 1..=5),
+        ) {
+            // Two logs starting from same base, each extending independently
+            let base: Vec<LogEntry> = base_terms.iter().map(|&t| entry(t, 0)).collect();
+            let mut log_a = base.clone();
+            let mut log_b = base.clone();
+            for &t in &append_terms {
+                log_a.push(entry(t, 1));
+            }
+            for &t in &append_terms {
+                log_b.push(entry(t, 2));
+            }
+            // Same base + same term sequence → LMP holds
+            prop_assert!(check_lmp(&log_a, &log_b));
+        }
     }
 }

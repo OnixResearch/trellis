@@ -372,5 +372,47 @@ mod tests {
                 prop_assert!(check_election_safe(&history, t as u64, cluster_size));
             }
         }
+
+        #[test]
+        fn prop_two_winners_requires_svpt_violation(
+            cluster_size in 3u64..=15,
+            num_votes_a in 0usize..=15,
+            num_votes_b in 0usize..=15,
+        ) {
+            let majority = (cluster_size / 2 + 1) as usize;
+            let mut history = Vec::new();
+            for _ in 0..num_votes_a.min(cluster_size as usize) {
+                history.push(vr(1, 10));
+            }
+            for _ in 0..num_votes_b.min(cluster_size as usize) {
+                history.push(vr(1, 20));
+            }
+            let a_won = num_votes_a.min(cluster_size as usize) >= majority;
+            let b_won = num_votes_b.min(cluster_size as usize) >= majority;
+            if a_won && b_won {
+                prop_assert!(!check_svpt(&history));
+            }
+        }
+
+        #[test]
+        fn prop_no_votes_always_safe(
+            cluster_size in 1u64..=20,
+            term: u64,
+        ) {
+            prop_assert!(check_election_safe(&[], term, cluster_size));
+        }
+
+        #[test]
+        fn prop_single_candidate_always_safe(
+            cluster_size in 1u64..=10,
+            candidate: u64,
+            num_votes in 0usize..=10,
+        ) {
+            let history: Vec<VoteRecord> = (0..num_votes.min(cluster_size as usize))
+                .map(|_| vr(1, candidate))
+                .collect();
+            prop_assert!(check_svpt(&history));
+            prop_assert!(check_election_safe(&history, 1, cluster_size));
+        }
     }
 }

@@ -239,5 +239,26 @@ mod tests {
         fn prop_leader_never_redirects(leader_id: u64) {
             prop_assert!(!should_redirect(2, leader_id)); // STATE_LEADER=2
         }
+
+        #[test]
+        fn prop_redirect_requires_known_leader(
+            state in 0u8..3,
+        ) {
+            // LEADER_UNKNOWN sentinel means no redirect
+            prop_assert!(!should_redirect(state, LEADER_UNKNOWN));
+        }
+
+        #[test]
+        fn prop_leader_hint_identity(id: u64) {
+            prop_assert_eq!(leader_hint(id), id);
+        }
+
+        #[test]
+        fn prop_only_leader_accepts(
+            state in 0u8..3,
+        ) {
+            let accepts = should_accept_request(state);
+            prop_assert_eq!(accepts, state == 2); // STATE_LEADER=2
+        }
     }
 }

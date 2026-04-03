@@ -268,5 +268,36 @@ mod tests {
                 prop_assert!(!result);
             }
         }
+
+        #[test]
+        fn prop_reset_requires_current_or_higher_term(
+            msg_term in 0u64..100,
+            current_term in 0u64..100,
+            success: bool,
+        ) {
+            let reset = should_reset_on_append_entries(msg_term, current_term, success);
+            if reset {
+                prop_assert!(msg_term >= current_term);
+                prop_assert!(success);
+            }
+        }
+
+        #[test]
+        fn prop_expired_at_threshold(
+            timeout in 1u64..10_000,
+        ) {
+            prop_assert!(!is_election_timer_expired(timeout - 1, timeout));
+            prop_assert!(is_election_timer_expired(timeout, timeout));
+        }
+
+        #[test]
+        fn prop_start_election_iff_follower_and_expired(
+            state in 0u8..3,
+            expired: bool,
+        ) {
+            let result = should_start_election(state, expired);
+            let expected = state == 0 && expired; // STATE_FOLLOWER == 0
+            prop_assert_eq!(result, expected);
+        }
     }
 }
