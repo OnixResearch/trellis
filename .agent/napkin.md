@@ -1436,3 +1436,14 @@
 - trace_relation: proof-only module (no exec fns). Test helpers req/resp/internal in test scope.
 - consistent_hash: single-node ring always returns that node regardless of key
 - 2994 → 3009 tests (+15)
+
+## Proptest Hardening P2 Cross-Module (2026-04-03)
+- 5 cross-module groups covering previously-uncovered modules in properties.rs
+- write_buffer::flush_complete(active, immutable) returns (active, 0) — zeros IMMUTABLE,
+  not active. The "swap" fn moves active→immutable; flush_complete just clears
+  the flushed immutable buffer.
+- graph cross-module: topo_sort succeeds <==> no cycle (DAG filter guarantees no cycle)
+- btree insert-delete roundtrip: sorted+deduped keys, new_key not in set
+- semaphore full means available==capacity (not available==0!) — semaphore::is_full
+  checks available == capacity ("all permits returned")
+- 3009 → 3029 tests (+20 cross-module proptests), 208→228 in properties.rs

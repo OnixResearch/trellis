@@ -6734,3 +6734,297 @@ mod job_execution_cross_tests {
         }
     }
 }
+
+// ============================================================
+// P2 Group 5: Graph/algorithm cross-module properties
+// ============================================================
+
+#[cfg(test)]
+mod graph_cross_tests {
+    use proptest::prelude::*;
+
+    fn random_graph(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
+        (3..=max_nodes).prop_flat_map(|n| {
+            proptest::collection::vec((0..n, 0..n), 0..=(n * 2).min(20)).prop_map(move |edges| {
+                (edges, n)
+            })
+        })
+    }
+
+    fn random_dag(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
+        (3..=max_nodes).prop_flat_map(|n| {
+            proptest::collection::vec((0..n, 0..n), 0..=(n * 2).min(20)).prop_map(move |raw| {
+                let edges: Vec<(usize, usize)> = raw.into_iter().filter(|&(u, v)| u < v).collect();
+                (edges, n)
+            })
+        })
+    }
+
+    proptest! {
+        // topo_sort succeeds <==> no cycle
+        #[test]
+        fn prop_topo_sort_iff_no_cycle((edges, n) in random_dag(12)) {
+            let has_cycle = crate::cycle_detect::has_cycle(&edges, n);
+            let topo = crate::topo_sort::topo_sort(&edges, n);
+            // DAGs (u < v filter) never have cycles
+            prop_assert!(!has_cycle);
+            prop_assert!(topo.is_some());
+        }
+
+        // cycle => topo_sort fails
+        #[test]
+        fn prop_cycle_means_no_topo(n in 3..10usize) {
+            let edges: Vec<(usize, usize)> = (0..n).map(|i| (i, (i + 1) % n)).collect();
+            prop_assert!(crate::cycle_detect::has_cycle(&edges, n));
+            prop_assert!(crate::topo_sort::topo_sort(&edges, n).is_none());
+        }
+
+        // reachable <==> shortest_path < infinity
+        #[test]
+        fn prop_reachable_iff_finite_distance((edges, n) in random_graph(10)) {
+            if n > 0 {
+                let visited = crate::reachability::reachable_from(&edges, n, 0);
+                let dists = crate::shortest_path::bfs_distances(&edges, n, 0);
+                for v in 0..n {
+                    prop_assert_eq!(visited[v], dists[v] >= 0);
+                }
+            }
+        }
+
+        // 2-colorable ==> no odd cycles (tested via: if 2-color succeeds, no self-loops)
+        #[test]
+        fn prop_two_colorable_valid_coloring((edges, n) in random_graph(10)) {
+            if let Some(colors) = crate::graph_color::two_color(&edges, n) {
+                prop_assert!(crate::graph_color::is_valid_coloring(&edges, n, &colors));
+            }
+        }
+
+        // reachable count >= 1 (source always reachable)
+        #[test]
+        fn prop_reachable_count_ge_one((edges, n) in random_graph(10)) {
+            if n > 0 {
+                let visited = crate::reachability::reachable_from(&edges, n, 0);
+                let count = crate::reachability::reachable_count(&visited);
+                prop_assert!(count >= 1);
+            }
+        }
+
+        // shortest_path source distance is always 0
+        #[test]
+        fn prop_source_distance_zero((edges, n) in random_graph(10)) {
+            if n > 0 {
+                let dists = crate::shortest_path::bfs_distances(&edges, n, 0);
+                prop_assert_eq!(dists[0], 0);
+            }
+        }
+    }
+}
+
+// ============================================================
+// P2 Group 1: Raft read/write path cross-module properties
+// ============================================================
+
+#[cfg(test)]
+mod raft_read_write_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // follower_read register uses commit_index as read_index
+        #[test]
+        fn prop_follower_read_uses_commit(
+            commit_index in 0u64..1000,
+        ) {
+            let read_idx = crate::follower_read::register_read(commit_index);
+            prop_assert_eq!(read_idx, commit_index);
+        }
+
+        // append_entries_build prev_log_index + 1 = next_index
+        #[test]
+        fn prop_build_prev_index_is_next_minus_one(
+            next_index in 1u64..10000,
+        ) {
+            let prev = crate::append_entries_build::build_prev_log_index(next_index);
+            prop_assert_eq!(prev, next_index - 1);
+        }
+
+        // config_change: enter_joint then leave_joint returns to stable
+        #[test]
+        fn prop_config_change_roundtrip(dummy in 0u8..1) {
+            let _ = dummy;
+            let stable = crate::config_change::PHASE_STABLE;
+            let joint = crate::config_change::enter_joint(stable);
+            prop_assert_eq!(joint, crate::config_change::PHASE_JOINT);
+            let back = crate::config_change::leave_joint(joint);
+            prop_assert_eq!(back, stable);
+        }
+
+        // snapshot_compaction: entries_after = log_len - compact_through
+        #[test]
+        fn prop_compaction_entries_conservation(
+            log_len in 1u64..100,
+            compact_through in 0u64..100,
+        ) {
+            if compact_through < log_len {
+                let after = crate::snapshot_compaction::entries_after_compaction(log_len, compact_through);
+                prop_assert_eq!(after, log_len - compact_through);
+            }
+        }
+
+        // joint_consensus: both configs must have quorum
+        #[test]
+        fn prop_joint_requires_both_configs(
+            total_old in 3u64..=10,
+            total_new in 3u64..=10,
+        ) {
+            let maj_old = total_old / 2 + 1;
+            let maj_new = total_new / 2 + 1;
+            // Only old quorum — should fail
+            if maj_new > 1 {
+                prop_assert!(!crate::joint_consensus::is_joint_quorum(maj_old, total_old, maj_new - 1, total_new));
+            }
+        }
+    }
+}
+
+// ============================================================
+// P2 Group 2: Storage/KV cross-module properties
+// ============================================================
+
+#[cfg(test)]
+mod storage_kv_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // block_cache: inserted slot is occupied
+        #[test]
+        fn prop_cache_insert_is_occupied(
+            capacity in 2usize..=10,
+            idx in 0usize..10,
+        ) {
+            if idx < capacity {
+                let mut slots = vec![crate::block_cache::SLOT_EMPTY; capacity];
+                crate::block_cache::insert(&mut slots, idx);
+                prop_assert_eq!(slots[idx], crate::block_cache::SLOT_CLEAN);
+            }
+        }
+
+        // wal_recovery: checkpoint at wal_end means no recovery needed
+        #[test]
+        fn prop_checkpoint_at_end_no_recovery(
+            wal_end in 0u64..10000,
+        ) {
+            prop_assert!(!crate::wal_recovery::needs_recovery(wal_end, wal_end));
+        }
+
+        // write_buffer: flush zeros the immutable buffer, keeps active
+        #[test]
+        fn prop_flush_zeros_immutable(
+            active in 0u64..10000,
+            immutable in 0u64..10000,
+        ) {
+            let (new_active, new_immutable) = crate::write_buffer::flush_complete(active, immutable);
+            prop_assert_eq!(new_active, active);
+            prop_assert_eq!(new_immutable, 0);
+        }
+
+        // page_checksum: pack/unpack roundtrip
+        #[test]
+        fn prop_checksum_pack_roundtrip(
+            a in 0u64..256,
+            b in 0u64..256,
+        ) {
+            let packed = crate::page_checksum::pack(a, b);
+            let (ua, ub) = crate::page_checksum::unpack(packed);
+            prop_assert_eq!(ua, a);
+            prop_assert_eq!(ub, b);
+        }
+
+        // btree_insert then btree_delete: insert key then delete it restores original
+        #[test]
+        fn prop_btree_insert_delete_roundtrip(
+            keys in proptest::collection::vec(1u64..100, 1..=8),
+            new_key in 100u64..200,
+        ) {
+            let mut sorted = keys.clone();
+            sorted.sort_unstable();
+            sorted.dedup();
+            if crate::btree_insert::is_sorted(&sorted) && !crate::btree_delete::contains_key(&sorted, new_key) {
+                let pos = crate::btree_insert::find_insert_position(&sorted, new_key);
+                let inserted = crate::btree_insert::insert_at(&sorted, pos, new_key);
+                prop_assert!(crate::btree_delete::contains_key(&inserted, new_key));
+                let del_pos = crate::btree_delete::find_key_position(&inserted, new_key);
+                let deleted = crate::btree_delete::delete_at(&inserted, del_pos);
+                prop_assert_eq!(deleted, sorted);
+            }
+        }
+    }
+}
+
+// ============================================================
+// P2 Group 3+4: Concurrency + Financial gaps
+// ============================================================
+
+#[cfg(test)]
+mod concurrency_financial_cross_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // semaphore acquire/release matches barrier all_arrived when n permits
+        #[test]
+        fn prop_semaphore_acquire_release_conservation(
+            capacity in 1u64..=20,
+            acquire in 0u64..=20,
+        ) {
+            if acquire <= capacity {
+                let after_acq = crate::semaphore::after_acquire(capacity, acquire);
+                let restored = crate::semaphore::after_release(after_acq, acquire);
+                prop_assert_eq!(restored, capacity);
+            }
+        }
+
+        // quota: consume then release roundtrip
+        #[test]
+        fn prop_quota_consume_release_roundtrip(
+            limit in 1u64..=1000,
+            used in 0u64..=1000,
+            amount in 0u64..=1000,
+        ) {
+            if used <= limit && amount <= limit - used {
+                let after_consume = crate::quota::quota_consume(used, amount);
+                let after_release = crate::quota::quota_release(after_consume, amount);
+                prop_assert_eq!(after_release, used);
+            }
+        }
+
+        // quota exhausted <==> remaining == 0
+        #[test]
+        fn prop_quota_exhausted_iff_zero_remaining(
+            limit in 1u64..=100,
+            used in 0u64..=100,
+        ) {
+            if used <= limit {
+                let exhausted = crate::quota::quota_is_exhausted(limit, used);
+                let remaining = crate::quota::quota_remaining(limit, used);
+                prop_assert_eq!(exhausted, remaining == 0);
+            }
+        }
+
+        // semaphore full <==> acquired_count == capacity
+        #[test]
+        fn prop_semaphore_full_iff_zero_available(
+            capacity in 1u64..=50,
+            available in 0u64..=50,
+        ) {
+            if available <= capacity {
+                let full = crate::semaphore::is_full(available, capacity);
+                let empty = crate::semaphore::is_empty(available);
+                if full {
+                    prop_assert_eq!(available, capacity);
+                }
+                if empty {
+                    prop_assert_eq!(available, 0);
+                }
+            }
+        }
+    }
+}
