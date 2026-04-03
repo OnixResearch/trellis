@@ -101,6 +101,7 @@
 //! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
 //! - `memory_order` — memory ordering lattice: Relaxed/Acquire/Release/AcqRel/SeqCst, fence composition, load/store validity
+//! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping, system invariant preservation
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
@@ -315,6 +316,7 @@ pub mod log_invariant_inductive;
 pub mod markov;
 pub mod match_index;
 pub mod memory_order;
+pub mod mesi;
 pub mod merkle;
 pub mod monotonic;
 pub mod mpsc_bounds;
