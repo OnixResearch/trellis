@@ -7028,3 +7028,289 @@ mod concurrency_financial_cross_tests {
         }
     }
 }
+
+// ============================================================
+// P3: Stress testing — boundary values
+// ============================================================
+
+#[cfg(test)]
+mod boundary_value_tests {
+    use proptest::prelude::*;
+
+    // Arithmetic at u64 boundaries
+    #[test]
+    fn test_arithmetic_boundaries() {
+        // abs_diff at extremes
+        assert_eq!(crate::arithmetic::abs_diff(0, 0), 0);
+        assert_eq!(crate::arithmetic::abs_diff(u64::MAX, 0), u64::MAX);
+        assert_eq!(crate::arithmetic::abs_diff(0, u64::MAX), u64::MAX);
+        assert_eq!(crate::arithmetic::abs_diff(u64::MAX, u64::MAX), 0);
+        assert_eq!(crate::arithmetic::abs_diff(u64::MAX - 1, u64::MAX), 1);
+
+        // saturating_add at overflow boundary
+        assert_eq!(crate::arithmetic::saturating_add(u64::MAX, 0), u64::MAX);
+        assert_eq!(crate::arithmetic::saturating_add(u64::MAX, 1), u64::MAX);
+        assert_eq!(crate::arithmetic::saturating_add(u64::MAX, u64::MAX), u64::MAX);
+        assert_eq!(crate::arithmetic::saturating_add(u64::MAX - 1, 1), u64::MAX);
+
+        // saturating_sub at zero boundary
+        assert_eq!(crate::arithmetic::saturating_sub(0, 0), 0);
+        assert_eq!(crate::arithmetic::saturating_sub(0, 1), 0);
+        assert_eq!(crate::arithmetic::saturating_sub(0, u64::MAX), 0);
+        assert_eq!(crate::arithmetic::saturating_sub(1, 1), 0);
+
+        // checked_mul at overflow boundary
+        assert!(crate::arithmetic::checked_mul(u64::MAX, 2).is_none());
+        assert_eq!(crate::arithmetic::checked_mul(u64::MAX, 1), Some(u64::MAX));
+        assert_eq!(crate::arithmetic::checked_mul(u64::MAX, 0), Some(0));
+        assert_eq!(crate::arithmetic::checked_mul(0, u64::MAX), Some(0));
+
+        // div_ceil with divisor = 1
+        assert_eq!(crate::arithmetic::div_ceil(0, 1), 0);
+        assert_eq!(crate::arithmetic::div_ceil(u64::MAX, 1), u64::MAX);
+        assert_eq!(crate::arithmetic::div_ceil(1, u64::MAX), 1);
+        assert_eq!(crate::arithmetic::div_ceil(u64::MAX - 1, u64::MAX), 1);
+        assert_eq!(crate::arithmetic::div_ceil(u64::MAX, u64::MAX), 1);
+
+        // gcd boundaries
+        assert_eq!(crate::arithmetic::gcd(0, 0), 0);
+        assert_eq!(crate::arithmetic::gcd(1, 1), 1);
+        assert_eq!(crate::arithmetic::gcd(u64::MAX, 1), 1);
+        assert_eq!(crate::arithmetic::gcd(u64::MAX, u64::MAX), u64::MAX);
+    }
+
+    // Bitwise at boundaries
+    #[test]
+    fn test_bitwise_boundaries() {
+        // is_power_of_two
+        assert!(!crate::bitwise::is_power_of_two(0));
+        assert!(crate::bitwise::is_power_of_two(1));
+        assert!(crate::bitwise::is_power_of_two(1 << 63));
+        assert!(!crate::bitwise::is_power_of_two(u64::MAX));
+
+        // bit_at at position 63
+        assert!(crate::bitwise::bit_at(1 << 63, 63));
+        assert!(!crate::bitwise::bit_at(1 << 63, 62));
+        assert!(crate::bitwise::bit_at(u64::MAX, 63));
+        assert!(crate::bitwise::bit_at(u64::MAX, 0));
+
+        // toggle is involution
+        let x = crate::bitwise::toggle_bit(0, 63);
+        assert_eq!(x, 1 << 63);
+        assert_eq!(crate::bitwise::toggle_bit(x, 63), 0);
+    }
+
+    // Conversion narrowing boundaries
+    #[test]
+    fn test_conversion_boundaries() {
+        assert_eq!(crate::conversion::narrow_u32(u32::MAX as u64), Some(u32::MAX));
+        assert!(crate::conversion::narrow_u32(u32::MAX as u64 + 1).is_none());
+        assert_eq!(crate::conversion::narrow_u16(u16::MAX as u64), Some(u16::MAX));
+        assert!(crate::conversion::narrow_u16(u16::MAX as u64 + 1).is_none());
+        assert_eq!(crate::conversion::narrow_u8(255), Some(255));
+        assert!(crate::conversion::narrow_u8(256).is_none());
+
+        assert_eq!(crate::conversion::unsigned_to_signed(i64::MAX as u64), Some(i64::MAX));
+        assert!(crate::conversion::unsigned_to_signed(i64::MAX as u64 + 1).is_none());
+        assert_eq!(crate::conversion::signed_to_unsigned(0), Some(0));
+        assert!(crate::conversion::signed_to_unsigned(-1).is_none());
+    }
+
+    // Integer alignment at boundaries
+    #[test]
+    fn test_integer_boundaries() {
+        assert_eq!(crate::integer::log2_floor(1), 0);
+        assert_eq!(crate::integer::log2_floor(u64::MAX), 63);
+        assert_eq!(crate::integer::align_down(u64::MAX, 1), u64::MAX);
+        assert_eq!(crate::integer::align_down(0, 1), 0);
+        assert!(crate::integer::is_even(0));
+        assert!(crate::integer::is_odd(u64::MAX));
+    }
+
+    proptest! {
+        // Division by large prime and u64::MAX
+        #[test]
+        fn prop_div_ceil_large_divisor(a in 0u64..u64::MAX) {
+            let large_prime = 999_999_999_999_999_989u64;
+            let r1 = crate::arithmetic::div_ceil(a, large_prime);
+            let r2 = crate::arithmetic::div_ceil(a, u64::MAX);
+            prop_assert!(r1 <= a / large_prime + 1);
+            prop_assert!(r2 <= 1);
+        }
+
+        // gcd(a, a) == a
+        #[test]
+        fn prop_gcd_self(a: u64) {
+            if a > 0 {
+                prop_assert_eq!(crate::arithmetic::gcd(a, a), a);
+            }
+        }
+    }
+}
+
+// ============================================================
+// P3: Round-trip / inverse proptests
+// ============================================================
+
+#[cfg(test)]
+mod roundtrip_tests {
+    use proptest::prelude::*;
+
+    proptest! {
+        // serialize_inj: encode_u64 then decode_u64
+        #[test]
+        fn prop_u64_encode_decode_roundtrip(v: u64) {
+            let encoded = crate::serialize_inj::encode_u64(v);
+            let decoded = crate::serialize_inj::decode_u64(&encoded);
+            prop_assert_eq!(decoded, v);
+        }
+
+        // slab: handle_pack then unpack
+        #[test]
+        fn prop_slab_handle_pack_unpack(index: u32, generation: u32) {
+            let packed = crate::slab::handle_pack(index, generation);
+            let ui = crate::slab::handle_unpack_index(packed);
+            let ug = crate::slab::handle_unpack_generation(packed);
+            prop_assert_eq!(ui, index);
+            prop_assert_eq!(ug, generation);
+        }
+
+        // slab: slot_address then slot_index roundtrip
+        #[test]
+        fn prop_slab_address_index_roundtrip(
+            index in 0u64..1000,
+            base in 0u64..1000,
+            slot_size in 1u64..100,
+        ) {
+            if base as u128 + (index as u128) * (slot_size as u128) <= u64::MAX as u128 {
+                let addr = crate::slab::slot_address(index, base, slot_size);
+                let back = crate::slab::slot_index(addr, base, slot_size);
+                prop_assert_eq!(back, index);
+            }
+        }
+
+        // cas_loop: aba_pack then unpack
+        #[test]
+        fn prop_aba_pack_unpack_roundtrip(value: u32, generation: u32) {
+            let packed = crate::cas_loop::aba_pack(value, generation);
+            let uv = crate::cas_loop::aba_unpack_value(packed);
+            let ug = crate::cas_loop::aba_unpack_generation(packed);
+            prop_assert_eq!(uv, value);
+            prop_assert_eq!(ug, generation);
+        }
+
+        // bitwise: set then clear is identity
+        #[test]
+        fn prop_set_clear_roundtrip(x: u64, pos in 0u64..64) {
+            let set = crate::bitwise::set_bit(x, pos);
+            let cleared = crate::bitwise::clear_bit(set, pos);
+            // If bit was originally 0, cleared == x; if 1, cleared == x
+            // because set_bit(x, pos) sets the bit, clear_bit clears it
+            if !crate::bitwise::bit_at(x, pos) {
+                prop_assert_eq!(cleared, x);
+            }
+        }
+
+        // ring_buffer: push then pop roundtrip
+        #[test]
+        fn prop_ring_push_pop(value: u64) {
+            let mut buf = crate::ring_buffer::RingBuffer::new(4);
+            buf.push(value);
+            let popped = buf.pop();
+            prop_assert_eq!(popped, Some(value));
+        }
+
+        // conversion: signed/unsigned roundtrip for non-negative
+        #[test]
+        fn prop_signed_unsigned_roundtrip(x in 0i64..i64::MAX) {
+            let u = crate::conversion::signed_to_unsigned(x).unwrap();
+            let back = crate::conversion::unsigned_to_signed(u).unwrap();
+            prop_assert_eq!(back, x);
+        }
+    }
+}
+
+// ============================================================
+// P3: Regression seed hardening
+// ============================================================
+
+#[cfg(test)]
+mod regression_hardening_tests {
+    // Each test encodes the exact shrunk input from proptest-regressions/
+    // so the fix is verified independently of the seed file.
+
+    // backoff.txt: attempt=64, cap=1
+    #[test]
+    fn test_regression_backoff_attempt_64_cap_1() {
+        let result = crate::backoff::compute_backoff(1, 64, 1);
+        assert!(result <= 1, "backoff(64, cap=1) = {} should be <= cap", result);
+    }
+
+    // consensus_path.txt: last_applied=12, commit=0
+    #[test]
+    fn test_regression_consensus_path_applied_ahead() {
+        // last_applied > commit: batch_apply_end is capped by commit_index
+        let end = crate::last_applied::batch_apply_end(12, 0, 10);
+        // end = min(last_applied + max_batch, commit_index) = min(22, 0) = 0
+        assert!(end <= 0, "end should not exceed commit_index");
+    }
+
+    // fair_share.txt: tokens=6199315631328619806, w1=1, w2=488, tw=41
+    #[test]
+    fn test_regression_fair_share_overflow() {
+        // w1=1 <= tw=41, so valid; should not panic
+        let r1 = crate::fair_share::fair_alloc(6199315631328619806, 1, 41);
+        assert!(r1 <= 6199315631328619806);
+    }
+
+    // job_retry.txt: attempts=6, max_attempts=0
+    #[test]
+    fn test_regression_job_retry_max_zero() {
+        let next = crate::job_retry::next_attempt(6, 0);
+        assert_eq!(next, 0, "max_attempts=0 should cap at 0");
+    }
+
+    // last_applied.txt: last_applied=26, commit_index=0, max_batch=1
+    #[test]
+    fn test_regression_last_applied_ahead_of_commit() {
+        // batch_apply_end is capped by commit_index
+        let end = crate::last_applied::batch_apply_end(26, 0, 1);
+        assert!(end <= 0, "end capped at commit_index=0");
+    }
+
+    // mpsc_bounds.txt: occ=40, cap=1
+    #[test]
+    fn test_regression_mpsc_occupancy_exceeds_capacity() {
+        let full = crate::mpsc_bounds::is_full(40, 1);
+        assert!(full);
+    }
+
+    // rate_limit.txt: tokens=2516605035125710725, cost=0, elapsed_ms=1, rate_per_sec=1, burst=0
+    #[test]
+    fn test_regression_rate_limit_zero_burst_zero_cost() {
+        let within = crate::rate_limit::is_within_burst(0, 0);
+        assert!(within, "zero cost should always be within burst");
+    }
+
+    // tiling.txt: inner rect (199, 224, 96, 143), point at (294, 366) near edge
+    #[test]
+    fn test_regression_tiling_contained_in() {
+        // Inner rect 1x1 at (294,366) inside outer (199,224,96,143)
+        // Outer covers x:[199,295), y:[224,367). 294 < 295, 366 < 367.
+        let inside = crate::tiling::contained_in(294, 366, 1, 1, 199, 224, 96, 143);
+        assert!(inside);
+    }
+
+    // watermark.txt: base=156554337110207874, capacity=4491, used=4491, size=...
+    #[test]
+    fn test_regression_watermark_full_alloc() {
+        let fits = crate::watermark::watermark_fits(
+            156554337110207874 + 4491, // mark = base + used
+            18290189736599339251,
+            156554337110207874,
+            4491,
+        );
+        // used == capacity, so nothing fits
+        assert!(!fits);
+    }
+}

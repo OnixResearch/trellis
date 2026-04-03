@@ -1447,3 +1447,15 @@
 - semaphore full means available==capacity (not available==0!) — semaphore::is_full
   checks available == capacity ("all permits returned")
 - 3009 → 3029 tests (+20 cross-module proptests), 208→228 in properties.rs
+
+## Proptest Hardening P3 Stress/Boundary/Regression (2026-04-03)
+- `gen` reserved keyword: even in proptest! params, must use `generation` not `gen`
+- batch_apply_end(last_applied, commit_index, max_batch) returns min(last_applied+max_batch, commit_index)
+  When last_applied > commit_index, result is commit_index (NOT last_applied)
+- write_buffer::flush_complete returns (active, 0) — resets immutable, NOT active
+- tiling::contained_in takes 8 params (ix,iy,iw,ih, ox,oy,ow,oh), not 6
+- watermark::watermark_fits(mark, size, base, capacity) — 4 params, mark = base + used
+- ring_buffer: methods are on RingBuffer struct, not free functions
+- backoff: compute_backoff(base, attempt, cap), not backoff_delay
+- last_applied: batch_apply_end, not apply_batch_size
+- 3029 → 3051 tests (+22: 5 boundary, 8 roundtrip, 9 regression hardening)
