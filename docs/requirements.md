@@ -25,6 +25,13 @@ r[bitwise.toggle-bit]
 toggle_bit MUST return a value with the bit at the given position flipped.
 Toggling twice MUST return the original value.
 
+r[bitwise.is-sign-extended]
+is_sign_extended(value, width) MUST return true if and only if bits [63:width]
+of value are all copies of bit [width-1]. width MUST be in [1, 64].
+is_sign_extended(value, 64) MUST always return true. If
+is_sign_extended(value, w1) holds and w2 >= w1, then
+is_sign_extended(value, w2) MUST also hold.
+
 ## Arithmetic
 
 r[arithmetic.abs-diff]
@@ -1055,6 +1062,14 @@ r[page.pages-needed]
 pages_needed MUST return the minimum number of pages required to cover
 size bytes. pages_needed(0, ps) MUST be 0. For size > 0, the result
 times page_size MUST be >= size. page_size MUST be nonzero.
+
+r[page.radix-index]
+radix_index(value, level, bits_per_level, base_offset) MUST return the
+field at bit position (base_offset + level * bits_per_level) with width
+bits_per_level. The result MUST agree with bitfield::extract_field at
+the computed offset and width. The result MUST be strictly less than
+2^bits_per_level. bits_per_level MUST be > 0. The computed offset +
+width MUST be <= 64.
 
 ## Fencing
 

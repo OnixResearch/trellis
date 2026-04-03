@@ -163,6 +163,80 @@ proof fn toggle_bit_involution(x: u64, pos: u64)
     assert(pos < 64 ==> (x ^ (1u64 << pos)) ^ (1u64 << pos) == x) by(bit_vector);
 }
 
+// --- is_sign_extended ---
+
+// r[depends bitwise.is-sign-extended]
+/// Spec: bits [63:width] are all copies of bit [width-1].
+/// At full width (64), this is vacuously true.
+pub open spec fn is_sign_extended_spec(value: u64, width: u64) -> bool
+    recommends 1 <= width <= 64
+{
+    if width >= 64 {
+        true
+    } else {
+        // The sign bit (bit width-1) determines what the upper bits should be.
+        // If sign bit is 0, upper bits must all be 0: value >> width == 0.
+        // If sign bit is 1, upper bits must all be 1: value >> width == (u64::MAX >> width).
+        // Equivalently: arithmetic shift right by (width-1) gives all-0 or all-1,
+        // which means the top (64-width) bits equal the sign bit repeated.
+        let sign_bit = (value >> sub(width, 1u64)) & 1u64;
+        if sign_bit == 0 {
+            (value >> width) == 0u64
+        } else {
+            // All upper bits must be 1. There are (64 - width) upper bits.
+            // value >> width should be (1 << (64 - width)) - 1 = all-ones in those bits.
+            (value >> width) == sub(1u64 << sub(64u64, width), 1u64)
+        }
+    }
+}
+
+// r[impl bitwise.is-sign-extended]
+/// Returns true if bits [63:width] are all copies of bit [width-1].
+/// Variable-shift overflow reasoning requires by(bit_vector) with
+/// variable widths — same class as order_for_size. Covered by proptest.
+#[verifier::external_body]
+pub fn is_sign_extended(value: u64, width: u64) -> (result: bool)
+    requires 1 <= width <= 64
+    ensures result == is_sign_extended_spec(value, width)
+{
+    if width >= 64 {
+        true
+    } else {
+        let sign_bit = (value >> (width - 1)) & 1;
+        if sign_bit == 0 {
+            (value >> width) == 0
+        } else {
+            (value >> width) == (1u64 << (64 - width)) - 1
+        }
+    }
+}
+
+// r[verify bitwise.is-sign-extended]
+/// Full width is always sign-extended.
+proof fn sign_extended_full(value: u64)
+    ensures is_sign_extended_spec(value, 64)
+{}
+
+// r[verify bitwise.is-sign-extended]
+/// Zero is sign-extended at any width.
+/// Z3 can't reason about variable shifts in the spec definition.
+/// Covered by proptest prop_sign_extended_zero.
+#[verifier::external_body]
+proof fn sign_extended_zero(width: u64)
+    requires 1 <= width <= 64
+    ensures is_sign_extended_spec(0, width)
+{}
+
+// r[verify bitwise.is-sign-extended]
+/// All-ones is sign-extended at any width.
+/// Z3 can't reason about variable shifts in the spec definition.
+/// Covered by proptest prop_sign_extended_all_ones.
+#[verifier::external_body]
+proof fn sign_extended_all_ones(width: u64)
+    requires 1 <= width <= 64
+    ensures is_sign_extended_spec(u64::MAX, width)
+{}
+
 } // verus!
 
 #[cfg(test)]
@@ -220,6 +294,37 @@ mod tests {
         assert_eq!(toggle_bit(0b1010, 1), 0b1000);
     }
 
+    // r[verify bitwise.is-sign-extended]
+    #[test]
+    fn test_is_sign_extended() {
+        // Full width always true
+        assert!(is_sign_extended(0, 64));
+        assert!(is_sign_extended(u64::MAX, 64));
+        assert!(is_sign_extended(42, 64));
+
+        // Zero: sign-extended at any width
+        assert!(is_sign_extended(0, 1));
+        assert!(is_sign_extended(0, 39));
+
+        // All-ones: sign-extended at any width
+        assert!(is_sign_extended(u64::MAX, 1));
+        assert!(is_sign_extended(u64::MAX, 39));
+
+        // Sv39 canonical: bit 38 = 0, bits 63-39 = 0
+        assert!(is_sign_extended(0x0000_003F_FFFF_FFFF, 39));
+        // Sv39 canonical: bit 38 = 1, bits 63-39 = 1
+        assert!(is_sign_extended(0xFFFF_FFC0_0000_0000, 39));
+        // Sv39 non-canonical: bit 38 = 1, bits 63-39 = 0
+        assert!(!is_sign_extended(0x0000_0040_0000_0000, 39));
+        // Sv39 non-canonical: bit 38 = 0, bits 63-39 = 1
+        assert!(!is_sign_extended(0xFFFF_FF80_0000_0000, 39));
+
+        // Width 1: only 0 and u64::MAX (all-ones) are sign-extended
+        assert!(is_sign_extended(0, 1));
+        assert!(is_sign_extended(u64::MAX, 1));
+        assert!(!is_sign_extended(1, 1));  // bit 0 = 1, but upper bits = 0
+    }
+
     proptest! {
         // r[verify bitwise.is-power-of-two]
         #[test]
@@ -255,6 +360,48 @@ mod tests {
         #[test]
         fn prop_toggle_involution(x: u64, pos in 0u64..64) {
             prop_assert_eq!(toggle_bit(toggle_bit(x, pos), pos), x);
+        }
+
+        // r[verify bitwise.is-sign-extended]
+        #[test]
+        fn prop_sign_extended_full(value: u64) {
+            prop_assert!(is_sign_extended(value, 64));
+        }
+
+        // r[verify bitwise.is-sign-extended]
+        #[test]
+        fn prop_sign_extended_zero(width in 1u64..=64) {
+            prop_assert!(is_sign_extended(0, width));
+        }
+
+        // r[verify bitwise.is-sign-extended]
+        #[test]
+        fn prop_sign_extended_all_ones(width in 1u64..=64) {
+            prop_assert!(is_sign_extended(u64::MAX, width));
+        }
+
+        // r[verify bitwise.is-sign-extended]
+        #[test]
+        fn prop_sign_extended_monotonic(value: u64, w1 in 1u64..=64, w2 in 1u64..=64) {
+            if w2 >= w1 && is_sign_extended(value, w1) {
+                prop_assert!(is_sign_extended(value, w2));
+            }
+        }
+
+        // r[verify bitwise.is-sign-extended]
+        #[test]
+        fn prop_sign_extended_model_oracle(value: u64, width in 1u64..=63) {
+            // Model: extract sign bit, check all upper bits match
+            let sign_bit = (value >> (width - 1)) & 1;
+            let expected = if sign_bit == 0 {
+                // Upper bits should all be 0
+                value >> width == 0
+            } else {
+                // Upper bits should all be 1
+                let mask = u64::MAX << width;
+                value & mask == mask
+            };
+            prop_assert_eq!(is_sign_extended(value, width), expected);
         }
     }
 }

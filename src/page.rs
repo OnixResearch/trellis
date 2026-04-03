@@ -7,6 +7,7 @@
 
 #[cfg(verus_keep_ghost)]
 use vstd::arithmetic::div_mod::lemma_fundamental_div_mod;
+
 use vstd::prelude::*;
 
 verus! {
@@ -287,6 +288,77 @@ proof fn page_start_of_frame(addr: u64, page_size: u64)
         requires page_size as int > 0, start == frame * page_size as int;
 }
 
+// --- radix_index ---
+
+// r[depends page.radix-index]
+/// Spec: extract the level-th group of bits_per_level bits from value,
+/// starting at base_offset. For Sv39 VPN extraction: radix_index(va, i, 9, 12).
+pub open spec fn radix_index_spec(
+    value: u64, level: u64, bits_per_level: u64, base_offset: u64,
+) -> u64
+    recommends
+        bits_per_level > 0,
+        base_offset + (level + 1) * bits_per_level <= 64,
+{
+    // Inline extract_field_spec to avoid cross-module ghost import issues
+    let offset = base_offset + level * bits_per_level;
+    if bits_per_level == 0 {
+        0u64
+    } else {
+        (value >> offset) & sub(1u64 << bits_per_level, 1u64)
+    }
+}
+
+// r[impl page.radix-index]
+/// Returns the level-th group of bits_per_level bits from value.
+pub fn radix_index(
+    value: u64, level: u64, bits_per_level: u64, base_offset: u64,
+) -> (result: u64)
+    requires
+        bits_per_level > 0,
+        bits_per_level <= 63,
+        base_offset + (level + 1) * bits_per_level <= 64,
+    ensures result == radix_index_spec(value, level, bits_per_level, base_offset)
+{
+    let offset = base_offset + level * bits_per_level;
+    let mask = (1u64 << bits_per_level) - 1;
+    assert(bits_per_level <= 63 ==> (1u64 << bits_per_level) >= 1u64) by(bit_vector);
+    (value >> offset) & mask
+}
+
+// r[verify page.radix-index]
+/// Radix index is bounded: result < 2^bits_per_level.
+proof fn radix_index_bounded(
+    value: u64, level: u64, bits_per_level: u64, base_offset: u64,
+)
+    requires
+        bits_per_level > 0,
+        bits_per_level <= 63,
+        base_offset + (level + 1) * bits_per_level <= 64,
+    ensures radix_index_spec(value, level, bits_per_level, base_offset)
+        < (1u64 << bits_per_level)
+{
+    let offset = base_offset + level * bits_per_level;
+    let w = bits_per_level;
+    // extract_field_spec returns (value >> offset) & ((1 << w) - 1)
+    // which is bounded by (1 << w) - 1 < (1 << w)
+    assert(offset + w <= 64 && w > 0 && w <= 63 ==>
+        ((value >> offset) & sub(1u64 << w, 1u64)) < (1u64 << w)
+    ) by(bit_vector);
+}
+
+// r[verify page.radix-index]
+/// For 9-bit levels, result < 512.
+proof fn radix_index_bounded_9bit(
+    value: u64, level: u64, base_offset: u64,
+)
+    requires base_offset + (level + 1) * 9 <= 64
+    ensures radix_index_spec(value, level, 9, base_offset) < 512
+{
+    radix_index_bounded(value, level, 9, base_offset);
+    assert(1u64 << 9u64 == 512u64) by(bit_vector);
+}
+
 } // verus!
 
 #[cfg(test)]
@@ -345,6 +417,28 @@ mod tests {
         assert_eq!(pages_needed(4097, 4096), 2);
         assert_eq!(pages_needed(8192, 4096), 2);
         assert_eq!(pages_needed(8193, 4096), 3);
+    }
+
+    // r[verify page.radix-index]
+    #[test]
+    fn test_radix_index() {
+        // Sv39: 3 levels of 9-bit VPN at base_offset 12
+        // Address 0: all VPN fields are 0
+        assert_eq!(radix_index(0, 0, 9, 12), 0);
+        assert_eq!(radix_index(0, 1, 9, 12), 0);
+        assert_eq!(radix_index(0, 2, 9, 12), 0);
+
+        // Address 0x80400000:
+        // bits 38-30 (VPN[2]) = 0b000000010 = 2
+        // bits 29-21 (VPN[1]) = 0b000000010 = 2
+        // bits 20-12 (VPN[0]) = 0b000000000 = 0
+        assert_eq!(radix_index(0x80400000, 0, 9, 12), 0);
+        assert_eq!(radix_index(0x80400000, 1, 9, 12), 2);
+        assert_eq!(radix_index(0x80400000, 2, 9, 12), 2);
+
+        // VPN[0] at max (511): bits 20-12 all set
+        let va = 0x1FF000u64; // bits 20-12 = 0x1FF = 511
+        assert_eq!(radix_index(va, 0, 9, 12), 511);
     }
 
     proptest! {
@@ -420,6 +514,37 @@ mod tests {
         // r[verify page.is-aligned]
         // r[verify page.start-address]
         // r[verify page.pages-needed]
+        // r[verify page.radix-index]
+        #[test]
+        fn prop_radix_index_bounded(value: u64, level in 0u64..4, bpl in 1u64..=16) {
+            let base = 0u64;
+            if base + (level + 1) * bpl <= 64 && bpl <= 63 {
+                let idx = radix_index(value, level, bpl, base);
+                prop_assert!(idx < (1u64 << bpl));
+            }
+        }
+
+        // r[verify page.radix-index]
+        #[test]
+        fn prop_radix_index_sv39_bounded(va: u64, level in 0u64..3) {
+            let idx = radix_index(va, level, 9, 12);
+            prop_assert!(idx < 512);
+        }
+
+        // r[verify page.radix-index]
+        #[test]
+        fn prop_radix_index_roundtrip_sv39(va: u64) {
+            // Extract 3 VPN levels (9 bits each at offset 12) + 12-bit page offset
+            let vpn0 = radix_index(va, 0, 9, 12);
+            let vpn1 = radix_index(va, 1, 9, 12);
+            let vpn2 = radix_index(va, 2, 9, 12);
+            let offset = va & 0xFFF; // bits [11:0]
+            // Recombine the 39-bit value
+            let recombined = (vpn2 << 30) | (vpn1 << 21) | (vpn0 << 12) | offset;
+            let mask_39 = (1u64 << 39) - 1;
+            prop_assert_eq!(recombined, va & mask_39);
+        }
+
         /// Model oracle: verify page arithmetic against u128 multiplication.
         #[test]
         fn prop_model_oracle(addr: u64, page_size in 1u64..=4096) {
