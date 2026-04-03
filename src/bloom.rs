@@ -242,6 +242,39 @@ mod tests {
 
         // r[verify bloom.insert]
         #[test]
+        fn prop_empty_filter_no_match(
+            size in 8usize..64,
+            positions in proptest::collection::vec(0usize..8, 1..=5),
+        ) {
+            let positions: Vec<usize> = positions.into_iter().map(|p| p % size).collect();
+            let bits = vec![false; size];
+            prop_assert!(!query(&bits, &positions));
+        }
+
+        #[test]
+        fn prop_full_filter_always_match(
+            size in 8usize..64,
+            positions in proptest::collection::vec(0usize..8, 1..=5),
+        ) {
+            let positions: Vec<usize> = positions.into_iter().map(|p| p % size).collect();
+            let bits = vec![true; size];
+            prop_assert!(query(&bits, &positions));
+        }
+
+        #[test]
+        fn prop_insert_idempotent(
+            size in 8usize..64,
+            positions in proptest::collection::vec(0usize..8, 1..=5),
+        ) {
+            let positions: Vec<usize> = positions.into_iter().map(|p| p % size).collect();
+            let mut bits = vec![false; size];
+            insert(&mut bits, &positions);
+            let after_first = bits.clone();
+            insert(&mut bits, &positions);
+            prop_assert_eq!(bits, after_first);
+        }
+
+        #[test]
         fn prop_insert_monotonic(
             size in 8usize..64,
             pos_a in proptest::collection::vec(0usize..8, 1..=3),

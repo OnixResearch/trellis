@@ -313,5 +313,23 @@ mod tests {
                 }
             }
         }
+
+        #[test]
+        fn prop_single_node_is_leaf(dummy in 0u8..1) {
+            let _ = dummy;
+            let parents = vec![None];
+            let leaf = find_latest_leaf(&parents);
+            prop_assert_eq!(leaf, Some(0));
+        }
+
+        #[test]
+        fn prop_linear_chain_leaf_is_last(len in 2usize..=10) {
+            let mut parents: Vec<Option<usize>> = vec![None];
+            for i in 1..len {
+                parents.push(Some(i - 1));
+            }
+            let leaf = find_latest_leaf(&parents);
+            prop_assert_eq!(leaf, Some(len - 1));
+        }
     }
 }

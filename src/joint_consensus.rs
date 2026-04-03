@@ -170,5 +170,35 @@ mod tests {
         fn prop_full_always_joint(total_old in 1u64..100, total_new in 1u64..100) {
             prop_assert!(is_joint_quorum(total_old, total_old, total_new, total_new));
         }
+
+        #[test]
+        fn prop_zero_count_never_quorum(
+            total_old in 1u64..50,
+            total_new in 1u64..50,
+        ) {
+            // Zero votes in old config means no joint quorum
+            prop_assert!(!is_joint_quorum(0, total_old, total_new, total_new));
+            // Zero votes in new config means no joint quorum
+            prop_assert!(!is_joint_quorum(total_old, total_old, 0, total_new));
+        }
+
+        #[test]
+        fn prop_both_quorums_required(
+            total_old in 3u64..=20,
+            total_new in 3u64..=20,
+        ) {
+            let maj_old = total_old / 2 + 1;
+            let maj_new = total_new / 2 + 1;
+            // Old quorum but not new
+            if maj_new > 1 {
+                prop_assert!(!is_joint_quorum(maj_old, total_old, maj_new - 1, total_new));
+            }
+            // New quorum but not old
+            if maj_old > 1 {
+                prop_assert!(!is_joint_quorum(maj_old - 1, total_old, maj_new, total_new));
+            }
+            // Both quorums
+            prop_assert!(is_joint_quorum(maj_old, total_old, maj_new, total_new));
+        }
     }
 }

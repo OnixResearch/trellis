@@ -1428,3 +1428,11 @@
   are the only valid transitions. No self-transitions.
 - election_init: init_election_term(u64::MAX) returns None (overflow guard)
 - 2970 → 2994 tests (+24)
+
+## Proptest Hardening P1 Batch 3 (2026-04-03)
+- 6 data structure modules, each from 2-3 proptests → 4-5 proptests
+- gossip: convergence_rounds returns n such that infection_lower_bound(n) == cluster_size
+- joint_consensus: both old AND new quorum required — dropping either below majority breaks it
+- trace_relation: proof-only module (no exec fns). Test helpers req/resp/internal in test scope.
+- consistent_hash: single-node ring always returns that node regardless of key
+- 2994 → 3009 tests (+15)

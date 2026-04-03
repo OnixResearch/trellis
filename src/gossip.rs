@@ -362,6 +362,34 @@ mod tests {
 
         // r[verify gossip.infection-lower-bound]
         #[test]
+        fn prop_zero_rounds_one_infected(
+            cluster_size in 1u64..=1000,
+            fanout in 1u64..=10,
+        ) {
+            let result = infection_lower_bound(cluster_size, fanout, 0);
+            prop_assert!(result <= 1);
+        }
+
+        #[test]
+        fn prop_convergence_rounds_positive(
+            cluster_size in 2u64..=100,
+            fanout in 2u64..=10,
+        ) {
+            let rounds = convergence_rounds(cluster_size, fanout);
+            prop_assert!(rounds >= 1);
+        }
+
+        #[test]
+        fn prop_converged_means_all_infected(
+            cluster_size in 2u64..=50,
+            fanout in 2u64..=5,
+        ) {
+            let rounds = convergence_rounds(cluster_size, fanout);
+            let infected = infection_lower_bound(cluster_size, fanout, rounds);
+            prop_assert_eq!(infected, cluster_size);
+        }
+
+        #[test]
         fn prop_infection_monotonic_rounds(
             cluster_size in 1u64..=1000,
             fanout in 2u64..=10,

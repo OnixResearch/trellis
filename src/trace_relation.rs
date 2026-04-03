@@ -393,5 +393,41 @@ mod tests {
 
             prop_assert!(visible_count <= trace.len());
         }
+
+        #[test]
+        fn prop_internal_never_visible(
+            num_internals in 1usize..=20,
+        ) {
+            let trace: Vec<TraceEvent> = (0..num_internals)
+                .map(|_| internal())
+                .collect();
+            let visible_count = trace.iter()
+                .filter(|e| e.event_type == EVENT_CLIENT_REQUEST || e.event_type == EVENT_CLIENT_RESPONSE)
+                .count();
+            prop_assert_eq!(visible_count, 0);
+        }
+
+        #[test]
+        fn prop_request_response_pairing(
+            uid: u64,
+            cmd: u64,
+            result: u64,
+        ) {
+            let r = req(uid, cmd);
+            let s = resp(uid, result);
+            prop_assert_eq!(r.event_type, EVENT_CLIENT_REQUEST);
+            prop_assert_eq!(s.event_type, EVENT_CLIENT_RESPONSE);
+            prop_assert_eq!(r.uid, s.uid);
+        }
+
+        #[test]
+        fn prop_event_types_exhaustive(
+            event_type in 0u8..3,
+        ) {
+            let valid = event_type == EVENT_CLIENT_REQUEST
+                || event_type == EVENT_CLIENT_RESPONSE
+                || event_type == EVENT_INTERNAL;
+            prop_assert!(valid);
+        }
     }
 }

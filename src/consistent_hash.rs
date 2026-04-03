@@ -192,5 +192,25 @@ mod tests {
         ) {
             prop_assert_eq!(lookup(&ring, key_hash), lookup(&ring, key_hash));
         }
+
+        #[test]
+        fn prop_result_is_ring_member(
+            ring in proptest::collection::vec((any::<u64>(), any::<u64>()), 1..=10),
+            key_hash: u64,
+        ) {
+            let result = lookup(&ring, key_hash);
+            let node_ids: Vec<u64> = ring.iter().map(|&(_, n)| n).collect();
+            prop_assert!(node_ids.contains(&result));
+        }
+
+        #[test]
+        fn prop_single_node_always_returns_it(
+            hash: u64,
+            node_id: u64,
+            key_hash: u64,
+        ) {
+            let ring = vec![(hash, node_id)];
+            prop_assert_eq!(lookup(&ring, key_hash), node_id);
+        }
     }
 }
