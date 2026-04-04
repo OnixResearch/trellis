@@ -51,6 +51,7 @@
 //! - `commit_notify` — commit notification dispatch: newly committed ranges, proposal status
 //! - `compaction_fence` — log compaction coordination with replication: safe compact index
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
+//! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
 //! - `delegation` — delegation chain validation: depth bounds, attenuation, Delegate gate
@@ -106,6 +107,7 @@
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
+//! - `nonce` — verified nonce issuance with uniqueness, monotonicity, and freshness proofs
 //! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
 //! - `nix_closure` — Nix generic closure with fuel-based termination
@@ -179,6 +181,7 @@
 //! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write detection
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
+//! - `zeroize` — verified memory scrubbing: write zero to every byte, idempotence, detection
 //!
 //! ### Memory allocator verification
 //!
@@ -435,3 +438,6 @@ pub mod calendar;
 pub mod cron_field;
 pub mod cron_match;
 pub mod cron_next;
+pub mod zeroize;
+pub mod ct_select;
+pub mod nonce;

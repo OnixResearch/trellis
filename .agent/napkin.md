@@ -1489,3 +1489,14 @@
   dom_min > max_dom and first_match's precondition min <= max would be violated.
 - Verus ensures block parse error: bare `{ let x = ...; expr }` in ensures clause
   is parsed as function body. Use helper spec fn or parenthesize.
+- Secrets verification modules added: zeroize, ct_select, nonce
+  - zeroize: Vec::set(i, 0u8) loop with forall invariant — Z3 handles automatically
+  - ct_select: bitmask algebra `(a & mask) | (b & !mask)` with by(bit_vector) proofs.
+    Verus can't parse `0u64.wrapping_sub(f)` in by(bit_vector) context — the `_wrapping_sub`
+    gets read as a numeric suffix. Use `if flag { 0xFFFF_FFFF_FFFF_FFFFu64 } else { 0u64 }`
+    to construct the mask instead. The by(bit_vector) proofs for `(a & ALL_ONES) | (b & !ALL_ONES) == a`
+    and `(a & 0) | (b & !0) == b` verify instantly.
+  - nonce: thin composition over monotonic — all proofs automatic. Cross-module import of
+    is_strict_advance_spec needs #[cfg(verus_keep_ghost)] (ghost code erased in normal builds).
+  - default_numeric_fallback lint: range literals in test loops need suffixes (`0_i32..100_i32`)
+  - uninlined_format_args lint: use `"nonce {n}"` not `"nonce {}", n`

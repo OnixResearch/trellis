@@ -5580,3 +5580,51 @@ has_two_cycle MUST return true iff edges contain A→B and B→A with A≠B.
 r[txn-dep.ts-ordered]
 ts_ordered MUST return true iff all edges respect timestamp ordering.
 Timestamp ordering MUST imply no self-loops and no 2-cycles.
+
+## Zeroize
+
+r[zeroize.scrub]
+zeroize MUST write zero to every byte in the buffer. After zeroize,
+all bytes MUST be zero. Length MUST be preserved.
+
+r[zeroize.idempotent]
+Zeroizing an already-zeroed buffer MUST produce the same result.
+zeroize(zeroize(buf)) == zeroize(buf).
+
+r[zeroize.detects-nonzero]
+is_zeroed MUST return true if and only if every byte is zero.
+is_zeroed on a zeroized buffer MUST return true.
+
+## Constant-Time Select
+
+r[ct-select.u64]
+ct_select_u64 MUST return a when flag is true, b when flag is false.
+The result MUST be equivalent to branching.
+
+r[ct-select.u8]
+ct_select_u8 MUST return a when flag is true, b when flag is false.
+
+r[ct-select.flag-true]
+When flag is true, ct_select MUST return the first argument.
+
+r[ct-select.flag-false]
+When flag is false, ct_select MUST return the second argument.
+
+## Nonce
+
+r[nonce.issue]
+issue_nonce MUST return the current counter value as the nonce and
+increment the counter by one. The counter MUST NOT wrap.
+
+r[nonce.uniqueness]
+Two nonces issued from different counter states MUST be distinct.
+For any c1 != c2, issue_nonce(c1).nonce != issue_nonce(c2).nonce.
+
+r[nonce.monotonic]
+Successive nonces MUST be strictly increasing. The new counter
+MUST be a strict advance over the old counter.
+
+r[nonce.freshness]
+is_fresh MUST return true iff the nonce is strictly greater than the
+last-seen value. A freshly issued nonce checked against its issuing
+counter MUST be fresh.
