@@ -351,3 +351,12 @@
 {"text":"yes","timestamp":1775175923636}
 {"text":"yes","timestamp":1775176508082}
 {"text":"do it","timestamp":1775176807447}
+{"text":"do we have verified mutex and mesi","timestamp":1775251848721}
+{"text":"lets do cache coherence","timestamp":1775251943453}
+{"text":"what mmu primitives do we need to add still","timestamp":1775254112333}
+{"text":"write an openspec to do all","timestamp":1775254238244}
+{"text":"can any of these be decomposed into smaller primitives?","timestamp":1775254648432}
+{"text":"yes","timestamp":1775255434783}
+{"text":"lets begin","timestamp":1775256335868}
+{"text":"can we write an openspec for time primitives, for use with cron","timestamp":1775270080995}
+{"text":"lets begin","timestamp":1775270320804}

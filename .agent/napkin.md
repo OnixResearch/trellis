@@ -1407,6 +1407,20 @@
     both r[impl] and r[verify] on the proof fn — same pattern as node_lifecycle
   - 4773 Verus proofs (+41), 2859 cargo tests (+18)
 
+## MMU Primitives Phase 1 (2026-04-03)
+- is_sign_extended spec uses variable shifts (value >> width, 1 << (64-width)) — Z3 can't
+  handle variable-shift reasoning in either by(bit_vector) or standard mode. Same class as
+  buddy::order_for_size. All three fns (exec + 2 proof) need external_body. Proptests cover.
+- radix_index spec inlined extract_field_spec body to avoid cross-module ghost import:
+  `use crate::bitfield::extract_field_spec` fails in single-file Verus AND in test builds
+  (spec fns erased). Solution: copy the shift-and-mask expression directly.
+- `#[cfg(verus_keep_ghost)] use crate::foo::bar_spec` — DON'T use this for spec fns you
+  reference in another module's spec body. The import works for Verus but the spec body
+  won't inline properly. Instead, duplicate the expression.
+- radix_index_bounded proof: by(bit_vector) with `offset + w <= 64 && w > 0 && w <= 63`
+  succeeds because the assertion uses concrete-width masking, not variable shifts.
+- Full-crate Verus has 19 pre-existing errors from other modules. My changes added 0 new.
+
 ## Proptest Hardening P1 Batch 1 (2026-04-03)
 - P0 was already complete from a prior session (all `assume()`, `no-ensures`, `external_body` safety nets in place)
 - P1 Batch 1: 13 Raft consensus modules, each from 3 proptests → 6-7 proptests
@@ -1459,3 +1473,19 @@
 - backoff: compute_backoff(base, attempt, cap), not backoff_delay
 - last_applied: batch_apply_end, not apply_batch_size
 - 3029 → 3051 tests (+22: 5 boundary, 8 roundtrip, 9 regression hardening)
+- Calendar module: day_of_week exec uses modular reduction (each term % 7) to avoid
+  u64 overflow on large years. mod7_sum_lemma proves the identity via nonlinear_arith.
+  `vstd::arithmetic::div_mod::lemma_div_pos_is_pos` needed for y/4 >= 0, y/100 >= 0.
+- Verus spec subtraction on u64 produces int: `(value - min) % step` fails type check.
+  Must write `(value - min) % (step as int)` in spec mode. Exec `%` on u64 is fine.
+- Cron field first_match proofs: Z3 nonlinear_arith can't prove
+  `(x + step - x%step) % step == 0` from Euclidean division axioms.
+  Marked external_body, proptest covers correctness.
+- Cron next_occurrence sentinel checks: compare against field max (fmin > min_max),
+  NOT against absolute field limit (fmin > 59). When min_max < field_max, the
+  sentinel (min_max + 1) is below the absolute limit and gets missed.
+- Cron next_occurrence dom_min > max_dom guard: must check before calling first_match.
+  When schedule requires a day the month doesn't have (dom=29 in Feb with 28 days),
+  dom_min > max_dom and first_match's precondition min <= max would be violated.
+- Verus ensures block parse error: bare `{ let x = ...; expr }` in ensures clause
+  is parsed as function body. Use helper spec fn or parenthesize.
