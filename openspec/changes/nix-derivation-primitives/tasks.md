@@ -1,0 +1,47 @@
+## Phase 1: Base32 and Hash Truncation
+
+- [ ] Implement `nix_base32` module: `spec fn encode_spec`, `exec fn encode`, `spec fn decode_spec`, `exec fn decode`
+- [ ] Prove base32 bijectivity: `decode(encode(x)) == x` for all byte sequences
+- [ ] Prove base32 output length: `encode(x).len() == (x.len() * 8 + 4) / 5`
+- [ ] Prove base32 injectivity: distinct inputs produce distinct encodings
+- [ ] Implement `nix_hash_truncate` module: `spec fn compress_hash_spec`, `exec fn compress_hash`
+- [ ] Prove compress output length: `compress_hash(h, n).len() == n`
+- [ ] Prove compress determinism: same inputs always produce same output
+- [ ] Prove compress XOR linearity: `compress(a XOR b, n) == compress(a, n) XOR compress(b, n)`
+- [ ] Proptest oracles for base32 against `nix hash to-nix32` CLI output
+- [ ] Proptest oracles for compress_hash round-trip properties
+- [ ] Add tracey annotations, verify `verus` passes, verify `tracey query uncovered` clean
+
+## Phase 2: Fingerprint and Name Validation
+
+- [ ] Implement store path name validation: `spec fn valid_name_spec`, `exec fn valid_name`
+- [ ] Implement `nix_fingerprint` module: `spec fn regular_fingerprint_spec`, `exec fn regular_fingerprint`
+- [ ] Implement fixed-output fingerprint: `spec fn fixed_fingerprint_spec`, `exec fn fixed_fingerprint`
+- [ ] Implement text-hash fingerprint: `spec fn text_fingerprint_spec`, `exec fn text_fingerprint`
+- [ ] Prove fingerprint injectivity: distinct (type, hash, name) → distinct fingerprints
+- [ ] Prove name validation rejects empty, dot-prefixed, and invalid-character names
+- [ ] Proptest oracles for fingerprint format against known Nix store paths
+- [ ] Add tracey annotations, verify `verus` passes, verify `tracey query uncovered` clean
+
+## Phase 3: ATerm Serialization
+
+- [ ] Implement ATerm string escaping: `spec fn escape_aterm_spec`, `exec fn escape_aterm`
+- [ ] Prove escape round-trip: unescape(escape(s)) == s
+- [ ] Define `Derivation` and `DerivationOutput` structs
+- [ ] Implement `nix_drv_serialize` module: `spec fn serialize_drv_spec`, `exec fn serialize_drv`
+- [ ] Prove serialization determinism: same derivation → same bytes
+- [ ] Prove serialization injectivity: distinct derivations → distinct bytes
+- [ ] Proptest oracles for ATerm escaping against known `.drv` file contents
+- [ ] Add tracey annotations, verify `verus` passes, verify `tracey query uncovered` clean
+
+## Phase 4: Store Path Composition
+
+- [ ] Implement `nix_store_path` module: `spec fn store_path_spec`, `exec fn store_path`
+- [ ] Implement input-addressed output path computation with self-reference masking
+- [ ] Implement fixed-output path computation
+- [ ] Prove store path determinism: composition of deterministic functions is deterministic
+- [ ] Prove store path format: output matches `/nix/store/<32 chars>-<name>`
+- [ ] Prove hash part is exactly 32 characters
+- [ ] Proptest end-to-end oracles against `nix derivation show` for nixpkgs derivations
+- [ ] Register all modules in `src/lib.rs`
+- [ ] Add tracey annotations, verify `verus` passes, verify `tracey query uncovered` clean
