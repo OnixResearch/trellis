@@ -363,3 +363,13 @@
 {"text":"what secrets verification can we add","timestamp":1775276778613}
 {"text":"lets begin.","timestamp":1775276931018}
 {"text":"continue","timestamp":1775278948041}
+{"text":"can we add an openspec for adding verified components of ../nickel/","timestamp":1775324297755}
+{"text":"add shamirs secret sharding to an openspec","timestamp":1775345953164}
+{"text":"add an openspec for left right","timestamp":1775347449769}
+{"text":"add a openspec for per core rw locks","timestamp":1775348242055}
+{"text":"add an openspec for fetch add","timestamp":1775348377905}
+{"text":"what other cache primitives should we verify?","timestamp":1775348511086}
+{"text":"write openspecs for all","timestamp":1775348570268}
+{"text":"what compilier primitives should we add?","timestamp":1775349354728}
+{"text":"all","timestamp":1775349711489}
+{"text":"continue","timestamp":1775351210523}
