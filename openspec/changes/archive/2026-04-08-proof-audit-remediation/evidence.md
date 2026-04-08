@@ -229,37 +229,64 @@ Documentation refresh completed:
 
 ## Post-review rerun evidence
 
-Captured on `2026-04-08T18:50-18:53-04:00` from the repo root after the review called out missing direct evidence.
+Captured on `2026-04-08T19:31-19:32-04:00` from the repo root after the review called out missing raw rerun transcripts.
+
+### Raw transcript files
+
+The full command transcripts are saved under:
+
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/cargo-test.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/clippy.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/verus.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/verify.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/check-ensures.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/tracey-status.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/tracey-uncovered.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/tracey-untested.txt`
+- `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/archive-state.txt`
+
+Each file includes the exact shell command on the first line followed by raw stdout/stderr.
 
 ### Command outputs captured directly
 
-- `pueue` task `19` — `cargo test -q`
-  - `test result: ok. 3162 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s`
-- `pueue` task `20` — `cargo clippy --all-targets -- -D warnings`
-  - `Finished 'dev' profile [unoptimized + debuginfo] target(s) in 23.45s`
-- `pueue` task `21` — `./scripts/verus.sh src/lib.rs`
-  - `verification results:: 5053 verified, 0 errors`
-- `pueue` task `22` — `./scripts/verify.sh`
-  - `✓ tests pass`
-  - `verification results:: 5053 verified, 0 errors`
-  - `✓ verus proofs pass`
-  - `verified-logic/rust: 0 uncovered out of 1197 rules`
-  - `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
-  - `=== ALL CHECKS PASSED ===`
-- Direct rerun: `./scripts/check-ensures.sh`
-  - `Checked 1089 pub fn in verus! blocks, 4 exempted`
-  - `✓ all verified pub fns have ensures clauses`
-- Direct rerun: `tracey query status`
-  - `verified-logic/rust: 1197 of 1197 requirements are covered. 1197 of 1197 have a verification reference.`
-- Direct rerun: `tracey query uncovered`
-  - `verified-logic/rust: 0 uncovered out of 1197 rules`
-- Direct rerun: `tracey query untested`
-  - `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
+- `pueue` task `24` — transcript file `rerun-logs/cargo-test.txt`
+  - command header: `$ cargo test -q`
+  - result: `test result: ok. 3162 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.40s`
+- `pueue` task `25` — transcript file `rerun-logs/clippy.txt`
+  - command header: `$ cargo clippy --all-targets -- -D warnings`
+  - result: `Finished 'dev' profile [unoptimized + debuginfo] target(s) in 0.04s`
+- `pueue` task `26` — transcript file `rerun-logs/verus.txt`
+  - command header: `$ ./scripts/verus.sh src/lib.rs`
+  - result: `verification results:: 5053 verified, 0 errors`
+- `pueue` task `27` — transcript file `rerun-logs/verify.txt`
+  - command header: `$ ./scripts/verify.sh`
+  - result includes:
+    - `Checked 1089 pub fn in verus! blocks, 4 exempted`
+    - `✓ clippy clean`
+    - `✓ tests pass`
+    - `verification results:: 5053 verified, 0 errors`
+    - `✓ verus proofs pass`
+    - `verified-logic/rust: 0 uncovered out of 1197 rules`
+    - `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
+    - `=== ALL CHECKS PASSED ===`
+- Direct rerun — transcript file `rerun-logs/check-ensures.txt`
+  - command header: `$ ./scripts/check-ensures.sh`
+  - result: `Checked 1089 pub fn in verus! blocks, 4 exempted` and `✓ all verified pub fns have ensures clauses`
+- Direct rerun — transcript file `rerun-logs/tracey-status.txt`
+  - command header: `$ tracey query status`
+  - result: `verified-logic/rust: 1197 of 1197 requirements are covered. 1197 of 1197 have a verification reference.`
+- Direct rerun — transcript file `rerun-logs/tracey-uncovered.txt`
+  - command header: `$ tracey query uncovered`
+  - result: `verified-logic/rust: 0 uncovered out of 1197 rules`
+- Direct rerun — transcript file `rerun-logs/tracey-untested.txt`
+  - command header: `$ tracey query untested`
+  - result: `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
 
 ### OpenSpec archive state
 
-- Direct check: `test -d openspec/changes/proof-audit-remediation`
-  - output: `active-absent`
+- Direct rerun — transcript file `rerun-logs/archive-state.txt`
+  - command header: `$ if [ -d openspec/changes/proof-audit-remediation ]; then echo active-present; else echo active-absent; fi`
+  - result: `active-absent`
 - The remediation change exists only at `openspec/changes/archive/2026-04-08-proof-audit-remediation/`.
 
 ### Post-review documentation correction
