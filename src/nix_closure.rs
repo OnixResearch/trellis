@@ -92,6 +92,7 @@ impl Clone for ClosureItem {
 }
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

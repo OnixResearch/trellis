@@ -205,6 +205,7 @@ proof fn step_down_is_not_quorum(recent_count: u64, cluster_size: u64)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

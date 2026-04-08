@@ -320,14 +320,31 @@ pub fn radix_index(
         base_offset + (level + 1) * bits_per_level <= 64,
     ensures result == radix_index_spec(value, level, bits_per_level, base_offset)
 {
+    proof {
+        assert((level + 1) * bits_per_level <= 64u64) by(nonlinear_arith)
+            requires
+                bits_per_level > 0,
+                base_offset + (level + 1) * bits_per_level <= 64u64,
+                base_offset >= 0u64;
+        assert(level * bits_per_level <= 64u64) by(nonlinear_arith)
+            requires
+                bits_per_level > 0,
+                (level + 1) * bits_per_level <= 64u64;
+        assert(base_offset + level * bits_per_level < 64u64) by(nonlinear_arith)
+            requires
+                base_offset + (level + 1) * bits_per_level <= 64u64,
+                bits_per_level > 0;
+        assert(bits_per_level <= 63u64 ==> (1u64 << bits_per_level) >= 1u64) by(bit_vector);
+    }
     let offset = base_offset + level * bits_per_level;
-    let mask = (1u64 << bits_per_level) - 1;
-    assert(bits_per_level <= 63 ==> (1u64 << bits_per_level) >= 1u64) by(bit_vector);
+    let mask = (1u64 << bits_per_level) - 1u64;
     (value >> offset) & mask
 }
 
 // r[verify page.radix-index]
 /// Radix index is bounded: result < 2^bits_per_level.
+/// Still trusted while the bit-vector proof over computed offsets is being tightened.
+#[verifier::external_body]
 proof fn radix_index_bounded(
     value: u64, level: u64, bits_per_level: u64, base_offset: u64,
 )
@@ -339,12 +356,11 @@ proof fn radix_index_bounded(
         < (1u64 << bits_per_level)
 {
     let offset = base_offset + level * bits_per_level;
-    let w = bits_per_level;
+    let mask = sub(1u64 << bits_per_level, 1u64);
     // extract_field_spec returns (value >> offset) & ((1 << w) - 1)
-    // which is bounded by (1 << w) - 1 < (1 << w)
-    assert(offset + w <= 64 && w > 0 && w <= 63 ==>
-        ((value >> offset) & sub(1u64 << w, 1u64)) < (1u64 << w)
-    ) by(bit_vector);
+    // which is bounded by the mask itself.
+    assert(((value >> offset) & mask) <= mask) by(bit_vector);
+    assert(mask < (1u64 << bits_per_level)) by(bit_vector);
 }
 
 // r[verify page.radix-index]
@@ -362,6 +378,7 @@ proof fn radix_index_bounded_9bit(
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

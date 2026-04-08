@@ -249,6 +249,7 @@ proof fn class_count_small()
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

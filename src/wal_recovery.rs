@@ -170,7 +170,11 @@ pub fn apply_entries(state: &mut Vec<u64>, entries: &[(u64, u64)])
             assert((entries@[i as int].0 as int) < original.len());
             assert((k as int) < state@.len());
         }
-        state.set(k as usize, v);
+        let index = match usize::try_from(k) {
+            Ok(value) => value,
+            Err(_) => 0,
+        };
+        state.set(index, v);
         i = i + 1;
     }
 }

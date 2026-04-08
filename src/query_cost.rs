@@ -45,7 +45,10 @@ pub fn seq_scan_cost(num_pages: u64, cost_per_page: u64) -> (result: u64)
     if wide > u64::MAX as u128 {
         u64::MAX
     } else {
-        wide as u64
+        match u64::try_from(wide) {
+            Ok(value) => value,
+            Err(_) => u64::MAX,
+        }
     }
 }
 
@@ -76,6 +79,7 @@ pub open spec fn index_rows_touched_spec(
 // --- index_scan_cost ---
 
 // r[depends query-cost.index-scan]
+// r[impl query-cost.index-scan]
 /// Spec: cost of an index scan.
 pub open spec fn index_scan_cost_spec(
     num_pages: u64, total_rows: u64,
@@ -184,6 +188,7 @@ proof fn more_distinct_lower_selectivity(a: u64, b: u64)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

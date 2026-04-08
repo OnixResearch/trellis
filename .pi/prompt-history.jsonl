@@ -373,3 +373,8 @@
 {"text":"what compilier primitives should we add?","timestamp":1775349354728}
 {"text":"all","timestamp":1775349711489}
 {"text":"continue","timestamp":1775351210523}
+{"text":"write an openspec for nix derivation primitives /logic","timestamp":1775408413000}
+{"text":"lets do an audit of the proofs","timestamp":1775668310291}
+{"text":"create an openspec with the findings","timestamp":1775668897555}
+{"text":"begin openspec/changes/proof-audit-remediation/","timestamp":1775669267891}
+{"text":"do it","timestamp":1775671978149}

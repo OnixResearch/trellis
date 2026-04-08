@@ -5,6 +5,8 @@
 //! maintains both modules' invariants. The key cross-module property:
 //! allocated slot addresses fall within the pool region.
 
+#![allow(clippy::result_unit_err, clippy::type_complexity)]
+
 #[cfg(verus_keep_ghost)]
 use crate::alloc_bitmap::{
     bitmap_alloc_spec, bitmap_free_spec, bitmap_is_allocated_spec, bitmap_utilization_spec,

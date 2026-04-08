@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**4929 Verus proofs · 3051 tests · 1207 requirements · 236 modules · 22 trusted axioms**
+**5053 Verus proofs · 3162 tests · 1197 requirements · 244 modules · 36 trusted boundaries**
 
 ## How it works
 
@@ -433,8 +433,8 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-22 functions are marked `#[verifier::external_body]` — Verus trusts the
-ensures clause without checking the body.
+`36` items are marked `#[verifier::external_body]` across `13` files.
+Those are the current trusted boundaries inside Verus.
 
 **13 permanent** (architectural trust boundaries):
 
@@ -451,10 +451,21 @@ ensures clause without checking the body.
   logs were built from the same leader chain. Trust boundaries encoding
   the global safety argument.
 
-**9 allocator exec fns** (`free_list.rs`, `alloc_bitmap.rs`, `pool.rs`,
-`segregated_free.rs`) — find-first-free loops, generation tracking, and
-`Vec`/`Seq` bridging that Z3 can't discharge through the type mismatch.
-All spec-level proofs for these modules are fully verified; only the
-exec→spec correspondence is trusted. Covered by proptest.
+**23 closeable** (proof debt still tracked in the audit inventory):
 
-All trusted items have proptest oracles verifying the same property at runtime.
+- **3 variable-shift proofs** (`bitwise.rs`)
+- **2 cron-field modular arithmetic proofs** (`cron_field.rs`)
+- **2 cron next-occurrence search wrappers** (`cron_next.rs`)
+- **3 free-list exec wrappers** (`free_list.rs`)
+- **2 allocation bitmap wrappers** (`alloc_bitmap.rs`)
+- **2 pool wrappers** (`pool.rs`)
+- **2 segregated-free wrappers** (`segregated_free.rs`)
+- **6 MESI proof/exec blockers** (`mesi.rs`) externalized to restore a green pipeline
+- **1 page radix-index bound proof** (`page.rs`) externalized while the computed-offset bit-vector proof is tightened
+
+In addition to `external_body`, the current audit also tracks:
+
+- `2` `assume(...)` soundness oracles (`topo_sort.rs`, `reachability.rs`)
+- `5` `@verified-logic:no-ensures` / placeholder-spec surfaces
+
+All trusted items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.

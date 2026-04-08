@@ -627,7 +627,7 @@ mod tests {
             components in proptest::collection::vec(0u32..100, 50..80),
         ) {
             let version: String = components.iter()
-                .map(|c| c.to_string())
+                .map(std::string::ToString::to_string)
                 .collect::<Vec<_>>()
                 .join(".");
             let v = version.into_bytes();

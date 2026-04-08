@@ -262,6 +262,7 @@ proof fn coalesce_symmetric(a: u64, b: u64, order: u64)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::uninlined_format_args)]
 mod tests {
     use proptest::prelude::*;
 

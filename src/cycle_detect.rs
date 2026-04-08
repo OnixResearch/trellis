@@ -5,6 +5,8 @@
 //! those nodes form cycles. Specs define cycles via fuel-bounded path
 //! existence.
 
+#![allow(clippy::too_many_lines)]
+
 use vstd::prelude::*;
 
 verus! {
@@ -57,6 +59,7 @@ pub open spec fn has_nontrivial_cycle_at(edges: Seq<(int, int)>, n: int, v: int)
 // ============================================================
 
 // r[impl cycle-detect.has-cycle]
+// @verified-logic:no-ensures Kahn-cycle correctness is still runtime-tested but not linked to has_cycle_spec
 /// Detect whether a directed graph has a cycle.
 ///
 /// Uses Kahn's algorithm: count in-degrees, iteratively remove

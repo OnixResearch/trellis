@@ -2196,7 +2196,13 @@ mod retry_proofs {
 }
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation, clippy::cast_possible_wrap)]
+    #[allow(
+        clippy::absurd_extreme_comparisons,
+        clippy::cast_possible_truncation,
+        clippy::cast_possible_wrap,
+        clippy::default_numeric_fallback,
+        clippy::uninlined_format_args,
+    )]
 mod tests {
     use proptest::prelude::*;
 
@@ -6666,7 +6672,7 @@ mod job_execution_cross_tests {
 
         // r[verify properties.size-class-agrees-with-buddy-order]
         #[test]
-        fn prop_size_class_agrees_with_buddy(size in 1u64..=(1u64 << 32)) {
+        fn prop_size_class_agrees_with_buddy(size in 1u64..=(1u64 << 32u64)) {
             let sc = crate::size_class::size_to_class(size);
             let bo = crate::buddy::order_for_size(size);
             // Both return a class/order where 2^result >= size
@@ -7089,14 +7095,14 @@ mod boundary_value_tests {
         assert!(!crate::bitwise::is_power_of_two(u64::MAX));
 
         // bit_at at position 63
-        assert!(crate::bitwise::bit_at(1 << 63, 63));
-        assert!(!crate::bitwise::bit_at(1 << 63, 62));
+        assert!(crate::bitwise::bit_at(1u64 << 63u64, 63));
+        assert!(!crate::bitwise::bit_at(1u64 << 63u64, 62));
         assert!(crate::bitwise::bit_at(u64::MAX, 63));
         assert!(crate::bitwise::bit_at(u64::MAX, 0));
 
         // toggle is involution
         let x = crate::bitwise::toggle_bit(0, 63);
-        assert_eq!(x, 1 << 63);
+        assert_eq!(x, 1u64 << 63u64);
         assert_eq!(crate::bitwise::toggle_bit(x, 63), 0);
     }
 
@@ -7243,7 +7249,7 @@ mod regression_hardening_tests {
     #[test]
     fn test_regression_backoff_attempt_64_cap_1() {
         let result = crate::backoff::compute_backoff(1, 64, 1);
-        assert!(result <= 1, "backoff(64, cap=1) = {} should be <= cap", result);
+        assert!(result <= 1, "backoff(64, cap=1) = {result} should be <= cap");
     }
 
     // consensus_path.txt: last_applied=12, commit=0
@@ -7252,7 +7258,7 @@ mod regression_hardening_tests {
         // last_applied > commit: batch_apply_end is capped by commit_index
         let end = crate::last_applied::batch_apply_end(12, 0, 10);
         // end = min(last_applied + max_batch, commit_index) = min(22, 0) = 0
-        assert!(end <= 0, "end should not exceed commit_index");
+        assert_eq!(end, 0, "end should not exceed commit_index");
     }
 
     // fair_share.txt: tokens=6199315631328619806, w1=1, w2=488, tw=41
@@ -7275,7 +7281,7 @@ mod regression_hardening_tests {
     fn test_regression_last_applied_ahead_of_commit() {
         // batch_apply_end is capped by commit_index
         let end = crate::last_applied::batch_apply_end(26, 0, 1);
-        assert!(end <= 0, "end capped at commit_index=0");
+        assert_eq!(end, 0, "end capped at commit_index=0");
     }
 
     // mpsc_bounds.txt: occ=40, cap=1

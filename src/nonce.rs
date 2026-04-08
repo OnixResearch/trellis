@@ -28,6 +28,8 @@ pub open spec fn next_counter_spec(counter: u64) -> u64 {
 }
 
 // r[impl nonce.issue]
+// r[impl nonce.monotonic]
+// r[impl nonce.uniqueness]
 /// Issue a nonce from the counter. Returns (new_counter, nonce).
 /// The nonce is the current counter value; the counter advances by one.
 pub fn issue_nonce(counter: u64) -> (result: (u64, u64))

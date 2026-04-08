@@ -548,7 +548,12 @@ pub proof fn mpmc_remaining_plus_occupancy(head: u64, tail: u64, capacity: u64)
 // ============================================================
 
 #[cfg(test)]
-#[allow(clippy::cast_possible_truncation)]
+#[allow(
+    clippy::absurd_extreme_comparisons,
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::default_numeric_fallback,
+)]
 mod tests {
     use proptest::prelude::*;
 

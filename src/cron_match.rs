@@ -6,6 +6,8 @@
 //! the given timestamp. Day-of-week is derived from the date,
 //! not supplied by the caller.
 
+#![allow(clippy::too_many_arguments)]
+
 #[cfg(verus_keep_ghost)]
 use crate::calendar::*;
 #[cfg(verus_keep_ghost)]

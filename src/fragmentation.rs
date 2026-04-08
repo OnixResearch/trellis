@@ -29,7 +29,10 @@ pub fn external_frag(free_total: u64, largest_free_block: u64) -> (result: u64)
     requires free_total > 0, largest_free_block <= free_total
     ensures result == external_frag_spec(free_total, largest_free_block)
 {
-    let pct = ((largest_free_block as u128 * 100) / free_total as u128) as u64;
+    let pct = match u64::try_from((largest_free_block as u128 * 100) / free_total as u128) {
+        Ok(value) => value,
+        Err(_) => 100,
+    };
     proof {
         // pct = (lfb * 100) / ft. Since lfb <= ft, pct <= 100.
         assert((largest_free_block as int) * 100 <= (free_total as int) * 100)

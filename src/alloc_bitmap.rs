@@ -8,6 +8,7 @@
 
 // Verified bit-packing uses u32→u64 casts.
 #![allow(clippy::cast_lossless)]
+#![allow(clippy::result_unit_err)]
 
 use vstd::prelude::*;
 
@@ -197,7 +198,10 @@ pub fn bitmap_alloc(
     for i in 0..map.len() {
         if !map[i] {
             let new_gen = if gens[i] < u32::MAX { gens[i] + 1 } else { gens[i] };
-            let handle = handle_pack(i as u32, new_gen);
+            let Ok(slot) = u32::try_from(i) else {
+                return None;
+            };
+            let handle = handle_pack(slot, new_gen);
             let mut new_map: Vec<bool> = map.to_vec();
             let mut new_gens: Vec<u32> = gens.to_vec();
             new_map[i] = true;

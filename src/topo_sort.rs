@@ -5,6 +5,8 @@
 //! Returns `None` when the graph contains a cycle. The ordering is
 //! validated by a verified checker.
 
+#![allow(clippy::too_many_lines)]
+
 use vstd::prelude::*;
 
 verus! {

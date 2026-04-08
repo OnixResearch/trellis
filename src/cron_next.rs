@@ -5,6 +5,8 @@
 //! avoid scanning all 525,600 minutes in a year. Bounded by max_years
 //! to guarantee termination.
 
+#![allow(clippy::too_many_arguments, clippy::too_many_lines)]
+
 #[cfg(verus_keep_ghost)]
 use crate::calendar::*;
 #[cfg(verus_keep_ghost)]

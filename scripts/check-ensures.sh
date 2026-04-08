@@ -7,89 +7,96 @@ set -euo pipefail
 
 cd "$(git rev-parse --show-toplevel 2>/dev/null || pwd)"
 
-FAIL=0
-CHECKED=0
-EXEMPT=0
+python - <<'PY'
+from pathlib import Path
+import re
+import sys
 
-for file in src/*.rs; do
-    [[ "$file" == "src/lib.rs" ]] && continue
+FAIL = 0
+CHECKED = 0
+EXEMPT = 0
 
-    mapfile -t lines < "$file"
-    total=${#lines[@]}
-    in_verus=0
-    in_test_mod=0
+verus_start = re.compile(r"^\s*verus!\s*\{")
+verus_end = re.compile(r"^\s*\}\s*//\s*verus!?\s*$")
+cfg_test = re.compile(r"#\[\s*cfg\s*\(\s*test\s*\)\s*\]")
+spec_fn = re.compile(r"^\s*(pub\s+)?(open\s+)?spec\s+fn\b")
+proof_fn = re.compile(r"^\s*proof\s+fn\b")
+private_fn = re.compile(r"^\s*fn\s+\w")
+pub_fn = re.compile(r"^\s*pub\s+fn\b")
 
-    for ((n=0; n<total; n++)); do
-        line="${lines[$n]}"
+for file in sorted(Path("src").glob("*.rs")):
+    if file.name == "lib.rs":
+        continue
 
-        # Track verus! block boundaries
-        [[ "$line" =~ ^verus![[:space:]]*\{ ]] && in_verus=1
-        [[ "$line" =~ ^\}[[:space:]]*//.verus ]] && in_verus=0
+    lines = file.read_text().splitlines()
+    in_verus = False
+    in_test_mod = False
 
-        # Track #[cfg(test)]
-        [[ "$line" =~ '#[cfg(test)]' ]] && in_test_mod=1
-        [[ $in_test_mod -eq 1 ]] && continue
+    for n, line in enumerate(lines):
+        if verus_start.match(line):
+            in_verus = True
 
-        # Only check inside verus! blocks
-        [[ $in_verus -eq 0 ]] && continue
-
-        # Skip spec fn and proof fn
-        [[ "$line" =~ ^[[:space:]]*(pub[[:space:]]+)?(open[[:space:]]+)?spec[[:space:]]+fn ]] && continue
-        [[ "$line" =~ ^[[:space:]]*proof[[:space:]]+fn ]] && continue
-
-        # Skip private helper fns
-        if [[ "$line" =~ ^[[:space:]]*fn[[:space:]] ]] && ! [[ "$line" =~ ^[[:space:]]*pub[[:space:]] ]]; then
+        if cfg_test.search(line):
+            in_test_mod = True
+        if in_test_mod:
+            if verus_end.match(line):
+                in_verus = False
             continue
-        fi
 
-        # Match pub fn inside verus!
-        if [[ "$line" =~ ^[[:space:]]*pub[[:space:]]+fn[[:space:]] ]]; then
-            CHECKED=$((CHECKED + 1))
-            line_num=$((n + 1))
+        if not in_verus:
+            if verus_end.match(line):
+                in_verus = False
+            continue
 
-            # Check for exemption in previous 5 lines
-            is_exempt=0
-            lookback=5
-            start=$((n - lookback))
-            [[ $start -lt 0 ]] && start=0
-            for ((k=start; k<n; k++)); do
-                [[ "${lines[$k]}" =~ @verified-logic:no-ensures ]] && is_exempt=1
-            done
+        if spec_fn.match(line) or proof_fn.match(line):
+            if verus_end.match(line):
+                in_verus = False
+            continue
 
-            if [[ $is_exempt -eq 1 ]]; then
-                EXEMPT=$((EXEMPT + 1))
+        if private_fn.match(line) and not pub_fn.match(line):
+            if verus_end.match(line):
+                in_verus = False
+            continue
+
+        if pub_fn.match(line):
+            CHECKED += 1
+            line_num = n + 1
+
+            start = max(0, n - 5)
+            is_exempt = any("@verified-logic:no-ensures" in lines[k] for k in range(start, n))
+            if is_exempt:
+                EXEMPT += 1
+                if verus_end.match(line):
+                    in_verus = False
                 continue
-            fi
 
-            # Scan forward for `ensures` before the opening `{`
-            has_ensures=0
-            for ((k=n; k<n+15 && k<total; k++)); do
-                fwd="${lines[$k]}"
-                [[ "$fwd" =~ ^[[:space:]]*ensures ]] && has_ensures=1 && break
-                # Stop at opening brace of function body
-                if [[ $k -gt $n ]] && [[ "$fwd" =~ ^\{ ]]; then
+            has_ensures = False
+
+            for fwd in lines[n:]:
+                code = fwd.split("//", 1)[0]
+                stripped = code.strip()
+                if re.search(r"\bensures\b", code):
+                    has_ensures = True
+                if stripped.startswith("{"):
                     break
-                fi
-            done
 
-            if [[ $has_ensures -eq 0 ]]; then
-                fn_sig="$(echo "$line" | sed 's/^[[:space:]]*//')"
-                echo "MISSING ensures: $file:$line_num: $fn_sig"
-                FAIL=1
-            fi
-        fi
-    done
-done
+            if not has_ensures:
+                fn_sig = line.lstrip()
+                print(f"MISSING ensures: {file}:{line_num}: {fn_sig}")
+                FAIL = 1
 
-echo ""
-echo "Checked $CHECKED pub fn in verus! blocks, $EXEMPT exempted"
+        if verus_end.match(line):
+            in_verus = False
 
-if [[ $FAIL -eq 0 ]]; then
-    echo "✓ all verified pub fns have ensures clauses"
-else
-    echo ""
-    echo "✗ pub fns in verus! blocks found without ensures"
-    echo "  Fix: add 'ensures result == *_spec(args)' to the function"
-    echo "  Or:  add '// @verified-logic:no-ensures <reason>' to exempt"
-    exit 1
-fi
+print()
+print(f"Checked {CHECKED} pub fn in verus! blocks, {EXEMPT} exempted")
+
+if FAIL == 0:
+    print("✓ all verified pub fns have ensures clauses")
+else:
+    print()
+    print("✗ pub fns in verus! blocks found without ensures")
+    print("  Fix: add 'ensures result == *_spec(args)' to the function")
+    print("  Or:  add '// @verified-logic:no-ensures <reason>' to exempt")
+    sys.exit(1)
+PY

@@ -23,6 +23,8 @@ pub open spec fn ct_select_u64_spec(flag: bool, a: u64, b: u64) -> u64 {
 }
 
 // r[impl ct-select.u64]
+// r[impl ct-select.flag-true]
+// r[impl ct-select.flag-false]
 /// Constant-time select for u64. Uses bitmask arithmetic:
 /// mask = all-ones (flag=true) or all-zeros (flag=false).
 /// result = (a & mask) | (b & !mask).
@@ -51,6 +53,8 @@ pub open spec fn ct_select_u8_spec(flag: bool, a: u8, b: u8) -> u8 {
 }
 
 // r[impl ct-select.u8]
+// r[impl ct-select.flag-true]
+// r[impl ct-select.flag-false]
 /// Constant-time select for u8. Same masking approach as u64.
 pub fn ct_select_u8(flag: bool, a: u8, b: u8) -> (result: u8)
     ensures result == ct_select_u8_spec(flag, a, b),

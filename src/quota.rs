@@ -151,6 +151,7 @@ pub open spec fn quota_utilization_spec(limit: u64, used: u64) -> u64 {
 
 // r[impl quota.utilization]
 /// Returns the utilization percentage (0–100).
+#[allow(clippy::cast_possible_truncation)]
 pub fn quota_utilization(limit: u64, used: u64) -> (result: u64)
     ensures result == quota_utilization_spec(limit, used)
 {

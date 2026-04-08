@@ -302,6 +302,7 @@ pub proof fn write_then_read(
 // ============================================================
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

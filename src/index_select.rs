@@ -177,6 +177,7 @@ proof fn covering_transitive(a: Seq<u64>, b: Seq<u64>, c: Seq<u64>)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 
@@ -203,6 +204,7 @@ mod tests {
         assert!(!is_covering(&[], &[1]));
     }
 
+    // r[verify index-select.best-index]
     #[test]
     fn test_best_index_single() {
         assert_eq!(best_index(&[(1, 10)]), 0);
@@ -221,10 +223,18 @@ mod tests {
         assert_eq!(best_index(&[(1, 10), (1, 10), (1, 10)]), 0);
     }
 
+    // r[verify index-select.best-index]
     #[test]
     fn test_best_index_cross_multiply() {
-        // 3/10 vs 2/7: 3*7=21 vs 2*10=20 → 2/7 is smaller (index 1)
+        // 3/10 vs 2/7: 3*7=21 vs 2*10=20 -> 2/7 is smaller (index 1)
         assert_eq!(best_index(&[(3, 10), (2, 7)]), 1);
+    }
+
+    // r[verify index-select.column-count]
+    #[test]
+    fn test_column_count() {
+        assert_eq!(column_count(&[]), 0);
+        assert_eq!(column_count(&[10, 20, 30]), 3);
     }
 
     proptest! {
@@ -245,12 +255,21 @@ mod tests {
             prop_assert!(is_covering(&index, &[]));
         }
 
+        // r[verify index-select.best-index]
         #[test]
         fn prop_best_index_in_bounds(
             sels in proptest::collection::vec((0u64..1000, 1u64..1000), 1..=10),
         ) {
             let result = best_index(&sels);
             prop_assert!(result < sels.len());
+        }
+
+        // r[verify index-select.column-count]
+        #[test]
+        fn prop_column_count_matches_len(
+            cols in proptest::collection::vec(any::<u64>(), 0..=10),
+        ) {
+            prop_assert_eq!(column_count(&cols), cols.len());
         }
 
         #[test]

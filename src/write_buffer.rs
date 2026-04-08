@@ -223,6 +223,7 @@ pub open spec fn flush_count_spec(total_bytes: u64, threshold: u64) -> u64
 }
 
 // r[impl write-buffer.flush-count]
+#[allow(clippy::manual_div_ceil)]
 pub fn flush_count(total_bytes: u64, threshold: u64) -> (result: u64)
     requires
         threshold > 0,

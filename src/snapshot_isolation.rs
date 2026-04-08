@@ -102,6 +102,7 @@ pub fn has_ww_conflict(ws_a: &[u64], ws_b: &[u64]) -> (result: bool)
 // --- si_allows_commit ---
 
 // r[depends snapshot-iso.si-allows-commit]
+// r[impl snapshot-iso.si-allows-commit]
 /// Spec: SI allows commit of a transaction with write set `ws` when
 /// none of the concurrently committed transactions' write sets conflict.
 /// `concurrent_ws` is a Seq of write sets (Seq<Seq<u64>>).
@@ -311,6 +312,7 @@ mod tests {
         assert!(!rw_overlap(&[1, 2], &[3, 4]));
     }
 
+    // r[verify snapshot-iso.write-set-size]
     #[test]
     fn test_write_set_size() {
         assert_eq!(write_set_size(&[1, 2, 3]), 3);

@@ -149,7 +149,7 @@ pub fn free_list_remove(list: &[u64], block: u64) -> (result: Vec<u64>)
     ensures result@ == free_list_remove_spec(list@, block)
 {
     let mut result = Vec::new();
-    for &b in list.iter() {
+    for &b in list {
         if b != block {
             result.push(b);
         }

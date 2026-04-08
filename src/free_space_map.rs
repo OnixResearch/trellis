@@ -272,7 +272,10 @@ pub fn first_free(map: &[bool]) -> (result: i64)
         decreases map@.len() - i,
     {
         if map[i] {
-            return i as i64;
+            return match i64::try_from(i) {
+                Ok(value) => value,
+                Err(_) => -1,
+            };
         }
         i = i + 1;
     }
@@ -409,6 +412,7 @@ pub open spec fn fragmentation_pct_spec(free: u64, largest_run: u64) -> u64
 }
 
 // r[impl free-space-map.fragmentation]
+#[allow(clippy::manual_checked_ops)]
 pub fn fragmentation_pct(free: u64, largest_run: u64) -> (result: u64)
     requires largest_run <= free, free <= u64::MAX / 100,
     ensures result == fragmentation_pct_spec(free, largest_run),
@@ -442,6 +446,7 @@ proof fn max_fragmentation_bound(free: u64)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::bool_assert_comparison)]
 mod tests {
     use super::*;
 
@@ -526,6 +531,7 @@ mod tests {
 }
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 mod proptests {
     use super::*;
     use proptest::prelude::*;

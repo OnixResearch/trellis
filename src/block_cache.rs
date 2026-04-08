@@ -568,6 +568,7 @@ mod tests {
 }
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod proptests {
     use super::*;
     use proptest::prelude::*;

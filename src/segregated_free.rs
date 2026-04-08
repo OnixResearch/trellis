@@ -164,7 +164,9 @@ pub fn seg_alloc(
         num_classes > 0, num_classes <= 17,
         lists@.len() == num_classes as int,
 {
-    let class = seg_class_for(size, num_classes) as usize;
+    let Ok(class) = usize::try_from(seg_class_for(size, num_classes)) else {
+        return None;
+    };
     if class < lists.len() && !lists[class].is_empty() {
         Some((lists[class][0], class as u64))
     } else {
@@ -197,7 +199,10 @@ pub fn seg_free(
     ensures
         lists@.len() == old(lists)@.len(),
 {
-    lists[class as usize].insert(0, block);
+    let Ok(index) = usize::try_from(class) else {
+        return;
+    };
+    lists[index].insert(0, block);
 }
 
 // ─── Proofs ──────────────────────────────────────────────────────────
@@ -259,6 +264,7 @@ proof fn alloc_empty_class_none(lists: Seq<Seq<u64>>, size: u64, num_classes: u6
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

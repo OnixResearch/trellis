@@ -343,6 +343,7 @@ mod tests {
         assert!(!is_visible(10, 20, 9));
     }
 
+    // r[verify mvcc.is-committed]
     #[test]
     fn test_is_committed() {
         assert!(is_committed(5, &[1, 2, 3]));
@@ -360,6 +361,7 @@ mod tests {
         assert!(!snapshot_visible(10, 20, 99, 25, &[]));
     }
 
+    // r[verify mvcc.chain-latest]
     #[test]
     fn test_chain_latest() {
         let chain = vec![
@@ -377,6 +379,7 @@ mod tests {
         assert_eq!(chain_latest(&chain, 3, &[]), 3);
     }
 
+    // r[verify mvcc.chain-latest]
     #[test]
     fn test_chain_latest_with_active() {
         let chain = vec![
@@ -388,7 +391,7 @@ mod tests {
         assert_eq!(chain_latest(&chain, 25, &[3]), 2);
         // At snapshot 15: entry 0 active, entry 1 visible (10 <= 15 < 20, creator 2 committed)
         assert_eq!(chain_latest(&chain, 15, &[3]), 1);
-        // Both active — nothing visible
+        // Both active - nothing visible
         assert_eq!(chain_latest(&chain, 15, &[2, 3]), 2);
     }
 
@@ -416,11 +419,13 @@ mod tests {
             }
         }
 
+        // r[verify mvcc.is-committed]
         #[test]
         fn prop_committed_on_empty_active(creator_txn: u64) {
             prop_assert!(is_committed(creator_txn, &[]));
         }
 
+        // r[verify mvcc.is-committed]
         #[test]
         fn prop_not_committed_when_in_active(creator_txn: u64, prefix_len in 0usize..5) {
             let mut active: Vec<u64> = (0..prefix_len as u64).collect();

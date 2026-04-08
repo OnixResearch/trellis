@@ -5,6 +5,8 @@
 //! Verified properties: returned coloring is valid (no monochromatic
 //! edges) and uses only two colors.
 
+#![allow(clippy::too_many_lines)]
+
 use vstd::prelude::*;
 
 verus! {

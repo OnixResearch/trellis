@@ -441,6 +441,7 @@ proof fn split_sizes_match_balance(keys: Seq<u64>)
 } // verus!
 
 #[cfg(test)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

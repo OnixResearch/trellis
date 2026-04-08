@@ -112,6 +112,7 @@ pub open spec fn pack_spec(a: u64, b: u64) -> u16
 }
 
 // r[impl page-checksum.pack]
+#[allow(clippy::cast_possible_truncation)]
 pub fn pack(a: u64, b: u64) -> (result: u16)
     requires a < 256, b < 256,
     ensures result == pack_spec(a, b),
