@@ -226,3 +226,43 @@ Documentation refresh completed:
 
 - `openspec/specs/verification-gaps/spec.md` now reflects the full audited inventory and green pipeline status
 - `README.md` now reflects the regenerated proof counts and trust-boundary description
+
+## Post-review rerun evidence
+
+Captured on `2026-04-08T18:50-18:53-04:00` from the repo root after the review called out missing direct evidence.
+
+### Command outputs captured directly
+
+- `pueue` task `19` — `cargo test -q`
+  - `test result: ok. 3162 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s`
+- `pueue` task `20` — `cargo clippy --all-targets -- -D warnings`
+  - `Finished 'dev' profile [unoptimized + debuginfo] target(s) in 23.45s`
+- `pueue` task `21` — `./scripts/verus.sh src/lib.rs`
+  - `verification results:: 5053 verified, 0 errors`
+- `pueue` task `22` — `./scripts/verify.sh`
+  - `✓ tests pass`
+  - `verification results:: 5053 verified, 0 errors`
+  - `✓ verus proofs pass`
+  - `verified-logic/rust: 0 uncovered out of 1197 rules`
+  - `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
+  - `=== ALL CHECKS PASSED ===`
+- Direct rerun: `./scripts/check-ensures.sh`
+  - `Checked 1089 pub fn in verus! blocks, 4 exempted`
+  - `✓ all verified pub fns have ensures clauses`
+- Direct rerun: `tracey query status`
+  - `verified-logic/rust: 1197 of 1197 requirements are covered. 1197 of 1197 have a verification reference.`
+- Direct rerun: `tracey query uncovered`
+  - `verified-logic/rust: 0 uncovered out of 1197 rules`
+- Direct rerun: `tracey query untested`
+  - `verified-logic/rust: 0 untested (impl but no verify) out of 1197 rules`
+
+### OpenSpec archive state
+
+- Direct check: `test -d openspec/changes/proof-audit-remediation`
+  - output: `active-absent`
+- The remediation change exists only at `openspec/changes/archive/2026-04-08-proof-audit-remediation/`.
+
+### Post-review documentation correction
+
+- `openspec/specs/verification-gaps/spec.md` now lists every `#[verifier::external_body]` site individually, with classification, rationale, and test-coverage notes.
+- This resolves the mismatch between the archived change text and the main inventory granularity.

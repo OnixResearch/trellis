@@ -11,7 +11,7 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
-As of `2026-04-08`, the live verification pipeline is green:
+As of `2026-04-08`, backed by the rerun commands recorded in `openspec/changes/archive/2026-04-08-proof-audit-remediation/evidence.md`, the live verification pipeline is green:
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
@@ -28,21 +28,47 @@ following inventory is the current audited boundary.
 
 `36` external_body items remain across `13` files.
 
-| File | Count | Classification | Rationale |
-|---|---:|---|---|
-| `src/chain.rs` | 3 | Permanent | Cryptographic hash axioms / closed-spec boundary |
-| `src/snapshot_integrity.rs` | 3 | Permanent | Cryptographic hash axioms / closed-spec boundary |
-| `src/nix_version.rs` | 4 | Permanent | Deep recursive version-comparison proofs still exceed solver limits |
-| `src/log_invariant_inductive.rs` | 3 | Permanent | Sound only under a system-level invariant, not a local lemma |
-| `src/bitwise.rs` | 3 | Closeable | Variable-shift proofs are still trusted solver workarounds |
-| `src/cron_field.rs` | 2 | Closeable | Nonlinear modular-arithmetic lemmas still missing |
-| `src/cron_next.rs` | 2 | Closeable | Search/rollover execs remain trusted runtime code |
-| `src/free_list.rs` | 3 | Closeable | Exec/spec correspondence for list mutation remains trusted |
-| `src/alloc_bitmap.rs` | 2 | Closeable | Allocation/free execs remain trusted wrappers |
-| `src/pool.rs` | 2 | Closeable | Composition over bitmap/slab is still trusted runtime glue |
-| `src/segregated_free.rs` | 2 | Closeable | Nested `Vec<Vec<u64>>` to `Seq<Seq<u64>>` bridge remains trusted |
-| `src/mesi.rs` | 6 | Closeable | Composite MESI checker/transition proofs were externalized to restore a green pipeline |
-| `src/page.rs` | 1 | Closeable | `radix_index_bounded` remains trusted while the computed-offset bit-vector proof is tightened |
+Each trusted site is listed individually below so the inventory matches the
+actual tree and not just per-file totals.
+
+| Site | Classification | Rationale | Test coverage |
+|---|---|---|---|
+| `src/chain.rs:42 hash_deterministic` | Permanent | Determinism axiom for closed `hash_spec`; this is the cryptographic assumption boundary. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
+| `src/chain.rs:70 compute_entry_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets the closed `hash_spec`. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
+| `src/chain.rs:207 hash_collision_free` | Permanent | Collision-resistance axiom for the closed hash model. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
+| `src/snapshot_integrity.rs:43 dual_hash_deterministic` | Permanent | Determinism axiom for uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
+| `src/snapshot_integrity.rs:54 dual_hash_collision_resistant` | Permanent | Collision-resistance axiom for the dual-hash model. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
+| `src/snapshot_integrity.rs:63 dual_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
+| `src/nix_version.rs:207 cv_fuel_antisymmetric` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for antisymmetry. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
+| `src/nix_version.rs:267 cv_fuel_reflexive` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for reflexivity. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
+| `src/nix_version.rs:300 cv_fuel_range` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for range reasoning. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
+| `src/nix_version.rs:365 compare_versions` | Permanent | Iterative exec/spec bridge still hits the same `cv_fuel` unfolding limit. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
+| `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
+| `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
+| `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
+| `src/bitwise.rs:197 is_sign_extended` | Closeable | Variable-shift bit-vector reasoning over arbitrary widths is still trusted. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
+| `src/bitwise.rs:224 sign_extended_zero` | Closeable | Z3 still cannot discharge the variable-shift proof for zero at arbitrary widths. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
+| `src/bitwise.rs:234 sign_extended_all_ones` | Closeable | Z3 still cannot discharge the variable-shift proof for all-ones at arbitrary widths. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
+| `src/cron_field.rs:188 first_match_correct` | Closeable | Nonlinear modular-arithmetic reasoning for `first_match_spec` is still trusted. | `src/cron_field.rs` unit tests + proptest (`218-334`) cover valid/sentinel outcomes and step behavior. |
+| `src/cron_field.rs:204 first_match_ge_from` | Closeable | Same nonlinear modular-arithmetic gap as `first_match_correct`. | `src/cron_field.rs` unit tests + proptest (`218-334`) cover monotonicity and step behavior. |
+| `src/cron_next.rs:106 next_occurrence` | Closeable | Search/rollover loop is still a trusted exec/spec bridge. | `src/cron_next.rs` unit tests + proptest (`363-558`) cover rollover, leap-year, and satisfiable/unsatisfiable schedules. |
+| `src/cron_next.rs:297 advance_one_minute` | Closeable | Calendar rollover helper is still trusted runtime code inside the next-occurrence search. | `src/cron_next.rs` unit tests + proptest (`363-558`) cover minute/hour/day/month/year rollover behavior. |
+| `src/free_list.rs:87 free_list_push` | Closeable | Exec/spec list-prepend bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
+| `src/free_list.rs:112 free_list_pop` | Closeable | Exec/spec head-removal bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
+| `src/free_list.rs:146 free_list_remove` | Closeable | Exec/spec filtered-removal bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
+| `src/alloc_bitmap.rs:180 bitmap_alloc` | Closeable | First-free search and cloned-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
+| `src/alloc_bitmap.rs:237 bitmap_free` | Closeable | Handle validation and updated-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
+| `src/pool.rs:48 pool_alloc` | Closeable | Composition over `alloc_bitmap` and `slab` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
+| `src/pool.rs:100 pool_free` | Closeable | Free-path composition over `alloc_bitmap` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
+| `src/segregated_free.rs:158 seg_alloc` | Closeable | Nested `Vec<Vec<u64>>` to `Seq<Seq<u64>>` bridge is still trusted. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
+| `src/segregated_free.rs:193 seg_free` | Closeable | Nested `Vec<Vec<u64>>` mutation still lacks a proved exec/spec bridge. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
+| `src/mesi.rs:116 check_system_invariant` | Closeable | Runtime checker is trusted while the count-summary proof remains open. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover valid/invalid system states and full read/write behavior. |
+| `src/mesi.rs:331 snoop_read_all` | Closeable | Loop/spec correspondence across all caches is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover bus snooping and full read behavior. |
+| `src/mesi.rs:393 invalidate_others` | Closeable | Loop/spec correspondence for invalidating every non-writer cache is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invalidation and full write behavior. |
+| `src/mesi.rs:662 invalidate_others_step` | Closeable | Inductive helper for global invalidation is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invalidation and full write behavior. |
+| `src/mesi.rs:700 full_write_writer_modified` | Closeable | Composite full-write shape proof still depends on trusted invalidation helper. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover writer-modified / others-invalid outcomes. |
+| `src/mesi.rs:725 full_write_preserves_invariant` | Closeable | Composite invariant-preservation proof is still trusted while MESI helper lemmas are tightened. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invariant-preserving full writes. |
+| `src/page.rs:347 radix_index_bounded` | Closeable | Computed-offset bit-vector bound proof is still trusted. | `src/page.rs` unit tests + proptest (`382-566`) cover radix-index extraction across level/offset cases. |
 
 Summary:
 
