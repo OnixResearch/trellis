@@ -2,12 +2,11 @@
 //!
 //! Allows followers to serve linearizable reads without forwarding to the
 //! leader. The protocol:
-//! 1. Follower receives read request, records its current `commit_index`
-//!    as `read_index`.
-//! 2. Follower asks leader to confirm it is still the leader (leader
-//!    performs a quorum heartbeat check).
-//! 3. Leader responds with its current `commit_index` (which is ≥ the
-//!    follower's `read_index` if the leader is current).
+//! 1. Follower receives read request, records its current `commit_index` as `read_index`.
+//! 2. Follower asks leader to confirm it is still the leader (leader performs a quorum heartbeat
+//!    check).
+//! 3. Leader responds with its current `commit_index` (which is ≥ the follower's `read_index` if
+//!    the leader is current).
 //! 4. Follower waits until `last_applied >= leader_commit_index`.
 //! 5. Follower serves the read from local state machine.
 //!
@@ -293,32 +292,32 @@ mod tests {
     fn test_safe_read_point() {
         assert_eq!(safe_read_point(5, 10), 10); // leader ahead
         assert_eq!(safe_read_point(10, 5), 10); // follower ahead
-        assert_eq!(safe_read_point(5, 5), 5);   // same
+        assert_eq!(safe_read_point(5, 5), 5); // same
     }
 
     // r[verify follower-read.can-serve]
     #[test]
     fn test_can_serve_read() {
-        assert!(can_serve_read(10, 5));   // applied past safe point
-        assert!(can_serve_read(5, 5));    // exactly at safe point
-        assert!(!can_serve_read(3, 5));   // behind
+        assert!(can_serve_read(10, 5)); // applied past safe point
+        assert!(can_serve_read(5, 5)); // exactly at safe point
+        assert!(!can_serve_read(3, 5)); // behind
     }
 
     // r[verify follower-read.stale-leader]
     #[test]
     fn test_is_leader_stale() {
         assert!(!is_leader_stale(3, 3)); // same term
-        assert!(is_leader_stale(3, 4));  // term changed
-        assert!(is_leader_stale(4, 3));  // term went backward (shouldn't happen but detected)
+        assert!(is_leader_stale(3, 4)); // term changed
+        assert!(is_leader_stale(4, 3)); // term went backward (shouldn't happen but detected)
     }
 
     // r[verify follower-read.timeout]
     #[test]
     fn test_is_read_timed_out() {
-        assert!(!is_read_timed_out(100, 100, 50));  // at registration
-        assert!(!is_read_timed_out(100, 140, 50));   // before deadline
-        assert!(is_read_timed_out(100, 150, 50));    // at deadline
-        assert!(is_read_timed_out(100, 200, 50));    // past deadline
+        assert!(!is_read_timed_out(100, 100, 50)); // at registration
+        assert!(!is_read_timed_out(100, 140, 50)); // before deadline
+        assert!(is_read_timed_out(100, 150, 50)); // at deadline
+        assert!(is_read_timed_out(100, 200, 50)); // past deadline
     }
 
     // r[verify follower-read.entries-behind]

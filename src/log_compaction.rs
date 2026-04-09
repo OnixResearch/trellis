@@ -252,7 +252,7 @@ proof fn compact_preserves_commit(
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_sign_loss, clippy::default_numeric_fallback)]
+#[allow(clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

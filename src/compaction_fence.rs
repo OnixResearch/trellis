@@ -256,7 +256,7 @@ mod tests {
     // r[verify compaction-fence.safe-to-compact]
     #[test]
     fn test_is_safe_to_compact() {
-        assert!(is_safe_to_compact(5, 10));   // well within
+        assert!(is_safe_to_compact(5, 10)); // well within
         assert!(!is_safe_to_compact(10, 10)); // at boundary
         assert!(!is_safe_to_compact(15, 10)); // past boundary
     }
@@ -283,18 +283,18 @@ mod tests {
     // r[verify compaction-fence.needs-snapshot]
     #[test]
     fn test_needs_snapshot_switch() {
-        assert!(needs_snapshot_switch(5, 10));   // behind
-        assert!(needs_snapshot_switch(10, 10));  // at boundary
+        assert!(needs_snapshot_switch(5, 10)); // behind
+        assert!(needs_snapshot_switch(10, 10)); // at boundary
         assert!(!needs_snapshot_switch(15, 10)); // within log
     }
 
     // r[verify compaction-fence.safe-compact-index]
     #[test]
     fn test_safe_compact_index() {
-        assert_eq!(safe_compact_index(20, 10), 9);  // limited by min_next
-        assert_eq!(safe_compact_index(5, 10), 5);    // desired is less
-        assert_eq!(safe_compact_index(9, 10), 9);    // at limit
-        assert_eq!(safe_compact_index(100, 0), 0);   // edge: zero min
+        assert_eq!(safe_compact_index(20, 10), 9); // limited by min_next
+        assert_eq!(safe_compact_index(5, 10), 5); // desired is less
+        assert_eq!(safe_compact_index(9, 10), 9); // at limit
+        assert_eq!(safe_compact_index(100, 0), 0); // edge: zero min
     }
 
     proptest! {

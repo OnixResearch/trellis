@@ -317,8 +317,8 @@ mod tests {
         assert!(!can_convert(3, 4)); // BOOLEAN -/-> DATE
         assert!(!can_convert(3, 5)); // BOOLEAN -/-> DATETIME
         // But BOOLEAN -> STRING and BOOLEAN -> BOOLEAN work
-        assert!(can_convert(3, 0));  // BOOLEAN -> STRING
-        assert!(can_convert(3, 3));  // BOOLEAN -> BOOLEAN
+        assert!(can_convert(3, 0)); // BOOLEAN -> STRING
+        assert!(can_convert(3, 3)); // BOOLEAN -> BOOLEAN
 
         // DATE doesn't convert to numeric/boolean
         assert!(!can_convert(4, 1)); // DATE -/-> INTEGER
@@ -336,13 +336,14 @@ mod tests {
         // Exhaustive check of all 7x7 = 49 pairs
         let expected: [[bool; 7]; 7] = [
             // to:    STR    INT    FLT    BOOL   DATE   DTTM   ANY
-            /* STR  */ [true,  true,  true,  true,  true,  true,  true],
-            /* INT  */ [true,  true,  true,  false, false, false, true],
-            /* FLT  */ [true,  true,  true,  false, false, false, true],
-            /* BOOL */ [true,  false, false, true,  false, false, true],
-            /* DATE */ [true,  false, false, false, true,  true,  true],
-            /* DTTM */ [true,  false, false, false, true,  true,  true],
-            /* ANY  */ [true,  true,  true,  true,  true,  true,  true],
+            /* STR */
+            [true, true, true, true, true, true, true],
+            /* INT */ [true, true, true, false, false, false, true],
+            /* FLT */ [true, true, true, false, false, false, true],
+            /* BOOL */ [true, false, false, true, false, false, true],
+            /* DATE */ [true, false, false, false, true, true, true],
+            /* DTTM */ [true, false, false, false, true, true, true],
+            /* ANY */ [true, true, true, true, true, true, true],
         ];
 
         for from in 0..7u8 {

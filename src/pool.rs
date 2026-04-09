@@ -7,14 +7,20 @@
 
 #![allow(clippy::result_unit_err, clippy::type_complexity)]
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
-use crate::alloc_bitmap::{
-    bitmap_alloc_spec, bitmap_free_spec, bitmap_is_allocated_spec, bitmap_utilization_spec,
-    count_allocated_from_spec,
-};
+use crate::alloc_bitmap::bitmap_alloc_spec;
+#[cfg(verus_keep_ghost)]
+use crate::alloc_bitmap::bitmap_free_spec;
+#[cfg(verus_keep_ghost)]
+use crate::alloc_bitmap::bitmap_is_allocated_spec;
+#[cfg(verus_keep_ghost)]
+use crate::alloc_bitmap::bitmap_utilization_spec;
+#[cfg(verus_keep_ghost)]
+use crate::alloc_bitmap::count_allocated_from_spec;
 #[cfg(verus_keep_ghost)]
 use crate::slab::slot_address_spec;
-use vstd::prelude::*;
 
 verus! {
 

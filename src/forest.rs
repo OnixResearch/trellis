@@ -6,7 +6,12 @@
 //! Applicable to git DAGs, file system trees, dependency graphs,
 //! and conversation branching structures.
 
-#![allow(clippy::single_match, clippy::collapsible_match, clippy::single_match_else, clippy::if_not_else)]
+#![allow(
+    clippy::single_match,
+    clippy::collapsible_match,
+    clippy::single_match_else,
+    clippy::if_not_else
+)]
 
 use vstd::prelude::*;
 
@@ -1323,22 +1328,21 @@ mod tests {
     // Generate random well-formed parent maps
     fn well_formed_parents(max_size: usize) -> impl Strategy<Value = Vec<Option<usize>>> {
         (1..=max_size).prop_flat_map(|n| {
-            proptest::collection::vec(proptest::option::of(0usize..100), n..=n)
-                .prop_map(move |raw| {
-                    raw.into_iter()
-                        .enumerate()
-                        .map(|(i, opt)| {
-                            if i == 0 {
-                                None // first node is always root
-                            } else {
-                                match opt {
-                                    Some(v) => Some(v % i), // ensure parent < i
-                                    None => None,
-                                }
+            proptest::collection::vec(proptest::option::of(0usize..100), n..=n).prop_map(move |raw| {
+                raw.into_iter()
+                    .enumerate()
+                    .map(|(i, opt)| {
+                        if i == 0 {
+                            None // first node is always root
+                        } else {
+                            match opt {
+                                Some(v) => Some(v % i), // ensure parent < i
+                                None => None,
                             }
-                        })
-                        .collect()
-                })
+                        }
+                    })
+                    .collect()
+            })
         })
     }
 

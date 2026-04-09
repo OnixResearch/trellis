@@ -4,18 +4,17 @@
 //! scope coverage, and access mode permission. Each factor is
 //! verified independently; this module composes them.
 
-#[cfg(verus_keep_ghost)]
-use crate::access_mode::*;
-#[cfg(verus_keep_ghost)]
-use crate::scope::*;
-#[cfg(verus_keep_ghost)]
-use crate::subsumption::*;
+use vstd::prelude::*;
 
 use crate::access_mode;
+#[cfg(verus_keep_ghost)]
+use crate::access_mode::*;
 use crate::scope;
+#[cfg(verus_keep_ghost)]
+use crate::scope::*;
 use crate::subsumption;
-
-use vstd::prelude::*;
+#[cfg(verus_keep_ghost)]
+use crate::subsumption::*;
 
 verus! {
 
@@ -322,9 +321,7 @@ mod tests {
     // r[verify authorize.optional-constraint]
     #[test]
     fn test_optional_some_some_covers() {
-        assert!(authorizes_with_optional(
-            4, b"", 3, Some(b"/home"), 0, b"key", 0, Some(b"/home/sub"),
-        ));
+        assert!(authorizes_with_optional(4, b"", 3, Some(b"/home"), 0, b"key", 0, Some(b"/home/sub"),));
     }
 
     proptest! {

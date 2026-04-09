@@ -214,10 +214,10 @@ mod tests {
     // r[verify check-quorum.recent-contact]
     #[test]
     fn test_has_recent_contact() {
-        assert!(has_recent_contact(100, 100, 50));   // same time
-        assert!(has_recent_contact(100, 120, 50));   // within timeout
-        assert!(!has_recent_contact(100, 150, 50));  // at timeout
-        assert!(!has_recent_contact(100, 200, 50));  // past timeout
+        assert!(has_recent_contact(100, 100, 50)); // same time
+        assert!(has_recent_contact(100, 120, 50)); // within timeout
+        assert!(!has_recent_contact(100, 150, 50)); // at timeout
+        assert!(!has_recent_contact(100, 200, 50)); // past timeout
     }
 
     // r[verify check-quorum.count-recent]
@@ -226,16 +226,16 @@ mod tests {
         let contacts = vec![100, 100, 100, 50, 50];
         assert_eq!(count_recent_contacts(&contacts, 100, 30), 3); // first 3 recent
         assert_eq!(count_recent_contacts(&contacts, 100, 60), 5); // all recent
-        assert_eq!(count_recent_contacts(&[], 100, 50), 0);       // empty
+        assert_eq!(count_recent_contacts(&[], 100, 50), 0); // empty
     }
 
     // r[verify check-quorum.should-step-down]
     #[test]
     fn test_should_step_down() {
-        assert!(!should_step_down(3, 5));  // quorum
-        assert!(should_step_down(2, 5));   // not quorum
-        assert!(should_step_down(1, 5));   // partitioned
-        assert!(!should_step_down(1, 1));  // singleton
+        assert!(!should_step_down(3, 5)); // quorum
+        assert!(should_step_down(2, 5)); // not quorum
+        assert!(should_step_down(1, 5)); // partitioned
+        assert!(!should_step_down(1, 1)); // singleton
     }
 
     // r[verify check-quorum.should-step-down]

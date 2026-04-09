@@ -253,12 +253,12 @@ mod tests {
     #[test]
     fn test_valid_transitions() {
         // All valid transitions
-        assert!(can_transition(0, 1));  // Created -> Ready
-        assert!(can_transition(1, 2));  // Ready -> Running
-        assert!(can_transition(2, 1));  // Running -> Ready (preempt)
-        assert!(can_transition(2, 3));  // Running -> Blocked
-        assert!(can_transition(2, 4));  // Running -> Terminated
-        assert!(can_transition(3, 1));  // Blocked -> Ready (wakeup)
+        assert!(can_transition(0, 1)); // Created -> Ready
+        assert!(can_transition(1, 2)); // Ready -> Running
+        assert!(can_transition(2, 1)); // Running -> Ready (preempt)
+        assert!(can_transition(2, 3)); // Running -> Blocked
+        assert!(can_transition(2, 4)); // Running -> Terminated
+        assert!(can_transition(3, 1)); // Blocked -> Ready (wakeup)
     }
 
     // r[verify process-state.can-transition]
@@ -269,13 +269,13 @@ mod tests {
             assert!(!can_transition(s, s));
         }
         // Invalid edges
-        assert!(!can_transition(0, 2));  // Created -> Running
-        assert!(!can_transition(0, 3));  // Created -> Blocked
-        assert!(!can_transition(0, 4));  // Created -> Terminated
-        assert!(!can_transition(1, 0));  // Ready -> Created
-        assert!(!can_transition(1, 3));  // Ready -> Blocked
-        assert!(!can_transition(3, 2));  // Blocked -> Running
-        assert!(!can_transition(4, 0));  // Terminated -> anything
+        assert!(!can_transition(0, 2)); // Created -> Running
+        assert!(!can_transition(0, 3)); // Created -> Blocked
+        assert!(!can_transition(0, 4)); // Created -> Terminated
+        assert!(!can_transition(1, 0)); // Ready -> Created
+        assert!(!can_transition(1, 3)); // Ready -> Blocked
+        assert!(!can_transition(3, 2)); // Blocked -> Running
+        assert!(!can_transition(4, 0)); // Terminated -> anything
         assert!(!can_transition(4, 1));
         assert!(!can_transition(4, 2));
         assert!(!can_transition(4, 3));
@@ -295,7 +295,7 @@ mod tests {
     #[test]
     fn test_is_schedulable() {
         assert!(!is_schedulable(0)); // Created — not yet admitted
-        assert!(is_schedulable(1));  // Ready — can run
+        assert!(is_schedulable(1)); // Ready — can run
         assert!(!is_schedulable(2)); // Running — already dispatched
         assert!(!is_schedulable(3)); // Blocked — waiting for I/O
         assert!(!is_schedulable(4)); // Terminated — done

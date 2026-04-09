@@ -500,8 +500,9 @@ mod tests {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         fn random_dag(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
             (2..=max_nodes).prop_flat_map(|n| {

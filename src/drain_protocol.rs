@@ -8,10 +8,12 @@
 //! Also models the notification condition: when the last in-flight
 //! operation finishes during drain, the caller should notify waiters.
 
-#[cfg(verus_keep_ghost)]
-use crate::drain::{can_start_op_spec, is_drain_complete_spec};
-
 use vstd::prelude::*;
+
+#[cfg(verus_keep_ghost)]
+use crate::drain::can_start_op_spec;
+#[cfg(verus_keep_ghost)]
+use crate::drain::is_drain_complete_spec;
 
 verus! {
 

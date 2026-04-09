@@ -87,7 +87,10 @@ pub fn generic_closure(
 // Allow Clone for ClosureItem (needed for the exec function)
 impl Clone for ClosureItem {
     fn clone(&self) -> Self {
-        ClosureItem { key: self.key, data: self.data }
+        ClosureItem {
+            key: self.key,
+            data: self.data,
+        }
     }
 }
 
@@ -102,17 +105,11 @@ mod tests {
     #[test]
     fn test_generic_closure_simple() {
         // Start with {1}, operator: 1 -> {2, 3}, 2 -> {3}, 3 -> {}
-        let result = generic_closure(
-            &vec![ClosureItem { key: 1, data: 10 }],
-            &|item: &ClosureItem| match item.key {
-                1 => vec![
-                    ClosureItem { key: 2, data: 20 },
-                    ClosureItem { key: 3, data: 30 },
-                ],
-                2 => vec![ClosureItem { key: 3, data: 30 }],
-                _ => vec![],
-            },
-        );
+        let result = generic_closure(&vec![ClosureItem { key: 1, data: 10 }], &|item: &ClosureItem| match item.key {
+            1 => vec![ClosureItem { key: 2, data: 20 }, ClosureItem { key: 3, data: 30 }],
+            2 => vec![ClosureItem { key: 3, data: 30 }],
+            _ => vec![],
+        });
         // Should contain keys 1, 2, 3 (unique)
         let keys: Vec<u64> = result.iter().map(|i| i.key).collect();
         assert!(keys.contains(&1));
@@ -125,10 +122,9 @@ mod tests {
     #[test]
     fn test_generic_closure_no_duplicates() {
         // Operator always returns items with key=1 (cycle)
-        let result = generic_closure(
-            &vec![ClosureItem { key: 1, data: 0 }],
-            &|_: &ClosureItem| vec![ClosureItem { key: 1, data: 0 }],
-        );
+        let result = generic_closure(&vec![ClosureItem { key: 1, data: 0 }], &|_: &ClosureItem| {
+            vec![ClosureItem { key: 1, data: 0 }]
+        });
         assert_eq!(result.len(), 1);
     }
 

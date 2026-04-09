@@ -11,7 +11,9 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
-use crate::ordering::{min_spec, max_spec};
+use crate::ordering::max_spec;
+#[cfg(verus_keep_ghost)]
+use crate::ordering::min_spec;
 
 verus! {
 

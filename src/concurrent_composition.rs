@@ -25,9 +25,24 @@
 #![allow(clippy::nonminimal_bool)]
 
 #[cfg(verus_keep_ghost)]
+use vstd::prelude::*;
+
+#[cfg(verus_keep_ghost)]
 use crate::bounded_mpmc::*;
 #[cfg(verus_keep_ghost)]
-use crate::cas_loop::{aba_next_generation_spec, aba_pack_spec, aba_unpack_generation_spec, aba_unpack_value_spec, attempts_remaining_spec, cas_result_spec, cas_succeeds_spec};
+use crate::cas_loop::aba_next_generation_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::aba_pack_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::aba_unpack_generation_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::aba_unpack_value_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::attempts_remaining_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::cas_result_spec;
+#[cfg(verus_keep_ghost)]
+use crate::cas_loop::cas_succeeds_spec;
 #[cfg(verus_keep_ghost)]
 use crate::fencing::*;
 #[cfg(verus_keep_ghost)]
@@ -41,13 +56,29 @@ use crate::rcu::*;
 #[cfg(verus_keep_ghost)]
 use crate::rwlock::*;
 #[cfg(verus_keep_ghost)]
-use crate::seqlock::{begin_write_spec, end_write_spec, is_valid_read_spec, is_write_in_progress_spec, writer_version_spec};
+use crate::seqlock::begin_write_spec;
+#[cfg(verus_keep_ghost)]
+use crate::seqlock::end_write_spec;
+#[cfg(verus_keep_ghost)]
+use crate::seqlock::is_valid_read_spec;
+#[cfg(verus_keep_ghost)]
+use crate::seqlock::is_write_in_progress_spec;
+#[cfg(verus_keep_ghost)]
+use crate::seqlock::writer_version_spec;
 #[cfg(verus_keep_ghost)]
 use crate::ticket_lock::*;
 #[cfg(verus_keep_ghost)]
-use crate::two_phase_lock::{PHASE_GROWING, PHASE_SHRINKING, OP_ACQUIRE, can_acquire_spec as twopl_can_acquire_spec, after_release_phase_spec, would_violate_spec};
+use crate::two_phase_lock::OP_ACQUIRE;
 #[cfg(verus_keep_ghost)]
-use vstd::prelude::*;
+use crate::two_phase_lock::PHASE_GROWING;
+#[cfg(verus_keep_ghost)]
+use crate::two_phase_lock::PHASE_SHRINKING;
+#[cfg(verus_keep_ghost)]
+use crate::two_phase_lock::after_release_phase_spec;
+#[cfg(verus_keep_ghost)]
+use crate::two_phase_lock::can_acquire_spec as twopl_can_acquire_spec;
+#[cfg(verus_keep_ghost)]
+use crate::two_phase_lock::would_violate_spec;
 
 #[cfg(verus_keep_ghost)]
 verus! {
@@ -552,7 +583,7 @@ pub proof fn mpmc_remaining_plus_occupancy(head: u64, tail: u64, capacity: u64)
     clippy::absurd_extreme_comparisons,
     clippy::cast_possible_truncation,
     clippy::cast_sign_loss,
-    clippy::default_numeric_fallback,
+    clippy::default_numeric_fallback
 )]
 mod tests {
     use proptest::prelude::*;

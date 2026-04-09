@@ -311,8 +311,8 @@ mod tests {
     fn test_is_chunk_valid() {
         assert!(is_chunk_valid(0, 100, 1000));
         assert!(is_chunk_valid(900, 100, 1000));
-        assert!(!is_chunk_valid(950, 100, 1000));  // exceeds
-        assert!(!is_chunk_valid(0, 0, 1000));       // zero size
+        assert!(!is_chunk_valid(950, 100, 1000)); // exceeds
+        assert!(!is_chunk_valid(0, 0, 1000)); // zero size
     }
 
     // r[verify snapshot-transfer.is-first-chunk]

@@ -4,14 +4,14 @@
 //! each level attenuates capabilities, each parent holds Delegate,
 //! and depth is bounded by `MAX_DELEGATION_DEPTH`.
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
 use crate::access_mode::*;
 #[cfg(verus_keep_ghost)]
 use crate::containment::*;
 #[cfg(verus_keep_ghost)]
 use crate::subsumption::*;
-
-use vstd::prelude::*;
 
 verus! {
 
@@ -401,15 +401,30 @@ mod tests {
 
     #[test]
     fn test_single_root_chain() {
-        let chain = [ChainLevel { depth: 0, has_delegate: false, variant: 0, mode: 0 }];
+        let chain = [ChainLevel {
+            depth: 0,
+            has_delegate: false,
+            variant: 0,
+            mode: 0,
+        }];
         assert!(chain_valid(&chain));
     }
 
     #[test]
     fn test_two_level_chain() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 1, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 1,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(chain_valid(&chain));
     }
@@ -417,8 +432,18 @@ mod tests {
     #[test]
     fn test_no_delegate_fails() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: false, variant: 4, mode: 3 },
-            ChainLevel { depth: 1, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: false,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 1,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(!chain_valid(&chain));
     }
@@ -426,8 +451,18 @@ mod tests {
     #[test]
     fn test_bad_root_fails() {
         let chain = [
-            ChainLevel { depth: 1, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 2, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 1,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 2,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(!chain_valid(&chain));
     }
@@ -435,8 +470,18 @@ mod tests {
     #[test]
     fn test_depth_skip_fails() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 2, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 2,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(!chain_valid(&chain));
     }
@@ -444,8 +489,18 @@ mod tests {
     #[test]
     fn test_variant_escalation_fails() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 0, mode: 3 }, // Read
-            ChainLevel { depth: 1, has_delegate: false, variant: 4, mode: 3 }, // Full — escalation!
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 0,
+                mode: 3,
+            }, // Read
+            ChainLevel {
+                depth: 1,
+                has_delegate: false,
+                variant: 4,
+                mode: 3,
+            }, // Full — escalation!
         ];
         assert!(!chain_valid(&chain));
     }
@@ -453,8 +508,18 @@ mod tests {
     #[test]
     fn test_mode_escalation_fails() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 0 }, // Read mode
-            ChainLevel { depth: 1, has_delegate: false, variant: 0, mode: 3 }, // Full mode — escalation!
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 0,
+            }, // Read mode
+            ChainLevel {
+                depth: 1,
+                has_delegate: false,
+                variant: 0,
+                mode: 3,
+            }, // Full mode — escalation!
         ];
         assert!(!chain_valid(&chain));
     }
@@ -462,15 +527,60 @@ mod tests {
     #[test]
     fn test_max_depth_chain() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 1, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 2, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 3, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 4, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 5, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 6, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 7, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 8, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 1,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 2,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 3,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 4,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 5,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 6,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 7,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 8,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(chain_valid(&chain));
     }
@@ -478,16 +588,66 @@ mod tests {
     #[test]
     fn test_exceeds_max_depth() {
         let chain = [
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 1, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 2, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 3, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 4, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 5, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 6, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 7, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 8, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 9, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 1,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 2,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 3,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 4,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 5,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 6,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 7,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 8,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 9,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ];
         assert!(!chain_valid(&chain));
     }

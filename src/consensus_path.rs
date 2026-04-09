@@ -11,6 +11,9 @@
 //! No new exec functions — only proof fns connecting existing specs.
 
 #[cfg(verus_keep_ghost)]
+use vstd::prelude::*;
+
+#[cfg(verus_keep_ghost)]
 use crate::commit_advance::*;
 #[cfg(verus_keep_ghost)]
 use crate::follower_commit::*;
@@ -26,8 +29,6 @@ use crate::log::*;
 use crate::read_index::*;
 #[cfg(verus_keep_ghost)]
 use crate::state_machine_safety::*;
-#[cfg(verus_keep_ghost)]
-use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
 verus! {
@@ -316,10 +317,7 @@ mod tests {
     // r[verify consensus-path.append-preserves-invariant]
     #[test]
     fn test_append_preserves_invariant() {
-        let mut log = vec![
-            LogEntry { term: 1, value: 10 },
-            LogEntry { term: 1, value: 20 },
-        ];
+        let mut log = vec![LogEntry { term: 1, value: 10 }, LogEntry { term: 1, value: 20 }];
         let old_len = log.len();
         leader_append_entry(&mut log, 2, 30);
         assert_eq!(log.len(), old_len + 1);
@@ -333,9 +331,7 @@ mod tests {
     // r[verify consensus-path.appended-entry-committable]
     #[test]
     fn test_appended_entry_committable() {
-        let mut log = vec![
-            LogEntry { term: 1, value: 10 },
-        ];
+        let mut log = vec![LogEntry { term: 1, value: 10 }];
         let old_len = log.len();
         leader_append_entry(&mut log, 2, 20);
         let new_index = (old_len + 1) as u64;
@@ -351,11 +347,11 @@ mod tests {
         // Follower updates to min(leader_commit, last_new_entry)
         let result = follower_update_commit(0, 5, 3);
         assert_eq!(result, 3); // bounded by last_new_entry
-        assert!(result <= 5);  // bounded by leader
+        assert!(result <= 5); // bounded by leader
 
         let result2 = follower_update_commit(2, 5, 10);
         assert_eq!(result2, 5); // bounded by leader_commit
-        assert!(result2 >= 2);  // monotonic
+        assert!(result2 >= 2); // monotonic
     }
 
     // r[verify consensus-path.applied-bounded-by-commit]
@@ -419,10 +415,7 @@ mod tests {
     // r[verify consensus-path.write-then-read]
     #[test]
     fn test_write_then_read() {
-        let log_a = vec![
-            LogEntry { term: 1, value: 100 },
-            LogEntry { term: 2, value: 200 },
-        ];
+        let log_a = vec![LogEntry { term: 1, value: 100 }, LogEntry { term: 2, value: 200 }];
         let log_b = log_a.clone();
 
         // Write at index 2 (1-based), committed at index 2

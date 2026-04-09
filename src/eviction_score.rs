@@ -397,8 +397,8 @@ mod tests {
         assert!(weights_valid(25, 25, 25, 25));
         assert!(weights_valid(100, 0, 0, 0));
         assert!(!weights_valid(30, 30, 30, 20)); // sum = 110
-        assert!(!weights_valid(0, 0, 0, 0));     // sum = 0
-        assert!(!weights_valid(101, 0, 0, 0));   // > 100
+        assert!(!weights_valid(0, 0, 0, 0)); // sum = 0
+        assert!(!weights_valid(101, 0, 0, 0)); // > 100
     }
 
     // r[verify eviction-score.weighted-score]
@@ -417,11 +417,11 @@ mod tests {
     // r[verify eviction-score.priority-multiplier]
     #[test]
     fn test_priority_multiplier() {
-        assert_eq!(priority_multiplier(0), 1);  // Low
-        assert_eq!(priority_multiplier(1), 2);  // Normal
-        assert_eq!(priority_multiplier(2), 4);  // High
+        assert_eq!(priority_multiplier(0), 1); // Low
+        assert_eq!(priority_multiplier(1), 2); // Normal
+        assert_eq!(priority_multiplier(2), 4); // High
         assert_eq!(priority_multiplier(3), 20); // Critical
-        assert_eq!(priority_multiplier(4), 1);  // Unknown
+        assert_eq!(priority_multiplier(4), 1); // Unknown
     }
 
     // r[verify eviction-score.tier-multiplier]

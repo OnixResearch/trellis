@@ -613,8 +613,9 @@ proof fn dual_hash_struct_injective(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify serialize-inj.encode-u64]
     #[test]

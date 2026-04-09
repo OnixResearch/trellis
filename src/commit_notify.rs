@@ -370,16 +370,16 @@ mod tests {
     fn test_is_newly_committed() {
         assert!(is_newly_committed(6, 5, 10));
         assert!(is_newly_committed(10, 5, 10));
-        assert!(!is_newly_committed(5, 5, 10));   // old commit itself
-        assert!(!is_newly_committed(11, 5, 10));   // beyond new
-        assert!(!is_newly_committed(3, 5, 10));    // before old
+        assert!(!is_newly_committed(5, 5, 10)); // old commit itself
+        assert!(!is_newly_committed(11, 5, 10)); // beyond new
+        assert!(!is_newly_committed(3, 5, 10)); // before old
     }
 
     // r[verify commit-notify.proposal-status]
     #[test]
     fn test_proposal_status() {
         assert_eq!(proposal_status(5, 10, false), STATUS_COMMITTED);
-        assert_eq!(proposal_status(5, 10, true), STATUS_COMMITTED);  // committed wins
+        assert_eq!(proposal_status(5, 10, true), STATUS_COMMITTED); // committed wins
         assert_eq!(proposal_status(15, 10, false), STATUS_PENDING);
         assert_eq!(proposal_status(15, 10, true), STATUS_EXPIRED);
     }

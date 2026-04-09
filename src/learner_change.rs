@@ -270,36 +270,36 @@ mod tests {
     // r[verify learner-change.can-add]
     #[test]
     fn test_can_add_learner() {
-        assert!(can_add_learner(false, false, 2, 5, false));   // new learner, under max
-        assert!(can_add_learner(false, true, 5, 5, false));    // existing (idempotent)
-        assert!(!can_add_learner(true, false, 0, 5, false));   // voter
-        assert!(!can_add_learner(false, false, 5, 5, false));  // at max
-        assert!(!can_add_learner(false, false, 2, 5, true));   // pending config
-        assert!(can_add_learner(false, false, 10, 0, false));  // unlimited (max=0)
+        assert!(can_add_learner(false, false, 2, 5, false)); // new learner, under max
+        assert!(can_add_learner(false, true, 5, 5, false)); // existing (idempotent)
+        assert!(!can_add_learner(true, false, 0, 5, false)); // voter
+        assert!(!can_add_learner(false, false, 5, 5, false)); // at max
+        assert!(!can_add_learner(false, false, 2, 5, true)); // pending config
+        assert!(can_add_learner(false, false, 10, 0, false)); // unlimited (max=0)
     }
 
     // r[verify learner-change.add-result]
     #[test]
     fn test_add_learner_result() {
         assert_eq!(add_learner_result(3, false), 4);
-        assert_eq!(add_learner_result(3, true), 3);  // idempotent
+        assert_eq!(add_learner_result(3, true), 3); // idempotent
     }
 
     // r[verify learner-change.can-remove]
     #[test]
     fn test_can_remove_learner() {
         assert!(can_remove_learner(true, false, false));
-        assert!(!can_remove_learner(false, false, false));  // not a learner
-        assert!(!can_remove_learner(true, true, false));    // promoting
-        assert!(!can_remove_learner(true, false, true));    // pending config
+        assert!(!can_remove_learner(false, false, false)); // not a learner
+        assert!(!can_remove_learner(true, true, false)); // promoting
+        assert!(!can_remove_learner(true, false, true)); // pending config
     }
 
     // r[verify learner-change.remove-result]
     #[test]
     fn test_remove_learner_result() {
         assert_eq!(remove_learner_result(3, true), 2);
-        assert_eq!(remove_learner_result(3, false), 3);  // not a learner
-        assert_eq!(remove_learner_result(0, true), 0);   // floor at 0
+        assert_eq!(remove_learner_result(3, false), 3); // not a learner
+        assert_eq!(remove_learner_result(0, true), 0); // floor at 0
     }
 
     // r[verify learner-change.quorum-unaffected]

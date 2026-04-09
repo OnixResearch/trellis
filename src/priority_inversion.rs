@@ -269,8 +269,9 @@ mod test {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         proptest! {
             // r[verify priority-inversion.effective-priority]

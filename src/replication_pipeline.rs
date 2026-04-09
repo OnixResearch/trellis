@@ -217,17 +217,17 @@ mod tests {
     // r[verify replication-pipeline.inflight-count]
     #[test]
     fn test_inflight_count() {
-        assert_eq!(inflight_count(11, 5), 5);   // 6,7,8,9,10 inflight
-        assert_eq!(inflight_count(6, 5), 0);    // nothing inflight
-        assert_eq!(inflight_count(5, 5), 0);    // nothing (next <= match+1)
-        assert_eq!(inflight_count(1, 0), 0);    // initialized state
+        assert_eq!(inflight_count(11, 5), 5); // 6,7,8,9,10 inflight
+        assert_eq!(inflight_count(6, 5), 0); // nothing inflight
+        assert_eq!(inflight_count(5, 5), 0); // nothing (next <= match+1)
+        assert_eq!(inflight_count(1, 0), 0); // initialized state
     }
 
     // r[verify replication-pipeline.can-send-more]
     #[test]
     fn test_can_send_more() {
-        assert!(can_send_more(6, 5, 10));   // 0 inflight < 10
-        assert!(can_send_more(10, 5, 10));  // 4 inflight < 10
+        assert!(can_send_more(6, 5, 10)); // 0 inflight < 10
+        assert!(can_send_more(10, 5, 10)); // 4 inflight < 10
         assert!(!can_send_more(16, 5, 10)); // 10 inflight = max
         assert!(!can_send_more(20, 5, 10)); // 14 inflight > max
     }
@@ -242,9 +242,9 @@ mod tests {
     // r[verify replication-pipeline.window-after-ack]
     #[test]
     fn test_window_after_ack() {
-        assert_eq!(window_after_ack(5, 8), 8);  // advance
-        assert_eq!(window_after_ack(5, 3), 5);  // stale ack
-        assert_eq!(window_after_ack(5, 5), 5);  // same
+        assert_eq!(window_after_ack(5, 8), 8); // advance
+        assert_eq!(window_after_ack(5, 3), 5); // stale ack
+        assert_eq!(window_after_ack(5, 5), 5); // same
     }
 
     proptest! {

@@ -3,12 +3,20 @@
 //! Computes retry delays as `min(base * 2^attempt, cap)` using saturating
 //! left-shift to prevent overflow. Jitter range is `[0, backoff]`.
 
-#![allow(unused_assignments, clippy::single_match, clippy::collapsible_match, clippy::single_match_else)]
-
-use vstd::prelude::*;
+#![allow(
+    unused_assignments,
+    clippy::single_match,
+    clippy::collapsible_match,
+    clippy::single_match_else
+)]
 
 #[cfg(verus_keep_ghost)]
-use vstd::arithmetic::mul::{lemma_mul_is_associative, lemma_mul_is_commutative, lemma_mul_inequality};
+use vstd::arithmetic::mul::lemma_mul_inequality;
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::mul::lemma_mul_is_associative;
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::mul::lemma_mul_is_commutative;
+use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
 use crate::ordering::min_spec;

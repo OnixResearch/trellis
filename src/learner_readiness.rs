@@ -203,16 +203,16 @@ mod tests {
     // r[verify learner-readiness.is-within-threshold]
     #[test]
     fn test_is_within_threshold() {
-        assert!(is_within_threshold(8, 10, 5));   // gap 2 <= 5
-        assert!(is_within_threshold(10, 10, 0));  // gap 0 <= 0
-        assert!(!is_within_threshold(5, 10, 3));  // gap 5 > 3
+        assert!(is_within_threshold(8, 10, 5)); // gap 2 <= 5
+        assert!(is_within_threshold(10, 10, 0)); // gap 0 <= 0
+        assert!(!is_within_threshold(5, 10, 3)); // gap 5 > 3
     }
 
     // r[verify learner-readiness.promotion-safe]
     #[test]
     fn test_promotion_safe() {
         assert!(promotion_safe(10, 10, 5));
-        assert!(!promotion_safe(5, 10, 5));  // not caught up
+        assert!(!promotion_safe(5, 10, 5)); // not caught up
         assert!(!promotion_safe(10, 10, 0)); // empty cluster
     }
 

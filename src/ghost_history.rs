@@ -695,9 +695,7 @@ mod tests {
         let mut ok = true;
         for i in 0..history.len() {
             for j in 0..history.len() {
-                if history[i].term == history[j].term
-                    && history[i].candidate_id != history[j].candidate_id
-                {
+                if history[i].term == history[j].term && history[i].candidate_id != history[j].candidate_id {
                     ok = false;
                 }
             }
@@ -738,34 +736,19 @@ mod tests {
         let mut extended_log = log;
         extended_log.push(entry(3, 30));
         // Snapshot is still a valid prefix after the log grew
-        assert!(crate::log::logs_match_prefix(
-            &snapshot_log,
-            &extended_log,
-            snapshot_log.len()
-        ));
+        assert!(crate::log::logs_match_prefix(&snapshot_log, &extended_log, snapshot_log.len()));
     }
 
     // r[verify ghost-history.cronies]
     #[test]
     fn test_cronies_basic() {
-        let history = vec![
-            vr(5, 10, 4, 3),
-            vr(5, 10, 4, 7),
-            vr(5, 10, 3, 2),
-            vr(3, 20, 2, 1),
-        ];
+        let history = vec![vr(5, 10, 4, 3), vr(5, 10, 4, 7), vr(5, 10, 3, 2), vr(3, 20, 2, 1)];
         // Count cronies for candidate 10 in term 5: should be 3
-        let count = history
-            .iter()
-            .filter(|r| r.term == 5 && r.candidate_id == 10)
-            .count();
+        let count = history.iter().filter(|r| r.term == 5 && r.candidate_id == 10).count();
         assert_eq!(count, 3);
 
         // Count cronies for candidate 20 in term 5: should be 0
-        let count_20 = history
-            .iter()
-            .filter(|r| r.term == 5 && r.candidate_id == 20)
-            .count();
+        let count_20 = history.iter().filter(|r| r.term == 5 && r.candidate_id == 20).count();
         assert_eq!(count_20, 0);
     }
 

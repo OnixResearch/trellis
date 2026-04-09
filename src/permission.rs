@@ -281,17 +281,17 @@ mod tests {
     fn test_has_permission() {
         let mode = 0o755; // rwxr-xr-x
         // Owner: rwx
-        assert!(has_permission(mode, 0, 2));  // read
-        assert!(has_permission(mode, 0, 1));  // write
-        assert!(has_permission(mode, 0, 0));  // execute
+        assert!(has_permission(mode, 0, 2)); // read
+        assert!(has_permission(mode, 0, 1)); // write
+        assert!(has_permission(mode, 0, 0)); // execute
         // Group: r-x
-        assert!(has_permission(mode, 1, 2));  // read
+        assert!(has_permission(mode, 1, 2)); // read
         assert!(!has_permission(mode, 1, 1)); // no write
-        assert!(has_permission(mode, 1, 0));  // execute
+        assert!(has_permission(mode, 1, 0)); // execute
         // Other: r-x
-        assert!(has_permission(mode, 2, 2));  // read
+        assert!(has_permission(mode, 2, 2)); // read
         assert!(!has_permission(mode, 2, 1)); // no write
-        assert!(has_permission(mode, 2, 0));  // execute
+        assert!(has_permission(mode, 2, 0)); // execute
     }
 
     // r[verify permission.set]

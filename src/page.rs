@@ -7,7 +7,6 @@
 
 #[cfg(verus_keep_ghost)]
 use vstd::arithmetic::div_mod::lemma_fundamental_div_mod;
-
 use vstd::prelude::*;
 
 verus! {

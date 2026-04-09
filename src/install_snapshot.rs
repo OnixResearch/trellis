@@ -267,7 +267,7 @@ mod tests {
     // r[verify install-snapshot.trigger]
     #[test]
     fn test_should_install_snapshot() {
-        assert!(should_install_snapshot(5, 10));  // behind compaction
+        assert!(should_install_snapshot(5, 10)); // behind compaction
         assert!(should_install_snapshot(10, 10)); // at compaction point
         assert!(!should_install_snapshot(15, 10)); // within log
     }
@@ -277,14 +277,14 @@ mod tests {
     fn test_apply_snapshot_commit() {
         assert_eq!(apply_snapshot_commit(3, 10), 10); // snapshot advances
         assert_eq!(apply_snapshot_commit(10, 3), 10); // commit already ahead
-        assert_eq!(apply_snapshot_commit(5, 5), 5);   // equal
+        assert_eq!(apply_snapshot_commit(5, 5), 5); // equal
     }
 
     // r[verify install-snapshot.matching-entry]
     #[test]
     fn test_has_matching_entry() {
         let log = vec![entry(1, 0), entry(2, 0), entry(3, 0), entry(4, 0)];
-        assert!(has_matching_entry(&log, 2, 3));  // log[2].term == 3
+        assert!(has_matching_entry(&log, 2, 3)); // log[2].term == 3
         assert!(!has_matching_entry(&log, 2, 5)); // log[2].term == 3 ≠ 5
         assert!(!has_matching_entry(&log, 5, 1)); // out of bounds
     }
@@ -294,7 +294,7 @@ mod tests {
     fn test_apply_snapshot_matching() {
         let log = vec![entry(1, 10), entry(2, 20), entry(3, 30), entry(4, 40)];
         let result = apply_snapshot_to_log(&log, 2, 3); // log[2].term == 3, match
-        assert_eq!(result.len(), 2);          // entries at [2, 4)
+        assert_eq!(result.len(), 2); // entries at [2, 4)
         assert_eq!(result[0].term, 3);
         assert_eq!(result[1].term, 4);
     }

@@ -153,8 +153,9 @@ proof fn committed_agreement_persists(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn entry(term: u64, value: u64) -> LogEntry {
         LogEntry { term, value }

@@ -8,12 +8,12 @@
 
 #![allow(clippy::too_many_arguments)]
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
 use crate::calendar::*;
 #[cfg(verus_keep_ghost)]
 use crate::cron_field::*;
-
-use vstd::prelude::*;
 
 verus! {
 
@@ -194,12 +194,11 @@ mod tests {
     fn test_matches_schedule_all_wildcards() {
         // * * * * * — matches everything
         assert!(matches_schedule(
-            2026, 4, 4, 10, 30,
-            0, 59, 1,  // minute: *
-            0, 23, 1,  // hour: *
-            1, 31, 1,  // dom: *
-            1, 12, 1,  // month: *
-            0, 6, 1,   // dow: *
+            2026, 4, 4, 10, 30, 0, 59, 1, // minute: *
+            0, 23, 1, // hour: *
+            1, 31, 1, // dom: *
+            1, 12, 1, // month: *
+            0, 6, 1, // dow: *
         ));
     }
 
@@ -209,12 +208,11 @@ mod tests {
         // 0 3 * * 1 — every Monday at 03:00
         // 2026-04-06 is a Monday
         assert!(matches_schedule(
-            2026, 4, 6, 3, 0,
-            0, 0, 1,   // minute: 0
-            3, 3, 1,   // hour: 3
-            1, 31, 1,  // dom: *
-            1, 12, 1,  // month: *
-            1, 1, 1,   // dow: 1 (Monday)
+            2026, 4, 6, 3, 0, 0, 0, 1, // minute: 0
+            3, 3, 1, // hour: 3
+            1, 31, 1, // dom: *
+            1, 12, 1, // month: *
+            1, 1, 1, // dow: 1 (Monday)
         ));
     }
 
@@ -223,12 +221,11 @@ mod tests {
     fn test_matches_schedule_minute_mismatch() {
         // minute=0, but timestamp minute=15
         assert!(!matches_schedule(
-            2026, 4, 6, 3, 15,
-            0, 0, 1,   // minute: 0
-            3, 3, 1,   // hour: 3
-            1, 31, 1,  // dom: *
-            1, 12, 1,  // month: *
-            0, 6, 1,   // dow: *
+            2026, 4, 6, 3, 15, 0, 0, 1, // minute: 0
+            3, 3, 1, // hour: 3
+            1, 31, 1, // dom: *
+            1, 12, 1, // month: *
+            0, 6, 1, // dow: *
         ));
     }
 
@@ -237,33 +234,20 @@ mod tests {
     fn test_matches_schedule_dow_mismatch() {
         // dow=1 (Monday), but 2026-04-04 is Saturday (6)
         assert!(!matches_schedule(
-            2026, 4, 4, 3, 0,
-            0, 0, 1,   // minute: 0
-            3, 3, 1,   // hour: 3
-            1, 31, 1,  // dom: *
-            1, 12, 1,  // month: *
-            1, 1, 1,   // dow: 1 (Monday)
+            2026, 4, 4, 3, 0, 0, 0, 1, // minute: 0
+            3, 3, 1, // hour: 3
+            1, 31, 1, // dom: *
+            1, 12, 1, // month: *
+            1, 1, 1, // dow: 1 (Monday)
         ));
     }
 
     // r[verify cron-match.valid-schedule]
     #[test]
     fn test_valid_schedule() {
-        assert!(is_valid_schedule(
-            0, 59, 15,
-            3, 3, 1,
-            1, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-        ));
+        assert!(is_valid_schedule(0, 59, 15, 3, 3, 1, 1, 31, 1, 1, 12, 1, 0, 6, 1,));
         // Invalid: hour max = 24
-        assert!(!is_valid_schedule(
-            0, 59, 1,
-            0, 24, 1,
-            1, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-        ));
+        assert!(!is_valid_schedule(0, 59, 1, 0, 24, 1, 1, 31, 1, 1, 12, 1, 0, 6, 1,));
     }
 
     // r[verify cron-match.day-of-week-consistency]
@@ -271,15 +255,11 @@ mod tests {
     fn test_dow_derived_from_date() {
         // 2026-04-04 is Saturday (6) — dow constraint 6 should match
         assert!(matches_schedule(
-            2026, 4, 4, 0, 0,
-            0, 59, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1,
-            6, 6, 1,  // dow: 6 (Saturday)
+            2026, 4, 4, 0, 0, 0, 59, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1, 6, 6, 1, // dow: 6 (Saturday)
         ));
         // dow constraint 0 (Sunday) should not match Saturday
         assert!(!matches_schedule(
-            2026, 4, 4, 0, 0,
-            0, 59, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1,
-            0, 0, 1,  // dow: 0 (Sunday)
+            2026, 4, 4, 0, 0, 0, 59, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1, 0, 0, 1, // dow: 0 (Sunday)
         ));
     }
 

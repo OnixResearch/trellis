@@ -428,9 +428,9 @@ mod tests {
     // r[verify persistent-state.term-recovery]
     #[test]
     fn test_term_after_recovery() {
-        assert_eq!(term_after_recovery(3, 5), 5);  // adopt higher
-        assert_eq!(term_after_recovery(5, 3), 5);  // keep own
-        assert_eq!(term_after_recovery(3, 3), 3);  // same
+        assert_eq!(term_after_recovery(3, 5), 5); // adopt higher
+        assert_eq!(term_after_recovery(5, 3), 5); // keep own
+        assert_eq!(term_after_recovery(3, 3), 3); // same
     }
 
     proptest! {

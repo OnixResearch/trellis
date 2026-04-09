@@ -360,11 +360,7 @@ mod tests {
         // Advance grace period
         let new_grace = advance_grace_period(5);
         // All threads exit their read sections
-        let threads = vec![
-            exit_read(new_grace),
-            exit_read(new_grace),
-            exit_read(new_grace),
-        ];
+        let threads = vec![exit_read(new_grace), exit_read(new_grace), exit_read(new_grace)];
         // Grace period complete — safe to free old version
         assert!(can_free_old_version(retire_at, new_grace, &threads));
     }

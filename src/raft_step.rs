@@ -328,8 +328,9 @@ proof fn commit_monotonic_transitive(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     /// Simplified runtime state for testing (avoids Seq/nat).
     struct TestState {
@@ -380,9 +381,18 @@ mod tests {
     fn test_handler_decomposition_concept() {
         // Three sub-steps each preserve term monotonicity
         let s0 = make_initial(3);
-        let s1 = TestState { term: 1, ..make_initial(3) };
-        let s2 = TestState { term: 1, ..make_initial(3) };
-        let s3 = TestState { term: 1, ..make_initial(3) };
+        let s1 = TestState {
+            term: 1,
+            ..make_initial(3)
+        };
+        let s2 = TestState {
+            term: 1,
+            ..make_initial(3)
+        };
+        let s3 = TestState {
+            term: 1,
+            ..make_initial(3)
+        };
 
         assert!(s1.term >= s0.term);
         assert!(s2.term >= s1.term);
@@ -394,9 +404,18 @@ mod tests {
     #[test]
     fn test_term_monotonic_compose() {
         let s0 = make_initial(3);
-        let s1 = TestState { term: 2, ..make_initial(3) };
-        let s2 = TestState { term: 2, ..make_initial(3) };
-        let s3 = TestState { term: 5, ..make_initial(3) };
+        let s1 = TestState {
+            term: 2,
+            ..make_initial(3)
+        };
+        let s2 = TestState {
+            term: 2,
+            ..make_initial(3)
+        };
+        let s3 = TestState {
+            term: 5,
+            ..make_initial(3)
+        };
 
         assert!(s1.term >= s0.term);
         assert!(s2.term >= s1.term);
@@ -408,9 +427,18 @@ mod tests {
     #[test]
     fn test_commit_monotonic_compose() {
         let s0 = make_initial(3);
-        let s1 = TestState { commit_index: 3, ..make_initial(3) };
-        let s2 = TestState { commit_index: 3, ..make_initial(3) };
-        let s3 = TestState { commit_index: 7, ..make_initial(3) };
+        let s1 = TestState {
+            commit_index: 3,
+            ..make_initial(3)
+        };
+        let s2 = TestState {
+            commit_index: 3,
+            ..make_initial(3)
+        };
+        let s3 = TestState {
+            commit_index: 7,
+            ..make_initial(3)
+        };
 
         assert!(s1.commit_index >= s0.commit_index);
         assert!(s2.commit_index >= s1.commit_index);

@@ -237,20 +237,14 @@ mod tests {
     #[test]
     fn test_voter_has_committed_entry() {
         // Voter's epoch (4, 8) >= committed epoch (3, 5)
-        assert!(epoch_ge(
-            &Epoch { term: 4, index: 8 },
-            &Epoch { term: 3, index: 5 },
-        ));
+        assert!(epoch_ge(&Epoch { term: 4, index: 8 }, &Epoch { term: 3, index: 5 },));
     }
 
     // r[verify leader-completeness-ghost.leader-epoch]
     #[test]
     fn test_leader_ge_voter() {
         // Leader epoch (5, 2) >= voter epoch (4, 8) (higher term wins)
-        assert!(epoch_ge(
-            &Epoch { term: 5, index: 2 },
-            &Epoch { term: 4, index: 8 },
-        ));
+        assert!(epoch_ge(&Epoch { term: 5, index: 2 }, &Epoch { term: 4, index: 8 },));
     }
 
     // r[verify leader-completeness-ghost.full-theorem]
@@ -278,7 +272,10 @@ mod tests {
         };
         // The vote record's epoch is (4, 10), which is >= (3, 5)
         assert!(epoch_ge(
-            &Epoch { term: record.voter_last_term, index: record.voter_last_index },
+            &Epoch {
+                term: record.voter_last_term,
+                index: record.voter_last_index
+            },
             &Epoch { term: 3, index: 5 },
         ));
     }

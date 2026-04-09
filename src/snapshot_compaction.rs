@@ -333,7 +333,7 @@ proof fn first_index_ge_compact(old_first: u64, compact_through: u64)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_sign_loss, clippy::default_numeric_fallback)]
+#[allow(clippy::cast_sign_loss, clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

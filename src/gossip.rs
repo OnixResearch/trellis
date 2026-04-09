@@ -6,10 +6,9 @@
 
 #![allow(clippy::single_match_else)]
 
-use vstd::prelude::*;
-
 #[cfg(verus_keep_ghost)]
 use vstd::arithmetic::mul::lemma_mul_inequality;
+use vstd::prelude::*;
 
 verus! {
 

@@ -521,7 +521,9 @@ mod tests {
 
     use super::*;
 
-    fn v(s: &str) -> Vec<u8> { s.as_bytes().to_vec() }
+    fn v(s: &str) -> Vec<u8> {
+        s.as_bytes().to_vec()
+    }
 
     // r[verify nix-version.compare-versions]
     #[test]
@@ -659,10 +661,8 @@ mod tests {
     #[test]
     fn test_nix_version_corpus() {
         let versions = [
-            "2.3.1", "2.3.10", "2.3.2", "2.4", "2.13.3",
-            "23.05", "23.11", "24.05",
-            "1.0pre1", "1.0pre2", "1.0",
-            "0.1", "0.10", "0.2",
+            "2.3.1", "2.3.10", "2.3.2", "2.4", "2.13.3", "23.05", "23.11", "24.05", "1.0pre1", "1.0pre2", "1.0", "0.1",
+            "0.10", "0.2",
         ];
         for &a in &versions {
             for &b in &versions {
@@ -670,10 +670,7 @@ mod tests {
                 let vb = b.as_bytes().to_vec();
                 let ab = compare_versions(&va, &vb);
                 let ba = compare_versions(&vb, &va);
-                assert_eq!(
-                    i16::from(ab), -i16::from(ba),
-                    "antisymmetry failed for {a} vs {b}"
-                );
+                assert_eq!(i16::from(ab), -i16::from(ba), "antisymmetry failed for {a} vs {b}");
             }
             let va = a.as_bytes().to_vec();
             assert_eq!(compare_versions(&va, &va), 0, "reflexivity failed for {a}");

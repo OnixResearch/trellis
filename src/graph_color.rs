@@ -410,16 +410,14 @@ mod tests {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         fn random_bipartite(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
             (4..=max_nodes).prop_flat_map(|n| {
                 let k = n / 2;
-                proptest::collection::vec((0..k, k..n), 0..=(k * (n - k)).min(30))
-                    .prop_map(move |raw| {
-                        (raw, n)
-                    })
+                proptest::collection::vec((0..k, k..n), 0..=(k * (n - k)).min(30)).prop_map(move |raw| (raw, n))
             })
         }
 

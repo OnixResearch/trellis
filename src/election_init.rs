@@ -208,9 +208,7 @@ mod tests {
         let vote_state = init_self_vote(7, 3);
         // Re-voting for same candidate in same term is allowed
         let my_epoch = crate::epoch::Epoch { term: 2, index: 10 };
-        assert!(crate::ballot::can_grant_vote(
-            &vote_state, 7, 3, &my_epoch, &my_epoch
-        ));
+        assert!(crate::ballot::can_grant_vote(&vote_state, 7, 3, &my_epoch, &my_epoch));
     }
 
     proptest! {

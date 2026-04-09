@@ -5,11 +5,10 @@
 //! adds a priority field to the election logic:
 //!
 //! - Higher-priority candidates are preferred when logs are equally fresh.
-//! - A node with a lower priority should yield to a higher-priority node
-//!   if the higher-priority node's log is at least as up-to-date.
+//! - A node with a lower priority should yield to a higher-priority node if the higher-priority
+//!   node's log is at least as up-to-date.
 //! - Priority never overrides log freshness — safety is preserved.
-//! - A leader voluntarily steps down when it discovers a higher-priority
-//!   node that is caught up.
+//! - A leader voluntarily steps down when it discovers a higher-priority node that is caught up.
 
 use vstd::prelude::*;
 
@@ -307,37 +306,37 @@ mod tests {
     // r[verify priority-election.should-yield]
     #[test]
     fn test_should_yield() {
-        assert!(should_yield(3, 5, true));    // higher priority, current log
-        assert!(!should_yield(5, 3, true));   // lower priority
-        assert!(!should_yield(3, 5, false));  // log not current
-        assert!(!should_yield(3, 3, true));   // same priority
+        assert!(should_yield(3, 5, true)); // higher priority, current log
+        assert!(!should_yield(5, 3, true)); // lower priority
+        assert!(!should_yield(3, 5, false)); // log not current
+        assert!(!should_yield(3, 3, true)); // same priority
     }
 
     // r[verify priority-election.delay]
     #[test]
     fn test_election_delay() {
-        assert_eq!(election_delay(100, 10, 10, 50), 100);  // highest priority
-        assert_eq!(election_delay(100, 8, 10, 50), 200);   // 2 levels below
-        assert_eq!(election_delay(100, 5, 10, 50), 350);   // 5 levels below
-        assert_eq!(election_delay(100, 10, 10, 0), 100);   // zero delay per level
+        assert_eq!(election_delay(100, 10, 10, 50), 100); // highest priority
+        assert_eq!(election_delay(100, 8, 10, 50), 200); // 2 levels below
+        assert_eq!(election_delay(100, 5, 10, 50), 350); // 5 levels below
+        assert_eq!(election_delay(100, 10, 10, 0), 100); // zero delay per level
     }
 
     // r[verify priority-election.compare-candidates]
     #[test]
     fn test_compare_candidates() {
-        assert_eq!(compare_candidates(true, false, 1, 10), -1);  // A fresher log
-        assert_eq!(compare_candidates(false, true, 10, 1), 1);   // B fresher log
-        assert_eq!(compare_candidates(true, true, 10, 5), -1);   // Same, A higher prio
-        assert_eq!(compare_candidates(true, true, 5, 10), 1);    // Same, B higher prio
-        assert_eq!(compare_candidates(true, true, 5, 5), 0);     // Tied
+        assert_eq!(compare_candidates(true, false, 1, 10), -1); // A fresher log
+        assert_eq!(compare_candidates(false, true, 10, 1), 1); // B fresher log
+        assert_eq!(compare_candidates(true, true, 10, 5), -1); // Same, A higher prio
+        assert_eq!(compare_candidates(true, true, 5, 10), 1); // Same, B higher prio
+        assert_eq!(compare_candidates(true, true, 5, 5), 0); // Tied
     }
 
     // r[verify priority-election.step-down]
     #[test]
     fn test_should_step_down_for_priority() {
         assert!(should_step_down_for_priority(3, true, true));
-        assert!(!should_step_down_for_priority(3, true, false));  // grace period
-        assert!(!should_step_down_for_priority(3, false, true));  // no higher ready
+        assert!(!should_step_down_for_priority(3, true, false)); // grace period
+        assert!(!should_step_down_for_priority(3, false, true)); // no higher ready
     }
 
     // r[verify priority-election.is-highest]

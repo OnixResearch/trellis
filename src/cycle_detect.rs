@@ -303,16 +303,14 @@ mod tests {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         fn random_dag(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
             (2..=max_nodes).prop_flat_map(|n| {
                 proptest::collection::vec((0..n, 0..n), 0..=(n * 2).min(30)).prop_map(move |raw| {
-                    let edges: Vec<(usize, usize)> = raw
-                        .into_iter()
-                        .filter(|&(u, v)| u < v)
-                        .collect();
+                    let edges: Vec<(usize, usize)> = raw.into_iter().filter(|&(u, v)| u < v).collect();
                     (edges, n)
                 })
             })

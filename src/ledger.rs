@@ -584,10 +584,10 @@ mod tests {
     fn test_can_transfer() {
         let accts = [100, 200, 300];
         assert!(can_transfer(&accts, 0, 1, 50));
-        assert!(!can_transfer(&accts, 0, 0, 50));  // self
-        assert!(!can_transfer(&accts, 0, 1, 0));   // zero
+        assert!(!can_transfer(&accts, 0, 0, 50)); // self
+        assert!(!can_transfer(&accts, 0, 1, 0)); // zero
         assert!(!can_transfer(&accts, 0, 1, 101)); // insufficient
-        assert!(!can_transfer(&accts, 5, 1, 10));  // out of bounds
+        assert!(!can_transfer(&accts, 5, 1, 10)); // out of bounds
     }
 
     // r[verify ledger.transfer-result]
@@ -604,10 +604,7 @@ mod tests {
     fn test_transfer_with_fee() {
         let accts = [1000, 200, 0]; // sender, receiver, fee collector
         // Transfer 100 with fee 5: sender -100, receiver +95, fee +5
-        assert_eq!(
-            ledger_transfer_with_fee(&accts, 0, 1, 2, 100, 5),
-            Some((900, 295, 5)),
-        );
+        assert_eq!(ledger_transfer_with_fee(&accts, 0, 1, 2, 100, 5), Some((900, 295, 5)),);
         // Total preserved: 1000+200+0 = 900+295+5 = 1200
     }
 

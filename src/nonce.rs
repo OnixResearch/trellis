@@ -7,7 +7,9 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
-use crate::monotonic::{is_advance_spec, is_strict_advance_spec};
+use crate::monotonic::is_advance_spec;
+#[cfg(verus_keep_ghost)]
+use crate::monotonic::is_strict_advance_spec;
 
 verus! {
 

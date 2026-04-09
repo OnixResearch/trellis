@@ -352,8 +352,9 @@ mod test {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         proptest! {
             // r[verify job-dag.all-deps-satisfied]

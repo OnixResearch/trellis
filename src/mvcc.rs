@@ -382,10 +382,7 @@ mod tests {
     // r[verify mvcc.chain-latest]
     #[test]
     fn test_chain_latest_with_active() {
-        let chain = vec![
-            (20, TS_INFINITY, 3),
-            (10, 20, 2),
-        ];
+        let chain = vec![(20, TS_INFINITY, 3), (10, 20, 2)];
         // txn 3 is active, entry 1 out of range at snapshot 25 (end=20 <= 25)
         // So nothing visible
         assert_eq!(chain_latest(&chain, 25, &[3]), 2);
@@ -397,9 +394,9 @@ mod tests {
 
     #[test]
     fn test_can_gc() {
-        assert!(can_gc(10, 15));  // deleted at 10, oldest active at 15
-        assert!(can_gc(10, 10));  // deleted at 10, oldest active at 10
-        assert!(!can_gc(10, 5));  // oldest active still needs it
+        assert!(can_gc(10, 15)); // deleted at 10, oldest active at 15
+        assert!(can_gc(10, 10)); // deleted at 10, oldest active at 10
+        assert!(!can_gc(10, 5)); // oldest active still needs it
         assert!(!can_gc(TS_INFINITY, 100)); // live version
     }
 

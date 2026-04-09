@@ -169,10 +169,11 @@ proof fn leader_completeness_theorem(
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::default_numeric_fallback)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify leader-completeness.quorum-overlap]
     #[test]

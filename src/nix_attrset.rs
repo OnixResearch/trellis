@@ -940,7 +940,9 @@ mod tests {
 
     use super::*;
 
-    fn kv(k: &str, v: u64) -> (Vec<u8>, u64) { (k.as_bytes().to_vec(), v) }
+    fn kv(k: &str, v: u64) -> (Vec<u8>, u64) {
+        (k.as_bytes().to_vec(), v)
+    }
 
     // r[verify nix-attrset.attr-values]
     #[test]

@@ -342,7 +342,11 @@ proof fn transitions_produce_valid_phases()
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::default_numeric_fallback)]
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::default_numeric_fallback
+)]
 mod tests {
     use proptest::prelude::*;
 
@@ -369,9 +373,9 @@ mod tests {
     // r[verify config-change.can-leave-joint]
     #[test]
     fn test_can_leave_joint() {
-        assert!(can_leave_joint(PHASE_JOINT, 5, 5));   // committed
-        assert!(can_leave_joint(PHASE_JOINT, 5, 10));  // past committed
-        assert!(!can_leave_joint(PHASE_JOINT, 5, 4));  // not committed
+        assert!(can_leave_joint(PHASE_JOINT, 5, 5)); // committed
+        assert!(can_leave_joint(PHASE_JOINT, 5, 10)); // past committed
+        assert!(!can_leave_joint(PHASE_JOINT, 5, 4)); // not committed
         assert!(!can_leave_joint(PHASE_STABLE, 5, 10)); // wrong phase
     }
 

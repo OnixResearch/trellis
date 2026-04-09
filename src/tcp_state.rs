@@ -495,9 +495,17 @@ mod tests {
     fn test_data_states() {
         assert!(is_data_state(TCP_ESTABLISHED));
         assert!(is_data_state(TCP_CLOSE_WAIT));
-        for s in [TCP_CLOSED, TCP_LISTEN, TCP_SYN_SENT, TCP_SYN_RECEIVED,
-                   TCP_FIN_WAIT_1, TCP_FIN_WAIT_2, TCP_CLOSING,
-                   TCP_LAST_ACK, TCP_TIME_WAIT] {
+        for s in [
+            TCP_CLOSED,
+            TCP_LISTEN,
+            TCP_SYN_SENT,
+            TCP_SYN_RECEIVED,
+            TCP_FIN_WAIT_1,
+            TCP_FIN_WAIT_2,
+            TCP_CLOSING,
+            TCP_LAST_ACK,
+            TCP_TIME_WAIT,
+        ] {
             assert!(!is_data_state(s));
         }
     }
@@ -505,13 +513,18 @@ mod tests {
     // r[verify tcp-state.is-shutdown]
     #[test]
     fn test_shutdown_states() {
-        let shutdown = [TCP_FIN_WAIT_1, TCP_FIN_WAIT_2, TCP_CLOSING,
-                        TCP_TIME_WAIT, TCP_LAST_ACK, TCP_CLOSE_WAIT];
+        let shutdown = [
+            TCP_FIN_WAIT_1,
+            TCP_FIN_WAIT_2,
+            TCP_CLOSING,
+            TCP_TIME_WAIT,
+            TCP_LAST_ACK,
+            TCP_CLOSE_WAIT,
+        ];
         for s in shutdown {
             assert!(is_shutdown(s));
         }
-        for s in [TCP_CLOSED, TCP_LISTEN, TCP_SYN_SENT,
-                   TCP_SYN_RECEIVED, TCP_ESTABLISHED] {
+        for s in [TCP_CLOSED, TCP_LISTEN, TCP_SYN_SENT, TCP_SYN_RECEIVED, TCP_ESTABLISHED] {
             assert!(!is_shutdown(s));
         }
     }
@@ -522,9 +535,16 @@ mod tests {
         assert!(!is_connected(TCP_CLOSED));
         assert!(!is_connected(TCP_LISTEN));
         assert!(!is_connected(TCP_SYN_SENT));
-        for s in [TCP_SYN_RECEIVED, TCP_ESTABLISHED, TCP_FIN_WAIT_1,
-                   TCP_FIN_WAIT_2, TCP_CLOSE_WAIT, TCP_CLOSING,
-                   TCP_LAST_ACK, TCP_TIME_WAIT] {
+        for s in [
+            TCP_SYN_RECEIVED,
+            TCP_ESTABLISHED,
+            TCP_FIN_WAIT_1,
+            TCP_FIN_WAIT_2,
+            TCP_CLOSE_WAIT,
+            TCP_CLOSING,
+            TCP_LAST_ACK,
+            TCP_TIME_WAIT,
+        ] {
             assert!(is_connected(s));
         }
     }

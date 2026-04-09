@@ -213,9 +213,9 @@ mod tests {
     #[test]
     fn test_is_lease_valid() {
         // timeout=150, drift=50, effective=100, expiry=200
-        assert!(is_lease_valid(100, 150, 50, 100));  // at start
-        assert!(is_lease_valid(100, 150, 50, 150));  // mid-lease
-        assert!(is_lease_valid(100, 150, 50, 199));  // just before
+        assert!(is_lease_valid(100, 150, 50, 100)); // at start
+        assert!(is_lease_valid(100, 150, 50, 150)); // mid-lease
+        assert!(is_lease_valid(100, 150, 50, 199)); // just before
         assert!(!is_lease_valid(100, 150, 50, 200)); // at expiry
         assert!(!is_lease_valid(100, 150, 50, 300)); // past expiry
     }
@@ -237,10 +237,10 @@ mod tests {
     // r[verify lease-read.requires-commit]
     #[test]
     fn test_lease_read_safe() {
-        assert!(lease_read_safe(true, 10, 5));    // valid + committed
-        assert!(!lease_read_safe(true, 3, 5));    // valid but not committed
-        assert!(!lease_read_safe(false, 10, 5));  // invalid lease
-        assert!(!lease_read_safe(false, 3, 5));   // both bad
+        assert!(lease_read_safe(true, 10, 5)); // valid + committed
+        assert!(!lease_read_safe(true, 3, 5)); // valid but not committed
+        assert!(!lease_read_safe(false, 10, 5)); // invalid lease
+        assert!(!lease_read_safe(false, 3, 5)); // both bad
     }
 
     // r[verify lease-read.leader-only]

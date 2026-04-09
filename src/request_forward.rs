@@ -293,9 +293,9 @@ mod tests {
     #[test]
     fn test_can_forward() {
         assert!(can_forward(true, true, 5, 10));
-        assert!(!can_forward(false, true, 5, 10));  // not follower
-        assert!(!can_forward(true, false, 5, 10));   // no leader
-        assert!(!can_forward(true, true, 10, 10));   // queue full
+        assert!(!can_forward(false, true, 5, 10)); // not follower
+        assert!(!can_forward(true, false, 5, 10)); // no leader
+        assert!(!can_forward(true, true, 10, 10)); // queue full
     }
 
     // r[verify request-forward.after-forward]

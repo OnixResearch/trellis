@@ -7,14 +7,14 @@
 
 #![allow(clippy::too_many_arguments, clippy::too_many_lines)]
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
 use crate::calendar::*;
 #[cfg(verus_keep_ghost)]
 use crate::cron_field::*;
 #[cfg(verus_keep_ghost)]
 use crate::cron_match::*;
-
-use vstd::prelude::*;
 
 verus! {
 
@@ -379,15 +379,8 @@ mod tests {
     #[test]
     fn test_next_every_minute() {
         // * * * * * — should return next minute
-        let (found, y, mo, d, h, m) = next_occurrence(
-            2026, 4, 4, 10, 30,
-            0, 59, 1,
-            0, 23, 1,
-            1, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-            4,
-        );
+        let (found, y, mo, d, h, m) =
+            next_occurrence(2026, 4, 4, 10, 30, 0, 59, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1, 0, 6, 1, 4);
         assert!(found);
         assert_eq!((y, mo, d, h, m), (2026, 4, 4, 10, 31));
     }
@@ -396,15 +389,8 @@ mod tests {
     #[test]
     fn test_next_hour_rollover() {
         // minute=0 — current minute is 30, should jump to 11:00
-        let (found, y, mo, d, h, m) = next_occurrence(
-            2026, 4, 4, 10, 30,
-            0, 0, 1,
-            0, 23, 1,
-            1, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-            4,
-        );
+        let (found, y, mo, d, h, m) =
+            next_occurrence(2026, 4, 4, 10, 30, 0, 0, 1, 0, 23, 1, 1, 31, 1, 1, 12, 1, 0, 6, 1, 4);
         assert!(found);
         assert_eq!((y, mo, d, h, m), (2026, 4, 4, 11, 0));
     }
@@ -415,12 +401,11 @@ mod tests {
         // 0 9 * * 1 — every Monday 9:00
         // 2026-04-04 is Saturday, next Monday is 2026-04-06
         let (found, y, mo, d, h, m) = next_occurrence(
-            2026, 4, 4, 12, 0,
-            0, 0, 1,   // minute=0
-            9, 9, 1,   // hour=9
-            1, 31, 1,  // dom=*
-            1, 12, 1,  // month=*
-            1, 1, 1,   // dow=1 (Monday)
+            2026, 4, 4, 12, 0, 0, 0, 1, // minute=0
+            9, 9, 1, // hour=9
+            1, 31, 1, // dom=*
+            1, 12, 1, // month=*
+            1, 1, 1, // dow=1 (Monday)
             4,
         );
         assert!(found);
@@ -432,13 +417,9 @@ mod tests {
     fn test_next_unsatisfiable() {
         // dom=31, month=2 — February never has 31 days
         let (found, _, _, _, _, _) = next_occurrence(
-            2026, 1, 1, 0, 0,
-            0, 0, 1,
-            0, 0, 1,
-            31, 31, 1,  // dom=31
-            2, 2, 1,    // month=2
-            0, 6, 1,
-            10,
+            2026, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 31, 31, 1, // dom=31
+            2, 2, 1, // month=2
+            0, 6, 1, 10,
         );
         assert!(!found);
     }
@@ -448,13 +429,9 @@ mod tests {
     fn test_next_feb29() {
         // dom=29, month=2 — should find next leap year
         let (found, y, mo, d, h, m) = next_occurrence(
-            2025, 1, 1, 0, 0,
-            0, 0, 1,
-            0, 0, 1,
-            29, 29, 1,  // dom=29
-            2, 2, 1,    // month=2
-            0, 6, 1,
-            4,
+            2025, 1, 1, 0, 0, 0, 0, 1, 0, 0, 1, 29, 29, 1, // dom=29
+            2, 2, 1, // month=2
+            0, 6, 1, 4,
         );
         assert!(found);
         assert_eq!((y, mo, d, h, m), (2028, 2, 29, 0, 0));
@@ -464,15 +441,8 @@ mod tests {
     #[test]
     fn test_next_month_rollover() {
         // dom=31, timestamp in April (30 days) — should jump to May 31
-        let (found, y, mo, d, h, m) = next_occurrence(
-            2026, 4, 15, 0, 0,
-            0, 0, 1,
-            0, 0, 1,
-            31, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-            4,
-        );
+        let (found, y, mo, d, h, m) =
+            next_occurrence(2026, 4, 15, 0, 0, 0, 0, 1, 0, 0, 1, 31, 31, 1, 1, 12, 1, 0, 6, 1, 4);
         assert!(found);
         assert_eq!((y, mo, d, h, m), (2026, 5, 31, 0, 0));
     }
@@ -481,15 +451,8 @@ mod tests {
     #[test]
     fn test_next_step_minute() {
         // */15 — every 15 minutes. At 10:32, next is 10:45.
-        let (found, y, mo, d, h, m) = next_occurrence(
-            2026, 4, 4, 10, 32,
-            0, 59, 15,
-            0, 23, 1,
-            1, 31, 1,
-            1, 12, 1,
-            0, 6, 1,
-            4,
-        );
+        let (found, y, mo, d, h, m) =
+            next_occurrence(2026, 4, 4, 10, 32, 0, 59, 15, 0, 23, 1, 1, 31, 1, 1, 12, 1, 0, 6, 1, 4);
         assert!(found);
         assert_eq!((y, mo, d, h, m), (2026, 4, 4, 10, 45));
     }

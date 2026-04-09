@@ -6,11 +6,7 @@
 
 // Verus exec code uses i64→usize casts bounded by invariants (0 <= x < cap).
 // if-not-else patterns are in Verus proof blocks where restructuring would break proofs.
-#![allow(
-    clippy::cast_possible_truncation,
-    clippy::cast_sign_loss,
-    clippy::if_not_else
-)]
+#![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::if_not_else)]
 
 use vstd::prelude::*;
 
@@ -914,15 +910,12 @@ mod tests {
 
     fn distinct_seq() -> impl Strategy<Value = Vec<i64>> {
         (0usize..=10).prop_flat_map(|len| {
-            proptest::collection::vec(0i64..20, len..=len).prop_filter(
-                "distinct",
-                |v| {
-                    let mut s = v.clone();
-                    s.sort_unstable();
-                    s.dedup();
-                    s.len() == v.len()
-                },
-            )
+            proptest::collection::vec(0i64..20, len..=len).prop_filter("distinct", |v| {
+                let mut s = v.clone();
+                s.sort_unstable();
+                s.dedup();
+                s.len() == v.len()
+            })
         })
     }
 

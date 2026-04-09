@@ -330,7 +330,7 @@ proof fn dequeue_enables_enqueue(head: u64, tail: u64, capacity: u64)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::default_numeric_fallback)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 

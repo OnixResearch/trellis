@@ -1,10 +1,9 @@
 //! Verified match index and next index tracking for Raft log replication.
 //!
 //! A leader maintains two parallel arrays indexed by server ID:
-//! - `matchIndex[i]`: the highest log index known to be replicated on server i
-//!   (monotonically non-decreasing)
-//! - `nextIndex[i]`: the next log index to send to server i
-//!   (decremented on rejection, floor at 1)
+//! - `matchIndex[i]`: the highest log index known to be replicated on server i (monotonically
+//!   non-decreasing)
+//! - `nextIndex[i]`: the next log index to send to server i (decremented on rejection, floor at 1)
 //!
 //! These are the bookkeeping that drives commit advancement.
 
@@ -313,7 +312,11 @@ proof fn count_replicated_bounded_from(matches: Seq<u64>, index: u64, from: int)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation, clippy::cast_sign_loss, clippy::default_numeric_fallback)]
+#[allow(
+    clippy::cast_possible_truncation,
+    clippy::cast_sign_loss,
+    clippy::default_numeric_fallback
+)]
 mod tests {
     use proptest::prelude::*;
 

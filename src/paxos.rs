@@ -438,13 +438,22 @@ mod tests {
     // r[verify paxos.ballot-gt]
     #[test]
     fn test_ballot_ordering() {
-        let b10 = Ballot { round: 1, proposer_id: 0 };
-        let b11 = Ballot { round: 1, proposer_id: 1 };
-        let b20 = Ballot { round: 2, proposer_id: 0 };
+        let b10 = Ballot {
+            round: 1,
+            proposer_id: 0,
+        };
+        let b11 = Ballot {
+            round: 1,
+            proposer_id: 1,
+        };
+        let b20 = Ballot {
+            round: 2,
+            proposer_id: 0,
+        };
 
-        assert!(ballot_gt(&b11, &b10));  // same round, higher proposer
-        assert!(ballot_gt(&b20, &b10));  // higher round
-        assert!(ballot_gt(&b20, &b11));  // higher round beats higher proposer
+        assert!(ballot_gt(&b11, &b10)); // same round, higher proposer
+        assert!(ballot_gt(&b20, &b10)); // higher round
+        assert!(ballot_gt(&b20, &b11)); // higher round beats higher proposer
         assert!(!ballot_gt(&b10, &b10)); // irreflexive
         assert!(!ballot_gt(&b10, &b11)); // reversed
     }
@@ -452,9 +461,18 @@ mod tests {
     // r[verify paxos.ballot-eq]
     #[test]
     fn test_ballot_equality() {
-        let b1 = Ballot { round: 5, proposer_id: 3 };
-        let b2 = Ballot { round: 5, proposer_id: 3 };
-        let b3 = Ballot { round: 5, proposer_id: 4 };
+        let b1 = Ballot {
+            round: 5,
+            proposer_id: 3,
+        };
+        let b2 = Ballot {
+            round: 5,
+            proposer_id: 3,
+        };
+        let b3 = Ballot {
+            round: 5,
+            proposer_id: 4,
+        };
 
         assert!(ballot_eq(&b1, &b2));
         assert!(!ballot_eq(&b1, &b3));
@@ -464,13 +482,25 @@ mod tests {
     #[test]
     fn test_promise_basic() {
         let state = AcceptorState {
-            promised_round: 1, promised_proposer: 0,
-            has_accepted: false, accepted_round: 0, accepted_proposer: 0,
+            promised_round: 1,
+            promised_proposer: 0,
+            has_accepted: false,
+            accepted_round: 0,
+            accepted_proposer: 0,
             accepted_value: 0,
         };
-        let higher = Ballot { round: 2, proposer_id: 0 };
-        let lower = Ballot { round: 0, proposer_id: 5 };
-        let same = Ballot { round: 1, proposer_id: 0 };
+        let higher = Ballot {
+            round: 2,
+            proposer_id: 0,
+        };
+        let lower = Ballot {
+            round: 0,
+            proposer_id: 5,
+        };
+        let same = Ballot {
+            round: 1,
+            proposer_id: 0,
+        };
 
         assert!(can_promise(&state, &higher));
         assert!(!can_promise(&state, &lower));
@@ -481,11 +511,17 @@ mod tests {
     #[test]
     fn test_promise_preserves_accepted() {
         let state = AcceptorState {
-            promised_round: 1, promised_proposer: 0,
-            has_accepted: true, accepted_round: 1, accepted_proposer: 0,
+            promised_round: 1,
+            promised_proposer: 0,
+            has_accepted: true,
+            accepted_round: 1,
+            accepted_proposer: 0,
             accepted_value: 42,
         };
-        let ballot = Ballot { round: 3, proposer_id: 0 };
+        let ballot = Ballot {
+            round: 3,
+            proposer_id: 0,
+        };
         let next = do_promise(&state, &ballot);
 
         assert_eq!(next.promised_round, 3);
@@ -498,13 +534,25 @@ mod tests {
     #[test]
     fn test_accept_basic() {
         let state = AcceptorState {
-            promised_round: 2, promised_proposer: 0,
-            has_accepted: false, accepted_round: 0, accepted_proposer: 0,
+            promised_round: 2,
+            promised_proposer: 0,
+            has_accepted: false,
+            accepted_round: 0,
+            accepted_proposer: 0,
             accepted_value: 0,
         };
-        let ok = Ballot { round: 2, proposer_id: 0 };    // equal — ok
-        let higher = Ballot { round: 3, proposer_id: 0 }; // higher — ok
-        let lower = Ballot { round: 1, proposer_id: 0 };  // lower — reject
+        let ok = Ballot {
+            round: 2,
+            proposer_id: 0,
+        }; // equal — ok
+        let higher = Ballot {
+            round: 3,
+            proposer_id: 0,
+        }; // higher — ok
+        let lower = Ballot {
+            round: 1,
+            proposer_id: 0,
+        }; // lower — reject
 
         assert!(can_accept(&state, &ok));
         assert!(can_accept(&state, &higher));
@@ -515,11 +563,17 @@ mod tests {
     #[test]
     fn test_accept_records() {
         let state = AcceptorState {
-            promised_round: 2, promised_proposer: 0,
-            has_accepted: false, accepted_round: 0, accepted_proposer: 0,
+            promised_round: 2,
+            promised_proposer: 0,
+            has_accepted: false,
+            accepted_round: 0,
+            accepted_proposer: 0,
             accepted_value: 0,
         };
-        let ballot = Ballot { round: 2, proposer_id: 0 };
+        let ballot = Ballot {
+            round: 2,
+            proposer_id: 0,
+        };
         let next = do_accept(&state, &ballot, 99);
 
         assert!(next.has_accepted);
@@ -538,8 +592,14 @@ mod tests {
     // r[verify paxos.higher-accepted]
     #[test]
     fn test_higher_accepted() {
-        let ba = Ballot { round: 3, proposer_id: 0 };
-        let bb = Ballot { round: 1, proposer_id: 0 };
+        let ba = Ballot {
+            round: 3,
+            proposer_id: 0,
+        };
+        let bb = Ballot {
+            round: 1,
+            proposer_id: 0,
+        };
 
         // Both accepted: higher ballot wins
         assert_eq!(higher_accepted(true, &ba, 10, true, &bb, 20, 99), 10);

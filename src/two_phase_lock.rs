@@ -385,29 +385,35 @@ mod tests {
 
         // Growing: acquire 3 locks
         let (h, p) = transition(phase, held, OP_ACQUIRE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
         assert_eq!((held, phase), (1, PHASE_GROWING));
 
         let (h, p) = transition(phase, held, OP_ACQUIRE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
         assert_eq!((held, phase), (2, PHASE_GROWING));
 
         let (h, p) = transition(phase, held, OP_ACQUIRE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
         assert_eq!((held, phase), (3, PHASE_GROWING));
 
         // Shrinking: release 3 locks
         let (h, p) = transition(phase, held, OP_RELEASE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
         assert_eq!((held, phase), (2, PHASE_SHRINKING));
 
         // Can't acquire anymore
         assert!(transition(phase, held, OP_ACQUIRE).is_none());
 
         let (h, p) = transition(phase, held, OP_RELEASE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
         let (h, p) = transition(phase, held, OP_RELEASE).unwrap();
-        held = h; phase = p;
+        held = h;
+        phase = p;
 
         assert!(is_complete(held, phase));
     }

@@ -5,8 +5,9 @@
 //! computes internal fragmentation (waste), and proves waste bounds.
 //! Delegates to [`buddy::order_for_size`] for the actual classification.
 
-use crate::buddy::order_for_size;
 use vstd::prelude::*;
+
+use crate::buddy::order_for_size;
 
 verus! {
 

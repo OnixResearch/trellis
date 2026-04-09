@@ -433,7 +433,7 @@ mod tests {
     // r[verify replication-mode.transition-to-snapshot]
     #[test]
     fn test_should_send_snapshot() {
-        assert!(should_send_snapshot(5, 10));  // behind compaction
+        assert!(should_send_snapshot(5, 10)); // behind compaction
         assert!(should_send_snapshot(10, 10)); // at compaction point
         assert!(!should_send_snapshot(15, 10)); // within log
     }

@@ -322,7 +322,7 @@ mod tests {
         // Width 1: only 0 and u64::MAX (all-ones) are sign-extended
         assert!(is_sign_extended(0, 1));
         assert!(is_sign_extended(u64::MAX, 1));
-        assert!(!is_sign_extended(1, 1));  // bit 0 = 1, but upper bits = 0
+        assert!(!is_sign_extended(1, 1)); // bit 0 = 1, but upper bits = 0
     }
 
     proptest! {

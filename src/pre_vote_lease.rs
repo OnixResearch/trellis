@@ -16,9 +16,9 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
-use crate::epoch::epoch_ge_spec;
-#[cfg(verus_keep_ghost)]
 use crate::epoch::Epoch;
+#[cfg(verus_keep_ghost)]
+use crate::epoch::epoch_ge_spec;
 
 verus! {
 
@@ -236,10 +236,10 @@ mod tests {
     // r[verify pre-vote-lease.reject]
     #[test]
     fn test_should_reject_pre_vote() {
-        assert!(should_reject_pre_vote(true, 3, 3));    // same term, has contact
-        assert!(should_reject_pre_vote(true, 2, 3));    // lower term
-        assert!(!should_reject_pre_vote(true, 4, 3));   // higher term bypasses
-        assert!(!should_reject_pre_vote(false, 3, 3));  // no contact
+        assert!(should_reject_pre_vote(true, 3, 3)); // same term, has contact
+        assert!(should_reject_pre_vote(true, 2, 3)); // lower term
+        assert!(!should_reject_pre_vote(true, 4, 3)); // higher term bypasses
+        assert!(!should_reject_pre_vote(false, 3, 3)); // no contact
     }
 
     // r[verify pre-vote-lease.combined-decision]
@@ -258,10 +258,10 @@ mod tests {
     // r[verify pre-vote-lease.leader-contact]
     #[test]
     fn test_has_leader_within_timeout() {
-        assert!(has_leader_within_timeout(100, 100, 50));   // just contacted
-        assert!(has_leader_within_timeout(100, 140, 50));   // within timeout
-        assert!(!has_leader_within_timeout(100, 150, 50));  // at timeout
-        assert!(!has_leader_within_timeout(100, 200, 50));  // past timeout
+        assert!(has_leader_within_timeout(100, 100, 50)); // just contacted
+        assert!(has_leader_within_timeout(100, 140, 50)); // within timeout
+        assert!(!has_leader_within_timeout(100, 150, 50)); // at timeout
+        assert!(!has_leader_within_timeout(100, 200, 50)); // past timeout
     }
 
     proptest! {

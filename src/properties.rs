@@ -1234,11 +1234,11 @@ mod lease_expiration_proofs {
     use vstd::prelude::*;
 
     use crate::expiration::is_expired_spec;
+    use crate::lease::Lease;
     use crate::lease::effective_expiry_spec;
     use crate::lease::grant_spec;
     use crate::lease::is_valid_spec;
     use crate::lease::renew_spec;
-    use crate::lease::Lease;
     use crate::monotonic::is_advance_spec;
 
     verus! {
@@ -1544,10 +1544,10 @@ mod type_lattice_proofs {
 mod circuit_breaker_validity_proofs {
     use vstd::prelude::*;
 
+    use crate::circuit_breaker::OPEN;
+    use crate::circuit_breaker::allow_request_spec;
     use crate::circuit_breaker::is_valid_state_spec;
     use crate::circuit_breaker::next_state_spec;
-    use crate::circuit_breaker::allow_request_spec;
-    use crate::circuit_breaker::OPEN;
 
     verus! {
 
@@ -1801,8 +1801,8 @@ mod gossip_proofs {
 mod acid_proofs {
     use vstd::prelude::*;
 
-    use crate::acid::commit_spec;
     use crate::acid::WriteOp;
+    use crate::acid::commit_spec;
 
     verus! {
 
@@ -2071,13 +2071,14 @@ mod financial_proofs {
 
     use crate::balance::credit_spec;
     use crate::balance::debit_spec;
+    use crate::escrow::ESCROW_REFUNDED;
+    use crate::escrow::ESCROW_RELEASED;
     use crate::escrow::fund_buyer_after_spec;
-    use crate::escrow::release_seller_after_spec;
     use crate::escrow::is_terminal_spec;
-    use crate::escrow::{ESCROW_RELEASED, ESCROW_REFUNDED};
+    use crate::escrow::release_seller_after_spec;
+    use crate::fee::MAX_RATE_BPS;
     use crate::fee::compute_fee_spec;
     use crate::fee::compute_net_spec;
-    use crate::fee::MAX_RATE_BPS;
     use crate::process_state::is_terminal_spec as ps_is_terminal_spec;
 
     verus! {
@@ -2155,8 +2156,11 @@ mod retry_proofs {
     use vstd::prelude::*;
 
     use crate::backoff::compute_backoff_spec;
-    use crate::circuit_breaker::{CLOSED, allow_request_spec};
-    use crate::retry::{RETRY, classify_outcome_spec, should_retry_spec};
+    use crate::circuit_breaker::CLOSED;
+    use crate::circuit_breaker::allow_request_spec;
+    use crate::retry::RETRY;
+    use crate::retry::classify_outcome_spec;
+    use crate::retry::should_retry_spec;
 
     verus! {
 
@@ -2196,13 +2200,13 @@ mod retry_proofs {
 }
 
 #[cfg(test)]
-    #[allow(
-        clippy::absurd_extreme_comparisons,
-        clippy::cast_possible_truncation,
-        clippy::cast_possible_wrap,
-        clippy::default_numeric_fallback,
-        clippy::uninlined_format_args,
-    )]
+#[allow(
+    clippy::absurd_extreme_comparisons,
+    clippy::cast_possible_truncation,
+    clippy::cast_possible_wrap,
+    clippy::default_numeric_fallback,
+    clippy::uninlined_format_args
+)]
 mod tests {
     use proptest::prelude::*;
 
@@ -3602,7 +3606,9 @@ mod cluster_coordination_proofs {
 
     use crate::drain::can_start_op_spec;
     use crate::drain_protocol::try_start_with_recheck_spec;
-    use crate::node_lifecycle::{DEGRADED, ONLINE, is_operational_spec};
+    use crate::node_lifecycle::DEGRADED;
+    use crate::node_lifecycle::ONLINE;
+    use crate::node_lifecycle::is_operational_spec;
 
     verus! {
 
@@ -3849,11 +3855,14 @@ mod cluster_membership_tests {
 mod coordination_cross_proofs {
     use vstd::prelude::*;
 
-    use crate::election::{compute_next_election_token_spec};
-    use crate::fencing::{issue_token_spec};
-    use crate::distributed_lock::{is_lock_expired_spec, compute_next_fencing_token_spec};
-    use crate::expiration::{is_expired_spec};
-    use crate::rwlock::{compute_next_write_token_spec, is_reader_expired_spec, is_writer_expired_spec};
+    use crate::distributed_lock::compute_next_fencing_token_spec;
+    use crate::distributed_lock::is_lock_expired_spec;
+    use crate::election::compute_next_election_token_spec;
+    use crate::expiration::is_expired_spec;
+    use crate::fencing::issue_token_spec;
+    use crate::rwlock::compute_next_write_token_spec;
+    use crate::rwlock::is_reader_expired_spec;
+    use crate::rwlock::is_writer_expired_spec;
 
     verus! {
 
@@ -3981,10 +3990,7 @@ mod coordination_cross_tests {
     // r[verify properties.lock-deadline-is-expiration-expires-at]
     #[test]
     fn lock_first_token_always_one() {
-        assert_eq!(
-            crate::distributed_lock::compute_next_fencing_token(None),
-            1u64
-        );
+        assert_eq!(crate::distributed_lock::compute_next_fencing_token(None), 1u64);
     }
 }
 
@@ -4121,20 +4127,23 @@ mod log_compaction_cross_tests {
 mod storage_cross_proofs {
     use vstd::prelude::*;
 
-    use crate::wal_segment::{
-        is_contiguous_spec, write_advance_spec, replay_count_spec,
-        is_truncate_safe_spec,
-    };
-    use crate::btree_balance::{
-        fill_pct_spec, split_left_size_spec, split_right_size_spec,
-        is_underfull_spec, min_keys_spec,
-    };
-    use crate::lsm_level::{
-        level_target_size_spec, space_amp_pct_spec, total_write_amp_spec,
-    };
-    use crate::monotonic::{is_advance_spec, is_strict_advance_spec};
-    use crate::arithmetic::{saturating_sub_spec, checked_mul_spec};
+    use crate::arithmetic::checked_mul_spec;
+    use crate::arithmetic::saturating_sub_spec;
+    use crate::btree_balance::fill_pct_spec;
+    use crate::btree_balance::is_underfull_spec;
+    use crate::btree_balance::min_keys_spec;
+    use crate::btree_balance::split_left_size_spec;
+    use crate::btree_balance::split_right_size_spec;
+    use crate::lsm_level::level_target_size_spec;
+    use crate::lsm_level::space_amp_pct_spec;
+    use crate::lsm_level::total_write_amp_spec;
+    use crate::monotonic::is_advance_spec;
+    use crate::monotonic::is_strict_advance_spec;
     use crate::ordering::min_spec;
+    use crate::wal_segment::is_contiguous_spec;
+    use crate::wal_segment::is_truncate_safe_spec;
+    use crate::wal_segment::replay_count_spec;
+    use crate::wal_segment::write_advance_spec;
 
     verus! {
 
@@ -4394,10 +4403,13 @@ mod storage_cross_tests {
 mod financial_extended_proofs {
     use vstd::prelude::*;
 
-    use crate::escrow::{fund_buyer_after_spec, refund_buyer_after_spec};
-    use crate::fee::{compute_fee_spec, compute_net_spec, split_with_fee_spec};
-    use crate::ledger::can_transfer_spec;
     use crate::double_entry::is_simple_entry_spec;
+    use crate::escrow::fund_buyer_after_spec;
+    use crate::escrow::refund_buyer_after_spec;
+    use crate::fee::compute_fee_spec;
+    use crate::fee::compute_net_spec;
+    use crate::fee::split_with_fee_spec;
+    use crate::ledger::can_transfer_spec;
 
     verus! {
 
@@ -4635,10 +4647,15 @@ mod follower_redirect_cross_tests {
 mod raft_pipeline_proofs {
     use vstd::prelude::*;
 
-    use crate::election::{can_win_election_spec, STATE_LEADER, STATE_TRANSITIONING};
-    use crate::vote_tally::{has_won_election_spec, count_votes_spec, count_votes_from_spec};
-    use crate::quorum::{majority_spec, is_quorum_spec};
+    use crate::election::STATE_LEADER;
+    use crate::election::STATE_TRANSITIONING;
+    use crate::election::can_win_election_spec;
     use crate::heartbeat::should_reset_election_timer_spec;
+    use crate::quorum::is_quorum_spec;
+    use crate::quorum::majority_spec;
+    use crate::vote_tally::count_votes_from_spec;
+    use crate::vote_tally::count_votes_spec;
+    use crate::vote_tally::has_won_election_spec;
 
     verus! {
 
@@ -4681,7 +4698,8 @@ mod raft_pipeline_proofs {
 mod lock_lease_proofs {
     use vstd::prelude::*;
 
-    use crate::distributed_lock::{compute_lock_deadline_spec, is_lock_expired_spec};
+    use crate::distributed_lock::compute_lock_deadline_spec;
+    use crate::distributed_lock::is_lock_expired_spec;
     use crate::expiration::is_expired_spec;
 
     verus! {
@@ -4722,7 +4740,9 @@ mod drain_lifecycle_proofs {
     use vstd::prelude::*;
 
     use crate::drain::can_start_op_spec;
-    use crate::node_lifecycle::{is_operational_spec, ONLINE, DEGRADED};
+    use crate::node_lifecycle::DEGRADED;
+    use crate::node_lifecycle::ONLINE;
+    use crate::node_lifecycle::is_operational_spec;
 
     verus! {
 
@@ -4757,8 +4777,11 @@ mod drain_lifecycle_proofs {
 mod retry_circuit_proofs {
     use vstd::prelude::*;
 
-    use crate::retry::{should_retry_spec, is_exhausted_spec};
-    use crate::circuit_breaker::{allow_request_spec, OPEN, CLOSED};
+    use crate::circuit_breaker::CLOSED;
+    use crate::circuit_breaker::OPEN;
+    use crate::circuit_breaker::allow_request_spec;
+    use crate::retry::is_exhausted_spec;
+    use crate::retry::should_retry_spec;
 
     verus! {
 
@@ -4808,8 +4831,9 @@ mod cas_fencing_proofs {
     use vstd::prelude::*;
 
     use crate::cas::check_cas_spec;
-    use crate::fencing::{is_valid_write_spec, is_stale_spec};
     use crate::distributed_lock::compute_next_fencing_token_spec;
+    use crate::fencing::is_stale_spec;
+    use crate::fencing::is_valid_write_spec;
 
     verus! {
 
@@ -4847,8 +4871,9 @@ mod cas_fencing_proofs {
 mod causality_proofs {
     use vstd::prelude::*;
 
-    use crate::vector_clock::{happens_before_spec, merge_spec as vc_merge_spec};
     use crate::crdt::g_counter_merge_spec;
+    use crate::vector_clock::happens_before_spec;
+    use crate::vector_clock::merge_spec as vc_merge_spec;
 
     verus! {
 
@@ -4891,8 +4916,10 @@ mod causality_proofs {
 mod noop_log_proofs {
     use vstd::prelude::*;
 
-    use crate::noop_commit::{make_noop_entry_spec, is_noop_spec, noop_commit_index_spec};
     use crate::log::log_append_spec;
+    use crate::noop_commit::is_noop_spec;
+    use crate::noop_commit::make_noop_entry_spec;
+    use crate::noop_commit::noop_commit_index_spec;
 
     verus! {
 
@@ -4928,7 +4955,9 @@ mod noop_log_proofs {
 mod snapshot_chunk_proofs {
     use vstd::prelude::*;
 
-    use crate::snapshot_transfer::{chunk_count_spec as st_chunk_count_spec, is_first_chunk_spec, is_last_chunk_spec};
+    use crate::snapshot_transfer::chunk_count_spec as st_chunk_count_spec;
+    use crate::snapshot_transfer::is_first_chunk_spec;
+    use crate::snapshot_transfer::is_last_chunk_spec;
 
     verus! {
 
@@ -5228,7 +5257,12 @@ mod spin_cas_proofs {
 mod seqlock_memory_order_proofs {
     use vstd::prelude::*;
 
-    use crate::memory_order::{ORD_RELEASE, ORD_ACQUIRE, has_release_semantics_spec, has_acquire_semantics_spec, valid_for_store_spec, valid_for_load_spec};
+    use crate::memory_order::ORD_ACQUIRE;
+    use crate::memory_order::ORD_RELEASE;
+    use crate::memory_order::has_acquire_semantics_spec;
+    use crate::memory_order::has_release_semantics_spec;
+    use crate::memory_order::valid_for_load_spec;
+    use crate::memory_order::valid_for_store_spec;
 
     verus! {
 
@@ -5345,7 +5379,10 @@ mod barrier_quorum_proofs {
 mod futex_notify_proofs {
     use vstd::prelude::*;
 
-    use crate::futex_state::{FUTEX_IDLE, consume_notification_spec, is_notified_spec, notify_spec};
+    use crate::futex_state::FUTEX_IDLE;
+    use crate::futex_state::consume_notification_spec;
+    use crate::futex_state::is_notified_spec;
+    use crate::futex_state::notify_spec;
 
     verus! {
 
@@ -5387,7 +5424,8 @@ mod mpsc_drained_proofs {
 mod cas_idempotent_proofs {
     use vstd::prelude::*;
 
-    use crate::cas_loop::{cas_succeeds_spec, is_idempotent_update_spec};
+    use crate::cas_loop::cas_succeeds_spec;
+    use crate::cas_loop::is_idempotent_update_spec;
 
     verus! {
 
@@ -5407,7 +5445,9 @@ mod cas_idempotent_proofs {
 mod ticket_lock_release_proofs {
     use vstd::prelude::*;
 
-    use crate::ticket_lock::{is_locked_spec, release_spec, waiters_count_spec};
+    use crate::ticket_lock::is_locked_spec;
+    use crate::ticket_lock::release_spec;
+    use crate::ticket_lock::waiters_count_spec;
 
     verus! {
 
@@ -5566,10 +5606,12 @@ mod paxos_monotonic_proofs {
     use vstd::prelude::*;
 
     use crate::monotonic::is_strict_advance_spec;
-    use crate::paxos::{
-        AcceptorState, Ballot, ballot_gt_spec, can_promise_spec,
-        promise_next_spec, promised_ballot,
-    };
+    use crate::paxos::AcceptorState;
+    use crate::paxos::Ballot;
+    use crate::paxos::ballot_gt_spec;
+    use crate::paxos::can_promise_spec;
+    use crate::paxos::promise_next_spec;
+    use crate::paxos::promised_ballot;
 
     verus! {
 
@@ -5603,11 +5645,14 @@ mod paxos_monotonic_proofs {
 mod lease_mutex_fencing_proofs {
     use vstd::prelude::*;
 
-    use crate::fencing::{is_stale_spec, is_valid_write_spec, issue_token_spec};
-    use crate::lease_mutex::{
-        LockState, acquire_next_spec, can_acquire_spec,
-        is_owner_spec, write_permitted_spec,
-    };
+    use crate::fencing::is_stale_spec;
+    use crate::fencing::is_valid_write_spec;
+    use crate::fencing::issue_token_spec;
+    use crate::lease_mutex::LockState;
+    use crate::lease_mutex::acquire_next_spec;
+    use crate::lease_mutex::can_acquire_spec;
+    use crate::lease_mutex::is_owner_spec;
+    use crate::lease_mutex::write_permitted_spec;
 
     verus! {
 
@@ -5658,10 +5703,11 @@ mod two_phase_lock_ordering_proofs {
     use vstd::prelude::*;
 
     use crate::lock_ordering::would_deadlock_spec;
-    use crate::two_phase_lock::{
-        PHASE_GROWING, PHASE_SHRINKING,
-        can_acquire_spec, would_violate_spec, OP_ACQUIRE,
-    };
+    use crate::two_phase_lock::OP_ACQUIRE;
+    use crate::two_phase_lock::PHASE_GROWING;
+    use crate::two_phase_lock::PHASE_SHRINKING;
+    use crate::two_phase_lock::can_acquire_spec;
+    use crate::two_phase_lock::would_violate_spec;
 
     verus! {
 
@@ -5695,7 +5741,8 @@ mod two_phase_lock_ordering_proofs {
 mod paxos_two_phase_proofs {
     use vstd::prelude::*;
 
-    use crate::two_phase::{can_commit_spec, must_abort_spec};
+    use crate::two_phase::can_commit_spec;
+    use crate::two_phase::must_abort_spec;
 
     verus! {
 
@@ -5723,10 +5770,12 @@ mod paxos_two_phase_proofs {
 mod lease_mutex_lease_proofs {
     use vstd::prelude::*;
 
-    use crate::lease_mutex::{
-        LockState, acquire_next_spec, can_acquire_spec,
-        is_available_spec, is_owner_spec, release_spec,
-    };
+    use crate::lease_mutex::LockState;
+    use crate::lease_mutex::acquire_next_spec;
+    use crate::lease_mutex::can_acquire_spec;
+    use crate::lease_mutex::is_available_spec;
+    use crate::lease_mutex::is_owner_spec;
+    use crate::lease_mutex::release_spec;
 
     verus! {
 
@@ -5762,8 +5811,9 @@ mod lease_mutex_lease_proofs {
 #[cfg(verus_keep_ghost)]
 mod typed_state_snapshot_proofs {
     use vstd::prelude::*;
-    use crate::typed_state::*;
+
     use crate::snapshot_integrity::*;
+    use crate::typed_state::*;
 
     verus! {
 
@@ -5837,9 +5887,10 @@ mod typed_state_snapshot_cross_tests {
 #[cfg(verus_keep_ghost)]
 mod serialization_injectivity_proofs {
     use vstd::prelude::*;
-    use crate::serialize_inj::*;
+
     use crate::chain::hash_collision_free;
     use crate::chain::hash_spec;
+    use crate::serialize_inj::*;
     use crate::snapshot_integrity::dual_hash_collision_resistant;
     use crate::snapshot_integrity::dual_hash_spec;
 
@@ -5927,8 +5978,9 @@ mod serialization_injectivity_proofs {
 
 #[cfg(test)]
 mod serialization_injectivity_cross_tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     proptest! {
         // r[verify properties.chain-hash-implies-field-equality]
@@ -6751,9 +6803,7 @@ mod graph_cross_tests {
 
     fn random_graph(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
         (3..=max_nodes).prop_flat_map(|n| {
-            proptest::collection::vec((0..n, 0..n), 0..=(n * 2).min(20)).prop_map(move |edges| {
-                (edges, n)
-            })
+            proptest::collection::vec((0..n, 0..n), 0..=(n * 2).min(20)).prop_map(move |edges| (edges, n))
         })
     }
 

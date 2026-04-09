@@ -5,8 +5,8 @@
 //! - No wildcard: exact equality.
 //! - Trailing wildcard `"prefix*"`: prefix match.
 //! - Leading wildcard `"*suffix"`: suffix match.
-//! - Multi-segment `"a*b*c"`: first segment anchored at start,
-//!   last at end, middle segments appear in order anywhere.
+//! - Multi-segment `"a*b*c"`: first segment anchored at start, last at end, middle segments appear
+//!   in order anywhere.
 
 #![allow(clippy::nonminimal_bool)]
 

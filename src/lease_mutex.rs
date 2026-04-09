@@ -280,7 +280,11 @@ mod tests {
     use super::*;
 
     fn fresh_lock() -> LockState {
-        LockState { holder: 0, expiry: 0, fence_token: 0 }
+        LockState {
+            holder: 0,
+            expiry: 0,
+            fence_token: 0,
+        }
     }
 
     // r[verify lease-mutex.is-available]
@@ -307,7 +311,11 @@ mod tests {
     // r[verify lease-mutex.try-acquire]
     #[test]
     fn test_acquire_while_held() {
-        let held = LockState { holder: 1, expiry: 100, fence_token: 1 };
+        let held = LockState {
+            holder: 1,
+            expiry: 100,
+            fence_token: 1,
+        };
         // Lock is held (now=50 < expiry=100), so acquire fails
         assert!(try_acquire(&held, 2, 50, 30).is_none());
         // Lock expired (now=100 >= expiry=100), so acquire succeeds
@@ -317,18 +325,26 @@ mod tests {
     // r[verify lease-mutex.is-owner]
     #[test]
     fn test_owner_check() {
-        let lock = LockState { holder: 5, expiry: 100, fence_token: 1 };
-        assert!(is_owner(&lock, 5, 50));   // correct holder, not expired
+        let lock = LockState {
+            holder: 5,
+            expiry: 100,
+            fence_token: 1,
+        };
+        assert!(is_owner(&lock, 5, 50)); // correct holder, not expired
         assert!(!is_owner(&lock, 5, 100)); // expired
-        assert!(!is_owner(&lock, 6, 50));  // wrong holder
+        assert!(!is_owner(&lock, 6, 50)); // wrong holder
     }
 
     // r[verify lease-mutex.write-permitted]
     #[test]
     fn test_write_permitted() {
-        let lock = LockState { holder: 5, expiry: 100, fence_token: 3 };
-        assert!(write_permitted(&lock, 5, 50, 3));  // exact fence match
-        assert!(write_permitted(&lock, 5, 50, 5));  // higher fence ok
+        let lock = LockState {
+            holder: 5,
+            expiry: 100,
+            fence_token: 3,
+        };
+        assert!(write_permitted(&lock, 5, 50, 3)); // exact fence match
+        assert!(write_permitted(&lock, 5, 50, 5)); // higher fence ok
         assert!(!write_permitted(&lock, 5, 50, 2)); // stale fence
         assert!(!write_permitted(&lock, 6, 50, 3)); // wrong holder
         assert!(!write_permitted(&lock, 5, 100, 3)); // expired
@@ -337,7 +353,11 @@ mod tests {
     // r[verify lease-mutex.release]
     #[test]
     fn test_release() {
-        let lock = LockState { holder: 5, expiry: 100, fence_token: 3 };
+        let lock = LockState {
+            holder: 5,
+            expiry: 100,
+            fence_token: 3,
+        };
         let released = do_release(&lock, 60);
         assert_eq!(released.expiry, 60);
         assert_eq!(released.fence_token, 3);

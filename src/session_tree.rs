@@ -4,12 +4,12 @@
 //! `find_unique` = `set_difference(ancestor_path)`, `find_divergence` = lca,
 //! `selective_merge` = `set_intersection`, `cherry_pick_subtree` = subtree.
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
 use crate::forest::*;
 #[cfg(verus_keep_ghost)]
 use crate::seq_set::*;
-
-use vstd::prelude::*;
 
 verus! {
 
@@ -235,22 +235,21 @@ mod tests {
     // Generate random well-formed parent maps
     fn well_formed_parents(max_size: usize) -> impl Strategy<Value = Vec<Option<usize>>> {
         (1..=max_size).prop_flat_map(|n| {
-            proptest::collection::vec(proptest::option::of(0usize..100), n..=n)
-                .prop_map(move |raw| {
-                    raw.into_iter()
-                        .enumerate()
-                        .map(|(i, opt)| {
-                            if i == 0 {
-                                None
-                            } else {
-                                match opt {
-                                    Some(v) => Some(v % i),
-                                    None => None,
-                                }
+            proptest::collection::vec(proptest::option::of(0usize..100), n..=n).prop_map(move |raw| {
+                raw.into_iter()
+                    .enumerate()
+                    .map(|(i, opt)| {
+                        if i == 0 {
+                            None
+                        } else {
+                            match opt {
+                                Some(v) => Some(v % i),
+                                None => None,
                             }
-                        })
-                        .collect()
-                })
+                        }
+                    })
+                    .collect()
+            })
         })
     }
 

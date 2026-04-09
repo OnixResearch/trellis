@@ -11,9 +11,11 @@ use vstd::prelude::*;
 #[cfg(verus_keep_ghost)]
 use crate::ordering::max_spec;
 #[cfg(verus_keep_ghost)]
-use crate::vector_clock::happens_before_spec;
+use crate::pointwise::max_u64;
 #[cfg(verus_keep_ghost)]
-use crate::pointwise::{pointwise_merge_spec, max_u64};
+use crate::pointwise::pointwise_merge_spec;
+#[cfg(verus_keep_ghost)]
+use crate::vector_clock::happens_before_spec;
 
 verus! {
 

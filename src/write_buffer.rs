@@ -353,9 +353,9 @@ mod tests {
 
     #[test]
     fn test_write_amp_pct() {
-        assert_eq!(write_amp_pct(100, 100), 100);  // 1x
-        assert_eq!(write_amp_pct(100, 300), 300);  // 3x
-        assert_eq!(write_amp_pct(100, 50), 50);    // 0.5x
+        assert_eq!(write_amp_pct(100, 100), 100); // 1x
+        assert_eq!(write_amp_pct(100, 300), 300); // 3x
+        assert_eq!(write_amp_pct(100, 50), 50); // 0.5x
     }
 
     #[test]
@@ -370,8 +370,9 @@ mod tests {
 
 #[cfg(test)]
 mod proptests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     proptest! {
         #[test]

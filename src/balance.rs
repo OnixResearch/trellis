@@ -198,7 +198,7 @@ proof fn zero_always_has_funds(balance: u64)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

@@ -269,7 +269,7 @@ proof fn zero_threshold_always_valid(
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 
@@ -297,19 +297,19 @@ mod tests {
     // r[verify quorum-cert.qc-gt]
     #[test]
     fn test_qc_ordering() {
-        assert!(qc_gt(2, 0, 1, 5));   // higher view
-        assert!(qc_gt(1, 6, 1, 5));   // same view, higher seq
-        assert!(!qc_gt(1, 5, 1, 5));  // equal
-        assert!(!qc_gt(1, 5, 2, 0));  // lower view
+        assert!(qc_gt(2, 0, 1, 5)); // higher view
+        assert!(qc_gt(1, 6, 1, 5)); // same view, higher seq
+        assert!(!qc_gt(1, 5, 1, 5)); // equal
+        assert!(!qc_gt(1, 5, 2, 0)); // lower view
     }
 
     // r[verify quorum-cert.is-committed]
     #[test]
     fn test_is_committed() {
-        assert!(is_committed(1, 5, 1, 6));    // consecutive in same view
-        assert!(!is_committed(1, 5, 2, 6));   // different views
-        assert!(!is_committed(1, 5, 1, 7));   // not consecutive
-        assert!(!is_committed(1, 5, 1, 5));   // same seq
+        assert!(is_committed(1, 5, 1, 6)); // consecutive in same view
+        assert!(!is_committed(1, 5, 2, 6)); // different views
+        assert!(!is_committed(1, 5, 1, 7)); // not consecutive
+        assert!(!is_committed(1, 5, 1, 5)); // same seq
     }
 
     proptest! {

@@ -257,17 +257,17 @@ mod tests {
     #[test]
     fn test_can_start_transfer() {
         assert!(can_start_transfer(STATE_LEADER, 2, 1));
-        assert!(!can_start_transfer(STATE_LEADER, 1, 1));   // self
-        assert!(!can_start_transfer(STATE_FOLLOWER, 2, 1));  // not leader
+        assert!(!can_start_transfer(STATE_LEADER, 1, 1)); // self
+        assert!(!can_start_transfer(STATE_FOLLOWER, 2, 1)); // not leader
         assert!(!can_start_transfer(STATE_TRANSITIONING, 2, 1));
     }
 
     // r[verify leadership-transfer.target-caught-up]
     #[test]
     fn test_is_target_caught_up() {
-        assert!(is_target_caught_up(10, 10));  // exact
-        assert!(is_target_caught_up(15, 10));  // ahead
-        assert!(!is_target_caught_up(5, 10));  // behind
+        assert!(is_target_caught_up(10, 10)); // exact
+        assert!(is_target_caught_up(15, 10)); // ahead
+        assert!(!is_target_caught_up(5, 10)); // behind
     }
 
     // r[verify leadership-transfer.should-send-timeout-now]

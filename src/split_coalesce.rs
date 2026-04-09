@@ -6,16 +6,20 @@
 //! recovers the original, and a recursive split from one large block
 //! produces disjoint blocks whose sizes sum to the original.
 
+use vstd::prelude::*;
+
+use crate::buddy::block_size;
 #[cfg(verus_keep_ghost)]
 use crate::buddy::block_size_spec;
+use crate::buddy::buddy_of;
 #[cfg(verus_keep_ghost)]
 use crate::buddy::buddy_of_spec;
+use crate::buddy::can_coalesce;
 #[cfg(verus_keep_ghost)]
 use crate::buddy::can_coalesce_spec;
+use crate::buddy::is_aligned_to_order;
 #[cfg(verus_keep_ghost)]
 use crate::buddy::is_aligned_to_order_spec;
-use crate::buddy::{block_size, buddy_of, can_coalesce, is_aligned_to_order};
-use vstd::prelude::*;
 
 verus! {
 
@@ -267,7 +271,10 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::buddy::{block_size, buddy_of, can_coalesce, is_aligned_to_order};
+    use crate::buddy::block_size;
+    use crate::buddy::buddy_of;
+    use crate::buddy::can_coalesce;
+    use crate::buddy::is_aligned_to_order;
 
     // r[verify split-coalesce.split-block]
     #[test]
@@ -293,12 +300,7 @@ mod tests {
     fn test_split_sizes_sum() {
         for order in 1u64..20 {
             let half_size = block_size(order - 1);
-            assert_eq!(
-                half_size + half_size,
-                block_size(order),
-                "sizes don't sum at order {}",
-                order
-            );
+            assert_eq!(half_size + half_size, block_size(order), "sizes don't sum at order {}", order);
         }
     }
 

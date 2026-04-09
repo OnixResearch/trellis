@@ -258,12 +258,12 @@ mod tests {
 
     #[test]
     fn test_is_expired() {
-        assert!(!is_expired(1000, 500, 0));    // before
-        assert!(!is_expired(1000, 1000, 0));   // at boundary
-        assert!(is_expired(1000, 1001, 0));    // just past
-        assert!(!is_expired(1000, 1001, 60));  // within tolerance
-        assert!(!is_expired(1000, 1060, 60));  // at tolerance boundary
-        assert!(is_expired(1000, 1061, 60));   // past tolerance
+        assert!(!is_expired(1000, 500, 0)); // before
+        assert!(!is_expired(1000, 1000, 0)); // at boundary
+        assert!(is_expired(1000, 1001, 0)); // just past
+        assert!(!is_expired(1000, 1001, 60)); // within tolerance
+        assert!(!is_expired(1000, 1060, 60)); // at tolerance boundary
+        assert!(is_expired(1000, 1061, 60)); // past tolerance
     }
 
     #[test]
@@ -275,10 +275,10 @@ mod tests {
 
     #[test]
     fn test_is_from_future() {
-        assert!(!is_from_future(100, 100, 0));   // at now
-        assert!(!is_from_future(100, 50, 60));   // within tolerance
-        assert!(!is_from_future(110, 50, 60));   // within tolerance
-        assert!(is_from_future(200, 50, 60));    // beyond tolerance
+        assert!(!is_from_future(100, 100, 0)); // at now
+        assert!(!is_from_future(100, 50, 60)); // within tolerance
+        assert!(!is_from_future(110, 50, 60)); // within tolerance
+        assert!(is_from_future(200, 50, 60)); // beyond tolerance
     }
 
     #[test]
@@ -304,10 +304,10 @@ mod tests {
 
     #[test]
     fn test_token_time_valid() {
-        assert!(token_time_valid(100, 200, 150, 60));   // in range
-        assert!(!token_time_valid(100, 200, 261, 60));   // expired past tolerance
-        assert!(!token_time_valid(300, 400, 100, 60));   // from future
-        assert!(token_time_valid(100, 200, 100, 0));     // at issued_at
+        assert!(token_time_valid(100, 200, 150, 60)); // in range
+        assert!(!token_time_valid(100, 200, 261, 60)); // expired past tolerance
+        assert!(!token_time_valid(300, 400, 100, 60)); // from future
+        assert!(token_time_valid(100, 200, 100, 0)); // at issued_at
     }
 
     proptest! {

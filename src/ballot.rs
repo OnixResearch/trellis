@@ -194,7 +194,10 @@ mod tests {
     use super::*;
 
     fn fresh_state() -> VoteState {
-        VoteState { voted_term: 0, voted_for: 0 }
+        VoteState {
+            voted_term: 0,
+            voted_for: 0,
+        }
     }
 
     fn ep(term: u64, index: u64) -> Epoch {
@@ -212,7 +215,10 @@ mod tests {
     // r[verify ballot.can-grant-vote]
     #[test]
     fn test_can_grant_vote_stale_term() {
-        let state = VoteState { voted_term: 5, voted_for: 1 };
+        let state = VoteState {
+            voted_term: 5,
+            voted_for: 1,
+        };
         // Candidate in term 3 (stale) should be rejected
         assert!(!can_grant_vote(&state, 2, 3, &ep(3, 10), &ep(3, 0)));
     }
@@ -220,7 +226,10 @@ mod tests {
     // r[verify ballot.can-grant-vote]
     #[test]
     fn test_can_grant_vote_same_term_different_candidate() {
-        let state = VoteState { voted_term: 5, voted_for: 1 };
+        let state = VoteState {
+            voted_term: 5,
+            voted_for: 1,
+        };
         // Different candidate in same term should be rejected
         assert!(!can_grant_vote(&state, 2, 5, &ep(5, 10), &ep(5, 0)));
     }
@@ -228,7 +237,10 @@ mod tests {
     // r[verify ballot.can-grant-vote]
     #[test]
     fn test_can_grant_vote_same_term_same_candidate() {
-        let state = VoteState { voted_term: 5, voted_for: 1 };
+        let state = VoteState {
+            voted_term: 5,
+            voted_for: 1,
+        };
         // Same candidate re-requesting in same term is OK if log is up-to-date
         assert!(can_grant_vote(&state, 1, 5, &ep(5, 10), &ep(5, 0)));
     }

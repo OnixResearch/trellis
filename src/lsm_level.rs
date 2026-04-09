@@ -531,7 +531,7 @@ proof fn count_empty(base: u64, ratio: u64)
 // ─── Tests ───────────────────────────────────────────────────────────
 
 #[cfg(test)]
-    #[allow(clippy::default_numeric_fallback)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
     use super::*;
 

@@ -12,7 +12,9 @@ use vstd::prelude::*;
 
 use crate::chain::compute_entry_hash;
 #[cfg(verus_keep_ghost)]
-use crate::chain::{compute_entry_hash_spec, hash_spec};
+use crate::chain::compute_entry_hash_spec;
+#[cfg(verus_keep_ghost)]
+use crate::chain::hash_spec;
 
 verus! {
 
@@ -145,9 +147,10 @@ proof fn verify_deterministic(leaf_hash: u64, index: u64, siblings: Seq<u64>, ro
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::*;
+
     use super::*;
     use crate::chain::compute_entry_hash;
-    use proptest::prelude::*;
 
     /// Runtime hash matching `compute_entry_hash(a, b, 0, 0)`.
     fn test_hash(a: u64, b: u64) -> u64 {

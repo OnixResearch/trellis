@@ -395,7 +395,9 @@ mod tests {
 
     use super::*;
 
-    fn v(s: &str) -> Vec<u8> { s.as_bytes().to_vec() }
+    fn v(s: &str) -> Vec<u8> {
+        s.as_bytes().to_vec()
+    }
 
     // r[verify nix-string.string-length]
     #[test]
@@ -417,27 +419,15 @@ mod tests {
     #[test]
     fn test_replace_strings() {
         // Simple replacement
-        let result = replace_strings(
-            &v("hello world"),
-            &vec![v("world")],
-            &vec![v("nix")],
-        );
+        let result = replace_strings(&v("hello world"), &vec![v("world")], &vec![v("nix")]);
         assert_eq!(result, v("hello nix"));
 
         // Multiple patterns
-        let result = replace_strings(
-            &v("aabbcc"),
-            &vec![v("aa"), v("bb")],
-            &vec![v("x"), v("y")],
-        );
+        let result = replace_strings(&v("aabbcc"), &vec![v("aa"), v("bb")], &vec![v("x"), v("y")]);
         assert_eq!(result, v("xycc"));
 
         // No match
-        let result = replace_strings(
-            &v("hello"),
-            &vec![v("xyz")],
-            &vec![v("abc")],
-        );
+        let result = replace_strings(&v("hello"), &vec![v("xyz")], &vec![v("abc")]);
         assert_eq!(result, v("hello"));
     }
 

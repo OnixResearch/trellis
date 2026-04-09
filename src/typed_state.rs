@@ -194,8 +194,9 @@ proof fn stamp_unverified<T>(v: T)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify typed-state.stamp]
     #[test]

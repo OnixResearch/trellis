@@ -431,10 +431,10 @@ mod tests {
     // r[verify client-session.is-duplicate]
     #[test]
     fn test_is_duplicate() {
-        assert!(!is_duplicate(0, 1));  // first command
-        assert!(is_duplicate(5, 5));   // resend last
-        assert!(is_duplicate(5, 3));   // old command
-        assert!(!is_duplicate(5, 6));  // new command
+        assert!(!is_duplicate(0, 1)); // first command
+        assert!(is_duplicate(5, 5)); // resend last
+        assert!(is_duplicate(5, 3)); // old command
+        assert!(!is_duplicate(5, 6)); // new command
     }
 
     // r[verify client-session.is-next-in-sequence]
@@ -471,10 +471,10 @@ mod tests {
     // r[verify client-session.session-expired]
     #[test]
     fn test_session_expired() {
-        assert!(!is_session_expired(100, 100, 50));   // same time
-        assert!(!is_session_expired(100, 120, 50));   // within timeout
-        assert!(!is_session_expired(100, 150, 50));   // at boundary
-        assert!(is_session_expired(100, 151, 50));    // expired
+        assert!(!is_session_expired(100, 100, 50)); // same time
+        assert!(!is_session_expired(100, 120, 50)); // within timeout
+        assert!(!is_session_expired(100, 150, 50)); // at boundary
+        assert!(is_session_expired(100, 151, 50)); // expired
     }
 
     // r[verify client-session.classify-command]

@@ -117,7 +117,7 @@ proof fn append_noop_preserves_prefix(log: Seq<LogEntry>, current_term: u64)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 

@@ -456,8 +456,8 @@ mod tests {
         assert_eq!(fund(ESCROW_CREATED, 1000, 500), Some((500, ESCROW_FUNDED)));
         assert_eq!(fund(ESCROW_CREATED, 100, 100), Some((0, ESCROW_FUNDED)));
         assert_eq!(fund(ESCROW_CREATED, 50, 100), None); // insufficient
-        assert_eq!(fund(ESCROW_CREATED, 100, 0), None);  // zero amount
-        assert_eq!(fund(ESCROW_FUNDED, 100, 50), None);  // wrong state
+        assert_eq!(fund(ESCROW_CREATED, 100, 0), None); // zero amount
+        assert_eq!(fund(ESCROW_FUNDED, 100, 50), None); // wrong state
     }
 
     // r[verify escrow.release]
@@ -466,7 +466,7 @@ mod tests {
         assert_eq!(release(ESCROW_FUNDED, 200, 500), Some((700, ESCROW_RELEASED)));
         assert_eq!(release(ESCROW_DISPUTED, 0, 500), Some((500, ESCROW_RELEASED)));
         assert_eq!(release(ESCROW_CREATED, 200, 500), None); // wrong state
-        assert_eq!(release(ESCROW_FUNDED, 200, 0), None);    // zero amount
+        assert_eq!(release(ESCROW_FUNDED, 200, 0), None); // zero amount
         assert_eq!(release(ESCROW_FUNDED, u64::MAX, 1), None); // overflow
     }
 
@@ -476,7 +476,7 @@ mod tests {
         assert_eq!(refund(ESCROW_FUNDED, 500, 300), Some((800, ESCROW_REFUNDED)));
         assert_eq!(refund(ESCROW_DISPUTED, 500, 300), Some((800, ESCROW_REFUNDED)));
         assert_eq!(refund(ESCROW_CREATED, 500, 300), None); // wrong state
-        assert_eq!(refund(ESCROW_FUNDED, 500, 0), None);    // zero amount
+        assert_eq!(refund(ESCROW_FUNDED, 500, 0), None); // zero amount
         assert_eq!(refund(ESCROW_FUNDED, u64::MAX, 1), None); // overflow
     }
 
@@ -494,8 +494,7 @@ mod tests {
     fn test_total_value() {
         assert_eq!(total_value(100, 200, 300), Some(600));
         assert_eq!(total_value(0, 0, 0), Some(0));
-        assert_eq!(total_value(u64::MAX, u64::MAX, u64::MAX),
-            Some(u64::MAX as u128 * 3));
+        assert_eq!(total_value(u64::MAX, u64::MAX, u64::MAX), Some(u64::MAX as u128 * 3));
     }
 
     proptest! {

@@ -173,9 +173,9 @@ mod tests {
     // r[verify pre-vote.start-election]
     #[test]
     fn test_should_start_real_election() {
-        assert!(should_start_real_election(3, 5));  // 3 >= majority(5)=3
+        assert!(should_start_real_election(3, 5)); // 3 >= majority(5)=3
         assert!(!should_start_real_election(2, 5)); // 2 < 3
-        assert!(should_start_real_election(1, 1));  // singleton
+        assert!(should_start_real_election(1, 1)); // singleton
     }
 
     proptest! {

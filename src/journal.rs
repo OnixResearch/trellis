@@ -342,10 +342,10 @@ mod tests {
     // r[verify journal.apply-entry]
     #[test]
     fn test_apply_entry_basic() {
-        assert_eq!(apply_entry(100, 30, true), Some(70));   // debit
+        assert_eq!(apply_entry(100, 30, true), Some(70)); // debit
         assert_eq!(apply_entry(100, 30, false), Some(130)); // credit
-        assert_eq!(apply_entry(10, 20, true), None);        // underflow
-        assert_eq!(apply_entry(u64::MAX, 1, false), None);  // overflow
+        assert_eq!(apply_entry(10, 20, true), None); // underflow
+        assert_eq!(apply_entry(u64::MAX, 1, false), None); // overflow
         assert_eq!(apply_entry(0, 0, true), Some(0));
         assert_eq!(apply_entry(0, 0, false), Some(0));
     }

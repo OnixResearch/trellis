@@ -185,7 +185,7 @@ proof fn fresh_vote_preserves_other_terms(
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::cast_possible_truncation)]
+#[allow(clippy::cast_possible_truncation)]
 mod tests {
     use proptest::prelude::*;
 
@@ -204,9 +204,7 @@ mod tests {
     fn check_svpt(history: &[VoteRecord]) -> bool {
         for i in 0..history.len() {
             for j in 0..history.len() {
-                if history[i].term == history[j].term
-                    && history[i].candidate_id != history[j].candidate_id
-                {
+                if history[i].term == history[j].term && history[i].candidate_id != history[j].candidate_id {
                     return false;
                 }
             }
@@ -222,11 +220,7 @@ mod tests {
         let majority = cluster_size / 2 + 1;
 
         // Collect all candidates for this term
-        let mut candidates: Vec<u64> = history
-            .iter()
-            .filter(|r| r.term == term)
-            .map(|r| r.candidate_id)
-            .collect();
+        let mut candidates: Vec<u64> = history.iter().filter(|r| r.term == term).map(|r| r.candidate_id).collect();
         candidates.sort();
         candidates.dedup();
 
@@ -234,10 +228,7 @@ mod tests {
         let winners: Vec<u64> = candidates
             .iter()
             .filter(|&&c| {
-                let count = history
-                    .iter()
-                    .filter(|r| r.term == term && r.candidate_id == c)
-                    .count() as u64;
+                let count = history.iter().filter(|r| r.term == term && r.candidate_id == c).count() as u64;
                 count >= majority
             })
             .copied()
@@ -269,14 +260,8 @@ mod tests {
         let history = vec![vr(5, 10), vr(5, 10), vr(5, 10)];
         assert!(check_svpt(&history));
 
-        let a_count = history
-            .iter()
-            .filter(|r| r.term == 5 && r.candidate_id == 10)
-            .count() as u64;
-        let b_count = history
-            .iter()
-            .filter(|r| r.term == 5 && r.candidate_id == 20)
-            .count() as u64;
+        let a_count = history.iter().filter(|r| r.term == 5 && r.candidate_id == 10).count() as u64;
+        let b_count = history.iter().filter(|r| r.term == 5 && r.candidate_id == 20).count() as u64;
 
         assert_eq!(a_count, 3);
         assert_eq!(b_count, 0);
@@ -305,14 +290,7 @@ mod tests {
     #[test]
     fn test_violation_detected() {
         // Without svpt: two candidates each get 3 votes (impossible in reality)
-        let history = vec![
-            vr(5, 10),
-            vr(5, 10),
-            vr(5, 10),
-            vr(5, 20),
-            vr(5, 20),
-            vr(5, 20),
-        ];
+        let history = vec![vr(5, 10), vr(5, 10), vr(5, 10), vr(5, 20), vr(5, 20), vr(5, 20)];
         assert!(!check_svpt(&history)); // svpt violated
         assert!(!check_election_safe(&history, 5, 5)); // two winners
     }

@@ -11,7 +11,9 @@ use vstd::prelude::*;
 #[cfg(verus_keep_ghost)]
 use crate::ordering::max_spec;
 #[cfg(verus_keep_ghost)]
-use crate::pointwise::{pointwise_merge_spec, max_u64};
+use crate::pointwise::max_u64;
+#[cfg(verus_keep_ghost)]
+use crate::pointwise::pointwise_merge_spec;
 
 verus! {
 
@@ -333,10 +335,7 @@ mod tests {
     // r[verify crdt.pn-counter-merge]
     #[test]
     fn test_pn_counter_merge() {
-        let (p, n) = pn_counter_merge(
-            &gc(&[3, 1]), &gc(&[1, 0]),
-            &gc(&[1, 2]), &gc(&[0, 1]),
-        );
+        let (p, n) = pn_counter_merge(&gc(&[3, 1]), &gc(&[1, 0]), &gc(&[1, 2]), &gc(&[0, 1]));
         assert_eq!(p, vec![3, 2]);
         assert_eq!(n, vec![1, 1]);
     }

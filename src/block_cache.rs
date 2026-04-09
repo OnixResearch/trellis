@@ -570,8 +570,9 @@ mod tests {
 #[cfg(test)]
 #[allow(clippy::cast_possible_truncation)]
 mod proptests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn valid_slot_state() -> impl Strategy<Value = u8> {
         prop_oneof![Just(SLOT_EMPTY), Just(SLOT_CLEAN), Just(SLOT_DIRTY)]

@@ -122,11 +122,11 @@ mod tests {
     // r[verify joint-consensus.dual-quorum]
     #[test]
     fn test_joint_quorum() {
-        assert!(is_joint_quorum(3, 5, 2, 3));   // old: 3/5, new: 2/3
-        assert!(!is_joint_quorum(2, 5, 2, 3));  // old: 2/5 (not quorum)
-        assert!(!is_joint_quorum(3, 5, 1, 3));  // new: 1/3 (not quorum)
-        assert!(!is_joint_quorum(2, 5, 1, 3));  // neither
-        assert!(is_joint_quorum(5, 5, 3, 3));   // both full
+        assert!(is_joint_quorum(3, 5, 2, 3)); // old: 3/5, new: 2/3
+        assert!(!is_joint_quorum(2, 5, 2, 3)); // old: 2/5 (not quorum)
+        assert!(!is_joint_quorum(3, 5, 1, 3)); // new: 1/3 (not quorum)
+        assert!(!is_joint_quorum(2, 5, 1, 3)); // neither
+        assert!(is_joint_quorum(5, 5, 3, 3)); // both full
     }
 
     // r[verify joint-consensus.dual-quorum]

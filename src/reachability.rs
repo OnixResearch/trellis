@@ -422,14 +422,13 @@ mod tests {
     #[cfg(test)]
     #[allow(clippy::cast_possible_truncation)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         fn random_graph(max_nodes: usize) -> impl Strategy<Value = (Vec<(usize, usize)>, usize)> {
             (2..=max_nodes).prop_flat_map(|n| {
-                proptest::collection::vec((0..n, 0..n), 0..=(n * 3).min(40)).prop_map(move |edges| {
-                    (edges, n)
-                })
+                proptest::collection::vec((0..n, 0..n), 0..=(n * 3).min(40)).prop_map(move |edges| (edges, n))
             })
         }
 

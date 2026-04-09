@@ -265,8 +265,8 @@ mod tests {
     #[test]
     fn test_transfer_valid() {
         assert!(transfer_valid(100, 50, 30));
-        assert!(!transfer_valid(100, 50, 0));       // zero amount
-        assert!(!transfer_valid(100, 50, 101));     // insufficient
+        assert!(!transfer_valid(100, 50, 0)); // zero amount
+        assert!(!transfer_valid(100, 50, 101)); // insufficient
         assert!(!transfer_valid(100, u64::MAX, 1)); // overflow
     }
 
@@ -291,7 +291,7 @@ mod tests {
     fn test_validate_transfer() {
         assert_eq!(validate_transfer(100, 50, 30, 2, 1), 0); // OK
         assert_eq!(validate_transfer(100, 50, 30, 1, 1), 4); // duplicate
-        assert_eq!(validate_transfer(100, 50, 0, 2, 1), 2);  // invalid amount
+        assert_eq!(validate_transfer(100, 50, 0, 2, 1), 2); // invalid amount
         assert_eq!(validate_transfer(100, 50, 101, 2, 1), 1); // insufficient
         assert_eq!(validate_transfer(100, u64::MAX, 1, 2, 1), 3); // overflow
     }

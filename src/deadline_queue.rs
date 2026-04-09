@@ -330,8 +330,9 @@ mod test {
 
     #[cfg(test)]
     mod proptests {
-        use super::*;
         use proptest::prelude::*;
+
+        use super::*;
 
         proptest! {
             // r[verify deadline-queue.is-earlier]

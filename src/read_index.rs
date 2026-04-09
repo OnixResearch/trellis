@@ -132,19 +132,19 @@ mod tests {
     // r[verify read-index.confirm-authority]
     #[test]
     fn test_confirm_read_authority() {
-        assert!(confirm_read_authority(3, 5));  // quorum
+        assert!(confirm_read_authority(3, 5)); // quorum
         assert!(!confirm_read_authority(2, 5)); // not quorum
         assert!(!confirm_read_authority(1, 5)); // deposed leader
-        assert!(confirm_read_authority(1, 1));  // singleton
+        assert!(confirm_read_authority(1, 1)); // singleton
     }
 
     // r[verify read-index.safe-at]
     #[test]
     fn test_read_safe_at() {
-        assert!(read_safe_at(5, 7));  // committed past read
-        assert!(read_safe_at(5, 5));  // at exact point
+        assert!(read_safe_at(5, 7)); // committed past read
+        assert!(read_safe_at(5, 5)); // at exact point
         assert!(!read_safe_at(5, 3)); // not yet committed
-        assert!(read_safe_at(0, 0));  // zero
+        assert!(read_safe_at(0, 0)); // zero
     }
 
     proptest! {

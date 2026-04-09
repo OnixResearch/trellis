@@ -273,8 +273,8 @@ mod tests {
     #[test]
     fn test_is_timed_out() {
         assert!(!is_timed_out(5000, 6000));
-        assert!(is_timed_out(6000, 6000));  // at deadline
-        assert!(is_timed_out(7000, 6000));  // past deadline
+        assert!(is_timed_out(6000, 6000)); // at deadline
+        assert!(is_timed_out(7000, 6000)); // past deadline
     }
 
     // r[verify job-timeout.time-remaining]
@@ -314,10 +314,7 @@ mod tests {
         let deadline = compute_deadline(start, timeout);
         for now in [1000, 2000, 3000, 4000, 5000, 6000] {
             if now >= start && now <= deadline {
-                assert_eq!(
-                    time_remaining(now, deadline) + elapsed_time(now, start),
-                    timeout
-                );
+                assert_eq!(time_remaining(now, deadline) + elapsed_time(now, start), timeout);
             }
         }
     }

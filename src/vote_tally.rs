@@ -10,9 +10,9 @@
 
 use vstd::prelude::*;
 
+use crate::quorum::is_quorum;
 #[cfg(verus_keep_ghost)]
 use crate::quorum::is_quorum_spec;
-use crate::quorum::is_quorum;
 
 verus! {
 

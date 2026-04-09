@@ -6,9 +6,10 @@
 //! [`btree_balance`] for underflow decisions and [`btree_insert`] for
 //! the sortedness predicate.
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
 use crate::btree_insert::is_sorted_spec;
-use vstd::prelude::*;
 
 verus! {
 

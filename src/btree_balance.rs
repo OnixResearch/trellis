@@ -426,10 +426,7 @@ mod tests {
     // r[verify btree-balance.split-right-size]
     fn test_split_sizes_conserve() {
         for count in 0..=20 {
-            assert_eq!(
-                split_left_size(count) + split_right_size(count),
-                count,
-            );
+            assert_eq!(split_left_size(count) + split_right_size(count), count,);
         }
     }
 

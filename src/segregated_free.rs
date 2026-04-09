@@ -6,11 +6,14 @@
 //! bookkeeping). The central invariant: a block appears in exactly one
 //! class list (cross-class uniqueness).
 
+use vstd::prelude::*;
+
 #[cfg(verus_keep_ghost)]
-use crate::free_list::{all_distinct_spec, free_list_contains_spec};
+use crate::free_list::all_distinct_spec;
+#[cfg(verus_keep_ghost)]
+use crate::free_list::free_list_contains_spec;
 #[cfg(verus_keep_ghost)]
 use crate::size_class::class_to_size_spec;
-use vstd::prelude::*;
 
 verus! {
 

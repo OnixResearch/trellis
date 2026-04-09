@@ -301,9 +301,9 @@ mod tests {
     // r[verify client-routing.leader-stale]
     #[test]
     fn test_is_leader_stale() {
-        assert!(!is_leader_stale(5, 5));  // same term
-        assert!(is_leader_stale(3, 5));   // stale
-        assert!(!is_leader_stale(5, 3));  // leader term higher (impossible but checks logic)
+        assert!(!is_leader_stale(5, 5)); // same term
+        assert!(is_leader_stale(3, 5)); // stale
+        assert!(!is_leader_stale(5, 3)); // leader term higher (impossible but checks logic)
     }
 
     // r[verify client-routing.route-read]

@@ -281,7 +281,7 @@ mod tests {
     // r[verify view-change.should-change-view]
     #[test]
     fn test_should_change_view() {
-        assert!(should_change_view(0, 1, 2, 1));  // 2 requests, f=1
+        assert!(should_change_view(0, 1, 2, 1)); // 2 requests, f=1
         assert!(!should_change_view(0, 1, 1, 1)); // only 1 request, need 2
         assert!(!should_change_view(5, 3, 10, 1)); // backward view
         assert!(!should_change_view(5, 5, 10, 1)); // same view
@@ -290,7 +290,7 @@ mod tests {
     // r[verify view-change.is-valid-new-view]
     #[test]
     fn test_valid_new_view() {
-        assert!(is_valid_new_view(0, 1, 1, 3, 2, 1));  // leader_of(1,3)=1, ok
+        assert!(is_valid_new_view(0, 1, 1, 3, 2, 1)); // leader_of(1,3)=1, ok
         assert!(!is_valid_new_view(0, 1, 0, 3, 2, 1)); // wrong leader
         assert!(!is_valid_new_view(0, 1, 1, 3, 1, 1)); // insufficient proof (need 2)
     }

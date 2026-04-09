@@ -5,11 +5,7 @@
 //! from the clankers sandbox policy module.
 
 // Verus block arithmetic patterns — manual range check and u8 cast are intentional.
-#![allow(
-    clippy::nonminimal_bool,
-    clippy::manual_range_contains,
-    clippy::unnecessary_cast
-)]
+#![allow(clippy::nonminimal_bool, clippy::manual_range_contains, clippy::unnecessary_cast)]
 
 use vstd::prelude::*;
 
@@ -686,8 +682,9 @@ mod tests {
 
 #[cfg(test)]
 mod proptests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     proptest! {
         #[test]

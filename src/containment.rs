@@ -4,18 +4,17 @@
 //! access is equal or narrower on every axis: variant subsumption,
 //! scope coverage, and mode ordering.
 
-#[cfg(verus_keep_ghost)]
-use crate::access_mode::*;
-#[cfg(verus_keep_ghost)]
-use crate::scope::*;
-#[cfg(verus_keep_ghost)]
-use crate::subsumption::*;
+use vstd::prelude::*;
 
 use crate::access_mode;
+#[cfg(verus_keep_ghost)]
+use crate::access_mode::*;
 use crate::scope;
+#[cfg(verus_keep_ghost)]
+use crate::scope::*;
 use crate::subsumption;
-
-use vstd::prelude::*;
+#[cfg(verus_keep_ghost)]
+use crate::subsumption::*;
 
 verus! {
 

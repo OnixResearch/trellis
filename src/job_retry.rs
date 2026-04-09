@@ -308,10 +308,10 @@ mod tests {
     // r[verify job-retry.cooldown-elapsed]
     #[test]
     fn test_cooldown_elapsed() {
-        assert!(is_cooldown_elapsed(1600, 1000, 500));   // 1600 >= 1500
-        assert!(!is_cooldown_elapsed(1200, 1000, 500));  // 1200 < 1500
-        assert!(is_cooldown_elapsed(1500, 1000, 500));   // 1500 >= 1500 (boundary)
-        assert!(is_cooldown_elapsed(0, 0, 0));           // 0 >= 0
+        assert!(is_cooldown_elapsed(1600, 1000, 500)); // 1600 >= 1500
+        assert!(!is_cooldown_elapsed(1200, 1000, 500)); // 1200 < 1500
+        assert!(is_cooldown_elapsed(1500, 1000, 500)); // 1500 >= 1500 (boundary)
+        assert!(is_cooldown_elapsed(0, 0, 0)); // 0 >= 0
         // Overflow: last=u64::MAX-50, cooldown=100 → int deadline > u64::MAX, unreachable
         assert!(!is_cooldown_elapsed(u64::MAX - 10, u64::MAX - 50, 100));
         assert!(!is_cooldown_elapsed(u64::MAX, u64::MAX - 50, 100)); // even u64::MAX can't reach it

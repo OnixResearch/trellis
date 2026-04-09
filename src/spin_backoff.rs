@@ -209,7 +209,7 @@ proof fn spin_phase_bounded(spin_limit: u64, yield_limit: u64)
 } // verus!
 
 #[cfg(test)]
-    #[allow(clippy::default_numeric_fallback)]
+#[allow(clippy::default_numeric_fallback)]
 mod tests {
     use proptest::prelude::*;
 
