@@ -21,6 +21,7 @@
 - `cargo clippy --all-targets -- -D warnings` was easiest to close with a mix of real cast fixes and test-only `#[allow(...)]` annotations for style lints (`default_numeric_fallback`, `uninlined_format_args`, truncation casts in proptests) rather than invasive churn in test code.
 - Restoring Verus in `src/mesi.rs`/`src/page.rs` used temporary `#[verifier::external_body]` on the remaining composite blockers. That made the pipeline green, but it increased the audited trust surface and must stay documented as closeable debt.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
+- Active OpenSpec change specs in this repo use full spec documents under `openspec/changes/*/specs/<domain>/spec.md`, not `ADDED/MODIFIED/REMOVED` delta sections. Match the existing change style when adding a new change.
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
 - `src/nix_base32.rs`: useful verified helper split for the roundtrip proof is to separate
   decode byte writes into `decode_low_spec(bit, digit)` and `decode_high_spec(bit, digit)`.
@@ -31,6 +32,20 @@
   assume the chunk starts in the last byte (`((n*5)/8)+1 == len`) and case-split on
   `bit % 8 == 4..7`, then prove the spill starts exactly at `len*8` and the padded bits are 0.
   With that in place, `reconstruct_prefix_len_upper` and `reconstruct_full_len` verify.
+- For the content-equality phase in `src/nix_base32.rs`, a useful intermediate step is to prove
+  pure byte-mask algebra first, separate from any `Seq` indexing: `current_byte_mask_update_no_spill`
+  and `current_byte_mask_update_spill` both verify cleanly as standalone `by(bit_vector)` lemmas.
+- The `digit_from_bit_spec` bridge is easier in small concrete cases than as one generic lemma:
+  `same_byte_digit_formula_j0`..`j3` verify cleanly for the no-spill offsets, but a generic wrapper
+  over `bit % 8 <= 3` still fights Verus because the final shift expression with `Seq` indexing does
+  not rewrite automatically across branches.
+- For the content-equality induction, local byte-update lemmas verify well when written branchwise on
+  concrete offsets instead of abstract masks: `current_byte_update_no_spill`, `current_byte_update_spill`,
+  `next_byte_zero_when_no_spill`, and `next_byte_update_spill` all go through once the prefix-masked
+  values and decode low/high bytes are first bound to local `u8` vars before any `by(bit_vector)` step.
+- Spill bridging is tractable with explicit two-byte digit formulas. `spill_digit_formula_j4`..`j7`
+  verify cleanly and are enough to prove current-byte and next-byte spill updates without any generic
+  `Seq`-indexed wrapper.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
