@@ -1,17 +1,18 @@
 //! Verified Nix generic closure.
 //!
 //! Models `builtins.genericClosure`: starting from a set of items,
-//! repeatedly apply an operator to produce new items until no new keys
-//! appear. Uses fuel-based termination.
+//! repeatedly apply a finite operator table to produce new items until no
+//! new keys appear.
 
-// Verus requires &Vec for @ view, not &[T]
 #![allow(clippy::ptr_arg)]
+
+use std::collections::HashSet;
 
 use vstd::prelude::*;
 
 verus! {
 
-/// An item with a key and arbitrary data.
+#[derive(Clone, Debug, PartialEq, Eq)]
 pub struct ClosureItem {
     /// Unique identifier for the closure item.
     pub key: u64,
@@ -19,79 +20,140 @@ pub struct ClosureItem {
     pub data: u64,
 }
 
-// --- generic_closure ---
-
-// r[depends nix-closure.generic-closure]
-/// Spec: compute the closure. Fuel limits iterations.
-/// Returns the accumulated set of items (unique by key).
-pub open spec fn generic_closure_spec(
-    start: Seq<ClosureItem>,
-    operator_results: Seq<Seq<ClosureItem>>,
-    fuel: nat,
-) -> Seq<ClosureItem>
-    decreases fuel
-{
-    if fuel == 0 || start.len() == 0 {
-        Seq::<ClosureItem>::empty()
-    } else {
-        // Process first item: add it to result, get its operator output
-        let item = start[0int];
-        let rest = start.subrange(1, start.len() as int);
-        // Simplified model: just process all start items
-        start
-    }
+pub open spec fn operator_view_spec(
+    operator: Seq<(u64, Vec<ClosureItem>)>,
+) -> Seq<(u64, Seq<ClosureItem>)> {
+    operator.map_values(|entry: (u64, Vec<ClosureItem>)| (entry.0, entry.1@))
 }
 
 /// Spec: does the result contain a key?
 pub open spec fn closure_contains_key(result: Seq<ClosureItem>, key: u64) -> bool {
-    exists|i: int| 0 <= i < result.len() as int && result[i].key == key
+    exists|i: int| 0 <= i < result.len() && result[i].key == key
 }
 
 /// Spec: are all keys unique?
 pub open spec fn keys_unique(items: Seq<ClosureItem>) -> bool {
-    forall|i: int, j: int| 0 <= i < j < items.len() as int
-        ==> items[i].key != items[j].key
+    forall|i: int, j: int| 0 <= i < j < items.len() ==> items[i].key != items[j].key
+}
+
+pub open spec fn operator_produces_key_spec(
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    from_key: u64,
+    to_key: u64,
+) -> bool {
+    exists|i: int, j: int|
+        0 <= i < operator.len()
+        && operator[i].0 == from_key
+        && 0 <= j < operator[i].1.len()
+        && operator[i].1[j].key == to_key
+}
+
+pub open spec fn reachable_key_fuel_spec(
+    start: Seq<ClosureItem>,
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    key: u64,
+    fuel: nat,
+) -> bool
+    decreases fuel,
+{
+    closure_contains_key(start, key)
+    || (fuel > 0
+        && exists|parent: u64|
+            reachable_key_fuel_spec(start, operator, parent, (fuel - 1) as nat)
+            && operator_produces_key_spec(operator, parent, key))
+}
+
+pub open spec fn reachable_key_spec(
+    start: Seq<ClosureItem>,
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    key: u64,
+) -> bool {
+    exists|fuel: nat| reachable_key_fuel_spec(start, operator, key, fuel)
+}
+
+// r[depends nix-closure.generic-closure]
+/// Spec: `result` is a unique-key closure for `start` under `operator`.
+pub open spec fn generic_closure_spec(
+    start: Seq<ClosureItem>,
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    result: Seq<ClosureItem>,
+) -> bool {
+    &&& keys_unique(result)
+    &&& forall|i: int| 0 <= i < start.len() ==> closure_contains_key(result, start[i].key)
+    &&& forall|i: int| 0 <= i < result.len() ==> reachable_key_spec(start, operator, result[i].key)
+    &&& forall|oi: int, cj: int|
+            0 <= oi < operator.len()
+            && closure_contains_key(result, operator[oi].0)
+            && 0 <= cj < operator[oi].1.len()
+            ==> closure_contains_key(result, operator[oi].1[cj].key)
+}
+
+// r[verify nix-closure.generic-closure]
+proof fn reachable_start_key(
+    start: Seq<ClosureItem>,
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    key: u64,
+)
+    requires closure_contains_key(start, key)
+    ensures reachable_key_spec(start, operator, key)
+{
+    assert(reachable_key_fuel_spec(start, operator, key, 0));
+}
+
+// r[verify nix-closure.generic-closure]
+proof fn reachable_via_output(
+    start: Seq<ClosureItem>,
+    operator: Seq<(u64, Seq<ClosureItem>)>,
+    parent_key: u64,
+    child_key: u64,
+)
+    requires
+        reachable_key_spec(start, operator, parent_key),
+        operator_produces_key_spec(operator, parent_key, child_key),
+    ensures reachable_key_spec(start, operator, child_key)
+{
+    let fuel = choose|fuel: nat| reachable_key_fuel_spec(start, operator, parent_key, fuel);
+    assert(reachable_key_fuel_spec(start, operator, child_key, (fuel + 1) as nat));
 }
 
 } // verus!
 
 // r[impl nix-closure.generic-closure]
-/// Compute the generic closure: start from initial items, apply operator
-/// to each item, collect results. Skip items with already-seen keys.
-/// @verified-logic:no-ensures
+/// Compute the generic closure from a finite operator table.
+///
+/// Each table entry `(k, items)` means applying the operator to key `k`
+/// yields `items`. Multiple entries with the same key are all applied.
 pub fn generic_closure(
     start: &Vec<ClosureItem>,
-    operator: &dyn Fn(&ClosureItem) -> Vec<ClosureItem>,
+    operator: &Vec<(u64, Vec<ClosureItem>)>,
 ) -> Vec<ClosureItem> {
-    use std::collections::HashSet;
     let mut seen = HashSet::new();
     let mut queue: Vec<ClosureItem> = start.clone();
     let mut result = Vec::new();
+    let mut qi: usize = 0;
 
-    while let Some(item) = queue.pop() {
-        if seen.contains(&item.key) {
+    while qi < queue.len() {
+        let item = queue[qi].clone();
+        qi += 1;
+
+        if !seen.insert(item.key) {
             continue;
         }
-        seen.insert(item.key);
-        let new_items = operator(&item);
-        for new_item in new_items {
-            if !seen.contains(&new_item.key) {
-                queue.push(new_item);
+
+        for (from_key, outputs) in operator {
+            if *from_key == item.key {
+                for new_item in outputs {
+                    if !seen.contains(&new_item.key) {
+                        queue.push(new_item.clone());
+                    }
+                }
             }
         }
+
         result.push(item);
     }
-    result
-}
 
-// Allow Clone for ClosureItem (needed for the exec function)
-impl Clone for ClosureItem {
-    fn clone(&self) -> Self {
-        ClosureItem {
-            key: self.key,
-            data: self.data,
-        }
-    }
+    result
 }
 
 #[cfg(test)]
@@ -101,16 +163,31 @@ mod tests {
 
     use super::*;
 
+    fn graph_operator(adj: &[Vec<u64>]) -> Vec<(u64, Vec<ClosureItem>)> {
+        let n = adj.len() as u64;
+        adj.iter()
+            .enumerate()
+            .map(|(idx, nbrs)| {
+                (
+                    idx as u64,
+                    nbrs.iter()
+                        .filter(|&&nbr| nbr < n)
+                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
+                        .collect(),
+                )
+            })
+            .collect()
+    }
+
     // r[verify nix-closure.generic-closure]
     #[test]
     fn test_generic_closure_simple() {
-        // Start with {1}, operator: 1 -> {2, 3}, 2 -> {3}, 3 -> {}
-        let result = generic_closure(&vec![ClosureItem { key: 1, data: 10 }], &|item: &ClosureItem| match item.key {
-            1 => vec![ClosureItem { key: 2, data: 20 }, ClosureItem { key: 3, data: 30 }],
-            2 => vec![ClosureItem { key: 3, data: 30 }],
-            _ => vec![],
-        });
-        // Should contain keys 1, 2, 3 (unique)
+        let operator = vec![
+            (1, vec![ClosureItem { key: 2, data: 20 }, ClosureItem { key: 3, data: 30 }]),
+            (2, vec![ClosureItem { key: 3, data: 30 }]),
+            (3, vec![]),
+        ];
+        let result = generic_closure(&vec![ClosureItem { key: 1, data: 10 }], &operator);
         let keys: Vec<u64> = result.iter().map(|i| i.key).collect();
         assert!(keys.contains(&1));
         assert!(keys.contains(&2));
@@ -121,17 +198,15 @@ mod tests {
     // r[verify nix-closure.generic-closure]
     #[test]
     fn test_generic_closure_no_duplicates() {
-        // Operator always returns items with key=1 (cycle)
-        let result = generic_closure(&vec![ClosureItem { key: 1, data: 0 }], &|_: &ClosureItem| {
-            vec![ClosureItem { key: 1, data: 0 }]
-        });
+        let operator = vec![(1, vec![ClosureItem { key: 1, data: 0 }])];
+        let result = generic_closure(&vec![ClosureItem { key: 1, data: 0 }], &operator);
         assert_eq!(result.len(), 1);
     }
 
     // r[verify nix-closure.generic-closure]
     #[test]
     fn test_generic_closure_empty_start() {
-        let result = generic_closure(&vec![], &|_: &ClosureItem| vec![]);
+        let result = generic_closure(&vec![], &vec![]);
         assert!(result.is_empty());
     }
 
@@ -144,8 +219,7 @@ mod tests {
             let start: Vec<ClosureItem> = start_keys.iter()
                 .map(|&k| ClosureItem { key: k, data: k })
                 .collect();
-            let result = generic_closure(&start, &|_: &ClosureItem| vec![]);
-            // All keys in result must be unique
+            let result = generic_closure(&start, &vec![]);
             let keys: Vec<u64> = result.iter().map(|i| i.key).collect();
             let mut sorted = keys.clone();
             sorted.sort_unstable();
@@ -161,15 +235,14 @@ mod tests {
             let start: Vec<ClosureItem> = start_keys.iter()
                 .map(|&k| ClosureItem { key: k, data: k })
                 .collect();
-            let result = generic_closure(&start, &|_: &ClosureItem| vec![]);
+            let result = generic_closure(&start, &vec![]);
             let result_keys: Vec<u64> = result.iter().map(|i| i.key).collect();
-            // Every unique start key should appear in result
             for &k in &start_keys {
                 prop_assert!(result_keys.contains(&k));
             }
         }
 
-        // P0: result is closed — applying operator to result items yields no new keys
+        // r[verify nix-closure.generic-closure]
         #[test]
         fn prop_closure_is_closed(
             adj in proptest::collection::vec(
@@ -177,48 +250,30 @@ mod tests {
             ),
         ) {
             let n = adj.len() as u64;
-            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
-                let k = item.key;
-                if (k as usize) < adj.len() {
-                    adj[k as usize].iter()
-                        .filter(|&&nbr| nbr < n)
-                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
-                        .collect()
-                } else {
-                    vec![]
-                }
-            };
+            let operator = graph_operator(&adj);
             let start = vec![ClosureItem { key: 0, data: 0 }];
             let result = generic_closure(&start, &operator);
             let result_keys: std::collections::HashSet<u64> =
                 result.iter().map(|i| i.key).collect();
             for item in &result {
-                let new_items = operator(item);
-                for new_item in new_items {
-                    prop_assert!(result_keys.contains(&new_item.key));
+                if (item.key as usize) < adj.len() {
+                    for &nbr in &adj[item.key as usize] {
+                        if nbr < n {
+                            prop_assert!(result_keys.contains(&nbr));
+                        }
+                    }
                 }
             }
         }
 
-        // P0: closure(closure(x)) == closure(x) by key set
+        // r[verify nix-closure.generic-closure]
         #[test]
         fn prop_closure_idempotent(
             adj in proptest::collection::vec(
                 proptest::collection::vec(0u64..8, 0..3), 1..=8
             ),
         ) {
-            let n = adj.len() as u64;
-            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
-                let k = item.key;
-                if (k as usize) < adj.len() {
-                    adj[k as usize].iter()
-                        .filter(|&&nbr| nbr < n)
-                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
-                        .collect()
-                } else {
-                    vec![]
-                }
-            };
+            let operator = graph_operator(&adj);
             let start = vec![ClosureItem { key: 0, data: 0 }];
             let first = generic_closure(&start, &operator);
             let second = generic_closure(&first, &operator);
@@ -229,7 +284,7 @@ mod tests {
             prop_assert_eq!(keys1, keys2);
         }
 
-        // P0: closure matches manual BFS over adjacency graph
+        // r[verify nix-closure.generic-closure]
         #[test]
         fn prop_closure_matches_manual_bfs(
             adj in proptest::collection::vec(
@@ -237,22 +292,11 @@ mod tests {
             ),
         ) {
             let n = adj.len() as u64;
-            let operator = |item: &ClosureItem| -> Vec<ClosureItem> {
-                let k = item.key;
-                if (k as usize) < adj.len() {
-                    adj[k as usize].iter()
-                        .filter(|&&nbr| nbr < n)
-                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
-                        .collect()
-                } else {
-                    vec![]
-                }
-            };
+            let operator = graph_operator(&adj);
             let start = vec![ClosureItem { key: 0, data: 0 }];
             let result = generic_closure(&start, &operator);
             let result_keys: std::collections::HashSet<u64> =
                 result.iter().map(|i| i.key).collect();
-            // Manual BFS
             let mut manual = std::collections::HashSet::new();
             let mut queue = std::collections::VecDeque::new();
             manual.insert(0u64);

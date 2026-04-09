@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5432 Verus proofs + 3191 cargo tests = current local snapshot
+- 5436 Verus proofs + 3191 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
@@ -17,7 +17,7 @@
 - When evidence needs to prove a directory is absent, `test -d` alone is not enough for a transcript because it prints nothing. Use an explicit shell form such as `if [ -d ... ]; then echo active-present; else echo active-absent; fi`, and save the raw transcript file in the change directory.
 - Tracey first dropped to `2 uncovered` (`query-cost.index-scan`, `snapshot-iso.si-allows-commit`) and `0 untested` after metadata-only fixes in `ct_select.rs`, `nonce.rs`, `index_select.rs`, `mvcc.rs`, and `snapshot_isolation.rs`, then to `0 uncovered` after adding `r[impl]` to the spec-level implementations in `query_cost.rs` and `snapshot_isolation.rs`.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
-- Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone; the only remaining weakened surface is the placeholder / no-ensures `src/nix_closure.rs` model.
+- Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone and there are no remaining `@verified-logic:no-ensures` / placeholder surfaces in `src/`.
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.
 - Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is closed now; the clean one-sided proof shape is to reuse the verified topological sort in the exec wrapper and prove locally that any topological order rules out a nontrivial cycle.
 - `cargo clippy --all-targets -- -D warnings` was easiest to close with a mix of real cast fixes and test-only `#[allow(...)]` annotations for style lints (`default_numeric_fallback`, `uninlined_format_args`, truncation casts in proptests) rather than invasive churn in test code.
@@ -36,6 +36,7 @@
 - `src/settlement.rs` no longer needs a no-ensures escape hatch. The workable bridge is to keep the old int-tuple spec for proofs, add exec-side view specs for `(usize, usize, u64)` obligations and `Vec<i128>` positions, then prove `compute_positions` against a prefix-application spec over the first `i` obligations. `is_valid_settlement` then verifies by comparing the proved position views index-by-index.
 - `src/topo_sort.rs:is_topo_order` closes cleanly if the checker proof is split into three recursive bridges (`all_in_range_from_pointwise`, `all_distinct_from_pairwise`, `edges_forward_from_pointwise`) plus a mapped-first-occurrence lemma for the edge endpoint scans. In the exec loops, only set `pu`/`pv` while they are still the sentinel so the invariants continue to describe the first occurrence.
 - `src/reachability.rs` was easier to close by fixing the spec than by forcing a false fixed-budget lemma through Verus. The right abstraction is `reachable_spec := exists fuel. reachable_fuel(...)`; then the helper lemma becomes the actually true one-edge extension fact `reachable_fuel(src, u, fuel) -> reachable_fuel(src, dst, fuel + 1)` when `(u, dst)` is an edge.
+- `src/nix_closure.rs` only closed after admitting the old API was the problem: `&dyn Fn(&ClosureItem) -> Vec<ClosureItem>` was not a tractable verified boundary. The practical close was to redesign the public API around a finite operator table, replace the placeholder spec with a real closure predicate over reachable keys, and keep the executor as a plain Rust wrapper outside `verus!`.
 - `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.

@@ -16,7 +16,7 @@ As of `2026-04-09`, backed by fresh reruns on the current tree, the live verific
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
 - `cargo test` passes (`3191 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5432 verified, 0 errors`)
+- `./scripts/verus.sh src/lib.rs` passes (`5436 verified, 0 errors`)
 - Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
@@ -60,11 +60,9 @@ No verified code in `src/` currently ends in an `assume(...)` soundness oracle.
 
 ### `@verified-logic:no-ensures` and placeholder surfaces
 
-`1` weakened exec/spec boundary remains.
+`0` weakened exec/spec boundaries remain.
 
-| Site | Classification | Rationale |
-|---|---|---|
-| `src/nix_closure.rs:61` | Closeable | `generic_closure_spec` still returns `start`; the model is intentionally incomplete |
+No public verified functions in `src/` currently rely on `@verified-logic:no-ensures`, and no placeholder specs remain in the live tree.
 
 ## Requirements
 

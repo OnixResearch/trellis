@@ -646,7 +646,7 @@ mod tests {
                 }
             }
 
-            // P0: directly test is_topo_order checker (assume() soundness oracle)
+            // P0: directly test the verified is_topo_order checker
             #[test]
             fn prop_checker_validates_output((edges, n) in random_dag(20)) {
                 if let Some(order) = topo_sort(&edges, n) {
