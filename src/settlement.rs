@@ -112,6 +112,53 @@ pub open spec fn compute_positions_spec(
     apply_from_spec(zeros, obligations, 0)
 }
 
+/// Exec-side obligation view: convert `(usize, usize, u64)` to `(int, int, u64)`.
+pub open spec fn obligation_view_spec(obligations: Seq<(usize, usize, u64)>) -> Seq<(int, int, u64)> {
+    obligations.map(|_i: int, o: (usize, usize, u64)| (o.0 as int, o.1 as int, o.2))
+}
+
+/// Exec-side position view: convert `i128` positions to mathematical integers.
+pub open spec fn position_view_spec(positions: Seq<i128>) -> Seq<int> {
+    positions.map(|_i: int, p: i128| p as int)
+}
+
+/// Exec-side prefix application over the first `upto` obligations.
+pub open spec fn compute_positions_prefix_exec_spec(
+    obligations: Seq<(usize, usize, u64)>, num_parties: usize, upto: int,
+) -> Seq<int>
+    recommends 0 <= upto <= obligations.len(), num_parties > 0
+    decreases upto
+{
+    if upto <= 0 {
+        Seq::new(num_parties as nat, |_i: int| 0int)
+    } else {
+        let prev = compute_positions_prefix_exec_spec(obligations, num_parties, upto - 1);
+        let (from_p, to_p, amt) = obligations[upto - 1];
+        apply_obligation_spec(prev, from_p as int, to_p as int, amt)
+    }
+}
+
+/// Exec-side compute_positions spec over usize-indexed obligations.
+pub open spec fn compute_positions_exec_spec(
+    obligations: Seq<(usize, usize, u64)>, num_parties: usize,
+) -> Seq<int>
+    recommends num_parties > 0
+{
+    compute_positions_prefix_exec_spec(obligations, num_parties, obligations.len() as int)
+}
+
+/// Exec-side settlement-validity spec over usize-indexed obligations.
+pub open spec fn is_valid_settlement_exec_spec(
+    original: Seq<(usize, usize, u64)>,
+    settlement: Seq<(usize, usize, u64)>,
+    num_parties: usize,
+) -> bool
+    recommends num_parties > 0
+{
+    compute_positions_exec_spec(original, num_parties)
+        =~= compute_positions_exec_spec(settlement, num_parties)
+}
+
 // r[impl settlement.compute-positions]
 /// Compute net positions. Returns a vec of length num_parties where each
 /// element is total credits minus total debits for that party.
@@ -129,6 +176,7 @@ pub fn compute_positions(
                 && obligations@[i].2 > 0u64,
     ensures
         result@.len() == num_parties as int,
+        position_view_spec(result@) == compute_positions_exec_spec(obligations@, num_parties),
 {
     let mut positions: Vec<i128> = Vec::new();
     let mut k: usize = 0;
@@ -143,6 +191,16 @@ pub fn compute_positions(
         k = k + 1;
     }
 
+    proof {
+        assert(position_view_spec(positions@) =~= Seq::new(num_parties as nat, |_i: int| 0int)) by {
+            assert forall|j: int| 0 <= j < positions@.len() implies position_view_spec(positions@)[j]
+                == Seq::new(num_parties as nat, |_i: int| 0int)[j] by {
+                assert(positions@[j] == 0i128);
+            }
+        }
+        assert(position_view_spec(positions@) == compute_positions_prefix_exec_spec(obligations@, num_parties, 0));
+    }
+
     let mut i: usize = 0;
     while i < obligations.len()
         invariant
@@ -150,6 +208,7 @@ pub fn compute_positions(
             positions@.len() == num_parties as int,
             num_parties > 0,
             obligations@.len() <= 1_000_000,
+            position_view_spec(positions@) == compute_positions_prefix_exec_spec(obligations@, num_parties, i as int),
             forall|j: int| #![trigger obligations@[j]]
                 0 <= j < obligations@.len() ==>
                     obligations@[j].0 < num_parties
@@ -166,6 +225,8 @@ pub fn compute_positions(
         let (from_p, to_p, amt) = obligations[i];
         assert(obligations@[i as int].0 < num_parties);
         assert(obligations@[i as int].1 < num_parties);
+        let ghost before_positions = positions@;
+        let ghost before_view = position_view_spec(before_positions);
         let old_from = positions[from_p];
         let old_to = positions[to_p];
         // Prove i128 bounds: |old_from - amt| and |old_to + amt| stay in range
@@ -176,10 +237,30 @@ pub fn compute_positions(
                 by(nonlinear_arith) requires i < 1_000_000int;
             assert(1_000_000int * (u64::MAX as int) < (i128::MAX as int)) by(nonlinear_arith);
             assert(-(1_000_000int * (u64::MAX as int)) > (i128::MIN as int)) by(nonlinear_arith);
+            assert(before_view[from_p as int] == old_from as int);
+            assert(before_view[to_p as int] == old_to as int);
         }
         positions.set(from_p, old_from - amt as i128);
+        proof {
+            assert(position_view_spec(positions@)
+                == before_view.update(from_p as int, old_from as int - amt as int));
+        }
         positions.set(to_p, old_to + amt as i128);
+        proof {
+            assert(position_view_spec(positions@)
+                == before_view
+                    .update(from_p as int, old_from as int - amt as int)
+                    .update(to_p as int, old_to as int + amt as int));
+            assert(position_view_spec(positions@)
+                == apply_obligation_spec(before_view, from_p as int, to_p as int, amt));
+            assert(apply_obligation_spec(before_view, from_p as int, to_p as int, amt)
+                == compute_positions_prefix_exec_spec(obligations@, num_parties, i as int + 1));
+        }
         i = i + 1;
+    }
+    proof {
+        assert(compute_positions_prefix_exec_spec(obligations@, num_parties, obligations@.len() as int)
+            == compute_positions_exec_spec(obligations@, num_parties));
     }
     positions
 }
@@ -201,7 +282,6 @@ pub open spec fn is_valid_settlement_spec(
 
 // r[impl settlement.valid-settlement]
 /// Check if a settlement produces the same net positions as the original.
-// @verified-logic:no-ensures exec uses (usize,usize,u64) but spec uses (int,int,u64); position comparison is correct by construction
 pub fn is_valid_settlement(
     original: &[(usize, usize, u64)],
     settlement: &[(usize, usize, u64)],
@@ -223,6 +303,8 @@ pub fn is_valid_settlement(
                 && settlement@[i].1 < num_parties
                 && settlement@[i].0 != settlement@[i].1
                 && settlement@[i].2 > 0u64,
+    ensures
+        result == is_valid_settlement_exec_spec(original@, settlement@, num_parties),
 {
     let orig_pos = compute_positions(original, num_parties);
     let settl_pos = compute_positions(settlement, num_parties);
@@ -232,12 +314,34 @@ pub fn is_valid_settlement(
             0 <= i <= num_parties,
             orig_pos@.len() == num_parties as int,
             settl_pos@.len() == num_parties as int,
+            position_view_spec(orig_pos@) == compute_positions_exec_spec(original@, num_parties),
+            position_view_spec(settl_pos@) == compute_positions_exec_spec(settlement@, num_parties),
+            forall|j: int| 0 <= j < i as int ==> orig_pos@[j] == settl_pos@[j],
         decreases num_parties - i,
     {
         if orig_pos[i] != settl_pos[i] {
+            proof {
+                assert(position_view_spec(orig_pos@)[i as int] != position_view_spec(settl_pos@)[i as int]);
+                if is_valid_settlement_exec_spec(original@, settlement@, num_parties) {
+                    assert(compute_positions_exec_spec(original@, num_parties)
+                        =~= compute_positions_exec_spec(settlement@, num_parties));
+                    assert(position_view_spec(orig_pos@) =~= position_view_spec(settl_pos@));
+                    assert(position_view_spec(orig_pos@)[i as int] == position_view_spec(settl_pos@)[i as int]);
+                    assert(false);
+                }
+            }
             return false;
         }
         i = i + 1;
+    }
+    proof {
+        assert forall|j: int| 0 <= j < num_parties as int
+            implies position_view_spec(orig_pos@)[j] == position_view_spec(settl_pos@)[j] by {
+            assert(orig_pos@[j] == settl_pos@[j]);
+        }
+        assert(position_view_spec(orig_pos@) =~= position_view_spec(settl_pos@));
+        assert(compute_positions_exec_spec(original@, num_parties)
+            =~= compute_positions_exec_spec(settlement@, num_parties));
     }
     true
 }

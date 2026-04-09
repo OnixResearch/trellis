@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5426 Verus proofs + 3191 cargo tests = current local snapshot
+- 5427 Verus proofs + 3191 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
@@ -33,6 +33,7 @@
 - `src/cron_next.rs:advance_one_minute` is no longer trusted; its proved ensures keep the output in basic calendar ranges and show the result timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The proof works if the search stays iterative, year-overflow paths return `false` instead of incrementing past the horizon, loop termination uses a lexicographic decreases tuple over `(year, month, day, hour, minute)`, and `cron_field::first_match_correct` / `first_match_ge_from` are `pub proof fn` so the search proof can reuse them across modules.
 - `src/index_select.rs:best_index` is no longer a placeholder/no-ensures surface. The clean spec shape is a prefix minimum (`best_index_prefix_spec`) with a strict cross-multiplication comparator `selectivity_lt_spec`; the exec loop invariant can then state `best == best_index_prefix_spec(selectivities, i)`.
+- `src/settlement.rs` no longer needs a no-ensures escape hatch. The workable bridge is to keep the old int-tuple spec for proofs, add exec-side view specs for `(usize, usize, u64)` obligations and `Vec<i128>` positions, then prove `compute_positions` against a prefix-application spec over the first `i` obligations. `is_valid_settlement` then verifies by comparing the proved position views index-by-index.
 - `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.

@@ -16,7 +16,7 @@ As of `2026-04-09`, backed by fresh reruns on the current tree, the live verific
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
 - `cargo test` passes (`3191 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5426 verified, 0 errors`)
+- `./scripts/verus.sh src/lib.rs` passes (`5427 verified, 0 errors`)
 - Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
@@ -63,12 +63,11 @@ Summary:
 
 ### `@verified-logic:no-ensures` and placeholder surfaces
 
-`3` weakened exec/spec boundaries remain.
+`2` weakened exec/spec boundaries remain.
 
 | Site | Classification | Rationale |
 |---|---|---|
 | `src/nix_closure.rs:61` | Closeable | `generic_closure_spec` still returns `start`; the model is intentionally incomplete |
-| `src/settlement.rs:204` | Closeable | Exec/spec bridge is justified by a type conversion argument, not a verified ensures clause |
 | `src/cycle_detect.rs:62` | Closeable | Kahn-cycle runtime checker is tested but not yet connected to `has_cycle_spec` |
 
 ## Requirements
