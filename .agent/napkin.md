@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5433 Verus proofs + 3191 cargo tests = current local snapshot
+- 5432 Verus proofs + 3191 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
@@ -17,9 +17,9 @@
 - When evidence needs to prove a directory is absent, `test -d` alone is not enough for a transcript because it prints nothing. Use an explicit shell form such as `if [ -d ... ]; then echo active-present; else echo active-absent; fi`, and save the raw transcript file in the change directory.
 - Tracey first dropped to `2 uncovered` (`query-cost.index-scan`, `snapshot-iso.si-allows-commit`) and `0 untested` after metadata-only fixes in `ct_select.rs`, `nonce.rs`, `index_select.rs`, `mvcc.rs`, and `snapshot_isolation.rs`, then to `0 uncovered` after adding `r[impl]` to the spec-level implementations in `query_cost.rs` and `snapshot_isolation.rs`.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
-- Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone; the remaining closeable surfaces are the `@verified-logic:no-ensures` sites in `src/nix_closure.rs` and `src/cycle_detect.rs`.
+- Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone; the only remaining weakened surface is the placeholder / no-ensures `src/nix_closure.rs` model.
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.
-- Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is now an explicit `@verified-logic:no-ensures` closeable boundary, not an unmarked gap.
+- Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is closed now; the clean one-sided proof shape is to reuse the verified topological sort in the exec wrapper and prove locally that any topological order rules out a nontrivial cycle.
 - `cargo clippy --all-targets -- -D warnings` was easiest to close with a mix of real cast fixes and test-only `#[allow(...)]` annotations for style lints (`default_numeric_fallback`, `uninlined_format_args`, truncation casts in proptests) rather than invasive churn in test code.
 - Restoring Verus in `src/mesi.rs`/`src/page.rs` used temporary `#[verifier::external_body]` on the remaining composite blockers. Those 7 sites are closed now; if a future session reintroduces them, it is a regression.
 - `src/mesi.rs:check_system_invariant` closed cleanly once I stopped trying to prove counts and instead verified a direct prefix scan with prefix-validity / prefix-coherence invariants.

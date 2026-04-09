@@ -2,12 +2,12 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5433 verified, 0 errors`).
+- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5432 verified, 0 errors`).
 - Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1197/1197` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
-- `src/cycle_detect.rs:has_cycle` is now an explicit `@verified-logic:no-ensures` closeable boundary instead of an unmarked gap.
+- `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
 - `README.md`'s proof/trust counts should match the live tree. The current code has 13 `#[verifier::external_body]` items across 4 modules.
 - All remaining `#[verifier::external_body]` sites are the permanent crypto / recursive-solver boundaries already listed in `openspec/specs/verification-gaps/spec.md`.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
@@ -25,7 +25,7 @@
 - The `decode` exec wrapper can be internalized without loop invariants by switching to a recursive helper `decode_prefix_exec` that mirrors `decode_prefix_spec` exactly. The hard update step becomes manageable if you first internalize `extend_to_exec` and `or_extend_at_exec`, then build `decode_step_exec` out of those pure vector constructors.
 
 ## Proof audit hotspots
-- Trusted boundaries are not limited to `external_body`: the real `assume(...)` soundness oracles are now gone, and the remaining weakened proof surfaces are the 2 `@verified-logic:no-ensures` / placeholder-spec sites in `nix_closure.rs` and `cycle_detect.rs`.
+- Trusted boundaries are not limited to `external_body`: the real `assume(...)` soundness oracles are now gone, and the only remaining weakened proof surface is the placeholder / no-ensures `nix_closure.rs` model.
 - Tracey is currently green (`0 uncovered`, `0 untested`).
 - The recent Tracey drift was cleared with metadata-only fixes: add `r[verify]` tags for untested rules, and add `r[impl]` tags to spec-level implementations when a requirement has no separate exec fn (for example `query_cost::index_scan_cost_spec` and `snapshot_isolation::si_allows_commit_spec`).
 - The temporary `src/mesi.rs` (6) and `src/page.rs` (1) trusted boundaries from the 2026-04-08 remediation are now closed; stale notes or inventories that still count MESI/page `external_body` sites are wrong.

@@ -59,11 +59,10 @@ pub open spec fn has_nontrivial_cycle_at(edges: Seq<(int, int)>, n: int, v: int)
 // ============================================================
 
 // r[impl cycle-detect.has-cycle]
-// @verified-logic:no-ensures Kahn-cycle correctness is still runtime-tested but not linked to has_cycle_spec
 /// Detect whether a directed graph has a cycle.
 ///
-/// Uses Kahn's algorithm: count in-degrees, iteratively remove
-/// zero-in-degree nodes. If all n nodes are removed, no cycle.
+/// Reuses the verified Kahn topological sort: an acyclic graph returns a
+/// topological order, while a cycle leaves no valid full ordering.
 pub fn has_cycle(edges: &[(usize, usize)], n: usize) -> (result: bool)
     requires
         n as int + edges@.len() as int <= usize::MAX as int,
@@ -71,117 +70,25 @@ pub fn has_cycle(edges: &[(usize, usize)], n: usize) -> (result: bool)
             let (u, v) = edges@[i];
             (u as int) < n as int && (v as int) < n as int
         },
+    ensures
+        !result ==> !has_cycle_spec(
+            edges@.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int)),
+            n as int,
+        ),
 {
-    // Compute in-degrees
-    let mut in_deg: Vec<u64> = Vec::new();
-    let mut k: usize = 0;
-    while k < n
-        invariant 0 <= k <= n, in_deg@.len() == k as int,
-            forall|j: int| 0 <= j < k as int ==> in_deg@[j] == 0u64,
-        decreases n - k,
-    {
-        in_deg.push(0);
-        k += 1;
-    }
-    let mut ei: usize = 0;
-    while ei < edges.len()
-        invariant
-            0 <= ei <= edges@.len(),
-            in_deg@.len() == n as int,
-            forall|i: int| #![trigger edges@[i]] 0 <= i < edges@.len() ==> {
-                let (u, v) = edges@[i];
-                (u as int) < n as int && (v as int) < n as int
-            },
-            forall|v: int| #![trigger in_deg@[v]] 0 <= v < n as int ==>
-                in_deg@[v] as int <= edges@.len() as int,
-        decreases edges.len() - ei,
-    {
-        let (_, v) = edges[ei];
-        proof {
-            let e = edges@[ei as int];
-            assert((e.1 as int) < n as int);
-        }
-        if in_deg[v] < edges.len() as u64 {
-            in_deg.set(v, in_deg[v] + 1);
-        }
-        ei += 1;
-    }
-
-    // Initialize queue with zero-in-degree nodes
-    let mut queue: Vec<usize> = Vec::new();
-    let mut qi_init: usize = 0;
-    while qi_init < n
-        invariant
-            0 <= qi_init <= n,
-            in_deg@.len() == n as int,
-            queue@.len() <= qi_init,
-            forall|s: int| #![trigger queue@[s]]
-                0 <= s < queue@.len() ==> (queue@[s] as int) < n as int,
-        decreases n - qi_init,
-    {
-        if in_deg[qi_init] == 0 {
-            queue.push(qi_init);
-        }
-        qi_init += 1;
-    }
-
-    // Process queue: remove zero-in-degree nodes
-    let mut processed: usize = 0;
-    let mut qi: usize = 0;
-    while qi < queue.len()
-        invariant
-            0 <= qi <= queue@.len(),
-            in_deg@.len() == n as int,
-            processed == qi,
-            queue@.len() <= n,
-            forall|i: int| #![trigger edges@[i]] 0 <= i < edges@.len() ==> {
-                let (u, v) = edges@[i];
-                (u as int) < n as int && (v as int) < n as int
-            },
-            forall|s: int| #![trigger queue@[s]]
-                0 <= s < queue@.len() ==> (queue@[s] as int) < n as int,
-        decreases n - qi,
-    {
-        let u = queue[qi];
-        processed += 1;
-        qi += 1;
-
-        let mut ej: usize = 0;
-        while ej < edges.len()
-            invariant
-                0 <= ej <= edges@.len(),
-                in_deg@.len() == n as int,
-                queue@.len() <= n,
-                qi as int <= queue@.len() as int,
-                forall|i: int| #![trigger edges@[i]] 0 <= i < edges@.len() ==> {
-                    let (u, v) = edges@[i];
-                    (u as int) < n as int && (v as int) < n as int
-                },
-                forall|s: int| #![trigger queue@[s]]
-                    0 <= s < queue@.len() ==> (queue@[s] as int) < n as int,
-            decreases edges.len() - ej,
-        {
-            let (src, dst) = edges[ej];
+    let ghost em = edges@.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int));
+    let order = crate::topo_sort::topo_sort(edges, n);
+    match order {
+        Some(order) => {
             proof {
-                let e = edges@[ej as int];
-                assert((e.0 as int) < n as int);
-                assert((e.1 as int) < n as int);
+                let om = order@.map(|_i: int, v: usize| v as int);
+                assert(crate::topo_sort::is_topo_order_spec(em, n as int, om));
+                topo_order_implies_acyclic(em, n as int, om);
             }
-            if src == u {
-                if in_deg[dst] > 0 {
-                    in_deg.set(dst, in_deg[dst] - 1);
-                    if in_deg[dst] == 0 {
-                        if queue.len() < n {
-                            queue.push(dst);
-                        }
-                    }
-                }
-            }
-            ej += 1;
+            false
         }
+        None => true,
     }
-
-    processed < n
 }
 
 // ============================================================
@@ -256,6 +163,69 @@ proof fn fuel_monotone(edges: Seq<(int, int)>, src: int, dst: int, f1: nat, f2: 
         let next = choose|next: int| has_edge_spec(edges, src, next)
             && has_path_fuel(edges, next, dst, (f1 - 1) as nat);
         fuel_monotone(edges, next, dst, (f1 - 1) as nat, (f2 - 1) as nat);
+    }
+}
+
+proof fn topo_edge_forward_at_index(edges: Seq<(int, int)>, n: int, order: Seq<int>, from: int, target: int)
+    requires
+        0 <= from <= target < edges.len(),
+        crate::topo_sort::edges_forward_spec(edges, n, order, from),
+    ensures crate::topo_sort::position_of_spec(order, edges[target].0)
+        < crate::topo_sort::position_of_spec(order, edges[target].1)
+    decreases target - from,
+{
+    if from < target {
+        topo_edge_forward_at_index(edges, n, order, from + 1, target);
+    }
+}
+
+proof fn topo_edge_forward_member(edges: Seq<(int, int)>, n: int, order: Seq<int>, src: int, dst: int)
+    requires
+        crate::topo_sort::is_topo_order_spec(edges, n, order),
+        has_edge_spec(edges, src, dst),
+    ensures crate::topo_sort::position_of_spec(order, src)
+        < crate::topo_sort::position_of_spec(order, dst)
+{
+    let i = choose|i: int| 0 <= i < edges.len() && edges[i] == (src, dst);
+    topo_edge_forward_at_index(edges, n, order, 0, i);
+}
+
+proof fn topo_path_strictly_forward(edges: Seq<(int, int)>, n: int, order: Seq<int>, src: int, dst: int, fuel: nat)
+    requires
+        crate::topo_sort::is_topo_order_spec(edges, n, order),
+        has_path_fuel(edges, src, dst, fuel),
+        src != dst,
+    ensures crate::topo_sort::position_of_spec(order, src)
+        < crate::topo_sort::position_of_spec(order, dst)
+    decreases fuel,
+{
+    let next = choose|next: int| has_edge_spec(edges, src, next)
+        && has_path_fuel(edges, next, dst, (fuel - 1) as nat);
+    topo_edge_forward_member(edges, n, order, src, next);
+    if next != dst {
+        topo_path_strictly_forward(edges, n, order, next, dst, (fuel - 1) as nat);
+    }
+}
+
+proof fn topo_order_implies_acyclic(edges: Seq<(int, int)>, n: int, order: Seq<int>)
+    requires crate::topo_sort::is_topo_order_spec(edges, n, order)
+    ensures !has_cycle_spec(edges, n)
+{
+    if has_cycle_spec(edges, n) {
+        let v = choose|v: int| 0 <= v < n && has_nontrivial_cycle_at(edges, n, v);
+        let mid = choose|mid: int| has_edge_spec(edges, v, mid)
+            && has_path_fuel(edges, mid, v, n as nat);
+        topo_edge_forward_member(edges, n, order, v, mid);
+        if mid == v {
+            assert(crate::topo_sort::position_of_spec(order, v)
+                < crate::topo_sort::position_of_spec(order, v));
+        } else {
+            topo_path_strictly_forward(edges, n, order, mid, v, n as nat);
+            assert(crate::topo_sort::position_of_spec(order, v)
+                < crate::topo_sort::position_of_spec(order, mid));
+            assert(crate::topo_sort::position_of_spec(order, mid)
+                < crate::topo_sort::position_of_spec(order, v));
+        }
     }
 }
 
