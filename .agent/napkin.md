@@ -46,6 +46,12 @@
 - Spill bridging is tractable with explicit two-byte digit formulas. `spill_digit_formula_j4`..`j7`
   verify cleanly and are enough to prove current-byte and next-byte spill updates without any generic
   `Seq`-indexed wrapper.
+- The last-byte spill case needs its own tiny bridge family (`last_spill_digit_formula_j4`..`j7` and
+  `current_byte_update_last_spill`) because the two-byte spill lemmas require a real next byte, but the
+  final chunk only sees zero padding.
+- The full roundtrip proof now works: prove `reconstruct_prefix_masked`, then combine it with
+  `prefix_masked_full`, `reconstruct_full_len`, and a tiny `extend_to_same_len` helper to internalize
+  `encode_decode_roundtrip`.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals

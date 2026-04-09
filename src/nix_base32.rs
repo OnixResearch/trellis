@@ -229,11 +229,31 @@ proof fn extend_to_len(acc: Seq<u8>, len: nat)
     ensures extend_to_spec(acc, len).len() == len
 {}
 
+proof fn extend_to_same_len(acc: Seq<u8>)
+    ensures extend_to_spec(acc, acc.len()) == acc
+{}
+
 proof fn or_extend_at_len(acc: Seq<u8>, idx: nat, val: u8)
     ensures or_extend_at_spec(acc, idx, val).len() == if acc.len() <= idx { idx + 1 } else { acc.len() }
 {
     if acc.len() <= idx {
         extend_to_len(acc, idx + 1);
+    }
+}
+
+proof fn or_extend_at_within_len(acc: Seq<u8>, len: nat, idx: nat, val: u8)
+    requires
+        acc.len() <= len,
+        idx < len,
+    ensures
+        or_extend_at_spec(acc, idx, val).len() <= len,
+{
+    or_extend_at_len(acc, idx, val);
+    if acc.len() <= idx {
+        assert(or_extend_at_spec(acc, idx, val).len() == idx + 1);
+        assert(idx + 1 <= len);
+    } else {
+        assert(or_extend_at_spec(acc, idx, val).len() == acc.len());
     }
 }
 
@@ -602,6 +622,87 @@ proof fn extend_to_index(acc: Seq<u8>, len: nat, idx: nat)
         idx < acc.len() ==> extend_to_spec(acc, len)[idx as int] == acc[idx as int],
         acc.len() <= idx ==> extend_to_spec(acc, len)[idx as int] == 0u8,
 {}
+
+proof fn or_extend_at_full_other(acc: Seq<u8>, len: nat, idx: nat, val: u8, k: nat)
+    requires
+        acc.len() <= len,
+        idx < len,
+        k < len,
+        k != idx,
+    ensures
+        extend_to_spec(or_extend_at_spec(acc, idx, val), len)[k as int]
+            == extend_to_spec(acc, len)[k as int],
+{
+    or_extend_at_len(acc, idx, val);
+    if acc.len() <= idx {
+        assert(or_extend_at_spec(acc, idx, val)
+            == extend_to_spec(acc, idx + 1).update(
+                idx as int,
+                (((extend_to_spec(acc, idx + 1)[idx as int] as u64) | (val as u64)) as u8),
+            ));
+        if k < idx {
+            extend_to_index(or_extend_at_spec(acc, idx, val), len, k);
+            extend_to_index(acc, len, k);
+            extend_to_index(acc, idx + 1, k);
+            assert(or_extend_at_spec(acc, idx, val)[k as int] == extend_to_spec(acc, idx + 1)[k as int]);
+            if k < acc.len() {
+                assert(extend_to_spec(acc, len)[k as int] == acc[k as int]);
+                assert(extend_to_spec(acc, idx + 1)[k as int] == acc[k as int]);
+            } else {
+                assert(extend_to_spec(acc, len)[k as int] == 0u8);
+                assert(extend_to_spec(acc, idx + 1)[k as int] == 0u8);
+            }
+        } else {
+            assert(idx < k) by(nonlinear_arith)
+                requires k != idx, !(k < idx);
+            extend_to_index(or_extend_at_spec(acc, idx, val), len, k);
+            extend_to_index(acc, len, k);
+            assert(acc.len() <= k) by(nonlinear_arith)
+                requires acc.len() <= idx, idx < k;
+        }
+    } else {
+        assert(or_extend_at_spec(acc, idx, val)
+            == acc.update(idx as int, (((acc[idx as int] as u64) | (val as u64)) as u8)));
+        if k < acc.len() {
+            extend_to_index(or_extend_at_spec(acc, idx, val), len, k);
+            extend_to_index(acc, len, k);
+            assert(or_extend_at_spec(acc, idx, val)[k as int] == acc[k as int]);
+        } else {
+            extend_to_index(or_extend_at_spec(acc, idx, val), len, k);
+            extend_to_index(acc, len, k);
+        }
+    }
+}
+
+proof fn or_extend_at_full_index(acc: Seq<u8>, len: nat, idx: nat, val: u8)
+    requires
+        acc.len() <= len,
+        idx < len,
+    ensures
+        extend_to_spec(or_extend_at_spec(acc, idx, val), len)[idx as int]
+            == (((extend_to_spec(acc, len)[idx as int] as u64) | (val as u64)) as u8),
+{
+    or_extend_at_len(acc, idx, val);
+    if acc.len() <= idx {
+        assert(or_extend_at_spec(acc, idx, val)
+            == extend_to_spec(acc, idx + 1).update(
+                idx as int,
+                (((extend_to_spec(acc, idx + 1)[idx as int] as u64) | (val as u64)) as u8),
+            ));
+        extend_to_index(or_extend_at_spec(acc, idx, val), len, idx);
+        extend_to_index(acc, len, idx);
+        extend_to_index(acc, idx + 1, idx);
+        assert(or_extend_at_spec(acc, idx, val)[idx as int]
+            == (((extend_to_spec(acc, idx + 1)[idx as int] as u64) | (val as u64)) as u8));
+    } else {
+        assert(or_extend_at_spec(acc, idx, val)
+            == acc.update(idx as int, (((acc[idx as int] as u64) | (val as u64)) as u8)));
+        extend_to_index(or_extend_at_spec(acc, idx, val), len, idx);
+        extend_to_index(acc, len, idx);
+        assert(or_extend_at_spec(acc, idx, val)[idx as int]
+            == (((acc[idx as int] as u64) | (val as u64)) as u8));
+    }
+}
 
 proof fn prefix_masked_zero(bytes: Seq<u8>)
     ensures prefix_masked_bytes_spec(bytes, 0) == zero_bytes_spec(bytes.len())
@@ -1064,6 +1165,372 @@ proof fn spill_digit_formula_j7(bytes: Seq<u8>, n: nat)
             b4 == ((((c as u64) >> 3u64) & 1u64) as u8);
 }
 
+proof fn last_spill_digit_formula_j4(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        (n * 5) % 8 == 4,
+        ((n * 5) / 8) + 1 == bytes.len(),
+    ensures
+        digit_from_bit_spec(bytes, n * 5)
+            == ((((bytes[((n * 5) / 8) as int] as u64) >> 4u64) & 15u64) as u8)
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let b = bytes[i as int];
+    let d = digit_from_bit_spec(bytes, bit);
+    chunk_start_in_bounds(bytes.len(), n);
+    div_mod_decompose_8(bit);
+    assert(bit == 8 * i + 4) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            bit % 8 == 4;
+    assert(bit_at_padded_spec(bytes, bit) == ((((b as u64) >> 4u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 1) == ((((b as u64) >> 5u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 2) == ((((b as u64) >> 6u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 3) == ((((b as u64) >> 7u64) & 1u64) as u8));
+    assert(bit + 4 == bytes.len() * 8) by(nonlinear_arith)
+        requires bit == 8 * i + 4, i + 1 == bytes.len();
+    bit_at_padded_zero_beyond_end(bytes, bit + 4);
+    let b0 = bit_at_padded_spec(bytes, bit);
+    let b1 = bit_at_padded_spec(bytes, bit + 1);
+    let b2 = bit_at_padded_spec(bytes, bit + 2);
+    let b3 = bit_at_padded_spec(bytes, bit + 3);
+    let b4 = bit_at_padded_spec(bytes, bit + 4);
+    assert(b4 == 0u8);
+    assert(d == ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8);
+    assert(d == ((((b as u64) >> 4u64) & 15u64) as u8)) by(bit_vector)
+        requires
+            d == ((b0 as u64)
+                | ((b1 as u64) << 1u64)
+                | ((b2 as u64) << 2u64)
+                | ((b3 as u64) << 3u64)
+                | ((b4 as u64) << 4u64)) as u8,
+            b0 == ((((b as u64) >> 4u64) & 1u64) as u8),
+            b1 == ((((b as u64) >> 5u64) & 1u64) as u8),
+            b2 == ((((b as u64) >> 6u64) & 1u64) as u8),
+            b3 == ((((b as u64) >> 7u64) & 1u64) as u8),
+            b4 == 0u8;
+}
+
+proof fn last_spill_digit_formula_j5(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        (n * 5) % 8 == 5,
+        ((n * 5) / 8) + 1 == bytes.len(),
+    ensures
+        digit_from_bit_spec(bytes, n * 5)
+            == ((((bytes[((n * 5) / 8) as int] as u64) >> 5u64) & 7u64) as u8)
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let b = bytes[i as int];
+    let d = digit_from_bit_spec(bytes, bit);
+    chunk_start_in_bounds(bytes.len(), n);
+    div_mod_decompose_8(bit);
+    assert(bit == 8 * i + 5) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            bit % 8 == 5;
+    assert(bit_at_padded_spec(bytes, bit) == ((((b as u64) >> 5u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 1) == ((((b as u64) >> 6u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 2) == ((((b as u64) >> 7u64) & 1u64) as u8));
+    assert(bit + 3 == bytes.len() * 8) by(nonlinear_arith)
+        requires bit == 8 * i + 5, i + 1 == bytes.len();
+    bit_at_padded_zero_beyond_end(bytes, bit + 3);
+    bit_at_padded_zero_beyond_end(bytes, bit + 4);
+    let b0 = bit_at_padded_spec(bytes, bit);
+    let b1 = bit_at_padded_spec(bytes, bit + 1);
+    let b2 = bit_at_padded_spec(bytes, bit + 2);
+    let b3 = bit_at_padded_spec(bytes, bit + 3);
+    let b4 = bit_at_padded_spec(bytes, bit + 4);
+    assert(b3 == 0u8);
+    assert(b4 == 0u8);
+    assert(d == ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8);
+    assert(d == ((((b as u64) >> 5u64) & 7u64) as u8)) by(bit_vector)
+        requires
+            d == ((b0 as u64)
+                | ((b1 as u64) << 1u64)
+                | ((b2 as u64) << 2u64)
+                | ((b3 as u64) << 3u64)
+                | ((b4 as u64) << 4u64)) as u8,
+            b0 == ((((b as u64) >> 5u64) & 1u64) as u8),
+            b1 == ((((b as u64) >> 6u64) & 1u64) as u8),
+            b2 == ((((b as u64) >> 7u64) & 1u64) as u8),
+            b3 == 0u8,
+            b4 == 0u8;
+}
+
+proof fn last_spill_digit_formula_j6(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        (n * 5) % 8 == 6,
+        ((n * 5) / 8) + 1 == bytes.len(),
+    ensures
+        digit_from_bit_spec(bytes, n * 5)
+            == ((((bytes[((n * 5) / 8) as int] as u64) >> 6u64) & 3u64) as u8)
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let b = bytes[i as int];
+    let d = digit_from_bit_spec(bytes, bit);
+    chunk_start_in_bounds(bytes.len(), n);
+    div_mod_decompose_8(bit);
+    assert(bit == 8 * i + 6) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            bit % 8 == 6;
+    assert(bit_at_padded_spec(bytes, bit) == ((((b as u64) >> 6u64) & 1u64) as u8));
+    assert(bit_at_padded_spec(bytes, bit + 1) == ((((b as u64) >> 7u64) & 1u64) as u8));
+    assert(bit + 2 == bytes.len() * 8) by(nonlinear_arith)
+        requires bit == 8 * i + 6, i + 1 == bytes.len();
+    bit_at_padded_zero_beyond_end(bytes, bit + 2);
+    bit_at_padded_zero_beyond_end(bytes, bit + 3);
+    bit_at_padded_zero_beyond_end(bytes, bit + 4);
+    let b0 = bit_at_padded_spec(bytes, bit);
+    let b1 = bit_at_padded_spec(bytes, bit + 1);
+    let b2 = bit_at_padded_spec(bytes, bit + 2);
+    let b3 = bit_at_padded_spec(bytes, bit + 3);
+    let b4 = bit_at_padded_spec(bytes, bit + 4);
+    assert(b2 == 0u8);
+    assert(b3 == 0u8);
+    assert(b4 == 0u8);
+    assert(d == ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8);
+    assert(d == ((((b as u64) >> 6u64) & 3u64) as u8)) by(bit_vector)
+        requires
+            d == ((b0 as u64)
+                | ((b1 as u64) << 1u64)
+                | ((b2 as u64) << 2u64)
+                | ((b3 as u64) << 3u64)
+                | ((b4 as u64) << 4u64)) as u8,
+            b0 == ((((b as u64) >> 6u64) & 1u64) as u8),
+            b1 == ((((b as u64) >> 7u64) & 1u64) as u8),
+            b2 == 0u8,
+            b3 == 0u8,
+            b4 == 0u8;
+}
+
+proof fn last_spill_digit_formula_j7(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        (n * 5) % 8 == 7,
+        ((n * 5) / 8) + 1 == bytes.len(),
+    ensures
+        digit_from_bit_spec(bytes, n * 5)
+            == ((((bytes[((n * 5) / 8) as int] as u64) >> 7u64) & 1u64) as u8)
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let b = bytes[i as int];
+    let d = digit_from_bit_spec(bytes, bit);
+    chunk_start_in_bounds(bytes.len(), n);
+    div_mod_decompose_8(bit);
+    assert(bit == 8 * i + 7) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            bit % 8 == 7;
+    assert(bit_at_padded_spec(bytes, bit) == ((((b as u64) >> 7u64) & 1u64) as u8));
+    assert(bit + 1 == bytes.len() * 8) by(nonlinear_arith)
+        requires bit == 8 * i + 7, i + 1 == bytes.len();
+    bit_at_padded_zero_beyond_end(bytes, bit + 1);
+    bit_at_padded_zero_beyond_end(bytes, bit + 2);
+    bit_at_padded_zero_beyond_end(bytes, bit + 3);
+    bit_at_padded_zero_beyond_end(bytes, bit + 4);
+    let b0 = bit_at_padded_spec(bytes, bit);
+    let b1 = bit_at_padded_spec(bytes, bit + 1);
+    let b2 = bit_at_padded_spec(bytes, bit + 2);
+    let b3 = bit_at_padded_spec(bytes, bit + 3);
+    let b4 = bit_at_padded_spec(bytes, bit + 4);
+    assert(b1 == 0u8);
+    assert(b2 == 0u8);
+    assert(b3 == 0u8);
+    assert(b4 == 0u8);
+    assert(d == ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8);
+    assert(d == ((((b as u64) >> 7u64) & 1u64) as u8)) by(bit_vector)
+        requires
+            d == ((b0 as u64)
+                | ((b1 as u64) << 1u64)
+                | ((b2 as u64) << 2u64)
+                | ((b3 as u64) << 3u64)
+                | ((b4 as u64) << 4u64)) as u8,
+            b0 == ((((b as u64) >> 7u64) & 1u64) as u8),
+            b1 == 0u8,
+            b2 == 0u8,
+            b3 == 0u8,
+            b4 == 0u8;
+}
+
+proof fn current_byte_update_last_spill(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        4 <= (n * 5) % 8 <= 7,
+        ((n * 5) / 8) + 1 == bytes.len(),
+    ensures
+        (((prefix_masked_byte_spec(bytes, n, (n * 5) / 8) as u64)
+            | (decode_low_spec(n * 5, digit_from_bit_spec(bytes, n * 5)) as u64)) as u8)
+            == prefix_masked_byte_spec(bytes, n + 1, (n * 5) / 8)
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let j = bit % 8;
+    let start = i * 8;
+    let b = bytes[i as int];
+    let d = digit_from_bit_spec(bytes, bit);
+    div_mod_decompose_8(bit);
+    assert(bit == start + j) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            j == bit % 8,
+            start == i * 8;
+    if j == 4 {
+        last_spill_digit_formula_j4(bytes, n);
+        assert(bit == start + 4) by(nonlinear_arith)
+            requires bit == start + j, j == 4;
+        assert(written_bits_in_byte_spec(n, i) == 4) by {
+            assert(n * 5 == start + 4) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 4;
+        }
+        assert((n + 1) * 5 == start + 9) by(nonlinear_arith)
+            requires bit == n * 5, bit == start + 4;
+        assert(written_bits_in_byte_spec(n + 1, i) == 8) by {
+            assert((n + 1) * 5 == start + 9) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 4;
+        }
+        let before = prefix_masked_byte_spec(bytes, n, i);
+        let after = prefix_masked_byte_spec(bytes, n + 1, i);
+        let low = decode_low_spec(bit, d);
+        assert(low_mask_spec(written_bits_in_byte_spec(n, i)) == 15u8);
+        assert(low_mask_spec(written_bits_in_byte_spec(n + 1, i)) == 255u8);
+        assert(before == (((b as u64) & 15u64) as u8));
+        assert(after == (((b as u64) & 255u64) as u8));
+        assert((((b as u64) & 255u64) as u8) == b) by(bit_vector);
+        assert(after == b);
+        assert(low == ((((d as u64) << 4u64) & 255u64) as u8));
+        assert((((before as u64) | (low as u64)) as u8) == after) by(bit_vector)
+            requires
+                before == (((b as u64) & 15u64) as u8),
+                after == b,
+                low == ((((d as u64) << 4u64) & 255u64) as u8),
+                d == ((((b as u64) >> 4u64) & 15u64) as u8);
+    } else if j == 5 {
+        last_spill_digit_formula_j5(bytes, n);
+        assert(bit == start + 5) by(nonlinear_arith)
+            requires bit == start + j, j == 5;
+        assert(written_bits_in_byte_spec(n, i) == 5) by {
+            assert(n * 5 == start + 5) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 5;
+        }
+        assert((n + 1) * 5 == start + 10) by(nonlinear_arith)
+            requires bit == n * 5, bit == start + 5;
+        assert(written_bits_in_byte_spec(n + 1, i) == 8) by {
+            assert((n + 1) * 5 == start + 10) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 5;
+        }
+        let before = prefix_masked_byte_spec(bytes, n, i);
+        let after = prefix_masked_byte_spec(bytes, n + 1, i);
+        let low = decode_low_spec(bit, d);
+        assert(low_mask_spec(written_bits_in_byte_spec(n, i)) == 31u8);
+        assert(low_mask_spec(written_bits_in_byte_spec(n + 1, i)) == 255u8);
+        assert(before == (((b as u64) & 31u64) as u8));
+        assert(after == (((b as u64) & 255u64) as u8));
+        assert((((b as u64) & 255u64) as u8) == b) by(bit_vector);
+        assert(after == b);
+        assert(low == ((((d as u64) << 5u64) & 255u64) as u8));
+        assert((((before as u64) | (low as u64)) as u8) == after) by(bit_vector)
+            requires
+                before == (((b as u64) & 31u64) as u8),
+                after == b,
+                low == ((((d as u64) << 5u64) & 255u64) as u8),
+                d == ((((b as u64) >> 5u64) & 7u64) as u8);
+    } else if j == 6 {
+        last_spill_digit_formula_j6(bytes, n);
+        assert(bit == start + 6) by(nonlinear_arith)
+            requires bit == start + j, j == 6;
+        assert(written_bits_in_byte_spec(n, i) == 6) by {
+            assert(n * 5 == start + 6) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 6;
+        }
+        assert((n + 1) * 5 == start + 11) by(nonlinear_arith)
+            requires bit == n * 5, bit == start + 6;
+        assert(written_bits_in_byte_spec(n + 1, i) == 8) by {
+            assert((n + 1) * 5 == start + 11) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 6;
+        }
+        let before = prefix_masked_byte_spec(bytes, n, i);
+        let after = prefix_masked_byte_spec(bytes, n + 1, i);
+        let low = decode_low_spec(bit, d);
+        assert(low_mask_spec(written_bits_in_byte_spec(n, i)) == 63u8);
+        assert(low_mask_spec(written_bits_in_byte_spec(n + 1, i)) == 255u8);
+        assert(before == (((b as u64) & 63u64) as u8));
+        assert(after == (((b as u64) & 255u64) as u8));
+        assert((((b as u64) & 255u64) as u8) == b) by(bit_vector);
+        assert(after == b);
+        assert(low == ((((d as u64) << 6u64) & 255u64) as u8));
+        assert((((before as u64) | (low as u64)) as u8) == after) by(bit_vector)
+            requires
+                before == (((b as u64) & 63u64) as u8),
+                after == b,
+                low == ((((d as u64) << 6u64) & 255u64) as u8),
+                d == ((((b as u64) >> 6u64) & 3u64) as u8);
+    } else {
+        assert(j == 7);
+        last_spill_digit_formula_j7(bytes, n);
+        assert(bit == start + 7) by(nonlinear_arith)
+            requires bit == start + j, j == 7;
+        assert(written_bits_in_byte_spec(n, i) == 7) by {
+            assert(n * 5 == start + 7) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 7;
+        }
+        assert((n + 1) * 5 == start + 12) by(nonlinear_arith)
+            requires bit == n * 5, bit == start + 7;
+        assert(written_bits_in_byte_spec(n + 1, i) == 8) by {
+            assert((n + 1) * 5 == start + 12) by(nonlinear_arith)
+                requires bit == n * 5, bit == start + 7;
+        }
+        let before = prefix_masked_byte_spec(bytes, n, i);
+        let after = prefix_masked_byte_spec(bytes, n + 1, i);
+        let low = decode_low_spec(bit, d);
+        assert(low_mask_spec(written_bits_in_byte_spec(n, i)) == 127u8);
+        assert(low_mask_spec(written_bits_in_byte_spec(n + 1, i)) == 255u8);
+        assert(before == (((b as u64) & 127u64) as u8));
+        assert(after == (((b as u64) & 255u64) as u8));
+        assert((((b as u64) & 255u64) as u8) == b) by(bit_vector);
+        assert(after == b);
+        assert(low == ((((d as u64) << 7u64) & 255u64) as u8));
+        assert((((before as u64) | (low as u64)) as u8) == after) by(bit_vector)
+            requires
+                before == (((b as u64) & 127u64) as u8),
+                after == b,
+                low == ((((d as u64) << 7u64) & 255u64) as u8),
+                d == ((((b as u64) >> 7u64) & 1u64) as u8);
+    }
+}
+
 proof fn current_byte_update_no_spill(bytes: Seq<u8>, n: nat)
     requires
         bytes.len() > 0,
@@ -1495,6 +1962,115 @@ proof fn next_byte_update_spill(bytes: Seq<u8>, n: nat)
     }
 }
 
+proof fn next_byte_zero_before_step(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        ((n * 5) / 8) + 1 < bytes.len(),
+    ensures
+        prefix_masked_byte_spec(bytes, n, ((n * 5) / 8) + 1) == 0u8
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let j = bit % 8;
+    let next = i + 1;
+    let start = next * 8;
+    let c = bytes[next as int];
+    div_mod_decompose_8(bit);
+    assert((bit % 8) < 8) by(nonlinear_arith);
+    assert(j <= 7) by(nonlinear_arith)
+        requires j == bit % 8, (bit % 8) < 8;
+    assert(bit == 8 * i + j) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            j == bit % 8;
+    assert(n * 5 < start) by(nonlinear_arith)
+        requires
+            bit == n * 5,
+            bit == 8 * i + j,
+            next == i + 1,
+            start == next * 8,
+            j <= 7;
+    assert(written_bits_in_byte_spec(n, next) == 0);
+    assert(low_mask_spec(written_bits_in_byte_spec(n, next)) == 0u8);
+    assert(prefix_masked_byte_spec(bytes, n, next) == (((c as u64) & 0u64) as u8));
+    assert((((c as u64) & 0u64) as u8) == 0u8) by(bit_vector);
+}
+
+proof fn past_byte_full(bytes: Seq<u8>, n: nat, idx: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        idx < bytes.len(),
+        idx < (n * 5) / 8,
+    ensures
+        prefix_masked_byte_spec(bytes, n, idx) == bytes[idx as int],
+        prefix_masked_byte_spec(bytes, n + 1, idx) == bytes[idx as int],
+{
+    let b = bytes[idx as int];
+    let bit = n * 5;
+    assert((idx + 1) * 8 <= bit) by(nonlinear_arith)
+        requires idx < bit / 8;
+    assert(idx * 8 + 8 <= bit) by(nonlinear_arith)
+        requires (idx + 1) * 8 <= bit;
+    assert(idx * 8 + 8 <= (n + 1) * 5) by(nonlinear_arith)
+        requires idx * 8 + 8 <= bit, bit == n * 5;
+    assert(written_bits_in_byte_spec(n, idx) == 8);
+    assert(written_bits_in_byte_spec(n + 1, idx) == 8);
+    assert(low_mask_spec(written_bits_in_byte_spec(n, idx)) == 255u8);
+    assert(low_mask_spec(written_bits_in_byte_spec(n + 1, idx)) == 255u8);
+    assert(prefix_masked_byte_spec(bytes, n, idx) == (((b as u64) & 255u64) as u8));
+    assert(prefix_masked_byte_spec(bytes, n + 1, idx) == (((b as u64) & 255u64) as u8));
+    assert((((b as u64) & 255u64) as u8) == b) by(bit_vector);
+}
+
+proof fn future_byte_zero(bytes: Seq<u8>, n: nat, idx: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        idx < bytes.len(),
+        idx >= ((n * 5) / 8) + 2,
+    ensures
+        prefix_masked_byte_spec(bytes, n, idx) == 0u8,
+        prefix_masked_byte_spec(bytes, n + 1, idx) == 0u8,
+{
+    let bit = n * 5;
+    let i = bit / 8;
+    let j = bit % 8;
+    let start = idx * 8;
+    let b = bytes[idx as int];
+    div_mod_decompose_8(bit);
+    assert((bit % 8) < 8) by(nonlinear_arith);
+    assert(j <= 7) by(nonlinear_arith)
+        requires j == bit % 8, (bit % 8) < 8;
+    assert(bit == 8 * i + j) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + (bit % 8),
+            i == bit / 8,
+            j == bit % 8;
+    assert(bit < start) by(nonlinear_arith)
+        requires
+            bit == 8 * i + j,
+            idx >= i + 2,
+            j <= 7,
+            start == idx * 8;
+    assert((n + 1) * 5 < start) by(nonlinear_arith)
+        requires
+            bit == n * 5,
+            bit == 8 * i + j,
+            idx >= i + 2,
+            j <= 7,
+            start == idx * 8;
+    assert(written_bits_in_byte_spec(n, idx) == 0);
+    assert(written_bits_in_byte_spec(n + 1, idx) == 0);
+    assert(low_mask_spec(written_bits_in_byte_spec(n, idx)) == 0u8);
+    assert(low_mask_spec(written_bits_in_byte_spec(n + 1, idx)) == 0u8);
+    assert(prefix_masked_byte_spec(bytes, n, idx) == (((b as u64) & 0u64) as u8));
+    assert(prefix_masked_byte_spec(bytes, n + 1, idx) == (((b as u64) & 0u64) as u8));
+    assert((((b as u64) & 0u64) as u8) == 0u8) by(bit_vector);
+}
+
 proof fn next_byte_zero_when_no_spill(bytes: Seq<u8>, n: nat)
     requires
         bytes.len() > 0,
@@ -1529,14 +2105,191 @@ proof fn next_byte_zero_when_no_spill(bytes: Seq<u8>, n: nat)
     assert((((c as u64) & 0u64) as u8) == 0u8) by(bit_vector);
 }
 
+proof fn reconstruct_prefix_masked(bytes: Seq<u8>, upto: nat)
+    requires
+        upto <= encoded_length_spec(bytes.len()),
+    ensures
+        extend_to_spec(reconstruct_prefix_spec(bytes, upto), bytes.len()) == prefix_masked_bytes_spec(bytes, upto),
+    decreases upto
+{
+    if upto == 0 {
+        prefix_masked_zero(bytes);
+        assert(reconstruct_prefix_spec(bytes, 0) == Seq::<u8>::empty());
+        assert(extend_to_spec(reconstruct_prefix_spec(bytes, 0), bytes.len()) == zero_bytes_spec(bytes.len()));
+        assert(zero_bytes_spec(bytes.len()) == prefix_masked_bytes_spec(bytes, 0));
+    } else {
+        let n = (upto - 1) as nat;
+        let bit = n * 5;
+        let i = bit / 8;
+        let j = bit % 8;
+        let d = digit_from_bit_spec(bytes, bit);
+        let low = decode_low_spec(bit, d);
+        let high = decode_high_spec(bit, d);
+        let acc = reconstruct_prefix_spec(bytes, n);
+        let acc1 = or_extend_at_spec(acc, i, low);
+        let result = reconstruct_prefix_spec(bytes, upto);
+        reconstruct_prefix_masked(bytes, n);
+        chunk_start_in_bounds(bytes.len(), n);
+        reconstruct_prefix_len_upper(bytes, n);
+        reconstruct_prefix_len_upper(bytes, upto);
+        or_extend_at_within_len(acc, bytes.len(), i, low);
+        assert(result == decode_step_spec(acc, n, d));
+        assert(result == if high == 0u8 { acc1 } else { or_extend_at_spec(acc1, i + 1, high) });
+        assert forall|k: int| 0 <= k < bytes.len() implies #[trigger] extend_to_spec(result, bytes.len())[k] == prefix_masked_bytes_spec(bytes, upto)[k] by {
+            let idx = k as nat;
+            let prev = extend_to_spec(acc, bytes.len())[k];
+            let cur = extend_to_spec(acc1, bytes.len())[k];
+            let lhs = extend_to_spec(result, bytes.len())[k];
+            let masked_n = prefix_masked_byte_spec(bytes, n, idx);
+            let masked_u = prefix_masked_byte_spec(bytes, upto, idx);
+            assert(prev == prefix_masked_bytes_spec(bytes, n)[k]);
+            assert(prefix_masked_bytes_spec(bytes, n)[k] == masked_n);
+            assert(prefix_masked_bytes_spec(bytes, upto)[k] == masked_u);
+            if idx < i {
+                past_byte_full(bytes, n, idx);
+                or_extend_at_full_other(acc, bytes.len(), i, low, idx);
+                assert(cur == prev);
+                if j <= 3 {
+                    digit_from_bit_bounded(bytes, bit);
+                    decode_high_zero_when_no_spill(bit, d);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else if i + 1 == bytes.len() {
+                    last_chunk_spill_zero(bytes, n);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else if high == 0u8 {
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else {
+                    or_extend_at_within_len(acc1, bytes.len(), i + 1, high);
+                    or_extend_at_full_other(acc1, bytes.len(), i + 1, high, idx);
+                    assert(result == or_extend_at_spec(acc1, i + 1, high));
+                    assert(lhs == cur);
+                }
+                assert(masked_n == masked_u);
+                assert(lhs == prefix_masked_bytes_spec(bytes, upto)[k]);
+            } else if idx == i {
+                or_extend_at_full_index(acc, bytes.len(), i, low);
+                if j <= 3 {
+                    digit_from_bit_bounded(bytes, bit);
+                    decode_high_zero_when_no_spill(bit, d);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                    current_byte_update_no_spill(bytes, n);
+                } else if i + 1 == bytes.len() {
+                    last_chunk_spill_zero(bytes, n);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                    current_byte_update_last_spill(bytes, n);
+                } else {
+                    if high == 0u8 {
+                        assert(result == acc1);
+                        assert(lhs == cur);
+                    } else {
+                        or_extend_at_within_len(acc1, bytes.len(), i + 1, high);
+                        or_extend_at_full_other(acc1, bytes.len(), i + 1, high, i);
+                        assert(result == or_extend_at_spec(acc1, i + 1, high));
+                        assert(lhs == cur);
+                    }
+                    current_byte_update_spill(bytes, n);
+                }
+                assert(lhs == prefix_masked_bytes_spec(bytes, upto)[k]);
+            } else if idx == i + 1 {
+                assert(i + 1 < bytes.len());
+                next_byte_zero_before_step(bytes, n);
+                or_extend_at_full_other(acc, bytes.len(), i, low, idx);
+                assert(cur == prev);
+                assert(masked_n == 0u8);
+                if j <= 3 {
+                    digit_from_bit_bounded(bytes, bit);
+                    decode_high_zero_when_no_spill(bit, d);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                    next_byte_zero_when_no_spill(bytes, n);
+                    assert(masked_u == 0u8);
+                    assert(lhs == prefix_masked_bytes_spec(bytes, upto)[k]);
+                } else {
+                    next_byte_update_spill(bytes, n);
+                    if high == 0u8 {
+                        assert(result == acc1);
+                        assert(lhs == cur);
+                        assert(masked_u == (((masked_n as u64) | (high as u64)) as u8));
+                        assert(masked_u == 0u8) by(bit_vector)
+                            requires masked_n == 0u8, high == 0u8, masked_u == (((masked_n as u64) | (high as u64)) as u8);
+                    } else {
+                        or_extend_at_within_len(acc1, bytes.len(), i + 1, high);
+                        or_extend_at_full_index(acc1, bytes.len(), i + 1, high);
+                        assert(result == or_extend_at_spec(acc1, i + 1, high));
+                        assert(lhs == (((cur as u64) | (high as u64)) as u8));
+                    }
+                    assert(lhs == prefix_masked_bytes_spec(bytes, upto)[k]);
+                }
+            } else {
+                assert(idx > i + 1) by(nonlinear_arith)
+                    requires !(idx < i), idx != i, idx != i + 1;
+                future_byte_zero(bytes, n, idx);
+                or_extend_at_full_other(acc, bytes.len(), i, low, idx);
+                assert(cur == prev);
+                assert(masked_n == 0u8);
+                if j <= 3 {
+                    digit_from_bit_bounded(bytes, bit);
+                    decode_high_zero_when_no_spill(bit, d);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else if i + 1 == bytes.len() {
+                    last_chunk_spill_zero(bytes, n);
+                    assert(high == 0u8);
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else if high == 0u8 {
+                    assert(result == acc1);
+                    assert(lhs == cur);
+                } else {
+                    or_extend_at_within_len(acc1, bytes.len(), i + 1, high);
+                    or_extend_at_full_other(acc1, bytes.len(), i + 1, high, idx);
+                    assert(result == or_extend_at_spec(acc1, i + 1, high));
+                    assert(lhs == cur);
+                }
+                assert(masked_u == 0u8);
+                assert(lhs == prefix_masked_bytes_spec(bytes, upto)[k]);
+            }
+        }
+        extend_to_len(result, bytes.len());
+        assert(prefix_masked_bytes_spec(bytes, upto).len() == bytes.len());
+        assert(extend_to_spec(result, bytes.len()).len() == bytes.len());
+        assert(extend_to_spec(result, bytes.len()) == prefix_masked_bytes_spec(bytes, upto));
+    }
+}
+
 
 // r[verify nix-base32.bijectivity]
 /// Canonical round-trip: decode(encode(bytes)) returns the original bytes.
-/// @verified-logic:closeable-boundary — base32 bit-level roundtrip proof not yet internalized
-#[verifier::external_body]
 pub proof fn encode_decode_roundtrip(bytes: Seq<u8>)
     ensures decode_spec(encode_spec(bytes)) == Some(bytes)
-{}
+{
+    let out_len = encoded_length_spec(bytes.len());
+    let rec = reconstruct_prefix_spec(bytes, out_len);
+    encode_output_length(bytes);
+    decode_prefix_of_encode(bytes, out_len);
+    reconstruct_prefix_masked(bytes, out_len);
+    reconstruct_full_len(bytes);
+    prefix_masked_full(bytes);
+    assert(decode_spec(encode_spec(bytes)) == decode_prefix_spec(encode_spec(bytes), out_len));
+    assert(extend_to_spec(rec, bytes.len()) == prefix_masked_bytes_spec(bytes, out_len));
+    assert(prefix_masked_bytes_spec(bytes, out_len) == bytes);
+    assert(rec.len() == bytes.len());
+    extend_to_same_len(rec);
+    assert(extend_to_spec(rec, bytes.len()) == extend_to_spec(rec, rec.len()));
+    assert(extend_to_spec(rec, bytes.len()) == rec);
+    assert(rec == bytes);
+}
 
 // r[verify nix-base32.bijectivity]
 /// Encode is injective by the decode-after-encode round-trip.
