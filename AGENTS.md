@@ -11,6 +11,9 @@
 - `README.md`'s proof/trust counts were refreshed during the remediation. The current code has 36 `#[verifier::external_body]` items across 13 modules.
 - `tracey query status` can still print a transient daemon auto-start warning inside `./scripts/verify.sh`; capture the full rerun output before claiming green, because the later uncovered/untested checks may still succeed and the script can still end with `=== ALL CHECKS PASSED ===`.
 - Raw proof-audit rerun transcripts are archived at `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/`; use an explicit shell command for absence checks (`if [ -d ... ]; then echo ...; fi`) instead of `test -d` when the evidence must show stdout.
+- Nix Base32 gotcha for `openspec/changes/nix-derivation-primitives`: upstream `BaseNix32::decode` accepts non-canonical alphabet strings, so `decode(encode(x)) == x` is valid but `encode(decode(y)) == y` only holds for canonical encodings (`"0" -> [0x00] -> "00"`, `"z" -> [0x1f] -> "0z"`).
+- The in-progress `src/nix_base32.rs` worktree adds 3 closeable `#[verifier::external_body]` items (encode/decode exec wrappers plus the roundtrip proof), so the trusted-inventory counts in `AGENTS.md`/README are stale until that change is fully reconciled.
+- Base32 proof scaffolding that already verifies: `reconstruct_prefix_spec`, `decode_prefix_of_encode`, and `bit_at_padded_bounded`. For `by(bit_vector)` lemmas over shifted bytes, bind the shift count to a `u64` local first; inline `(pos % 8) as u64` can trigger `IntRange` failures.
 
 ## Proof audit hotspots
 - Trusted boundaries are not limited to `external_body`: there are also `assume(...)` soundness oracles in `src/topo_sort.rs` and `src/reachability.rs`, plus 5 `@verified-logic:no-ensures` / placeholder-spec surfaces (`index_select.rs`, `nix_closure.rs`, `settlement.rs`, `segregated_free.rs`, `cycle_detect.rs`).

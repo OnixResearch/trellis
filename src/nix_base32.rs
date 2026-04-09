@@ -1,0 +1,463 @@
+//! Verified Nix Base32 encoding.
+//!
+//! Matches upstream `BaseNix32`: bits are grouped in 5-bit chunks starting at
+//! the low bits of the first byte, and output characters are emitted from the
+//! highest 5-bit chunk down to the lowest.
+//!
+//! Important: upstream decode accepts non-canonical strings like `"0"` and
+//! `"z"`; canonical round-trips are guaranteed for `encode(bytes)` outputs.
+
+#![allow(clippy::ptr_arg)]
+
+use vstd::prelude::*;
+
+verus! {
+
+pub closed spec fn alphabet_spec() -> Seq<u8> {
+    seq![
+        48u8, 49u8, 50u8, 51u8, 52u8, 53u8, 54u8, 55u8,
+        56u8, 57u8, 97u8, 98u8, 99u8, 100u8, 102u8, 103u8,
+        104u8, 105u8, 106u8, 107u8, 108u8, 109u8, 110u8, 112u8,
+        113u8, 114u8, 115u8, 118u8, 119u8, 120u8, 121u8, 122u8,
+    ]
+}
+
+// r[depends nix-base32.output-length]
+/// Spec: encoded length in characters.
+pub open spec fn encoded_length_spec(input_len: nat) -> nat {
+    (input_len * 8 + 4) / 5
+}
+
+pub closed spec fn bit_at_padded_spec(bytes: Seq<u8>, pos: nat) -> u8 {
+    if pos < bytes.len() * 8 {
+        ((((bytes[(pos / 8) as int] as u64) >> ((pos % 8) as u64)) & 1u64) as u8)
+    } else {
+        0u8
+    }
+}
+
+pub closed spec fn digit_from_bit_spec(bytes: Seq<u8>, start: nat) -> u8 {
+    ((bit_at_padded_spec(bytes, start) as u64)
+        | ((bit_at_padded_spec(bytes, start + 1) as u64) << 1u64)
+        | ((bit_at_padded_spec(bytes, start + 2) as u64) << 2u64)
+        | ((bit_at_padded_spec(bytes, start + 3) as u64) << 3u64)
+        | ((bit_at_padded_spec(bytes, start + 4) as u64) << 4u64)) as u8
+}
+
+pub closed spec fn encode_char_spec(bytes: Seq<u8>, out_len: nat, idx: nat) -> u8
+    recommends idx < out_len
+{
+    alphabet_spec()[digit_from_bit_spec(bytes, ((out_len - 1 - idx) * 5) as nat) as int]
+}
+
+pub closed spec fn encode_prefix_spec(bytes: Seq<u8>, out_len: nat, upto: nat) -> Seq<u8>
+    recommends upto <= out_len
+{
+    Seq::new(upto, |i: int| encode_char_spec(bytes, out_len, i as nat))
+}
+
+// decode_char_spec cases
+pub closed spec fn decode_char_spec(c: u8) -> Option<u8> {
+    if c == 48u8 { Some(0u8) }
+    else if c == 49u8 { Some(1u8) }
+    else if c == 50u8 { Some(2u8) }
+    else if c == 51u8 { Some(3u8) }
+    else if c == 52u8 { Some(4u8) }
+    else if c == 53u8 { Some(5u8) }
+    else if c == 54u8 { Some(6u8) }
+    else if c == 55u8 { Some(7u8) }
+    else if c == 56u8 { Some(8u8) }
+    else if c == 57u8 { Some(9u8) }
+    else if c == 97u8 { Some(10u8) }
+    else if c == 98u8 { Some(11u8) }
+    else if c == 99u8 { Some(12u8) }
+    else if c == 100u8 { Some(13u8) }
+    else if c == 102u8 { Some(14u8) }
+    else if c == 103u8 { Some(15u8) }
+    else if c == 104u8 { Some(16u8) }
+    else if c == 105u8 { Some(17u8) }
+    else if c == 106u8 { Some(18u8) }
+    else if c == 107u8 { Some(19u8) }
+    else if c == 108u8 { Some(20u8) }
+    else if c == 109u8 { Some(21u8) }
+    else if c == 110u8 { Some(22u8) }
+    else if c == 112u8 { Some(23u8) }
+    else if c == 113u8 { Some(24u8) }
+    else if c == 114u8 { Some(25u8) }
+    else if c == 115u8 { Some(26u8) }
+    else if c == 118u8 { Some(27u8) }
+    else if c == 119u8 { Some(28u8) }
+    else if c == 120u8 { Some(29u8) }
+    else if c == 121u8 { Some(30u8) }
+    else if c == 122u8 { Some(31u8) }
+    else { None }
+}
+
+pub closed spec fn zero_bytes_spec(n: nat) -> Seq<u8> {
+    Seq::new(n, |i: int| 0u8)
+}
+
+pub closed spec fn extend_to_spec(acc: Seq<u8>, len: nat) -> Seq<u8>
+    recommends acc.len() <= len
+{
+    acc + zero_bytes_spec((len - acc.len()) as nat)
+}
+
+pub closed spec fn or_extend_at_spec(acc: Seq<u8>, idx: nat, val: u8) -> Seq<u8> {
+    let base = if acc.len() <= idx {
+        extend_to_spec(acc, idx + 1)
+    } else {
+        acc
+    };
+    base.update(idx as int, (((base[idx as int] as u64) | (val as u64)) as u8))
+}
+
+pub closed spec fn decode_step_spec(acc: Seq<u8>, n: nat, digit: u8) -> Seq<u8> {
+    let bit = n * 5;
+    let i = bit / 8;
+    let j = bit % 8;
+    let low = (((digit as u64) << (j as u64)) & 0xffu64) as u8;
+    let acc1 = or_extend_at_spec(acc, i, low);
+    let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
+    if high == 0u8 {
+        acc1
+    } else {
+        or_extend_at_spec(acc1, i + 1, high)
+    }
+}
+
+pub closed spec fn decode_prefix_spec(chars: Seq<u8>, upto: nat) -> Option<Seq<u8>>
+    recommends upto <= chars.len()
+    decreases upto
+{
+    if upto == 0 {
+        Some(Seq::<u8>::empty())
+    } else {
+        match decode_prefix_spec(chars, (upto - 1) as nat) {
+            None => None,
+            Some(acc) => {
+                let c = chars[(chars.len() - upto) as int];
+                match decode_char_spec(c) {
+                    None => None,
+                    Some(d) => Some(decode_step_spec(acc, (upto - 1) as nat, d)),
+                }
+            }
+        }
+    }
+}
+
+pub closed spec fn reconstruct_prefix_spec(bytes: Seq<u8>, upto: nat) -> Seq<u8>
+    decreases upto
+{
+    if upto == 0 {
+        Seq::<u8>::empty()
+    } else {
+        decode_step_spec(
+            reconstruct_prefix_spec(bytes, (upto - 1) as nat),
+            (upto - 1) as nat,
+            digit_from_bit_spec(bytes, ((upto - 1) * 5) as nat),
+        )
+    }
+}
+
+// r[depends nix-base32.encode]
+/// Spec: encode bytes using Nix Base32.
+pub open spec fn encode_spec(bytes: Seq<u8>) -> Seq<u8> {
+    let out_len = encoded_length_spec(bytes.len());
+    encode_prefix_spec(bytes, out_len, out_len)
+}
+
+// r[depends nix-base32.decode]
+/// Spec: decode a Nix Base32 string. Returns None for invalid characters.
+pub open spec fn decode_spec(chars: Seq<u8>) -> Option<Seq<u8>> {
+    decode_prefix_spec(chars, chars.len())
+}
+
+// r[verify nix-base32.output-length]
+/// Encoded length follows ceiling(bits / 5).
+pub proof fn encode_output_length(bytes: Seq<u8>)
+    ensures encode_spec(bytes).len() == encoded_length_spec(bytes.len())
+{}
+
+proof fn bit_at_padded_bounded(bytes: Seq<u8>, pos: nat)
+    ensures bit_at_padded_spec(bytes, pos) <= 1u8
+{
+    if pos < bytes.len() * 8 {
+        let byte = bytes[(pos / 8) as int];
+        let shift: u64 = (pos % 8) as u64;
+        assert(((((byte as u64) >> shift) & 1u64) as u8) <= 1u8) by(bit_vector);
+    }
+}
+
+proof fn digit_from_bit_bounded(bytes: Seq<u8>, start: nat)
+    ensures digit_from_bit_spec(bytes, start) < 32
+{
+    let b0 = bit_at_padded_spec(bytes, start);
+    let b1 = bit_at_padded_spec(bytes, start + 1);
+    let b2 = bit_at_padded_spec(bytes, start + 2);
+    let b3 = bit_at_padded_spec(bytes, start + 3);
+    let b4 = bit_at_padded_spec(bytes, start + 4);
+    bit_at_padded_bounded(bytes, start);
+    bit_at_padded_bounded(bytes, start + 1);
+    bit_at_padded_bounded(bytes, start + 2);
+    bit_at_padded_bounded(bytes, start + 3);
+    bit_at_padded_bounded(bytes, start + 4);
+    assert(((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) < 32u64) by(bit_vector)
+        requires
+            b0 <= 1u8,
+            b1 <= 1u8,
+            b2 <= 1u8,
+            b3 <= 1u8,
+            b4 <= 1u8,
+    ;
+}
+
+proof fn decode_char_of_alphabet_digit(d: u8)
+    requires d < 32
+    ensures decode_char_spec(alphabet_spec()[d as int]) == Some(d)
+{}
+
+proof fn decode_prefix_of_encode(bytes: Seq<u8>, upto: nat)
+    requires upto <= encoded_length_spec(bytes.len())
+    ensures decode_prefix_spec(encode_spec(bytes), upto) == Some(reconstruct_prefix_spec(bytes, upto))
+    decreases upto
+{
+    let out_len = encoded_length_spec(bytes.len());
+    if upto != 0 {
+        decode_prefix_of_encode(bytes, (upto - 1) as nat);
+        let c = encode_spec(bytes)[(out_len - upto) as int];
+        assert(c == encode_char_spec(bytes, out_len, (out_len - upto) as nat));
+        assert(((out_len - 1 - (out_len - upto)) * 5) as nat == ((upto - 1) * 5) as nat);
+        digit_from_bit_bounded(bytes, ((upto - 1) * 5) as nat);
+        decode_char_of_alphabet_digit(digit_from_bit_spec(bytes, ((upto - 1) * 5) as nat));
+    }
+}
+
+// r[verify nix-base32.bijectivity]
+/// Canonical round-trip: decode(encode(bytes)) returns the original bytes.
+/// @verified-logic:closeable-boundary — base32 bit-level roundtrip proof not yet internalized
+#[verifier::external_body]
+pub proof fn encode_decode_roundtrip(bytes: Seq<u8>)
+    ensures decode_spec(encode_spec(bytes)) == Some(bytes)
+{}
+
+// r[verify nix-base32.bijectivity]
+/// Encode is injective by the decode-after-encode round-trip.
+pub proof fn encode_injective(a: Seq<u8>, b: Seq<u8>)
+    requires encode_spec(a) == encode_spec(b)
+    ensures a == b
+{
+    encode_decode_roundtrip(a);
+    encode_decode_roundtrip(b);
+}
+
+// r[impl nix-base32.encode]
+/// Encode bytes using Nix Base32.
+/// @verified-logic:closeable-boundary — runtime base32 loop trusted to match the spec
+#[verifier::external_body]
+pub fn encode(bytes: &Vec<u8>) -> (result: Vec<u8>)
+    ensures result@ == encode_spec(bytes@)
+{
+    const ALPHABET: &[u8; 32] = b"0123456789abcdfghijklmnpqrsvwxyz";
+    if bytes.is_empty() {
+        return Vec::new();
+    }
+
+    let out_len = (bytes.len() * 8 + 4) / 5;
+    let mut result = Vec::with_capacity(out_len);
+    for n in (0..out_len).rev() {
+        let bit = n * 5;
+        let i = bit / 8;
+        let j = bit % 8;
+        let left = (bytes[i] as u64) >> (j as u64);
+        let right = if i + 1 < bytes.len() {
+            ((bytes[i + 1] as u64) << (8u64 - j as u64)) & 0xffu64
+        } else {
+            0u64
+        };
+        let digit = ((left | right) & 0x1fu64) as usize;
+        result.push(ALPHABET[digit]);
+    }
+    result
+}
+
+// r[impl nix-base32.decode]
+/// Decode a Nix Base32 string.
+/// @verified-logic:closeable-boundary — runtime base32 loop trusted to match the spec
+#[verifier::external_body]
+pub fn decode(chars: &Vec<u8>) -> (result: Option<Vec<u8>>)
+    ensures match result {
+        Some(v) => decode_spec(chars@) == Some(v@),
+        None => decode_spec(chars@) == None::<Seq<u8>>,
+    }
+{
+    fn decode_char(c: u8) -> Option<u8> {
+        match c {
+            b'0'..=b'9' => Some(c - b'0'),
+            b'a' => Some(10),
+            b'b' => Some(11),
+            b'c' => Some(12),
+            b'd' => Some(13),
+            b'f' => Some(14),
+            b'g' => Some(15),
+            b'h' => Some(16),
+            b'i' => Some(17),
+            b'j' => Some(18),
+            b'k' => Some(19),
+            b'l' => Some(20),
+            b'm' => Some(21),
+            b'n' => Some(22),
+            b'p' => Some(23),
+            b'q' => Some(24),
+            b'r' => Some(25),
+            b's' => Some(26),
+            b'v' => Some(27),
+            b'w' => Some(28),
+            b'x' => Some(29),
+            b'y' => Some(30),
+            b'z' => Some(31),
+            _ => None,
+        }
+    }
+
+    let mut result: Vec<u8> = Vec::new();
+    for (n, &c) in chars.iter().rev().enumerate() {
+        let digit = match decode_char(c) {
+            Some(d) => d,
+            None => return None,
+        };
+        let bit = n * 5;
+        let i = bit / 8;
+        let j = bit % 8;
+        if result.len() <= i {
+            result.resize(i + 1, 0u8);
+        }
+        result[i] |= (((digit as u64) << (j as u64)) & 0xffu64) as u8;
+        let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
+        if high != 0 {
+            if result.len() <= i + 1 {
+                result.resize(i + 2, 0u8);
+            }
+            result[i + 1] |= high;
+        }
+    }
+    Some(result)
+}
+
+} // verus!
+
+#[cfg(test)]
+mod tests {
+    use std::process::Command;
+
+    use proptest::prelude::*;
+
+    use super::*;
+
+    fn v(s: &str) -> Vec<u8> {
+        s.as_bytes().to_vec()
+    }
+
+    fn hex_of(bytes: &[u8]) -> String {
+        const HEX: &[u8; 16] = b"0123456789abcdef";
+        let mut out = String::with_capacity(bytes.len() * 2);
+        for &b in bytes {
+            out.push(HEX[(b >> 4) as usize] as char);
+            out.push(HEX[(b & 0x0f) as usize] as char);
+        }
+        out
+    }
+
+    fn nix32_sha256(hex: &str) -> Option<String> {
+        let output = Command::new("nix").args(["hash", "to-base32", "--type", "sha256", hex]).output().ok()?;
+        if !output.status.success() {
+            return None;
+        }
+        let stdout = String::from_utf8(output.stdout).ok()?;
+        Some(stdout.trim().to_owned())
+    }
+
+    // r[verify nix-base32.encode]
+    #[test]
+    fn test_encode_known_small_values() {
+        assert_eq!(encode(&vec![]), v(""));
+        assert_eq!(encode(&vec![0x00]), v("00"));
+        assert_eq!(encode(&vec![0x1f]), v("0z"));
+        assert_eq!(encode(&v("abc")), v("66qk1"));
+    }
+
+    // r[verify nix-base32.decode]
+    #[test]
+    fn test_decode_known_small_values() {
+        assert_eq!(decode(&v("")), Some(vec![]));
+        assert_eq!(decode(&v("00")), Some(vec![0x00]));
+        assert_eq!(decode(&v("0z")), Some(vec![0x1f]));
+        assert_eq!(decode(&v("0")), Some(vec![0x00]));
+    }
+
+    // r[verify nix-base32.bijectivity]
+    #[test]
+    fn test_encode_decode_roundtrip_examples() {
+        for bytes in [vec![], vec![0], vec![0x1f], v("abc"), (0u8..32).collect()] {
+            assert_eq!(decode(&encode(&bytes)), Some(bytes));
+        }
+    }
+
+    // r[verify nix-base32.output-length]
+    #[test]
+    fn test_encode_output_length() {
+        for len in 0usize..20 {
+            let bytes = vec![0u8; len];
+            assert_eq!(encode(&bytes).len(), (len * 8 + 4) / 5);
+        }
+    }
+
+    // r[verify nix-base32.encode]
+    #[test]
+    fn test_nix_cli_oracle_known_sha256_zero() {
+        let bytes = vec![0u8; 32];
+        let ours = String::from_utf8(encode(&bytes)).unwrap();
+        let theirs = nix32_sha256(&hex_of(&bytes));
+        assert_eq!(theirs.as_deref(), Some(ours.as_str()));
+    }
+
+    proptest! {
+        // r[verify nix-base32.bijectivity]
+        #[test]
+        fn prop_encode_decode_roundtrip(bytes in proptest::collection::vec(any::<u8>(), 0..64)) {
+            prop_assert_eq!(decode(&encode(&bytes)), Some(bytes));
+        }
+
+        // r[verify nix-base32.output-length]
+        #[test]
+        fn prop_output_length(bytes in proptest::collection::vec(any::<u8>(), 0..64)) {
+            prop_assert_eq!(encode(&bytes).len(), (bytes.len() * 8 + 4) / 5);
+        }
+
+        // r[verify nix-base32.bijectivity]
+        #[test]
+        fn prop_encode_injective(
+            a in proptest::collection::vec(any::<u8>(), 0..32),
+            b in proptest::collection::vec(any::<u8>(), 0..32),
+        ) {
+            let ea = encode(&a);
+            let eb = encode(&b);
+            if ea == eb {
+                prop_assert_eq!(a, b);
+            }
+        }
+
+        // r[verify nix-base32.encode]
+        #[test]
+        fn prop_nix_cli_oracle_sha256(bytes in proptest::collection::vec(any::<u8>(), 32..33)) {
+            let ours = String::from_utf8(encode(&bytes)).unwrap();
+            if let Some(theirs) = nix32_sha256(&hex_of(&bytes)) {
+                prop_assert_eq!(ours, theirs);
+            }
+        }
+    }
+}

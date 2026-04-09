@@ -11,7 +11,8 @@
 //! ## Modules
 //!
 //! - `access_mode` — access mode partial order: read/write/delete/full with no-escalation
-//! - `append_entries_build` — Raft leader-side AppendEntries construction: prev_log, entries, batching
+//! - `append_entries_build` — Raft leader-side AppendEntries construction: prev_log, entries,
+//!   batching
 //! - `append_entries_check` — Raft AppendEntries consistency: prevLogIndex/prevLogTerm validation
 //! - `acid` — ACID transaction proofs: atomicity, consistency, isolation, durability
 //! - `arithmetic` — abs diff, saturating ops, checked mul
@@ -27,18 +28,21 @@
 //! - `bloom` — Bloom filter with no-false-negatives proof
 //! - `authorize` — three-factor authorization: subsumption × scope × mode
 //! - `approval` — merge gating: approval counting, stale detection, CI checks
-//! - `bounded_mpmc` — bounded MPMC queue: head/tail occupancy, enqueue/dequeue, slot generation, capacity conservation
+//! - `bounded_mpmc` — bounded MPMC queue: head/tail occupancy, enqueue/dequeue, slot generation,
+//!   capacity conservation
 //! - `bounded_peers` — bounded peer collection: capacity cap, self-exclusion, order preservation
 //! - `bounded_range` — ranges with optional upper bound (None = unbounded)
 //! - `buddy` — buddy system: block sizes, buddy addresses, coalescing, parent blocks
 //! - `causal_order` — causal delivery and consistent snapshots
-//! - `consistent_snapshot` — consistent cuts with lattice operations (join/meet) and message consistency
+//! - `consistent_snapshot` — consistent cuts with lattice operations (join/meet) and message
+//!   consistency
 //! - `containment` — delegation containment: scope + mode + subsumption
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
-//! - `cas_loop` — CAS retry loop modeling: success/failure, ABA detection via generation counters, retry bounds
+//! - `cas_loop` — CAS retry loop modeling: success/failure, ABA detection via generation counters,
+//!   retry bounds
 //! - `chain` — chain hash integrity with append-preserves proof
 //! - `check_quorum` — leader liveness: step down when quorum contact lost
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
@@ -59,7 +63,8 @@
 //! - `distributed_lock` — distributed lock tokens, deadlines, expiry, backoff
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `drain_protocol` — double-check admission with recheck and notification
-//! - `epoch_reclaim` — epoch-based memory reclamation: pin/unpin, three-epoch cycling, safe-to-reclaim
+//! - `epoch_reclaim` — epoch-based memory reclamation: pin/unpin, three-epoch cycling,
+//!   safe-to-reclaim
 //! - `election` — leader election state machine: transitions, tokens, timing
 //! - `election_jitter` — deterministic per-node jitter via Knuth multiplicative hash
 //! - `election_safety_proof` — system-level election safety: at most one leader per term
@@ -72,20 +77,24 @@
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
-//! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry provenance
+//! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry
+//!   provenance
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
-//! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free proof
-//! - `heap_index` — binary heap index arithmetic: parent/child navigation, leaf detection, roundtrip proofs
+//! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free
+//!   proof
+//! - `heap_index` — binary heap index arithmetic: parent/child navigation, leaf detection,
+//!   roundtrip proofs
 //! - `install_snapshot` — snapshot trigger and commit advancement for log compaction
 //! - `integer` — parity, alignment, log2, next-power-of-two
 //! - `interval` — half-open interval contains, overlap, split, merge
 //! - `joint_consensus` — dual-quorum membership changes with intersection proof
 //! - `journal` — append-only transaction journal with running balances and seq num monotonicity
 //! - `kv_version` — KV entry version computation: create/update with saturation
-//! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping, conservation
+//! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping,
+//!   conservation
 //! - `leader_append_only` — leader log immutability invariant: only grows, never overwrites
 //! - `leader_completeness` — committed entries survive elections (quorum intersection + epoch_ge)
 //! - `leadership_transfer` — voluntary leadership transfer: catch-up, `TimeoutNow`, deadline
@@ -95,18 +104,25 @@
 //! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
 //! - `settlement` — bilateral obligation netting: net positions, sum-to-zero, valid settlement
 //! - `lease_read` — lease-based linearizable reads with clock drift compensation
-//! - `lock_ordering` — lock acquisition ordering for deadlock prevention: strict total order, cycle freedom
+//! - `lock_ordering` — lock acquisition ordering for deadlock prevention: strict total order, cycle
+//!   freedom
 //! - `lsm_level` — LSM-tree level management: target sizing, compaction triggers, amplification
 //! - `log` — append-only log with Log Matching Property
 //! - `match_index` — per-follower matchIndex/nextIndex tracking with monotonicity
 //! - `log_conflict` — log conflict resolution: find divergence, truncate, append leader entries
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
-//! - `memory_order` — memory ordering lattice: Relaxed/Acquire/Release/AcqRel/SeqCst, fence composition, load/store validity
-//! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping, system invariant preservation
+//! - `memory_order` — memory ordering lattice: Relaxed/Acquire/Release/AcqRel/SeqCst, fence
+//!   composition, load/store validity
+//! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping,
+//!   system invariant preservation
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
 //! - `nix_attrset` — Nix attribute set operations: merge, intersect, remove
+//! - `nix_base32` — Nix custom Base32 encoding and decoding
+//! - `nix_drv_serialize` — Nix ATerm escaping primitives and derivation structs
+//! - `nix_fingerprint` — Nix derivation fingerprint construction and name validation
+//! - `nix_hash_truncate` — Nix `compressHash` XOR-fold truncation
 //! - `nonce` — verified nonce issuance with uniqueness, monotonicity, and freshness proofs
 //! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
@@ -129,7 +145,8 @@
 //! - `pressure` — multi-threshold severity classification
 //! - `priority_election` — priority-based leader election: delay, yield, candidate comparison
 //! - `process_state` — process lifecycle state machine: transitions, terminal, schedulable
-//! - `quota` — resource quota enforcement: remaining capacity, admission, consume/release, utilization
+//! - `quota` — resource quota enforcement: remaining capacity, admission, consume/release,
+//!   utilization
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
 //! - `raft_step` — Raft step decomposition for modular invariant proofs
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
@@ -147,7 +164,8 @@
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
-//! - `snapshot_compaction` — Raft log compaction trigger: when to snapshot, prefix discard, metadata
+//! - `snapshot_compaction` — Raft log compaction trigger: when to snapshot, prefix discard,
+//!   metadata
 //! - `spin_backoff` — spin-wait backoff: two-phase (spin then yield), exponential spin count
 //! - `snapshot_integrity` — dual-hash snapshot verification with round-trip and tamper proofs
 //! - `snapshot_transfer` — chunked snapshot streaming: validation, ordering, progress
@@ -159,7 +177,8 @@
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `term_authority` — step-down on higher term: adopt, revert to follower, clear vote
-//! - `ticket_lock` — FIFO-fair ticket lock: take/release, waiter counting, mutual exclusion, queue position
+//! - `ticket_lock` — FIFO-fair ticket lock: take/release, waiter counting, mutual exclusion, queue
+//!   position
 //! - `tier` — hot/warm/cold tier classification with promote/demote
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
@@ -169,8 +188,10 @@
 //! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
 //! - `vector_clock` — causality tracking with partial order and merge lattice
-//! - `view_change` — view-based reconfiguration: view monotonicity, leader rotation, quorum-gated transitions
-//! - `quorum_cert` — quorum certificate: vote counting, QC ordering, commit rule via consecutive certificates
+//! - `view_change` — view-based reconfiguration: view monotonicity, leader rotation, quorum-gated
+//!   transitions
+//! - `quorum_cert` — quorum certificate: vote counting, QC ordering, commit rule via consecutive
+//!   certificates
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
 //! - `wal_recovery` — WAL crash recovery: replay range, idempotent replay, checkpoint advancement
 //! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
@@ -178,7 +199,8 @@
 //! - `write_buffer` — memtable flush thresholds, buffer swap, write amplification, flush counting
 //! - `block_cache` — cache slot states: insert, evict, mark-dirty, write-back, clock-hand sweep
 //! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
-//! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write detection
+//! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write
+//!   detection
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
 //! - `zeroize` — verified memory scrubbing: write zero to every byte, idempotence, detection
@@ -197,14 +219,14 @@
 //! - `fragmentation` — fragmentation metrics: external/internal bounds, can-satisfy
 
 pub mod access_mode;
+pub mod acid;
+pub mod algebraic;
 pub mod append_entries_build;
 pub mod append_entries_check;
 pub mod append_response;
-pub mod acid;
-pub mod algebraic;
 pub mod approval;
-pub mod authorize;
 pub mod arithmetic;
+pub mod authorize;
 pub mod backoff;
 pub mod balance;
 pub mod ballot;
@@ -216,72 +238,88 @@ pub mod bitwise;
 pub mod bloom;
 pub mod bounded_range;
 pub mod btree_balance;
-pub mod buddy;
-pub mod causal_order;
-pub mod containment;
 pub mod btree_delete;
 pub mod btree_insert;
+pub mod buddy;
+pub mod causal_order;
 pub mod concurrent_composition;
 pub mod consensus_path;
 pub mod consistent_hash;
 pub mod consistent_snapshot;
+pub mod containment;
 
-pub mod crdt;
+pub mod alloc_bitmap;
+pub mod alloc_token;
+pub mod arena;
+pub mod block_cache;
 pub mod bounded_mpmc;
 pub mod bounded_peers;
 pub mod bounds;
+pub mod calendar;
 pub mod cas;
 pub mod cas_loop;
 pub mod chain;
 pub mod check_quorum;
 pub mod chunk;
+pub mod circuit_breaker;
 pub mod client_routing;
 pub mod client_session;
-pub mod config_change;
-pub mod circuit_breaker;
+pub mod coalesce_policy;
 pub mod collections;
 pub mod commit_advance;
 pub mod commit_notify;
 pub mod compaction_fence;
+pub mod config_change;
 pub mod constant_time_eq;
 pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
+pub mod crdt;
+pub mod cron_field;
+pub mod cron_match;
+pub mod cron_next;
+pub mod ct_select;
+pub mod cycle_detect;
 pub mod deadline_queue;
 pub mod delegation;
-pub mod double_entry;
 pub mod distributed_lock;
+pub mod double_entry;
 pub mod drain;
 pub mod drain_protocol;
-pub mod env_scrub;
-pub mod epoch_reclaim;
 pub mod election;
-pub mod escrow;
-pub mod fair_share;
-pub mod fee;
 pub mod election_init;
 pub mod election_jitter;
 pub mod election_safety_proof;
 pub mod election_timer;
 pub mod entry_type;
+pub mod env_scrub;
 pub mod epoch;
+pub mod epoch_reclaim;
+pub mod escrow;
 pub mod eviction;
 pub mod eviction_score;
 pub mod expiration;
+pub mod fair_share;
 pub mod fast_backtrack;
+pub mod fee;
 pub mod fencing;
 pub mod follower_commit;
-pub mod follower_redirect;
 pub mod follower_read;
-pub mod futex_state;
+pub mod follower_redirect;
 pub mod forest;
+pub mod fragmentation;
+pub mod free_list;
+pub mod free_space_map;
+pub mod futex_state;
 pub mod ghost_history;
 pub mod glob;
 pub mod gossip;
+pub mod graph_color;
 pub mod hash_bucket;
 pub mod hazard_pointer;
 pub mod heap_index;
 pub mod heartbeat;
+pub mod index_select;
 pub mod install_snapshot;
 pub mod integer;
 pub mod interval;
@@ -307,40 +345,48 @@ pub mod learner_change;
 pub mod learner_readiness;
 pub mod lease;
 pub mod lease_mutex;
-pub mod ledger;
 pub mod lease_read;
+pub mod ledger;
 pub mod linearizability;
 pub mod lock_ordering;
 pub mod log;
 pub mod log_compaction;
-pub mod lsm_level;
 pub mod log_conflict;
 pub mod log_invariant_inductive;
+pub mod lsm_level;
 pub mod markov;
 pub mod match_index;
 pub mod memory_order;
-pub mod mesi;
 pub mod merkle;
+pub mod mesi;
 pub mod monotonic;
 pub mod mpsc_bounds;
+pub mod mvcc;
 pub mod nix_attrset;
-pub mod noop_commit;
-pub mod node_classify;
+pub mod nix_base32;
 pub mod nix_closure;
-pub mod node_lifecycle;
+pub mod nix_drv_serialize;
+pub mod nix_fingerprint;
+pub mod nix_hash_truncate;
 pub mod nix_list;
 pub mod nix_string;
 pub mod nix_version;
+pub mod node_classify;
+pub mod node_lifecycle;
+pub mod nonce;
+pub mod noop_commit;
 pub mod option;
 pub mod ordering;
 pub mod page;
-pub mod paxos;
+pub mod page_checksum;
 pub mod partition;
 pub mod pattern;
+pub mod paxos;
 pub mod peer_spec;
 pub mod permission;
 pub mod persistent_state;
 pub mod pointwise;
+pub mod pool;
 pub mod pre_vote;
 pub mod pre_vote_lease;
 pub mod pre_vote_tally;
@@ -349,13 +395,15 @@ pub mod priority_election;
 pub mod priority_inversion;
 pub mod process_state;
 pub mod properties;
-pub mod quota;
+pub mod query_cost;
 pub mod quorum;
 pub mod quorum_cert;
+pub mod quota;
 pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
 pub mod rcu;
+pub mod reachability;
 pub mod read_index;
 pub mod ref_count;
 pub mod region;
@@ -367,23 +415,28 @@ pub mod retry;
 pub mod ring_buffer;
 pub mod rwlock;
 pub mod scope;
+pub mod segregated_free;
 pub mod semaphore;
-pub mod seqlock;
 pub mod seq_fold;
 pub mod seq_set;
+pub mod seqlock;
 pub mod sequence;
 pub mod sequential;
-pub mod session_tree;
 pub mod serialize_inj;
+pub mod session_tree;
 pub mod settlement;
+pub mod shortest_path;
 pub mod signal;
-pub mod snapshot_compaction;
-pub mod spin_backoff;
-pub mod snapshot_integrity;
-pub mod snapshot_transfer;
-pub mod state_machine_safety;
+pub mod size_class;
 pub mod slab;
 pub mod slice;
+pub mod snapshot_compaction;
+pub mod snapshot_integrity;
+pub mod snapshot_isolation;
+pub mod snapshot_transfer;
+pub mod spin_backoff;
+pub mod split_coalesce;
+pub mod state_machine_safety;
 pub mod subsumption;
 pub mod tcp_state;
 pub mod term_authority;
@@ -392,52 +445,25 @@ pub mod tier;
 pub mod tiered_rate_limit;
 pub mod tiling;
 pub mod token_timestamp;
+pub mod topo_sort;
 pub mod trace_relation;
 pub mod transfer;
 pub mod trust_level;
-pub mod type_lattice;
 pub mod two_phase;
 pub mod two_phase_lock;
+pub mod txn_dependency;
+pub mod txn_isolation;
+pub mod type_lattice;
 pub mod typed_state;
 pub mod vector_clock;
-pub mod vote_tally;
 pub mod view_change;
+pub mod vote_tally;
 pub mod voter_set;
+pub mod wal_recovery;
 pub mod wal_segment;
 pub mod watermark;
 pub mod weighted_round_robin;
 pub mod witness;
-pub mod block_cache;
-pub mod free_space_map;
-pub mod page_checksum;
-pub mod wal_recovery;
-pub mod write_buffer;
 pub mod work_stealing;
-pub mod topo_sort;
-pub mod cycle_detect;
-pub mod reachability;
-pub mod graph_color;
-pub mod shortest_path;
-pub mod alloc_token;
-pub mod size_class;
-pub mod free_list;
-pub mod split_coalesce;
-pub mod alloc_bitmap;
-pub mod arena;
-pub mod pool;
-pub mod segregated_free;
-pub mod coalesce_policy;
-pub mod fragmentation;
-pub mod txn_isolation;
-pub mod mvcc;
-pub mod snapshot_isolation;
-pub mod query_cost;
-pub mod index_select;
-pub mod txn_dependency;
-pub mod calendar;
-pub mod cron_field;
-pub mod cron_match;
-pub mod cron_next;
+pub mod write_buffer;
 pub mod zeroize;
-pub mod ct_select;
-pub mod nonce;

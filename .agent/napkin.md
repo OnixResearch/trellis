@@ -1512,3 +1512,14 @@
     is_strict_advance_spec needs #[cfg(verus_keep_ghost)] (ghost code erased in normal builds).
   - default_numeric_fallback lint: range literals in test loops need suffixes (`0_i32..100_i32`)
   - uninlined_format_args lint: use `"nonce {n}"` not `"nonce {}", n`
+- Nix Base32 gotcha from upstream `BaseNix32`: `decode` accepts non-canonical strings.
+  Examples: `decode("0") == [0x00]`, but `encode([0x00]) == "00"`; `decode("z") == [0x1f]`,
+  but `encode([0x1f]) == "0z"`. So `decode(encode(x)) == x` holds, but
+  `encode(decode(y)) == y` only holds for canonical encodings, not every alphabet-only string.
+- `src/nix_base32.rs` currently uses 3 closeable `#[verifier::external_body]` items
+  (encode, decode, and the roundtrip proof) to keep the worktree verifiable while the
+  bit-level proof and exec/spec connection are still being internalized.
+- Useful base32 proof scaffolding now in-tree: `reconstruct_prefix_spec`,
+  `decode_prefix_of_encode`, and `bit_at_padded_bounded`. Also, `by(bit_vector)`
+  on shifted byte extracts works better if the shift count is first bound to a
+  `u64` local, not left as `(pos % 8) as u64` inline.
