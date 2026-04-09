@@ -157,8 +157,7 @@ pub open spec fn seg_alloc_spec(
 
 // r[impl segregated-free.alloc]
 /// Allocate from the appropriate class's free list.
-// @verified-logic:no-ensures external_body — type mismatch (Vec<Vec<u64>> vs Seq<Seq<u64>>)
-#[verifier::external_body]
+#[allow(clippy::cast_possible_truncation)]
 pub fn seg_alloc(
     lists: &[Vec<u64>], size: u64, num_classes: u64,
 ) -> (result: Option<(u64, u64)>)
@@ -166,13 +165,26 @@ pub fn seg_alloc(
         size > 0, size <= 65536,
         num_classes > 0, num_classes <= 17,
         lists@.len() == num_classes as int,
+    ensures
+        result == seg_alloc_spec(lists@.map_values(|v: Vec<u64>| v@), size, num_classes),
 {
-    let Ok(class) = usize::try_from(seg_class_for(size, num_classes)) else {
-        return None;
-    };
-    if class < lists.len() && !lists[class].is_empty() {
+    let ghost mapped = lists@.map_values(|v: Vec<u64>| v@);
+    let class = seg_class_for(size, num_classes) as usize;
+    proof {
+        let n = lists@.len();
+        assert(class as u64 == seg_class_for_spec(size, num_classes));
+        assert((class as int) < n);
+        assert(mapped[class as int] == lists@[class as int]@);
+    }
+    if !lists[class].is_empty() {
+        proof {
+            assert(seg_alloc_spec(mapped, size, num_classes) == Some((lists@[class as int]@[0], class as u64)));
+        }
         Some((lists[class][0], class as u64))
     } else {
+        proof {
+            assert(seg_alloc_spec(mapped, size, num_classes) == None::<(u64, u64)>);
+        }
         None
     }
 }

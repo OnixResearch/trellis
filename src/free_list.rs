@@ -74,6 +74,25 @@ pub fn free_list_len(list: &[u64]) -> (result: u64)
     list.len() as u64
 }
 
+/// Helper: copy slice suffix starting at `from`.
+fn clone_from(list: &[u64], from: usize) -> (result: Vec<u64>)
+    requires from <= list@.len()
+    ensures result@ == list@.subrange(from as int, list@.len() as int)
+{
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = from;
+    while i < list.len()
+        invariant
+            from <= i <= list@.len(),
+            result@ == list@.subrange(from as int, i as int),
+        decreases list@.len() - i,
+    {
+        result.push(list[i]);
+        i = i + 1;
+    }
+    result
+}
+
 // ─── Push ────────────────────────────────────────────────────────────
 
 // r[depends free-list.push]
@@ -84,16 +103,24 @@ pub open spec fn free_list_push_spec(list: Seq<u64>, block: u64) -> Seq<u64> {
 
 // r[impl free-list.push]
 /// Add block to front of the list. Requires block not already present.
-#[verifier::external_body]
 pub fn free_list_push(list: &[u64], block: u64) -> (result: Vec<u64>)
     requires
         !free_list_contains_spec(list@, block),
         list@.len() < u64::MAX as int,
     ensures result@ == free_list_push_spec(list@, block)
 {
-    let mut result = Vec::with_capacity(list.len() + 1);
+    let mut result: Vec<u64> = Vec::new();
     result.push(block);
-    result.extend_from_slice(list);
+    let mut i: usize = 0;
+    while i < list.len()
+        invariant
+            0 <= i <= list@.len(),
+            result@ == seq![block] + list@.subrange(0, i as int),
+        decreases list@.len() - i,
+    {
+        result.push(list[i]);
+        i = i + 1;
+    }
     result
 }
 
@@ -109,14 +136,13 @@ pub open spec fn free_list_pop_spec(list: Seq<u64>) -> (u64, Seq<u64>)
 
 // r[impl free-list.pop]
 /// Remove and return the first block.
-#[verifier::external_body]
 pub fn free_list_pop(list: &[u64]) -> (result: (u64, Vec<u64>))
     requires list@.len() > 0
     ensures result.0 == free_list_pop_spec(list@).0,
         result.1@ == free_list_pop_spec(list@).1
 {
     let block = list[0];
-    let rest = list[1..].to_vec();
+    let rest = clone_from(list, 1);
     (block, rest)
 }
 
@@ -135,24 +161,51 @@ pub open spec fn remove_from_spec(list: Seq<u64>, block: u64, from: int) -> Seq<
     }
 }
 
+/// Spec helper: remove all occurrences of block from list[..upto].
+pub open spec fn remove_prefix_spec(list: Seq<u64>, block: u64, upto: int) -> Seq<u64>
+    decreases (if upto >= 0 { upto } else { 0 }),
+{
+    if upto <= 0 {
+        seq![]
+    } else {
+        let prefix = remove_prefix_spec(list, block, upto - 1);
+        if list[upto - 1] == block { prefix } else { prefix.push(list[upto - 1]) }
+    }
+}
+
 // r[depends free-list.remove]
 /// Spec: remove block from the list.
 pub open spec fn free_list_remove_spec(list: Seq<u64>, block: u64) -> Seq<u64> {
-    remove_from_spec(list, block, 0)
+    remove_prefix_spec(list, block, list.len() as int)
 }
 
 // r[impl free-list.remove]
 /// Remove the given block from the list.
-#[verifier::external_body]
 pub fn free_list_remove(list: &[u64], block: u64) -> (result: Vec<u64>)
     requires free_list_contains_spec(list@, block)
     ensures result@ == free_list_remove_spec(list@, block)
 {
-    let mut result = Vec::new();
-    for &b in list {
-        if b != block {
-            result.push(b);
+    let mut result: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < list.len()
+        invariant
+            0 <= i <= list@.len(),
+            result@ == remove_prefix_spec(list@, block, i as int),
+        decreases list@.len() - i,
+    {
+        if list[i] != block {
+            result.push(list[i]);
+            proof {
+                assert(remove_prefix_spec(list@, block, i as int + 1)
+                    == remove_prefix_spec(list@, block, i as int).push(list[i as int]));
+            }
+        } else {
+            proof {
+                assert(remove_prefix_spec(list@, block, i as int + 1)
+                    == remove_prefix_spec(list@, block, i as int));
+            }
         }
+        i = i + 1;
     }
     result
 }
