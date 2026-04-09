@@ -188,12 +188,18 @@ mod tests {
         ) {
             let escaped = escape_aterm(&s);
             let inner = &escaped[1..escaped.len() - 1];
-            for window in inner.windows(1) {
-                let b = window[0];
-                if b == b'"' || b == b'\n' || b == b'\r' || b == b'\t' {
-                    prop_assert!(false, "unescaped special byte {b}");
+            let mut escaped_byte = false;
+            for &b in inner {
+                if escaped_byte {
+                    prop_assert!(matches!(b, b'\\' | b'"' | b'n' | b'r' | b't'));
+                    escaped_byte = false;
+                } else if b == b'\\' {
+                    escaped_byte = true;
+                } else {
+                    prop_assert!(!matches!(b, b'"' | b'\n' | b'\r' | b'\t'));
                 }
             }
+            prop_assert!(!escaped_byte, "escape sequence truncated at end of output");
         }
     }
 }

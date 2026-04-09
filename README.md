@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**5053 Verus proofs · 3162 tests · 1197 requirements · 244 modules · 36 trusted boundaries**
+**5372 Verus proofs · 3191 tests · 1197 requirements · 244 modules · 29 trusted boundaries**
 
 ## How it works
 
@@ -400,7 +400,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 2930 tests (unit + property)
+cargo test                 # 3191 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -408,7 +408,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (4929 proofs)
+./scripts/verus.sh         # verus only (5372 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -433,7 +433,7 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-`36` items are marked `#[verifier::external_body]` across `13` files.
+`29` items are marked `#[verifier::external_body]` across `11` files.
 Those are the current trusted boundaries inside Verus.
 
 **13 permanent** (architectural trust boundaries):
@@ -451,7 +451,7 @@ Those are the current trusted boundaries inside Verus.
   logs were built from the same leader chain. Trust boundaries encoding
   the global safety argument.
 
-**23 closeable** (proof debt still tracked in the audit inventory):
+**16 closeable** (proof debt still tracked in the audit inventory):
 
 - **3 variable-shift proofs** (`bitwise.rs`)
 - **2 cron-field modular arithmetic proofs** (`cron_field.rs`)
@@ -460,8 +460,6 @@ Those are the current trusted boundaries inside Verus.
 - **2 allocation bitmap wrappers** (`alloc_bitmap.rs`)
 - **2 pool wrappers** (`pool.rs`)
 - **2 segregated-free wrappers** (`segregated_free.rs`)
-- **6 MESI proof/exec blockers** (`mesi.rs`) externalized to restore a green pipeline
-- **1 page radix-index bound proof** (`page.rs`) externalized while the computed-offset bit-vector proof is tightened
 
 In addition to `external_body`, the current audit also tracks:
 

@@ -11,12 +11,12 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
-As of `2026-04-08`, backed by the rerun commands recorded in `openspec/changes/archive/2026-04-08-proof-audit-remediation/evidence.md`, the live verification pipeline is green:
+As of `2026-04-09`, backed by fresh reruns on the current tree, the live verification pipeline is green:
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3162 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5053 verified, 0 errors`)
+- `cargo test` passes (`3191 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`5372 verified, 0 errors`)
 - Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
@@ -26,7 +26,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`36` external_body items remain across `13` files.
+`29` external_body items remain across `11` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -58,22 +58,15 @@ actual tree and not just per-file totals.
 | `src/free_list.rs:146 free_list_remove` | Closeable | Exec/spec filtered-removal bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
 | `src/alloc_bitmap.rs:180 bitmap_alloc` | Closeable | First-free search and cloned-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
 | `src/alloc_bitmap.rs:237 bitmap_free` | Closeable | Handle validation and updated-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
-| `src/pool.rs:48 pool_alloc` | Closeable | Composition over `alloc_bitmap` and `slab` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
-| `src/pool.rs:100 pool_free` | Closeable | Free-path composition over `alloc_bitmap` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
-| `src/segregated_free.rs:158 seg_alloc` | Closeable | Nested `Vec<Vec<u64>>` to `Seq<Seq<u64>>` bridge is still trusted. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
-| `src/segregated_free.rs:193 seg_free` | Closeable | Nested `Vec<Vec<u64>>` mutation still lacks a proved exec/spec bridge. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
-| `src/mesi.rs:116 check_system_invariant` | Closeable | Runtime checker is trusted while the count-summary proof remains open. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover valid/invalid system states and full read/write behavior. |
-| `src/mesi.rs:331 snoop_read_all` | Closeable | Loop/spec correspondence across all caches is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover bus snooping and full read behavior. |
-| `src/mesi.rs:393 invalidate_others` | Closeable | Loop/spec correspondence for invalidating every non-writer cache is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invalidation and full write behavior. |
-| `src/mesi.rs:662 invalidate_others_step` | Closeable | Inductive helper for global invalidation is still trusted. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invalidation and full write behavior. |
-| `src/mesi.rs:700 full_write_writer_modified` | Closeable | Composite full-write shape proof still depends on trusted invalidation helper. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover writer-modified / others-invalid outcomes. |
-| `src/mesi.rs:725 full_write_preserves_invariant` | Closeable | Composite invariant-preservation proof is still trusted while MESI helper lemmas are tightened. | `src/mesi.rs` unit tests + proptest (`815-1131`) cover invariant-preserving full writes. |
-| `src/page.rs:347 radix_index_bounded` | Closeable | Computed-offset bit-vector bound proof is still trusted. | `src/page.rs` unit tests + proptest (`382-566`) cover radix-index extraction across level/offset cases. |
+| `src/pool.rs:54 pool_alloc` | Closeable | Composition over `alloc_bitmap` and `slab` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
+| `src/pool.rs:106 pool_free` | Closeable | Free-path composition over `alloc_bitmap` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
+| `src/segregated_free.rs:161 seg_alloc` | Closeable | Nested `Vec<Vec<u64>>` to `Seq<Seq<u64>>` bridge is still trusted. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
+| `src/segregated_free.rs:196 seg_free` | Closeable | Nested `Vec<Vec<u64>>` mutation still lacks a proved exec/spec bridge. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
 
 Summary:
 
 - Permanent external-body items: `13`
-- Closeable external-body items: `23`
+- Closeable external-body items: `16`
 
 ### `assume(...)` soundness oracles
 

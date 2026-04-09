@@ -340,10 +340,18 @@ pub fn radix_index(
     (value >> offset) & mask
 }
 
+proof fn and_mask_lt_shift(value: u64, offset: u64, width: u64)
+    requires
+        0 < width <= 63,
+    ensures
+        ((value >> offset) & sub(1u64 << width, 1u64)) < (1u64 << width)
+{
+    assert(((value >> offset) & sub(1u64 << width, 1u64)) < (1u64 << width)) by(bit_vector)
+        requires 0u64 < width <= 63u64;
+}
+
 // r[verify page.radix-index]
 /// Radix index is bounded: result < 2^bits_per_level.
-/// Still trusted while the bit-vector proof over computed offsets is being tightened.
-#[verifier::external_body]
 proof fn radix_index_bounded(
     value: u64, level: u64, bits_per_level: u64, base_offset: u64,
 )
@@ -354,12 +362,13 @@ proof fn radix_index_bounded(
     ensures radix_index_spec(value, level, bits_per_level, base_offset)
         < (1u64 << bits_per_level)
 {
-    let offset = base_offset + level * bits_per_level;
-    let mask = sub(1u64 << bits_per_level, 1u64);
-    // extract_field_spec returns (value >> offset) & ((1 << w) - 1)
-    // which is bounded by the mask itself.
-    assert(((value >> offset) & mask) <= mask) by(bit_vector);
-    assert(mask < (1u64 << bits_per_level)) by(bit_vector);
+    assert(base_offset + level * bits_per_level < 64) by(nonlinear_arith)
+        requires
+            bits_per_level > 0,
+            base_offset + (level + 1) * bits_per_level <= 64;
+    let offset = (base_offset + level * bits_per_level) as u64;
+    assert(bits_per_level != 0u64);
+    and_mask_lt_shift(value, offset, bits_per_level);
 }
 
 // r[verify page.radix-index]

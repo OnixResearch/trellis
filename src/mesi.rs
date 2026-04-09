@@ -112,64 +112,217 @@ pub open spec fn system_invariant_spec(caches: Seq<u8>) -> bool {
 
 // r[impl mesi.system-invariant]
 /// Check the MESI system invariant at runtime.
-/// The count-summary proof is still open; proptests cover the checker behavior.
-#[verifier::external_body]
+#[allow(clippy::too_many_lines)]
 pub fn check_system_invariant(caches: &Vec<u8>) -> (result: bool)
     requires caches@.len() <= u64::MAX as int
     ensures result ==> system_invariant_spec(caches@)
 {
+    let mut has_non_invalid: bool = false;
     let mut has_modified: bool = false;
     let mut has_exclusive: bool = false;
-    let mut modified_count: u64 = 0;
-    let mut exclusive_count: u64 = 0;
-    let mut shared_count: u64 = 0;
-
     let mut i: usize = 0;
     while i < caches.len()
         invariant
             0 <= i <= caches@.len(),
             caches@.len() <= u64::MAX as int,
-            modified_count <= i as u64,
-            exclusive_count <= i as u64,
-            shared_count <= i as u64,
-            has_modified == (modified_count > 0),
-            has_exclusive == (exclusive_count > 0),
-            // Everything we've seen so far is a valid state
-            forall|k: int| 0 <= k < i ==> is_valid_state_spec(caches@[k])
-                ==> (
-                    (caches@[k] == STATE_MODIFIED ==> modified_count > 0)
-                    && (caches@[k] == STATE_EXCLUSIVE ==> exclusive_count > 0)
-                    && (caches@[k] == STATE_SHARED ==> shared_count > 0)
-                ),
+            has_modified ==> has_non_invalid,
+            has_exclusive ==> has_non_invalid,
+            !has_non_invalid ==> forall|k: int| 0 <= k < i ==> caches@[k] == STATE_INVALID,
+            !has_modified ==> forall|k: int| 0 <= k < i ==> caches@[k] != STATE_MODIFIED,
+            !has_exclusive ==> forall|k: int| 0 <= k < i ==> caches@[k] != STATE_EXCLUSIVE,
+            forall|k: int| 0 <= k < i ==> is_valid_state_spec(caches@[k]),
+            forall|k: int, l: int|
+                0 <= k < i && 0 <= l < i && k != l
+                && caches@[k] == STATE_MODIFIED
+                ==> caches@[l] == STATE_INVALID,
+            forall|k: int, l: int|
+                0 <= k < i && 0 <= l < i && k != l
+                && caches@[k] == STATE_EXCLUSIVE
+                ==> caches@[l] == STATE_INVALID,
         decreases caches@.len() - i
     {
+        let ghost prefix_end = i as int;
         let s = caches[i];
         if !is_valid_state(s) {
             return false;
         }
+
         if s == STATE_MODIFIED {
-            modified_count = modified_count + 1;
+            if has_non_invalid {
+                return false;
+            }
+            proof {
+                assert(!has_modified) by {
+                    if has_modified {
+                        assert(has_non_invalid);
+                    }
+                };
+                assert(!has_exclusive) by {
+                    if has_exclusive {
+                        assert(has_non_invalid);
+                    }
+                };
+                assert forall|k: int| 0 <= k < prefix_end
+                    implies caches@[k] == STATE_INVALID by {
+                    if caches@[k] != STATE_INVALID {
+                        assert(has_non_invalid);
+                    }
+                };
+            }
+            has_modified = true;
+            has_non_invalid = true;
         } else if s == STATE_EXCLUSIVE {
-            exclusive_count = exclusive_count + 1;
+            if has_non_invalid {
+                return false;
+            }
+            proof {
+                assert(!has_modified) by {
+                    if has_modified {
+                        assert(has_non_invalid);
+                    }
+                };
+                assert(!has_exclusive) by {
+                    if has_exclusive {
+                        assert(has_non_invalid);
+                    }
+                };
+                assert forall|k: int| 0 <= k < prefix_end
+                    implies caches@[k] == STATE_INVALID by {
+                    if caches@[k] != STATE_INVALID {
+                        assert(has_non_invalid);
+                    }
+                };
+            }
+            has_exclusive = true;
+            has_non_invalid = true;
         } else if s == STATE_SHARED {
-            shared_count = shared_count + 1;
+            if has_modified || has_exclusive {
+                return false;
+            }
+            proof {
+                assert(!has_modified);
+                assert(!has_exclusive);
+                assert forall|k: int| 0 <= k < prefix_end
+                    implies caches@[k] != STATE_MODIFIED by {
+                    if caches@[k] == STATE_MODIFIED {
+                        assert(has_modified);
+                    }
+                };
+                assert forall|k: int| 0 <= k < prefix_end
+                    implies caches@[k] != STATE_EXCLUSIVE by {
+                    if caches@[k] == STATE_EXCLUSIVE {
+                        assert(has_exclusive);
+                    }
+                };
+            }
+            has_non_invalid = true;
         }
-        has_modified = modified_count > 0;
-        has_exclusive = exclusive_count > 0;
+
         i = i + 1;
+
+        proof {
+            assert(caches@[prefix_end] == s);
+            assert(has_modified ==> has_non_invalid);
+            assert(has_exclusive ==> has_non_invalid);
+
+            assert forall|k: int| 0 <= k < i as int
+                implies is_valid_state_spec(caches@[k]) by {
+                if k == prefix_end {
+                    assert(caches@[k] == s);
+                    assert(is_valid_state_spec(s));
+                }
+            };
+
+            assert(!has_non_invalid ==> forall|k: int| 0 <= k < i as int ==> caches@[k] == STATE_INVALID) by {
+                if !has_non_invalid {
+                    assert(s == STATE_INVALID);
+                    assert forall|k: int| 0 <= k < i as int
+                        implies caches@[k] == STATE_INVALID by {
+                        if k == prefix_end {
+                            assert(caches@[k] == s);
+                        }
+                    };
+                }
+            };
+
+            assert(!has_modified ==> forall|k: int| 0 <= k < i as int ==> caches@[k] != STATE_MODIFIED) by {
+                if !has_modified {
+                    assert forall|k: int| 0 <= k < i as int
+                        implies caches@[k] != STATE_MODIFIED by {
+                        if k == prefix_end {
+                            assert(caches@[k] == s);
+                            if s == STATE_MODIFIED {
+                                assert(false);
+                            }
+                        }
+                    };
+                }
+            };
+
+            assert(!has_exclusive ==> forall|k: int| 0 <= k < i as int ==> caches@[k] != STATE_EXCLUSIVE) by {
+                if !has_exclusive {
+                    assert forall|k: int| 0 <= k < i as int
+                        implies caches@[k] != STATE_EXCLUSIVE by {
+                        if k == prefix_end {
+                            assert(caches@[k] == s);
+                            if s == STATE_EXCLUSIVE {
+                                assert(false);
+                            }
+                        }
+                    };
+                }
+            };
+
+            assert forall|k: int, l: int|
+                0 <= k < i as int && 0 <= l < i as int && k != l
+                && caches@[k] == STATE_MODIFIED
+                implies caches@[l] == STATE_INVALID by {
+                if k == prefix_end {
+                    assert(s == STATE_MODIFIED);
+                    assert(l < prefix_end);
+                    assert(caches@[l] == STATE_INVALID);
+                } else if l == prefix_end {
+                    assert(caches@[l] == s);
+                    if s != STATE_INVALID {
+                        assert(false);
+                    }
+                }
+            };
+
+            assert forall|k: int, l: int|
+                0 <= k < i as int && 0 <= l < i as int && k != l
+                && caches@[k] == STATE_EXCLUSIVE
+                implies caches@[l] == STATE_INVALID by {
+                if k == prefix_end {
+                    assert(s == STATE_EXCLUSIVE);
+                    assert(l < prefix_end);
+                    assert(caches@[l] == STATE_INVALID);
+                } else if l == prefix_end {
+                    assert(caches@[l] == s);
+                    if s != STATE_INVALID {
+                        assert(false);
+                    }
+                }
+            };
+        }
     }
 
-    // Single writer: at most one Modified
-    if modified_count > 1 {
-        return false;
-    }
-    // Modified + anything else present → violation
-    if has_modified && (exclusive_count > 0 || shared_count > 0) {
-        return false;
-    }
-    // Exclusive + anything else present → violation
-    if has_exclusive && (modified_count > 0 || shared_count > 0 || exclusive_count > 1) {
-        return false;
+    proof {
+        assert(i == caches.len());
+        assert forall|k: int| 0 <= k < caches@.len()
+            implies is_valid_state_spec(caches@[k]) by {
+        };
+        assert forall|k: int, l: int|
+            0 <= k < caches@.len() && 0 <= l < caches@.len() && k != l
+            && caches@[k] == STATE_MODIFIED
+            implies caches@[l] == STATE_INVALID by {
+        };
+        assert forall|k: int, l: int|
+            0 <= k < caches@.len() && 0 <= l < caches@.len() && k != l
+            && caches@[k] == STATE_EXCLUSIVE
+            implies caches@[l] == STATE_INVALID by {
+        };
+        assert(system_invariant_spec(caches@));
     }
     true
 }
@@ -327,8 +480,6 @@ pub open spec fn snoop_read_all_spec(caches: Seq<u8>, requester: int, from: int)
 
 // r[impl mesi.snoop-read-all]
 /// Apply bus_read to every cache except the requester.
-/// The loop/spec correspondence is still runtime-tested but not fully proved.
-#[verifier::external_body]
 pub fn snoop_read_all(caches: &mut Vec<u8>, requester: usize)
     requires
         0 <= requester < old(caches)@.len(),
@@ -344,6 +495,7 @@ pub fn snoop_read_all(caches: &mut Vec<u8>, requester: usize)
     while i < caches.len()
         invariant
             0 <= i <= caches@.len(),
+            requester < caches@.len(),
             caches@.len() == original.len(),
             snoop_read_all_spec(caches@, requester as int, i as int)
                 == snoop_read_all_spec(original, requester as int, 0),
@@ -356,6 +508,21 @@ pub fn snoop_read_all(caches: &mut Vec<u8>, requester: usize)
             bus_read(caches, i);
             proof {
                 assert(caches@ == bus_read_spec(before, i as int));
+                assert(before.len() == original.len());
+                assert(requester < before.len());
+                assert forall|j: int| 0 <= j < caches@.len()
+                    implies is_valid_state_spec(caches@[j]) by {
+                    if j == i as int {
+                        bus_read_valid(before, i as int);
+                    } else {
+                        assert(caches@[j] == before[j]);
+                    }
+                };
+                snoop_read_all_step(before, requester, i);
+                assert(
+                    snoop_read_all_spec(before, requester as int, i as int)
+                        == snoop_read_all_spec(bus_read_spec(before, i as int), requester as int, i as int + 1)
+                );
                 assert(
                     snoop_read_all_spec(before, requester as int, i as int)
                         == snoop_read_all_spec(caches@, requester as int, i as int + 1)
@@ -387,10 +554,28 @@ pub open spec fn invalidate_others_spec(caches: Seq<u8>, writer: int, from: int)
     }
 }
 
+proof fn snoop_read_all_step(caches: Seq<u8>, requester: usize, from: usize)
+    requires
+        requester < caches.len(),
+        from < caches.len(),
+        from != requester,
+    ensures
+        snoop_read_all_spec(caches, requester as int, from as int)
+            == snoop_read_all_spec(bus_read_spec(caches, from as int), requester as int, from as int + 1)
+{}
+
+proof fn invalidate_others_spec_step(caches: Seq<u8>, writer: usize, from: usize)
+    requires
+        writer < caches.len(),
+        from < caches.len(),
+        from != writer,
+    ensures
+        invalidate_others_spec(caches, writer as int, from as int)
+            == invalidate_others_spec(bus_invalidate_spec(caches, from as int), writer as int, from as int + 1)
+{}
+
 // r[impl mesi.invalidate-others]
 /// Invalidate every cache except the writer.
-/// The loop/spec correspondence is still runtime-tested but not fully proved.
-#[verifier::external_body]
 pub fn invalidate_others(caches: &mut Vec<u8>, writer: usize)
     requires
         0 <= writer < old(caches)@.len(),
@@ -406,6 +591,7 @@ pub fn invalidate_others(caches: &mut Vec<u8>, writer: usize)
     while i < caches.len()
         invariant
             0 <= i <= caches@.len(),
+            writer < caches@.len(),
             caches@.len() == original.len(),
             invalidate_others_spec(caches@, writer as int, i as int)
                 == invalidate_others_spec(original, writer as int, 0),
@@ -418,6 +604,21 @@ pub fn invalidate_others(caches: &mut Vec<u8>, writer: usize)
             bus_invalidate(caches, i);
             proof {
                 assert(caches@ == bus_invalidate_spec(before, i as int));
+                assert(before.len() == original.len());
+                assert(writer < before.len());
+                assert forall|j: int| 0 <= j < caches@.len()
+                    implies is_valid_state_spec(caches@[j]) by {
+                    if j == i as int {
+                        assert(caches@[j] == STATE_INVALID);
+                    } else {
+                        assert(caches@[j] == before[j]);
+                    }
+                };
+                invalidate_others_spec_step(before, writer, i);
+                assert(
+                    invalidate_others_spec(before, writer as int, i as int)
+                        == invalidate_others_spec(bus_invalidate_spec(before, i as int), writer as int, i as int + 1)
+                );
                 assert(
                     invalidate_others_spec(before, writer as int, i as int)
                         == invalidate_others_spec(caches@, writer as int, i as int + 1)
@@ -655,11 +856,131 @@ proof fn all_invalid_satisfies_invariant(n: int)
     ensures system_invariant_spec(Seq::new(n as nat, |_i: int| STATE_INVALID))
 {}
 
+proof fn invalidate_others_spec_len(caches: Seq<u8>, writer: int, from: int)
+    requires
+        0 <= writer < caches.len(),
+        0 <= from <= caches.len(),
+    ensures
+        invalidate_others_spec(caches, writer, from).len() == caches.len(),
+    decreases caches.len() - from
+{
+    if from >= caches.len() {
+        assert(invalidate_others_spec(caches, writer, from) == caches);
+    } else if from == writer {
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(caches, writer, from + 1)
+        );
+        invalidate_others_spec_len(caches, writer, from + 1);
+    } else {
+        let next = bus_invalidate_spec(caches, from);
+        assert(next.len() == caches.len());
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(next, writer, from + 1)
+        );
+        invalidate_others_spec_len(next, writer, from + 1);
+    }
+}
+
+proof fn invalidate_others_spec_below_from(caches: Seq<u8>, writer: int, from: int, j: int)
+    requires
+        0 <= writer < caches.len(),
+        0 <= from <= caches.len(),
+        0 <= j < from,
+    ensures
+        invalidate_others_spec(caches, writer, from)[j] == caches[j],
+    decreases caches.len() - from
+{
+    if from >= caches.len() {
+        assert(invalidate_others_spec(caches, writer, from) == caches);
+    } else if from == writer {
+        assert(j < from + 1);
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(caches, writer, from + 1)
+        );
+        invalidate_others_spec_below_from(caches, writer, from + 1, j);
+    } else {
+        let next = bus_invalidate_spec(caches, from);
+        assert(j != from);
+        assert(next[j] == caches[j]);
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(next, writer, from + 1)
+        );
+        invalidate_others_spec_below_from(next, writer, from + 1, j);
+    }
+}
+
+proof fn invalidate_others_writer_unchanged(caches: Seq<u8>, writer: int, from: int)
+    requires
+        0 <= writer < caches.len(),
+        0 <= from <= caches.len(),
+    ensures
+        invalidate_others_spec(caches, writer, from)[writer] == caches[writer],
+    decreases caches.len() - from
+{
+    if from >= caches.len() {
+        assert(invalidate_others_spec(caches, writer, from) == caches);
+    } else if from == writer {
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(caches, writer, from + 1)
+        );
+        invalidate_others_writer_unchanged(caches, writer, from + 1);
+    } else {
+        let next = bus_invalidate_spec(caches, from);
+        assert(next[writer] == caches[writer]);
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(next, writer, from + 1)
+        );
+        invalidate_others_writer_unchanged(next, writer, from + 1);
+    }
+}
+
+proof fn invalidate_others_index_invalid(caches: Seq<u8>, writer: int, from: int, j: int)
+    requires
+        0 <= writer < caches.len(),
+        0 <= from <= caches.len(),
+        0 <= j < caches.len(),
+        j != writer,
+        j >= from,
+    ensures
+        invalidate_others_spec(caches, writer, from)[j] == STATE_INVALID,
+    decreases caches.len() - from
+{
+    if from >= caches.len() {
+        assert(j >= caches.len());
+        assert(false);
+    } else if from == writer {
+        assert(j >= from + 1);
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(caches, writer, from + 1)
+        );
+        invalidate_others_index_invalid(caches, writer, from + 1, j);
+    } else {
+        let next = bus_invalidate_spec(caches, from);
+        assert(
+            invalidate_others_spec(caches, writer, from)
+                == invalidate_others_spec(next, writer, from + 1)
+        );
+        if j == from {
+            invalidate_others_spec_below_from(next, writer, from + 1, j);
+            assert(invalidate_others_spec(next, writer, from + 1)[j] == next[j]);
+            assert(next[j] == STATE_INVALID);
+        } else {
+            assert(j >= from + 1);
+            invalidate_others_index_invalid(next, writer, from + 1, j);
+        }
+    }
+}
+
 // r[verify mesi.system-invariant]
 /// After invalidate_others, the writer's position is unchanged and
 /// all others are Invalid. (Inductive helper — single step.)
-/// Still trusted while the recursive invalidate proof is being tightened.
-#[verifier::external_body]
 proof fn invalidate_others_step(caches: Seq<u8>, writer: int, from: int)
     requires
         0 <= writer < caches.len(),
@@ -675,29 +996,32 @@ proof fn invalidate_others_step(caches: Seq<u8>, writer: int, from: int)
         ),
     decreases caches.len() - from
 {
-    if from >= caches.len() {
-    } else if from == writer {
-        invalidate_others_step(caches, writer, from + 1);
-    } else {
-        let next = bus_invalidate_spec(caches, from);
-        assert(next.len() == caches.len());
-        assert(next[writer] == caches[writer]);
-        assert(next[from] == STATE_INVALID);
-        // Other positions unchanged by bus_invalidate on `from`
-        assert forall|k: int| 0 <= k < caches.len() && k != from
-            implies next[k] == caches[k] by {};
-        // All states still valid
-        assert forall|k: int| 0 <= k < caches.len()
-            implies is_valid_state_spec(next[k]) by {};
-        invalidate_others_step(next, writer, from + 1);
-    }
+    invalidate_others_spec_len(caches, writer, from);
+    assert forall|j: int| 0 <= j < caches.len() && j == writer
+        implies invalidate_others_spec(caches, writer, from)[j] == caches[j] by {
+        invalidate_others_writer_unchanged(caches, writer, from);
+    };
+    assert forall|j: int| 0 <= j < caches.len() && j != writer && j >= from
+        implies invalidate_others_spec(caches, writer, from)[j] == STATE_INVALID by {
+        invalidate_others_index_invalid(caches, writer, from, j);
+    };
+    assert forall|j: int| 0 <= j < caches.len() implies (
+        (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+        && (j != writer && j >= from
+            ==> invalidate_others_spec(caches, writer, from)[j] == STATE_INVALID)
+    ) by {
+        if j == writer {
+            invalidate_others_writer_unchanged(caches, writer, from);
+        }
+        if j != writer && j >= from {
+            invalidate_others_index_invalid(caches, writer, from, j);
+        }
+    };
 }
 
 // r[verify mesi.system-invariant]
 // r[verify mesi.full-write]
 /// After a full write, the writer is Modified and all others are Invalid.
-/// Still trusted while the invalidate helper remains external.
-#[verifier::external_body]
 proof fn full_write_writer_modified(caches: Seq<u8>, writer: int)
     requires
         0 <= writer < caches.len(),
@@ -714,6 +1038,7 @@ proof fn full_write_writer_modified(caches: Seq<u8>, writer: int)
     assert(processor_write_spec(after_inv, writer)[writer] == STATE_MODIFIED);
     assert forall|j: int| 0 <= j < caches.len() && j != writer
         implies processor_write_spec(after_inv, writer)[j] == STATE_INVALID by {
+        invalidate_others_index_invalid(caches, writer, 0, j);
         assert(after_inv[j] == STATE_INVALID);
     };
 }
@@ -721,8 +1046,6 @@ proof fn full_write_writer_modified(caches: Seq<u8>, writer: int)
 // r[verify mesi.system-invariant]
 // r[verify mesi.full-write]
 /// A full write preserves the system invariant.
-/// Still trusted while the composite MESI proof is being tightened.
-#[verifier::external_body]
 proof fn full_write_preserves_invariant(caches: Seq<u8>, writer: int)
     requires
         0 <= writer < caches.len(),
@@ -732,7 +1055,12 @@ proof fn full_write_preserves_invariant(caches: Seq<u8>, writer: int)
 {
     full_write_writer_modified(caches, writer);
     constants_valid();
+    invalidate_others_spec_len(caches, writer, 0);
+    let after_inv = invalidate_others_spec(caches, writer, 0);
     let result = full_write_spec(caches, writer);
+    assert(after_inv.len() == caches.len());
+    assert(result.len() == after_inv.len());
+    assert(result.len() == caches.len());
     assert(result[writer] == STATE_MODIFIED);
     assert forall|i: int| 0 <= i < result.len()
         implies is_valid_state_spec(result[i]) by {
@@ -740,6 +1068,11 @@ proof fn full_write_preserves_invariant(caches: Seq<u8>, writer: int)
             assert(result[i] == STATE_MODIFIED);
             assert(is_valid_state_spec(result[i]));
         } else {
+            assert(0 <= i < after_inv.len());
+            processor_write_other_unchanged(after_inv, writer, i);
+            invalidate_others_index_invalid(caches, writer, 0, i);
+            assert(after_inv[i] == STATE_INVALID);
+            assert(result[i] == after_inv[i]);
             assert(result[i] == STATE_INVALID);
             assert(is_valid_state_spec(result[i]));
         }
@@ -748,8 +1081,25 @@ proof fn full_write_preserves_invariant(caches: Seq<u8>, writer: int)
         0 <= i < result.len() && 0 <= j < result.len() && i != j
         && result[i] == STATE_MODIFIED
         implies result[j] == STATE_INVALID by {
-        assert(i == writer);
-        assert(result[j] == STATE_INVALID);
+        if i == writer {
+            if j == writer {
+                assert(false);
+            }
+            assert(0 <= j < after_inv.len());
+            processor_write_other_unchanged(after_inv, writer, j);
+            invalidate_others_index_invalid(caches, writer, 0, j);
+            assert(after_inv[j] == STATE_INVALID);
+            assert(result[j] == after_inv[j]);
+            assert(result[j] == STATE_INVALID);
+        } else {
+            assert(0 <= i < after_inv.len());
+            processor_write_other_unchanged(after_inv, writer, i);
+            invalidate_others_index_invalid(caches, writer, 0, i);
+            assert(after_inv[i] == STATE_INVALID);
+            assert(result[i] == after_inv[i]);
+            assert(result[i] == STATE_INVALID);
+            assert(false);
+        }
     };
     assert forall|i: int, j: int|
         0 <= i < result.len() && 0 <= j < result.len() && i != j
@@ -757,8 +1107,15 @@ proof fn full_write_preserves_invariant(caches: Seq<u8>, writer: int)
         implies result[j] == STATE_INVALID by {
         if i == writer {
             assert(result[i] == STATE_MODIFIED);
+            assert(false);
         } else {
+            assert(0 <= i < after_inv.len());
+            processor_write_other_unchanged(after_inv, writer, i);
+            invalidate_others_index_invalid(caches, writer, 0, i);
+            assert(after_inv[i] == STATE_INVALID);
+            assert(result[i] == after_inv[i]);
             assert(result[i] == STATE_INVALID);
+            assert(false);
         }
     };
 }

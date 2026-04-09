@@ -2355,6 +2355,7 @@ fn bit_at_padded_exec(bytes: &Vec<u8>, pos: usize) -> (result: u8)
     result
 }
 
+#[allow(clippy::cast_possible_truncation)]
 fn encode_digit(bytes: &Vec<u8>, n: usize) -> (digit: u8)
     requires
         bytes@.len() <= ((usize::MAX as int) - 4) / 8,
@@ -2426,6 +2427,7 @@ fn alphabet_char(digit: u8) -> (result: u8)
 
 // r[impl nix-base32.encode]
 /// Encode bytes using Nix Base32.
+#[allow(clippy::manual_div_ceil)]
 pub fn encode(bytes: &Vec<u8>) -> (result: Vec<u8>)
     requires bytes@.len() <= ((usize::MAX as int) - 4) / 8
     ensures result@ == encode_spec(bytes@)
@@ -2546,6 +2548,7 @@ fn extend_to_exec(acc: &Vec<u8>, len: usize) -> (result: Vec<u8>)
     result
 }
 
+#[allow(clippy::cast_possible_truncation)]
 fn or_extend_at_exec(acc: &Vec<u8>, idx: usize, val: u8) -> (result: Vec<u8>)
     requires idx < usize::MAX
     ensures result@ == or_extend_at_spec(acc@, idx as nat, val)
@@ -2556,7 +2559,7 @@ fn or_extend_at_exec(acc: &Vec<u8>, idx: usize, val: u8) -> (result: Vec<u8>)
     proof {
         assert(cur == extend_to_spec(acc@, len as nat)[idx as int]);
     }
-    let new = ((cur as u64) | (val as u64)) as u8;
+    let new = cur | val;
     result.set(idx, new);
     proof {
         if acc@.len() <= idx as nat {
@@ -2635,7 +2638,7 @@ fn decode_step_exec(acc: &Vec<u8>, n: usize, digit: u8) -> (result: Vec<u8>)
                 (bit as nat) == (n as nat) * 5;
     }
     let acc1 = or_extend_at_exec(acc, i, low);
-    let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
+    let high = if j == 0 { 0u8 } else { digit >> (8usize - j) };
     if high == 0u8 {
         proof {
             assert((bit as nat) == (n as nat) * 5);
@@ -2770,7 +2773,7 @@ mod tests {
         const HEX: &[u8; 16] = b"0123456789abcdef";
         let mut out = String::with_capacity(bytes.len() * 2);
         for &b in bytes {
-            out.push(HEX[(b >> 4) as usize] as char);
+            out.push(HEX[(b >> 4u8) as usize] as char);
             out.push(HEX[(b & 0x0f) as usize] as char);
         }
         out
@@ -2812,6 +2815,7 @@ mod tests {
     }
 
     // r[verify nix-base32.output-length]
+    #[allow(clippy::manual_div_ceil)]
     #[test]
     fn test_encode_output_length() {
         for len in 0usize..20 {
@@ -2838,6 +2842,7 @@ mod tests {
 
         // r[verify nix-base32.output-length]
         #[test]
+        #[allow(clippy::manual_div_ceil)]
         fn prop_output_length(bytes in proptest::collection::vec(any::<u8>(), 0..64)) {
             prop_assert_eq!(encode(&bytes).len(), (bytes.len() * 8 + 4) / 5);
         }

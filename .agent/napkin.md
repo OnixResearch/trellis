@@ -4,14 +4,16 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5053 Verus proofs + 3162 cargo tests = current green snapshot
+- 5372 Verus proofs + 3191 cargo tests = current green snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 36 `#[verifier::external_body]` items across 13 files; 13 permanent and 23 closeable
+- Current trusted inventory: 29 `#[verifier::external_body]` items across 11 files; 13 permanent and 16 closeable
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
+- 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.
 - I overclaimed completion once by relying on summarized status instead of fresh command output; before saying the tree is green, rerun and capture `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, `./scripts/verify.sh`, and the direct Tracey/check-ensures commands.
+- Done review is strict about evidence boundaries: if I claim a file changed, it must appear in `git status`, and if I claim a trust site disappeared, I should include direct grep/count output for the affected file and the repo-wide inventory.
 - When evidence needs to prove a directory is absent, `test -d` alone is not enough for a transcript because it prints nothing. Use an explicit shell form such as `if [ -d ... ]; then echo active-present; else echo active-absent; fi`, and save the raw transcript file in the change directory.
 - Tracey first dropped to `2 uncovered` (`query-cost.index-scan`, `snapshot-iso.si-allows-commit`) and `0 untested` after metadata-only fixes in `ct_select.rs`, `nonce.rs`, `index_select.rs`, `mvcc.rs`, and `snapshot_isolation.rs`, then to `0 uncovered` after adding `r[impl]` to the spec-level implementations in `query_cost.rs` and `snapshot_isolation.rs`.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
@@ -19,7 +21,13 @@
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.
 - Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is now an explicit `@verified-logic:no-ensures` closeable boundary, not an unmarked gap.
 - `cargo clippy --all-targets -- -D warnings` was easiest to close with a mix of real cast fixes and test-only `#[allow(...)]` annotations for style lints (`default_numeric_fallback`, `uninlined_format_args`, truncation casts in proptests) rather than invasive churn in test code.
-- Restoring Verus in `src/mesi.rs`/`src/page.rs` used temporary `#[verifier::external_body]` on the remaining composite blockers. That made the pipeline green, but it increased the audited trust surface and must stay documented as closeable debt.
+- Restoring Verus in `src/mesi.rs`/`src/page.rs` used temporary `#[verifier::external_body]` on the remaining composite blockers. Those 7 sites are closed now; if a future session reintroduces them, it is a regression.
+- `src/mesi.rs:check_system_invariant` closed cleanly once I stopped trying to prove counts and instead verified a direct prefix scan with prefix-validity / prefix-coherence invariants.
+- `src/mesi.rs:invalidate_others_spec` is easiest to prove with four tiny recursive lemmas: len preservation, unchanged indices below `from`, writer unchanged, and any non-writer index `>= from` becomes Invalid.
+- I made a bad runtime tradeoff once by replacing MESI loops with recursive exec helpers. Verus liked it, but runtime stack depth became proportional to `caches.len()`. Keep the proofs recursive if needed, but keep exec code iterative.
+- `src/page.rs:radix_index_bounded` closed with a tiny helper proving `((value >> offset) & ((1 << width) - 1)) < (1 << width)` plus an explicit nonlinear-arith proof that the computed offset is below 64.
+- `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
+- `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
 - Active OpenSpec change specs in this repo use full spec documents under `openspec/changes/*/specs/<domain>/spec.md`, not `ADDED/MODIFIED/REMOVED` delta sections. Match the existing change style when adding a new change.
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
