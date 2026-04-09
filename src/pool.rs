@@ -51,7 +51,6 @@ pub open spec fn pool_alloc_spec(
 // r[impl pool.alloc]
 /// Allocate one slot. Returns (slot, address, handle, new_map, new_gens)
 /// or None if the pool is full.
-#[verifier::external_body]
 pub fn pool_alloc(
     map: &[bool], gens: &[u32], base: u64, obj_size: u64,
 ) -> (result: Option<(usize, u64, u64, Vec<bool>, Vec<u32>)>)
@@ -77,12 +76,30 @@ pub fn pool_alloc(
         }
     })
 {
-    use crate::alloc_bitmap::{bitmap_alloc, handle_unpack_slot};
+    use crate::alloc_bitmap::bitmap_alloc;
     use crate::slab::slot_address;
 
-    match bitmap_alloc(map, gens) {
+    let alloc_result = bitmap_alloc(map, gens);
+    match alloc_result {
         None => None,
         Some((slot, handle, new_map, new_gens)) => {
+            proof {
+                assert(slot as int == bitmap_alloc_spec(map@, gens@).0);
+                assert(0 <= bitmap_alloc_spec(map@, gens@).0);
+                assert(bitmap_alloc_spec(map@, gens@).0 == crate::alloc_bitmap::first_free_from_spec(map@, 0));
+                crate::alloc_bitmap::first_free_in_bounds(map@, 0);
+                assert(0 <= (slot as int));
+                assert((slot as int) < map@.len());
+                assert(base as int + (slot as int) * obj_size as int <= u64::MAX as int) by (nonlinear_arith)
+                    requires
+                        0 <= (slot as int),
+                        (slot as int) < map.len() as int,
+                        obj_size > 0,
+                        base as int + map.len() as int * obj_size as int <= u64::MAX as int,
+                ;
+                assert(pool_alloc_spec(map@, gens@, base, obj_size)
+                    == Some((slot as int, slot_address_spec(slot as u64, base, obj_size), handle)));
+            }
             let addr = slot_address(slot as u64, base, obj_size);
             Some((slot, addr, handle, new_map, new_gens))
         }
@@ -103,7 +120,6 @@ pub open spec fn pool_free_spec(
 
 // r[impl pool.free]
 /// Free a pool slot by handle. Returns Ok(new_map, new_gens) or Err.
-#[verifier::external_body]
 pub fn pool_free(
     map: &[bool], gens: &[u32], handle: u64,
 ) -> (result: Result<(Vec<bool>, Vec<u32>), ()>)
@@ -115,7 +131,11 @@ pub fn pool_free(
         }
     })
 {
-    crate::alloc_bitmap::bitmap_free(map, gens, handle)
+    let free_result = crate::alloc_bitmap::bitmap_free(map, gens, handle);
+    proof {
+        assert(pool_free_spec(map@, gens@, handle) == bitmap_free_spec(map@, gens@, handle).0);
+    }
+    free_result
 }
 
 // ─── Pool Is Full ────────────────────────────────────────────────────

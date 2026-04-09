@@ -94,6 +94,42 @@ pub fn bitmap_generation(gens: &[u32], slot: usize) -> (result: u32)
     gens[slot]
 }
 
+/// Helper: clone a bool slice into a Vec.
+pub fn clone_bool_slice(src: &[bool]) -> (result: Vec<bool>)
+    ensures result@ == src@
+{
+    let mut out: Vec<bool> = Vec::new();
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            0 <= i <= src@.len(),
+            out@ == src@.subrange(0, i as int),
+        decreases src@.len() - i,
+    {
+        out.push(src[i]);
+        i = i + 1;
+    }
+    out
+}
+
+/// Helper: clone a u32 slice into a Vec.
+pub fn clone_u32_slice(src: &[u32]) -> (result: Vec<u32>)
+    ensures result@ == src@
+{
+    let mut out: Vec<u32> = Vec::new();
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            0 <= i <= src@.len(),
+            out@ == src@.subrange(0, i as int),
+        decreases src@.len() - i,
+    {
+        out.push(src[i]);
+        i = i + 1;
+    }
+    out
+}
+
 // ─── Utilization ─────────────────────────────────────────────────────
 
 /// Spec helper: count allocated (true) entries from position `from`.
@@ -177,7 +213,7 @@ pub open spec fn bitmap_alloc_spec(
 
 // r[impl alloc-bitmap.alloc]
 /// Allocate the first free slot. Returns None if full.
-#[verifier::external_body]
+#[allow(clippy::cast_possible_truncation)]
 pub fn bitmap_alloc(
     map: &[bool], gens: &[u32],
 ) -> (result: Option<(usize, u64, Vec<bool>, Vec<u32>)>)
@@ -195,19 +231,36 @@ pub fn bitmap_alloc(
         }
     })
 {
-    for i in 0..map.len() {
+    let mut i: usize = 0;
+    while i < map.len()
+        invariant
+            0 <= i <= map@.len(),
+            map@.len() == gens@.len(),
+            map@.len() <= u32::MAX as int,
+            forall|j: int| 0 <= j < i as int ==> map@[j],
+        decreases map@.len() - i,
+    {
         if !map[i] {
             let new_gen = if gens[i] < u32::MAX { gens[i] + 1 } else { gens[i] };
-            let Ok(slot) = u32::try_from(i) else {
-                return None;
-            };
+            let slot = i as u32;
             let handle = handle_pack(slot, new_gen);
-            let mut new_map: Vec<bool> = map.to_vec();
-            let mut new_gens: Vec<u32> = gens.to_vec();
-            new_map[i] = true;
-            new_gens[i] = new_gen;
+            let mut new_map = clone_bool_slice(map);
+            let mut new_gens = clone_u32_slice(gens);
+            new_map.set(i, true);
+            new_gens.set(i, new_gen);
+            proof {
+                first_free_at_prefix_boundary(map@, i as int);
+                assert(bitmap_alloc_spec(map@, gens@).0 == i as int);
+                assert(bitmap_alloc_spec(map@, gens@).1 == handle);
+                assert(new_map@ == bitmap_alloc_spec(map@, gens@).2);
+                assert(new_gens@ == bitmap_alloc_spec(map@, gens@).3);
+            }
             return Some((i, handle, new_map, new_gens));
         }
+        i = i + 1;
+    }
+    proof {
+        alloc_full_returns_none(map@, gens@);
     }
     None
 }
@@ -234,7 +287,6 @@ pub open spec fn bitmap_free_spec(
 // r[impl alloc-bitmap.free]
 /// Free a slot by handle. Returns Ok(new_map, new_gens) or Err(()) for
 /// double-free, stale handle, or out-of-range.
-#[verifier::external_body]
 pub fn bitmap_free(
     map: &[bool], gens: &[u32], handle: u64,
 ) -> (result: Result<(Vec<bool>, Vec<u32>), ()>)
@@ -256,9 +308,9 @@ pub fn bitmap_free(
     if slot >= map.len() || !map[slot] || gens[slot] != generation {
         return Err(());
     }
-    let mut new_map: Vec<bool> = map.to_vec();
-    let new_gens: Vec<u32> = gens.to_vec();
-    new_map[slot] = false;
+    let mut new_map = clone_bool_slice(map);
+    let new_gens = clone_u32_slice(gens);
+    new_map.set(slot, false);
     Ok((new_map, new_gens))
 }
 
@@ -359,6 +411,55 @@ proof fn alloc_full_helper(map: Seq<bool>, from: int)
     if from >= 0 && from < map.len() {
         assert(map[from]); // all allocated
         alloc_full_helper(map, from + 1);
+    }
+}
+
+/// Helper: if every slot in `[from, target)` is allocated and `target` is free,
+/// then `target` is the first free slot from `from`.
+pub proof fn first_free_from_is_target(map: Seq<bool>, from: int, target: int)
+    requires
+        0 <= from <= target < map.len(),
+        !map[target],
+        forall|j: int| from <= j < target ==> map[j],
+    ensures first_free_from_spec(map, from) == target
+    decreases target - from,
+{
+    if from == target {
+        assert(first_free_from_spec(map, from) == from);
+    } else {
+        assert(map[from]);
+        first_free_from_is_target(map, from + 1, target);
+    }
+}
+
+/// Helper: if every earlier slot is allocated and slot `i` is free, then it is the first free slot.
+pub proof fn first_free_at_prefix_boundary(map: Seq<bool>, i: int)
+    requires
+        0 <= i < map.len(),
+        !map[i],
+        forall|j: int| 0 <= j < i ==> map[j],
+    ensures first_free_from_spec(map, 0) == i
+{
+    first_free_from_is_target(map, 0, i);
+}
+
+/// Helper: a found free slot is in bounds.
+pub proof fn first_free_in_bounds(map: Seq<bool>, from: int)
+    requires
+        0 <= from <= map.len(),
+        0 <= first_free_from_spec(map, from),
+    ensures
+        from <= first_free_from_spec(map, from),
+        first_free_from_spec(map, from) < map.len(),
+    decreases map.len() - from,
+{
+    if from < map.len() {
+        if !map[from] {
+            assert(first_free_from_spec(map, from) == from);
+        } else {
+            assert(first_free_from_spec(map, from) == first_free_from_spec(map, from + 1));
+            first_free_in_bounds(map, from + 1);
+        }
     }
 }
 
