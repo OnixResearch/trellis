@@ -2301,32 +2301,185 @@ pub proof fn encode_injective(a: Seq<u8>, b: Seq<u8>)
     encode_decode_roundtrip(b);
 }
 
+proof fn encode_chunk_window_fits(len: nat, n: nat)
+    requires
+        len <= ((usize::MAX as int) - 4) / 8,
+        n < encoded_length_spec(len),
+    ensures
+        n * 5 + 4 <= usize::MAX as nat,
+{
+    encoded_length_ceil(len);
+    assert(len > 0);
+    chunk_start_in_bounds(len, n);
+    assert(len * 8 + 4 <= usize::MAX as nat) by(nonlinear_arith)
+        requires len <= ((usize::MAX as int) - 4) / 8;
+    assert(n * 5 + 4 < len * 8 + 4) by(nonlinear_arith)
+        requires n * 5 < len * 8;
+}
+
+proof fn mul5_usize_nat(n: usize)
+    requires (n as nat) * 5 + 4 <= usize::MAX as nat
+    ensures
+        ((n * 5) as nat) == (n as nat) * 5,
+        ((n * 5 + 1) as nat) == (n as nat) * 5 + 1,
+        ((n * 5 + 2) as nat) == (n as nat) * 5 + 2,
+        ((n * 5 + 3) as nat) == (n as nat) * 5 + 3,
+        ((n * 5 + 4) as nat) == (n as nat) * 5 + 4,
+{}
+
+proof fn encoded_length_exec_eq(len: usize)
+    requires len as nat <= ((usize::MAX as int) - 4) / 8
+    ensures ((len * 8 + 4) / 5) as nat == encoded_length_spec(len as nat)
+{}
+
+fn bit_at_padded_exec(bytes: &Vec<u8>, pos: usize) -> (result: u8)
+    requires bytes@.len() <= ((usize::MAX as int) - 4) / 8
+    ensures
+        result == bit_at_padded_spec(bytes@, pos as nat),
+        result <= 1u8,
+{
+    let shift: u64 = (pos % 8) as u64;
+    let result = if pos < bytes.len() * 8 {
+        (((bytes[pos / 8] as u64) >> shift) & 1u64) as u8
+    } else {
+        0u8
+    };
+    proof {
+        if pos < bytes.len() * 8 {
+            assert((pos as nat) < ((bytes.len() as nat) * 8));
+        } else {
+            assert((pos as nat) >= ((bytes.len() as nat) * 8));
+        }
+        bit_at_padded_bounded(bytes@, pos as nat);
+    }
+    result
+}
+
+fn encode_digit(bytes: &Vec<u8>, n: usize) -> (digit: u8)
+    requires
+        bytes@.len() <= ((usize::MAX as int) - 4) / 8,
+        n < encoded_length_spec(bytes@.len()),
+    ensures
+        digit == digit_from_bit_spec(bytes@, (n as nat) * 5),
+        digit < 32u8,
+{
+    proof {
+        encode_chunk_window_fits(bytes@.len(), n as nat);
+    }
+    let bit = n * 5;
+    let b0 = bit_at_padded_exec(bytes, bit);
+    let b1 = bit_at_padded_exec(bytes, bit + 1);
+    let b2 = bit_at_padded_exec(bytes, bit + 2);
+    let b3 = bit_at_padded_exec(bytes, bit + 3);
+    let b4 = bit_at_padded_exec(bytes, bit + 4);
+    let digit = ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8;
+    proof {
+        let start = (n as nat) * 5;
+        mul5_usize_nat(n);
+        assert(digit == digit_from_bit_spec(bytes@, start));
+        digit_from_bit_bounded(bytes@, start);
+    }
+    digit
+}
+
+fn alphabet_char(digit: u8) -> (result: u8)
+    requires digit < 32u8
+    ensures result == alphabet_spec()[digit as int]
+{
+    if digit == 0u8 { 48u8 }
+    else if digit == 1u8 { 49u8 }
+    else if digit == 2u8 { 50u8 }
+    else if digit == 3u8 { 51u8 }
+    else if digit == 4u8 { 52u8 }
+    else if digit == 5u8 { 53u8 }
+    else if digit == 6u8 { 54u8 }
+    else if digit == 7u8 { 55u8 }
+    else if digit == 8u8 { 56u8 }
+    else if digit == 9u8 { 57u8 }
+    else if digit == 10u8 { 97u8 }
+    else if digit == 11u8 { 98u8 }
+    else if digit == 12u8 { 99u8 }
+    else if digit == 13u8 { 100u8 }
+    else if digit == 14u8 { 102u8 }
+    else if digit == 15u8 { 103u8 }
+    else if digit == 16u8 { 104u8 }
+    else if digit == 17u8 { 105u8 }
+    else if digit == 18u8 { 106u8 }
+    else if digit == 19u8 { 107u8 }
+    else if digit == 20u8 { 108u8 }
+    else if digit == 21u8 { 109u8 }
+    else if digit == 22u8 { 110u8 }
+    else if digit == 23u8 { 112u8 }
+    else if digit == 24u8 { 113u8 }
+    else if digit == 25u8 { 114u8 }
+    else if digit == 26u8 { 115u8 }
+    else if digit == 27u8 { 118u8 }
+    else if digit == 28u8 { 119u8 }
+    else if digit == 29u8 { 120u8 }
+    else if digit == 30u8 { 121u8 }
+    else { 122u8 }
+}
+
 // r[impl nix-base32.encode]
 /// Encode bytes using Nix Base32.
-/// @verified-logic:closeable-boundary — runtime base32 loop trusted to match the spec
-#[verifier::external_body]
 pub fn encode(bytes: &Vec<u8>) -> (result: Vec<u8>)
+    requires bytes@.len() <= ((usize::MAX as int) - 4) / 8
     ensures result@ == encode_spec(bytes@)
 {
-    const ALPHABET: &[u8; 32] = b"0123456789abcdfghijklmnpqrsvwxyz";
     if bytes.is_empty() {
+        proof {
+            assert(encode_spec(bytes@) == Seq::<u8>::empty());
+        }
         return Vec::new();
     }
 
     let out_len = (bytes.len() * 8 + 4) / 5;
+    proof {
+        encoded_length_exec_eq(bytes.len());
+        assert((bytes.len() as nat) == bytes@.len());
+        assert(out_len as nat == encoded_length_spec(bytes@.len()));
+    }
     let mut result = Vec::with_capacity(out_len);
-    for n in (0..out_len).rev() {
-        let bit = n * 5;
-        let i = bit / 8;
-        let j = bit % 8;
-        let left = (bytes[i] as u64) >> (j as u64);
-        let right = if i + 1 < bytes.len() {
-            ((bytes[i + 1] as u64) << (8u64 - j as u64)) & 0xffu64
-        } else {
-            0u64
-        };
-        let digit = ((left | right) & 0x1fu64) as usize;
-        result.push(ALPHABET[digit]);
+    let mut idx: usize = 0;
+    while idx < out_len
+        invariant
+            bytes@.len() <= ((usize::MAX as int) - 4) / 8,
+            bytes.len() > 0,
+            out_len as nat == encoded_length_spec(bytes@.len()),
+            0 <= idx <= out_len,
+            result@.len() == idx as int,
+            forall|j: int| 0 <= j < idx as int ==> result@[j] == encode_char_spec(bytes@, out_len as nat, j as nat),
+        decreases out_len - idx
+    {
+        let n = out_len - 1 - idx;
+        let digit = encode_digit(bytes, n);
+        let c = alphabet_char(digit);
+        proof {
+            assert((out_len - 1 - idx) as nat == out_len as nat - 1 - idx as nat) by(nonlinear_arith)
+                requires idx < out_len;
+            assert(c == encode_char_spec(bytes@, out_len as nat, idx as nat));
+        }
+        result.push(c);
+        idx = idx + 1;
+        proof {
+            assert forall|j: int| 0 <= j < idx as int implies result@[j] == encode_char_spec(bytes@, out_len as nat, j as nat) by {
+                if j < idx as int - 1 {
+                } else {
+                    assert(j == idx as int - 1) by(nonlinear_arith)
+                        requires 0 <= j < idx as int, !(j < idx as int - 1);
+                }
+            }
+        }
+    }
+    proof {
+        assert forall|j: int| 0 <= j < out_len as int implies result@[j] == encode_char_spec(bytes@, out_len as nat, j as nat) by {
+        }
+        assert(result@ == encode_prefix_spec(bytes@, out_len as nat, out_len as nat));
+        assert(result@ == encode_spec(bytes@));
     }
     result
 }

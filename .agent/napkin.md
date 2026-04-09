@@ -52,6 +52,10 @@
 - The full roundtrip proof now works: prove `reconstruct_prefix_masked`, then combine it with
   `prefix_masked_full`, `reconstruct_full_len`, and a tiny `extend_to_same_len` helper to internalize
   `encode_decode_roundtrip`.
+- To internalize `encode`, it was easier to stop proving the old left/right byte formula directly.
+  A better route is: prove a small range precondition for `usize`, add verified exec helpers
+  `bit_at_padded_exec` and `encode_digit` that mirror the spec bit-by-bit, then use a verified
+  `alphabet_char` mapping in the loop. That avoids the brittle bitvector bridge entirely.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
