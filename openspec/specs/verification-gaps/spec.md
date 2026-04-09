@@ -16,7 +16,7 @@ As of `2026-04-09`, backed by fresh reruns on the current tree, the live verific
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
 - `cargo test` passes (`3191 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5427 verified, 0 errors`)
+- `./scripts/verus.sh src/lib.rs` passes (`5433 verified, 0 errors`)
 - Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
@@ -54,11 +54,10 @@ Summary:
 
 ### `assume(...)` soundness oracles
 
-`2` soundness oracles remain in verified code.
+`1` soundness oracle remains in verified code.
 
 | Site | Classification | Rationale |
 |---|---|---|
-| `src/topo_sort.rs:265` | Closeable | Checker soundness currently ends in an `assume(is_topo_order_spec(...))` oracle |
 | `src/reachability.rs:286` | Closeable | Completeness is still partially delegated to an `assume(reachable_fuel(...))` oracle |
 
 ### `@verified-logic:no-ensures` and placeholder surfaces

@@ -4,7 +4,7 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5427 Verus proofs + 3191 cargo tests = current local snapshot
+- 5433 Verus proofs + 3191 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
@@ -17,7 +17,7 @@
 - When evidence needs to prove a directory is absent, `test -d` alone is not enough for a transcript because it prints nothing. Use an explicit shell form such as `if [ -d ... ]; then echo active-present; else echo active-absent; fi`, and save the raw transcript file in the change directory.
 - Tracey first dropped to `2 uncovered` (`query-cost.index-scan`, `snapshot-iso.si-allows-commit`) and `0 untested` after metadata-only fixes in `ct_select.rs`, `nonce.rs`, `index_select.rs`, `mvcc.rs`, and `snapshot_isolation.rs`, then to `0 uncovered` after adding `r[impl]` to the spec-level implementations in `query_cost.rs` and `snapshot_isolation.rs`.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
-- Trusted boundaries also include `assume(...)` oracles in `src/topo_sort.rs` and `src/reachability.rs`, not just `#[verifier::external_body]`.
+- Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`; after closing `src/topo_sort.rs:is_topo_order`, the only remaining real `assume(...)` oracle is in `src/reachability.rs`.
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.
 - Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is now an explicit `@verified-logic:no-ensures` closeable boundary, not an unmarked gap.
 - `cargo clippy --all-targets -- -D warnings` was easiest to close with a mix of real cast fixes and test-only `#[allow(...)]` annotations for style lints (`default_numeric_fallback`, `uninlined_format_args`, truncation casts in proptests) rather than invasive churn in test code.
@@ -34,6 +34,7 @@
 - `src/cron_next.rs:next_occurrence` also closes now. The proof works if the search stays iterative, year-overflow paths return `false` instead of incrementing past the horizon, loop termination uses a lexicographic decreases tuple over `(year, month, day, hour, minute)`, and `cron_field::first_match_correct` / `first_match_ge_from` are `pub proof fn` so the search proof can reuse them across modules.
 - `src/index_select.rs:best_index` is no longer a placeholder/no-ensures surface. The clean spec shape is a prefix minimum (`best_index_prefix_spec`) with a strict cross-multiplication comparator `selectivity_lt_spec`; the exec loop invariant can then state `best == best_index_prefix_spec(selectivities, i)`.
 - `src/settlement.rs` no longer needs a no-ensures escape hatch. The workable bridge is to keep the old int-tuple spec for proofs, add exec-side view specs for `(usize, usize, u64)` obligations and `Vec<i128>` positions, then prove `compute_positions` against a prefix-application spec over the first `i` obligations. `is_valid_settlement` then verifies by comparing the proved position views index-by-index.
+- `src/topo_sort.rs:is_topo_order` closes cleanly if the checker proof is split into three recursive bridges (`all_in_range_from_pointwise`, `all_distinct_from_pairwise`, `edges_forward_from_pointwise`) plus a mapped-first-occurrence lemma for the edge endpoint scans. In the exec loops, only set `pu`/`pv` while they are still the sentinel so the invariants continue to describe the first occurrence.
 - `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.

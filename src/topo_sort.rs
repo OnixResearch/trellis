@@ -115,6 +115,83 @@ pub open spec fn in_degree_spec(edges: Seq<(int, int)>, v: int) -> int {
     in_degree_from_spec(edges, v, 0)
 }
 
+proof fn position_of_from_found(order: Seq<int>, node: int, from: int, pos: int)
+    requires
+        0 <= from <= pos < order.len(),
+        order[pos] == node,
+        forall|j: int| #![trigger order[j]] from <= j < pos ==> order[j] != node,
+    ensures position_of_from_spec(order, node, from) == pos
+    decreases order.len() - from,
+{
+    if from < pos {
+        position_of_from_found(order, node, from + 1, pos);
+    }
+}
+
+proof fn mapped_position_of_from_found(order: Seq<usize>, node: usize, from: int, pos: int)
+    requires
+        0 <= from <= pos < order.len(),
+        order[pos] == node,
+        forall|j: int| #![trigger order[j]] from <= j < pos ==> order[j] != node,
+    ensures position_of_from_spec(order.map(|_i: int, v: usize| v as int), node as int, from) == pos
+    decreases order.len() - from,
+{
+    if from < pos {
+        mapped_position_of_from_found(order, node, from + 1, pos);
+    }
+}
+
+proof fn all_in_range_from_pointwise(order: Seq<int>, n: int, from: int)
+    requires
+        0 <= from <= order.len(),
+        forall|j: int| #![trigger order[j]] from <= j < order.len() ==> 0 <= order[j] < n,
+    ensures all_in_range_spec(order, n, from)
+    decreases order.len() - from,
+{
+    if from < order.len() {
+        all_in_range_from_pointwise(order, n, from + 1);
+    }
+}
+
+proof fn not_in_rest_from_pointwise(order: Seq<int>, val: int, from: int)
+    requires
+        0 <= from <= order.len(),
+        forall|j: int| #![trigger order[j]] from <= j < order.len() ==> order[j] != val,
+    ensures not_in_rest_spec(order, val, from)
+    decreases order.len() - from,
+{
+    if from < order.len() {
+        not_in_rest_from_pointwise(order, val, from + 1);
+    }
+}
+
+proof fn all_distinct_from_pairwise(order: Seq<int>, from: int)
+    requires
+        0 <= from <= order.len(),
+        forall|a: int, b: int| #![trigger order[a], order[b]] from <= a < b < order.len() ==> order[a] != order[b],
+    ensures all_distinct_spec(order, from)
+    decreases order.len() - from,
+{
+    if from < order.len() {
+        assert(forall|j: int| #![trigger order[j]] from + 1 <= j < order.len() ==> order[j] != order[from]);
+        not_in_rest_from_pointwise(order, order[from], from + 1);
+        all_distinct_from_pairwise(order, from + 1);
+    }
+}
+
+proof fn edges_forward_from_pointwise(edges: Seq<(int, int)>, n: int, order: Seq<int>, from: int)
+    requires
+        0 <= from <= edges.len(),
+        forall|k: int| #![trigger edges[k]] from <= k < edges.len() ==>
+            position_of_spec(order, edges[k].0) < position_of_spec(order, edges[k].1),
+    ensures edges_forward_spec(edges, n, order, from)
+    decreases edges.len() - from,
+{
+    if from < edges.len() {
+        edges_forward_from_pointwise(edges, n, order, from + 1);
+    }
+}
+
 // ============================================================
 // Verified checker
 // ============================================================
@@ -180,6 +257,8 @@ pub fn is_topo_order(edges: &[(usize, usize)], n: usize, order: &[usize]) -> (re
             forall|j: int| #![trigger om[j]] 0 <= j < i as int ==> (0 <= om[j] && om[j] < n as int),
             // All values seen so far are marked
             forall|j: int| #![trigger om[j]] 0 <= j < i as int ==> seen@[om[j]] == true,
+            // Prefix values are pairwise distinct
+            forall|a: int, b: int| 0 <= a < b < i as int ==> om[a] != om[b],
             // Only values in order[0..i] are marked
             forall|v: int| #![trigger seen@[v]] 0 <= v < n as int && seen@[v] ==> (
                 exists|j: int| #![trigger om[j]] 0 <= j < i as int && om[j] == v
@@ -198,8 +277,9 @@ pub fn is_topo_order(edges: &[(usize, usize)], n: usize, order: &[usize]) -> (re
         i += 1;
     }
 
-    // Re-establish edge validity for the next loop
     proof {
+        all_in_range_from_pointwise(om, n as int, 0);
+        all_distinct_from_pairwise(om, 0);
         assert forall|k: int| #![trigger edges@[k]] 0 <= k < edges@.len() implies ({
             let (eu, ev) = edges@[k];
             (eu as int) < n as int && (ev as int) < n as int
@@ -217,10 +297,13 @@ pub fn is_topo_order(edges: &[(usize, usize)], n: usize, order: &[usize]) -> (re
             em =~= edges@.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int)),
             om =~= order@.map(|_i: int, v: usize| v as int),
             order@.len() == n,
+            all_in_range_spec(om, n as int, 0),
+            all_distinct_spec(om, 0),
             forall|k: int| #![trigger edges@[k]] 0 <= k < edges@.len() ==> {
                 let (eu, ev) = edges@[k];
                 (eu as int) < n as int && (ev as int) < n as int
             },
+            forall|k: int| 0 <= k < ei as int ==> position_of_spec(order@.map(|_i: int, v: usize| v as int), em[k].0) < position_of_spec(order@.map(|_i: int, v: usize| v as int), em[k].1),
         decreases edges.len() - ei,
     {
         let (u, v) = edges[ei];
@@ -238,9 +321,10 @@ pub fn is_topo_order(edges: &[(usize, usize)], n: usize, order: &[usize]) -> (re
                 order@.len() == n,
                 pu == n || (pu < n && order@[pu as int] == u),
                 pu == n ==> forall|j: int| #![trigger order@[j]] 0 <= j < pi as int ==> order@[j] != u,
+                pu < n ==> forall|j: int| #![trigger order@[j]] 0 <= j < pu as int ==> order@[j] != u,
             decreases n - pi,
         {
-            if order[pi] == u { pu = pi; }
+            if pu == n && order[pi] == u { pu = pi; }
             pi += 1;
         }
         // Find position of v
@@ -252,17 +336,27 @@ pub fn is_topo_order(edges: &[(usize, usize)], n: usize, order: &[usize]) -> (re
                 order@.len() == n,
                 pv == n || (pv < n && order@[pv as int] == v),
                 pv == n ==> forall|j: int| #![trigger order@[j]] 0 <= j < pj as int ==> order@[j] != v,
+                pv < n ==> forall|j: int| #![trigger order@[j]] 0 <= j < pv as int ==> order@[j] != v,
             decreases n - pj,
         {
-            if order[pj] == v { pv = pj; }
+            if pv == n && order[pj] == v { pv = pj; }
             pj += 1;
         }
-        if pu >= pv { return false; }
+        if pu == n || pv == n || pu >= pv { return false; }
+        proof {
+            mapped_position_of_from_found(order@, u, 0, pu as int);
+            mapped_position_of_from_found(order@, v, 0, pv as int);
+            assert(position_of_spec(order@.map(|_i: int, w: usize| w as int), u as int) == pu as int);
+            assert(position_of_spec(order@.map(|_i: int, w: usize| w as int), v as int) == pv as int);
+            assert(position_of_spec(order@.map(|_i: int, w: usize| w as int), u as int) < position_of_spec(order@.map(|_i: int, w: usize| w as int), v as int));
+        }
         ei += 1;
     }
 
-    // Return true but don't try to prove the full spec connection — covered by proptest
-    assume(is_topo_order_spec(em, n as int, om));
+    proof {
+        edges_forward_from_pointwise(em, n as int, order@.map(|_i: int, v: usize| v as int), 0);
+        assert(is_topo_order_spec(em, n as int, order@.map(|_i: int, v: usize| v as int)));
+    }
     true
 }
 

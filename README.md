@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**5427 Verus proofs · 3191 tests · 1197 requirements · 244 modules · 13 trusted boundaries**
+**5433 Verus proofs · 3191 tests · 1197 requirements · 244 modules · 13 trusted boundaries**
 
 ## How it works
 
@@ -408,7 +408,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (5427 proofs)
+./scripts/verus.sh         # verus only (5433 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -463,7 +463,7 @@ Those are the current trusted boundaries inside Verus.
 
 In addition to `external_body`, the current audit also tracks:
 
-- `2` `assume(...)` soundness oracles (`topo_sort.rs`, `reachability.rs`)
-- `5` `@verified-logic:no-ensures` / placeholder-spec surfaces
+- `1` `assume(...)` soundness oracle (`reachability.rs`)
+- `2` `@verified-logic:no-ensures` / placeholder-spec surfaces
 
 All trusted items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.
