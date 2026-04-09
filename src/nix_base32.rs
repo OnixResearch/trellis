@@ -112,13 +112,21 @@ pub closed spec fn or_extend_at_spec(acc: Seq<u8>, idx: nat, val: u8) -> Seq<u8>
     base.update(idx as int, (((base[idx as int] as u64) | (val as u64)) as u8))
 }
 
+pub closed spec fn decode_low_spec(bit: nat, digit: u8) -> u8 {
+    (((digit as u64) << ((bit % 8) as u64)) & 0xffu64) as u8
+}
+
+pub closed spec fn decode_high_spec(bit: nat, digit: u8) -> u8 {
+    let j = bit % 8;
+    if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 }
+}
+
 pub closed spec fn decode_step_spec(acc: Seq<u8>, n: nat, digit: u8) -> Seq<u8> {
     let bit = n * 5;
     let i = bit / 8;
-    let j = bit % 8;
-    let low = (((digit as u64) << (j as u64)) & 0xffu64) as u8;
+    let low = decode_low_spec(bit, digit);
     let acc1 = or_extend_at_spec(acc, i, low);
-    let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
+    let high = decode_high_spec(bit, digit);
     if high == 0u8 {
         acc1
     } else {
@@ -242,6 +250,188 @@ proof fn encoded_length_ceil(len: nat)
     assert(encoded_length_spec(len) == 0 <==> len == 0) by(nonlinear_arith);
 }
 
+proof fn chunk_start_in_bounds(len: nat, n: nat)
+    requires
+        len > 0,
+        n < encoded_length_spec(len),
+    ensures
+        n * 5 < len * 8,
+        (n * 5) / 8 < len,
+{
+    let out_len = encoded_length_spec(len);
+    encoded_length_ceil(len);
+    assert(out_len > 0);
+    assert((out_len - 1) * 5 < len * 8);
+    assert(n as int <= out_len as int - 1) by(nonlinear_arith)
+        requires n < out_len, out_len > 0;
+    assert((n * 5) as int <= ((out_len - 1) * 5) as int) by(nonlinear_arith)
+        requires n as int <= out_len as int - 1;
+    assert(n * 5 < len * 8) by(nonlinear_arith)
+        requires
+            (n * 5) as int <= ((out_len - 1) * 5) as int,
+            (out_len - 1) * 5 < len * 8;
+    assert((n * 5) / 8 < len) by(nonlinear_arith)
+        requires n * 5 < len * 8;
+}
+
+proof fn div_mod_decompose_8(x: nat)
+    ensures x == 8 * (x / 8) + (x % 8)
+{
+    assert(x == 8 * (x / 8) + (x % 8)) by(nonlinear_arith);
+}
+
+proof fn bit_at_padded_zero_beyond_end(bytes: Seq<u8>, pos: nat)
+    requires pos >= bytes.len() * 8
+    ensures bit_at_padded_spec(bytes, pos) == 0u8
+{}
+
+proof fn decode_high_zero_when_no_spill(bit: nat, digit: u8)
+    requires
+        digit < 32,
+        bit % 8 <= 3,
+    ensures decode_high_spec(bit, digit) == 0u8
+{
+    let j = bit % 8;
+    if j == 0 {
+    } else if j == 1 {
+        assert((digit as u64) >> 7u64 == 0u64) by(bit_vector)
+            requires digit < 32u8;
+    } else if j == 2 {
+        assert((digit as u64) >> 6u64 == 0u64) by(bit_vector)
+            requires digit < 32u8;
+    } else {
+        assert(j == 3);
+        assert((digit as u64) >> 5u64 == 0u64) by(bit_vector)
+            requires digit < 32u8;
+    }
+}
+
+proof fn last_chunk_spill_zero(bytes: Seq<u8>, n: nat)
+    requires
+        bytes.len() > 0,
+        n < encoded_length_spec(bytes.len()),
+        ((n * 5) / 8) + 1 == bytes.len(),
+        4 <= (n * 5) % 8,
+    ensures decode_high_spec(n * 5, digit_from_bit_spec(bytes, n * 5)) == 0u8
+{
+    let bit = n * 5;
+    let j = bit % 8;
+    let d = digit_from_bit_spec(bytes, bit);
+    let b0 = bit_at_padded_spec(bytes, bit);
+    let b1 = bit_at_padded_spec(bytes, bit + 1);
+    let b2 = bit_at_padded_spec(bytes, bit + 2);
+    let b3 = bit_at_padded_spec(bytes, bit + 3);
+    let b4 = bit_at_padded_spec(bytes, bit + 4);
+    digit_from_bit_bounded(bytes, bit);
+    bit_at_padded_bounded(bytes, bit);
+    bit_at_padded_bounded(bytes, bit + 1);
+    bit_at_padded_bounded(bytes, bit + 2);
+    bit_at_padded_bounded(bytes, bit + 3);
+    bit_at_padded_bounded(bytes, bit + 4);
+    div_mod_decompose_8(bit);
+    assert(bit / 8 + 1 == bytes.len());
+    assert(bit == 8 * (bytes.len() - 1) + j) by(nonlinear_arith)
+        requires
+            bit == 8 * (bit / 8) + j,
+            bit / 8 + 1 == bytes.len(),
+            bytes.len() > 0;
+    assert(d == ((b0 as u64)
+        | ((b1 as u64) << 1u64)
+        | ((b2 as u64) << 2u64)
+        | ((b3 as u64) << 3u64)
+        | ((b4 as u64) << 4u64)) as u8);
+    if j == 4 {
+        assert(bit + 4 == bytes.len() * 8) by(nonlinear_arith)
+            requires bit == 8 * (bytes.len() - 1) + j, j == 4, bytes.len() > 0;
+        bit_at_padded_zero_beyond_end(bytes, bit + 4);
+        assert(b4 == 0u8);
+        assert((d as u64) >> 4u64 == 0u64) by(bit_vector)
+            requires
+                d == ((b0 as u64)
+                    | ((b1 as u64) << 1u64)
+                    | ((b2 as u64) << 2u64)
+                    | ((b3 as u64) << 3u64)
+                    | ((b4 as u64) << 4u64)) as u8,
+                b0 <= 1u8,
+                b1 <= 1u8,
+                b2 <= 1u8,
+                b3 <= 1u8,
+                b4 == 0u8;
+        assert((((d as u64) >> 4u64) as u8) == 0u8) by(bit_vector)
+            requires (d as u64) >> 4u64 == 0u64;
+    } else if j == 5 {
+        assert(bit + 3 == bytes.len() * 8) by(nonlinear_arith)
+            requires bit == 8 * (bytes.len() - 1) + j, j == 5, bytes.len() > 0;
+        bit_at_padded_zero_beyond_end(bytes, bit + 3);
+        bit_at_padded_zero_beyond_end(bytes, bit + 4);
+        assert(b3 == 0u8);
+        assert(b4 == 0u8);
+        assert((d as u64) >> 3u64 == 0u64) by(bit_vector)
+            requires
+                d == ((b0 as u64)
+                    | ((b1 as u64) << 1u64)
+                    | ((b2 as u64) << 2u64)
+                    | ((b3 as u64) << 3u64)
+                    | ((b4 as u64) << 4u64)) as u8,
+                b0 <= 1u8,
+                b1 <= 1u8,
+                b2 <= 1u8,
+                b3 == 0u8,
+                b4 == 0u8;
+        assert((((d as u64) >> 3u64) as u8) == 0u8) by(bit_vector)
+            requires (d as u64) >> 3u64 == 0u64;
+    } else if j == 6 {
+        assert(bit + 2 == bytes.len() * 8) by(nonlinear_arith)
+            requires bit == 8 * (bytes.len() - 1) + j, j == 6, bytes.len() > 0;
+        bit_at_padded_zero_beyond_end(bytes, bit + 2);
+        bit_at_padded_zero_beyond_end(bytes, bit + 3);
+        bit_at_padded_zero_beyond_end(bytes, bit + 4);
+        assert(b2 == 0u8);
+        assert(b3 == 0u8);
+        assert(b4 == 0u8);
+        assert((d as u64) >> 2u64 == 0u64) by(bit_vector)
+            requires
+                d == ((b0 as u64)
+                    | ((b1 as u64) << 1u64)
+                    | ((b2 as u64) << 2u64)
+                    | ((b3 as u64) << 3u64)
+                    | ((b4 as u64) << 4u64)) as u8,
+                b0 <= 1u8,
+                b1 <= 1u8,
+                b2 == 0u8,
+                b3 == 0u8,
+                b4 == 0u8;
+        assert((((d as u64) >> 2u64) as u8) == 0u8) by(bit_vector)
+            requires (d as u64) >> 2u64 == 0u64;
+    } else {
+        assert(j == 7);
+        assert(bit + 1 == bytes.len() * 8) by(nonlinear_arith)
+            requires bit == 8 * (bytes.len() - 1) + j, j == 7, bytes.len() > 0;
+        bit_at_padded_zero_beyond_end(bytes, bit + 1);
+        bit_at_padded_zero_beyond_end(bytes, bit + 2);
+        bit_at_padded_zero_beyond_end(bytes, bit + 3);
+        bit_at_padded_zero_beyond_end(bytes, bit + 4);
+        assert(b1 == 0u8);
+        assert(b2 == 0u8);
+        assert(b3 == 0u8);
+        assert(b4 == 0u8);
+        assert((d as u64) >> 1u64 == 0u64) by(bit_vector)
+            requires
+                d == ((b0 as u64)
+                    | ((b1 as u64) << 1u64)
+                    | ((b2 as u64) << 2u64)
+                    | ((b3 as u64) << 3u64)
+                    | ((b4 as u64) << 4u64)) as u8,
+                b0 <= 1u8,
+                b1 == 0u8,
+                b2 == 0u8,
+                b3 == 0u8,
+                b4 == 0u8;
+        assert((((d as u64) >> 1u64) as u8) == 0u8) by(bit_vector)
+            requires (d as u64) >> 1u64 == 0u64;
+    }
+}
+
 proof fn decode_char_of_alphabet_digit(d: u8)
     requires d < 32
     ensures decode_char_spec(alphabet_spec()[d as int]) == Some(d)
@@ -275,10 +465,79 @@ proof fn reconstruct_prefix_len_lower(bytes: Seq<u8>, upto: nat)
         let bit = n * 5;
         let i = bit / 8;
         let digit = digit_from_bit_spec(bytes, bit);
-        let low = (((digit as u64) << ((bit % 8) as u64)) & 0xffu64) as u8;
+        let low = decode_low_spec(bit, digit);
         or_extend_at_len(reconstruct_prefix_spec(bytes, n), i, low);
         assert(reconstruct_prefix_spec(bytes, upto).len() >= i + 1);
-        assert(i == (((upto - 1) * 5) / 8)) ;
+        assert(i == (((upto - 1) * 5) / 8));
+    }
+}
+
+proof fn reconstruct_prefix_len_upper(bytes: Seq<u8>, upto: nat)
+    requires upto <= encoded_length_spec(bytes.len())
+    ensures reconstruct_prefix_spec(bytes, upto).len() <= bytes.len()
+    decreases upto
+{
+    if upto != 0 {
+        reconstruct_prefix_len_upper(bytes, (upto - 1) as nat);
+        let n = (upto - 1) as nat;
+        let bit = n * 5;
+        let i = bit / 8;
+        let digit = digit_from_bit_spec(bytes, bit);
+        let low = decode_low_spec(bit, digit);
+        let high = decode_high_spec(bit, digit);
+        let acc = reconstruct_prefix_spec(bytes, n);
+        chunk_start_in_bounds(bytes.len(), n);
+        or_extend_at_len(acc, i, low);
+        assert(or_extend_at_spec(acc, i, low).len() <= bytes.len()) by {
+            if acc.len() <= i {
+                assert(or_extend_at_spec(acc, i, low).len() == i + 1);
+                assert(i + 1 <= bytes.len());
+            } else {
+                assert(or_extend_at_spec(acc, i, low).len() == acc.len());
+            }
+        }
+        if high == 0u8 {
+            assert(reconstruct_prefix_spec(bytes, upto).len() == or_extend_at_spec(acc, i, low).len());
+        } else {
+            digit_from_bit_bounded(bytes, bit);
+            if bit % 8 <= 3 {
+                decode_high_zero_when_no_spill(bit, digit);
+                assert(high == 0u8);
+            } else if i + 1 == bytes.len() {
+                last_chunk_spill_zero(bytes, n);
+                assert(high == 0u8);
+            } else {
+                assert(i + 2 <= bytes.len());
+                or_extend_at_len(or_extend_at_spec(acc, i, low), i + 1, high);
+                assert(reconstruct_prefix_spec(bytes, upto).len() <= bytes.len()) by {
+                    assert(reconstruct_prefix_spec(bytes, upto) == or_extend_at_spec(or_extend_at_spec(acc, i, low), i + 1, high));
+                    if or_extend_at_spec(acc, i, low).len() <= i + 1 {
+                        assert(reconstruct_prefix_spec(bytes, upto).len() == i + 2);
+                    } else {
+                        assert(reconstruct_prefix_spec(bytes, upto).len() == or_extend_at_spec(acc, i, low).len());
+                    }
+                }
+            }
+        }
+    }
+}
+
+proof fn reconstruct_full_len(bytes: Seq<u8>)
+    ensures reconstruct_prefix_spec(bytes, encoded_length_spec(bytes.len())).len() == bytes.len()
+{
+    let out_len = encoded_length_spec(bytes.len());
+    reconstruct_prefix_len_lower(bytes, out_len);
+    reconstruct_prefix_len_upper(bytes, out_len);
+    encoded_length_ceil(bytes.len());
+    if out_len == 0 {
+        assert(bytes.len() == 0);
+    } else {
+        assert((((out_len - 1) * 5) / 8) + 1 == bytes.len()) by(nonlinear_arith)
+            requires
+                out_len == encoded_length_spec(bytes.len()),
+                (out_len - 1) * 5 < bytes.len() * 8,
+                out_len * 5 >= bytes.len() * 8,
+                bytes.len() != 0;
     }
 }
 

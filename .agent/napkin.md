@@ -22,6 +22,15 @@
 - Restoring Verus in `src/mesi.rs`/`src/page.rs` used temporary `#[verifier::external_body]` on the remaining composite blockers. That made the pipeline green, but it increased the audited trust surface and must stay documented as closeable debt.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
+- `src/nix_base32.rs`: useful verified helper split for the roundtrip proof is to separate
+  decode byte writes into `decode_low_spec(bit, digit)` and `decode_high_spec(bit, digit)`.
+  Also, `chunk_start_in_bounds(len, n)` and `decode_high_zero_when_no_spill(bit, digit)`
+  verify cleanly and seem like the right arithmetic/bit lemmas for killing the remaining
+  roundtrip boundary in small steps.
+- The last-byte spill proof is tractable if you phrase it as `last_chunk_spill_zero`:
+  assume the chunk starts in the last byte (`((n*5)/8)+1 == len`) and case-split on
+  `bit % 8 == 4..7`, then prove the spill starts exactly at `len*8` and the padded bits are 0.
+  With that in place, `reconstruct_prefix_len_upper` and `reconstruct_full_len` verify.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
