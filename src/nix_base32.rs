@@ -216,6 +216,32 @@ proof fn digit_from_bit_bounded(bytes: Seq<u8>, start: nat)
     ;
 }
 
+proof fn extend_to_len(acc: Seq<u8>, len: nat)
+    requires acc.len() <= len
+    ensures extend_to_spec(acc, len).len() == len
+{}
+
+proof fn or_extend_at_len(acc: Seq<u8>, idx: nat, val: u8)
+    ensures or_extend_at_spec(acc, idx, val).len() == if acc.len() <= idx { idx + 1 } else { acc.len() }
+{
+    if acc.len() <= idx {
+        extend_to_len(acc, idx + 1);
+    }
+}
+
+proof fn encoded_length_ceil(len: nat)
+    ensures
+        encoded_length_spec(len) * 5 >= len * 8,
+        len != 0 ==> (encoded_length_spec(len) - 1) * 5 < len * 8,
+        encoded_length_spec(len) == 0 <==> len == 0,
+{
+    assert(encoded_length_spec(len) * 5 >= len * 8) by(nonlinear_arith);
+    if len != 0 {
+        assert((encoded_length_spec(len) - 1) * 5 < len * 8) by(nonlinear_arith);
+    }
+    assert(encoded_length_spec(len) == 0 <==> len == 0) by(nonlinear_arith);
+}
+
 proof fn decode_char_of_alphabet_digit(d: u8)
     requires d < 32
     ensures decode_char_spec(alphabet_spec()[d as int]) == Some(d)
@@ -234,6 +260,25 @@ proof fn decode_prefix_of_encode(bytes: Seq<u8>, upto: nat)
         assert(((out_len - 1 - (out_len - upto)) * 5) as nat == ((upto - 1) * 5) as nat);
         digit_from_bit_bounded(bytes, ((upto - 1) * 5) as nat);
         decode_char_of_alphabet_digit(digit_from_bit_spec(bytes, ((upto - 1) * 5) as nat));
+    }
+}
+
+proof fn reconstruct_prefix_len_lower(bytes: Seq<u8>, upto: nat)
+    ensures
+        upto == 0 ==> reconstruct_prefix_spec(bytes, upto).len() == 0,
+        upto != 0 ==> reconstruct_prefix_spec(bytes, upto).len() >= (((upto - 1) * 5) / 8) + 1,
+    decreases upto
+{
+    if upto != 0 {
+        reconstruct_prefix_len_lower(bytes, (upto - 1) as nat);
+        let n = (upto - 1) as nat;
+        let bit = n * 5;
+        let i = bit / 8;
+        let digit = digit_from_bit_spec(bytes, bit);
+        let low = (((digit as u64) << ((bit % 8) as u64)) & 0xffu64) as u8;
+        or_extend_at_len(reconstruct_prefix_spec(bytes, n), i, low);
+        assert(reconstruct_prefix_spec(bytes, upto).len() >= i + 1);
+        assert(i == (((upto - 1) * 5) / 8)) ;
     }
 }
 
