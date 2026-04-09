@@ -56,6 +56,11 @@
   A better route is: prove a small range precondition for `usize`, add verified exec helpers
   `bit_at_padded_exec` and `encode_digit` that mirror the spec bit-by-bit, then use a verified
   `alphabet_char` mapping in the loop. That avoids the brittle bitvector bridge entirely.
+- To internalize `decode`, recursive exec code was much easier than the original in-place reverse loop.
+  Mirror `decode_prefix_spec` with `decode_prefix_exec`, use `extend_to_exec` + `or_extend_at_exec`
+  to build updated vectors functionally, and keep the `usize` arithmetic tame with a small
+  `decode_chunk_window_fits` bound. This avoids proving mutation-heavy loop invariants over `resize`
+  and `|=`.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals

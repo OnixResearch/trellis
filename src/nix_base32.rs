@@ -2484,67 +2484,272 @@ pub fn encode(bytes: &Vec<u8>) -> (result: Vec<u8>)
     result
 }
 
+proof fn decode_chunk_window_fits(len: nat, n: nat)
+    requires
+        len <= ((usize::MAX as int) - 4) / 5 + 1,
+        n < len,
+    ensures
+        n * 5 + 4 <= usize::MAX as nat,
+{
+    assert(len > 0);
+    assert(n <= len - 1) by(nonlinear_arith)
+        requires n < len, len > 0;
+    assert(n * 5 + 4 <= (len - 1) * 5 + 4) by(nonlinear_arith)
+        requires n <= len - 1;
+    assert((len - 1) * 5 + 4 <= usize::MAX as nat) by(nonlinear_arith)
+        requires len <= ((usize::MAX as int) - 4) / 5 + 1;
+}
+
+fn extend_to_exec(acc: &Vec<u8>, len: usize) -> (result: Vec<u8>)
+    requires acc@.len() <= len as nat
+    ensures result@ == extend_to_spec(acc@, len as nat)
+{
+    let mut result = Vec::with_capacity(len);
+    let mut i: usize = 0;
+    while i < acc.len()
+        invariant
+            acc@.len() <= len as nat,
+            0 <= i <= acc.len(),
+            result@.len() == i as int,
+            forall|j: int| 0 <= j < i as int ==> result@[j] == acc@[j],
+        decreases acc.len() - i
+    {
+        result.push(acc[i]);
+        i = i + 1;
+    }
+    let mut j: usize = acc.len();
+    while j < len
+        invariant
+            acc@.len() <= len as nat,
+            acc.len() <= j <= len,
+            result@.len() == j as int,
+            forall|k: int| 0 <= k < acc.len() as int ==> result@[k] == acc@[k],
+            forall|k: int| acc.len() as int <= k < j as int ==> result@[k] == 0u8,
+        decreases len - j
+    {
+        result.push(0u8);
+        j = j + 1;
+    }
+    proof {
+        extend_to_len(acc@, len as nat);
+        assert forall|k: int| 0 <= k < len as int implies result@[k] == extend_to_spec(acc@, len as nat)[k] by {
+            let kk = k as nat;
+            extend_to_index(acc@, len as nat, kk);
+            if k < acc.len() as int {
+            } else {
+                assert(result@[k] == 0u8);
+            }
+        }
+        assert(result@.len() == extend_to_spec(acc@, len as nat).len());
+        assert(result@ == extend_to_spec(acc@, len as nat));
+    }
+    result
+}
+
+fn or_extend_at_exec(acc: &Vec<u8>, idx: usize, val: u8) -> (result: Vec<u8>)
+    requires idx < usize::MAX
+    ensures result@ == or_extend_at_spec(acc@, idx as nat, val)
+{
+    let len = if acc.len() <= idx { idx + 1 } else { acc.len() };
+    let mut result = extend_to_exec(acc, len);
+    let cur = result[idx];
+    proof {
+        assert(cur == extend_to_spec(acc@, len as nat)[idx as int]);
+    }
+    let new = ((cur as u64) | (val as u64)) as u8;
+    result.set(idx, new);
+    proof {
+        if acc@.len() <= idx as nat {
+            assert(len as nat == idx as nat + 1);
+            assert(result@ == extend_to_spec(acc@, idx as nat + 1).update(idx as int, new));
+        } else {
+            assert(len as nat == acc@.len());
+            extend_to_same_len(acc@);
+            assert(extend_to_spec(acc@, len as nat) == acc@);
+            assert(result@ == acc@.update(idx as int, new));
+        }
+        assert(result@ == or_extend_at_spec(acc@, idx as nat, val));
+    }
+    result
+}
+
+fn decode_char_exec(c: u8) -> (result: Option<u8>)
+    ensures match result {
+        Some(d) => decode_char_spec(c) == Some(d),
+        None => decode_char_spec(c) == None::<u8>,
+    }
+{
+    if c == 48u8 { Some(0u8) }
+    else if c == 49u8 { Some(1u8) }
+    else if c == 50u8 { Some(2u8) }
+    else if c == 51u8 { Some(3u8) }
+    else if c == 52u8 { Some(4u8) }
+    else if c == 53u8 { Some(5u8) }
+    else if c == 54u8 { Some(6u8) }
+    else if c == 55u8 { Some(7u8) }
+    else if c == 56u8 { Some(8u8) }
+    else if c == 57u8 { Some(9u8) }
+    else if c == 97u8 { Some(10u8) }
+    else if c == 98u8 { Some(11u8) }
+    else if c == 99u8 { Some(12u8) }
+    else if c == 100u8 { Some(13u8) }
+    else if c == 102u8 { Some(14u8) }
+    else if c == 103u8 { Some(15u8) }
+    else if c == 104u8 { Some(16u8) }
+    else if c == 105u8 { Some(17u8) }
+    else if c == 106u8 { Some(18u8) }
+    else if c == 107u8 { Some(19u8) }
+    else if c == 108u8 { Some(20u8) }
+    else if c == 109u8 { Some(21u8) }
+    else if c == 110u8 { Some(22u8) }
+    else if c == 112u8 { Some(23u8) }
+    else if c == 113u8 { Some(24u8) }
+    else if c == 114u8 { Some(25u8) }
+    else if c == 115u8 { Some(26u8) }
+    else if c == 118u8 { Some(27u8) }
+    else if c == 119u8 { Some(28u8) }
+    else if c == 120u8 { Some(29u8) }
+    else if c == 121u8 { Some(30u8) }
+    else if c == 122u8 { Some(31u8) }
+    else { None }
+}
+
+fn decode_step_exec(acc: &Vec<u8>, n: usize, digit: u8) -> (result: Vec<u8>)
+    requires
+        (n as nat) * 5 + 4 <= usize::MAX as nat,
+        digit < 32u8,
+    ensures result@ == decode_step_spec(acc@, n as nat, digit)
+{
+    proof {
+        mul5_usize_nat(n);
+    }
+    let bit = n * 5;
+    let i = bit / 8;
+    let j = bit % 8;
+    let low = (((digit as u64) << (j as u64)) & 0xffu64) as u8;
+    proof {
+        assert(i < usize::MAX) by(nonlinear_arith)
+            requires
+                (n as nat) * 5 + 4 <= usize::MAX as nat,
+                i == bit / 8,
+                (bit as nat) == (n as nat) * 5;
+    }
+    let acc1 = or_extend_at_exec(acc, i, low);
+    let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
+    if high == 0u8 {
+        proof {
+            assert((bit as nat) == (n as nat) * 5);
+            assert(i as nat == ((n as nat) * 5) / 8) by(nonlinear_arith)
+                requires i == bit / 8, (bit as nat) == (n as nat) * 5;
+            assert(low == decode_low_spec((n as nat) * 5, digit));
+            assert(high == decode_high_spec((n as nat) * 5, digit));
+            assert(acc1@ == or_extend_at_spec(acc@, i as nat, low));
+            assert(acc1@ == decode_step_spec(acc@, n as nat, digit));
+        }
+        acc1
+    } else {
+        proof {
+            assert(i + 1 < usize::MAX) by(nonlinear_arith)
+                requires
+                    (n as nat) * 5 + 4 <= usize::MAX as nat,
+                    i == bit / 8,
+                    (bit as nat) == (n as nat) * 5;
+        }
+        let acc2 = or_extend_at_exec(&acc1, i + 1, high);
+        proof {
+            assert((bit as nat) == (n as nat) * 5);
+            assert(i as nat == ((n as nat) * 5) / 8) by(nonlinear_arith)
+                requires i == bit / 8, (bit as nat) == (n as nat) * 5;
+            assert(low == decode_low_spec((n as nat) * 5, digit));
+            assert(high == decode_high_spec((n as nat) * 5, digit));
+            assert(acc1@ == or_extend_at_spec(acc@, i as nat, low));
+            assert(acc2@ == or_extend_at_spec(acc1@, i as nat + 1, high));
+            assert(acc2@ == decode_step_spec(acc@, n as nat, digit));
+        }
+        acc2
+    }
+}
+
+fn decode_prefix_exec(chars: &Vec<u8>, upto: usize) -> (result: Option<Vec<u8>>)
+    requires
+        chars@.len() <= ((usize::MAX as int) - 4) / 5 + 1,
+        upto <= chars.len(),
+    ensures match result {
+        Some(v) => decode_prefix_spec(chars@, upto as nat) == Some(v@),
+        None => decode_prefix_spec(chars@, upto as nat) == None::<Seq<u8>>,
+    }
+    decreases upto
+{
+    if upto == 0 {
+        let out = Vec::new();
+        proof {
+            assert(out@ == Seq::<u8>::empty());
+            assert(decode_prefix_spec(chars@, 0) == Some(out@));
+        }
+        Some(out)
+    } else {
+        let prev = decode_prefix_exec(chars, upto - 1);
+        match prev {
+            None => {
+                proof {
+                    assert(decode_prefix_spec(chars@, (upto - 1) as nat) == None::<Seq<u8>>);
+                    assert(decode_prefix_spec(chars@, upto as nat) == None::<Seq<u8>>);
+                }
+                None
+            }
+            Some(acc) => {
+                let c = chars[chars.len() - upto];
+                let digit = decode_char_exec(c);
+                match digit {
+                    None => {
+                        proof {
+                            assert(c == chars@[(chars.len() - upto) as int]);
+                            assert(decode_prefix_spec(chars@, (upto - 1) as nat) == Some(acc@));
+                            assert(decode_char_spec(c) == None::<u8>);
+                            assert(decode_prefix_spec(chars@, upto as nat) == None::<Seq<u8>>);
+                        }
+                        None
+                    }
+                    Some(d) => {
+                        proof {
+                            assert(((upto - 1) as nat) < (chars.len() as nat));
+                            assert((chars.len() as nat) == chars@.len());
+                            decode_chunk_window_fits(chars.len() as nat, (upto - 1) as nat);
+                        }
+                        let next = decode_step_exec(&acc, upto - 1, d);
+                        proof {
+                            assert(c == chars@[(chars.len() - upto) as int]);
+                            assert(decode_prefix_spec(chars@, (upto - 1) as nat) == Some(acc@));
+                            assert(decode_char_spec(c) == Some(d));
+                            assert(next@ == decode_step_spec(acc@, (upto - 1) as nat, d));
+                            assert(decode_prefix_spec(chars@, upto as nat) == Some(next@));
+                        }
+                        Some(next)
+                    }
+                }
+            }
+        }
+    }
+}
+
 // r[impl nix-base32.decode]
 /// Decode a Nix Base32 string.
-/// @verified-logic:closeable-boundary — runtime base32 loop trusted to match the spec
-#[verifier::external_body]
 pub fn decode(chars: &Vec<u8>) -> (result: Option<Vec<u8>>)
+    requires chars@.len() <= ((usize::MAX as int) - 4) / 5 + 1
     ensures match result {
         Some(v) => decode_spec(chars@) == Some(v@),
         None => decode_spec(chars@) == None::<Seq<u8>>,
     }
 {
-    fn decode_char(c: u8) -> Option<u8> {
-        match c {
-            b'0'..=b'9' => Some(c - b'0'),
-            b'a' => Some(10),
-            b'b' => Some(11),
-            b'c' => Some(12),
-            b'd' => Some(13),
-            b'f' => Some(14),
-            b'g' => Some(15),
-            b'h' => Some(16),
-            b'i' => Some(17),
-            b'j' => Some(18),
-            b'k' => Some(19),
-            b'l' => Some(20),
-            b'm' => Some(21),
-            b'n' => Some(22),
-            b'p' => Some(23),
-            b'q' => Some(24),
-            b'r' => Some(25),
-            b's' => Some(26),
-            b'v' => Some(27),
-            b'w' => Some(28),
-            b'x' => Some(29),
-            b'y' => Some(30),
-            b'z' => Some(31),
-            _ => None,
+    let result = decode_prefix_exec(chars, chars.len());
+    proof {
+        assert(chars.len() as nat == chars@.len());
+        match &result {
+            Some(v) => assert(decode_spec(chars@) == Some(v@)),
+            None => assert(decode_spec(chars@) == None::<Seq<u8>>),
         }
     }
-
-    let mut result: Vec<u8> = Vec::new();
-    for (n, &c) in chars.iter().rev().enumerate() {
-        let digit = match decode_char(c) {
-            Some(d) => d,
-            None => return None,
-        };
-        let bit = n * 5;
-        let i = bit / 8;
-        let j = bit % 8;
-        if result.len() <= i {
-            result.resize(i + 1, 0u8);
-        }
-        result[i] |= (((digit as u64) << (j as u64)) & 0xffu64) as u8;
-        let high = if j == 0 { 0u8 } else { ((digit as u64) >> (8u64 - j as u64)) as u8 };
-        if high != 0 {
-            if result.len() <= i + 1 {
-                result.resize(i + 2, 0u8);
-            }
-            result[i + 1] |= high;
-        }
-    }
-    Some(result)
+    result
 }
 
 } // verus!
