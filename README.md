@@ -463,7 +463,7 @@ Those are the current trusted boundaries inside Verus.
 
 In addition to `external_body`, the current audit also tracks:
 
-- `1` `assume(...)` soundness oracle (`reachability.rs`)
+- `0` `assume(...)` soundness oracles
 - `2` `@verified-logic:no-ensures` / placeholder-spec surfaces
 
 All trusted items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.

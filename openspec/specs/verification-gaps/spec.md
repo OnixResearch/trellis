@@ -54,11 +54,9 @@ Summary:
 
 ### `assume(...)` soundness oracles
 
-`1` soundness oracle remains in verified code.
+`0` soundness oracles remain in verified code.
 
-| Site | Classification | Rationale |
-|---|---|---|
-| `src/reachability.rs:286` | Closeable | Completeness is still partially delegated to an `assume(reachable_fuel(...))` oracle |
+No verified code in `src/` currently ends in an `assume(...)` soundness oracle.
 
 ### `@verified-logic:no-ensures` and placeholder surfaces
 

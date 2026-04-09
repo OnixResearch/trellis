@@ -25,7 +25,7 @@
 - The `decode` exec wrapper can be internalized without loop invariants by switching to a recursive helper `decode_prefix_exec` that mirrors `decode_prefix_spec` exactly. The hard update step becomes manageable if you first internalize `extend_to_exec` and `or_extend_at_exec`, then build `decode_step_exec` out of those pure vector constructors.
 
 ## Proof audit hotspots
-- Trusted boundaries are not limited to `external_body`: there is also one remaining `assume(...)` soundness oracle in `src/reachability.rs`, plus 2 `@verified-logic:no-ensures` / placeholder-spec surfaces (`nix_closure.rs`, `cycle_detect.rs`).
+- Trusted boundaries are not limited to `external_body`: the real `assume(...)` soundness oracles are now gone, and the remaining weakened proof surfaces are the 2 `@verified-logic:no-ensures` / placeholder-spec sites in `nix_closure.rs` and `cycle_detect.rs`.
 - Tracey is currently green (`0 uncovered`, `0 untested`).
 - The recent Tracey drift was cleared with metadata-only fixes: add `r[verify]` tags for untested rules, and add `r[impl]` tags to spec-level implementations when a requirement has no separate exec fn (for example `query_cost::index_scan_cost_spec` and `snapshot_isolation::si_allows_commit_spec`).
 - The temporary `src/mesi.rs` (6) and `src/page.rs` (1) trusted boundaries from the 2026-04-08 remediation are now closed; stale notes or inventories that still count MESI/page `external_body` sites are wrong.
@@ -34,3 +34,4 @@
 - Keep MESI exec paths iterative. A recursive exec helper over cache entries verifies, but it is a runtime regression because recursion depth grows with `caches.len()` and can blow the Rust stack.
 - `src/page.rs:radix_index_bounded` closed with a tiny bit-vector helper over `(value >> offset) & ((1 << width) - 1)` plus an explicit arithmetic proof that the computed offset is `< 64`.
 - `src/topo_sort.rs:is_topo_order` no longer needs an `assume(...)` oracle. The stable proof shape was: keep the runtime checker iterative, add recursive bridge lemmas from pointwise/pairwise facts to `all_in_range_spec` / `all_distinct_spec` / `edges_forward_spec`, and make the edge-position scans record the first matching index by guarding updates with `pu == n` / `pv == n`.
+- `src/reachability.rs` closed once `reachable_spec` stopped pretending the fixed budget `n` was the essence of the property. The clean model is existential reachability (`exists fuel. reachable_fuel(...)`), after which edge extension is the true lemma: `reachable_fuel(src, u, fuel)` plus `(u, dst)` yields `reachable_fuel(src, dst, fuel + 1)` with no `assume(...)` corner case.

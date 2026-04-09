@@ -34,9 +34,9 @@ pub open spec fn reachable_fuel(edges: Seq<(int, int)>, src: int, dst: int, fuel
     }
 }
 
-/// Spec: reachable with n steps (sufficient for any simple path in n-node graph).
+/// Spec: a path exists from `src` to `dst` with some finite fuel witness.
 pub open spec fn reachable_spec(edges: Seq<(int, int)>, n: int, src: int, dst: int) -> bool {
-    reachable_fuel(edges, src, dst, n as nat)
+    exists|fuel: nat| reachable_fuel(edges, src, dst, fuel)
 }
 
 // r[depends reachability.reachable-set]
@@ -243,7 +243,6 @@ pub fn reachable_count(visited: &[bool]) -> (result: u64)
 /// If src reaches u and edge (u, dst) exists, then src reaches dst.
 proof fn reachable_via_edge(edges: Seq<(int, int)>, n: int, src: int, u: int, dst: int)
     requires
-        n > 0,
         0 <= src < n,
         0 <= u < n,
         0 <= dst < n,
@@ -251,40 +250,27 @@ proof fn reachable_via_edge(edges: Seq<(int, int)>, n: int, src: int, u: int, ds
         has_edge_spec(edges, u, dst),
     ensures reachable_spec(edges, n, src, dst)
 {
-    extend_path(edges, src, u, dst, n as nat);
+    let fuel = choose|fuel: nat| reachable_fuel(edges, src, u, fuel);
+    extend_path(edges, src, u, dst, fuel);
+    assert(exists|witness: nat| reachable_fuel(edges, src, dst, witness));
 }
 
-/// If reachable_fuel(src, u, fuel) and edge(u, dst), then reachable_fuel(src, dst, fuel).
+/// If reachable_fuel(src, u, fuel) and edge(u, dst) exists, then src reaches dst with one extra edge.
 proof fn extend_path(edges: Seq<(int, int)>, src: int, u: int, dst: int, fuel: nat)
     requires
-        fuel > 0,
         reachable_fuel(edges, src, u, fuel),
         has_edge_spec(edges, u, dst),
-    ensures reachable_fuel(edges, src, dst, fuel)
+    ensures reachable_fuel(edges, src, dst, (fuel + 1) as nat)
     decreases fuel,
 {
     if src == dst {
-        // trivially true
+        assert(reachable_fuel(edges, src, dst, (fuel + 1) as nat));
     } else if src == u {
-        // edge(src=u, dst), reachable_fuel(dst, dst, fuel-1)
-        assert(reachable_fuel(edges, dst, dst, (fuel - 1) as nat));
+        assert(reachable_fuel(edges, dst, dst, fuel));
     } else {
-        // src != u, src != dst
         let mid = choose|mid: int| has_edge_spec(edges, src, mid)
             && reachable_fuel(edges, mid, u, (fuel - 1) as nat);
-        if mid == dst {
-            assert(reachable_fuel(edges, dst, dst, (fuel - 1) as nat));
-        } else if fuel > 1 {
-            extend_path(edges, mid, u, dst, (fuel - 1) as nat);
-        } else {
-            // fuel == 1: reachable_fuel(mid, u, 0) ⟹ mid == u.
-            // But mid != dst and src != u means we need 2 hops with 1 fuel.
-            // This case is only reachable if u == dst (mid==u==dst, contradiction
-            // with mid!=dst) or fuel > 1. So this branch is unreachable
-            // when the lemma is called from reachable_via_edge (fuel=n, n >= #distinct nodes).
-            // Use assume for this corner case — covered by proptest.
-            assume(reachable_fuel(edges, src, dst, fuel));
-        }
+        extend_path(edges, mid, u, dst, (fuel - 1) as nat);
     }
 }
 
@@ -297,7 +283,9 @@ proof fn extend_path(edges: Seq<(int, int)>, src: int, u: int, dst: int, fuel: n
 proof fn source_reachable(edges: Seq<(int, int)>, n: int, src: int)
     requires n > 0, 0 <= src < n
     ensures reachable_spec(edges, n, src, src)
-{}
+{
+    assert(reachable_fuel(edges, src, src, 0));
+}
 
 // r[verify reachability.reachable]
 /// If there's an edge from src to dst, dst is reachable.
@@ -305,7 +293,8 @@ proof fn neighbor_reachable(edges: Seq<(int, int)>, n: int, src: int, dst: int)
     requires n > 0, has_edge_spec(edges, src, dst)
     ensures reachable_spec(edges, n, src, dst)
 {
-    assert(reachable_fuel(edges, dst, dst, (n - 1) as nat));
+    assert(reachable_fuel(edges, dst, dst, 0));
+    assert(reachable_fuel(edges, src, dst, 1));
 }
 
 // r[verify reachability.count]
