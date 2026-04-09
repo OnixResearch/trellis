@@ -5,6 +5,12 @@
 //! is (field_min, field_max, 1). Step `*/N` is (field_min, field_max, N).
 //! Range `A-B` is (A, B, 1). Range with step `A-B/N` is (A, B, N).
 
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::div_mod::{
+    lemma_fundamental_div_mod,
+    lemma_mod_multiples_basic,
+    lemma_mod_pos_bound,
+};
 use vstd::prelude::*;
 
 verus! {
@@ -180,13 +186,30 @@ proof fn min_gt_max_invalid(min: u64, max: u64, step: u64, field_min: u64, field
     ensures !is_valid_field_spec(min, max, step, field_min, field_max)
 {}
 
+proof fn round_up_divisible(offset: int, step: int)
+    requires
+        step >= 1,
+        offset >= 0,
+    ensures ({
+        let r = offset % step;
+        r == 0 || (offset + step - r) % step == 0
+    })
+{
+    let r = offset % step;
+    if r != 0 {
+        let q = offset / step;
+        lemma_fundamental_div_mod(offset, step);
+        assert(offset - r == step * q) by(nonlinear_arith)
+            requires offset == step * q + r;
+        assert(offset + step - r == (q + 1) * step) by(nonlinear_arith)
+            requires offset - r == step * q;
+        lemma_mod_multiples_basic(q + 1, step);
+    }
+}
+
 // r[verify cron-field.match-field]
 /// first_match result either matches the field or signals no-match (max+1).
-/// Marked external_body: Z3's nonlinear_arith can't derive
-/// `(x + step - x%step) % step == 0` from Euclidean division axioms.
-/// Correctness covered by proptest (prop_first_match_is_valid_or_sentinel).
-#[verifier::external_body]
-proof fn first_match_correct(from: u64, min: u64, max: u64, step: u64)
+pub proof fn first_match_correct(from: u64, min: u64, max: u64, step: u64)
     requires
         step >= 1,
         min <= max,
@@ -195,22 +218,79 @@ proof fn first_match_correct(from: u64, min: u64, max: u64, step: u64)
         let r = first_match_spec(from, min, max, step);
         r == (max + 1) as u64 || match_field_spec(r, min, max, step)
     })
-{}
+{
+    let r = first_match_spec(from, min, max, step);
+    if from > max {
+        assert(r == (max + 1) as u64);
+    } else if from <= min {
+        assert(r == min);
+        min_always_matches(min, max, step);
+    } else {
+        let offset: int = from as int - min as int;
+        let remainder: int = offset % step as int;
+        if remainder == 0 {
+            assert(r == from);
+            assert(match_field_spec(from, min, max, step));
+        } else {
+            let delta: int = step as int - remainder;
+            let next: int = from as int + delta;
+            if next > max as int {
+                assert(r == (max + 1) as u64);
+            } else {
+                assert(r == next as u64);
+                round_up_divisible(offset, step as int);
+                assert(from as int == min as int + offset) by(nonlinear_arith)
+                    requires offset == from as int - min as int;
+                assert(next - min as int == offset + delta) by(nonlinear_arith)
+                    requires from as int == min as int + offset, next == from as int + delta;
+                assert(match_field_spec(next as u64, min, max, step));
+            }
+        }
+    }
+}
 
 // r[verify cron-field.match-field]
 /// first_match result is >= from (never goes backward).
-/// Marked external_body: same Z3 nonlinear mod limitation.
-/// Correctness covered by proptest.
-#[verifier::external_body]
-proof fn first_match_ge_from(from: u64, min: u64, max: u64, step: u64)
+pub proof fn first_match_ge_from(from: u64, min: u64, max: u64, step: u64)
     requires
         step >= 1,
         min <= max,
         (max as int) + 1 <= u64::MAX as int,
+        from <= max + 1,
     ensures
         first_match_spec(from, min, max, step) >= from
             || first_match_spec(from, min, max, step) == min,
-{}
+{
+    let r = first_match_spec(from, min, max, step);
+    if from > max {
+        assert(from == max + 1);
+        assert(r == (max + 1) as u64);
+    } else if from <= min {
+        assert(r == min);
+    } else {
+        let offset: int = from as int - min as int;
+        let remainder: int = offset % step as int;
+        if remainder == 0 {
+            assert(r == from);
+        } else {
+            lemma_mod_pos_bound(offset, step as int);
+            let next: int = from as int + (step as int - remainder);
+            assert(step as int - remainder > 0) by(nonlinear_arith)
+                requires 0 <= remainder < step as int, remainder != 0;
+            assert(next > from as int) by(nonlinear_arith)
+                requires next == from as int + (step as int - remainder), step as int - remainder > 0;
+            if next > max as int {
+                assert(r == (max + 1) as u64);
+                assert((max + 1) >= from) by(nonlinear_arith)
+                    requires from <= max;
+            } else {
+                assert(r == next as u64);
+                assert(next as u64 >= from) by(nonlinear_arith)
+                    requires next > from as int, next <= max as int, max as int <= u64::MAX as int;
+            }
+        }
+    }
+}
 
 } // verus!
 

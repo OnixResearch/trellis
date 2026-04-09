@@ -1,14 +1,18 @@
 # Agent Notes
 
 ## Verification
-- `./scripts/verify.sh` is green as of 2026-04-09.
-- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5372 verified, 0 errors`).
+- `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
+- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5425 verified, 0 errors`).
 - Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1197/1197` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` is now an explicit `@verified-logic:no-ensures` closeable boundary instead of an unmarked gap.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 29 `#[verifier::external_body]` items across 11 modules.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 13 `#[verifier::external_body]` items across 4 modules.
+- All remaining `#[verifier::external_body]` sites are the permanent crypto / recursive-solver boundaries already listed in `openspec/specs/verification-gaps/spec.md`.
+- `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
+- `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
+- `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.
 - `tracey query status` can still print a transient daemon auto-start warning inside `./scripts/verify.sh`; capture the full rerun output before claiming green, because the later uncovered/untested checks may still succeed and the script can still end with `=== ALL CHECKS PASSED ===`.
 - Raw proof-audit rerun transcripts are archived at `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/`; use an explicit shell command for absence checks (`if [ -d ... ]; then echo ...; fi`) instead of `test -d` when the evidence must show stdout.
 - Active OpenSpec changes in this repo use standalone spec docs under `openspec/changes/*/specs/<domain>/spec.md` instead of `ADDED/MODIFIED/REMOVED` delta sections; match the existing change style when adding new change specs.

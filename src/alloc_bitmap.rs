@@ -94,6 +94,7 @@ pub fn bitmap_generation(gens: &[u32], slot: usize) -> (result: u32)
     gens[slot]
 }
 
+// @verified-logic:exempt internal proof-oriented helper for verified exec cloning
 /// Helper: clone a bool slice into a Vec.
 pub fn clone_bool_slice(src: &[bool]) -> (result: Vec<bool>)
     ensures result@ == src@
@@ -112,6 +113,7 @@ pub fn clone_bool_slice(src: &[bool]) -> (result: Vec<bool>)
     out
 }
 
+// @verified-logic:exempt internal proof-oriented helper for verified exec cloning
 /// Helper: clone a u32 slice into a Vec.
 pub fn clone_u32_slice(src: &[u32]) -> (result: Vec<u32>)
     ensures result@ == src@

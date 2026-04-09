@@ -16,7 +16,7 @@ As of `2026-04-09`, backed by fresh reruns on the current tree, the live verific
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
 - `cargo test` passes (`3191 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5372 verified, 0 errors`)
+- `./scripts/verus.sh src/lib.rs` passes (`5425 verified, 0 errors`)
 - Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
@@ -26,7 +26,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`29` external_body items remain across `11` files.
+`13` external_body items remain across `4` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -46,27 +46,11 @@ actual tree and not just per-file totals.
 | `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
-| `src/bitwise.rs:197 is_sign_extended` | Closeable | Variable-shift bit-vector reasoning over arbitrary widths is still trusted. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
-| `src/bitwise.rs:224 sign_extended_zero` | Closeable | Z3 still cannot discharge the variable-shift proof for zero at arbitrary widths. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
-| `src/bitwise.rs:234 sign_extended_all_ones` | Closeable | Z3 still cannot discharge the variable-shift proof for all-ones at arbitrary widths. | `src/bitwise.rs` unit tests + proptest (`243-392`) cover the runtime checker, zero, all-ones, and width cases. |
-| `src/cron_field.rs:188 first_match_correct` | Closeable | Nonlinear modular-arithmetic reasoning for `first_match_spec` is still trusted. | `src/cron_field.rs` unit tests + proptest (`218-334`) cover valid/sentinel outcomes and step behavior. |
-| `src/cron_field.rs:204 first_match_ge_from` | Closeable | Same nonlinear modular-arithmetic gap as `first_match_correct`. | `src/cron_field.rs` unit tests + proptest (`218-334`) cover monotonicity and step behavior. |
-| `src/cron_next.rs:106 next_occurrence` | Closeable | Search/rollover loop is still a trusted exec/spec bridge. | `src/cron_next.rs` unit tests + proptest (`363-558`) cover rollover, leap-year, and satisfiable/unsatisfiable schedules. |
-| `src/cron_next.rs:297 advance_one_minute` | Closeable | Calendar rollover helper is still trusted runtime code inside the next-occurrence search. | `src/cron_next.rs` unit tests + proptest (`363-558`) cover minute/hour/day/month/year rollover behavior. |
-| `src/free_list.rs:87 free_list_push` | Closeable | Exec/spec list-prepend bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
-| `src/free_list.rs:112 free_list_pop` | Closeable | Exec/spec head-removal bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
-| `src/free_list.rs:146 free_list_remove` | Closeable | Exec/spec filtered-removal bridge remains trusted. | `src/free_list.rs` unit tests + proptest (`290-375`) cover push/pop/remove and LIFO behavior. |
-| `src/alloc_bitmap.rs:180 bitmap_alloc` | Closeable | First-free search and cloned-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
-| `src/alloc_bitmap.rs:237 bitmap_free` | Closeable | Handle validation and updated-state bridge remain trusted. | `src/alloc_bitmap.rs` unit tests + proptest (`414-532`) cover allocation, full maps, generations, and stale handles. |
-| `src/pool.rs:54 pool_alloc` | Closeable | Composition over `alloc_bitmap` and `slab` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
-| `src/pool.rs:106 pool_free` | Closeable | Free-path composition over `alloc_bitmap` remains trusted runtime glue. | `src/pool.rs` unit tests + proptest (`221-287`) cover alloc/free/full/count behavior. |
-| `src/segregated_free.rs:161 seg_alloc` | Closeable | Nested `Vec<Vec<u64>>` to `Seq<Seq<u64>>` bridge is still trusted. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
-| `src/segregated_free.rs:196 seg_free` | Closeable | Nested `Vec<Vec<u64>>` mutation still lacks a proved exec/spec bridge. | `src/segregated_free.rs` unit tests + proptest (`268-344`) cover class selection, alloc/free, and free-count behavior. |
 
 Summary:
 
 - Permanent external-body items: `13`
-- Closeable external-body items: `16`
+- Closeable external-body items: `0`
 
 ### `assume(...)` soundness oracles
 

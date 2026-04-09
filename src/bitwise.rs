@@ -192,9 +192,6 @@ pub open spec fn is_sign_extended_spec(value: u64, width: u64) -> bool
 
 // r[impl bitwise.is-sign-extended]
 /// Returns true if bits [63:width] are all copies of bit [width-1].
-/// Variable-shift overflow reasoning requires by(bit_vector) with
-/// variable widths — same class as order_for_size. Covered by proptest.
-#[verifier::external_body]
 pub fn is_sign_extended(value: u64, width: u64) -> (result: bool)
     requires 1 <= width <= 64
     ensures result == is_sign_extended_spec(value, width)
@@ -202,11 +199,21 @@ pub fn is_sign_extended(value: u64, width: u64) -> (result: bool)
     if width >= 64 {
         true
     } else {
-        let sign_bit = (value >> (width - 1)) & 1;
+        let shift: u64 = width - 1;
+        let sign_bit = (value >> shift) & 1;
+        proof {
+            assert((value >> shift) & 1u64 == (value >> sub(width, 1u64)) & 1u64) by(bit_vector)
+                requires 1 <= width < 64, shift == width - 1;
+        }
         if sign_bit == 0 {
             (value >> width) == 0
         } else {
-            (value >> width) == (1u64 << (64 - width)) - 1
+            let upper: u64 = 64 - width;
+            proof {
+                assert((1u64 << upper) - 1u64 == sub(1u64 << sub(64u64, width), 1u64)) by(bit_vector)
+                    requires 1 <= width < 64, upper == 64 - width;
+            }
+            (value >> width) == (1u64 << upper) - 1
         }
     }
 }
@@ -219,23 +226,31 @@ proof fn sign_extended_full(value: u64)
 
 // r[verify bitwise.is-sign-extended]
 /// Zero is sign-extended at any width.
-/// Z3 can't reason about variable shifts in the spec definition.
-/// Covered by proptest prop_sign_extended_zero.
-#[verifier::external_body]
 proof fn sign_extended_zero(width: u64)
     requires 1 <= width <= 64
     ensures is_sign_extended_spec(0, width)
-{}
+{
+    if width < 64 {
+        assert(((0u64 >> sub(width, 1u64)) & 1u64) == 0u64) by(bit_vector)
+            requires 1 <= width < 64;
+        assert((0u64 >> width) == 0u64) by(bit_vector)
+            requires width < 64;
+    }
+}
 
 // r[verify bitwise.is-sign-extended]
 /// All-ones is sign-extended at any width.
-/// Z3 can't reason about variable shifts in the spec definition.
-/// Covered by proptest prop_sign_extended_all_ones.
-#[verifier::external_body]
 proof fn sign_extended_all_ones(width: u64)
     requires 1 <= width <= 64
     ensures is_sign_extended_spec(u64::MAX, width)
-{}
+{
+    if width < 64 {
+        assert(((u64::MAX >> sub(width, 1u64)) & 1u64) == 1u64) by(bit_vector)
+            requires 1 <= width < 64;
+        assert((u64::MAX >> width) == sub(1u64 << sub(64u64, width), 1u64)) by(bit_vector)
+            requires 1 <= width < 64;
+    }
+}
 
 } // verus!
 

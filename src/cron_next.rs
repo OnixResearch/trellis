@@ -103,7 +103,6 @@ pub open spec fn next_occurrence_succeeds_spec(
 ///
 /// Uses field-skipping: jumps to the first matching month, then day,
 /// then hour, then minute within each enclosing unit.
-#[verifier::external_body]
 pub fn next_occurrence(
     iy: u64, imo: u64, id: u64, ih: u64, im: u64,
     min_min: u64, min_max: u64, min_step: u64,
@@ -145,39 +144,103 @@ pub fn next_occurrence(
     // Start scanning from the next minute after the input.
     let (mut cy, mut cmo, mut cd, mut ch, mut cm) = advance_one_minute(iy, imo, id, ih, im);
 
-    while cy <= max_year {
-        // Skip to first matching month
+    while cy <= max_year
+        invariant
+            iy >= 1,
+            1 <= imo && imo <= 12,
+            1 <= id && id <= 31,
+            ih <= 23,
+            im <= 59,
+            min_step >= 1, hr_step >= 1, dom_step >= 1, mon_step >= 1, dow_step >= 1,
+            min_min <= min_max && min_max <= 59,
+            hr_min <= hr_max && hr_max <= 23,
+            dom_min <= dom_max && dom_max <= 31 && dom_min >= 1,
+            mon_min <= mon_max && mon_max <= 12 && mon_min >= 1,
+            dow_min <= dow_max && dow_max <= 6,
+            max_years >= 1,
+            max_year == iy + max_years,
+            cy >= 1,
+            1 <= cmo && cmo <= 12,
+            1 <= cd && cd <= 31,
+            ch <= 23,
+            cm <= 59,
+            timestamp_lt_spec(iy, imo, id, ih, im, cy, cmo, cd, ch, cm),
+        decreases
+            (if max_year >= cy { (max_year - cy) as int } else { 0 }),
+            (12 - cmo) as int,
+            (31 - cd) as int,
+            (23 - ch) as int,
+            (59 - cm) as int,
+    {
+        // Skip to first matching month.
+        proof {
+            crate::cron_field::first_match_correct(cmo, mon_min, mon_max, mon_step);
+        }
         let fm = crate::cron_field::first_match(cmo, mon_min, mon_max, mon_step);
         if fm > mon_max {
-            // No matching month this year — advance to next year
-            cy = cy + 1;
+            // No matching month this year — advance to next year.
+            if cy >= max_year {
+                return (false, 0, 0, 0, 0, 0);
+            }
+            let next_year: u64 = cy + 1u64;
+            proof {
+                assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+            }
+            cy = cy + 1u64;
             cmo = 1;
             cd = 1;
             ch = 0;
             cm = 0;
             continue;
         }
+        proof {
+            crate::cron_field::first_match_ge_from(cmo, mon_min, mon_max, mon_step);
+        }
         if fm > cmo {
+            proof {
+                assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, fm, 1, 0, 0));
+            }
             cmo = fm;
             cd = 1;
             ch = 0;
             cm = 0;
+        } else {
+            proof {
+                assert(fm == cmo);
+            }
+        }
+        proof {
+            assert(match_field_spec(cmo, mon_min, mon_max, mon_step));
         }
 
         // How many days in this month?
         let dim = crate::calendar::days_in_month(cy, cmo);
-        if dim == 0 || cd > dim {
-            // Invalid month state — advance to next month
+        if cd > dim {
+            // Invalid day for this month — advance to next month.
             if cmo >= 12 {
-                cy = cy + 1;
+                if cy >= max_year {
+                    return (false, 0, 0, 0, 0, 0);
+                }
+                let next_year: u64 = cy + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                }
+                cy = cy + 1u64;
                 cmo = 1;
             } else {
-                cmo = cmo + 1;
+                let next_month: u64 = cmo + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                }
+                cmo = cmo + 1u64;
             }
             cd = 1;
             ch = 0;
             cm = 0;
             continue;
+        }
+        proof {
+            assert(is_valid_date_spec(cy, cmo, cd));
         }
 
         // Skip to first matching day.
@@ -185,105 +248,242 @@ pub fn next_occurrence(
         let max_dom = if dom_max < dim { dom_max } else { dim };
         if dom_min > max_dom {
             // Schedule requires a day this month doesn't have
-            // (e.g., dom=29 but Feb has 28 days)
+            // (e.g., dom=29 but Feb has 28 days).
             if cmo >= 12 {
-                cy = cy + 1;
+                if cy >= max_year {
+                    return (false, 0, 0, 0, 0, 0);
+                }
+                let next_year: u64 = cy + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                }
+                cy = cy + 1u64;
                 cmo = 1;
             } else {
-                cmo = cmo + 1;
+                let next_month: u64 = cmo + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                }
+                cmo = cmo + 1u64;
             }
             cd = 1;
             ch = 0;
             cm = 0;
             continue;
+        }
+        proof {
+            crate::cron_field::first_match_correct(cd, dom_min, max_dom, dom_step);
         }
         let fd = crate::cron_field::first_match(cd, dom_min, max_dom, dom_step);
         if fd > max_dom {
-            // No matching day this month — advance to next month
+            // No matching day this month — advance to next month.
             if cmo >= 12 {
-                cy = cy + 1;
+                if cy >= max_year {
+                    return (false, 0, 0, 0, 0, 0);
+                }
+                let next_year: u64 = cy + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                }
+                cy = cy + 1u64;
                 cmo = 1;
             } else {
-                cmo = cmo + 1;
+                let next_month: u64 = cmo + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                }
+                cmo = cmo + 1u64;
             }
             cd = 1;
             ch = 0;
             cm = 0;
             continue;
         }
+        proof {
+            crate::cron_field::first_match_ge_from(cd, dom_min, max_dom, dom_step);
+        }
         if fd > cd {
+            proof {
+                assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, fd, 0, 0));
+            }
             cd = fd;
             ch = 0;
             cm = 0;
+        } else {
+            proof {
+                assert(fd == cd);
+            }
+        }
+        proof {
+            assert(match_field_spec(cd, dom_min, max_dom, dom_step));
+            assert(is_valid_date_spec(cy, cmo, cd));
         }
 
-        // Check day-of-week
+        // Check day-of-week.
         let dow = crate::calendar::day_of_week(cy, cmo, cd);
         if !crate::cron_field::match_field(dow, dow_min, dow_max, dow_step) {
-            // Advance to next day
+            // Advance to next day.
             if cd >= dim {
                 if cmo >= 12 {
-                    cy = cy + 1;
+                    if cy >= max_year {
+                        return (false, 0, 0, 0, 0, 0);
+                    }
+                    let next_year: u64 = cy + 1u64;
+                    proof {
+                        assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                    }
+                    cy = cy + 1u64;
                     cmo = 1;
                 } else {
-                    cmo = cmo + 1;
+                    let next_month: u64 = cmo + 1u64;
+                    proof {
+                        assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                    }
+                    cmo = cmo + 1u64;
                 }
                 cd = 1;
             } else {
-                cd = cd + 1;
+                let next_day: u64 = cd + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, next_day, 0, 0));
+                }
+                cd = cd + 1u64;
             }
             ch = 0;
             cm = 0;
             continue;
         }
+        proof {
+            assert(match_field_spec(dow, dow_min, dow_max, dow_step));
+        }
 
-        // Skip to first matching hour
+        // Skip to first matching hour.
+        proof {
+            crate::cron_field::first_match_correct(ch, hr_min, hr_max, hr_step);
+        }
         let fh = crate::cron_field::first_match(ch, hr_min, hr_max, hr_step);
         if fh > hr_max {
-            // No matching hour today — advance to next day
+            // No matching hour today — advance to next day.
             if cd >= dim {
                 if cmo >= 12 {
-                    cy = cy + 1;
+                    if cy >= max_year {
+                        return (false, 0, 0, 0, 0, 0);
+                    }
+                    let next_year: u64 = cy + 1u64;
+                    proof {
+                        assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                    }
+                    cy = cy + 1u64;
                     cmo = 1;
                 } else {
-                    cmo = cmo + 1;
+                    let next_month: u64 = cmo + 1u64;
+                    proof {
+                        assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                    }
+                    cmo = cmo + 1u64;
                 }
                 cd = 1;
+                ch = 0;
             } else {
-                cd = cd + 1;
+                let next_day: u64 = cd + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, next_day, 0, 0));
+                }
+                cd = cd + 1u64;
+                ch = 0;
             }
-            ch = 0;
             cm = 0;
             continue;
         }
+        proof {
+            crate::cron_field::first_match_ge_from(ch, hr_min, hr_max, hr_step);
+        }
         if fh > ch {
+            proof {
+                assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, cd, fh, 0));
+            }
             ch = fh;
             cm = 0;
+        } else {
+            proof {
+                assert(fh == ch);
+            }
+        }
+        proof {
+            assert(match_field_spec(ch, hr_min, hr_max, hr_step));
         }
 
-        // Skip to first matching minute
+        // Skip to first matching minute.
+        proof {
+            crate::cron_field::first_match_correct(cm, min_min, min_max, min_step);
+        }
         let fmin = crate::cron_field::first_match(cm, min_min, min_max, min_step);
         if fmin > min_max {
-            // No matching minute this hour — advance to next hour
+            // No matching minute this hour — advance to next hour.
             if ch >= hr_max {
-                // No more hours today — next day
+                // No more hours today — next day.
                 if cd >= dim {
                     if cmo >= 12 {
-                        cy = cy + 1;
+                        if cy >= max_year {
+                            return (false, 0, 0, 0, 0, 0);
+                        }
+                        let next_year: u64 = cy + 1u64;
+                        proof {
+                            assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, next_year, 1, 1, 0, 0));
+                        }
+                        cy = cy + 1u64;
                         cmo = 1;
                     } else {
-                        cmo = cmo + 1;
+                        let next_month: u64 = cmo + 1u64;
+                        proof {
+                            assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, next_month, 1, 0, 0));
+                        }
+                        cmo = cmo + 1u64;
                     }
                     cd = 1;
                 } else {
-                    cd = cd + 1;
+                    let next_day: u64 = cd + 1u64;
+                    proof {
+                        assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, next_day, 0, 0));
+                    }
+                    cd = cd + 1u64;
                 }
                 ch = 0;
             } else {
-                ch = ch + 1;
+                let next_hour: u64 = ch + 1u64;
+                proof {
+                    assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, cd, next_hour, 0));
+                }
+                ch = ch + 1u64;
             }
             cm = 0;
             continue;
+        }
+        proof {
+            crate::cron_field::first_match_ge_from(cm, min_min, min_max, min_step);
+            if fmin > cm {
+                assert(timestamp_lt_spec(cy, cmo, cd, ch, cm, cy, cmo, cd, ch, fmin));
+            } else {
+                assert(fmin == cm);
+            }
+            assert(match_field_spec(fmin, min_min, min_max, min_step));
+            assert(matches_schedule_spec(
+                cy, cmo, cd, ch, fmin,
+                min_min, min_max, min_step,
+                hr_min, hr_max, hr_step,
+                dom_min, dom_max, dom_step,
+                mon_min, mon_max, mon_step,
+                dow_min, dow_max, dow_step,
+            ));
+            assert(next_occurrence_succeeds_spec(
+                true, cy, cmo, cd, ch, fmin,
+                iy, imo, id, ih, im,
+                min_min, min_max, min_step,
+                hr_min, hr_max, hr_step,
+                dom_min, dom_max, dom_step,
+                mon_min, mon_max, mon_step,
+                dow_min, dow_max, dow_step,
+            ));
         }
 
         // All five fields match!
@@ -294,14 +494,23 @@ pub fn next_occurrence(
 }
 
 /// Advance a timestamp by one minute, handling rollover.
-#[verifier::external_body]
-fn advance_one_minute(y: u64, mo: u64, d: u64, h: u64, m: u64) -> (u64, u64, u64, u64, u64)
+fn advance_one_minute(y: u64, mo: u64, d: u64, h: u64, m: u64) -> (result: (u64, u64, u64, u64, u64))
     requires
         y >= 1,
+        y < u64::MAX,
         1 <= mo && mo <= 12,
         1 <= d && d <= 31,
         h <= 23,
         m <= 59,
+    ensures ({
+        let (ny, nmo, nd, nh, nm) = result;
+        &&& ny >= 1
+        &&& 1 <= nmo <= 12
+        &&& 1 <= nd <= 31
+        &&& nh <= 23
+        &&& nm <= 59
+        &&& timestamp_lt_spec(y, mo, d, h, m, ny, nmo, nd, nh, nm)
+    })
 {
     if m < 59 {
         return (y, mo, d, h, m + 1);
@@ -355,6 +564,42 @@ proof fn year_advance_is_later(
 )
     requires y1 < y2
     ensures timestamp_lt_spec(y1, mo1, d1, h1, m1, y2, mo2, d2, h2, m2)
+{}
+
+// r[verify cron-next.result-after-input]
+proof fn month_advance_is_later(
+    y: u64, mo1: u64, d1: u64, h1: u64, m1: u64,
+    mo2: u64, d2: u64, h2: u64, m2: u64,
+)
+    requires mo1 < mo2
+    ensures timestamp_lt_spec(y, mo1, d1, h1, m1, y, mo2, d2, h2, m2)
+{}
+
+// r[verify cron-next.result-after-input]
+proof fn day_advance_is_later(
+    y: u64, mo: u64, d1: u64, h1: u64, m1: u64,
+    d2: u64, h2: u64, m2: u64,
+)
+    requires d1 < d2
+    ensures timestamp_lt_spec(y, mo, d1, h1, m1, y, mo, d2, h2, m2)
+{}
+
+// r[verify cron-next.result-after-input]
+proof fn hour_advance_is_later(
+    y: u64, mo: u64, d: u64, h1: u64, m1: u64,
+    h2: u64, m2: u64,
+)
+    requires h1 < h2
+    ensures timestamp_lt_spec(y, mo, d, h1, m1, y, mo, d, h2, m2)
+{}
+
+// r[verify cron-next.result-after-input]
+proof fn minute_advance_is_later(
+    y: u64, mo: u64, d: u64, h: u64, m1: u64,
+    m2: u64,
+)
+    requires m1 < m2
+    ensures timestamp_lt_spec(y, mo, d, h, m1, y, mo, d, h, m2)
 {}
 
 } // verus!

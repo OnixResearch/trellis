@@ -203,21 +203,70 @@ pub open spec fn seg_free_spec(
     lists.update(class as int, new_list)
 }
 
+/// Helper: clone `list` while prepending `block`.
+fn clone_prepend(list: &[u64], block: u64) -> (result: Vec<u64>)
+    ensures result@ == seq![block] + list@
+{
+    let mut result: Vec<u64> = Vec::new();
+    result.push(block);
+    let mut i: usize = 0;
+    while i < list.len()
+        invariant
+            0 <= i <= list@.len(),
+            result@ == seq![block] + list@.take(i as int),
+        decreases list@.len() - i,
+    {
+        result.push(list[i]);
+        proof {
+            assert(list@.take(i as int + 1) =~= list@.take(i as int).push(list@[i as int]));
+        }
+        i = i + 1;
+    }
+    result
+}
+
+proof fn mapped_lists_update(lists: Seq<Vec<u64>>, index: int, new_list: Vec<u64>)
+    requires
+        0 <= index < lists.len(),
+    ensures
+        lists.update(index, new_list).map_values(|v: Vec<u64>| v@)
+            =~= lists.map_values(|v: Vec<u64>| v@).update(index, new_list@),
+{
+    let updated = lists.update(index, new_list).map_values(|v: Vec<u64>| v@);
+    let mapped = lists.map_values(|v: Vec<u64>| v@).update(index, new_list@);
+    assert forall|i: int|
+        #![trigger updated[i]]
+        0 <= i < lists.len()
+    implies updated[i] == mapped[i] by {
+        if i == index {
+        } else {
+        }
+    }
+}
+
 // r[impl segregated-free.free]
 /// Return a block to its class's free list.
-#[verifier::external_body]
+#[allow(clippy::cast_possible_truncation)]
 pub fn seg_free(
     lists: &mut Vec<Vec<u64>>, block: u64, class: u64,
 )
     requires
         0 <= class < old(lists)@.len(),
     ensures
-        lists@.len() == old(lists)@.len(),
+        lists@.map_values(|v: Vec<u64>| v@)
+            == seg_free_spec(old(lists)@.map_values(|v: Vec<u64>| v@), block, class),
 {
-    let Ok(index) = usize::try_from(class) else {
-        return;
-    };
-    lists[index].insert(0, block);
+    let ghost old_mapped = old(lists)@.map_values(|v: Vec<u64>| v@);
+    let index = class as usize;
+    let new_list = clone_prepend(&lists[index], block);
+    proof {
+        assert(new_list@ == seq![block] + old(lists)@[index as int]@);
+    }
+    lists.set(index, new_list);
+    proof {
+        mapped_lists_update(old(lists)@, index as int, lists@[index as int]);
+        assert(old_mapped[index as int] == old(lists)@[index as int]@);
+    }
 }
 
 // ─── Proofs ──────────────────────────────────────────────────────────

@@ -4,11 +4,11 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5372 Verus proofs + 3191 cargo tests = current green snapshot
+- 5425 Verus proofs + 3191 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 29 `#[verifier::external_body]` items across 11 files; 13 permanent and 16 closeable
+- Current trusted inventory: 13 `#[verifier::external_body]` items across 4 files; all 13 are permanent
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.
@@ -27,7 +27,11 @@
 - I made a bad runtime tradeoff once by replacing MESI loops with recursive exec helpers. Verus liked it, but runtime stack depth became proportional to `caches.len()`. Keep the proofs recursive if needed, but keep exec code iterative.
 - `src/page.rs:radix_index_bounded` closed with a tiny helper proving `((value >> offset) & ((1 << width) - 1)) < (1 << width)` plus an explicit nonlinear-arith proof that the computed offset is below 64.
 - `src/free_list.rs` closed cleanly with small copy/filter loops: a `clone_from` helper proves suffix copies for `pop`, `push` just tracks `seq![block] + prefix`, and `remove` is easiest with a prefix-filter spec (`remove_prefix_spec`) instead of the old suffix-recursive `remove_from_spec` invariant.
-- `src/segregated_free.rs:seg_alloc` can bridge `Vec<Vec<u64>>` to `Seq<Seq<u64>>` directly with `lists@.map_values(|v: Vec<u64>| v@)`; that closed the alloc path without extra deep-view helpers. `seg_free` is still the remaining open `segregated_free` boundary.
+- `src/segregated_free.rs:seg_alloc` can bridge `Vec<Vec<u64>>` to `Seq<Seq<u64>>` directly with `lists@.map_values(|v: Vec<u64>| v@)`. `seg_free` also closes cleanly with a tiny `clone_prepend` exec helper plus a `mapped_lists_update` proof that commutes `Seq<Vec<u64>>::update` with `map_values(|v| v@)`.
+- `src/bitwise.rs:is_sign_extended` and the zero/all-ones proofs close with small `by(bit_vector)` bridges if the variable shifts are first bound to `u64` locals (`shift`, `upper`) before comparing the exec arithmetic to the spec's `sub(...)` form.
+- `src/cron_field.rs:first_match_correct` closes if the modulo step-rounding proof is rewritten in terms of `lemma_fundamental_div_mod`, `lemma_mod_multiples_basic`, and `lemma_mod_pos_bound` instead of asking nonlinear arithmetic to simplify `%` directly. `first_match_ge_from` also wants the natural proof precondition `from <= max + 1` for the sentinel branch.
+- `src/cron_next.rs:advance_one_minute` is no longer trusted; its proved ensures keep the output in basic calendar ranges and show the result timestamp is strictly later than the input.
+- `src/cron_next.rs:next_occurrence` also closes now. The proof works if the search stays iterative, year-overflow paths return `false` instead of incrementing past the horizon, loop termination uses a lexicographic decreases tuple over `(year, month, day, hour, minute)`, and `cron_field::first_match_correct` / `first_match_ge_from` are `pub proof fn` so the search proof can reuse them across modules.
 - `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
