@@ -2,7 +2,7 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5425 verified, 0 errors`).
+- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5426 verified, 0 errors`).
 - Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1197/1197` covered and verified).
 
 ## Tooling gotchas
@@ -25,7 +25,7 @@
 - The `decode` exec wrapper can be internalized without loop invariants by switching to a recursive helper `decode_prefix_exec` that mirrors `decode_prefix_spec` exactly. The hard update step becomes manageable if you first internalize `extend_to_exec` and `or_extend_at_exec`, then build `decode_step_exec` out of those pure vector constructors.
 
 ## Proof audit hotspots
-- Trusted boundaries are not limited to `external_body`: there are also `assume(...)` soundness oracles in `src/topo_sort.rs` and `src/reachability.rs`, plus 5 `@verified-logic:no-ensures` / placeholder-spec surfaces (`index_select.rs`, `nix_closure.rs`, `settlement.rs`, `segregated_free.rs`, `cycle_detect.rs`).
+- Trusted boundaries are not limited to `external_body`: there are also `assume(...)` soundness oracles in `src/topo_sort.rs` and `src/reachability.rs`, plus 3 `@verified-logic:no-ensures` / placeholder-spec surfaces (`nix_closure.rs`, `settlement.rs`, `cycle_detect.rs`).
 - Tracey is currently green (`0 uncovered`, `0 untested`).
 - The recent Tracey drift was cleared with metadata-only fixes: add `r[verify]` tags for untested rules, and add `r[impl]` tags to spec-level implementations when a requirement has no separate exec fn (for example `query_cost::index_scan_cost_spec` and `snapshot_isolation::si_allows_commit_spec`).
 - The temporary `src/mesi.rs` (6) and `src/page.rs` (1) trusted boundaries from the 2026-04-08 remediation are now closed; stale notes or inventories that still count MESI/page `external_body` sites are wrong.

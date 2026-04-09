@@ -78,9 +78,35 @@ pub fn is_covering(index_cols: &[u64], query_cols: &[u64]) -> (result: bool)
 // --- best_index ---
 
 // r[depends index-select.best-index]
+/// Spec helper: strict comparison of selectivities.
+/// `lhs` is better than `rhs` when its fraction is strictly smaller.
+pub open spec fn selectivity_lt_spec(lhs: (u64, u64), rhs: (u64, u64)) -> bool {
+    (lhs.0 as int) * (rhs.1 as int) < (rhs.0 as int) * (lhs.1 as int)
+}
+
+/// Spec helper: best index among the prefix `selectivities[0..upto)`.
+pub open spec fn best_index_prefix_spec(selectivities: Seq<(u64, u64)>, upto: int) -> int
+    recommends
+        1 <= upto <= selectivities.len(),
+        forall|i: int| #![trigger selectivities[i]]
+            0 <= i < selectivities.len() ==> selectivities[i].1 > 0,
+    decreases upto,
+{
+    if upto <= 1 {
+        0
+    } else {
+        let prev = best_index_prefix_spec(selectivities, upto - 1);
+        let cur = upto - 1;
+        if selectivity_lt_spec(selectivities[cur], selectivities[prev]) {
+            cur
+        } else {
+            prev
+        }
+    }
+}
+
 /// Spec: given selectivities for each candidate index (lower is better),
 /// return the index of the one with the lowest selectivity.
-/// Compares fractions via cross-multiplication: a/b <= c/d iff a*d <= c*b.
 pub open spec fn best_index_spec(
     selectivities: Seq<(u64, u64)>,
 ) -> int
@@ -89,16 +115,10 @@ pub open spec fn best_index_spec(
         forall|i: int| #![trigger selectivities[i]]
             0 <= i < selectivities.len() ==> selectivities[i].1 > 0,
 {
-    // The index with the minimum selectivity (first in case of ties).
-    // Defined as: the smallest i such that for all j, sel[i] <= sel[j].
-    // Using cross-multiplication for comparison.
-    0 // placeholder — actual selection done in exec
+    best_index_prefix_spec(selectivities, selectivities.len() as int)
 }
 
 // r[impl index-select.best-index]
-// @verified-logic:no-ensures
-// Minimality proof requires nonlinear cross-multiplication transitivity
-// which Z3 can't maintain through the loop. Covered by proptest.
 /// Returns the index (position) of the candidate with lowest selectivity.
 pub fn best_index(selectivities: &[(u64, u64)]) -> (result: usize)
     requires
@@ -106,7 +126,7 @@ pub fn best_index(selectivities: &[(u64, u64)]) -> (result: usize)
         forall|i: int| #![trigger selectivities@[i]]
             0 <= i < selectivities@.len() ==> selectivities@[i].1 > 0,
     ensures
-        (result as int) < selectivities@.len(),
+        result as int == best_index_spec(selectivities@),
 {
     let mut best: usize = 0;
     let mut i: usize = 1;
@@ -114,6 +134,7 @@ pub fn best_index(selectivities: &[(u64, u64)]) -> (result: usize)
         invariant
             0 <= best < selectivities@.len(),
             1 <= i <= selectivities@.len(),
+            best as int == best_index_prefix_spec(selectivities@, i as int),
         decreases selectivities@.len() - i
     {
         let (n_cur, d_cur) = selectivities[i];
@@ -135,7 +156,14 @@ pub fn best_index(selectivities: &[(u64, u64)]) -> (result: usize)
         let cross_cur = n_cur as u128 * d_best as u128;
         let cross_best = n_best as u128 * d_cur as u128;
         if cross_cur < cross_best {
+            proof {
+                assert(selectivity_lt_spec(selectivities@[i as int], selectivities@[best as int]));
+            }
             best = i;
+        } else {
+            proof {
+                assert(!selectivity_lt_spec(selectivities@[i as int], selectivities@[best as int]));
+            }
         }
         i = i + 1;
     }
