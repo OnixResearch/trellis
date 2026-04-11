@@ -404,3 +404,9 @@
 {"text":"lets continue","timestamp":1775759960132}
 {"text":"lets do it","timestamp":1775762532213}
 {"text":"continue","timestamp":1775763325807}
+{"text":"do it","timestamp":1775764767424}
+{"text":"can we create an openspec for verifying https://codeberg.org/expede/surelock https://notes.brooklynzelenka.com/Blog/Surelock primitives","timestamp":1775925505537}
+{"text":"continue","timestamp":1775926762209}
+{"text":"1. refine the spec scope,\n 2. start implementing the verified modules, or\n 3. add a sibling OpenSpec for the deferred mixed-level LockSet case.","timestamp":1775927254014}
+{"text":"can we create an openspec for durable execution logic","timestamp":1775927827097}
+{"text":"lets write an openspec for primitives from the zircon kernel","timestamp":1775930588295}

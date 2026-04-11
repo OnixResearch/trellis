@@ -41,6 +41,7 @@
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
 - Active OpenSpec change specs in this repo use full spec documents under `openspec/changes/*/specs/<domain>/spec.md`, not `ADDED/MODIFIED/REMOVED` delta sections. Match the existing change style when adding a new change.
+- Done review will flag internal OpenSpec drift inside one change: keep proposal capability names aligned with spec requirement IDs, and do not promise behaviors in `proposal.md` that the change spec does not require yet.
 - Generic decomposition: algebraic.rs (predicates), pointwise.rs (seq lifting), seq_fold.rs (counting)
 - `src/nix_base32.rs`: useful verified helper split for the roundtrip proof is to separate
   decode byte writes into `decode_low_spec(bit, digit)` and `decode_high_spec(bit, digit)`.
@@ -1581,3 +1582,6 @@
   `decode_prefix_of_encode`, and `bit_at_padded_bounded`. Also, `by(bit_vector)`
   on shifted byte extracts works better if the shift count is first bound to a
   `u64` local, not left as `(pos % 8) as u64` inline.
+- Durable-execution OpenSpec scope fits this repo best as pure replay/recovery decision logic
+  that composes with existing `persistent_state`, `journal`, and job execution modules;
+  keep storage I/O, timers, and actual side-effect execution out of scope.
