@@ -26,14 +26,24 @@ Zircon-specific modules.
 - Model events and eventpairs, including peer-close semantics
 - Model channels as datagram IPC with optional transferred handles
 - Model futex wait/wake/requeue semantics with multi-waiter state
+- Model sockets as paired byte-stream IPC with bounded buffers, short
+  reads/writes, write disposition, and threshold signals
+- Model ports as async wait multiplexers with bind/deliver/one-shot/repeat
+- Model timers as deadline-based waitable objects with set/cancel/reset
+- Model FIFOs as fixed-element paired ring buffers with peer-closed
+- Model jobs as a containment hierarchy with kill propagation, critical
+  process designation, and parent-lifetime rules
 - Prove cross-module refinement against existing generic modules
 
 **Non-Goals:**
 - Exact syscall ABI or FIDL surface
 - User-visible handle integers and reuse policy
-- Full task tree semantics for jobs/processes/threads
-- VM, pager, port, and scheduler subsystems
+- Full thread creation, TLS, and per-thread exception handling
+- VMOs, VMARs, pagers, and address-space management
+- Timer slack coarsening policy internals
 - Kernel-internal lock validation or low-level arch invariants
+- Driver objects (interrupts, MSIs, BTIs, PMTs, debuglog, resources)
+- Stream objects and counter objects
 
 ## Decisions
 
@@ -117,14 +127,63 @@ proves:
 because of raw atomic instructions. The model should stay at the kernel
 primitive boundary.
 
-### 8. Keep scope to object and synchronization primitives
+### 8. Sockets reuse ring-buffer internals
 
-**Choice:** Leave ports, VMOs, VMARs, pager objects, and scheduler policies
-out of this change.
+**Choice:** Model the per-endpoint receive buffer as a bounded byte ring,
+reusing concepts from `ring_buffer.rs`. Track write disposition as a
+per-endpoint boolean pair.
 
-**Rationale:** Handles, rights, signals, channels, events, and futexes already
-make a coherent and useful slice. Pulling in VM or scheduler state would turn
-this into a much larger kernel-modeling project.
+**Rationale:** Socket buffers are classic ring buffers. Short reads/writes
+fall naturally out of a bounded-capacity model. Write disposition is a
+two-bit state that controls `WRITABLE` / `PEER_WRITE_DISABLED` signals.
+
+### 9. Ports are packet queues with bound registrations
+
+**Choice:** Model a port as a packet queue plus a set of registrations
+`(object_koid, mask, key, mode)`. Signal delivery checks the intersection.
+One-shot removes the registration after delivery; repeating keeps it.
+
+**Rationale:** Ports extend the `zircon_wait` model to async / many-object
+scale. The key insight is that a port packet is just a materialized
+wait-readiness result.
+
+### 10. Timers wrap deadline ordering
+
+**Choice:** Model a timer as `(state: Idle | Armed(deadline) | Signaled,
+koid)`. Set transitions to Armed, deadline passage transitions to Signaled,
+cancel/reset transitions back. Reuse `deadline_queue` for ordering proofs.
+
+**Rationale:** Timers are the simplest waitable object beyond events. The
+only interesting invariant is signal persistence until cancel/reset.
+
+### 11. FIFOs are element-aligned paired ring buffers
+
+**Choice:** Model a FIFO as two `ring_buffer`-style queues with a fixed
+element size. Reads and writes operate on whole elements. Peer-closed
+follows the same peered-object pattern as eventpairs, sockets, and channels.
+
+**Rationale:** FIFOs exist for efficient fixed-size element transfer on the
+control plane of shared-memory transports. Element alignment is their defining
+constraint vs. sockets.
+
+### 12. Jobs model the containment tree, not the full task API
+
+**Choice:** Model the job tree as parent/child edges, with kill propagation
+as a recursive descent. Track critical-process designation per job. Prove
+parent-lifetime: a job with live descendants cannot be finalized.
+
+**Rationale:** The interesting Zircon job invariants are tree structure,
+kill propagation, and critical-process crash-kills-job. We do not need
+full task_create/task_kill ABI details.
+
+### 13. Keep VMOs, VMARs, and scheduler out of scope
+
+**Choice:** Leave VM, pager, and scheduler objects out of this change.
+
+**Rationale:** The eleven modules (rights, handles, wait, events, channels,
+futexes, sockets, ports, timers, FIFOs, jobs) already cover the core object
+model, all IPC primitives, synchronization, async waiting, and task
+containment. VM and scheduler are coherent follow-up changes.
 
 ## Module Plan
 
@@ -134,6 +193,11 @@ this into a much larger kernel-modeling project.
 - `src/zircon_event.rs`
 - `src/zircon_channel.rs`
 - `src/zircon_futex.rs`
+- `src/zircon_socket.rs`
+- `src/zircon_port.rs`
+- `src/zircon_timer.rs`
+- `src/zircon_fifo.rs`
+- `src/zircon_job.rs`
 - `src/properties.rs` additions for cross-module theorems
 
 ## Risks / Trade-offs
@@ -153,3 +217,15 @@ blocked->ready properties on top.
 **[Over-modeling ABI details]** Exact syscall error codes could bog the work
 down. Mitigation: keep the model at the semantic level: preconditions,
 state transitions, and preserved invariants.
+
+**[Socket buffer proof shape]** Short read/write proofs need careful bounding.
+Mitigation: reuse `ring_buffer` well-formedness invariant as the abstraction
+boundary.
+
+**[Port registration set management]** Tracking many registrations per port
+could be complex. Mitigation: model registrations as a `Seq` with lookup and
+removal; avoid indexing tricks.
+
+**[Job tree recursion]** Kill propagation requires structural recursion over
+the job tree. Mitigation: use `decreases` on tree depth, same pattern as
+`nix_closure`.

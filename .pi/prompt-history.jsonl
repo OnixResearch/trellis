@@ -411,3 +411,5 @@
 {"text":"can we create an openspec for durable execution logic","timestamp":1775927827097}
 {"text":"lets write an openspec for primitives from the zircon kernel","timestamp":1775930588295}
 {"text":"lets make an openspec for erlang beam primitives","timestamp":1775959300443}
+{"text":"what ziron/fuschia primitives should we add? https://fuchsia.dev/fuchsia-src/concepts/kernel","timestamp":1775959905778}
+{"text":"letsupdate with the additions","timestamp":1775960089694}

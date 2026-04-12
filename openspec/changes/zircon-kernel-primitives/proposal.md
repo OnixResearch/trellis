@@ -37,9 +37,25 @@ model.
   on peer close.
 - **zircon_futex**: Futex wait/wake/requeue logic that refines the existing
   `futex_state` model into a multi-waiter Zircon-style primitive.
+- **zircon_socket**: Stream-oriented paired IPC with bounded buffers, short
+  reads/writes, write disposition (enable/disable), and threshold signals
+  (`READ_THRESHOLD`, `WRITE_THRESHOLD`). Peer-closed propagation.
+- **zircon_port**: Async wait multiplexer. Objects bind signal masks to a
+  port; when signals fire, a packet is delivered to the port queue.
+  Covers one-shot vs repeating registrations and user-queued packets.
+- **zircon_timer**: Deadline-based waitable object with set/cancel/reset
+  lifecycle. `ZX_TIMER_SIGNALED` persists until cancel or reset.
+  Connects to `deadline_queue` for ordering.
+- **zircon_fifo**: Fixed-element paired ring buffer IPC. Element-aligned
+  reads/writes (no partial elements). Peer-closed propagation.
+- **zircon_job**: Task containment hierarchy. Jobs own child jobs and
+  processes. Kill propagates down the tree. Critical-process designation.
+  Policy inheritance.
 - **Cross-module properties**: Proofs linking rights to operations,
-  channel transfer to handle lifetime, eventpair state to signal algebra,
-  and futex wake/requeue to blocked/ready task transitions.
+  channel transfer to handle lifetime, eventpair/socket/fifo state to
+  signal algebra, port delivery to wait readiness, timer signaling to
+  deadline ordering, job kill to process-state transitions, and futex
+  wake/requeue to blocked/ready task transitions.
 
 ## Capabilities
 
@@ -54,6 +70,14 @@ model.
 - `zircon-channel.discard`: Verified unread in-flight handles close on peer loss
 - `zircon-futex.wait-wake`: Verified compare/wait/wake behavior
 - `zircon-futex.requeue`: Verified waiter-preserving requeue semantics
+- `zircon-socket.stream-ipc`: Verified bounded stream with short read/write semantics
+- `zircon-socket.disposition`: Verified write enable/disable and threshold signals
+- `zircon-port.delivery`: Verified packet delivery from bound signal watches
+- `zircon-port.queue`: Verified user-queued and async packet ordering
+- `zircon-timer.lifecycle`: Verified set/cancel/reset with persistent signaling
+- `zircon-fifo.element-aligned`: Verified fixed-element ring buffer IPC
+- `zircon-job.containment`: Verified job/process tree structure
+- `zircon-job.kill-propagation`: Verified recursive kill down the job tree
 
 ## Impact
 
@@ -63,16 +87,21 @@ model.
   transitions, wait predicates, event/eventpair state, channel message
   transfer, and futex requeue logic
 - **Dependencies**: Reuses existing `signal`, `ref_count`, `futex_state`,
-  and `process_state` modules; no new runtime deps expected
+  `process_state`, `ring_buffer`, `deadline_queue`, and `cow` modules;
+  no new runtime deps expected
 - **Testing**: Verus proofs, unit tests for concrete scenarios, and proptest
-  model oracles for channel transfer and futex wake/requeue sequences
+  model oracles for channel transfer, socket stream, FIFO element alignment,
+  port packet delivery, timer lifecycle, job kill propagation, and futex
+  wake/requeue sequences
 
 ## Out of Scope
 
 - Raw syscall ABI details such as exact status codes or handle integer values
 - VMOs, VMARs, pagers, and address-space management
-- Job/process/thread creation trees beyond the blocking/ready state needed
-  for wait/futex interaction
-- Ports, packet delivery, and async wait registration
+- Thread creation, thread-local storage, and per-thread exception handling
 - Full scheduler modeling beyond existing deadline/fair queue primitives
-- Driver, exception, or resource-object semantics
+- Timer slack coarsening policy (we model deadline semantics, not kernel
+  slack tuning)
+- Driver objects: interrupts, MSIs, BTIs, PMTs, debuglog, resources
+- Stream objects (seekable VMO I/O)
+- Counter objects

@@ -35,10 +35,44 @@
 - [ ] Add unit tests and proptests for wake counts, empty wakes, and requeue conservation
 - [ ] Run `./scripts/verify.sh` and confirm Tracey uncovered/untested queries stay clean
 
-## Phase 5: Cross-Module Properties and Finish
+## Phase 5: Sockets and FIFOs
 
-- [ ] Add `src/properties.rs` theorems linking rights checks to handle operations, event/eventpair state to `signal.rs`, channel transfer to handle lifetime, and futex unblock to `process_state`
-- [ ] Add `pub mod zircon_*;` exports to `src/lib.rs`
+- [ ] Create `src/zircon_socket.rs` with paired byte-stream endpoints, bounded buffers, and short read/write semantics
+- [ ] Prove write appends to peer receive buffer and read consumes in order; short reads/writes respect buffer bounds
+- [ ] Add write disposition (enable/disable) with `WRITE_DISABLED` and `PEER_WRITE_DISABLED` signals
+- [ ] Add configurable read/write threshold signals
+- [ ] Prove peer-closed propagation following the peered-object pattern
+- [ ] Create `src/zircon_fifo.rs` with fixed-element paired ring buffer using `ring_buffer` concepts
+- [ ] Prove element-aligned reads/writes (no partial elements) and bounded capacity
+- [ ] Prove FIFO peer-closed and readable/writable signals
+- [ ] Add unit tests and proptests for socket stream scenarios and FIFO element alignment
+- [ ] Run `./scripts/verify.sh` and confirm Tracey uncovered/untested queries stay clean
+
+## Phase 6: Ports and Timers
+
+- [ ] Create `src/zircon_port.rs` with packet queue, async wait registration, and signal-to-packet delivery
+- [ ] Prove one-shot registration is consumed after first delivery and repeating registration re-arms
+- [ ] Prove user-queued packets are delivered in FIFO order
+- [ ] Prove async delivery corresponds to wait-readiness from `zircon_wait`
+- [ ] Create `src/zircon_timer.rs` with Idle/Armed/Signaled state machine and set/cancel/reset operations
+- [ ] Prove signal persistence until cancel/reset and deadline ordering consistency with `deadline_queue`
+- [ ] Add unit tests and proptests for port delivery scenarios and timer lifecycle
+- [ ] Run `./scripts/verify.sh` and confirm Tracey uncovered/untested queries stay clean
+
+## Phase 7: Job Containment Hierarchy
+
+- [ ] Create `src/zircon_job.rs` with tree structure (parent-child jobs, job-process membership)
+- [ ] Prove containment invariants: unique parent for non-root jobs, unique owning job per process
+- [ ] Prove kill propagation: killing a job recursively kills all descendants
+- [ ] Prove critical-process semantics: abnormal exit of a critical process kills the owning job
+- [ ] Prove parent-lifetime: a job with live descendants remains live even with no handles
+- [ ] Add unit tests and proptests for kill propagation and critical-process scenarios
+- [ ] Run `./scripts/verify.sh` and confirm Tracey uncovered/untested queries stay clean
+
+## Phase 8: Cross-Module Properties and Finish
+
+- [ ] Add `src/properties.rs` theorems linking rights checks to handle operations, peered-object signals to `signal.rs`, channel transfer to handle lifetime, port delivery to wait readiness, timer signaling to deadline ordering, job kill to process-state transitions, and futex unblock to `process_state`
+- [ ] Add `pub mod zircon_*;` exports to `src/lib.rs` for all eleven Zircon modules
 - [ ] Add or update main spec text under `openspec/specs/` once implementation stabilizes and the change is ready to sync
 - [ ] Run `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, and `./scripts/verify.sh`
 - [ ] Confirm Tracey reports `0 uncovered` and `0 untested` for the finished change
