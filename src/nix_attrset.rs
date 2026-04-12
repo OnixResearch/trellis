@@ -242,7 +242,8 @@ proof fn seq_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
 }
 
 /// Verified byte-by-byte comparison matching `seq_cmp` spec.
-pub fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+/// Internal helper used only by attrset merge/list-to-attrs logic in this module.
+fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
     ensures result as int == seq_cmp(a@, b@),
             result == -1 || result == 0 || result == 1
 {

@@ -27,6 +27,7 @@ pub open spec fn flip_spec(p: Polarity) -> Polarity {
 
 /// Exec: flip polarity.
 // r[impl nickel-polarity.flip-domain]
+// r[impl nickel-polarity.double-flip]
 pub fn flip(p: Polarity) -> (result: Polarity)
     ensures result == flip_spec(p)
 {
@@ -44,6 +45,8 @@ pub enum PathStep {
 }
 
 /// Exec: is this step a Domain step?
+// r[impl nickel-polarity.path-tracking]
+// r[impl nickel-polarity.preserve-codomain]
 pub fn is_domain(step: PathStep) -> (result: bool)
     ensures result == (step == PathStep::Domain)
 {
@@ -68,6 +71,12 @@ pub open spec fn polarity_after_path(initial: Polarity, path: Seq<PathStep>) -> 
         };
         polarity_after_path(next, path.subrange(1, path.len() as int))
     }
+}
+
+/// Spec: double-flip identity as a standalone property.
+// r[depends nickel-polarity.double-flip]
+pub open spec fn double_flip_spec(p: Polarity) -> bool {
+    flip_spec(flip_spec(p)) == p
 }
 
 /// Spec: count domain steps in a path.
@@ -135,7 +144,7 @@ pub fn polarity_at(initial: Polarity, path: &Vec<PathStep>) -> (result: Polarity
 // r[verify nickel-polarity.double-flip]
 /// Double-flip identity: flip(flip(p)) == p.
 proof fn double_flip_identity(p: Polarity)
-    ensures flip_spec(flip_spec(p)) == p
+    ensures double_flip_spec(p)
 {}
 
 // r[verify nickel-polarity.flip-domain]

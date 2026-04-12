@@ -123,10 +123,7 @@ proof fn reachable_via_output(
 ///
 /// Each table entry `(k, items)` means applying the operator to key `k`
 /// yields `items`. Multiple entries with the same key are all applied.
-pub fn generic_closure(
-    start: &Vec<ClosureItem>,
-    operator: &Vec<(u64, Vec<ClosureItem>)>,
-) -> Vec<ClosureItem> {
+pub fn generic_closure(start: &Vec<ClosureItem>, operator: &Vec<(u64, Vec<ClosureItem>)>) -> Vec<ClosureItem> {
     let mut seen = HashSet::new();
     let mut queue: Vec<ClosureItem> = start.clone();
     let mut result = Vec::new();
@@ -170,10 +167,7 @@ mod tests {
             .map(|(idx, nbrs)| {
                 (
                     idx as u64,
-                    nbrs.iter()
-                        .filter(|&&nbr| nbr < n)
-                        .map(|&nbr| ClosureItem { key: nbr, data: 0 })
-                        .collect(),
+                    nbrs.iter().filter(|&&nbr| nbr < n).map(|&nbr| ClosureItem { key: nbr, data: 0 }).collect(),
                 )
             })
             .collect()

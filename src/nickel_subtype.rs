@@ -486,8 +486,7 @@ mod tests {
             | (NType::Num, NType::Num)
             | (NType::Bool, NType::Bool)
             | (NType::Str, NType::Str) => true,
-            (NType::Array(ti), NType::Array(ui))
-            | (NType::Dict(ti), NType::Dict(ui)) => type_eq_runtime(ti, ui),
+            (NType::Array(ti), NType::Array(ui)) | (NType::Dict(ti), NType::Dict(ui)) => type_eq_runtime(ti, ui),
             (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) => {
                 type_eq_runtime(t_dom, u_dom) && type_eq_runtime(t_cod, u_cod)
             }
@@ -500,8 +499,7 @@ mod tests {
             true
         } else {
             match (t, u) {
-                (NType::Array(ti), NType::Array(ui))
-                | (NType::Dict(ti), NType::Dict(ui)) => subtype_runtime(ti, ui),
+                (NType::Array(ti), NType::Array(ui)) | (NType::Dict(ti), NType::Dict(ui)) => subtype_runtime(ti, ui),
                 (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) => {
                     subtype_runtime(u_dom, t_dom) && subtype_runtime(t_cod, u_cod)
                 }
@@ -514,10 +512,7 @@ mod tests {
     #[test]
     fn test_reflexivity() {
         assert!(subtype_runtime(&NType::Num, &NType::Num));
-        assert!(subtype_runtime(
-            &NType::Array(Box::new(NType::Bool)),
-            &NType::Array(Box::new(NType::Bool)),
-        ));
+        assert!(subtype_runtime(&NType::Array(Box::new(NType::Bool)), &NType::Array(Box::new(NType::Bool)),));
     }
 
     // r[verify nickel-subtype.record-dict]
@@ -528,10 +523,7 @@ mod tests {
     #[test]
     fn test_array_covariance_concept() {
         assert!(subtype_runtime(&NType::Num, &NType::Dyn));
-        assert!(subtype_runtime(
-            &NType::Array(Box::new(NType::Num)),
-            &NType::Array(Box::new(NType::Dyn)),
-        ));
+        assert!(subtype_runtime(&NType::Array(Box::new(NType::Num)), &NType::Array(Box::new(NType::Dyn)),));
     }
 
     // r[verify nickel-subtype.closed-records]

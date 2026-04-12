@@ -365,7 +365,9 @@ proof fn uncovered_empty_when_covered(patterns: Seq<SpecPattern>, variants: Seq<
 mod tests {
     use super::*;
 
-    fn tag(s: &str) -> Vec<u8> { s.as_bytes().to_vec() }
+    fn tag(s: &str) -> Vec<u8> {
+        s.as_bytes().to_vec()
+    }
 
     // r[verify nickel-pattern.wildcard-covers-all]
     #[test]
@@ -390,10 +392,7 @@ mod tests {
     // r[verify nickel-pattern.enum-coverage]
     #[test]
     fn test_incomplete_enum() {
-        let patterns = vec![
-            Pattern::EnumVariant(tag("a")),
-            Pattern::EnumVariant(tag("b")),
-        ];
+        let patterns = vec![Pattern::EnumVariant(tag("a")), Pattern::EnumVariant(tag("b"))];
         let variants = vec![tag("a"), tag("b"), tag("c")];
         assert!(!check_enum_coverage(&patterns, &variants));
     }
@@ -401,10 +400,7 @@ mod tests {
     // r[verify nickel-pattern.coverage-completeness]
     #[test]
     fn test_find_uncovered() {
-        let patterns = vec![
-            Pattern::EnumVariant(tag("a")),
-            Pattern::EnumVariant(tag("b")),
-        ];
+        let patterns = vec![Pattern::EnumVariant(tag("a")), Pattern::EnumVariant(tag("b"))];
         let variants = vec![tag("a"), tag("b"), tag("c")];
         let uncovered = find_uncovered(&patterns, &variants);
         assert_eq!(uncovered.len(), 1);
@@ -415,14 +411,8 @@ mod tests {
     #[test]
     fn test_overlap_detection() {
         assert!(check_overlap(&Pattern::Wildcard, &Pattern::EnumVariant(tag("a"))));
-        assert!(check_overlap(
-            &Pattern::EnumVariant(tag("a")),
-            &Pattern::EnumVariant(tag("a")),
-        ));
-        assert!(!check_overlap(
-            &Pattern::EnumVariant(tag("a")),
-            &Pattern::EnumVariant(tag("b")),
-        ));
+        assert!(check_overlap(&Pattern::EnumVariant(tag("a")), &Pattern::EnumVariant(tag("a")),));
+        assert!(!check_overlap(&Pattern::EnumVariant(tag("a")), &Pattern::EnumVariant(tag("b")),));
     }
 
     // r[verify nickel-pattern.wildcard-covers-all]

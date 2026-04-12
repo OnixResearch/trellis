@@ -252,6 +252,18 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `nix_string` | string operations (substring, length, replace) |
 | `nix_version` | version comparison (same algorithm as Nix's compareVersions) |
 
+### Nickel language semantics
+
+| Module | What it verifies |
+|---|---|
+| `nickel_priority` | Nickel merge priority total order: Bottom < Neutral < Numeral(n) < Top |
+| `nickel_merge_split` | Nickel three-way record split: left-only, center, right-only |
+| `nickel_field_merge` | Nickel field-level merge resolution by priority |
+| `nickel_record_merge` | Nickel full record merge with identity, disjoint commutativity, and neutral-record associativity proofs |
+| `nickel_subtype` | Nickel gradual type subtyping: reflexivity, covariance, record-dict |
+| `nickel_polarity` | Nickel contract blame polarity: flip on domain, double-flip identity |
+| `nickel_pattern_coverage` | Nickel pattern completeness and overlap detection |
+
 ### Networking
 
 | Module | What it verifies |

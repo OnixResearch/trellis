@@ -201,8 +201,7 @@ mod tests {
     // r[verify nix-fingerprint.regular-output]
     #[test]
     fn test_regular_fingerprint_structure() {
-        let fp = nix_fingerprint::regular_fingerprint(
-            &v("out"), &v("abcdef1234567890"), &v("hello-1.0"));
+        let fp = nix_fingerprint::regular_fingerprint(&v("out"), &v("abcdef1234567890"), &v("hello-1.0"));
         let s = String::from_utf8(fp).unwrap();
         assert!(s.starts_with("output:out:sha256:"));
         assert!(s.ends_with(":/nix/store:hello-1.0"));
@@ -211,8 +210,7 @@ mod tests {
     // r[verify nix-fingerprint.fixed-output]
     #[test]
     fn test_fixed_fingerprint_structure() {
-        let fp = nix_fingerprint::fixed_fingerprint(
-            &v("sha256"), &v("abcdef1234567890"), &v("hello-src.tar.gz"));
+        let fp = nix_fingerprint::fixed_fingerprint(&v("sha256"), &v("abcdef1234567890"), &v("hello-src.tar.gz"));
         let s = String::from_utf8(fp).unwrap();
         assert_eq!(s, "fixed:out:sha256:abcdef1234567890:hello-src.tar.gz");
     }

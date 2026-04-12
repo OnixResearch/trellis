@@ -6,11 +6,11 @@
 //! Range `A-B` is (A, B, 1). Range with step `A-B/N` is (A, B, N).
 
 #[cfg(verus_keep_ghost)]
-use vstd::arithmetic::div_mod::{
-    lemma_fundamental_div_mod,
-    lemma_mod_multiples_basic,
-    lemma_mod_pos_bound,
-};
+use vstd::arithmetic::div_mod::lemma_fundamental_div_mod;
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::div_mod::lemma_mod_multiples_basic;
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::div_mod::lemma_mod_pos_bound;
 use vstd::prelude::*;
 
 verus! {

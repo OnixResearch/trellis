@@ -66,6 +66,8 @@ pub open spec fn priority_eq(a: MergePriority, b: MergePriority) -> bool {
 
 /// Exec: compare two priorities. Returns -1, 0, or 1.
 // r[impl nickel-priority.total-order]
+// r[impl nickel-priority.extrema]
+// r[impl nickel-priority.numeral-ordering]
 pub fn priority_cmp(a: &MergePriority, b: &MergePriority) -> (result: i8)
     ensures
         result == -1 || result == 0 || result == 1,
@@ -168,11 +170,7 @@ mod tests {
     // r[verify nickel-priority.extrema]
     #[test]
     fn test_bottom_minimum() {
-        let priorities = [
-            MergePriority::Neutral,
-            MergePriority::Numeral(5),
-            MergePriority::Top,
-        ];
+        let priorities = [MergePriority::Neutral, MergePriority::Numeral(5), MergePriority::Top];
         for p in &priorities {
             assert_eq!(priority_cmp(&MergePriority::Bottom, p), -1);
         }

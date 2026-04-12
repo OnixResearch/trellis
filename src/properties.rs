@@ -2149,6 +2149,175 @@ mod financial_proofs {
     } // verus!
 }
 
+// --- Nickel cross-module properties ---
+
+#[cfg(verus_keep_ghost)]
+mod nickel_proofs {
+    use vstd::prelude::*;
+
+    use crate::nickel_field_merge::FieldMergeResult;
+    use crate::nickel_field_merge::field_merge_spec;
+    use crate::nickel_merge_split::is_sorted_keys;
+    use crate::nickel_merge_split::key_lt;
+    use crate::nickel_merge_split::key_total;
+    use crate::nickel_merge_split::kv_kv_disjoint;
+    use crate::nickel_merge_split::split_spec;
+    use crate::nickel_priority::MergePriority;
+    use crate::nickel_priority::priority_lt;
+
+    verus! {
+
+    proof fn drop_first_index<A>(s: Seq<A>, i: int)
+        requires s.len() > 0, 0 <= i < s.subrange(1, s.len() as int).len()
+        ensures s.subrange(1, s.len() as int)[i] == s[i + 1]
+    {}
+
+    proof fn seq_head_tail_eq<A>(s: Seq<A>)
+        requires s.len() > 0
+        ensures s =~= seq![s[0int]] + s.subrange(1, s.len() as int)
+    {
+        assert forall|i: int| 0 <= i < s.len()
+            implies s[i] == (seq![s[0int]] + s.subrange(1, s.len() as int))[i] by {
+            if i == 0 {
+            } else {
+                drop_first_index(s, i - 1);
+            }
+        }
+    }
+
+    proof fn nickel_sorted_tail(attrs: Seq<(Seq<u8>, u64)>)
+        requires is_sorted_keys(attrs), attrs.len() > 0
+        ensures is_sorted_keys(attrs.subrange(1, attrs.len() as int))
+    {
+        assert forall|i: int, j: int|
+            0 <= i < j < attrs.subrange(1, attrs.len() as int).len()
+            implies key_lt(attrs.subrange(1, attrs.len() as int)[i].0, attrs.subrange(1, attrs.len() as int)[j].0) by {
+            drop_first_index(attrs, i);
+            drop_first_index(attrs, j);
+            assert(0 <= i + 1 < j + 1 < attrs.len());
+        }
+    }
+
+    proof fn nickel_disjoint_tail_left(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>)
+        requires kv_kv_disjoint(a, b), a.len() > 0
+        ensures kv_kv_disjoint(a.subrange(1, a.len() as int), b)
+    {
+        assert forall|i: int, j: int|
+            0 <= i < a.subrange(1, a.len() as int).len() && 0 <= j < b.len()
+            implies !(a.subrange(1, a.len() as int)[i].0 =~= b[j].0) by {
+            drop_first_index(a, i);
+            assert(0 <= i + 1 < a.len());
+        }
+    }
+
+    proof fn nickel_disjoint_tail_right(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>)
+        requires kv_kv_disjoint(a, b), b.len() > 0
+        ensures kv_kv_disjoint(a, b.subrange(1, b.len() as int))
+    {
+        assert forall|i: int, j: int|
+            0 <= i < a.len() && 0 <= j < b.subrange(1, b.len() as int).len()
+            implies !(a[i].0 =~= b.subrange(1, b.len() as int)[j].0) by {
+            drop_first_index(b, j);
+            assert(0 <= j + 1 < b.len());
+        }
+    }
+
+    // r[depends nickel-priority.total-order]
+    // r[verify nickel-field-merge.higher-wins]
+    proof fn prove_nickel_priority_orders_field_merge_right_wins(
+        v1: u64, p1: MergePriority, v2: u64, p2: MergePriority,
+    )
+        requires priority_lt(p1, p2)
+        ensures field_merge_spec(v1, p1, v2, p2) == FieldMergeResult::Right(v2, p2)
+    {}
+
+    // r[depends nickel-priority.total-order]
+    // r[verify nickel-field-merge.higher-wins]
+    proof fn prove_nickel_priority_orders_field_merge_left_wins(
+        v1: u64, p1: MergePriority, v2: u64, p2: MergePriority,
+    )
+        requires priority_lt(p2, p1)
+        ensures field_merge_spec(v1, p1, v2, p2) == FieldMergeResult::Left(v1, p1)
+    {}
+
+    // r[depends nickel-priority.total-order]
+    // r[verify nickel-field-merge.equal-recurse]
+    proof fn prove_nickel_priority_equal_priorities_merge_equal(
+        v: u64, p1: MergePriority, p2: MergePriority,
+    )
+        requires crate::nickel_priority::priority_eq(p1, p2)
+        ensures field_merge_spec(v, p1, v, p2) == FieldMergeResult::Equal(v, p1)
+    {}
+
+    // r[depends nickel-priority.total-order]
+    // r[verify nickel-field-merge.equal-recurse]
+    proof fn prove_nickel_priority_equal_priorities_merge_conflict(
+        v1: u64, v2: u64, p1: MergePriority, p2: MergePriority,
+    )
+        requires crate::nickel_priority::priority_eq(p1, p2), v1 != v2
+        ensures field_merge_spec(v1, p1, v2, p2) == FieldMergeResult::Conflict
+    {}
+
+    proof fn prove_nickel_split_disjoint_preserves_sides(
+        a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>,
+    )
+        requires
+            is_sorted_keys(a),
+            is_sorted_keys(b),
+            kv_kv_disjoint(a, b),
+        ensures
+            split_spec(a, b).left =~= a,
+            split_spec(a, b).center.len() == 0,
+            split_spec(a, b).right =~= b,
+        decreases a.len() + b.len()
+    {
+        if a.len() == 0 {
+        } else if b.len() == 0 {
+        } else {
+            let ta = a.subrange(1, a.len() as int);
+            let tb = b.subrange(1, b.len() as int);
+
+            key_total(a[0int].0, b[0int].0);
+            assert(!(a[0int].0 =~= b[0int].0));
+
+            if key_lt(a[0int].0, b[0int].0) {
+                nickel_sorted_tail(a);
+                nickel_disjoint_tail_left(a, b);
+                prove_nickel_split_disjoint_preserves_sides(ta, b);
+                seq_head_tail_eq(a);
+            } else {
+                assert(key_lt(b[0int].0, a[0int].0));
+                nickel_sorted_tail(b);
+                nickel_disjoint_tail_right(a, b);
+                prove_nickel_split_disjoint_preserves_sides(a, tb);
+                seq_head_tail_eq(b);
+            }
+        }
+    }
+
+    // r[depends nickel-merge.split]
+    // r[depends nix-attrset.merge]
+    // r[verify nickel-merge.split]
+    proof fn prove_nickel_split_recombines_to_nix_merge_when_disjoint(
+        a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>,
+    )
+        requires
+            is_sorted_keys(a),
+            is_sorted_keys(b),
+            kv_kv_disjoint(a, b),
+        ensures ({
+            let r = split_spec(a, b);
+            &&& r.center.len() == 0
+            &&& crate::nix_attrset::merge_spec(r.left, r.right)
+                =~= crate::nix_attrset::merge_spec(a, b)
+        })
+    {
+        prove_nickel_split_disjoint_preserves_sides(a, b);
+    }
+
+    } // verus!
+}
+
 // --- retry ↔ circuit_breaker ↔ backoff ---
 
 #[cfg(verus_keep_ghost)]

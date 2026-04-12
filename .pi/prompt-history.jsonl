@@ -419,3 +419,9 @@
 {"text":"strengthen nickel_subtype proofs","timestamp":1775968316114}
 {"text":"- strengthen nickel-subtype.transitivity proof, likely via fuel monotonicity +\n targeted transitivity lemmas for supported constructors.","timestamp":1775968754600}
 {"text":"1. add explicit subtype transitivity tests for supported chains (Array, Dict, Dyn)\n 2. maybe rename/comment nickel-subtype.transitivity proof surface more clearly in\n module comments\n 3. if desired, redesign subtype relation so record/dict interaction becomes globally\n transitive, then prove full theorem","timestamp":1775969733102}
+{"text":"what next","timestamp":1776014531916}
+{"text":"do it","timestamp":1776014678151}
+{"text":"- Either expand prove_nickel_priority_orders_field_merge(...) to cover both order\n directions and equal-priority behavior, or narrow the task wording before marking it\n done.\n - Provide actual successful check-coverage.sh, Tracey query, and verification/test\n outputs before keeping the integration task checked off.\n - Audit vec_u8_cmp callers and confirm the visibility reduction is safe, or revert\n the API change.","timestamp":1776021514612}
+{"text":"next step can be last two open Nickel tasks in\n openspec/changes/nickel-verified-components/tasks.md.","timestamp":1776021854116}
+{"text":"continue","timestamp":1776022780513}
+{"text":"- Either change src/nickel_record_merge.rs to actually compose split + resolution +\n union, or update the OpenSpec task/design text to match the direct merge\n implementation.\n - Provide the src/properties.rs, README, and Tracey/coverage diffs before keeping\n those tasks.md items checked.\n - Fix the stale associativity comment in src/nickel_record_merge.rs.\n - Attach successful end-of-command output for Verus, tests, and coverage, then\n reassess whether the OpenSpec change should be synced/archived.","timestamp":1776024173198}
