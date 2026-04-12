@@ -28,12 +28,12 @@
 
 ## Phase 4: Object and Session Models
 
-- [ ] Add formal predicates and proof skeletons for linearizability,
+- [x] Add formal predicates and proof skeletons for linearizability,
   sequential consistency, causal consistency, PRAM, writes follow reads,
   monotonic reads, monotonic writes, and read your writes
-- [ ] Reuse existing vector-clock and causal-order machinery where it matches
+- [x] Reuse existing vector-clock and causal-order machinery where it matches
   the history-level definitions
-- [ ] Add example histories that distinguish linearizability vs sequential
+- [x] Add example histories that distinguish linearizability vs sequential
   consistency and causal consistency vs PRAM
 
 ## Phase 5: Refinement Proofs and Validation

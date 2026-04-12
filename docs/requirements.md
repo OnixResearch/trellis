@@ -332,6 +332,50 @@ r[consistency-txn.strict-serializability]
 Strict serializability MUST extend serializability with real-time and
 per-session program-order respect across transactions.
 
+## Object and Session Consistency Models
+
+r[consistency-object.sequential-witness]
+A sequential witness trace MUST match the existing alternating
+request/response shape used by the library's linearizability machinery.
+
+r[consistency-object.sequential-consistency]
+Sequential consistency MUST require a sequential witness and preserved
+program order.
+
+r[consistency-object.linearizability]
+Linearizability MUST extend sequential consistency by also preserving
+real-time order.
+
+r[consistency-session.causal-dependency]
+A reusable causal-dependency witness MUST agree with vector-clock
+happens-before.
+
+r[consistency-session.causal-ready]
+Message-level causal readiness MUST reuse the existing causal-delivery
+readiness rule.
+
+r[consistency-session.read-your-writes]
+Read-your-writes MUST hold exactly when a session's later reads include
+its own earlier writes.
+
+r[consistency-session.monotonic-reads]
+Monotonic reads MUST hold exactly when later reads do not move to an
+older observed state.
+
+r[consistency-session.monotonic-writes]
+Monotonic writes MUST hold exactly when same-session writes preserve issue
+order everywhere.
+
+r[consistency-session.writes-follow-reads]
+Writes-follow-reads MUST hold exactly when a write after a read is not
+ordered before the write that produced the read value.
+
+r[consistency-session.pram]
+PRAM MUST require monotonic reads, monotonic writes, and read-your-writes.
+
+r[consistency-session.causal-consistency]
+Causal consistency MUST extend PRAM with writes-follow-reads.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]
