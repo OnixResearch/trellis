@@ -425,3 +425,8 @@
 {"text":"next step can be last two open Nickel tasks in\n openspec/changes/nickel-verified-components/tasks.md.","timestamp":1776021854116}
 {"text":"continue","timestamp":1776022780513}
 {"text":"- Either change src/nickel_record_merge.rs to actually compose split + resolution +\n union, or update the OpenSpec task/design text to match the direct merge\n implementation.\n - Provide the src/properties.rs, README, and Tracey/coverage diffs before keeping\n those tasks.md items checked.\n - Fix the stale associativity comment in src/nickel_record_merge.rs.\n - Attach successful end-of-command output for Verus, tests, and coverage, then\n reassess whether the OpenSpec change should be synced/archived.","timestamp":1776024173198}
+{"text":"what sel4 primitives could we add to this?","timestamp":1776025631733}
+{"text":"write openspec for all","timestamp":1776025743520}
+{"text":"1","timestamp":1776026539005}
+{"text":"begin openspec/changes/consistency-models/","timestamp":1776027375175}
+{"text":"do all of openspec/changes/consistency-models until complete. commit as you go through each phase.","timestamp":1776027902561}
