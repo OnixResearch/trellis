@@ -29,9 +29,12 @@ and blame polarity tracking can be caught at the spec level.
   Higher priority wins; equal priority recurses or requires equality.
   Models the priority-based conflict resolution in `core/src/eval/merge.rs`.
 
-- **nickel_record_merge**: Full record merge: split → resolve each bucket →
-  union. Proves associativity, identity (merge with empty), and that
-  right-biased override at equal priority matches Nickel's semantics.
+- **nickel_record_merge**: Full record merge via a direct two-pointer merge
+  over sorted records, using `nickel_field_merge` to distinguish left-win
+  from right-biased equal-key cases. In this simplified model, equal keys
+  select the right field for `Right`, `Equal`, and `Conflict` outcomes.
+  Proves neutral-record associativity, identity (merge with empty), and
+  that right-biased override at equal priority matches Nickel's semantics.
 
 - **nickel_subtype**: Subtyping relation for Nickel's gradual type system.
   Record-dictionary subsumption (`{a: T, b: U} <: {_: V}` when T,U <: V),

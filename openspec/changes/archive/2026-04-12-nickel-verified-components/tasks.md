@@ -6,9 +6,9 @@
 
 ## Phase 2: Record Merge
 
-- [ ] Add `nickel_record_merge` module: full merge spec/exec fn composing split + field resolution + union, identity proof, key coverage proof, disjoint commutativity proof
-- [ ] Prove merge associativity for uniform-priority (all Neutral) records
-- [ ] Add cross-module proofs in `properties.rs`: nickel_priority ↔ nickel_field_merge ordering consistency, nickel_merge_split ↔ nix_attrset merge equivalence for disjoint case
+- [x] Add `nickel_record_merge` module: full merge spec/exec fn as a direct two-pointer merge over sorted records with equal-key field resolution, identity proof, key coverage proof, disjoint commutativity proof
+- [x] Prove merge associativity for uniform-priority (all Neutral) records
+- [x] Add cross-module proofs in `properties.rs`: nickel_priority ↔ nickel_field_merge ordering consistency, nickel_merge_split ↔ nix_attrset merge equivalence for disjoint case
 
 ## Phase 3: Type Subtyping
 
@@ -24,6 +24,6 @@
 
 ## Phase 5: Integration
 
-- [ ] Add Tracey annotations (r[impl], r[verify], r[depends]) to all new modules, run check-coverage.sh clean
+- [x] Add Tracey annotations (r[impl], r[verify], r[depends]) to all new modules, run check-coverage.sh clean
 - [x] Add all modules to src/lib.rs, run verus verification, run full test suite
-- [ ] Update README.md module table with new Nickel section
+- [x] Update README.md module table with new Nickel section

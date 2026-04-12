@@ -41,6 +41,27 @@ membership and priority resolution matter.
 **Alternative:** Hash-map model. Rejected because Verus reasons better about
 sequences and sorted invariants than hash-based structures.
 
+### 1a. Implement record merge as a direct sorted merge
+
+**Choice:** Implement `nickel_record_merge` as a direct two-pointer merge
+over sorted record fields. When head keys are equal, call
+`nickel_field_merge` and then map its outcome into this record-level model:
+`Left` keeps the left field, while `Right`, `Equal`, and `Conflict` all
+select the right field. Otherwise emit the smaller head and recurse on the
+remaining tail.
+
+**Rationale:** The proof obligations we care about for record merge are key
+coverage, identity, disjoint commutativity, and uniform-priority
+associativity. A direct merge exposes those obligations in one place and
+matches the existing `nix_attrset::merge_spec` proof style. Reifying an
+intermediate split/result/union structure would add bookkeeping without
+improving the target properties.
+
+**Alternative:** Physically compose `nickel_merge_split` + field resolution +
+union. Rejected for the current module because the direct merge is smaller,
+verifies cleanly, and still admits cross-module bridge lemmas in
+`properties.rs`.
+
 ### 2. Represent MergePriority as an enum with i64 numerals
 
 **Choice:** Model `MergePriority` as a four-variant enum:
