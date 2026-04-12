@@ -665,6 +665,7 @@
   - `Seq::update` preserves length — vstd axiom
 
 ## Mistakes & Corrections
+- Pi `rg` tool wrapper shell-splits patterns with spaces or `|`; for alternations or multi-word patterns, use `bash` with a quoted `rg 'a|b' ...` command instead.
 - Tried `cargo-verus` — needs rustup, doesn't work in nix. Used `rust_verify` directly.
 - `proof fn` can't call `exec fn` in ensures — must reference `spec fn` instead.
 - `FnSpec` deprecated — use `spec_fn`.

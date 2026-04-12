@@ -8,12 +8,12 @@
 
 ## Phase 2: Shared History Vocabulary
 
-- [ ] Define shared history concepts for future implementation: operations,
+- [x] Define shared history concepts for future implementation: operations,
   transactions, objects, sessions, visibility, arbitration, and real-time
   order
-- [ ] Decide which common relations belong in a reusable module versus inside
+- [x] Decide which common relations belong in a reusable module versus inside
   model-specific specs
-- [ ] Add Tracey requirement IDs and source-level implementation plan for the
+- [x] Add Tracey requirement IDs and source-level implementation plan for the
   shared vocabulary
 
 ## Phase 3: Transactional Models

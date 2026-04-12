@@ -237,6 +237,57 @@ If logs_match_prefix(a, b, k) holds, the term sequences of a and b
 MUST be equal over [0, k). Log term-agreement is equivalent to prefix
 equality on the projected term sequence.
 
+## Consistency Model Vocabulary
+
+r[consistency-vocab.valid-op-kind]
+The shared consistency-history vocabulary MUST use four operation tags:
+read, write, commit, and abort. Any other tag MUST be rejected.
+
+r[consistency-vocab.op-complete]
+A shared history operation MUST be complete when it has a valid tag and
+its invocation time is less than or equal to its response time.
+
+r[consistency-vocab.same-object]
+Two history operations MUST be considered on the same object if and only
+if their object identifiers are equal.
+
+r[consistency-vocab.same-transaction]
+Two history operations MUST be considered in the same transaction if and
+only if their transaction identifiers are equal.
+
+r[consistency-vocab.same-session]
+Two history operations MUST be considered in the same session if and only
+if their session identifiers are equal.
+
+r[consistency-vocab.history-well-formed]
+A history MUST be well formed when every operation in it is complete under
+`consistency-vocab.op-complete`.
+
+r[consistency-vocab.realtime-order]
+Real-time order MUST hold from operation `a` to operation `b` exactly when
+`a` responds before `b` is invoked.
+
+r[consistency-vocab.session-order]
+Session order MUST hold from operation `a` to operation `b` exactly when
+they belong to the same session, have different operation IDs, and `a`
+completes no later than `b` begins.
+
+r[consistency-vocab.visibility]
+Visibility MUST hold from a write to a read exactly when the read names
+that write as its observed source on the same object.
+
+r[consistency-vocab.arbitration]
+Arbitration MUST give a deterministic order between two writes to the
+same object by response time, with operation ID as the tie-breaker.
+
+r[consistency-vocab.write-conflict]
+Two writes MUST conflict exactly when they touch the same object but come
+from different transactions.
+
+r[consistency-vocab.happens-before]
+The shared happens-before edge relation MUST be the union of real-time
+order, session order, and visibility.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]

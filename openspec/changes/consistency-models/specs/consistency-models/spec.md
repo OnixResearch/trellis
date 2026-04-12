@@ -40,6 +40,42 @@ Jepsen model tree so stronger models refine weaker ones.
 - AND causal consistency implies PRAM and writes follow reads
 - AND PRAM implies monotonic reads, monotonic writes, and read your writes
 
+### Requirement: Shared History Vocabulary
+
+Future implementations of the consistency-models domain MUST define all
+modeled guarantees over a shared history vocabulary instead of inventing a
+separate event encoding for each model family.
+
+#### Scenario: Common operation shape
+
+- GIVEN a history used to evaluate transactional, object, or session models
+- WHEN the implementation refers to a read, write, commit, or abort event
+- THEN that event is expressed in terms of shared operation metadata:
+  object, transaction, session, invocation time, response time, and observed
+  value
+- AND transaction, object, and session membership are defined once for the
+  whole domain
+
+#### Scenario: Reusable core relations
+
+- GIVEN multiple model families that talk about order or visibility
+- WHEN they are implemented in Rust
+- THEN session order and real-time order are defined once as reusable
+  relations
+- AND visibility and arbitration are defined once as reusable relations
+- AND model-specific predicates are stated by constraining those shared
+  relations instead of inventing incompatible local vocabularies
+
+#### Scenario: Family-specific rules stay layered
+
+- GIVEN transactional or session-specific rules such as snapshot membership,
+  first-committer-wins, or causal closure
+- WHEN the implementation is decomposed into source modules
+- THEN those derived rules live in family-specific modules layered on top of
+  the shared vocabulary
+- AND the shared vocabulary layer stays free of model-specific anomaly
+  decisions
+
 ### Requirement: Availability Envelope
 
 The specification MUST record the strongest availability envelope associated

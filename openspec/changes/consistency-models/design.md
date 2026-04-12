@@ -46,16 +46,52 @@ adds explicit hierarchy and availability requirements.
 ### 2. Model Everything as Predicates Over Shared History Relations
 
 **Choice:** Future implementation work should define shared history relations
-once: session order, real-time order, visibility, arbitration, conflicts,
-snapshot membership, and happens-before.
+once: session order, real-time order, visibility, arbitration,
+same-object write conflict, and a shared happens-before edge relation built
+from those base relations. Snapshot membership stays transactional-specific.
 
 **Rationale:** These models mostly differ in which relations they constrain.
 If each model invents its own local vocabulary, the implication proofs will be
 harder to state and harder to trust.
 
-**Implementation:** This spec names the behavioral requirements now. Later
-Rust modules can map those requirements to common spec predicates and proof
-functions.
+**Implementation:** Phase 2 now fixes the source split and Tracey naming up
+front.
+
+Reusable source modules:
+- `src/consistency_history.rs` -> operation/transaction/session/object
+  vocabulary, operation kinds, and well-formed history-event shape
+- `src/consistency_relations.rs` -> reusable session-order, real-time-order,
+  visibility, arbitration, write-conflict, and happens-before-edge relations
+
+Family-specific source modules layered on top:
+- `src/consistency_transactional.rs` -> strict serializability,
+  serializability, repeatable read, snapshot isolation, monotonic atomic
+  view, cursor stability, read committed, and read uncommitted
+- `src/consistency_object.rs` -> linearizability and sequential consistency
+- `src/consistency_session.rs` -> causal consistency, PRAM, writes follow
+  reads, monotonic reads, monotonic writes, and read your writes
+- `src/consistency_refinement.rs` -> implication proofs and availability
+  metadata bridges
+
+Planned Tracey requirement IDs for the shared layer:
+- `consistency-vocab.valid-op-kind`
+- `consistency-vocab.op-complete`
+- `consistency-vocab.same-object`
+- `consistency-vocab.same-transaction`
+- `consistency-vocab.same-session`
+- `consistency-vocab.history-well-formed`
+- `consistency-vocab.realtime-order`
+- `consistency-vocab.session-order`
+- `consistency-vocab.visibility`
+- `consistency-vocab.arbitration`
+- `consistency-vocab.write-conflict`
+- `consistency-vocab.happens-before`
+
+Planned Tracey namespaces beyond Phase 2:
+- `consistency-txn.*` -> transactional-model predicates and anomaly boundaries
+- `consistency-object.*` -> object-model predicates and witnesses
+- `consistency-session.*` -> session/causal guarantees
+- `consistency-refinement.*` -> implication edges and availability metadata
 
 ### 3. Keep Transactional, Object, and Session Families Separate
 
@@ -70,9 +106,23 @@ linearizability and sequential consistency reason about single-object
 operations; session guarantees reason about one client's local order.
 
 **Implementation:** The requirements stay in one domain, but the design and
-later code should preserve those family boundaries. Strict serializability
-bridges transactional and real-time object semantics; causal consistency
-bridges ordered object semantics and session guarantees.
+later code should preserve those family boundaries.
+
+Reusable across families:
+- history entities: operation kind, object ID, transaction ID, session ID,
+  invocation time, response time, observed value
+- base relations: session order, real-time order, visibility, arbitration,
+  same-object write conflict, happens-before edge
+
+Family-specific derived predicates:
+- transactional-only: snapshot membership, predicate-read witnesses,
+  first-committer-wins, serial-witness orders
+- object-only: single-object legal sequential witnesses
+- session-only: causal closure and per-session observation monotonicity
+- refinement-only: implication lemmas and availability-envelope metadata
+
+Strict serializability bridges transactional and real-time object semantics;
+causal consistency bridges ordered object semantics and session guarantees.
 
 ### 4. Allowed Behaviors Are Part of the Spec
 

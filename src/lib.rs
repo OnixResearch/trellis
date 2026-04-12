@@ -38,6 +38,8 @@
 //!   consistency
 //! - `containment` — delegation containment: scope + mode + subsumption
 //! - `consistent_hash` — consistent hash ring with complete coverage
+//! - `consistency_history` — shared operation vocabulary for consistency-model predicates
+//! - `consistency_relations` — shared real-time, session, visibility, arbitration, and conflict relations
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
@@ -254,6 +256,8 @@ pub mod causal_order;
 pub mod concurrent_composition;
 pub mod consensus_path;
 pub mod consistent_hash;
+pub mod consistency_history;
+pub mod consistency_relations;
 pub mod consistent_snapshot;
 pub mod containment;
 
