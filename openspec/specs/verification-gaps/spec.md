@@ -15,9 +15,9 @@ As of `2026-04-12`, backed by fresh reruns on the current tree, the live verific
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3334 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5902 verified, 0 errors`)
-- Tracey is green (`1298/1298 covered`, `1298/1298 verified`, `0 uncovered`, `0 untested`)
+- `cargo test` passes (`3364 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`5913 verified, 0 errors`)
+- Tracey is green (`1317/1317 covered`, `1317/1317 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
@@ -26,7 +26,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`31` external_body items remain across `10` files.
+`68` external_body items remain across `16` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -48,6 +48,43 @@ actual tree and not just per-file totals.
 | `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
+| `src/shamir_field.rs:90 field_add` | Closeable | Initial Shamir field-add exec/spec bridge is trusted while runtime tests cover modular arithmetic identities. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, and inverse search on small primes. |
+| `src/shamir_field.rs:103 field_sub` | Closeable | Initial Shamir field-sub exec/spec bridge is trusted while runtime tests cover additive-inverse behavior. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, and inverse search on small primes. |
+| `src/shamir_field.rs:119 field_mul` | Closeable | Initial Shamir field-mul exec/spec bridge is trusted while runtime tests cover modular multiplication laws. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, and inverse search on small primes. |
+| `src/shamir_field.rs:131 field_inv` | Closeable | Bounded inverse search is currently a trusted exec/spec bridge. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, and inverse search on small primes. |
+| `src/shamir_field.rs:169 field_add_zero` | Closeable | Additive-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover additive identity directly. |
+| `src/shamir_field.rs:180 field_mul_one` | Closeable | Multiplicative-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover multiplicative identity directly. |
+| `src/shamir_field.rs:191 field_commutative` | Closeable | Commutativity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover commutativity directly. |
+| `src/shamir_field.rs:202 field_closed` | Closeable | Closure proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover result range bounds directly. |
+| `src/shamir_field.rs:214 field_sub_add_roundtrip` | Closeable | Subtraction roundtrip proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover `(a-b)+b == a` directly. |
+| `src/shamir_field.rs:223 field_inv_from_spec_correct` | Closeable | Inverse-search witness proof is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:238 field_inv_spec_correct` | Closeable | Inverse-spec correctness proof is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:247 zero_has_no_inverse` | Closeable | Zero-inverse proof stub is currently trusted. | `src/shamir_field.rs` unit tests cover `field_inv(0, p) == None`. |
+| `src/shamir_field.rs:256 field_mul_zero` | Closeable | Zero-multiplication proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest exercise zero cases. |
+| `src/shamir_poly.rs:39 poly_eval_from` | Closeable | Recursive Horner helper is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
+| `src/shamir_poly.rs:59 poly_eval_horner` | Closeable | Public Horner evaluator is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
+| `src/shamir_poly.rs:72 poly_degree_bound` | Closeable | Degree-bound proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover degree-vs-length behavior. |
+| `src/shamir_poly.rs:80 constant_poly_eval` | Closeable | Constant-polynomial proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover constant evaluation directly. |
+| `src/shamir_poly.rs:89 linear_poly_eval` | Closeable | Linear-polynomial proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover linear evaluation directly. |
+| `src/shamir_poly.rs:98 poly_at_zero_is_constant` | Closeable | Constant-term proof stub is currently trusted. | `src/shamir_poly.rs` unit tests + proptest cover evaluation at zero directly. |
+| `src/shamir_lagrange.rs:85 basis_self_at_point` | Closeable | Basis self-evaluation proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:93 basis_self_from` | Closeable | Basis suffix proof helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:103 basis_other_at_point` | Closeable | Basis off-diagonal proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:110 basis_other_from` | Closeable | Basis off-diagonal suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:125 basis_partition_of_unity_at_point` | Closeable | Partition-of-unity proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:148 basis_sum_at_point_from` | Closeable | Partition-of-unity suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:158 lagrange_eval_at_point` | Closeable | Interpolation correctness proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:169 lagrange_eval_at_point_from` | Closeable | Interpolation suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:185 lagrange_values_unique` | Closeable | Value-vector uniqueness proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover distinct point-value behavior. |
+| `src/shamir_lagrange.rs:198 basis_at_zero_from` | Closeable | Runtime basis-at-zero helper is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:229 lagrange_at_zero_from` | Closeable | Runtime interpolation-at-zero helper is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:259 lagrange_at_zero` | Closeable | Public interpolation-at-zero evaluator is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_split.rs:65 split_constant_term_preserved` | Closeable | Split constant-term proof stub is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover secret-at-zero and share evaluation. |
+| `src/shamir_split.rs:79 split_count_and_xs` | Closeable | Split count/x-coordinate proof stub is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover output count and x-coordinate preservation. |
+| `src/shamir_split.rs:119 split` | Closeable | Public share-generation exec/spec bridge is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover parameter validation and share generation. |
+| `src/shamir_reconstruct.rs:31 reconstruct` | Closeable | Public reconstruction exec/spec bridge is currently trusted. | `src/shamir_reconstruct.rs` unit tests + proptest cover threshold round-trips and insufficient-share behavior. |
+| `src/shamir_threshold.rs:25 threshold_completion_exists` | Closeable | Threshold-completion existence proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover single-share completion to arbitrary secrets. |
+| `src/shamir_threshold.rs:44 threshold_completion_unique` | Closeable | Threshold uniqueness proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover threshold subsets fixing the secret. |
 | `src/zircon_channel.rs:64 channel_signals` | Closeable | Signal calculation is currently a trusted exec/spec bridge over channel queue state. | `src/zircon_channel.rs` unit tests + proptest cover readable, peer-closed, and FIFO datagrams. |
 | `src/zircon_channel.rs:88 send_message` | Closeable | Handle transfer + queue append remain trusted pending a fully verified queue/ownership bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
 | `src/zircon_channel.rs:115 receive_message` | Closeable | Queue pop + handle rebind remain trusted pending a fully verified datagram dequeue bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
@@ -68,7 +105,7 @@ actual tree and not just per-file totals.
 Summary:
 
 - Permanent external-body items: `15`
-- Closeable external-body items: `16`
+- Closeable external-body items: `53`
 
 ### `assume(...)` soundness oracles
 

@@ -189,6 +189,12 @@
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
+//! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
+//! - `shamir_poly` — polynomial evaluation for Shamir secret sharing
+//! - `shamir_lagrange` — Lagrange basis functions and interpolation at zero
+//! - `shamir_split` — share generation from a secret polynomial
+//! - `shamir_reconstruct` — secret reconstruction from threshold shares
+//! - `shamir_threshold` — threshold-completion witnesses for fewer-than-k shares
 //! - `slice` — chunk count, prefix/suffix equality, all-equal, mismatch
 //! - `subsumption` — variant subsumption DAG for capability authorization
 //! - `term_authority` — step-down on higher term: adopt, revert to follower, clear vote
@@ -454,6 +460,12 @@ pub mod sequential;
 pub mod serialize_inj;
 pub mod session_tree;
 pub mod settlement;
+pub mod shamir_field;
+pub mod shamir_lagrange;
+pub mod shamir_poly;
+pub mod shamir_reconstruct;
+pub mod shamir_split;
+pub mod shamir_threshold;
 pub mod shortest_path;
 pub mod signal;
 pub mod size_class;

@@ -259,6 +259,77 @@ r[consistency-vocab.same-session]
 Two history operations MUST be considered in the same session if and only
 if their session identifiers are equal.
 
+## Shamir Secret Sharing
+
+r[shamir-field.closure]
+Field addition and multiplication modulo p MUST return values in [0, p).
+The modulus MUST satisfy 1 < p < 2^32.
+
+r[shamir-field.additive-identity]
+Zero MUST be the additive identity: a + 0 == a and 0 + a == a.
+
+r[shamir-field.multiplicative-identity]
+One MUST be the multiplicative identity: a * 1 == a and 1 * a == a.
+
+r[shamir-field.commutativity]
+Field addition and multiplication MUST be commutative.
+
+r[shamir-field.multiplicative-inverse]
+Any inverse returned for a non-zero element MUST multiply back to one.
+Zero MUST have no inverse.
+
+r[shamir-field.subtraction]
+Field subtraction MUST satisfy (a - b) + b == a modulo p.
+
+r[shamir-poly.horner-correctness]
+Polynomial evaluation by Horner's method MUST match the recursive
+polynomial sum definition. Evaluating at zero MUST return the constant term.
+
+r[shamir-poly.degree-bound]
+A polynomial with k coefficients MUST have degree at most k - 1.
+
+r[shamir-lagrange.kronecker-delta]
+The i-th Lagrange basis function MUST equal 1 at x_i and 0 at x_j for j != i.
+
+r[shamir-lagrange.partition-of-unity]
+The Lagrange basis values at any interpolation point MUST sum to 1.
+
+r[shamir-lagrange.interpolation-correctness]
+The Lagrange interpolant MUST reproduce the provided y-values at the
+interpolation points. Evaluating it at zero MUST support reconstruction.
+
+r[shamir-lagrange.uniqueness]
+A value vector over fixed distinct interpolation points MUST be uniquely
+determined by its interpolated values on those points.
+
+r[shamir-split.share-count]
+Split MUST return exactly one share per requested x-coordinate and preserve
+those x-coordinates in the output.
+
+r[shamir-split.parameter-validation]
+Split MUST reject degenerate thresholds and invalid x-coordinates.
+Threshold MUST satisfy 2 <= k <= n.
+
+r[shamir-split.constant-term-preservation]
+The secret MUST be the constant term of the split polynomial. Evaluating the
+polynomial at x = 0 MUST return the secret.
+
+r[shamir-reconstruct.correctness]
+Reconstruction from k valid shares MUST return the secret encoded by the
+threshold polynomial used to generate those shares.
+
+r[shamir-reconstruct.insufficient-shares]
+Reconstruction from fewer than k shares SHOULD NOT recover the original
+secret except in degenerate low-degree cases.
+
+r[shamir-threshold.information-theoretic-security]
+Any k - 1 visible shares MUST be completable to any target secret by adding
+a suitable k-th point at x = 0.
+
+r[shamir-threshold.perfect-reconstruction-threshold]
+Once the secret point is included, the completed interpolation data MUST
+fix a unique secret value.
+
 r[consistency-vocab.history-well-formed]
 A history MUST be well formed when every operation in it is complete under
 `consistency-vocab.op-complete`.

@@ -430,3 +430,4 @@
 {"text":"1","timestamp":1776026539005}
 {"text":"begin openspec/changes/consistency-models/","timestamp":1776027375175}
 {"text":"do all of openspec/changes/consistency-models until complete. commit as you go through each phase.","timestamp":1776027902561}
+{"text":"implement openspec/changes/zircon-kernel-primitives/ dont stop until complete.","timestamp":1776031135046}

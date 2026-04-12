@@ -2,14 +2,14 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3334 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5902 verified, 0 errors`).
-- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1298/1298` covered and verified).
+- `cargo test` passes (`3364 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5913 verified, 0 errors`).
+- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1317/1317` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 31 `#[verifier::external_body]` items across 10 files.
-- `openspec/specs/verification-gaps/spec.md` now splits the 31 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 16 closeable Zircon-model exec bridges (`zircon_channel`, `zircon_fifo`, `zircon_job`, `zircon_socket`, `zircon_port`). Keep the README summary in sync with that table.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 68 `#[verifier::external_body]` items across 16 files.
+- `openspec/specs/verification-gaps/spec.md` now splits the 68 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 53 closeable bridges: 16 Zircon-model exec bridges plus 37 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
 - `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.
@@ -17,6 +17,7 @@
 - Raw proof-audit rerun transcripts are archived at `openspec/changes/archive/2026-04-08-proof-audit-remediation/rerun-logs/`; use an explicit shell command for absence checks (`if [ -d ... ]; then echo ...; fi`) instead of `test -d` when the evidence must show stdout.
 - Active OpenSpec changes in this repo use standalone spec docs under `openspec/changes/*/specs/<domain>/spec.md` instead of `ADDED/MODIFIED/REMOVED` delta sections; match the existing change style when adding new change specs.
 - Tracey coverage in this repo comes from `docs/requirements.md`, not `openspec/specs/**`. When adding a new verified domain, add matching `r[...]` requirements to `docs/requirements.md` and annotate `src/**/*.rs`; changing OpenSpec specs alone will not move Tracey coverage.
+- For helper-only requirements, `tracey` still expects an `r[impl]` reference. The Shamir change only went green after adding `r[impl]` tags to defining spec/helpers for identity, basis, constant-term, and threshold rules that had tests/proofs but no separate exec anchor.
 - For consistency-model work, done review expects the object-model layer to use `src/consistency_history.rs` / `src/consistency_relations.rs` directly. Reusing `trace_relation::TraceEvent` for new consistency-model predicates is spec drift and will be flagged.
 - Nix Base32 gotcha for `openspec/changes/nix-derivation-primitives`: upstream `BaseNix32::decode` accepts non-canonical alphabet strings, so `decode(encode(x)) == x` is valid but `encode(decode(y)) == y` only holds for canonical encodings (`"0" -> [0x00] -> "00"`, `"z" -> [0x1f] -> "0z"`).
 - The in-progress `src/nix_base32.rs` worktree no longer needs closeable base32 trusted boundaries: the canonical roundtrip proof, `encode`, and `decode` are all internalized now, so older notes that counted 1, 2, or 3 base32 trusted boundaries are stale.
