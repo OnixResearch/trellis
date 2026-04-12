@@ -11,6 +11,17 @@ property.
 
 ### Field Arithmetic
 
+#### Requirement: Prime Modulus Validation
+
+Shamir field arithmetic MUST operate over GF(p) for a prime modulus p.
+Composite moduli MUST be rejected.
+
+##### Scenario: Composite modulus rejected
+
+- GIVEN a composite modulus such as 15
+- WHEN validating the modulus for Shamir field operations
+- THEN the operation MUST reject it as not being a field modulus
+
 #### Requirement: Closure
 
 Addition and multiplication over GF(p) MUST produce results in the

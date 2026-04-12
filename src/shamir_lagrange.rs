@@ -6,6 +6,7 @@ use vstd::prelude::*;
 
 use crate::shamir_field;
 use crate::shamir_field::*;
+use crate::shamir_poly::*;
 
 verus! {
 
@@ -181,17 +182,17 @@ proof fn lagrange_eval_at_point_from(xs: Seq<u64>, ys: Seq<u64>, j: int, p: u64,
 
 // r[impl shamir-lagrange.uniqueness]
 // r[verify shamir-lagrange.uniqueness]
-/// Interpolated value vectors are unique on the interpolation points.
+/// Two degree-<k polynomials agreeing on k distinct points have identical coefficients.
 #[verifier::external_body]
-pub proof fn lagrange_values_unique(xs: Seq<u64>, ys1: Seq<u64>, ys2: Seq<u64>, p: u64)
+pub proof fn lagrange_polynomials_unique(xs: Seq<u64>, coeffs1: Seq<u64>, coeffs2: Seq<u64>, p: u64)
     requires
         valid_interp_points_spec(xs, p),
-        ys1.len() == xs.len(),
-        ys2.len() == xs.len(),
-        forall|k: int| 0 <= k < ys1.len() ==> ys1[k] < p,
-        forall|k: int| 0 <= k < ys2.len() ==> ys2[k] < p,
-        forall|j: int| 0 <= j < xs.len() ==> lagrange_eval_spec(xs, ys1, xs[j], p) == lagrange_eval_spec(xs, ys2, xs[j], p),
-    ensures forall|j: int| 0 <= j < xs.len() ==> ys1[j] == ys2[j]
+        coeffs1.len() <= xs.len(),
+        coeffs2.len() <= xs.len(),
+        forall|k: int| 0 <= k < coeffs1.len() ==> coeffs1[k] < p,
+        forall|k: int| 0 <= k < coeffs2.len() ==> coeffs2[k] < p,
+        forall|j: int| 0 <= j < xs.len() ==> poly_eval_sum_spec(coeffs1, xs[j], p) == poly_eval_sum_spec(coeffs2, xs[j], p),
+    ensures coeffs1 =~= coeffs2
 {
 }
 
@@ -315,23 +316,21 @@ mod tests {
 
         // r[verify shamir-lagrange.uniqueness]
         #[test]
-        fn prop_distinct_y_vectors_give_distinct_point_values(
-            y10 in 0u64..17,
-            y11 in 0u64..17,
-            y20 in 0u64..17,
-            y21 in 0u64..17,
+        fn prop_distinct_linear_polynomials_differ_on_two_points(
+            a0 in 0u64..17,
+            a1 in 0u64..17,
+            b0 in 0u64..17,
+            b1 in 0u64..17,
         ) {
             let p = 17u64;
-            let xs = vec![1u64, 2u64];
-            let ys1 = vec![y10, y11];
-            let ys2 = vec![y20, y21];
-            if ys1 != ys2 {
+            let xs = [1u64, 2u64];
+            let c1 = [a0, a1];
+            let c2 = [b0, b1];
+            if c1 != c2 {
                 let same_values = xs.iter().all(|&x| {
-                    let v1 = if x == xs[0] { ys1[0] } else { ys1[1] };
-                    let v2 = if x == xs[0] { ys2[0] } else { ys2[1] };
-                    v1 == v2
+                    poly_eval_horner(&c1, x, p) == poly_eval_horner(&c2, x, p)
                 });
-                prop_assert_eq!(same_values, false);
+                prop_assert!(!same_values);
             }
         }
     }

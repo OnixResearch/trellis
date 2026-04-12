@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**5913 Verus proofs · 3364 tests · 1317 requirements · 279 modules · 68 trusted boundaries**
+**5912 Verus proofs · 3365 tests · 1318 requirements · 279 modules · 69 trusted boundaries**
 
 ## How it works
 
@@ -430,7 +430,7 @@ cargo clippy -- -D warnings
 ```
 src/lib.rs              ← crate root, 279 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1317 tracey requirements
+docs/requirements.md    ← 1318 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
@@ -445,7 +445,7 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-`68` items are marked `#[verifier::external_body]` across `16` files.
+`69` items are marked `#[verifier::external_body]` across `16` files.
 Those are the current trusted boundaries inside Verus.
 
 **15 permanent** (architectural trust boundaries):
@@ -458,7 +458,7 @@ Those are the current trusted boundaries inside Verus.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
 
-**53 closeable** (proof debt still tracked in the audit inventory):
+**54 closeable** (proof debt still tracked in the audit inventory):
 
 - **4 Zircon channel wrappers** (`zircon_channel.rs`) — signal calculation, send, receive,
   and unread-handle discard are currently trusted exec/spec bridges.
@@ -468,7 +468,7 @@ Those are the current trusted boundaries inside Verus.
   trusted exec/spec bridges over the parent-pointer tree model.
 - **3 Zircon socket wrappers** (`zircon_socket.rs`) — stream read/write and signal
   calculation are trusted exec/spec bridges.
-- **37 Shamir secret-sharing bridges** (`shamir_field.rs`, `shamir_poly.rs`, `shamir_lagrange.rs`,
+- **38 Shamir secret-sharing bridges** (`shamir_field.rs`, `shamir_poly.rs`, `shamir_lagrange.rs`,
   `shamir_split.rs`, `shamir_reconstruct.rs`, `shamir_threshold.rs`) — the initial Shamir
   implementation currently trusts its field, interpolation, and reconstruction bridges while
   runtime unit tests and proptests exercise the algebra and round-trip behavior.

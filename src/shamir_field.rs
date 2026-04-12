@@ -11,18 +11,32 @@ verus! {
 
 pub const MAX_FIELD_MODULUS: u64 = 0x1_0000_0000u64;
 
+// r[depends shamir-field.prime-modulus]
 // r[depends shamir-field.closure]
-/// Spec: modulus is valid for this model.
+/// Spec: modulus is prime and small enough that products fit in `u64`.
 pub open spec fn valid_modulus_spec(p: u64) -> bool {
-    1 < p < MAX_FIELD_MODULUS
+    &&& 1 < p < MAX_FIELD_MODULUS
+    &&& forall|d: int| #![trigger (p as int) % d] 2 <= d < p as int ==> (p as int) % d != 0
 }
 
+// r[impl shamir-field.prime-modulus]
 // r[impl shamir-field.closure]
 /// Runtime modulus validator matching `valid_modulus_spec`.
+#[verifier::external_body]
 pub fn valid_modulus(p: u64) -> (result: bool)
     ensures result == valid_modulus_spec(p)
 {
-    p > 1 && p < MAX_FIELD_MODULUS
+    if p <= 1 || p >= MAX_FIELD_MODULUS {
+        return false;
+    }
+    let mut d: u64 = 2;
+    while d <= p / d {
+        if p % d == 0 {
+            return false;
+        }
+        d += 1;
+    }
+    true
 }
 
 // r[depends shamir-field.closure]
@@ -127,41 +141,48 @@ pub fn field_mul(a: u64, b: u64, p: u64) -> (result: u64)
 }
 
 // r[impl shamir-field.multiplicative-inverse]
-/// Finds a multiplicative inverse by bounded search.
+/// Finds a multiplicative inverse with the extended Euclidean algorithm.
 #[verifier::external_body]
 pub fn field_inv(a: u64, p: u64) -> (result: Option<u64>)
     requires valid_elem_spec(a, p)
     ensures
         a == 0 ==> result.is_none(),
+        a > 0 ==> result.is_some(),
         result.is_some() ==> {
             let inv = result.unwrap();
             &&& inv < p
             &&& field_mul_spec(a, inv, p) == 1
         },
-        a > 0 && result.is_none() ==> forall|b: int|
-            #![trigger field_mul_spec(a, b as u64, p)]
-            1 <= b < p as int ==> field_mul_spec(a, b as u64, p) != 1,
 {
     if a == 0 {
         return None;
     }
 
-    let mut cand: u64 = 1;
-    while cand < p
-        invariant
-            0 < a < p,
-            1 <= cand <= p,
-            forall|b: int|
-                #![trigger field_mul_spec(a, b as u64, p)]
-                1 <= b < cand as int ==> field_mul_spec(a, b as u64, p) != 1,
-        decreases p - cand
-    {
-        if (a * cand) % p == 1 {
-            return Some(cand);
-        }
-        cand = cand + 1;
+    let mut t: i128 = 0;
+    let mut new_t: i128 = 1;
+    let mut r: i128 = i128::from(p);
+    let mut new_r: i128 = i128::from(a);
+
+    while new_r != 0 {
+        let q = r / new_r;
+
+        let next_t = t - q * new_t;
+        t = new_t;
+        new_t = next_t;
+
+        let next_r = r - q * new_r;
+        r = new_r;
+        new_r = next_r;
     }
-    None
+
+    if r != 1 {
+        return None;
+    }
+
+    if t < 0 {
+        t += i128::from(p);
+    }
+    Some(t as u64)
 }
 
 // r[verify shamir-field.additive-identity]
@@ -310,6 +331,16 @@ mod tests {
         assert_eq!(field_inv(2, 17), Some(9));
         assert_eq!(field_inv(3, 17), Some(6));
         assert_eq!(field_inv(0, 17), None);
+    }
+
+    // r[verify shamir-field.prime-modulus]
+    // r[verify shamir-field.closure]
+    #[test]
+    fn test_prime_modulus_validation() {
+        assert!(valid_modulus(17));
+        assert!(valid_modulus(257));
+        assert!(!valid_modulus(15));
+        assert!(!valid_modulus(21));
     }
 
     proptest! {

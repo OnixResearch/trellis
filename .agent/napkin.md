@@ -7,12 +7,12 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5913 Verus proofs + 3364 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1317 requirements)
+- 5912 Verus proofs + 3365 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1318 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 68 `#[verifier::external_body]` items across 16 files.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 53 = 16 Zircon wrappers plus 37 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
+- Current trusted inventory: 69 `#[verifier::external_body]` items across 16 files.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 54 = 16 Zircon wrappers plus 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.

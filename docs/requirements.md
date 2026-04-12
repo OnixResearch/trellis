@@ -261,9 +261,13 @@ if their session identifiers are equal.
 
 ## Shamir Secret Sharing
 
+r[shamir-field.prime-modulus]
+Shamir field arithmetic MUST validate that the modulus is prime and less
+than 2^32. Composite moduli MUST be rejected.
+
 r[shamir-field.closure]
 Field addition and multiplication modulo p MUST return values in [0, p).
-The modulus MUST satisfy 1 < p < 2^32.
+The modulus MUST satisfy 1 < p < 2^32 and be prime.
 
 r[shamir-field.additive-identity]
 Zero MUST be the additive identity: a + 0 == a and 0 + a == a.

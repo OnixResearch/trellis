@@ -183,6 +183,7 @@ mod tests {
         assert!(split(5, &[], &[1, 2], 17).is_none());
         assert!(split(5, &[3, 4], &[1, 2], 17).is_none());
         assert!(split(5, &[3], &[0, 2], 17).is_none());
+        assert!(split(5, &[3], &[1, 2], 15).is_none());
     }
 
     // r[verify shamir-split.share-count]

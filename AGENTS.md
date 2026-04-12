@@ -2,14 +2,14 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3364 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5913 verified, 0 errors`).
-- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1317/1317` covered and verified).
+- `cargo test` passes (`3365 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5912 verified, 0 errors`).
+- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1318/1318` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 68 `#[verifier::external_body]` items across 16 files.
-- `openspec/specs/verification-gaps/spec.md` now splits the 68 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 53 closeable bridges: 16 Zircon-model exec bridges plus 37 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 69 `#[verifier::external_body]` items across 16 files.
+- `openspec/specs/verification-gaps/spec.md` now splits the 69 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 54 closeable bridges: 16 Zircon-model exec bridges plus 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
 - `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.

@@ -9,11 +9,12 @@ unbounded allocation, no external dependencies.
 ## Goals / Non-Goals
 
 **Goals:**
-- Verified field arithmetic (mod prime) with axioms proved
-- Verified polynomial evaluation matching the summation definition
-- Verified Lagrange interpolation passing through given points
-- Verified split/reconstruct round-trip
-- Verified threshold security property (k-1 shares → all secrets consistent)
+- Prime-field arithmetic over a checked prime modulus
+- Polynomial evaluation matching the summation definition
+- Lagrange interpolation passing through given points
+- Split/reconstruct round-trip
+- Threshold security property (k-1 shares → all secrets consistent)
+- Explicit accounting of any remaining trusted Verus bridges in the proof-gap inventory
 
 **Non-Goals:**
 - Runtime random polynomial generation (caller supplies coefficients)
@@ -40,8 +41,9 @@ for `u128` is less mature and the proof overhead isn't justified for a
 logic library.
 
 **Implementation:** All field functions take an explicit `p: u64` parameter
-with `requires p > 1, p < 0x1_0000_0000` (fits in 32 bits). Results carry
-`ensures result < p`.
+with `requires valid_modulus_spec(p)` where `valid_modulus_spec` means prime
+and `< 0x1_0000_0000`. The runtime validator checks primality by trial
+division and rejects composite moduli. Results carry `ensures result < p`.
 
 ### 2. Polynomial Representation
 
@@ -90,13 +92,13 @@ full Lagrange formula and then specializing to x=0 keeps the proof modular.
 
 ### 5. Multiplicative Inverse
 
-**Choice:** Extended Euclidean algorithm (iterative).
+**Choice:** Extended Euclidean algorithm (iterative) in runtime code.
 
 **Rationale:** Fermat's little theorem (a^{p-2} mod p) requires
 exponentiation with a loop and exponent reasoning. Extended GCD is a
 standard loop with a well-known termination argument (gcd decreases).
-Verus can verify the loop invariant: `a * old_s + p * old_t == gcd` at
-each step.
+The current implementation uses the runtime algorithm directly and keeps
+any remaining proof debt explicit in the verification-gap inventory.
 
 **Alternative:** Fermat's little theorem — rejected due to more complex
 loop invariant for modular exponentiation.
@@ -139,6 +141,7 @@ This is deliberate: verified-logic is a pure logic library, not a
 cryptographic implementation. The spec still proves that *if* coefficients
 are chosen, the scheme is correct.
 
-**[Extended GCD termination]** → Verus needs a decreases clause for the
-loop. The standard argument (the remainder strictly decreases) works, but
-the invariant is verbose. Worth the cost for a cleaner inverse proof.
+**[Trusted proof bridges remain]** → The shipped implementation is
+behaviorally green but still carries trusted `external_body` bridges in the
+Shamir modules. Those sites are listed explicitly in
+`openspec/specs/verification-gaps/spec.md` and remain closeable proof debt.
