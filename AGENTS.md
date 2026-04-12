@@ -2,14 +2,14 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3191 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5436 verified, 0 errors`).
-- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1197/1197` covered and verified).
+- `cargo test` passes (`3334 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5902 verified, 0 errors`).
+- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1298/1298` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 13 `#[verifier::external_body]` items across 4 modules.
-- All remaining `#[verifier::external_body]` sites are the permanent crypto / recursive-solver boundaries already listed in `openspec/specs/verification-gaps/spec.md`.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 31 `#[verifier::external_body]` items across 10 files.
+- `openspec/specs/verification-gaps/spec.md` now splits the 31 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 16 closeable Zircon-model exec bridges (`zircon_channel`, `zircon_fifo`, `zircon_job`, `zircon_socket`, `zircon_port`). Keep the README summary in sync with that table.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
 - `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.

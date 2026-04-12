@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**5436 Verus proofs · 3191 tests · 1197 requirements · 244 modules · 13 trusted boundaries**
+**5902 Verus proofs · 3334 tests · 1298 requirements · 273 modules · 31 trusted boundaries**
 
 ## How it works
 
@@ -430,7 +430,7 @@ cargo clippy -- -D warnings
 ```
 src/lib.rs              ← crate root, 236 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1207 tracey requirements
+docs/requirements.md    ← 1298 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
@@ -445,33 +445,31 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-`29` items are marked `#[verifier::external_body]` across `11` files.
+`31` items are marked `#[verifier::external_body]` across `10` files.
 Those are the current trusted boundaries inside Verus.
 
-**13 permanent** (architectural trust boundaries):
+**15 permanent** (architectural trust boundaries):
 
-- **6 cryptographic axioms** (`chain.rs`, `snapshot_integrity.rs`) — Blake3
-  hash modeled as uninterpreted function with determinism and collision
-  resistance axioms. Irreducible trust boundary between formal verification
-  and cryptographic assumptions.
-- **4 version comparison** (`nix_version.rs`) — the `cv_fuel` spec has 8+
-  levels of nested let/if/else that exceed Z3's quantifier instantiation
-  budget. Proof bodies are preserved as documentation; proptest oracles
-  verify runtime correctness.
-- **3 log matching inductive** (`log_invariant_inductive.rs`) — ensures
-  clauses only sound under the system-level Raft invariant that all
-  logs were built from the same leader chain. Trust boundaries encoding
-  the global safety argument.
+- **6 cryptographic axioms / exec bridges** (`chain.rs`, `snapshot_integrity.rs`) —
+  Blake3-style hashing is modeled with uninterpreted specs plus trusted exec wrappers.
+- **4 version comparison bridges** (`nix_version.rs`) — the recursive `cv_fuel`
+  reasoning still exceeds solver budget.
+- **2 nix store-path hash bridges** (`nix_store_path.rs`) — external hash/model bridge.
+- **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
+  only sound under the global Raft leader-chain invariant.
 
 **16 closeable** (proof debt still tracked in the audit inventory):
 
-- **3 variable-shift proofs** (`bitwise.rs`)
-- **2 cron-field modular arithmetic proofs** (`cron_field.rs`)
-- **2 cron next-occurrence search wrappers** (`cron_next.rs`)
-- **3 free-list exec wrappers** (`free_list.rs`)
-- **2 allocation bitmap wrappers** (`alloc_bitmap.rs`)
-- **2 pool wrappers** (`pool.rs`)
-- **2 segregated-free wrappers** (`segregated_free.rs`)
+- **4 Zircon channel wrappers** (`zircon_channel.rs`) — signal calculation, send, receive,
+  and unread-handle discard are currently trusted exec/spec bridges.
+- **3 Zircon FIFO wrappers** (`zircon_fifo.rs`) — bounded element write/read and signal
+  calculation are trusted exec/spec bridges.
+- **4 Zircon job wrappers** (`zircon_job.rs`) — containment and parent-liveness queries are
+  trusted exec/spec bridges over the parent-pointer tree model.
+- **3 Zircon socket wrappers** (`zircon_socket.rs`) — stream read/write and signal
+  calculation are trusted exec/spec bridges.
+- **2 Zircon port wrappers** (`zircon_port.rs`) — packet dequeue and async delivery are
+  trusted exec/spec bridges.
 
 In addition to `external_body`, the current audit also tracks:
 

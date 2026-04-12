@@ -7,11 +7,12 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5436 Verus proofs + 3191 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1197 requirements)
+- 5902 Verus proofs + 3334 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1298 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 13 `#[verifier::external_body]` items across 4 files; all 13 are permanent
+- Current trusted inventory: 31 `#[verifier::external_body]` items across 10 files.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 16 across the Zircon wrappers (`zircon_channel`, `zircon_fifo`, `zircon_job`, `zircon_socket`, `zircon_port`).
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.
@@ -20,6 +21,7 @@
 - When evidence needs to prove a directory is absent, `test -d` alone is not enough for a transcript because it prints nothing. Use an explicit shell form such as `if [ -d ... ]; then echo active-present; else echo active-absent; fi`, and save the raw transcript file in the change directory.
 - Tracey first dropped to `2 uncovered` (`query-cost.index-scan`, `snapshot-iso.si-allows-commit`) and `0 untested` after metadata-only fixes in `ct_select.rs`, `nonce.rs`, `index_select.rs`, `mvcc.rs`, and `snapshot_isolation.rs`, then to `0 uncovered` after adding `r[impl]` to the spec-level implementations in `query_cost.rs` and `snapshot_isolation.rs`.
 - Tracey in this repo scans `docs/requirements.md`, not `openspec/specs/**`. New OpenSpec domains still need matching `r[...]` entries in `docs/requirements.md` or Tracey will stay unchanged.
+- Zircon port gotcha: `zircon-port.one-shot` stayed uncovered until `deliver` itself carried `r[impl zircon-port.one-shot]`; proof/test tags alone were not enough because the rule needed an implementation reference.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
 - Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone and there are no remaining `@verified-logic:no-ensures` / placeholder surfaces in `src/`.
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.

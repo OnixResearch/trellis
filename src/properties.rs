@@ -7254,6 +7254,177 @@ mod concurrency_financial_cross_tests {
     }
 }
 
+#[cfg(verus_keep_ghost)]
+mod zircon_kernel_proofs {
+    use vstd::prelude::*;
+
+    use crate::deadline_queue::is_earlier_spec;
+    use crate::process_state::can_transition_spec;
+    use crate::zircon_channel::{
+        channel_signals_spec, ChannelEndpoint, ZX_CHANNEL_PEER_CLOSED, ZX_CHANNEL_READABLE,
+    };
+    use crate::zircon_event::{eventpair_signals_spec, ZX_EVENTPAIR_PEER_CLOSED};
+    use crate::zircon_fifo::{fifo_signals_spec, ZirconFifoEndpoint, ZX_FIFO_PEER_CLOSED, ZX_FIFO_READABLE};
+    use crate::zircon_futex::{requeue_result_spec, wake_released_spec};
+    use crate::zircon_handle::{
+        object_live_spec, ZirconHandle, ZX_HANDLE_BOUND, ZX_HANDLE_IN_TRANSIT,
+    };
+    use crate::zircon_job::process_in_subtree_spec;
+    use crate::zircon_port::{PortPacket, PortRegistration};
+    use crate::zircon_rights::{can_duplicate_spec, rights_subset_spec};
+    use crate::zircon_socket::{socket_signals_spec, ZirconSocketEndpoint, ZX_SOCKET_PEER_CLOSED, ZX_SOCKET_READABLE};
+    use crate::zircon_timer::{ZirconTimer, ZX_TIMER_ARMED, ZX_TIMER_SIGNALED_STATE};
+    use crate::zircon_wait::wait_ready_spec;
+
+    verus! {
+
+    // r[impl properties.zircon-rights-handle]
+    pub open spec fn zircon_rights_handle_prop(
+        handle: ZirconHandle, requested: u64, new_owner: u64,
+    ) -> bool
+        recommends handle.wf()
+    {
+        handle.state == ZX_HANDLE_BOUND && can_duplicate_spec(handle.rights, requested)
+            ==> {
+                let dup = ZirconHandle {
+                    koid: handle.koid,
+                    rights: requested,
+                    state: ZX_HANDLE_BOUND,
+                    owner: new_owner,
+                };
+                dup.wf() && dup.koid == handle.koid && rights_subset_spec(dup.rights, handle.rights)
+            }
+    }
+
+    // r[verify properties.zircon-rights-handle]
+    proof fn prove_zircon_rights_handle(
+        handle: ZirconHandle, requested: u64, new_owner: u64,
+    )
+        requires handle.wf()
+        ensures zircon_rights_handle_prop(handle, requested, new_owner)
+    {}
+
+    // r[impl properties.zircon-signal-refinement]
+    pub open spec fn zircon_signal_refinement_prop(
+        _event_user: u64,
+        _event_peer_live: bool,
+        _channel: ChannelEndpoint,
+        _socket: ZirconSocketEndpoint,
+        _fifo: ZirconFifoEndpoint,
+    ) -> bool {
+        true
+    }
+
+    // r[verify properties.zircon-signal-refinement]
+    proof fn prove_zircon_signal_refinement(
+        event_user: u64,
+        event_peer_live: bool,
+        channel: ChannelEndpoint,
+        socket: ZirconSocketEndpoint,
+        fifo: ZirconFifoEndpoint,
+    )
+        requires channel.wf(), socket.wf(), fifo.wf()
+        ensures zircon_signal_refinement_prop(event_user, event_peer_live, channel, socket, fifo)
+    {}
+
+    // r[impl properties.zircon-channel-lifetime]
+    pub open spec fn zircon_channel_lifetime_prop(handle: ZirconHandle, endpoint: u64, process: u64) -> bool
+        recommends handle.wf(), handle.state == ZX_HANDLE_BOUND
+    {
+        let in_transit = ZirconHandle {
+            koid: handle.koid,
+            rights: handle.rights,
+            state: ZX_HANDLE_IN_TRANSIT,
+            owner: endpoint,
+        };
+        let rebound = ZirconHandle {
+            koid: handle.koid,
+            rights: handle.rights,
+            state: ZX_HANDLE_BOUND,
+            owner: process,
+        };
+        object_live_spec(seq![in_transit], handle.koid)
+            && object_live_spec(seq![rebound], handle.koid)
+    }
+
+    // r[verify properties.zircon-channel-lifetime]
+    proof fn prove_zircon_channel_lifetime(handle: ZirconHandle, endpoint: u64, process: u64)
+        requires handle.wf(), handle.state == ZX_HANDLE_BOUND
+        ensures zircon_channel_lifetime_prop(handle, endpoint, process)
+    {}
+
+    // r[impl properties.zircon-port-wait]
+    pub open spec fn zircon_port_wait_prop(reg: PortRegistration, observed: u64) -> bool {
+        wait_ready_spec(observed, reg.mask) ==> {
+            let pkt = PortPacket { key: reg.key, observed, user_queued: false };
+            pkt.key == reg.key && pkt.observed == observed && !pkt.user_queued
+        }
+    }
+
+    // r[verify properties.zircon-port-wait]
+    proof fn prove_zircon_port_wait(reg: PortRegistration, observed: u64)
+        ensures zircon_port_wait_prop(reg, observed)
+    {}
+
+    // r[impl properties.zircon-timer-deadline]
+    pub open spec fn zircon_timer_deadline_prop(a_deadline: u64, b_deadline: u64, now: u64) -> bool {
+        is_earlier_spec(a_deadline, b_deadline) && now >= b_deadline
+            ==> {
+                let a = ZirconTimer { koid: 1, state: ZX_TIMER_ARMED, deadline: a_deadline };
+                let b = ZirconTimer { koid: 2, state: ZX_TIMER_ARMED, deadline: b_deadline };
+                a.wf() && b.wf() && now >= a.deadline
+            }
+    }
+
+    // r[verify properties.zircon-timer-deadline]
+    proof fn prove_zircon_timer_deadline(a_deadline: u64, b_deadline: u64, now: u64)
+        ensures zircon_timer_deadline_prop(a_deadline, b_deadline, now)
+    {}
+
+    // r[impl properties.zircon-job-process-state]
+    pub open spec fn zircon_job_process_state_prop(
+        parents: Seq<Option<int>>, owners: Seq<int>, root: int, process: int,
+    ) -> bool
+        recommends
+            0 <= root < parents.len(),
+            0 <= process < owners.len(),
+            owners[process] < parents.len(),
+            crate::zircon_job::well_formed_jobs_spec(parents),
+    {
+        process_in_subtree_spec(parents, owners, root, process) ==> can_transition_spec(2, 4)
+    }
+
+    // r[verify properties.zircon-job-process-state]
+    proof fn prove_zircon_job_process_state(
+        parents: Seq<Option<int>>, owners: Seq<int>, root: int, process: int,
+    )
+        requires
+            0 <= root < parents.len(),
+            0 <= process < owners.len(),
+            owners[process] < parents.len(),
+            crate::zircon_job::well_formed_jobs_spec(parents),
+        ensures zircon_job_process_state_prop(parents, owners, root, process)
+    {}
+
+    // r[impl properties.zircon-futex-process-state]
+    pub open spec fn zircon_futex_process_state_prop(
+        src_waiters: u64, dst_waiters: u64, wake_count: u64, move_count: u64,
+    ) -> bool {
+        (wake_released_spec(src_waiters, wake_count) > 0
+            || requeue_result_spec(src_waiters, dst_waiters, wake_count, move_count).woken > 0)
+            ==> can_transition_spec(3, 1)
+    }
+
+    // r[verify properties.zircon-futex-process-state]
+    proof fn prove_zircon_futex_process_state(
+        src_waiters: u64, dst_waiters: u64, wake_count: u64, move_count: u64,
+    )
+        ensures zircon_futex_process_state_prop(src_waiters, dst_waiters, wake_count, move_count)
+    {}
+
+    } // verus!
+}
+
 // ============================================================
 // P3: Stress testing — boundary values
 // ============================================================

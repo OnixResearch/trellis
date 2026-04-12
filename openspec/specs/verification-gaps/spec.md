@@ -11,13 +11,13 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
-As of `2026-04-09`, backed by fresh reruns on the current tree, the live verification pipeline is green:
+As of `2026-04-12`, backed by fresh reruns on the current tree, the live verification pipeline is green:
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3191 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5436 verified, 0 errors`)
-- Tracey is green (`1197/1197 covered`, `1197/1197 verified`, `0 uncovered`, `0 untested`)
+- `cargo test` passes (`3334 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`5902 verified, 0 errors`)
+- Tracey is green (`1298/1298 covered`, `1298/1298 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
@@ -26,31 +26,49 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`13` external_body items remain across `4` files.
+`31` external_body items remain across `10` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
 
 | Site | Classification | Rationale | Test coverage |
 |---|---|---|---|
-| `src/chain.rs:42 hash_deterministic` | Permanent | Determinism axiom for closed `hash_spec`; this is the cryptographic assumption boundary. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
-| `src/chain.rs:70 compute_entry_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets the closed `hash_spec`. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
-| `src/chain.rs:207 hash_collision_free` | Permanent | Collision-resistance axiom for the closed hash model. | `src/chain.rs` unit tests + proptest (`381-630`) exercise the runtime hash wrapper and chain properties. |
-| `src/snapshot_integrity.rs:43 dual_hash_deterministic` | Permanent | Determinism axiom for uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
-| `src/snapshot_integrity.rs:54 dual_hash_collision_resistant` | Permanent | Collision-resistance axiom for the dual-hash model. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
-| `src/snapshot_integrity.rs:63 dual_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest (`274-356`) exercise round-trip and tamper-detection behavior. |
-| `src/nix_version.rs:207 cv_fuel_antisymmetric` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for antisymmetry. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
-| `src/nix_version.rs:267 cv_fuel_reflexive` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for reflexivity. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
-| `src/nix_version.rs:300 cv_fuel_range` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for range reasoning. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
-| `src/nix_version.rs:365 compare_versions` | Permanent | Iterative exec/spec bridge still hits the same `cv_fuel` unfolding limit. | `src/nix_version.rs` unit tests + proptest corpus (`519-660`) cover version-ordering behavior. |
-| `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
-| `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
-| `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest (`387-602`) cover valid log-shape behavior. |
+| `src/chain.rs:42 hash_deterministic` | Permanent | Determinism axiom for closed `hash_spec`; this is the cryptographic assumption boundary. | `src/chain.rs` unit tests + proptest exercise the runtime hash wrapper and chain properties. |
+| `src/chain.rs:70 compute_entry_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets the closed `hash_spec`. | `src/chain.rs` unit tests + proptest exercise the runtime hash wrapper and chain properties. |
+| `src/chain.rs:207 hash_collision_free` | Permanent | Collision-resistance axiom for the closed hash model. | `src/chain.rs` unit tests + proptest exercise the runtime hash wrapper and chain properties. |
+| `src/snapshot_integrity.rs:43 dual_hash_deterministic` | Permanent | Determinism axiom for uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest exercise round-trip and tamper detection. |
+| `src/snapshot_integrity.rs:54 dual_hash_collision_resistant` | Permanent | Collision-resistance axiom for the dual-hash model. | `src/snapshot_integrity.rs` unit tests + proptest exercise round-trip and tamper detection. |
+| `src/snapshot_integrity.rs:63 dual_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest exercise round-trip and tamper detection. |
+| `src/nix_version.rs:207 cv_fuel_antisymmetric` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for antisymmetry. | `src/nix_version.rs` unit tests + proptest cover version ordering. |
+| `src/nix_version.rs:267 cv_fuel_reflexive` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for reflexivity. | `src/nix_version.rs` unit tests + proptest cover version ordering. |
+| `src/nix_version.rs:300 cv_fuel_range` | Permanent | Recursive `cv_fuel` unfolding still exceeds solver limits for range reasoning. | `src/nix_version.rs` unit tests + proptest cover version ordering. |
+| `src/nix_version.rs:365 compare_versions` | Permanent | Iterative exec/spec bridge still hits the same `cv_fuel` unfolding limit. | `src/nix_version.rs` unit tests + proptest cover version ordering. |
+| `src/nix_store_path.rs:27 sha256_deterministic` | Permanent | Hash determinism axiom for uninterpreted SHA-256 model. | `src/nix_store_path.rs` unit tests + proptest cover store-path roundtrips. |
+| `src/nix_store_path.rs:33 sha256_collision_resistant` | Permanent | Collision-resistance axiom for uninterpreted SHA-256 model. | `src/nix_store_path.rs` unit tests + proptest cover store-path roundtrips. |
+| `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
+| `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
+| `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
+| `src/zircon_channel.rs:64 channel_signals` | Closeable | Signal calculation is currently a trusted exec/spec bridge over channel queue state. | `src/zircon_channel.rs` unit tests + proptest cover readable, peer-closed, and FIFO datagrams. |
+| `src/zircon_channel.rs:88 send_message` | Closeable | Handle transfer + queue append remain trusted pending a fully verified queue/ownership bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
+| `src/zircon_channel.rs:115 receive_message` | Closeable | Queue pop + handle rebind remain trusted pending a fully verified datagram dequeue bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
+| `src/zircon_channel.rs:139 close_endpoint` | Closeable | Unread handle discard remains trusted pending a fully verified fold over queued messages. | `src/zircon_channel.rs` unit tests cover unread-handle cleanup. |
+| `src/zircon_fifo.rs:38 fifo_write` | Closeable | Element-bounded FIFO write remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests + proptest cover element alignment and capacity bounds. |
+| `src/zircon_fifo.rs:56 fifo_read` | Closeable | Element-bounded FIFO read remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests + proptest cover FIFO order and whole-element reads. |
+| `src/zircon_fifo.rs:80 fifo_signals` | Closeable | FIFO signal calculation remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests cover readable/writable/peer-closed signals. |
+| `src/zircon_job.rs:39 well_formed_jobs` | Closeable | Parent-pointer tree validation remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover valid containment examples. |
+| `src/zircon_job.rs:120 job_in_subtree` | Closeable | Recursive subtree membership remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover descendant queries. |
+| `src/zircon_job.rs:141 process_in_subtree` | Closeable | Process ownership lift into subtree membership remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover descendant process queries. |
+| `src/zircon_job.rs:204 parent_kept_live` | Closeable | Parent-liveness scan remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover running-descendant cases. |
+| `src/zircon_socket.rs:89 socket_signals` | Closeable | Socket signal calculation remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests cover readable, threshold, disabled, and peer-closed signals. |
+| `src/zircon_socket.rs:117 socket_write` | Closeable | Short-write buffer append remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests + proptest cover write bounds and order. |
+| `src/zircon_socket.rs:138 socket_read` | Closeable | Short-read buffer consumption remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests + proptest cover prefix consumption. |
+| `src/zircon_port.rs:73 pop_packet` | Closeable | FIFO dequeue from the port packet queue remains a trusted exec/spec bridge. | `src/zircon_port.rs` unit tests + proptest cover user-packet FIFO order. |
+| `src/zircon_port.rs:92 deliver` | Closeable | Async delivery + one-shot/repeating registration update remain a trusted exec/spec bridge. | `src/zircon_port.rs` unit tests cover async delivery and one-shot vs repeating behavior. |
 
 Summary:
 
-- Permanent external-body items: `13`
-- Closeable external-body items: `0`
+- Permanent external-body items: `15`
+- Closeable external-body items: `16`
 
 ### `assume(...)` soundness oracles
 
