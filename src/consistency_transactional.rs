@@ -4,7 +4,7 @@
 //! booleans and small helper checks. The goal is to make the refinement edges
 //! explicit without pretending this is already a full history checker.
 
-#![allow(clippy::nonminimal_bool)]
+#![allow(clippy::fn_params_excessive_bools, clippy::nonminimal_bool)]
 
 use vstd::prelude::*;
 
@@ -12,8 +12,6 @@ use vstd::prelude::*;
 use crate::cycle_detect::has_cycle_spec;
 #[cfg(verus_keep_ghost)]
 use crate::snapshot_isolation::has_ww_conflict_spec;
-#[cfg(verus_keep_ghost)]
-use crate::topo_sort::is_valid_graph_spec;
 
 verus! {
 
@@ -190,8 +188,11 @@ pub open spec fn dependency_graph_acyclic_spec(edges: Seq<(int, int)>, n: int) -
 /// Checks one witness style for serializability: acyclic dependencies.
 pub fn dependency_graph_acyclic(edges: &[(usize, usize)], n: usize) -> (result: bool)
     requires
-        is_valid_graph_spec(edges@.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int)), n as int),
         n as int + edges@.len() as int <= usize::MAX as int,
+        forall|i: int| #![trigger edges@[i]] 0 <= i < edges@.len() ==> {
+            let (u, v) = edges@[i];
+            (u as int) < n as int && (v as int) < n as int
+        },
     ensures
         result ==> dependency_graph_acyclic_spec(
             edges@.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int)),
@@ -296,8 +297,22 @@ proof fn self_loop_not_acyclic(n: int, v: int)
     requires 0 <= v < n
     ensures !dependency_graph_acyclic_spec(seq![(v, v)], n)
 {
-    crate::cycle_detect::self_loop_is_cycle(seq![(v, v)], n, v);
+    let edges = seq![(v, v)];
+    assert(crate::cycle_detect::has_cycle_spec(edges, n)) by {
+        assert(crate::cycle_detect::has_edge_spec(edges, v, v)) by {
+            assert(edges[0] == (v, v));
+        }
+        assert(crate::cycle_detect::has_path_fuel(edges, v, v, 0));
+        assert(crate::cycle_detect::has_nontrivial_cycle_at(edges, n, v));
+    }
 }
+
+// r[verify consistency-txn.serializability]
+/// A provided serial witness is enough to satisfy the abstract
+/// serializability predicate.
+proof fn serial_witness_is_serializable(serial_witness_exists: bool)
+    ensures serial_witness_exists ==> serializability_spec(serial_witness_exists)
+{}
 
 // r[verify consistency-txn.strict-serializability]
 /// Strict serializability implies serializability.

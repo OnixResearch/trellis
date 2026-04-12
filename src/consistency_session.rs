@@ -3,6 +3,8 @@
 //! Reuses the vector-clock happens-before relation for causal dependencies and
 //! the causal-delivery readiness rule for message-level examples.
 
+#![allow(clippy::fn_params_excessive_bools, clippy::ptr_arg)]
+
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
@@ -161,6 +163,7 @@ pub fn causal_consistency(
 }
 
 // r[verify consistency-session.pram]
+// r[verify consistency-session.monotonic-reads]
 /// PRAM implies monotonic reads.
 proof fn pram_implies_monotonic_reads(
     non_decreasing_reads: bool,
@@ -172,6 +175,7 @@ proof fn pram_implies_monotonic_reads(
 {}
 
 // r[verify consistency-session.pram]
+// r[verify consistency-session.monotonic-writes]
 /// PRAM implies monotonic writes.
 proof fn pram_implies_monotonic_writes(
     non_decreasing_reads: bool,
@@ -210,6 +214,7 @@ proof fn causal_consistency_implies_pram(
 {}
 
 // r[verify consistency-session.causal-consistency]
+// r[verify consistency-session.writes-follow-reads]
 /// Causal consistency implies writes-follow-reads.
 proof fn causal_consistency_implies_wfr(
     non_decreasing_reads: bool,

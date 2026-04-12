@@ -6,17 +6,65 @@
 
 use vstd::prelude::*;
 
-#[cfg(verus_keep_ghost)]
-use crate::linearizability::is_sequential_spec;
 use crate::trace_relation::{TraceEvent, EVENT_CLIENT_REQUEST, EVENT_CLIENT_RESPONSE};
 
 verus! {
 
+/// Helper: sequential witness check from pair index `from` onward.
+pub open spec fn sequential_witness_from_spec(trace: Seq<TraceEvent>, from: int) -> bool
+    decreases trace.len() / 2 - from
+{
+    if trace.len() % 2 != 0 {
+        false
+    } else if from >= trace.len() / 2 {
+        true
+    } else {
+        trace[2 * from].event_type == EVENT_CLIENT_REQUEST
+        && trace[2 * from + 1].event_type == EVENT_CLIENT_RESPONSE
+        && trace[2 * from].uid == trace[2 * from + 1].uid
+        && sequential_witness_from_spec(trace, from + 1)
+    }
+}
+
+proof fn sequential_prefix_to_start(trace: Seq<TraceEvent>, upto: int)
+    requires
+        trace.len() % 2 == 0,
+        0 <= upto <= trace.len() / 2,
+        forall|j: int| #![trigger trace[2 * j]]
+            0 <= j < upto ==>
+                trace[2 * j].event_type == EVENT_CLIENT_REQUEST
+                && trace[2 * j + 1].event_type == EVENT_CLIENT_RESPONSE
+                && trace[2 * j].uid == trace[2 * j + 1].uid,
+        sequential_witness_from_spec(trace, upto),
+    ensures sequential_witness_spec(trace)
+    decreases upto,
+{
+    if upto > 0 {
+        sequential_prefix_to_start(trace, upto - 1);
+    }
+}
+
+proof fn sequential_tail_implies_pair(trace: Seq<TraceEvent>, from: int, pair_idx: int)
+    requires
+        trace.len() % 2 == 0,
+        0 <= from <= pair_idx < trace.len() / 2,
+        sequential_witness_from_spec(trace, from),
+    ensures
+        trace[2 * pair_idx].event_type == EVENT_CLIENT_REQUEST,
+        trace[2 * pair_idx + 1].event_type == EVENT_CLIENT_RESPONSE,
+        trace[2 * pair_idx].uid == trace[2 * pair_idx + 1].uid,
+    decreases pair_idx - from,
+{
+    if from < pair_idx {
+        sequential_tail_implies_pair(trace, from + 1, pair_idx);
+    }
+}
+
 // r[depends consistency-object.sequential-witness]
-/// Spec: a trace is a sequential witness exactly when it matches the existing
-/// alternating request/response definition.
+/// Spec: a trace is a sequential witness when all pairs form matching
+/// request/response steps.
 pub open spec fn sequential_witness_spec(trace: Seq<TraceEvent>) -> bool {
-    is_sequential_spec(trace)
+    sequential_witness_from_spec(trace, 0)
 }
 
 // r[impl consistency-object.sequential-witness]
@@ -45,9 +93,19 @@ pub fn sequential_witness(trace: &[TraceEvent]) -> (result: bool)
             || resp.event_type != EVENT_CLIENT_RESPONSE
             || req.uid != resp.uid
         {
+            proof {
+                if sequential_witness_spec(trace@) {
+                    sequential_tail_implies_pair(trace@, 0, k as int);
+                    assert(trace@[2 * (k as int)].event_type == EVENT_CLIENT_REQUEST);
+                }
+            }
             return false;
         }
         k += 1;
+    }
+    proof {
+        assert(sequential_witness_from_spec(trace@, k as int));
+        sequential_prefix_to_start(trace@, k as int);
     }
     true
 }
@@ -98,13 +156,6 @@ pub fn linearizability(
     sequential_consistency(sequential_witness, program_order_respected)
         && realtime_respected
 }
-
-// r[verify consistency-object.sequential-witness]
-/// The shared sequential witness alias matches the existing linearizability
-/// definition exactly.
-proof fn sequential_witness_alias(trace: Seq<TraceEvent>)
-    ensures sequential_witness_spec(trace) == is_sequential_spec(trace)
-{}
 
 // r[verify consistency-object.linearizability]
 /// Linearizability implies sequential consistency.

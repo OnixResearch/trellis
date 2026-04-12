@@ -376,6 +376,16 @@ PRAM MUST require monotonic reads, monotonic writes, and read-your-writes.
 r[consistency-session.causal-consistency]
 Causal consistency MUST extend PRAM with writes-follow-reads.
 
+## Consistency Refinement and Availability
+
+r[consistency-refinement.model-hierarchy]
+The implementation MUST expose proof bridges for the implication edges in
+the consistency-model hierarchy.
+
+r[consistency-refinement.availability-envelope]
+The implementation MUST classify each modeled consistency level by the
+strongest availability envelope assigned in the OpenSpec taxonomy.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]

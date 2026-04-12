@@ -119,6 +119,31 @@ pub open spec fn history_well_formed_spec(history: Seq<HistoryOp>, from: int) ->
     }
 }
 
+proof fn history_tail_to_start(history: Seq<HistoryOp>, upto: int)
+    requires
+        0 <= upto <= history.len(),
+        forall|j: int| #![trigger history[j]] 0 <= j < upto ==> is_complete_op_spec(history[j]),
+        history_well_formed_spec(history, upto),
+    ensures history_well_formed_spec(history, 0)
+    decreases upto,
+{
+    if upto > 0 {
+        history_tail_to_start(history, upto - 1);
+    }
+}
+
+proof fn history_tail_implies_complete_at(history: Seq<HistoryOp>, from: int, idx: int)
+    requires
+        0 <= from <= idx < history.len(),
+        history_well_formed_spec(history, from),
+    ensures is_complete_op_spec(history[idx])
+    decreases idx - from,
+{
+    if from < idx {
+        history_tail_implies_complete_at(history, from + 1, idx);
+    }
+}
+
 // r[impl consistency-vocab.history-well-formed]
 /// Checks that each event in the history uses the shared vocabulary correctly.
 pub fn history_well_formed(history: &[HistoryOp]) -> (result: bool)
@@ -128,18 +153,23 @@ pub fn history_well_formed(history: &[HistoryOp]) -> (result: bool)
     while i < history.len()
         invariant
             0 <= i <= history@.len(),
-            history_well_formed_spec(history@, 0) <==>
-                ((forall|j: int| #![trigger history@[j]] 0 <= j < i as int ==> is_complete_op_spec(history@[j]))
-                 && history_well_formed_spec(history@, i as int)),
+            forall|j: int| #![trigger history@[j]] 0 <= j < i as int ==> is_complete_op_spec(history@[j]),
         decreases history@.len() - i,
     {
         if !is_complete_op(history[i]) {
             proof {
-                assert(!is_complete_op_spec(history@[i as int]));
+                if history_well_formed_spec(history@, 0) {
+                    history_tail_implies_complete_at(history@, 0, i as int);
+                    assert(is_complete_op_spec(history@[i as int]));
+                }
             }
             return false;
         }
         i += 1;
+    }
+    proof {
+        assert(history_well_formed_spec(history@, i as int));
+        history_tail_to_start(history@, i as int);
     }
     true
 }

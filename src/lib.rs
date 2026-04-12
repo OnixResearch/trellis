@@ -40,6 +40,7 @@
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `consistency_history` — shared operation vocabulary for consistency-model predicates
 //! - `consistency_object` — object-level sequential-consistency and linearizability predicates
+//! - `consistency_refinement` — implication edges and availability-envelope metadata for consistency models
 //! - `consistency_relations` — shared real-time, session, visibility, arbitration, and conflict relations
 //! - `consistency_session` — session guarantees and causal-consistency predicates
 //! - `consistency_transactional` — abstract transactional consistency predicates and refinement skeletons
@@ -261,6 +262,7 @@ pub mod consensus_path;
 pub mod consistent_hash;
 pub mod consistency_history;
 pub mod consistency_object;
+pub mod consistency_refinement;
 pub mod consistency_relations;
 pub mod consistency_session;
 pub mod consistency_transactional;

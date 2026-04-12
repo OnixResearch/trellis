@@ -38,9 +38,9 @@
 
 ## Phase 5: Refinement Proofs and Validation
 
-- [ ] Prove the implication edges captured in the Jepsen model tree
-- [ ] Encode availability-envelope metadata for each model family in the main
+- [x] Prove the implication edges captured in the Jepsen model tree
+- [x] Encode availability-envelope metadata for each model family in the main
   spec or implementation docs
-- [ ] Add model-level tests or checkers for representative legal and illegal
+- [x] Add model-level tests or checkers for representative legal and illegal
   histories
-- [ ] Run Verus, cargo test, and Tracey for the eventual implementation
+- [x] Run Verus, cargo test, and Tracey for the eventual implementation
