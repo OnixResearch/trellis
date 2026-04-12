@@ -6,7 +6,9 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
-use crate::consistency_object::{linearizability_spec, sequential_consistency_spec};
+use crate::consistency_object::{
+    linearizability_flags_spec, sequential_consistency_flags_spec,
+};
 #[cfg(verus_keep_ghost)]
 use crate::consistency_session::{
     causal_consistency_spec, monotonic_reads_spec, monotonic_writes_spec, pram_spec,
@@ -134,11 +136,35 @@ proof fn strict_serializable_refines_linearizable(
         serial_witness_exists,
         realtime_respected,
         program_order_respected,
-    ) ==> linearizability_spec(
+    ) ==> linearizability_flags_spec(
         serial_witness_exists,
         program_order_respected,
         realtime_respected,
     )
+{}
+
+// r[verify consistency-refinement.model-hierarchy]
+/// Serializability implies repeatable read in the shared witness model.
+proof fn serializable_refines_repeatable_read(serial_witness_exists: bool)
+    ensures serializability_spec(serial_witness_exists)
+        ==> repeatable_read_spec(
+            serial_witness_exists,
+            serial_witness_exists,
+            serial_witness_exists,
+        )
+{}
+
+// r[verify consistency-refinement.model-hierarchy]
+/// Serializability implies snapshot isolation in the shared witness model.
+proof fn serializable_refines_snapshot_isolation(serial_witness_exists: bool)
+    ensures serializability_spec(serial_witness_exists)
+        ==> snapshot_isolation_spec(
+            serial_witness_exists,
+            serial_witness_exists,
+            serial_witness_exists,
+            serial_witness_exists,
+            serial_witness_exists,
+        )
 {}
 
 // r[verify consistency-refinement.model-hierarchy]
@@ -148,11 +174,33 @@ proof fn linearizable_refines_sequential(
     program_order_respected: bool,
     realtime_respected: bool,
 )
-    ensures linearizability_spec(
+    ensures linearizability_flags_spec(
         sequential_witness,
         program_order_respected,
         realtime_respected,
-    ) ==> sequential_consistency_spec(sequential_witness, program_order_respected)
+    ) ==> sequential_consistency_flags_spec(sequential_witness, program_order_respected)
+{}
+
+// r[verify consistency-refinement.model-hierarchy]
+/// Repeatable read implies cursor stability.
+proof fn repeatable_read_refines_cursor_stability(
+    no_dirty_reads: bool,
+    no_dirty_writes: bool,
+    stable_object_reads: bool,
+)
+    ensures repeatable_read_spec(no_dirty_reads, no_dirty_writes, stable_object_reads)
+        ==> cursor_stability_spec(no_dirty_reads, no_dirty_writes, stable_object_reads)
+{}
+
+// r[verify consistency-refinement.model-hierarchy]
+/// Repeatable read implies monotonic atomic view.
+proof fn repeatable_read_refines_mav(
+    no_dirty_reads: bool,
+    no_dirty_writes: bool,
+    stable_object_reads: bool,
+)
+    ensures repeatable_read_spec(no_dirty_reads, no_dirty_writes, stable_object_reads)
+        ==> monotonic_atomic_view_spec(no_dirty_reads, no_dirty_writes, stable_object_reads)
 {}
 
 // r[verify consistency-refinement.model-hierarchy]
@@ -214,6 +262,21 @@ proof fn read_committed_refines_read_uncommitted(
 )
     ensures read_committed_spec(no_dirty_reads, no_dirty_writes)
         ==> read_uncommitted_spec(no_dirty_writes)
+{}
+
+// r[verify consistency-refinement.model-hierarchy]
+/// Sequential consistency implies causal consistency in the shared witness model.
+proof fn sequential_refines_causal(
+    sequential_witness: bool,
+    program_order_respected: bool,
+)
+    ensures sequential_consistency_flags_spec(sequential_witness, program_order_respected)
+        ==> causal_consistency_spec(
+            program_order_respected,
+            program_order_respected,
+            sequential_witness,
+            program_order_respected,
+        )
 {}
 
 // r[verify consistency-refinement.model-hierarchy]
@@ -308,22 +371,67 @@ proof fn total_available_models()
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
 
-    // r[verify consistency-refinement.model-hierarchy]
-    #[test]
-    fn test_strict_serializable_refines_object_and_transactional_models() {
-        let strict = crate::consistency_transactional::strict_serializability(true, true, true);
-        assert!(strict);
-        assert!(crate::consistency_transactional::serializability(true));
-        assert!(crate::consistency_object::linearizability(true, true, true));
+    fn read(op_id: u64, session: u64, invoke: u64, respond: u64, observed: u64) -> HistoryOp {
+        HistoryOp {
+            op_id,
+            kind: OP_READ,
+            object: 7,
+            txn: op_id,
+            session,
+            invoke,
+            respond,
+            observed,
+            value: 0,
+        }
+    }
+
+    fn write(op_id: u64, session: u64, invoke: u64, respond: u64, value: u64) -> HistoryOp {
+        HistoryOp {
+            op_id,
+            kind: OP_WRITE,
+            object: 7,
+            txn: op_id,
+            session,
+            invoke,
+            respond,
+            observed: 0,
+            value,
+        }
     }
 
     // r[verify consistency-refinement.model-hierarchy]
     #[test]
-    fn test_causal_bundle_refines_session_guarantees() {
-        let causal = crate::consistency_session::causal_consistency(true, true, true, true);
-        assert!(causal);
+    fn test_transactional_hierarchy_edges_have_runtime_representatives() {
+        assert!(crate::consistency_transactional::serializability(true));
+        assert!(crate::consistency_transactional::repeatable_read(true, true, true));
+        assert!(crate::consistency_transactional::snapshot_isolation(true, true, true, true, true));
+        assert!(crate::consistency_transactional::cursor_stability(true, true, true));
+        assert!(crate::consistency_transactional::monotonic_atomic_view(true, true, true));
+        assert!(crate::consistency_transactional::read_committed(true, true));
+        assert!(crate::consistency_transactional::read_uncommitted(true));
+    }
+
+    // r[verify consistency-refinement.model-hierarchy]
+    #[test]
+    fn test_object_history_distinguishes_linearizable_from_sequential() {
+        let earlier = write(1, 5, 0, 1, 10);
+        let later = read(2, 6, 2, 3, 1);
+        let linear = [earlier, later];
+        let reordered = [later, earlier];
+
+        assert!(crate::consistency_object::linearizability(&linear));
+        assert!(crate::consistency_object::sequential_consistency(&reordered));
+        assert!(!crate::consistency_object::linearizability(&reordered));
+    }
+
+    // r[verify consistency-refinement.model-hierarchy]
+    #[test]
+    fn test_session_hierarchy_distinguishes_causal_from_pram() {
         assert!(crate::consistency_session::pram(true, true, true));
+        assert!(!crate::consistency_session::causal_consistency(true, true, true, false));
+        assert!(crate::consistency_session::causal_consistency(true, true, true, true));
         assert!(crate::consistency_session::writes_follow_reads(true));
     }
 

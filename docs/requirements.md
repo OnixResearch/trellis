@@ -335,16 +335,17 @@ per-session program-order respect across transactions.
 ## Object and Session Consistency Models
 
 r[consistency-object.sequential-witness]
-A sequential witness trace MUST match the existing alternating
-request/response shape used by the library's linearizability machinery.
+A sequential witness history MUST be a well-formed total order of complete
+shared read/write operations expressed with the consistency-history
+vocabulary.
 
 r[consistency-object.sequential-consistency]
-Sequential consistency MUST require a sequential witness and preserved
-program order.
+Sequential consistency MUST require a shared sequential witness and
+preserved session/program order.
 
 r[consistency-object.linearizability]
 Linearizability MUST extend sequential consistency by also preserving
-real-time order.
+shared real-time order.
 
 r[consistency-session.causal-dependency]
 A reusable causal-dependency witness MUST agree with vector-clock

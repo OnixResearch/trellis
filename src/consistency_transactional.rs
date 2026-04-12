@@ -338,6 +338,21 @@ pub open spec fn overlapping_conflict(ws_a: Seq<u64>, ws_b: Seq<u64>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::consistency_history::{HistoryOp, OP_WRITE};
+
+    fn write(op_id: u64, txn: u64, session: u64, object: u64, invoke: u64, respond: u64) -> HistoryOp {
+        HistoryOp {
+            op_id,
+            kind: OP_WRITE,
+            object,
+            txn,
+            session,
+            invoke,
+            respond,
+            observed: 0,
+            value: op_id,
+        }
+    }
 
     // r[verify consistency-txn.read-uncommitted]
     #[test]
@@ -364,14 +379,20 @@ mod tests {
     // r[verify consistency-txn.first-committer-wins]
     #[test]
     fn test_first_committer_wins_blocks_conflicting_overlap() {
-        assert!(!first_committer_wins(&[7, 9], &[9, 12], true, true));
-        assert!(first_committer_wins(&[7, 9], &[10, 12], true, true));
+        let t1 = write(1, 10, 1, 7, 0, 10);
+        let t2 = write(2, 20, 2, 7, 5, 12);
+        let overlapping = t1.respond > t2.invoke && t2.respond > t1.invoke;
+        assert!(overlapping);
+        assert!(!first_committer_wins(&[t1.object], &[t2.object], overlapping, true));
     }
 
     // r[verify consistency-txn.snapshot-isolation]
     #[test]
     fn test_snapshot_isolation_allows_write_skew_shape() {
-        let fcw = first_committer_wins(&[1], &[2], true, true);
+        let t1 = write(1, 10, 1, 7, 0, 10);
+        let t2 = write(2, 20, 2, 8, 5, 12);
+        let overlapping = t1.respond > t2.invoke && t2.respond > t1.invoke;
+        let fcw = first_committer_wins(&[t1.object], &[t2.object], overlapping, true);
         assert!(fcw);
         assert!(snapshot_isolation(true, true, true, true, fcw));
     }

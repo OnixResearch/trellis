@@ -1,174 +1,216 @@
-//! Object-level consistency predicates.
+//! Object-level consistency predicates over the shared history vocabulary.
 //!
-//! Reuses the existing trace vocabulary and sequential-trace checker shape from
-//! the Raft linearizability module, but packages the object-model hierarchy in
-//! a small standalone API.
+//! Uses `HistoryOp` plus the shared real-time and session-order relations,
+//! so the object-model layer matches the same operation metadata used by the
+//! transactional and session-model modules.
 
 use vstd::prelude::*;
 
-use crate::trace_relation::{TraceEvent, EVENT_CLIENT_REQUEST, EVENT_CLIENT_RESPONSE};
+#[cfg(verus_keep_ghost)]
+use crate::consistency_history::is_complete_op_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_relations::{realtime_order_spec, session_order_spec};
+
+use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
 
 verus! {
 
-/// Helper: sequential witness check from pair index `from` onward.
-pub open spec fn sequential_witness_from_spec(trace: Seq<TraceEvent>, from: int) -> bool
-    decreases trace.len() / 2 - from
+spec fn is_object_op_spec(op: HistoryOp) -> bool {
+    op.kind == OP_READ || op.kind == OP_WRITE
+}
+
+fn is_object_op(op: HistoryOp) -> (result: bool)
+    ensures result == is_object_op_spec(op)
 {
-    if trace.len() % 2 != 0 {
-        false
-    } else if from >= trace.len() / 2 {
+    op.kind == OP_READ || op.kind == OP_WRITE
+}
+
+// r[depends consistency-object.sequential-witness]
+/// Spec: a sequential witness is a well-formed total order of complete
+/// read/write operations expressed in the shared history vocabulary.
+pub open spec fn sequential_witness_from_spec(history: Seq<HistoryOp>, from: int) -> bool
+    decreases history.len() - from
+{
+    if from >= history.len() {
         true
     } else {
-        trace[2 * from].event_type == EVENT_CLIENT_REQUEST
-        && trace[2 * from + 1].event_type == EVENT_CLIENT_RESPONSE
-        && trace[2 * from].uid == trace[2 * from + 1].uid
-        && sequential_witness_from_spec(trace, from + 1)
-    }
-}
-
-proof fn sequential_prefix_to_start(trace: Seq<TraceEvent>, upto: int)
-    requires
-        trace.len() % 2 == 0,
-        0 <= upto <= trace.len() / 2,
-        forall|j: int| #![trigger trace[2 * j]]
-            0 <= j < upto ==>
-                trace[2 * j].event_type == EVENT_CLIENT_REQUEST
-                && trace[2 * j + 1].event_type == EVENT_CLIENT_RESPONSE
-                && trace[2 * j].uid == trace[2 * j + 1].uid,
-        sequential_witness_from_spec(trace, upto),
-    ensures sequential_witness_spec(trace)
-    decreases upto,
-{
-    if upto > 0 {
-        sequential_prefix_to_start(trace, upto - 1);
-    }
-}
-
-proof fn sequential_tail_implies_pair(trace: Seq<TraceEvent>, from: int, pair_idx: int)
-    requires
-        trace.len() % 2 == 0,
-        0 <= from <= pair_idx < trace.len() / 2,
-        sequential_witness_from_spec(trace, from),
-    ensures
-        trace[2 * pair_idx].event_type == EVENT_CLIENT_REQUEST,
-        trace[2 * pair_idx + 1].event_type == EVENT_CLIENT_RESPONSE,
-        trace[2 * pair_idx].uid == trace[2 * pair_idx + 1].uid,
-    decreases pair_idx - from,
-{
-    if from < pair_idx {
-        sequential_tail_implies_pair(trace, from + 1, pair_idx);
+        is_complete_op_spec(history[from])
+        && (history[from].kind == OP_READ || history[from].kind == OP_WRITE)
+        && sequential_witness_from_spec(history, from + 1)
     }
 }
 
 // r[depends consistency-object.sequential-witness]
-/// Spec: a trace is a sequential witness when all pairs form matching
-/// request/response steps.
-pub open spec fn sequential_witness_spec(trace: Seq<TraceEvent>) -> bool {
-    sequential_witness_from_spec(trace, 0)
+pub open spec fn sequential_witness_spec(history: Seq<HistoryOp>) -> bool {
+    sequential_witness_from_spec(history, 0)
+}
+
+fn sequential_witness_from(history: &[HistoryOp], from: usize) -> (result: bool)
+    requires from <= history.len()
+    ensures result == sequential_witness_from_spec(history@, from as int)
+    decreases history@.len() - from as int
+{
+    if from >= history.len() {
+        true
+    } else {
+        crate::consistency_history::is_complete_op(history[from])
+            && is_object_op(history[from])
+            && sequential_witness_from(history, from + 1)
+    }
 }
 
 // r[impl consistency-object.sequential-witness]
-/// Runtime checker for the alternating request/response witness shape.
-pub fn sequential_witness(trace: &[TraceEvent]) -> (result: bool)
-    ensures result == sequential_witness_spec(trace@)
+/// Runtime checker for the shared object-operation witness shape.
+pub fn sequential_witness(history: &[HistoryOp]) -> (result: bool)
+    ensures result == sequential_witness_spec(history@)
 {
-    if trace.len() % 2 != 0 {
-        return false;
+    sequential_witness_from(history, 0)
+}
+
+pub open spec fn program_order_respected_from_spec(history: Seq<HistoryOp>, i: int, j: int) -> bool
+    decreases history.len() - i, history.len() - j
+{
+    if i + 1 >= history.len() {
+        true
+    } else if j >= history.len() {
+        program_order_respected_from_spec(history, i + 1, i + 2)
+    } else {
+        !session_order_spec(history[j], history[i])
+        && program_order_respected_from_spec(history, i, j + 1)
     }
-    let mut k: usize = 0;
-    while k < trace.len() / 2
-        invariant
-            0 <= k <= trace@.len() / 2,
-            trace@.len() % 2 == 0,
-            forall|j: int| #![trigger trace@[2 * j]]
-                0 <= j < k as int ==>
-                    trace@[2 * j].event_type == EVENT_CLIENT_REQUEST
-                    && trace@[2 * j + 1].event_type == EVENT_CLIENT_RESPONSE
-                    && trace@[2 * j].uid == trace@[2 * j + 1].uid,
-        decreases trace@.len() / 2 - k,
-    {
-        let req = &trace[2 * k];
-        let resp = &trace[2 * k + 1];
-        if req.event_type != EVENT_CLIENT_REQUEST
-            || resp.event_type != EVENT_CLIENT_RESPONSE
-            || req.uid != resp.uid
-        {
-            proof {
-                if sequential_witness_spec(trace@) {
-                    sequential_tail_implies_pair(trace@, 0, k as int);
-                    assert(trace@[2 * (k as int)].event_type == EVENT_CLIENT_REQUEST);
-                }
-            }
-            return false;
-        }
-        k += 1;
+}
+
+pub open spec fn program_order_respected_spec(history: Seq<HistoryOp>) -> bool {
+    if history.len() <= 1 {
+        true
+    } else {
+        program_order_respected_from_spec(history, 0, 1)
     }
-    proof {
-        assert(sequential_witness_from_spec(trace@, k as int));
-        sequential_prefix_to_start(trace@, k as int);
+}
+
+fn program_order_respected_from(history: &[HistoryOp], i: usize, j: usize) -> (result: bool)
+    requires
+        history.len() <= 1 || (i < history.len() && i < j && j <= history.len()),
+    ensures result == program_order_respected_from_spec(history@, i as int, j as int)
+    decreases history@.len() - i as int, history@.len() - j as int
+{
+    if history.len() <= 1 || i >= history.len() - 1 {
+        true
+    } else if j >= history.len() {
+        program_order_respected_from(history, i + 1, i + 2)
+    } else {
+        !crate::consistency_relations::session_order(history[j], history[i])
+            && program_order_respected_from(history, i, j + 1)
     }
-    true
+}
+
+fn program_order_respected(history: &[HistoryOp]) -> (result: bool)
+    ensures result == program_order_respected_spec(history@)
+{
+    if history.len() <= 1 {
+        true
+    } else {
+        program_order_respected_from(history, 0, 1)
+    }
 }
 
 // r[depends consistency-object.sequential-consistency]
-/// Spec: sequential consistency requires a sequential witness and preserved
-/// program order.
-pub open spec fn sequential_consistency_spec(
-    sequential_witness: bool,
-    program_order_respected: bool,
-) -> bool {
-    sequential_witness && program_order_respected
+/// Spec: sequential consistency requires a shared sequential witness and
+/// preserved session/program order in that witness order.
+pub open spec fn sequential_consistency_spec(history: Seq<HistoryOp>) -> bool {
+    sequential_witness_spec(history) && program_order_respected_spec(history)
 }
 
 // r[impl consistency-object.sequential-consistency]
-pub fn sequential_consistency(
-    sequential_witness: bool,
-    program_order_respected: bool,
-) -> (result: bool)
-    ensures result == sequential_consistency_spec(sequential_witness, program_order_respected)
+pub fn sequential_consistency(history: &[HistoryOp]) -> (result: bool)
+    ensures result == sequential_consistency_spec(history@)
 {
-    sequential_witness && program_order_respected
+    sequential_witness(history) && program_order_respected(history)
+}
+
+pub open spec fn realtime_order_respected_from_spec(history: Seq<HistoryOp>, i: int, j: int) -> bool
+    decreases history.len() - i, history.len() - j
+{
+    if i + 1 >= history.len() {
+        true
+    } else if j >= history.len() {
+        realtime_order_respected_from_spec(history, i + 1, i + 2)
+    } else {
+        !realtime_order_spec(history[j], history[i])
+        && realtime_order_respected_from_spec(history, i, j + 1)
+    }
+}
+
+pub open spec fn realtime_order_respected_spec(history: Seq<HistoryOp>) -> bool {
+    if history.len() <= 1 {
+        true
+    } else {
+        realtime_order_respected_from_spec(history, 0, 1)
+    }
+}
+
+fn realtime_order_respected_from(history: &[HistoryOp], i: usize, j: usize) -> (result: bool)
+    requires
+        history.len() <= 1 || (i < history.len() && i < j && j <= history.len()),
+    ensures result == realtime_order_respected_from_spec(history@, i as int, j as int)
+    decreases history@.len() - i as int, history@.len() - j as int
+{
+    if history.len() <= 1 || i >= history.len() - 1 {
+        true
+    } else if j >= history.len() {
+        realtime_order_respected_from(history, i + 1, i + 2)
+    } else {
+        !crate::consistency_relations::realtime_order(history[j], history[i])
+            && realtime_order_respected_from(history, i, j + 1)
+    }
+}
+
+fn realtime_order_respected(history: &[HistoryOp]) -> (result: bool)
+    ensures result == realtime_order_respected_spec(history@)
+{
+    if history.len() <= 1 {
+        true
+    } else {
+        realtime_order_respected_from(history, 0, 1)
+    }
 }
 
 // r[depends consistency-object.linearizability]
-/// Spec: linearizability is sequential consistency plus real-time respect.
-pub open spec fn linearizability_spec(
+/// Spec: linearizability is sequential consistency plus preserved real-time
+/// order in the shared witness order.
+pub open spec fn linearizability_spec(history: Seq<HistoryOp>) -> bool {
+    sequential_consistency_spec(history) && realtime_order_respected_spec(history)
+}
+
+// r[impl consistency-object.linearizability]
+pub fn linearizability(history: &[HistoryOp]) -> (result: bool)
+    ensures result == linearizability_spec(history@)
+{
+    sequential_consistency(history) && realtime_order_respected(history)
+}
+
+/// Shared refinement adapter: abstract sequential-consistency flag bundle.
+pub open spec fn sequential_consistency_flags_spec(
+    sequential_witness: bool,
+    program_order_respected: bool,
+) -> bool {
+    sequential_witness && program_order_respected
+}
+
+/// Shared refinement adapter: abstract linearizability flag bundle.
+pub open spec fn linearizability_flags_spec(
     sequential_witness: bool,
     program_order_respected: bool,
     realtime_respected: bool,
 ) -> bool {
-    sequential_consistency_spec(sequential_witness, program_order_respected)
+    sequential_consistency_flags_spec(sequential_witness, program_order_respected)
     && realtime_respected
-}
-
-// r[impl consistency-object.linearizability]
-pub fn linearizability(
-    sequential_witness: bool,
-    program_order_respected: bool,
-    realtime_respected: bool,
-) -> (result: bool)
-    ensures result == linearizability_spec(
-        sequential_witness,
-        program_order_respected,
-        realtime_respected,
-    )
-{
-    sequential_consistency(sequential_witness, program_order_respected)
-        && realtime_respected
 }
 
 // r[verify consistency-object.linearizability]
 /// Linearizability implies sequential consistency.
-proof fn linearizability_implies_sequential_consistency(
-    sequential_witness: bool,
-    program_order_respected: bool,
-    realtime_respected: bool,
-)
-    ensures linearizability_spec(
-        sequential_witness,
-        program_order_respected,
-        realtime_respected,
-    ) ==> sequential_consistency_spec(sequential_witness, program_order_respected)
+proof fn linearizability_implies_sequential_consistency(history: Seq<HistoryOp>)
+    ensures linearizability_spec(history) ==> sequential_consistency_spec(history)
 {}
 
 } // verus!
@@ -176,50 +218,81 @@ proof fn linearizability_implies_sequential_consistency(
 #[cfg(test)]
 mod tests {
     use super::*;
+    use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
 
-    fn req(uid: u64, cmd: u64) -> TraceEvent {
-        TraceEvent {
-            event_type: EVENT_CLIENT_REQUEST,
-            uid,
-            command: cmd,
-            result: 0,
+    fn read(op_id: u64, session: u64, invoke: u64, respond: u64, observed: u64) -> HistoryOp {
+        HistoryOp {
+            op_id,
+            kind: OP_READ,
+            object: 7,
+            txn: op_id,
+            session,
+            invoke,
+            respond,
+            observed,
+            value: 0,
         }
     }
 
-    fn resp(uid: u64, result: u64) -> TraceEvent {
-        TraceEvent {
-            event_type: EVENT_CLIENT_RESPONSE,
-            uid,
-            command: 0,
-            result,
+    fn write(op_id: u64, session: u64, invoke: u64, respond: u64, value: u64) -> HistoryOp {
+        HistoryOp {
+            op_id,
+            kind: OP_WRITE,
+            object: 7,
+            txn: op_id,
+            session,
+            invoke,
+            respond,
+            observed: 0,
+            value,
         }
     }
 
     // r[verify consistency-object.sequential-witness]
     #[test]
-    fn test_sequential_witness_accepts_alternating_trace() {
-        let trace = [req(1, 10), resp(1, 11), req(2, 20), resp(2, 21)];
-        assert!(sequential_witness(&trace));
+    fn test_sequential_witness_accepts_shared_history() {
+        let history = [write(1, 10, 0, 1, 11), read(2, 11, 2, 3, 1)];
+        assert!(sequential_witness(&history));
     }
 
     // r[verify consistency-object.sequential-witness]
     #[test]
-    fn test_sequential_witness_rejects_broken_trace() {
-        let trace = [req(1, 10), req(2, 20), resp(2, 21)];
-        assert!(!sequential_witness(&trace));
+    fn test_sequential_witness_rejects_non_object_op() {
+        let mut bad = read(1, 10, 0, 1, 0);
+        bad.kind = crate::consistency_history::OP_COMMIT;
+        assert!(!sequential_witness(&[bad]));
     }
 
     // r[verify consistency-object.sequential-consistency]
     #[test]
-    fn test_sequential_consistency_requires_program_order() {
-        assert!(sequential_consistency(true, true));
-        assert!(!sequential_consistency(true, false));
+    fn test_sequential_consistency_accepts_program_ordered_history() {
+        let history = [write(1, 5, 0, 1, 10), read(2, 5, 2, 3, 1)];
+        assert!(sequential_consistency(&history));
+    }
+
+    // r[verify consistency-object.sequential-consistency]
+    #[test]
+    fn test_sequential_consistency_rejects_program_order_inversion() {
+        let earlier = write(1, 5, 0, 1, 10);
+        let later = read(2, 5, 2, 3, 1);
+        let inverted = [later, earlier];
+        assert!(!sequential_consistency(&inverted));
     }
 
     // r[verify consistency-object.linearizability]
     #[test]
-    fn test_linearizability_adds_realtime() {
-        assert!(linearizability(true, true, true));
-        assert!(!linearizability(true, true, false));
+    fn test_linearizability_accepts_realtime_ordered_history() {
+        let history = [write(1, 5, 0, 1, 10), read(2, 6, 2, 3, 1)];
+        assert!(linearizability(&history));
+    }
+
+    // r[verify consistency-object.linearizability]
+    #[test]
+    fn test_linearizability_rejects_realtime_inversion_but_sc_accepts_it() {
+        let earlier = write(1, 5, 0, 1, 10);
+        let later = read(2, 6, 2, 3, 1);
+        let reordered = [later, earlier];
+        assert!(sequential_consistency(&reordered));
+        assert!(!linearizability(&reordered));
     }
 }
