@@ -43,6 +43,42 @@ pub proof fn key_cmp_antisymmetric(a: Seq<u8>, b: Seq<u8>)
     }
 }
 
+proof fn subrange_drop_first_len<A>(s: Seq<A>)
+    requires s.len() > 0
+    ensures s.subrange(1, s.len() as int).len() == s.len() - 1
+{}
+
+proof fn subrange_drop_first_index<A>(s: Seq<A>, i: int)
+    requires s.len() > 0, 0 <= i < s.subrange(1, s.len() as int).len()
+    ensures s.subrange(1, s.len() as int)[i] == s[i + 1]
+{}
+
+pub proof fn key_total(a: Seq<u8>, b: Seq<u8>)
+    ensures key_lt(a, b) || key_lt(b, a) || a =~= b
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 && b.len() == 0 {
+    } else if a.len() == 0 {
+    } else if b.len() == 0 {
+    } else if a[0int] < b[0int] {
+    } else if a[0int] > b[0int] {
+    } else {
+        key_total(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int));
+        if a.subrange(1, a.len() as int) =~= b.subrange(1, b.len() as int) {
+            assert(a.len() == b.len());
+            assert forall|i: int| 0 <= i < a.len() implies a[i] == b[i] by {
+                if i == 0 {
+                } else {
+                    subrange_drop_first_index(a, i - 1);
+                    subrange_drop_first_index(b, i - 1);
+                    assert(a.subrange(1, a.len() as int)[(i - 1) as int] == b.subrange(1, b.len() as int)[(i - 1) as int]);
+                }
+            }
+            assert(a =~= b);
+        }
+    }
+}
+
 /// Skip equal prefix byte helper.
 proof fn key_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
     requires 0 <= i < a.len(), 0 <= i < b.len(), a[i] == b[i]
@@ -136,6 +172,16 @@ pub open spec fn center_keys(s: Seq<(Seq<u8>, u64, u64)>) -> Seq<Seq<u8>> {
 
 pub open spec fn has_attr_spec(attrs: Seq<(Seq<u8>, u64)>, key: Seq<u8>) -> bool {
     exists|i: int| 0 <= i < attrs.len() && attrs[i].0 =~= key
+}
+
+pub open spec fn kv_kv_disjoint(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>) -> bool {
+    forall|i: int, j: int| 0 <= i < a.len() && 0 <= j < b.len()
+        ==> !(a[i].0 =~= b[j].0)
+}
+
+pub open spec fn kv_center_disjoint(a: Seq<(Seq<u8>, u64)>, c: Seq<(Seq<u8>, u64, u64)>) -> bool {
+    forall|i: int, j: int| 0 <= i < a.len() && 0 <= j < c.len()
+        ==> !(a[i].0 =~= c[j].0)
 }
 
 // --- Spec: recursive split ---
@@ -385,22 +431,272 @@ pub fn split(
 
 // --- Proofs ---
 
+proof fn key_lt_irreflexive(a: Seq<u8>)
+    ensures !key_lt(a, a)
+    decreases a.len()
+{
+    if a.len() > 0 {
+        key_lt_irreflexive(a.subrange(1, a.len() as int));
+    }
+}
+
+proof fn key_lt_asymmetric(a: Seq<u8>, b: Seq<u8>)
+    requires key_lt(a, b)
+    ensures !key_lt(b, a)
+{
+    key_cmp_antisymmetric(a, b);
+}
+
+proof fn sorted_tail(attrs: Seq<(Seq<u8>, u64)>)
+    requires is_sorted_keys(attrs), attrs.len() > 0
+    ensures is_sorted_keys(attrs.subrange(1, attrs.len() as int))
+{
+    assert forall|i: int, j: int|
+        0 <= i < j < attrs.subrange(1, attrs.len() as int).len()
+        implies key_lt(attrs.subrange(1, attrs.len() as int)[i].0, attrs.subrange(1, attrs.len() as int)[j].0) by {
+        subrange_drop_first_index(attrs, i);
+        subrange_drop_first_index(attrs, j);
+        assert(0 <= i + 1);
+        assert(i + 1 < j + 1);
+    }
+}
+
+proof fn sorted_head_not_in_tail(attrs: Seq<(Seq<u8>, u64)>)
+    requires is_sorted_keys(attrs), attrs.len() > 0
+    ensures !has_attr_spec(attrs.subrange(1, attrs.len() as int), attrs[0int].0)
+{
+    if has_attr_spec(attrs.subrange(1, attrs.len() as int), attrs[0int].0) {
+        let i = choose|i: int|
+            0 <= i < attrs.subrange(1, attrs.len() as int).len()
+                && attrs.subrange(1, attrs.len() as int)[i].0 =~= attrs[0int].0;
+        assert(0 < i + 1 < attrs.len());
+        assert(key_lt(attrs[0int].0, attrs[i + 1].0));
+        assert(attrs[i + 1].0 =~= attrs[0int].0);
+        assert(key_lt(attrs[0int].0, attrs[0int].0));
+        key_lt_irreflexive(attrs[0int].0);
+        assert(false);
+    }
+}
+
+proof fn lt_head_not_in_sorted(key: Seq<u8>, attrs: Seq<(Seq<u8>, u64)>)
+    requires is_sorted_keys(attrs), attrs.len() > 0, key_lt(key, attrs[0int].0)
+    ensures !has_attr_spec(attrs, key)
+{
+    if has_attr_spec(attrs, key) {
+        let i = choose|i: int| 0 <= i < attrs.len() && attrs[i].0 =~= key;
+        if i == 0 {
+            assert(attrs[0int].0 =~= key);
+            assert(key_lt(key, key));
+            key_lt_irreflexive(key);
+            assert(false);
+        } else {
+            assert(key_lt(attrs[0int].0, attrs[i].0));
+            assert(attrs[i].0 =~= key);
+            assert(key_lt(attrs[0int].0, key));
+            key_lt_asymmetric(key, attrs[0int].0);
+            assert(false);
+        }
+    }
+}
+
+proof fn left_keys_from_a(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>, key: Seq<u8>)
+    requires is_sorted_keys(a), is_sorted_keys(b), has_attr_spec(split_spec(a, b).left, key)
+    ensures has_attr_spec(a, key)
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 {
+        assert(false);
+    } else if b.len() == 0 {
+    } else if key_lt(a[0int].0, b[0int].0) {
+        let rest = split_spec(a.subrange(1, a.len() as int), b);
+        if key =~= a[0int].0 {
+        } else {
+            sorted_tail(a);
+            left_keys_from_a(a.subrange(1, a.len() as int), b, key);
+        }
+    } else if key_lt(b[0int].0, a[0int].0) {
+        sorted_tail(b);
+        left_keys_from_a(a, b.subrange(1, b.len() as int), key);
+    } else {
+        sorted_tail(a);
+        sorted_tail(b);
+        left_keys_from_a(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int), key);
+    }
+}
+
+proof fn center_keys_from_a(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>, key: Seq<u8>)
+    requires is_sorted_keys(a), is_sorted_keys(b), exists|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key
+    ensures has_attr_spec(a, key)
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 || b.len() == 0 {
+        assert(false);
+    } else if key_lt(a[0int].0, b[0int].0) {
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        sorted_tail(a);
+        assert(0 <= w < split_spec(a.subrange(1, a.len() as int), b).center.len()
+            && split_spec(a.subrange(1, a.len() as int), b).center[w].0 =~= key);
+        center_keys_from_a(a.subrange(1, a.len() as int), b, key);
+    } else if key_lt(b[0int].0, a[0int].0) {
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        sorted_tail(b);
+        assert(0 <= w < split_spec(a, b.subrange(1, b.len() as int)).center.len()
+            && split_spec(a, b.subrange(1, b.len() as int)).center[w].0 =~= key);
+        center_keys_from_a(a, b.subrange(1, b.len() as int), key);
+    } else {
+        let rest = split_spec(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int));
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        if key =~= a[0int].0 {
+        } else {
+            sorted_tail(a);
+            sorted_tail(b);
+            assert(split_spec(a, b).center[0int].0 =~= a[0int].0);
+            assert(w > 0);
+            assert(0 <= w - 1 < rest.center.len() && rest.center[(w - 1) as int].0 =~= key);
+            center_keys_from_a(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int), key);
+        }
+    }
+}
+
+proof fn center_keys_from_b(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>, key: Seq<u8>)
+    requires is_sorted_keys(a), is_sorted_keys(b), exists|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key
+    ensures has_attr_spec(b, key)
+    decreases a.len() + b.len()
+{
+    if a.len() == 0 || b.len() == 0 {
+        assert(false);
+    } else if key_lt(a[0int].0, b[0int].0) {
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        sorted_tail(a);
+        assert(0 <= w < split_spec(a.subrange(1, a.len() as int), b).center.len()
+            && split_spec(a.subrange(1, a.len() as int), b).center[w].0 =~= key);
+        center_keys_from_b(a.subrange(1, a.len() as int), b, key);
+    } else if key_lt(b[0int].0, a[0int].0) {
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        sorted_tail(b);
+        assert(0 <= w < split_spec(a, b.subrange(1, b.len() as int)).center.len()
+            && split_spec(a, b.subrange(1, b.len() as int)).center[w].0 =~= key);
+        center_keys_from_b(a, b.subrange(1, b.len() as int), key);
+    } else {
+        let rest = split_spec(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int));
+        let w = choose|i: int| 0 <= i < split_spec(a, b).center.len() && split_spec(a, b).center[i].0 =~= key;
+        if key =~= b[0int].0 {
+        } else {
+            sorted_tail(a);
+            sorted_tail(b);
+            key_total(a[0int].0, b[0int].0);
+            assert(a[0int].0 =~= b[0int].0);
+            assert(split_spec(a, b).center[0int].0 =~= b[0int].0);
+            assert(w > 0);
+            assert(0 <= w - 1 < rest.center.len() && rest.center[(w - 1) as int].0 =~= key);
+            center_keys_from_b(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int), key);
+        }
+    }
+}
+
+proof fn right_keys_from_b(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>, key: Seq<u8>)
+    requires is_sorted_keys(a), is_sorted_keys(b), has_attr_spec(split_spec(a, b).right, key)
+    ensures has_attr_spec(b, key)
+    decreases a.len() + b.len()
+{
+    if b.len() == 0 {
+        assert(false);
+    } else if a.len() == 0 {
+    } else if key_lt(a[0int].0, b[0int].0) {
+        sorted_tail(a);
+        right_keys_from_b(a.subrange(1, a.len() as int), b, key);
+    } else if key_lt(b[0int].0, a[0int].0) {
+        let rest = split_spec(a, b.subrange(1, b.len() as int));
+        if key =~= b[0int].0 {
+        } else {
+            sorted_tail(b);
+            right_keys_from_b(a, b.subrange(1, b.len() as int), key);
+        }
+    } else {
+        sorted_tail(a);
+        sorted_tail(b);
+        right_keys_from_b(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int), key);
+    }
+}
+
 // r[verify nickel-merge.split]
-/// Disjointness: left + center count == |a|, center + right count == |b|.
+/// Disjointness: no key appears in more than one partition.
 proof fn split_disjoint(a: Seq<(Seq<u8>, u64)>, b: Seq<(Seq<u8>, u64)>)
+    requires is_sorted_keys(a), is_sorted_keys(b)
     ensures ({
         let r = split_spec(a, b);
-        r.left.len() + r.center.len() + r.right.len() <= a.len() + b.len()
+        &&& kv_kv_disjoint(r.left, r.right)
+        &&& kv_center_disjoint(r.left, r.center)
+        &&& kv_center_disjoint(r.right, r.center)
     })
     decreases a.len() + b.len()
 {
-    if a.len() > 0 && b.len() > 0 {
-        if key_lt(a[0int].0, b[0int].0) {
-            split_disjoint(a.subrange(1, a.len() as int), b);
-        } else if key_lt(b[0int].0, a[0int].0) {
-            split_disjoint(a, b.subrange(1, b.len() as int));
-        } else {
-            split_disjoint(a.subrange(1, a.len() as int), b.subrange(1, b.len() as int));
+    let r = split_spec(a, b);
+    if a.len() == 0 || b.len() == 0 {
+    } else if key_lt(a[0int].0, b[0int].0) {
+        let ta = a.subrange(1, a.len() as int);
+        sorted_tail(a);
+        split_disjoint(ta, b);
+        sorted_head_not_in_tail(a);
+        lt_head_not_in_sorted(a[0int].0, b);
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.right.len()
+            implies !(r.left[i].0 =~= r.right[j].0) by {
+            if i == 0 {
+                right_keys_from_b(ta, b, r.right[j].0);
+            }
+        }
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.center.len()
+            implies !(r.left[i].0 =~= r.center[j].0) by {
+            if i == 0 {
+                center_keys_from_b(ta, b, r.center[j].0);
+            }
+        }
+        assert forall|i: int, j: int| 0 <= i < r.right.len() && 0 <= j < r.center.len()
+            implies !(r.right[i].0 =~= r.center[j].0) by {
+        }
+    } else if key_lt(b[0int].0, a[0int].0) {
+        let tb = b.subrange(1, b.len() as int);
+        sorted_tail(b);
+        split_disjoint(a, tb);
+        sorted_head_not_in_tail(b);
+        lt_head_not_in_sorted(b[0int].0, a);
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.right.len()
+            implies !(r.left[i].0 =~= r.right[j].0) by {
+            if j == 0 {
+                left_keys_from_a(a, tb, r.left[i].0);
+            }
+        }
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.center.len()
+            implies !(r.left[i].0 =~= r.center[j].0) by {
+        }
+        assert forall|i: int, j: int| 0 <= i < r.right.len() && 0 <= j < r.center.len()
+            implies !(r.right[i].0 =~= r.center[j].0) by {
+            if i == 0 {
+                center_keys_from_a(a, tb, r.center[j].0);
+            }
+        }
+    } else {
+        let ta = a.subrange(1, a.len() as int);
+        let tb = b.subrange(1, b.len() as int);
+        sorted_tail(a);
+        sorted_tail(b);
+        split_disjoint(ta, tb);
+        sorted_head_not_in_tail(a);
+        sorted_head_not_in_tail(b);
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.right.len()
+            implies !(r.left[i].0 =~= r.right[j].0) by {
+        }
+        assert forall|i: int, j: int| 0 <= i < r.left.len() && 0 <= j < r.center.len()
+            implies !(r.left[i].0 =~= r.center[j].0) by {
+            if j == 0 {
+                left_keys_from_a(ta, tb, r.left[i].0);
+            }
+        }
+        assert forall|i: int, j: int| 0 <= i < r.right.len() && 0 <= j < r.center.len()
+            implies !(r.right[i].0 =~= r.center[j].0) by {
+            if j == 0 {
+                right_keys_from_b(ta, tb, r.right[i].0);
+            }
         }
     }
 }

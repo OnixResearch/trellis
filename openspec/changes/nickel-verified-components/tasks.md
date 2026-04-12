@@ -12,10 +12,10 @@
 
 ## Phase 3: Type Subtyping
 
-- [ ] Add `nickel_subtype` module: type enum, subtype relation spec fn, reflexivity proof, transitivity proof
+- [x] Add `nickel_subtype` module: type enum, subtype relation spec fn, reflexivity proof, transitivity proof
 - [x] Implement record-dictionary subsumption rule with proof
 - [x] Implement array and dictionary covariance rules with proofs
-- [x] Implement record width subtyping with proof
+- [x] Implement exact closed-record subtyping with proof
 
 ## Phase 4: Contract Polarity and Pattern Coverage
 

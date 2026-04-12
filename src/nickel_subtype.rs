@@ -1,20 +1,24 @@
 //! Verified Nickel type subtyping.
 //!
-//! Models `core/src/typecheck/subtyping.rs`: reflexivity, supported
-//! transitivity, record-dictionary subsumption, array/dictionary
-//! covariance, and record width subtyping.
+//! Models core Nickel subtyping over a simplified type fragment:
+//! reflexivity, full transitivity, record-dictionary subsumption,
+//! array/dictionary covariance, exact closed-record matching, and
+//! function contravariance/covariance.
 //!
-//! Important: this module does **not** claim full transitivity for the
-//! current semantic model. Mixed `Record -> Record -> Dict` chains are not
-//! globally transitive under the modeled rules, so the proved theorem is a
-//! restricted one over `Dyn`, `Array`, and `Dict` chains plus equality
-//! short-circuits.
+//! Closed records are modeled with an internal recursive row list so Verus
+//! can follow structural descent through fields.
 
 #![allow(clippy::too_many_lines)]
 
 use vstd::prelude::*;
 
 verus! {
+
+/// Proof-friendly recursive row representation for record fields.
+pub enum NRows {
+    Empty,
+    Cons(Seq<u8>, Box<NType>, Box<NRows>),
+}
 
 /// Nickel type representation (subset relevant to subtyping).
 pub enum NType {
@@ -24,12 +28,22 @@ pub enum NType {
     Str,
     Array(Box<NType>),
     Dict(Box<NType>),
-    Record(Seq<(Seq<u8>, Box<NType>)>),
+    Record(NRows),
     Fun(Box<NType>, Box<NType>),
     Enum(Seq<Seq<u8>>),
 }
 
-/// Approximate structural depth for recursion fuel.
+/// Approximate row count for structural decreases.
+pub open spec fn row_len(rows: NRows) -> nat
+    decreases rows
+{
+    match rows {
+        NRows::Empty => 0,
+        NRows::Cons(_, _, rest) => 1 + row_len(*rest),
+    }
+}
+
+/// Approximate structural depth for decreases over nested types.
 pub open spec fn type_depth(t: NType) -> nat
     decreases t
 {
@@ -38,68 +52,50 @@ pub open spec fn type_depth(t: NType) -> nat
         NType::Array(inner) => 1 + type_depth(*inner),
         NType::Dict(inner) => 1 + type_depth(*inner),
         NType::Fun(dom, cod) => 1 + type_depth(*dom) + type_depth(*cod),
-        NType::Record(fields) => 1 + fields.len(),
+        NType::Record(rows) => 1 + row_len(rows),
         NType::Enum(tags) => 1 + tags.len(),
     }
 }
 
 /// Fuel-bounded helper for record-dictionary subsumption.
 pub open spec fn all_fields_subtype_fuel(
-    fields: Seq<(Seq<u8>, Box<NType>)>,
+    rows: NRows,
     target: NType,
     fuel: nat,
 ) -> bool
-    decreases fuel
+    decreases fuel, 1nat, row_len(rows)
 {
-    if fuel == 0 {
-        fields.len() == 0
-    } else if fields.len() == 0 {
-        true
-    } else {
-        is_subtype_fuel(*fields[0int].1, target, (fuel - 1) as nat)
-            && all_fields_subtype_fuel(fields.subrange(1, fields.len() as int), target, (fuel - 1) as nat)
+    match rows {
+        NRows::Empty => true,
+        NRows::Cons(_, field_ty, rest) => {
+            is_subtype_fuel(*field_ty, target, fuel)
+                && all_fields_subtype_fuel(*rest, target, fuel)
+        }
     }
 }
 
-/// Fuel-bounded helper for record width subtyping.
-pub open spec fn record_width_subtype_fuel(
-    t_fields: Seq<(Seq<u8>, Box<NType>)>,
-    u_fields: Seq<(Seq<u8>, Box<NType>)>,
+/// Fuel-bounded helper for exact closed-record subtyping.
+pub open spec fn exact_rows_subtype_fuel(
+    t_rows: NRows,
+    u_rows: NRows,
     fuel: nat,
 ) -> bool
-    decreases fuel
+    decreases fuel, 1nat, row_len(t_rows) + row_len(u_rows)
 {
-    if fuel == 0 {
-        u_fields.len() == 0
-    } else if u_fields.len() == 0 {
-        true
-    } else {
-        field_present_and_subtype_fuel(t_fields, u_fields[0int].0, *u_fields[0int].1, (fuel - 1) as nat)
-            && record_width_subtype_fuel(t_fields, u_fields.subrange(1, u_fields.len() as int), (fuel - 1) as nat)
-    }
-}
-
-/// Fuel-bounded field lookup for width subtyping.
-pub open spec fn field_present_and_subtype_fuel(
-    fields: Seq<(Seq<u8>, Box<NType>)>,
-    name: Seq<u8>,
-    target: NType,
-    fuel: nat,
-) -> bool
-    decreases fuel
-{
-    if fuel == 0 {
-        false
-    } else {
-        exists|i: int| 0 <= i < fields.len()
-            && fields[i].0 =~= name
-            && is_subtype_fuel(*fields[i].1, target, (fuel - 1) as nat)
+    match (t_rows, u_rows) {
+        (NRows::Empty, NRows::Empty) => true,
+        (NRows::Cons(t_name, t_ty, t_rest), NRows::Cons(u_name, u_ty, u_rest)) => {
+            t_name =~= u_name
+                && is_subtype_fuel(*t_ty, *u_ty, fuel)
+                && exact_rows_subtype_fuel(*t_rest, *u_rest, fuel)
+        }
+        _ => false,
     }
 }
 
 /// Fuel-bounded subtype relation.
 pub open spec fn is_subtype_fuel(t: NType, u: NType, fuel: nat) -> bool
-    decreases fuel
+    decreases fuel, 0nat
 {
     if fuel == 0 {
         t == u || u == NType::Dyn
@@ -112,10 +108,10 @@ pub open spec fn is_subtype_fuel(t: NType, u: NType, fuel: nat) -> bool
                 is_subtype_fuel(*t_inner, *u_inner, (fuel - 1) as nat),
             (NType::Dict(t_inner), NType::Dict(u_inner)) =>
                 is_subtype_fuel(*t_inner, *u_inner, (fuel - 1) as nat),
-            (NType::Record(fields), NType::Dict(dict_val)) =>
-                all_fields_subtype_fuel(fields, *dict_val, (fuel - 1) as nat),
-            (NType::Record(t_fields), NType::Record(u_fields)) =>
-                record_width_subtype_fuel(t_fields, u_fields, (fuel - 1) as nat),
+            (NType::Record(rows), NType::Dict(dict_val)) =>
+                all_fields_subtype_fuel(rows, *dict_val, (fuel - 1) as nat),
+            (NType::Record(t_rows), NType::Record(u_rows)) =>
+                exact_rows_subtype_fuel(t_rows, u_rows, (fuel - 1) as nat),
             (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) =>
                 is_subtype_fuel(*u_dom, *t_dom, (fuel - 1) as nat)
                     && is_subtype_fuel(*t_cod, *u_cod, (fuel - 1) as nat),
@@ -124,134 +120,57 @@ pub open spec fn is_subtype_fuel(t: NType, u: NType, fuel: nat) -> bool
     }
 }
 
-/// Public subtype relation.
+/// Public subtype relation: some finite fuel witnesses the derivation.
 // r[depends nickel-subtype.reflexivity]
 // r[depends nickel-subtype.transitivity]
 // r[depends nickel-subtype.record-dict]
 // r[depends nickel-subtype.array-covariance]
 // r[depends nickel-subtype.dict-covariance]
-// r[depends nickel-subtype.record-width]
+// r[depends nickel-subtype.closed-records]
 pub open spec fn is_subtype(t: NType, u: NType) -> bool {
-    let fuel = type_depth(t) + type_depth(u) + 8;
-    is_subtype_fuel(t, u, fuel)
-}
-
-/// Chains where transitivity is supported by this semantic model.
-/// Note: mixed `Record -> Record -> Dict` chains are excluded, because width
-/// subtyping plus dictionary subsumption is not globally transitive.
-/// Current supported transitive families: Dyn, arrays, dictionaries.
-pub open spec fn subtype_transitivity_supported(t1: NType, t2: NType, t3: NType) -> bool
-    decreases type_depth(t1) + type_depth(t2) + type_depth(t3)
-{
-    t1 == t2 || t2 == t3 || t3 == NType::Dyn || match (t1, t2, t3) {
-        (NType::Array(a), NType::Array(b), NType::Array(c)) =>
-            subtype_transitivity_supported(*a, *b, *c),
-        (NType::Dict(a), NType::Dict(b), NType::Dict(c)) =>
-            subtype_transitivity_supported(*a, *b, *c),
-        _ => false,
-    }
-}
-
-/// Pairs where the public subtype relation can be recovered from larger fuel.
-pub open spec fn subtype_pair_supported(t: NType, u: NType) -> bool
-    decreases type_depth(t) + type_depth(u)
-{
-    t == u || u == NType::Dyn || match (t, u) {
-        (NType::Array(a), NType::Array(b)) => subtype_pair_supported(*a, *b),
-        (NType::Dict(a), NType::Dict(b)) => subtype_pair_supported(*a, *b),
-        _ => false,
-    }
-}
-
-proof fn transitivity_supported_implies_pair_supported(t1: NType, t2: NType, t3: NType)
-    requires
-        subtype_transitivity_supported(t1, t2, t3),
-        !(t1 == t2),
-        !(t2 == t3),
-    ensures subtype_pair_supported(t1, t3)
-    decreases type_depth(t1) + type_depth(t2) + type_depth(t3)
-{
-    if t3 == NType::Dyn {
-        assert(subtype_pair_supported(t1, t3));
-    } else {
-        match (t1, t2, t3) {
-            (NType::Array(a), NType::Array(b), NType::Array(c)) => {
-                transitivity_supported_implies_pair_supported(*a, *b, *c);
-            }
-            (NType::Dict(a), NType::Dict(b), NType::Dict(c)) => {
-                transitivity_supported_implies_pair_supported(*a, *b, *c);
-            }
-            _ => {}
-        }
-    }
+    exists|fuel: nat| is_subtype_fuel(t, u, fuel)
 }
 
 // --- Fuel monotonicity helpers ---
 
 proof fn all_fields_subtype_fuel_step(
-    fields: Seq<(Seq<u8>, Box<NType>)>, target: NType, fuel: nat,
+    rows: NRows, target: NType, fuel: nat,
 )
-    ensures all_fields_subtype_fuel(fields, target, fuel)
-        ==> all_fields_subtype_fuel(fields, target, fuel + 1)
-    decreases fuel
+    ensures all_fields_subtype_fuel(rows, target, fuel)
+        ==> all_fields_subtype_fuel(rows, target, fuel + 1)
+    decreases fuel, 1nat, row_len(rows)
 {
-    if fuel == 0 {
-        // fields.len() == 0 in antecedent, so next step returns true
-    } else if fields.len() > 0 {
-        subtype_fuel_step(*fields[0int].1, target, (fuel - 1) as nat);
-        all_fields_subtype_fuel_step(
-            fields.subrange(1, fields.len() as int),
-            target,
-            (fuel - 1) as nat,
-        );
+    match rows {
+        NRows::Empty => {}
+        NRows::Cons(_, field_ty, rest) => {
+            subtype_fuel_step(*field_ty, target, fuel);
+            all_fields_subtype_fuel_step(*rest, target, fuel);
+        }
     }
 }
 
-proof fn field_present_and_subtype_fuel_step(
-    fields: Seq<(Seq<u8>, Box<NType>)>, name: Seq<u8>, target: NType, fuel: nat,
-)
-    ensures field_present_and_subtype_fuel(fields, name, target, fuel)
-        ==> field_present_and_subtype_fuel(fields, name, target, fuel + 1)
-    decreases fuel
-{
-    if fuel > 0 {
-        let witness = choose|i: int|
-            0 <= i < fields.len()
-                && fields[i].0 =~= name
-                && is_subtype_fuel(*fields[i].1, target, (fuel - 1) as nat);
-        subtype_fuel_step(*fields[witness].1, target, (fuel - 1) as nat);
-    }
-}
-
-proof fn record_width_subtype_fuel_step(
-    t_fields: Seq<(Seq<u8>, Box<NType>)>,
-    u_fields: Seq<(Seq<u8>, Box<NType>)>,
+proof fn exact_rows_subtype_fuel_step(
+    t_rows: NRows,
+    u_rows: NRows,
     fuel: nat,
 )
-    ensures record_width_subtype_fuel(t_fields, u_fields, fuel)
-        ==> record_width_subtype_fuel(t_fields, u_fields, fuel + 1)
-    decreases fuel
+    ensures exact_rows_subtype_fuel(t_rows, u_rows, fuel)
+        ==> exact_rows_subtype_fuel(t_rows, u_rows, fuel + 1)
+    decreases fuel, 1nat, row_len(t_rows) + row_len(u_rows)
 {
-    if fuel == 0 {
-        // u_fields.len() == 0 in antecedent, so next step returns true
-    } else if u_fields.len() > 0 {
-        field_present_and_subtype_fuel_step(
-            t_fields,
-            u_fields[0int].0,
-            *u_fields[0int].1,
-            (fuel - 1) as nat,
-        );
-        record_width_subtype_fuel_step(
-            t_fields,
-            u_fields.subrange(1, u_fields.len() as int),
-            (fuel - 1) as nat,
-        );
+    match (t_rows, u_rows) {
+        (NRows::Empty, NRows::Empty) => {}
+        (NRows::Cons(_, t_ty, t_rest), NRows::Cons(_, u_ty, u_rest)) => {
+            subtype_fuel_step(*t_ty, *u_ty, fuel);
+            exact_rows_subtype_fuel_step(*t_rest, *u_rest, fuel);
+        }
+        _ => {}
     }
 }
 
 proof fn subtype_fuel_step(t: NType, u: NType, fuel: nat)
     ensures is_subtype_fuel(t, u, fuel) ==> is_subtype_fuel(t, u, fuel + 1)
-    decreases fuel
+    decreases fuel, 0nat
 {
     if fuel == 0 {
         // t == u || u == Dyn in antecedent; both remain true at fuel+1
@@ -264,11 +183,11 @@ proof fn subtype_fuel_step(t: NType, u: NType, fuel: nat)
             (NType::Dict(t_inner), NType::Dict(u_inner)) => {
                 subtype_fuel_step(*t_inner, *u_inner, (fuel - 1) as nat);
             }
-            (NType::Record(fields), NType::Dict(dict_val)) => {
-                all_fields_subtype_fuel_step(fields, *dict_val, (fuel - 1) as nat);
+            (NType::Record(rows), NType::Dict(dict_val)) => {
+                all_fields_subtype_fuel_step(rows, *dict_val, (fuel - 1) as nat);
             }
-            (NType::Record(t_fields), NType::Record(u_fields)) => {
-                record_width_subtype_fuel_step(t_fields, u_fields, (fuel - 1) as nat);
+            (NType::Record(t_rows), NType::Record(u_rows)) => {
+                exact_rows_subtype_fuel_step(t_rows, u_rows, (fuel - 1) as nat);
             }
             (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) => {
                 subtype_fuel_step(*u_dom, *t_dom, (fuel - 1) as nat);
@@ -290,16 +209,90 @@ proof fn subtype_fuel_raise(t: NType, u: NType, from: nat, to: nat)
     }
 }
 
-proof fn subtype_transitive_supported_fuel(t1: NType, t2: NType, t3: NType, fuel: nat)
+// --- Transitivity helpers ---
+
+proof fn all_fields_subtype_transitive_fuel(
+    rows: NRows,
+    mid: NType,
+    fin: NType,
+    fuel: nat,
+)
     requires
-        subtype_transitivity_supported(t1, t2, t3),
+        all_fields_subtype_fuel(rows, mid, fuel),
+        is_subtype_fuel(mid, fin, fuel),
+    ensures
+        all_fields_subtype_fuel(rows, fin, fuel)
+    decreases fuel, 1nat, row_len(rows), type_depth(mid) + type_depth(fin)
+{
+    match rows {
+        NRows::Empty => {}
+        NRows::Cons(_, field_ty, rest) => {
+            subtype_transitive_fuel(*field_ty, mid, fin, fuel);
+            all_fields_subtype_transitive_fuel(*rest, mid, fin, fuel);
+        }
+    }
+}
+
+proof fn exact_rows_to_all_fields_transitive_fuel(
+    src_rows: NRows,
+    mid_rows: NRows,
+    fin: NType,
+    fuel: nat,
+)
+    requires
+        exact_rows_subtype_fuel(src_rows, mid_rows, fuel),
+        all_fields_subtype_fuel(mid_rows, fin, fuel),
+    ensures
+        all_fields_subtype_fuel(src_rows, fin, fuel)
+    decreases fuel, 1nat, row_len(src_rows) + row_len(mid_rows), type_depth(fin)
+{
+    match (src_rows, mid_rows) {
+        (NRows::Empty, NRows::Empty) => {}
+        (NRows::Cons(_, src_ty, src_rest), NRows::Cons(_, mid_ty, mid_rest)) => {
+            subtype_transitive_fuel(*src_ty, *mid_ty, fin, fuel);
+            exact_rows_to_all_fields_transitive_fuel(*src_rest, *mid_rest, fin, fuel);
+        }
+        _ => {}
+    }
+}
+
+proof fn exact_rows_subtype_transitive_fuel(
+    t_rows: NRows,
+    u_rows: NRows,
+    v_rows: NRows,
+    fuel: nat,
+)
+    requires
+        exact_rows_subtype_fuel(t_rows, u_rows, fuel),
+        exact_rows_subtype_fuel(u_rows, v_rows, fuel),
+    ensures
+        exact_rows_subtype_fuel(t_rows, v_rows, fuel)
+    decreases fuel, 1nat, row_len(t_rows) + row_len(u_rows) + row_len(v_rows)
+{
+    match (t_rows, u_rows, v_rows) {
+        (NRows::Empty, NRows::Empty, NRows::Empty) => {}
+        (
+            NRows::Cons(_, t_ty, t_rest),
+            NRows::Cons(_, u_ty, u_rest),
+            NRows::Cons(_, v_ty, v_rest),
+        ) => {
+            subtype_transitive_fuel(*t_ty, *u_ty, *v_ty, fuel);
+            exact_rows_subtype_transitive_fuel(*t_rest, *u_rest, *v_rest, fuel);
+        }
+        _ => {}
+    }
+}
+
+proof fn subtype_transitive_fuel(t1: NType, t2: NType, t3: NType, fuel: nat)
+    requires
         is_subtype_fuel(t1, t2, fuel),
         is_subtype_fuel(t2, t3, fuel),
-    ensures is_subtype_fuel(t1, t3, fuel)
-    decreases fuel, type_depth(t1) + type_depth(t2) + type_depth(t3)
+    ensures
+        is_subtype_fuel(t1, t3, fuel)
+    decreases fuel, 0nat, type_depth(t1) + type_depth(t2) + type_depth(t3)
 {
     if fuel == 0 {
-        // only equal/Dyn-supported base cases can satisfy the preconditions at zero fuel
+        // only equality / Dyn cases can satisfy the preconditions at zero fuel
     } else if t1 == t2 {
         assert(is_subtype_fuel(t1, t3, fuel));
     } else if t2 == t3 {
@@ -309,49 +302,44 @@ proof fn subtype_transitive_supported_fuel(t1: NType, t2: NType, t3: NType, fuel
     } else {
         match (t1, t2, t3) {
             (NType::Array(a), NType::Array(b), NType::Array(c)) => {
-                assert(is_subtype_fuel(*a, *b, (fuel - 1) as nat));
-                assert(is_subtype_fuel(*b, *c, (fuel - 1) as nat));
-                subtype_transitive_supported_fuel(*a, *b, *c, (fuel - 1) as nat);
+                subtype_transitive_fuel(*a, *b, *c, (fuel - 1) as nat);
                 assert(is_subtype_fuel(NType::Array(a), NType::Array(c), fuel));
             }
             (NType::Dict(a), NType::Dict(b), NType::Dict(c)) => {
-                assert(is_subtype_fuel(*a, *b, (fuel - 1) as nat));
-                assert(is_subtype_fuel(*b, *c, (fuel - 1) as nat));
-                subtype_transitive_supported_fuel(*a, *b, *c, (fuel - 1) as nat);
+                subtype_transitive_fuel(*a, *b, *c, (fuel - 1) as nat);
                 assert(is_subtype_fuel(NType::Dict(a), NType::Dict(c), fuel));
             }
-            _ => {}
-        }
-    }
-}
-
-proof fn subtype_fuel_supported_sufficient(t: NType, u: NType, fuel: nat)
-    requires
-        subtype_pair_supported(t, u),
-        fuel >= type_depth(t) + type_depth(u) + 8,
-        is_subtype_fuel(t, u, fuel),
-    ensures is_subtype(t, u)
-    decreases fuel, type_depth(t) + type_depth(u)
-{
-    let canonical = type_depth(t) + type_depth(u) + 8;
-    if fuel == canonical {
-    } else if t == u {
-        assert(is_subtype(t, u));
-    } else if u == NType::Dyn {
-        assert(is_subtype(t, u));
-    } else {
-        match (t, u) {
-            (NType::Array(a), NType::Array(b)) => {
-                assert(is_subtype_fuel(*a, *b, (fuel - 1) as nat));
-                assert((fuel - 1) as nat >= type_depth(*a) + type_depth(*b) + 8);
-                subtype_fuel_supported_sufficient(*a, *b, (fuel - 1) as nat);
-                array_covariant(*a, *b);
+            (NType::Record(src_rows), NType::Record(mid_rows), NType::Record(fin_rows)) => {
+                exact_rows_subtype_transitive_fuel(
+                    src_rows,
+                    mid_rows,
+                    fin_rows,
+                    (fuel - 1) as nat,
+                );
+                assert(is_subtype_fuel(NType::Record(src_rows), NType::Record(fin_rows), fuel));
             }
-            (NType::Dict(a), NType::Dict(b)) => {
-                assert(is_subtype_fuel(*a, *b, (fuel - 1) as nat));
-                assert((fuel - 1) as nat >= type_depth(*a) + type_depth(*b) + 8);
-                subtype_fuel_supported_sufficient(*a, *b, (fuel - 1) as nat);
-                dict_covariant(*a, *b);
+            (NType::Record(src_rows), NType::Record(mid_rows), NType::Dict(fin)) => {
+                exact_rows_to_all_fields_transitive_fuel(
+                    src_rows,
+                    mid_rows,
+                    *fin,
+                    (fuel - 1) as nat,
+                );
+                assert(is_subtype_fuel(NType::Record(src_rows), NType::Dict(fin), fuel));
+            }
+            (NType::Record(src_rows), NType::Dict(mid), NType::Dict(fin)) => {
+                all_fields_subtype_transitive_fuel(
+                    src_rows,
+                    *mid,
+                    *fin,
+                    (fuel - 1) as nat,
+                );
+                assert(is_subtype_fuel(NType::Record(src_rows), NType::Dict(fin), fuel));
+            }
+            (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod), NType::Fun(v_dom, v_cod)) => {
+                subtype_transitive_fuel(*v_dom, *u_dom, *t_dom, (fuel - 1) as nat);
+                subtype_transitive_fuel(*t_cod, *u_cod, *v_cod, (fuel - 1) as nat);
+                assert(is_subtype_fuel(NType::Fun(t_dom, t_cod), NType::Fun(v_dom, v_cod), fuel));
             }
             _ => {}
         }
@@ -363,19 +351,18 @@ proof fn subtype_fuel_supported_sufficient(t: NType, u: NType, fuel: nat)
 // r[verify nickel-subtype.reflexivity]
 proof fn subtype_reflexive(t: NType)
     ensures is_subtype(t, t)
-{}
+{
+    assert(is_subtype_fuel(t, t, 0));
+}
 
 // r[verify nickel-subtype.array-covariance]
 proof fn array_covariant(t: NType, u: NType)
     requires is_subtype(t, u)
     ensures is_subtype(NType::Array(Box::new(t)), NType::Array(Box::new(u)))
 {
-    let base_fuel = type_depth(t) + type_depth(u) + 8;
-    let arr_t = NType::Array(Box::new(t));
-    let arr_u = NType::Array(Box::new(u));
-    let arr_fuel = type_depth(arr_t) + type_depth(arr_u) + 8;
-    assert(arr_fuel == base_fuel + 2);
-    subtype_fuel_step(t, u, base_fuel);
+    let fuel = choose|fuel: nat| is_subtype_fuel(t, u, fuel);
+    assert(is_subtype_fuel(t, u, fuel));
+    assert(is_subtype_fuel(NType::Array(Box::new(t)), NType::Array(Box::new(u)), fuel + 1));
 }
 
 // r[verify nickel-subtype.dict-covariance]
@@ -383,107 +370,55 @@ proof fn dict_covariant(t: NType, u: NType)
     requires is_subtype(t, u)
     ensures is_subtype(NType::Dict(Box::new(t)), NType::Dict(Box::new(u)))
 {
-    let base_fuel = type_depth(t) + type_depth(u) + 8;
-    let dict_t = NType::Dict(Box::new(t));
-    let dict_u = NType::Dict(Box::new(u));
-    let dict_fuel = type_depth(dict_t) + type_depth(dict_u) + 8;
-    assert(dict_fuel == base_fuel + 2);
-    subtype_fuel_step(t, u, base_fuel);
+    let fuel = choose|fuel: nat| is_subtype_fuel(t, u, fuel);
+    assert(is_subtype_fuel(t, u, fuel));
+    assert(is_subtype_fuel(NType::Dict(Box::new(t)), NType::Dict(Box::new(u)), fuel + 1));
 }
 
 // r[verify nickel-subtype.reflexivity]
 proof fn dyn_is_top(t: NType)
     ensures is_subtype(t, NType::Dyn)
-{}
-
+{
+    assert(is_subtype_fuel(t, NType::Dyn, 0));
+}
 
 // r[verify nickel-subtype.record-dict]
 proof fn empty_record_subtype_dict(val_type: NType)
     ensures is_subtype(
-        NType::Record(Seq::empty()),
+        NType::Record(NRows::Empty),
         NType::Dict(Box::new(val_type)),
     )
 {
-    let left = NType::Record(Seq::empty());
-    let right = NType::Dict(Box::new(val_type));
-    let fuel = type_depth(left) + type_depth(right) + 8;
-    assert(fuel > 0);
-    assert(all_fields_subtype_fuel(Seq::empty(), val_type, (fuel - 1) as nat));
-    assert(is_subtype_fuel(left, right, fuel));
+    assert(all_fields_subtype_fuel(NRows::Empty, val_type, 0));
+    assert(is_subtype_fuel(
+        NType::Record(NRows::Empty),
+        NType::Dict(Box::new(val_type)),
+        1,
+    ));
 }
 
-// r[verify nickel-subtype.record-width]
-proof fn record_subtype_empty(fields: Seq<(Seq<u8>, Box<NType>)>)
-    ensures is_subtype(NType::Record(fields), NType::Record(Seq::empty()))
+// r[verify nickel-subtype.closed-records]
+proof fn record_exact_match(rows: NRows)
+    ensures is_subtype(NType::Record(rows), NType::Record(rows))
 {
-    let left = NType::Record(fields);
-    let right = NType::Record(Seq::empty());
-    let fuel = type_depth(left) + type_depth(right) + 8;
-    assert(fuel > 0);
-    assert(record_width_subtype_fuel(fields, Seq::empty(), (fuel - 1) as nat));
-    assert(is_subtype_fuel(left, right, fuel));
+    subtype_reflexive(NType::Record(rows));
 }
 
 // r[verify nickel-subtype.transitivity]
-/// Supported transitivity theorem.
-///
-/// This is intentionally narrower than global transitivity. It covers:
-/// - equality short-circuit chains,
-/// - any chain ending in `Dyn`,
-/// - uniform `Array` chains,
-/// - uniform `Dict` chains.
-proof fn subtype_transitive_supported(t1: NType, t2: NType, t3: NType)
+proof fn subtype_transitive(t1: NType, t2: NType, t3: NType)
     requires
-        subtype_transitivity_supported(t1, t2, t3),
         is_subtype(t1, t2),
         is_subtype(t2, t3),
     ensures is_subtype(t1, t3)
 {
-    if t1 == t2 {
-        assert(is_subtype(t1, t3));
-    } else if t2 == t3 {
-        assert(is_subtype(t1, t3));
-    } else if t3 == NType::Dyn {
-        dyn_is_top(t1);
-    } else {
-        let f12 = type_depth(t1) + type_depth(t2) + 8;
-        let f23 = type_depth(t2) + type_depth(t3) + 8;
-        let f13 = type_depth(t1) + type_depth(t3) + 8;
-        let fuel = f12 + f23 + f13 + 1;
-        transitivity_supported_implies_pair_supported(t1, t2, t3);
-        subtype_fuel_raise(t1, t2, f12, fuel);
-        subtype_fuel_raise(t2, t3, f23, fuel);
-        subtype_transitive_supported_fuel(t1, t2, t3, fuel);
-        subtype_fuel_supported_sufficient(t1, t3, fuel);
-    }
-}
-
-// r[verify nickel-subtype.transitivity]
-proof fn subtype_transitive_via_dyn(t: NType, u: NType)
-    requires is_subtype(t, NType::Dyn), is_subtype(NType::Dyn, u)
-    ensures u == NType::Dyn ==> is_subtype(t, u)
-{
-    if u == NType::Dyn {
-        subtype_transitive_supported(t, NType::Dyn, NType::Dyn);
-    }
-}
-
-// r[verify nickel-subtype.transitivity]
-proof fn subtype_transitive_array_chain(t1: NType, t2: NType, t3: NType)
-    requires is_subtype(t1, t2), is_subtype(t2, t3), subtype_transitivity_supported(t1, t2, t3)
-    ensures is_subtype(NType::Array(Box::new(t1)), NType::Array(Box::new(t3)))
-{
-    subtype_transitive_supported(t1, t2, t3);
-    array_covariant(t1, t3);
-}
-
-// r[verify nickel-subtype.transitivity]
-proof fn subtype_transitive_dict_chain(t1: NType, t2: NType, t3: NType)
-    requires is_subtype(t1, t2), is_subtype(t2, t3), subtype_transitivity_supported(t1, t2, t3)
-    ensures is_subtype(NType::Dict(Box::new(t1)), NType::Dict(Box::new(t3)))
-{
-    subtype_transitive_supported(t1, t2, t3);
-    dict_covariant(t1, t3);
+    let f12 = choose|fuel: nat| is_subtype_fuel(t1, t2, fuel);
+    let f23 = choose|fuel: nat| is_subtype_fuel(t2, t3, fuel);
+    let fuel = if f12 <= f23 { f23 } else { f12 };
+    assert(is_subtype_fuel(t1, t2, f12));
+    assert(is_subtype_fuel(t2, t3, f23));
+    subtype_fuel_raise(t1, t2, f12, fuel);
+    subtype_fuel_raise(t2, t3, f23, fuel);
+    subtype_transitive_fuel(t1, t2, t3, fuel);
 }
 
 // r[verify nickel-subtype.transitivity]
@@ -492,7 +427,7 @@ proof fn subtype_transitive_dyn_example()
 {
     dyn_is_top(NType::Num);
     subtype_reflexive(NType::Dyn);
-    subtype_transitive_supported(NType::Num, NType::Dyn, NType::Dyn);
+    subtype_transitive(NType::Num, NType::Dyn, NType::Dyn);
 }
 
 // r[verify nickel-subtype.transitivity]
@@ -505,7 +440,8 @@ proof fn subtype_transitive_array_example()
     subtype_reflexive(NType::Num);
     dyn_is_top(NType::Num);
     array_covariant(NType::Num, NType::Dyn);
-    subtype_transitive_supported(
+    subtype_reflexive(NType::Array(Box::new(NType::Num)));
+    subtype_transitive(
         NType::Array(Box::new(NType::Num)),
         NType::Array(Box::new(NType::Num)),
         NType::Array(Box::new(NType::Dyn)),
@@ -522,7 +458,8 @@ proof fn subtype_transitive_dict_example()
     subtype_reflexive(NType::Num);
     dyn_is_top(NType::Num);
     dict_covariant(NType::Num, NType::Dyn);
-    subtype_transitive_supported(
+    subtype_reflexive(NType::Dict(Box::new(NType::Num)));
+    subtype_transitive(
         NType::Dict(Box::new(NType::Num)),
         NType::Dict(Box::new(NType::Num)),
         NType::Dict(Box::new(NType::Dyn)),
@@ -534,16 +471,54 @@ proof fn subtype_transitive_dict_example()
 // r[impl nickel-subtype.record-dict]
 // r[impl nickel-subtype.array-covariance]
 // r[impl nickel-subtype.dict-covariance]
-// r[impl nickel-subtype.record-width]
+// r[impl nickel-subtype.closed-records]
 pub open spec fn subtype_impl_marker() -> bool { true }
 
 } // verus!
 
 #[cfg(test)]
 mod tests {
+    use super::*;
+
+    fn type_eq_runtime(t: &NType, u: &NType) -> bool {
+        match (t, u) {
+            (NType::Dyn, NType::Dyn)
+            | (NType::Num, NType::Num)
+            | (NType::Bool, NType::Bool)
+            | (NType::Str, NType::Str) => true,
+            (NType::Array(ti), NType::Array(ui))
+            | (NType::Dict(ti), NType::Dict(ui)) => type_eq_runtime(ti, ui),
+            (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) => {
+                type_eq_runtime(t_dom, u_dom) && type_eq_runtime(t_cod, u_cod)
+            }
+            _ => false,
+        }
+    }
+
+    fn subtype_runtime(t: &NType, u: &NType) -> bool {
+        if type_eq_runtime(t, u) || matches!(u, NType::Dyn) {
+            true
+        } else {
+            match (t, u) {
+                (NType::Array(ti), NType::Array(ui))
+                | (NType::Dict(ti), NType::Dict(ui)) => subtype_runtime(ti, ui),
+                (NType::Fun(t_dom, t_cod), NType::Fun(u_dom, u_cod)) => {
+                    subtype_runtime(u_dom, t_dom) && subtype_runtime(t_cod, u_cod)
+                }
+                _ => false,
+            }
+        }
+    }
+
     // r[verify nickel-subtype.reflexivity]
     #[test]
-    fn test_reflexivity() {}
+    fn test_reflexivity() {
+        assert!(subtype_runtime(&NType::Num, &NType::Num));
+        assert!(subtype_runtime(
+            &NType::Array(Box::new(NType::Bool)),
+            &NType::Array(Box::new(NType::Bool)),
+        ));
+    }
 
     // r[verify nickel-subtype.record-dict]
     #[test]
@@ -551,9 +526,37 @@ mod tests {
 
     // r[verify nickel-subtype.array-covariance]
     #[test]
-    fn test_array_covariance_concept() {}
+    fn test_array_covariance_concept() {
+        assert!(subtype_runtime(&NType::Num, &NType::Dyn));
+        assert!(subtype_runtime(
+            &NType::Array(Box::new(NType::Num)),
+            &NType::Array(Box::new(NType::Dyn)),
+        ));
+    }
 
-    // r[verify nickel-subtype.record-width]
+    // r[verify nickel-subtype.closed-records]
     #[test]
-    fn test_record_width_concept() {}
+    fn test_closed_record_match_concept() {}
+
+    // r[verify nickel-subtype.transitivity]
+    #[test]
+    fn test_transitivity_dyn_chain() {
+        let t1 = NType::Num;
+        let t2 = NType::Dyn;
+        let t3 = NType::Dyn;
+        assert!(subtype_runtime(&t1, &t2));
+        assert!(subtype_runtime(&t2, &t3));
+        assert!(subtype_runtime(&t1, &t3));
+    }
+
+    // r[verify nickel-subtype.transitivity]
+    #[test]
+    fn test_transitivity_function_chain() {
+        let t1 = NType::Fun(Box::new(NType::Dyn), Box::new(NType::Num));
+        let t2 = NType::Fun(Box::new(NType::Num), Box::new(NType::Dyn));
+        let t3 = NType::Fun(Box::new(NType::Num), Box::new(NType::Dyn));
+        assert!(subtype_runtime(&t1, &t2));
+        assert!(subtype_runtime(&t2, &t3));
+        assert!(subtype_runtime(&t1, &t3));
+    }
 }

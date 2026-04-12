@@ -20,32 +20,48 @@ pub enum MergePriority {
     Top,
 }
 
-/// Map a priority to a canonical integer for comparison.
-/// Bottom → i64::MIN, Neutral → 0, Numeral(n) → n, Top → i64::MAX.
+/// Coarse comparison bucket.
+///
+/// Bottom is strictly below all numeral/neutral priorities, and Top is
+/// strictly above them. Neutral shares the numeral bucket so Neutral and
+/// Numeral(0) compare equal, but Bottom and Top stay distinct from the
+/// extremal numeral values.
+// r[depends nickel-priority.total-order]
+pub open spec fn priority_bucket(p: MergePriority) -> int {
+    match p {
+        MergePriority::Bottom => 0int,
+        MergePriority::Neutral | MergePriority::Numeral(_) => 1int,
+        MergePriority::Top => 2int,
+    }
+}
+
+/// Intra-bucket comparison value.
 // r[depends nickel-priority.total-order]
 pub open spec fn priority_rank(p: MergePriority) -> int {
     match p {
-        MergePriority::Bottom => i64::MIN as int,
+        MergePriority::Bottom => 0int,
         MergePriority::Neutral => 0int,
         MergePriority::Numeral(n) => n as int,
-        MergePriority::Top => i64::MAX as int,
+        MergePriority::Top => 0int,
     }
 }
 
 /// Spec: less-than-or-equal on priorities.
 // r[depends nickel-priority.total-order]
 pub open spec fn priority_le(a: MergePriority, b: MergePriority) -> bool {
-    priority_rank(a) <= priority_rank(b)
+    priority_bucket(a) < priority_bucket(b)
+        || (priority_bucket(a) == priority_bucket(b) && priority_rank(a) <= priority_rank(b))
 }
 
 /// Spec: strict less-than on priorities.
 pub open spec fn priority_lt(a: MergePriority, b: MergePriority) -> bool {
-    priority_rank(a) < priority_rank(b)
+    priority_bucket(a) < priority_bucket(b)
+        || (priority_bucket(a) == priority_bucket(b) && priority_rank(a) < priority_rank(b))
 }
 
-/// Spec: equality on priorities (by rank).
+/// Spec: equality on priorities.
 pub open spec fn priority_eq(a: MergePriority, b: MergePriority) -> bool {
-    priority_rank(a) == priority_rank(b)
+    priority_bucket(a) == priority_bucket(b) && priority_rank(a) == priority_rank(b)
 }
 
 /// Exec: compare two priorities. Returns -1, 0, or 1.
@@ -57,19 +73,27 @@ pub fn priority_cmp(a: &MergePriority, b: &MergePriority) -> (result: i8)
         result < 0 <==> priority_lt(*a, *b),
         result > 0 <==> priority_lt(*b, *a),
 {
+    let ba: i8 = match a {
+        MergePriority::Bottom => 0,
+        MergePriority::Neutral | MergePriority::Numeral(_) => 1,
+        MergePriority::Top => 2,
+    };
+    let bb: i8 = match b {
+        MergePriority::Bottom => 0,
+        MergePriority::Neutral | MergePriority::Numeral(_) => 1,
+        MergePriority::Top => 2,
+    };
     let ra: i64 = match a {
-        MergePriority::Bottom => i64::MIN,
-        MergePriority::Neutral => 0,
         MergePriority::Numeral(n) => *n,
-        MergePriority::Top => i64::MAX,
+        MergePriority::Bottom | MergePriority::Neutral | MergePriority::Top => 0,
     };
     let rb: i64 = match b {
-        MergePriority::Bottom => i64::MIN,
-        MergePriority::Neutral => 0,
         MergePriority::Numeral(n) => *n,
-        MergePriority::Top => i64::MAX,
+        MergePriority::Bottom | MergePriority::Neutral | MergePriority::Top => 0,
     };
-    if ra < rb { -1 }
+    if ba < bb { -1 }
+    else if ba > bb { 1 }
+    else if ra < rb { -1 }
     else if ra > rb { 1 }
     else { 0 }
 }
@@ -152,6 +176,15 @@ mod tests {
         for p in &priorities {
             assert_eq!(priority_cmp(&MergePriority::Bottom, p), -1);
         }
+    }
+
+    // r[verify nickel-priority.total-order]
+    #[test]
+    fn test_extremal_numerals_do_not_alias_bounds() {
+        assert_eq!(priority_cmp(&MergePriority::Bottom, &MergePriority::Numeral(i64::MIN)), -1);
+        assert_eq!(priority_cmp(&MergePriority::Numeral(i64::MIN), &MergePriority::Bottom), 1);
+        assert_eq!(priority_cmp(&MergePriority::Top, &MergePriority::Numeral(i64::MAX)), 1);
+        assert_eq!(priority_cmp(&MergePriority::Numeral(i64::MAX), &MergePriority::Top), -1);
     }
 
     // r[verify nickel-priority.numeral-ordering]

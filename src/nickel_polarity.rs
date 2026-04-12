@@ -81,6 +81,17 @@ pub open spec fn domain_count(path: Seq<PathStep>) -> nat
     }
 }
 
+/// Spec: apply one polarity flip for each counted domain step.
+pub open spec fn apply_domain_flips(initial: Polarity, count: nat) -> Polarity
+    decreases count
+{
+    if count == 0 {
+        initial
+    } else {
+        apply_domain_flips(flip_spec(initial), (count - 1) as nat)
+    }
+}
+
 /// Exec: compute polarity after a path.
 // r[impl nickel-polarity.path-tracking]
 // r[impl nickel-polarity.preserve-codomain]
@@ -151,6 +162,28 @@ proof fn codomain_preserves(p: Polarity)
     assert(tail =~= Seq::<PathStep>::empty());
     assert(polarity_after_path(p, path) == polarity_after_path(p, tail));
     assert(polarity_after_path(p, tail) == p);
+}
+
+// r[verify nickel-polarity.path-tracking]
+/// Path tracking matches flipping once for each domain step counted in the path.
+proof fn path_matches_domain_flip_count(initial: Polarity, path: Seq<PathStep>)
+    ensures polarity_after_path(initial, path) == apply_domain_flips(initial, domain_count(path))
+    decreases path.len()
+{
+    if path.len() == 0 {
+    } else {
+        let tail = path.subrange(1, path.len() as int);
+        if path[0int] == PathStep::Domain {
+            path_matches_domain_flip_count(flip_spec(initial), tail);
+            assert(domain_count(path) == 1 + domain_count(tail));
+            assert(polarity_after_path(initial, path) == polarity_after_path(flip_spec(initial), tail));
+            assert(apply_domain_flips(initial, domain_count(path)) == apply_domain_flips(flip_spec(initial), domain_count(tail)));
+        } else {
+            path_matches_domain_flip_count(initial, tail);
+            assert(domain_count(path) == domain_count(tail));
+            assert(polarity_after_path(initial, path) == polarity_after_path(initial, tail));
+        }
+    }
 }
 
 // r[verify nickel-polarity.path-tracking]
@@ -233,5 +266,31 @@ mod tests {
     fn test_codomain_preserves() {
         let path = vec![PathStep::Codomain];
         assert_eq!(polarity_at(Polarity::Positive, &path), Polarity::Positive);
+    }
+
+    // r[verify nickel-polarity.path-tracking]
+    #[test]
+    fn test_mixed_path_even_domain_count() {
+        let path = vec![
+            PathStep::Codomain,
+            PathStep::Domain,
+            PathStep::Codomain,
+            PathStep::Domain,
+            PathStep::Codomain,
+        ];
+        assert_eq!(polarity_at(Polarity::Positive, &path), Polarity::Positive);
+    }
+
+    // r[verify nickel-polarity.path-tracking]
+    #[test]
+    fn test_mixed_path_odd_domain_count() {
+        let path = vec![
+            PathStep::Codomain,
+            PathStep::Domain,
+            PathStep::Codomain,
+            PathStep::Domain,
+            PathStep::Domain,
+        ];
+        assert_eq!(polarity_at(Polarity::Positive, &path), Polarity::Negative);
     }
 }

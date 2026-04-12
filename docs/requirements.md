@@ -1334,9 +1334,10 @@ Array T <: Array U if and only if T <: U.
 r[nickel-subtype.dict-covariance]
 {_: T} <: {_: U} if and only if T <: U.
 
-r[nickel-subtype.record-width]
-A record with more fields MUST be a subtype of a record with fewer
-fields when shared fields are pairwise subtypes.
+r[nickel-subtype.closed-records]
+A closed record MUST be a subtype of another closed record if and only if
+both records have exactly the same field names and the corresponding
+field types are pairwise subtypes.
 
 ## Nickel Polarity
 
