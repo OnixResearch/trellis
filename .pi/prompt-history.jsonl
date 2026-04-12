@@ -410,3 +410,4 @@
 {"text":"1. refine the spec scope,\n 2. start implementing the verified modules, or\n 3. add a sibling OpenSpec for the deferred mixed-level LockSet case.","timestamp":1775927254014}
 {"text":"can we create an openspec for durable execution logic","timestamp":1775927827097}
 {"text":"lets write an openspec for primitives from the zircon kernel","timestamp":1775930588295}
+{"text":"lets make an openspec for erlang beam primitives","timestamp":1775959300443}
