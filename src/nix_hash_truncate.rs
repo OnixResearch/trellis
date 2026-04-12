@@ -76,6 +76,158 @@ pub proof fn compress_hash_deterministic(hash: Seq<u8>, target_len: nat)
     ensures compress_hash_spec(hash, target_len) == compress_hash_spec(hash, target_len)
 {}
 
+pub open spec fn seq_xor_spec(a: Seq<u8>, b: Seq<u8>) -> Seq<u8>
+    recommends a.len() == b.len()
+{
+    Seq::new(a.len(), |i: int| (a[i] ^ b[i]) as u8)
+}
+
+proof fn xor_assoc_comm(x: u8, y: u8, z: u8, w: u8)
+    ensures (x ^ z) ^ (y ^ w) == (x ^ y) ^ (z ^ w)
+{
+    let x64: u64 = x as u64;
+    let y64: u64 = y as u64;
+    let z64: u64 = z as u64;
+    let w64: u64 = w as u64;
+    assert((x64 ^ z64) ^ (y64 ^ w64) == (x64 ^ y64) ^ (z64 ^ w64)) by(bit_vector);
+}
+
+proof fn xor_zero(x: u8)
+    ensures x ^ 0u8 == x
+{
+    let x64: u64 = x as u64;
+    assert(x64 ^ 0u64 == x64) by(bit_vector);
+}
+
+proof fn zero_bytes_xor(n: nat)
+    ensures seq_xor_spec(zero_bytes_spec(n), zero_bytes_spec(n)) == zero_bytes_spec(n)
+{
+    assert forall|i: int| 0 <= i < n as int implies
+        (zero_bytes_spec(n)[i] ^ zero_bytes_spec(n)[i]) as u8 == 0u8
+    by {
+        xor_zero(0u8);
+    }
+    assert(seq_xor_spec(zero_bytes_spec(n), zero_bytes_spec(n)) =~= zero_bytes_spec(n));
+}
+
+proof fn xor_step_distributes(
+    acc_a: Seq<u8>, acc_b: Seq<u8>, idx: nat, byte_a: u8, byte_b: u8,
+)
+    requires
+        acc_a.len() == acc_b.len(),
+        idx < acc_a.len(),
+    ensures
+        seq_xor_spec(
+            xor_step_spec(acc_a, idx, byte_a),
+            xor_step_spec(acc_b, idx, byte_b),
+        ) == xor_step_spec(
+            seq_xor_spec(acc_a, acc_b),
+            idx,
+            (byte_a ^ byte_b) as u8,
+        )
+{
+    let lhs = seq_xor_spec(
+        xor_step_spec(acc_a, idx, byte_a),
+        xor_step_spec(acc_b, idx, byte_b),
+    );
+    let rhs = xor_step_spec(
+        seq_xor_spec(acc_a, acc_b),
+        idx,
+        (byte_a ^ byte_b) as u8,
+    );
+    assert(lhs =~= rhs) by {
+        assert forall|i: int| 0 <= i < lhs.len() implies lhs[i] == rhs[i] by {
+            if i == idx as int {
+                xor_assoc_comm(acc_a[i], acc_b[i], byte_a, byte_b);
+            }
+        }
+    }
+}
+
+proof fn compress_hash_prefix_xor_linear(
+    a: Seq<u8>, b: Seq<u8>, target_len: nat, upto: nat,
+)
+    requires
+        a.len() == b.len(),
+        upto <= a.len(),
+        target_len > 0,
+    ensures
+        seq_xor_spec(
+            compress_hash_prefix_spec(a, target_len, upto),
+            compress_hash_prefix_spec(b, target_len, upto),
+        ) == compress_hash_prefix_spec(
+            seq_xor_spec(a, b),
+            target_len,
+            upto,
+        )
+    decreases upto
+{
+    if upto == 0 {
+        zero_bytes_xor(target_len);
+    } else {
+        compress_hash_prefix_xor_linear(a, b, target_len, (upto - 1) as nat);
+        compress_hash_prefix_len(a, target_len, (upto - 1) as nat);
+        compress_hash_prefix_len(b, target_len, (upto - 1) as nat);
+        let idx = (((upto - 1) as int) % (target_len as int)) as nat;
+        xor_step_distributes(
+            compress_hash_prefix_spec(a, target_len, (upto - 1) as nat),
+            compress_hash_prefix_spec(b, target_len, (upto - 1) as nat),
+            idx,
+            a[(upto - 1) as int],
+            b[(upto - 1) as int],
+        );
+    }
+}
+
+// r[verify nix-hash-truncate.xor-properties]
+/// XOR linearity: compress(a XOR b, n) == compress(a, n) XOR compress(b, n).
+pub proof fn compress_hash_xor_linear(a: Seq<u8>, b: Seq<u8>, target_len: nat)
+    requires a.len() == b.len()
+    ensures
+        seq_xor_spec(
+            compress_hash_spec(a, target_len),
+            compress_hash_spec(b, target_len),
+        ) == compress_hash_spec(
+            seq_xor_spec(a, b),
+            target_len,
+        )
+{
+    if target_len == 0 {
+        assert(seq_xor_spec(Seq::<u8>::empty(), Seq::<u8>::empty()) =~= Seq::<u8>::empty());
+    } else {
+        compress_hash_prefix_xor_linear(a, b, target_len, a.len());
+    }
+}
+
+// r[verify nix-hash-truncate.xor-properties]
+/// compress_hash of all zeros returns all zeros.
+pub proof fn compress_hash_zero(n: nat, target_len: nat)
+    ensures compress_hash_spec(zero_bytes_spec(n), target_len) == zero_bytes_spec(target_len)
+{
+    if target_len > 0 {
+        compress_hash_prefix_zero(zero_bytes_spec(n), target_len, n);
+    }
+}
+
+proof fn compress_hash_prefix_zero(hash: Seq<u8>, target_len: nat, upto: nat)
+    requires
+        target_len > 0,
+        upto <= hash.len(),
+        forall|i: int| 0 <= i < upto as int ==> hash[i] == 0u8,
+    ensures
+        compress_hash_prefix_spec(hash, target_len, upto) == zero_bytes_spec(target_len)
+    decreases upto
+{
+    if upto != 0 {
+        compress_hash_prefix_zero(hash, target_len, (upto - 1) as nat);
+        compress_hash_prefix_len(hash, target_len, (upto - 1) as nat);
+        let idx = (((upto - 1) as int) % (target_len as int)) as nat;
+        xor_zero(0u8);
+        assert(xor_step_spec(zero_bytes_spec(target_len), idx, 0u8)
+            =~= zero_bytes_spec(target_len));
+    }
+}
+
 // r[impl nix-hash-truncate.compress]
 /// Compress a hash to `target_len` bytes by XOR folding.
 pub fn compress_hash(hash: &Vec<u8>, target_len: usize) -> (result: Vec<u8>)

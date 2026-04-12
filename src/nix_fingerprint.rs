@@ -21,7 +21,7 @@ pub closed spec fn text_hash_inputs_prefix_spec(parts: Seq<Seq<u8>>, upto: nat) 
     }
 }
 
-spec fn no_colon_spec(s: Seq<u8>) -> bool {
+pub open spec fn no_colon_spec(s: Seq<u8>) -> bool {
     forall|i: int| 0 <= i < s.len() ==> s[i] != 58u8
 }
 
@@ -300,6 +300,87 @@ pub proof fn regular_fingerprint_name_injective(
     }
 }
 
+// r[verify nix-fingerprint.injectivity]
+/// Regular and text-hash fingerprints are disjoint by prefix.
+pub proof fn regular_and_text_disjoint(
+    output_name: Seq<u8>, drv_hash: Seq<u8>, regular_name: Seq<u8>,
+    input_hashes: Seq<Seq<u8>>, text_hash: Seq<u8>, text_name: Seq<u8>,
+)
+    ensures regular_fingerprint_spec(output_name, drv_hash, regular_name)
+        != text_hash_fingerprint_spec(input_hashes, text_hash, text_name)
+{
+    assert(regular_fingerprint_spec(output_name, drv_hash, regular_name)[0int] == 111u8);
+    assert(text_hash_fingerprint_spec(input_hashes, text_hash, text_name)[0int] == 116u8);
+}
+
+// r[verify nix-fingerprint.injectivity]
+/// Fixed and text-hash fingerprints are disjoint by prefix.
+pub proof fn fixed_and_text_disjoint(
+    algo: Seq<u8>, hash: Seq<u8>, fixed_name: Seq<u8>,
+    input_hashes: Seq<Seq<u8>>, text_hash: Seq<u8>, text_name: Seq<u8>,
+)
+    ensures fixed_fingerprint_spec(algo, hash, fixed_name)
+        != text_hash_fingerprint_spec(input_hashes, text_hash, text_name)
+{
+    assert(fixed_fingerprint_spec(algo, hash, fixed_name)[0int] == 102u8);
+    assert(text_hash_fingerprint_spec(input_hashes, text_hash, text_name)[0int] == 116u8);
+}
+
+// r[verify nix-fingerprint.injectivity]
+/// Different names produce different fixed-output fingerprints when other fields match.
+pub proof fn fixed_fingerprint_name_injective(
+    algo: Seq<u8>, hash: Seq<u8>, a: Seq<u8>, b: Seq<u8>,
+)
+    requires a != b
+    ensures fixed_fingerprint_spec(algo, hash, a)
+        != fixed_fingerprint_spec(algo, hash, b)
+{
+    let prefix = seq![102u8, 105u8, 120u8, 101u8, 100u8, 58u8, 111u8, 117u8, 116u8, 58u8]
+        + algo
+        + seq![58u8]
+        + hash
+        + seq![58u8];
+    let fa = fixed_fingerprint_spec(algo, hash, a);
+    let fb = fixed_fingerprint_spec(algo, hash, b);
+    assert(fa != fb) by {
+        if fa == fb {
+            assert(a =~= fa.subrange(prefix.len() as int, fa.len() as int));
+            assert(b =~= fb.subrange(prefix.len() as int, fb.len() as int));
+            assert(a =~= b);
+        }
+    }
+}
+
+// r[verify nix-fingerprint.injectivity]
+/// Different hashes produce different fixed-output fingerprints when other fields match,
+/// given hashes contain no colons.
+pub proof fn fixed_fingerprint_hash_injective(
+    algo: Seq<u8>, ha: Seq<u8>, hb: Seq<u8>, name: Seq<u8>,
+)
+    requires
+        ha != hb,
+        no_colon_spec(ha),
+        no_colon_spec(hb),
+    ensures fixed_fingerprint_spec(algo, ha, name)
+        != fixed_fingerprint_spec(algo, hb, name)
+{
+    let pre = seq![102u8, 105u8, 120u8, 101u8, 100u8, 58u8, 111u8, 117u8, 116u8, 58u8]
+        + algo + seq![58u8];
+    let fa = fixed_fingerprint_spec(algo, ha, name);
+    let fb = fixed_fingerprint_spec(algo, hb, name);
+    assert(fa != fb) by {
+        if fa == fb {
+            if ha.len() == hb.len() {
+                assert(ha =~= fa.subrange(pre.len() as int, (pre.len() + ha.len()) as int));
+                assert(hb =~= fb.subrange(pre.len() as int, (pre.len() + hb.len()) as int));
+                assert(ha =~= hb);
+            } else {
+                assert(fa.len() != fb.len());
+            }
+        }
+    }
+}
+
 } // verus!
 
 #[cfg(test)]
@@ -387,6 +468,41 @@ mod tests {
             prop_assume!(a != b);
             let fa = regular_fingerprint(&v("out"), &hash.clone().into_bytes(), &a.into_bytes());
             let fb = regular_fingerprint(&v("out"), &hash.into_bytes(), &b.into_bytes());
+            prop_assert_ne!(fa, fb);
+        }
+
+        // r[verify nix-fingerprint.regular-output]
+        #[test]
+        fn prop_regular_fingerprint_format(
+            hash in "[0-9a-f]{64}",
+            name in "[a-z][A-Za-z0-9+\\-._?=]{0,20}",
+        ) {
+            let fp = regular_fingerprint(&v("out"), &hash.clone().into_bytes(), &name.clone().into_bytes());
+            let expected = format!("output:out:sha256:{hash}:/nix/store:{name}");
+            prop_assert_eq!(fp, expected.into_bytes());
+        }
+
+        // r[verify nix-fingerprint.fixed-output]
+        #[test]
+        fn prop_fixed_fingerprint_format(
+            hash in "[0-9a-f]{64}",
+            name in "[a-z][A-Za-z0-9+\\-._?=]{0,20}",
+        ) {
+            let fp = fixed_fingerprint(&v("sha256"), &hash.clone().into_bytes(), &name.clone().into_bytes());
+            let expected = format!("fixed:out:sha256:{hash}:{name}");
+            prop_assert_eq!(fp, expected.into_bytes());
+        }
+
+        // r[verify nix-fingerprint.injectivity]
+        #[test]
+        fn prop_fixed_name_injective(
+            hash in "[0-9a-f]{1,20}",
+            a in "[A-Za-z0-9+\\-._?=]{1,20}",
+            b in "[A-Za-z0-9+\\-._?=]{1,20}",
+        ) {
+            prop_assume!(a != b);
+            let fa = fixed_fingerprint(&v("sha256"), &hash.clone().into_bytes(), &a.into_bytes());
+            let fb = fixed_fingerprint(&v("sha256"), &hash.into_bytes(), &b.into_bytes());
             prop_assert_ne!(fa, fb);
         }
     }

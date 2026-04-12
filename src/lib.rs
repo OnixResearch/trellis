@@ -123,6 +123,7 @@
 //! - `nix_drv_serialize` — Nix ATerm escaping primitives and derivation structs
 //! - `nix_fingerprint` — Nix derivation fingerprint construction and name validation
 //! - `nix_hash_truncate` — Nix `compressHash` XOR-fold truncation
+//! - `nix_store_path` — Nix store path computation composing base32, hash truncation, and fingerprints
 //! - `nonce` — verified nonce issuance with uniqueness, monotonicity, and freshness proofs
 //! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
@@ -369,6 +370,7 @@ pub mod nix_drv_serialize;
 pub mod nix_fingerprint;
 pub mod nix_hash_truncate;
 pub mod nix_list;
+pub mod nix_store_path;
 pub mod nix_string;
 pub mod nix_version;
 pub mod node_classify;
