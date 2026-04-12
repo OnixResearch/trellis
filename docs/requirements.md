@@ -288,6 +288,50 @@ r[consistency-vocab.happens-before]
 The shared happens-before edge relation MUST be the union of real-time
 order, session order, and visibility.
 
+## Transactional Consistency Models
+
+r[consistency-txn.read-uncommitted]
+Read uncommitted MUST still forbid dirty writes.
+
+r[consistency-txn.read-committed]
+Read committed MUST extend read uncommitted by forbidding dirty reads.
+
+r[consistency-txn.cursor-stability]
+Cursor stability MUST extend read committed by protecting cursor-held
+objects from concurrent modification.
+
+r[consistency-txn.monotonic-atomic-view]
+Monotonic atomic view MUST extend read committed by requiring all-or-none
+visibility for effects of already-observed committed transactions.
+
+r[consistency-txn.repeatable-read]
+Repeatable read MUST extend read committed by keeping rereads of the same
+object stable within a transaction.
+
+r[consistency-txn.predicate-stability]
+Predicate stability MUST hold exactly when reevaluating a predicate yields
+the same membership result.
+
+r[consistency-txn.first-committer-wins]
+First-committer-wins MUST reject executions in which overlapping snapshots
+with conflicting write sets both commit.
+
+r[consistency-txn.snapshot-isolation]
+Snapshot isolation MUST extend read committed with a consistent snapshot,
+atomic visibility, and first-committer-wins.
+
+r[consistency-txn.serializability]
+Serializability MUST hold when there exists a serial witness order for the
+committed transactions.
+
+r[consistency-txn.dependency-acyclic]
+An acyclic transaction-dependency graph MUST be a valid serializability
+witness shape.
+
+r[consistency-txn.strict-serializability]
+Strict serializability MUST extend serializability with real-time and
+per-session program-order respect across transactions.
+
 ## Option Combinators
 
 r[option.unwrap-or-default]

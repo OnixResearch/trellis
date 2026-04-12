@@ -18,12 +18,12 @@
 
 ## Phase 3: Transactional Models
 
-- [ ] Add formal predicates and proof skeletons for strict serializability,
+- [x] Add formal predicates and proof skeletons for strict serializability,
   serializability, repeatable read, snapshot isolation, monotonic atomic view,
   cursor stability, read committed, and read uncommitted
-- [ ] Model transaction-level conflicts, predicate reads, and first-committer-
+- [x] Model transaction-level conflicts, predicate reads, and first-committer-
   wins behavior needed by snapshot isolation
-- [ ] Add example histories and regression cases for allowed and forbidden
+- [x] Add example histories and regression cases for allowed and forbidden
   transactional anomalies
 
 ## Phase 4: Object and Session Models
