@@ -1,8 +1,8 @@
 ## Phase 1: Priority and Merge Primitives
 
-- [ ] Add `nickel_priority` module: MergePriority enum, compare spec/exec fn, total order proofs (reflexive, antisymmetric, transitive), extrema proofs (Bottom ≤ all, Top ≥ all), Neutral == Numeral(0) proof
-- [ ] Add `nickel_merge_split` module: three-way split spec/exec fn over sorted key-value sequences, disjointness proof, completeness proof, value preservation proof
-- [ ] Add `nickel_field_merge` module: priority-based field resolution spec/exec fn, higher-wins proof, equal-recurse semantics, default-override proof
+- [x] Add `nickel_priority` module: MergePriority enum, compare spec/exec fn, total order proofs (reflexive, antisymmetric, transitive), extrema proofs (Bottom ≤ all, Top ≥ all), Neutral == Numeral(0) proof
+- [x] Add `nickel_merge_split` module: three-way split spec/exec fn over sorted key-value sequences, disjointness proof, completeness proof, value preservation proof
+- [x] Add `nickel_field_merge` module: priority-based field resolution spec/exec fn, higher-wins proof, equal-recurse semantics, default-override proof
 
 ## Phase 2: Record Merge
 
@@ -13,17 +13,17 @@
 ## Phase 3: Type Subtyping
 
 - [ ] Add `nickel_subtype` module: type enum, subtype relation spec fn, reflexivity proof, transitivity proof
-- [ ] Implement record-dictionary subsumption rule with proof
-- [ ] Implement array and dictionary covariance rules with proofs
-- [ ] Implement record width subtyping with proof
+- [x] Implement record-dictionary subsumption rule with proof
+- [x] Implement array and dictionary covariance rules with proofs
+- [x] Implement record width subtyping with proof
 
 ## Phase 4: Contract Polarity and Pattern Coverage
 
-- [ ] Add `nickel_polarity` module: Polarity enum, flip spec/exec fn, double-flip identity proof, path-based polarity computation with domain-flip counting proof
-- [ ] Add `nickel_pattern_coverage` module: pattern descriptor type, coverage checking spec/exec fn, wildcard completeness proof, enum coverage proof, overlap detection
+- [x] Add `nickel_polarity` module: Polarity enum, flip spec/exec fn, double-flip identity proof, path-based polarity computation with domain-flip counting proof
+- [x] Add `nickel_pattern_coverage` module: pattern descriptor type, coverage checking spec/exec fn, wildcard completeness proof, enum coverage proof, overlap detection
 
 ## Phase 5: Integration
 
 - [ ] Add Tracey annotations (r[impl], r[verify], r[depends]) to all new modules, run check-coverage.sh clean
-- [ ] Add all modules to src/lib.rs, run verus verification, run full test suite
+- [x] Add all modules to src/lib.rs, run verus verification, run full test suite
 - [ ] Update README.md module table with new Nickel section

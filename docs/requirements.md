@@ -1252,6 +1252,126 @@ concat_lists MUST flatten a list of lists into a single list.
 r[nix-closure.generic-closure]
 generic_closure MUST compute the transitive closure with unique keys.
 
+## Nickel Merge Split
+
+r[nickel-merge.split]
+split(m1, m2) MUST partition keys into three disjoint sets: left (keys
+only in m1), center (keys in both), and right (keys only in m2). No key
+MUST appear in more than one partition.
+
+r[nickel-merge.split-completeness]
+Every key in m1 MUST appear in either left or center. Every key in m2
+MUST appear in either center or right. No keys are lost.
+
+r[nickel-merge.split-value-preservation]
+For keys in left, the value MUST come from m1. For keys in right, the
+value MUST come from m2. For keys in center, both values MUST be
+preserved as a pair.
+
+## Nickel Priority
+
+r[nickel-priority.total-order]
+MergePriority MUST form a total order: Bottom < Neutral < Numeral(n) < Top.
+Neutral MUST compare equal to Numeral(0). The order MUST be reflexive,
+antisymmetric, and transitive.
+
+r[nickel-priority.extrema]
+Bottom MUST be less than or equal to every other priority. Top MUST be
+greater than or equal to every other priority.
+
+r[nickel-priority.numeral-ordering]
+Numeral(a) < Numeral(b) if and only if a < b. Numeral ordering MUST
+agree with the underlying integer ordering.
+
+## Nickel Field Merge
+
+r[nickel-field-merge.higher-wins]
+When merging two fields with different priorities, the field with strictly
+higher priority MUST be selected.
+
+r[nickel-field-merge.equal-recurse]
+When merging two fields with equal priority, both values MUST be equal
+or the merge MUST fail (conflict).
+
+r[nickel-field-merge.default-override]
+A field with priority Bottom MUST be overridden by any field with higher
+priority. A field with priority Top MUST override any field with lower
+priority.
+
+## Nickel Record Merge
+
+r[nickel-record-merge.identity]
+Merging any record with the empty record MUST return the original record
+unchanged.
+
+r[nickel-record-merge.associativity]
+merge(a, merge(b, c)) MUST equal merge(merge(a, b), c) when all merges
+succeed and priorities are uniform.
+
+r[nickel-record-merge.key-coverage]
+The keys of merge(a, b) MUST be a superset of keys(a) and keys(b).
+No keys are lost or invented.
+
+r[nickel-record-merge.disjoint-commutativity]
+When records a and b have no keys in common, merge(a, b) MUST equal
+merge(b, a).
+
+## Nickel Subtype
+
+r[nickel-subtype.reflexivity]
+Every type T MUST be a subtype of itself: T <: T.
+
+r[nickel-subtype.transitivity]
+If T1 <: T2 and T2 <: T3, then T1 <: T3.
+
+r[nickel-subtype.record-dict]
+A record type MUST be a subtype of a dictionary type if and only if
+every field type is a subtype of the dictionary value type.
+
+r[nickel-subtype.array-covariance]
+Array T <: Array U if and only if T <: U.
+
+r[nickel-subtype.dict-covariance]
+{_: T} <: {_: U} if and only if T <: U.
+
+r[nickel-subtype.record-width]
+A record with more fields MUST be a subtype of a record with fewer
+fields when shared fields are pairwise subtypes.
+
+## Nickel Polarity
+
+r[nickel-polarity.flip-domain]
+When a contract checks a function argument, the polarity MUST flip.
+
+r[nickel-polarity.preserve-codomain]
+When a contract checks a function return value, the polarity MUST be
+preserved.
+
+r[nickel-polarity.double-flip]
+Flipping polarity twice MUST return to the original polarity.
+
+r[nickel-polarity.path-tracking]
+The polarity at any point in a type path MUST equal the initial polarity
+flipped once for each domain step.
+
+## Nickel Pattern Coverage
+
+r[nickel-pattern.coverage-completeness]
+A set of patterns MUST be complete for a type when every possible value
+matches at least one pattern.
+
+r[nickel-pattern.overlap-detection]
+When two patterns can match the same value, this overlap MUST be
+detectable.
+
+r[nickel-pattern.wildcard-covers-all]
+A wildcard pattern MUST match any value. A pattern set containing a
+wildcard MUST always be complete.
+
+r[nickel-pattern.enum-coverage]
+For an enum type, a pattern set MUST be complete if and only if it
+contains a pattern for each variant or a wildcard.
+
 ## CRDT
 
 r[crdt.g-counter-merge]

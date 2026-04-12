@@ -132,6 +132,13 @@
 //! - `nix_list` — Nix list builtins: elem, head, tail, `gen_list`, concat
 //! - `nix_string` — Nix string operations: length, substring, replace
 //! - `nix_version` — Nix version comparison with component classification
+//! - `nickel_priority` — Nickel merge priority total order: Bottom < Neutral < Numeral(n) < Top
+//! - `nickel_merge_split` — Nickel three-way record split: left-only, center, right-only
+//! - `nickel_field_merge` — Nickel field-level merge resolution by priority
+//! - `nickel_record_merge` — Nickel full record merge with identity and commutativity proofs
+//! - `nickel_subtype` — Nickel gradual type subtyping: reflexivity, covariance, record-dict
+//! - `nickel_polarity` — Nickel contract blame polarity: flip on domain, double-flip identity
+//! - `nickel_pattern_coverage` — Nickel pattern completeness and overlap detection
 //! - `option` — verified Option combinators
 //! - `ordering` — min, max, median, sign, compare-and-swap
 //! - `pattern` — wildcard and set-membership pattern matching for capabilities
@@ -373,6 +380,13 @@ pub mod nix_list;
 pub mod nix_store_path;
 pub mod nix_string;
 pub mod nix_version;
+pub mod nickel_field_merge;
+pub mod nickel_merge_split;
+pub mod nickel_pattern_coverage;
+pub mod nickel_polarity;
+pub mod nickel_priority;
+pub mod nickel_record_merge;
+pub mod nickel_subtype;
 pub mod node_classify;
 pub mod node_lifecycle;
 pub mod nonce;

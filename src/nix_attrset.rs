@@ -211,7 +211,7 @@ pub open spec fn merge_spec(
 }
 
 /// Antisymmetry: seq_cmp(a, b) == -seq_cmp(b, a).
-proof fn seq_cmp_antisymmetric(a: Seq<u8>, b: Seq<u8>)
+pub proof fn seq_cmp_antisymmetric(a: Seq<u8>, b: Seq<u8>)
     ensures seq_cmp(a, b) == -seq_cmp(b, a)
     decreases a.len() + b.len()
 {
@@ -242,7 +242,7 @@ proof fn seq_cmp_skip(a: Seq<u8>, b: Seq<u8>, i: int)
 }
 
 /// Verified byte-by-byte comparison matching `seq_cmp` spec.
-fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+pub fn vec_u8_cmp(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
     ensures result as int == seq_cmp(a@, b@),
             result == -1 || result == 0 || result == 1
 {

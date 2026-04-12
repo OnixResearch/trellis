@@ -1585,3 +1585,13 @@
 - Durable-execution OpenSpec scope fits this repo best as pure replay/recovery decision logic
   that composes with existing `persistent_state`, `journal`, and job execution modules;
   keep storage I/O, timers, and actual side-effect execution out of scope.
+- Nickel modules: cross-module Verus ghost imports are awkward; for standalone modules,
+  duplicate tiny spec helpers or keep ghost-only bridges local instead of importing
+  internal spec fns from another module.
+- Nickel subtype: direct mutual recursion between `is_subtype` and record helper specs
+  was awkward to terminate. Fuel-bounded helper specs (`*_fuel`) got tree back to
+  Verus green faster than structural-decreases tuning.
+- Nickel subtype transitivity caveat: current relation is not globally transitive across
+  mixed `Record -> Record -> Dict` chains (`{a:Num,b:Bool} <: {a:Num}` and `{a:Num} <: {_:Num}`
+  but not `{a:Num,b:Bool} <: {_:Num}`). Strongest honest proof surface is a supported-transitivity
+  predicate for Dyn/Array/Dict chains, not an unconditional theorem.

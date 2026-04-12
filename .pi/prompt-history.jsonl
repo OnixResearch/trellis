@@ -413,3 +413,9 @@
 {"text":"lets make an openspec for erlang beam primitives","timestamp":1775959300443}
 {"text":"what ziron/fuschia primitives should we add? https://fuchsia.dev/fuchsia-src/concepts/kernel","timestamp":1775959905778}
 {"text":"letsupdate with the additions","timestamp":1775960089694}
+{"text":"begin openspec/changes/nix-derivation-primitives/","timestamp":1775963822363}
+{"text":"lets implement openspec/changes/nickel-verified-components/","timestamp":1775966291256}
+{"text":"continue","timestamp":1775967758274}
+{"text":"strengthen nickel_subtype proofs","timestamp":1775968316114}
+{"text":"- strengthen nickel-subtype.transitivity proof, likely via fuel monotonicity +\n targeted transitivity lemmas for supported constructors.","timestamp":1775968754600}
+{"text":"1. add explicit subtype transitivity tests for supported chains (Array, Dict, Dyn)\n 2. maybe rename/comment nickel-subtype.transitivity proof surface more clearly in\n module comments\n 3. if desired, redesign subtype relation so record/dict interaction becomes globally\n transitive, then prove full theorem","timestamp":1775969733102}
