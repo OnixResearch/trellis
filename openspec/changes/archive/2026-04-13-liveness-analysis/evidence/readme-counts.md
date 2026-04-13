@@ -7,8 +7,21 @@ README headline after landing:
 - `296 modules`
 - `15 trusted boundaries`
 
-Exact derivation commands and outputs are preserved in:
+Archive-stable sources of truth are preserved in:
+- `evidence/verus-lib.txt`
+- `evidence/cargo-test.txt`
+- `evidence/tracey-uncovered.txt`
+- `evidence/tracey-untested.txt`
+- `evidence/src-lib-pub-mod-lines.txt`
+- `evidence/external-body-sites.txt`
+- `evidence/requirements-marker-lines.txt`
+
+Exact derivation commands and their original outputs are also preserved in:
 - `evidence/readme-count-commands.txt`
+
+The pinned evidence files above are the archive source of truth. The command
+transcript is provenance only; rerunning those commands against a future live
+worktree may drift.
 
 ## Proof count
 
@@ -43,27 +56,36 @@ Underlying transcript sources:
 - `evidence/tracey-untested.txt`
 
 Why README uses `1387`, not the raw `docs/requirements.md` marker count:
-- the raw shell count of lines starting with `r[` is `1410`
+- pinned raw marker listing: `evidence/requirements-marker-lines.txt`
+- pinned raw marker count: `1410`
 - README is meant to report the live Tracey rule count for the `verified-logic/rust`
   implementation, not the raw marker-line count in the markdown file
 - Tracey is therefore the source of truth for the README requirement headline
 
 ## Module count
 
-Command/output source: `evidence/readme-count-commands.txt`
+Pinned archive input:
+- `evidence/src-lib-pub-mod-lines.txt`
+
+Command/output provenance:
+- `evidence/readme-count-commands.txt`
 
 Chosen source of truth:
-- `modules=296`
+- `296` lines in `evidence/src-lib-pub-mod-lines.txt`
 
 Derivation rule:
 - count lines in `src/lib.rs` that start with `pub mod `
 
 ## Trusted-boundary count
 
-Command/output source: `evidence/readme-count-commands.txt`
+Pinned archive input:
+- `evidence/external-body-sites.txt`
+
+Command/output provenance:
+- `evidence/readme-count-commands.txt`
 
 Chosen source of truth:
-- `15`
+- `15` lines in `evidence/external-body-sites.txt`
 
 Derivation rule:
 - count `#[verifier::external_body]` occurrences under `src/`
