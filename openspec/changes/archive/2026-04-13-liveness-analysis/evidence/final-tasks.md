@@ -37,7 +37,7 @@
 
 ## Phase 5: Tests
 
-- [x] Unit tests for simple straight-line, if-else, loop-style programs
+- [x] Unit tests for simple straight-line and branch-style programs
 - [x] Unit tests for exit boundary and def-kills
 - [x] Proptest: dataflow equations hold at fixed point for random CFGs
 - [x] Proptest: use-def characterization against brute-force path search

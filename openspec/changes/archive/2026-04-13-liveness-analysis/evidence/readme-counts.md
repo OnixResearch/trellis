@@ -7,48 +7,63 @@ README headline after landing:
 - `296 modules`
 - `15 trusted boundaries`
 
-These counts were taken from the live tree after the liveness-analysis work landed.
+Exact derivation commands and outputs are preserved in:
+- `evidence/readme-count-commands.txt`
 
 ## Proof count
 
-Source: `evidence/verus-lib.txt`
+Command/output source: `evidence/readme-count-commands.txt`
 
-```text
-verification results:: 6380 verified, 0 errors
-```
+Chosen source of truth:
+- `verification results:: 6380 verified, 0 errors`
+
+Underlying transcript source:
+- `evidence/verus-lib.txt`
 
 ## Test count
 
-Source: `evidence/cargo-test.txt`
+Command/output source: `evidence/readme-count-commands.txt`
 
-```text
-test result: ok. 3474 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
-```
+Chosen source of truth:
+- `test result: ok. 3474 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out`
+
+Underlying transcript source:
+- `evidence/cargo-test.txt`
 
 ## Requirement count
 
-Source: `evidence/tracey-uncovered.txt` and `evidence/tracey-untested.txt`
+Command/output source: `evidence/readme-count-commands.txt`
 
-```text
-verified-logic/rust: 0 uncovered out of 1387 rules
-verified-logic/rust: 0 untested (impl but no verify) out of 1387 rules
-```
+Chosen source of truth:
+- `verified-logic/rust: 0 uncovered out of 1387 rules`
+- `verified-logic/rust: 0 untested (impl but no verify) out of 1387 rules`
 
-README uses the live Tracey rule count (`1387`), not a raw line count from
-`docs/requirements.md`.
+Underlying transcript sources:
+- `evidence/tracey-uncovered.txt`
+- `evidence/tracey-untested.txt`
+
+Why README uses `1387`, not the raw `docs/requirements.md` marker count:
+- the raw shell count of lines starting with `r[` is `1410`
+- README is meant to report the live Tracey rule count for the `verified-logic/rust`
+  implementation, not the raw marker-line count in the markdown file
+- Tracey is therefore the source of truth for the README requirement headline
 
 ## Module count
 
-Derived from `src/lib.rs` by counting `pub mod ` lines.
+Command/output source: `evidence/readme-count-commands.txt`
 
-```text
-modules=296
-```
+Chosen source of truth:
+- `modules=296`
+
+Derivation rule:
+- count lines in `src/lib.rs` that start with `pub mod `
 
 ## Trusted-boundary count
 
-Derived from the live source tree by counting `#[verifier::external_body]`.
+Command/output source: `evidence/readme-count-commands.txt`
 
-```text
-15
-```
+Chosen source of truth:
+- `15`
+
+Derivation rule:
+- count `#[verifier::external_body]` occurrences under `src/`
