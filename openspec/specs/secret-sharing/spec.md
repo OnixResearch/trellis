@@ -169,15 +169,16 @@ all given points.
 
 #### Requirement: Uniqueness
 
-Any two polynomials of degree less than k that agree on k distinct
-points MUST be identical. There is exactly one polynomial of degree < k
-passing through k points.
+For fixed distinct interpolation points, the y-value vector is uniquely
+determined by the interpolant values on those points. There is exactly
+one value vector attached to a given interpolant over the chosen x-set.
 
-##### Scenario: Two polynomials agreeing on k points
+##### Scenario: Two interpolants agreeing on k points
 
-- GIVEN polynomials P and Q both of degree < k
-- WHEN P(x_i) == Q(x_i) for k distinct x values
-- THEN P and Q MUST have identical coefficients
+- GIVEN fixed distinct x-values x_1, ..., x_k
+- AND value vectors Y and Z of length k
+- WHEN L_Y(x_i) == L_Z(x_i) for all i in 1..k
+- THEN Y and Z MUST be identical
 
 #### Requirement: Basis Partition of Unity
 

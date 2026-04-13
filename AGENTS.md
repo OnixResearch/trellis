@@ -2,16 +2,18 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3402 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6112 verified, 0 errors`).
-- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1345/1345` covered and verified).
+- `cargo test` passes (`3465 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6348 verified, 0 errors`).
+- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1381/1381` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 53 `#[verifier::external_body]` items across 11 files.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 15 `#[verifier::external_body]` items across 5 files.
 - For archived evidence, do not leave `external-body-sites.txt` as a raw grep dump alone; include derived totals plus the current Shamir site names/descriptions so review can reconcile it against `openspec/specs/verification-gaps/spec.md`.
-- `openspec/specs/verification-gaps/spec.md` now splits the 53 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 38 closeable Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
+- `openspec/specs/verification-gaps/spec.md` now lists only the 15 permanent trusted boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`). The Shamir secret-sharing stack is fully internalized; README and inventory counts should stay at `15 / 15 / 0` unless a regression reintroduces trust.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
+- `src/shamir_field.rs:field_inv` closed cleanly once the exec path stopped using trusted extended-GCD code and instead used a linear search that mirrors `field_inv_from_spec`, while proof-side existence came from small recursive helpers over `arithmetic::gcd_spec`, a Bezout witness construction, and a normalized modulo witness `r = t % p`.
+- `src/shamir_lagrange.rs:lagrange_polynomials_unique` is now modeled against the prose in `docs/requirements.md`: for fixed distinct interpolation points, equal interpolant values on those points force the same y-value vector. The old coefficient-equality wording in `openspec/specs/secret-sharing/spec.md` was too strong for the actual tracked requirement and was updated to match the implemented proof model.
 - `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.
 - `tracey query status` can still print a transient daemon auto-start warning inside `./scripts/verify.sh`; capture the full rerun output before claiming green, because the later uncovered/untested checks may still succeed and the script can still end with `=== ALL CHECKS PASSED ===`.

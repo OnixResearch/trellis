@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**6112 Verus proofs · 3402 tests · 1345 requirements · 287 modules · 53 trusted boundaries**
+**6348 Verus proofs · 3465 tests · 1381 requirements · 287 modules · 15 trusted boundaries**
 
 ## How it works
 
@@ -445,7 +445,7 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-`53` items are marked `#[verifier::external_body]` across `11` files.
+`15` items are marked `#[verifier::external_body]` across `5` files.
 Those are the current trusted boundaries inside Verus.
 
 **15 permanent** (architectural trust boundaries):
@@ -458,12 +458,7 @@ Those are the current trusted boundaries inside Verus.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
 
-**38 closeable** (proof debt still tracked in the audit inventory):
-
-- **38 Shamir secret-sharing bridges** (`shamir_field.rs`, `shamir_poly.rs`, `shamir_lagrange.rs`,
-  `shamir_split.rs`, `shamir_reconstruct.rs`, `shamir_threshold.rs`) — the initial Shamir
-  implementation currently trusts its field, interpolation, and reconstruction bridges while
-  runtime unit tests and proptests exercise the algebra and round-trip behavior.
+**0 closeable** (all previously tracked Shamir proof debt is closed).
 
 In addition to `external_body`, the current audit also tracks:
 

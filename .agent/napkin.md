@@ -7,13 +7,13 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 6112 Verus proofs + 3402 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1345 requirements)
+- 6348 Verus proofs + 3465 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1381 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 53 `#[verifier::external_body]` items across 11 files.
+- Current trusted inventory: 15 `#[verifier::external_body]` items across 5 files.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable Shamir subset is now 0 because `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold` are fully internalized.
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.
@@ -48,6 +48,8 @@
 - `src/nix_closure.rs` only closed after admitting the old API was the problem: `&dyn Fn(&ClosureItem) -> Vec<ClosureItem>` was not a tractable verified boundary. The practical close was to redesign the public API around a finite operator table, replace the placeholder spec with a real closure predicate over reachable keys, and keep the executor as a plain Rust wrapper outside `verus!`.
 - `src/nix_drv_serialize.rs` had a bad property test, not a bad escaper: the old test rejected escaped `"` bytes by scanning raw bytes instead of tracking backslash state.
 - `src/nix_base32.rs`: `usize::div_ceil` satisfies clippy but is not Verus-modeled in exec code yet; keep the old `(x + 4) / 5` formula in verified execs and use a local `#[allow(clippy::manual_div_ceil)]` instead.
+- `src/shamir_poly.rs`: recursive Horner proofs unfold more reliably if the current suffix is first bound to a ghost local `s`, then prove `s[0]` and `s.subrange(1, s.len())` explicitly before asserting the one-step `poly_eval_sum_spec(s, ...)` expansion.
+- `src/shamir_split.rs`: for share-building loops, `shares@.len() == j` plus pointwise prefix facts is easier than `shares@ == spec.subrange(0, j)`, which can trigger annoying `Seq::subrange` recommendation failures in invariants.
 - The main `openspec/specs/verification-gaps/spec.md` must list each `#[verifier::external_body]` site individually, not just file totals, because the archived proof-audit change text says every trusted site appears in the inventory.
 - Active OpenSpec change specs in this repo use full spec documents under `openspec/changes/*/specs/<domain>/spec.md`, not `ADDED/MODIFIED/REMOVED` delta sections. Match the existing change style when adding a new change.
 - Done review will flag internal OpenSpec drift inside one change: keep proposal capability names aligned with spec requirement IDs, and do not promise behaviors in `proposal.md` that the change spec does not require yet.
@@ -112,7 +114,11 @@
 |------|--------|----------------|-------------------|
 | 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
 | 2026-04-13 | self | Used regex alternation/pipes directly in `rg` tool patterns; shell interpreted them as pipelines and even invoked `shutdown` from the literal pattern | For alternation searches, use `bash` with `rg 'a|b' ...` quoted, or avoid `|` in the raw `rg` tool pattern |
+| 2026-04-13 | self | Repeated same `rg` alternation mistake after already logging it in napkin | Default to `bash` for any regex containing `|`, even for quick README searches |
 | 2026-04-13 | self | Started an OpenSpec change in `../chaoscontrol` before confirming user wanted the spec in this repo | For cross-repo requests, confirm target repo first; if user says "add primitives here", default OpenSpec work to current repo, not sibling repo |
+
+## Domain Notes
+- Lazygit branch refresh panic can come from a corrupt local auto branch ref, not from repo-wide object corruption. In this repo, `.git/refs/heads/pi/auto/main` pointed to missing object `fdc4b6514488e7b441c17b3b50d15cdfc90072a4`; `git show-ref --heads` reported `bad ref`, and reflog showed last good tip `982a1021f46d3dadf56cd2c5304080a2912f92a1`.
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals

@@ -62,7 +62,6 @@ pub open spec fn split_spec(secret: u64, random_coeffs: Seq<u64>, xs: Seq<u64>, 
 
 // r[verify shamir-split.constant-term-preservation]
 /// The constructed polynomial evaluates to the secret at x = 0.
-#[verifier::external_body]
 pub proof fn split_constant_term_preserved(secret: u64, random_coeffs: Seq<u64>, p: u64)
     requires
         valid_modulus_spec(p),
@@ -74,9 +73,28 @@ pub proof fn split_constant_term_preserved(secret: u64, random_coeffs: Seq<u64>,
     poly_at_zero_is_constant(split_coeffs_spec(secret, random_coeffs), p);
 }
 
+proof fn split_from_count_and_xs(secret: u64, random_coeffs: Seq<u64>, xs: Seq<u64>, p: u64, from: int)
+    requires
+        split_params_valid_spec(random_coeffs, xs, p),
+        secret < p,
+        forall|i: int| #![trigger random_coeffs[i]] 0 <= i < random_coeffs.len() ==> random_coeffs[i] < p,
+        forall|i: int| #![trigger xs[i]] 0 <= i < xs.len() ==> 0 < xs[i] < p,
+        0 <= from <= xs.len(),
+    ensures
+        split_from_spec(secret, random_coeffs, xs, p, from).len() == xs.len() - from,
+        forall|i: int| 0 <= i < xs.len() - from ==> {
+            &&& split_from_spec(secret, random_coeffs, xs, p, from)[i].0 == xs[from + i]
+            &&& split_from_spec(secret, random_coeffs, xs, p, from)[i].1 == poly_eval_sum_spec(split_coeffs_spec(secret, random_coeffs), xs[from + i], p)
+        },
+    decreases xs.len() - from
+{
+    if from < xs.len() {
+        split_from_count_and_xs(secret, random_coeffs, xs, p, from + 1);
+    }
+}
+
 // r[verify shamir-split.share-count]
 /// Split preserves the requested x-coordinates and count.
-#[verifier::external_body]
 pub proof fn split_count_and_xs(secret: u64, random_coeffs: Seq<u64>, xs: Seq<u64>, p: u64)
     requires
         split_params_valid_spec(random_coeffs, xs, p),
@@ -87,12 +105,17 @@ pub proof fn split_count_and_xs(secret: u64, random_coeffs: Seq<u64>, xs: Seq<u6
         split_spec(secret, random_coeffs, xs, p).len() == xs.len(),
         forall|i: int| 0 <= i < xs.len() ==> split_spec(secret, random_coeffs, xs, p)[i].0 == xs[i],
 {
+    split_from_count_and_xs(secret, random_coeffs, xs, p, 0);
 }
 
-fn xs_are_valid(xs: &[u64], p: u64) -> bool {
+fn xs_are_valid(xs: &[u64], p: u64) -> (result: bool)
+    ensures result ==> forall|i: int| #![trigger xs@[i]] 0 <= i < xs@.len() ==> 0 < xs@[i] < p
+{
     let mut i: usize = 0;
     while i < xs.len()
-        invariant 0 <= i <= xs.len()
+        invariant
+            0 <= i <= xs.len(),
+            forall|k: int| #![trigger xs@[k]] 0 <= k < i ==> 0 < xs@[k] < p,
         decreases xs.len() - i
     {
         if xs[i] == 0 || xs[i] >= p {
@@ -116,7 +139,6 @@ fn xs_are_valid(xs: &[u64], p: u64) -> bool {
 // r[impl shamir-split.share-count]
 // r[impl shamir-split.parameter-validation]
 /// Generates shares by evaluating the secret polynomial at the requested x-coordinates.
-#[verifier::external_body]
 pub fn split(secret: u64, random_coeffs: &[u64], xs: &[u64], p: u64) -> (result: Option<Vec<Share>>)
     ensures
         result.is_some() ==> {
@@ -125,7 +147,7 @@ pub fn split(secret: u64, random_coeffs: &[u64], xs: &[u64], p: u64) -> (result:
             &&& forall|i: int| 0 <= i < xs@.len() ==> shares@[i].0 == xs@[i]
         }
 {
-    if !shamir_field::valid_modulus(p) || secret >= p || random_coeffs.len() == 0 || random_coeffs.len() + 1 > xs.len() {
+    if !shamir_field::valid_modulus(p) || secret >= p || random_coeffs.len() == 0 || random_coeffs.len() >= xs.len() {
         return None;
     }
     if !xs_are_valid(xs, p) {
@@ -138,7 +160,10 @@ pub fn split(secret: u64, random_coeffs: &[u64], xs: &[u64], p: u64) -> (result:
     while i < random_coeffs.len()
         invariant
             0 <= i <= random_coeffs@.len(),
+            split_params_valid_spec(random_coeffs@, xs@, p),
+            secret < p,
             coeffs@ == seq![secret] + random_coeffs@.subrange(0, i as int),
+            forall|k: int| #![trigger random_coeffs@[k]] 0 <= k < i ==> random_coeffs@[k] < p,
         decreases random_coeffs@.len() - i
     {
         if random_coeffs[i] >= p {
@@ -148,22 +173,40 @@ pub fn split(secret: u64, random_coeffs: &[u64], xs: &[u64], p: u64) -> (result:
         i = i + 1;
     }
 
+    proof {
+        assert(forall|k: int| #![trigger random_coeffs@[k]] 0 <= k < random_coeffs@.len() ==> random_coeffs@[k] < p);
+    }
+
     let mut shares: Vec<Share> = Vec::new();
     let mut j: usize = 0;
     while j < xs.len()
         invariant
             0 <= j <= xs@.len(),
+            split_params_valid_spec(random_coeffs@, xs@, p),
+            secret < p,
+            forall|k: int| #![trigger random_coeffs@[k]] 0 <= k < random_coeffs@.len() ==> random_coeffs@[k] < p,
+            forall|k: int| #![trigger xs@[k]] 0 <= k < xs@.len() ==> 0 < xs@[k] < p,
             coeffs@ == split_coeffs_spec(secret, random_coeffs@),
-            shares@ == split_from_spec(secret, random_coeffs@, xs@, p, 0).subrange(0, j as int),
+            shares@.len() == j,
+            forall|k: int| #![trigger shares@[k]] 0 <= k < j ==> shares@[k].0 == xs@[k],
         decreases xs@.len() - j
     {
         let y = shamir_poly::poly_eval_horner(&coeffs, xs[j], p);
         shares.push((xs[j], y));
         proof {
-            assert(split_from_spec(secret, random_coeffs@, xs@, p, 0).subrange(0, j as int + 1)
-                == split_from_spec(secret, random_coeffs@, xs@, p, 0).subrange(0, j as int).push((xs@[j as int], y)));
+            assert(shares@.len() == j as int + 1);
+            assert(shares@[j as int].0 == xs@[j as int]);
+            assert forall|k: int| #![trigger shares@[k]] 0 <= k < j + 1 implies shares@[k].0 == xs@[k] by {
+                if k < j {
+                } else {
+                    assert(k == j);
+                }
+            }
         }
         j = j + 1;
+    }
+    proof {
+        assert(j == xs@.len());
     }
     Some(shares)
 }

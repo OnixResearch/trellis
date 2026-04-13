@@ -36,27 +36,42 @@ pub open spec fn poly_degree_spec(coeffs: Seq<u64>) -> int {
     if coeffs.len() == 0 { -1 } else { coeffs.len() as int - 1 }
 }
 
-#[verifier::external_body]
 fn poly_eval_from(coeffs: &[u64], x: u64, p: u64, from: usize) -> (result: u64)
     requires
         valid_modulus_spec(p),
         x < p,
         from <= coeffs@.len(),
         forall|i: int| 0 <= i < coeffs@.len() ==> coeffs@[i] < p,
-    ensures result == poly_eval_sum_spec(coeffs@.subrange(from as int, coeffs@.len() as int), x, p)
+    ensures
+        result == poly_eval_sum_spec(coeffs@.subrange(from as int, coeffs@.len() as int), x, p),
+        result < p,
     decreases coeffs@.len() - from
 {
     if from >= coeffs.len() {
         0
     } else {
         let tail = poly_eval_from(coeffs, x, p, from + 1);
-        (coeffs[from] + ((x * tail) % p)) % p
+        let prod = field_mul(x, tail, p);
+        proof {
+            let ghost s = coeffs@.subrange(from as int, coeffs@.len() as int);
+            assert(s.len() > 0);
+            assert(s[0] == coeffs@[from as int]);
+            assert(s.subrange(1, s.len() as int) =~= coeffs@.subrange(from as int + 1, coeffs@.len() as int));
+            assert(tail == poly_eval_sum_spec(coeffs@.subrange(from as int + 1, coeffs@.len() as int), x, p));
+            assert(prod == field_mul_spec(x, tail, p));
+            assert(poly_eval_sum_spec(s, x, p)
+                == field_add_spec(
+                    s[0],
+                    field_mul_spec(x, poly_eval_sum_spec(s.subrange(1, s.len() as int), x, p), p),
+                    p,
+                ));
+        }
+        field_add(coeffs[from], prod, p)
     }
 }
 
 // r[impl shamir-poly.horner-correctness]
 /// Evaluates a polynomial at `x` by Horner's method.
-#[verifier::external_body]
 pub fn poly_eval_horner(coeffs: &[u64], x: u64, p: u64) -> (result: u64)
     requires
         valid_modulus_spec(p),
@@ -64,12 +79,15 @@ pub fn poly_eval_horner(coeffs: &[u64], x: u64, p: u64) -> (result: u64)
         forall|i: int| 0 <= i < coeffs@.len() ==> coeffs@[i] < p,
     ensures result == poly_eval_sum_spec(coeffs@, x, p)
 {
-    poly_eval_from(coeffs, x, p, 0)
+    let result = poly_eval_from(coeffs, x, p, 0);
+    proof {
+        assert(coeffs@.subrange(0, coeffs@.len() as int) =~= coeffs@);
+    }
+    result
 }
 
 // r[verify shamir-poly.degree-bound]
 /// A coefficient vector of length `k` has degree at most `k-1`.
-#[verifier::external_body]
 pub proof fn poly_degree_bound(coeffs: Seq<u64>)
     ensures poly_degree_spec(coeffs) < coeffs.len() as int || coeffs.len() == 0
 {
@@ -77,25 +95,41 @@ pub proof fn poly_degree_bound(coeffs: Seq<u64>)
 
 // r[verify shamir-poly.horner-correctness]
 /// Constant polynomial evaluates to its constant term.
-#[verifier::external_body]
 pub proof fn constant_poly_eval(c: u64, x: u64, p: u64)
     requires valid_modulus_spec(p), c < p, x < p
     ensures poly_eval_sum_spec(seq![c], x, p) == c
 {
+    let ghost s = seq![c];
+    assert(s.len() == 1);
+    assert(s[0] == c);
+    assert(s.subrange(1, s.len() as int) =~= Seq::<u64>::empty());
+    assert(poly_eval_sum_spec(Seq::<u64>::empty(), x, p) == 0);
+    field_mul_zero(x, p);
+    field_add_zero(c, p);
+    assert(poly_eval_sum_spec(s, x, p)
+        == field_add_spec(c, field_mul_spec(x, 0, p), p));
 }
 
 // r[verify shamir-poly.horner-correctness]
 /// Linear polynomial matches `a0 + a1*x`.
-#[verifier::external_body]
 pub proof fn linear_poly_eval(a0: u64, a1: u64, x: u64, p: u64)
     requires valid_modulus_spec(p), a0 < p, a1 < p, x < p
     ensures poly_eval_sum_spec(seq![a0, a1], x, p) == field_add_spec(a0, field_mul_spec(a1, x, p), p)
 {
+    let ghost s = seq![a0, a1];
+    assert(s.len() == 2);
+    assert(s[0] == a0);
+    assert(s.subrange(1, s.len() as int) =~= seq![a1]);
+    constant_poly_eval(a1, x, p);
+    field_commutative(x, a1, p);
+    assert(poly_eval_sum_spec(s, x, p)
+        == field_add_spec(a0, field_mul_spec(x, poly_eval_sum_spec(seq![a1], x, p), p), p));
+    assert(poly_eval_sum_spec(seq![a1], x, p) == a1);
+    assert(field_mul_spec(x, a1, p) == field_mul_spec(a1, x, p));
 }
 
 // r[verify shamir-poly.horner-correctness]
 /// Evaluating at zero returns the constant term for non-empty polynomials.
-#[verifier::external_body]
 pub proof fn poly_at_zero_is_constant(coeffs: Seq<u64>, p: u64)
     requires
         valid_modulus_spec(p),
@@ -104,6 +138,13 @@ pub proof fn poly_at_zero_is_constant(coeffs: Seq<u64>, p: u64)
     ensures poly_eval_sum_spec(coeffs, 0, p) == coeffs[0]
     decreases coeffs.len()
 {
+    if coeffs.len() == 1 {
+        constant_poly_eval(coeffs[0], 0, p);
+    } else {
+        poly_at_zero_is_constant(coeffs.subrange(1, coeffs.len() as int), p);
+        field_mul_zero(poly_eval_sum_spec(coeffs.subrange(1, coeffs.len() as int), 0, p), p);
+        field_add_zero(coeffs[0], p);
+    }
 }
 
 } // verus!

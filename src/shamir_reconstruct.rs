@@ -28,7 +28,6 @@ pub open spec fn share_ys_prefix_spec(shares: Seq<Share>, k: int) -> Seq<u64>
 // r[impl shamir-reconstruct.correctness]
 // r[impl shamir-reconstruct.insufficient-shares]
 /// Reconstructs a secret from the first `k` shares.
-#[verifier::external_body]
 pub fn reconstruct(shares: &[Share], k: usize, p: u64) -> (result: Option<u64>)
     ensures result.is_some() ==> result.unwrap() < p
 {
@@ -45,6 +44,8 @@ pub fn reconstruct(shares: &[Share], k: usize, p: u64) -> (result: Option<u64>)
             k <= shares@.len(),
             xs@ == share_xs_prefix_spec(shares@, i as int),
             ys@ == share_ys_prefix_spec(shares@, i as int),
+            forall|j: int| #![trigger xs@[j]] 0 <= j < xs@.len() ==> 0 < xs@[j] < p,
+            forall|j: int| #![trigger ys@[j]] 0 <= j < ys@.len() ==> ys@[j] < p,
         decreases k - i
     {
         let (x, y) = shares[i];

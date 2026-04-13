@@ -22,7 +22,6 @@ pub open spec fn threshold_completion_spec(secret: u64, xs: Seq<u64>, ys: Seq<u6
 
 // r[verify shamir-threshold.information-theoretic-security]
 /// Any visible `k-1` shares can be completed with any target secret.
-#[verifier::external_body]
 pub proof fn threshold_completion_exists(secret: u64, xs: Seq<u64>, ys: Seq<u64>, p: u64)
     requires
         ys.len() == xs.len(),
@@ -41,7 +40,6 @@ pub proof fn threshold_completion_exists(secret: u64, xs: Seq<u64>, ys: Seq<u64>
 
 // r[verify shamir-threshold.perfect-reconstruction-threshold]
 /// Once the secret point is added, the completed value vector is unique.
-#[verifier::external_body]
 pub proof fn threshold_completion_unique(secret1: u64, secret2: u64, xs: Seq<u64>, ys: Seq<u64>, p: u64)
     requires
         ys.len() == xs.len(),

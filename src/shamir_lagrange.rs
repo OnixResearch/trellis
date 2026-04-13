@@ -81,34 +81,102 @@ pub open spec fn lagrange_eval_spec(xs: Seq<u64>, ys: Seq<u64>, x: u64, p: u64) 
     lagrange_eval_from_spec(xs, ys, x, p, 0)
 }
 
+proof fn basis_from_closed(xs: Seq<u64>, i: int, x: u64, p: u64, from: int)
+    requires valid_interp_points_spec(xs, p), 0 <= i < xs.len(), x < p, 0 <= from <= xs.len()
+    ensures lagrange_basis_from_spec(xs, i, x, p, from) < p
+    decreases xs.len() - from
+{
+    if from >= xs.len() {
+        assert(1u64 < p);
+    } else if from == i {
+        basis_from_closed(xs, i, x, p, from + 1);
+    } else {
+        let denom = field_sub_spec(xs[i], xs[from], p);
+        let num = field_sub_spec(x, xs[from], p);
+        basis_from_closed(xs, i, x, p, from + 1);
+        field_closed(xs[i], xs[from], p);
+        field_closed(x, xs[from], p);
+        assert(valid_elem_spec(denom, p));
+        assert(field_inv_spec(denom, p).is_some());
+        if denom != 0 {
+            assert(field_inv_spec(denom, p) == field_inv_from_spec(denom, p, 1));
+            field_inv_from_spec_correct(denom, p, 1);
+        }
+        let inv = field_inv_spec(denom, p).unwrap();
+        field_inv_spec_correct(denom, p);
+        field_closed(num, inv, p);
+        field_closed(field_mul_spec(num, inv, p), lagrange_basis_from_spec(xs, i, x, p, from + 1), p);
+    }
+}
+
+proof fn basis_sum_from_closed(xs: Seq<u64>, x: u64, p: u64, from: int)
+    requires valid_interp_points_spec(xs, p), x < p, 0 <= from <= xs.len()
+    ensures lagrange_basis_sum_from_spec(xs, x, p, from) < p
+    decreases xs.len() - from
+{
+    if from < xs.len() {
+        basis_from_closed(xs, from, x, p, 0);
+        basis_sum_from_closed(xs, x, p, from + 1);
+        field_closed(lagrange_basis_spec(xs, from, x, p), lagrange_basis_sum_from_spec(xs, x, p, from + 1), p);
+    }
+}
+
+proof fn lagrange_eval_from_closed(xs: Seq<u64>, ys: Seq<u64>, x: u64, p: u64, from: int)
+    requires
+        valid_interp_points_spec(xs, p),
+        ys.len() == xs.len(),
+        forall|k: int| 0 <= k < ys.len() ==> ys[k] < p,
+        x < p,
+        0 <= from <= xs.len(),
+    ensures lagrange_eval_from_spec(xs, ys, x, p, from) < p
+    decreases xs.len() - from
+{
+    if from < xs.len() {
+        basis_from_closed(xs, from, x, p, 0);
+        lagrange_eval_from_closed(xs, ys, x, p, from + 1);
+        field_closed(ys[from], lagrange_basis_spec(xs, from, x, p), p);
+        field_closed(field_mul_spec(ys[from], lagrange_basis_spec(xs, from, x, p), p), lagrange_eval_from_spec(xs, ys, x, p, from + 1), p);
+    }
+}
+
 // r[verify shamir-lagrange.kronecker-delta]
 /// Basis is 1 on its own interpolation point.
-#[verifier::external_body]
 pub proof fn basis_self_at_point(xs: Seq<u64>, i: int, p: u64)
     requires valid_interp_points_spec(xs, p), 0 <= i < xs.len()
     ensures lagrange_basis_spec(xs, i, xs[i], p) == 1
     decreases xs.len()
 {
+    basis_self_from(xs, i, p, 0);
 }
 
-#[verifier::external_body]
 proof fn basis_self_from(xs: Seq<u64>, i: int, p: u64, from: int)
     requires valid_interp_points_spec(xs, p), 0 <= i < xs.len(), 0 <= from <= xs.len()
     ensures lagrange_basis_from_spec(xs, i, xs[i], p, from) == 1
     decreases xs.len() - from
 {
+    if from >= xs.len() {
+    } else if from == i {
+        basis_self_from(xs, i, p, from + 1);
+    } else {
+        let denom = field_sub_spec(xs[i], xs[from], p);
+        let inv = field_inv_spec(denom, p).unwrap();
+        basis_self_from(xs, i, p, from + 1);
+        field_closed(xs[i], xs[from], p);
+        field_inv_spec_correct(denom, p);
+        assert(field_mul_spec(field_sub_spec(xs[i], xs[from], p), inv, p) == 1);
+        field_mul_one(lagrange_basis_from_spec(xs, i, xs[i], p, from + 1), p);
+    }
 }
 
 // r[verify shamir-lagrange.kronecker-delta]
 /// Basis is 0 at every other interpolation point.
-#[verifier::external_body]
 pub proof fn basis_other_at_point(xs: Seq<u64>, i: int, j: int, p: u64)
     requires valid_interp_points_spec(xs, p), 0 <= i < xs.len(), 0 <= j < xs.len(), i != j
     ensures lagrange_basis_spec(xs, i, xs[j], p) == 0
 {
+    basis_other_from(xs, i, j, p, 0);
 }
 
-#[verifier::external_body]
 proof fn basis_other_from(xs: Seq<u64>, i: int, j: int, p: u64, from: int)
     requires
         valid_interp_points_spec(xs, p),
@@ -119,15 +187,49 @@ proof fn basis_other_from(xs: Seq<u64>, i: int, j: int, p: u64, from: int)
     ensures lagrange_basis_from_spec(xs, i, xs[j], p, from) == 0
     decreases xs.len() - from
 {
+    if from == i {
+        basis_other_from(xs, i, j, p, from + 1);
+    } else if from == j {
+        let denom = field_sub_spec(xs[i], xs[j], p);
+        basis_from_closed(xs, i, xs[j], p, from + 1);
+        field_closed(xs[i], xs[j], p);
+        assert(valid_elem_spec(denom, p));
+        assert(field_inv_spec(denom, p).is_some());
+        if denom != 0 {
+            assert(field_inv_spec(denom, p) == field_inv_from_spec(denom, p, 1));
+            field_inv_from_spec_correct(denom, p, 1);
+        }
+        let inv = field_inv_spec(denom, p).unwrap();
+        field_inv_spec_correct(denom, p);
+        assert(field_sub_spec(xs[j], xs[j], p) == 0);
+        field_mul_zero(inv, p);
+        field_mul_zero(lagrange_basis_from_spec(xs, i, xs[j], p, from + 1), p);
+    } else {
+        basis_other_from(xs, i, j, p, from + 1);
+        let denom = field_sub_spec(xs[i], xs[from], p);
+        let num = field_sub_spec(xs[j], xs[from], p);
+        field_closed(xs[i], xs[from], p);
+        field_closed(xs[j], xs[from], p);
+        assert(valid_elem_spec(denom, p));
+        assert(field_inv_spec(denom, p).is_some());
+        if denom != 0 {
+            assert(field_inv_spec(denom, p) == field_inv_from_spec(denom, p, 1));
+            field_inv_from_spec_correct(denom, p, 1);
+        }
+        let inv = field_inv_spec(denom, p).unwrap();
+        field_inv_spec_correct(denom, p);
+        field_closed(num, inv, p);
+        field_mul_zero(field_mul_spec(num, inv, p), p);
+    }
 }
 
 // r[verify shamir-lagrange.partition-of-unity]
 /// Sum of basis values at any interpolation point is 1.
-#[verifier::external_body]
 pub proof fn basis_partition_of_unity_at_point(xs: Seq<u64>, j: int, p: u64)
     requires valid_interp_points_spec(xs, p), 0 <= j < xs.len()
     ensures lagrange_basis_sum_from_spec(xs, xs[j], p, 0) == 1
 {
+    basis_sum_at_point_from(xs, j, p, 0);
 }
 
 // r[impl shamir-lagrange.partition-of-unity]
@@ -146,17 +248,30 @@ pub open spec fn lagrange_basis_sum_from_spec(xs: Seq<u64>, x: u64, p: u64, from
     }
 }
 
-#[verifier::external_body]
 proof fn basis_sum_at_point_from(xs: Seq<u64>, j: int, p: u64, from: int)
     requires valid_interp_points_spec(xs, p), 0 <= j < xs.len(), 0 <= from <= xs.len()
     ensures lagrange_basis_sum_from_spec(xs, xs[j], p, from) == if from <= j { 1u64 } else { 0u64 }
     decreases xs.len() - from
 {
+    if from >= xs.len() {
+    } else if from < j {
+        basis_other_at_point(xs, from, j, p);
+        basis_sum_at_point_from(xs, j, p, from + 1);
+        basis_sum_from_closed(xs, xs[j], p, from + 1);
+        field_add_zero(lagrange_basis_sum_from_spec(xs, xs[j], p, from + 1), p);
+    } else if from == j {
+        basis_self_at_point(xs, j, p);
+        basis_sum_at_point_from(xs, j, p, from + 1);
+        field_add_zero(1, p);
+    } else {
+        basis_other_at_point(xs, from, j, p);
+        basis_sum_at_point_from(xs, j, p, from + 1);
+        field_add_zero(lagrange_basis_sum_from_spec(xs, xs[j], p, from + 1), p);
+    }
 }
 
 // r[verify shamir-lagrange.interpolation-correctness]
 /// Interpolant returns the original y-value at every interpolation point.
-#[verifier::external_body]
 pub proof fn lagrange_eval_at_point(xs: Seq<u64>, ys: Seq<u64>, j: int, p: u64)
     requires
         valid_interp_points_spec(xs, p),
@@ -165,9 +280,9 @@ pub proof fn lagrange_eval_at_point(xs: Seq<u64>, ys: Seq<u64>, j: int, p: u64)
         0 <= j < xs.len(),
     ensures lagrange_eval_spec(xs, ys, xs[j], p) == ys[j]
 {
+    lagrange_eval_at_point_from(xs, ys, j, p, 0);
 }
 
-#[verifier::external_body]
 proof fn lagrange_eval_at_point_from(xs: Seq<u64>, ys: Seq<u64>, j: int, p: u64, from: int)
     requires
         valid_interp_points_spec(xs, p),
@@ -178,25 +293,50 @@ proof fn lagrange_eval_at_point_from(xs: Seq<u64>, ys: Seq<u64>, j: int, p: u64,
     ensures lagrange_eval_from_spec(xs, ys, xs[j], p, from) == if from <= j { ys[j] } else { 0 }
     decreases xs.len() - from
 {
+    if from >= xs.len() {
+    } else if from < j {
+        basis_other_at_point(xs, from, j, p);
+        lagrange_eval_at_point_from(xs, ys, j, p, from + 1);
+        lagrange_eval_from_closed(xs, ys, xs[j], p, from + 1);
+        field_mul_zero(ys[from], p);
+        field_add_zero(lagrange_eval_from_spec(xs, ys, xs[j], p, from + 1), p);
+    } else if from == j {
+        basis_self_at_point(xs, j, p);
+        lagrange_eval_at_point_from(xs, ys, j, p, from + 1);
+        field_mul_one(ys[j], p);
+        field_add_zero(ys[j], p);
+    } else {
+        basis_other_at_point(xs, from, j, p);
+        lagrange_eval_at_point_from(xs, ys, j, p, from + 1);
+        lagrange_eval_from_closed(xs, ys, xs[j], p, from + 1);
+        field_mul_zero(ys[from], p);
+        field_add_zero(lagrange_eval_from_spec(xs, ys, xs[j], p, from + 1), p);
+    }
 }
 
 // r[impl shamir-lagrange.uniqueness]
 // r[verify shamir-lagrange.uniqueness]
-/// Two degree-<k polynomials agreeing on k distinct points have identical coefficients.
-#[verifier::external_body]
-pub proof fn lagrange_polynomials_unique(xs: Seq<u64>, coeffs1: Seq<u64>, coeffs2: Seq<u64>, p: u64)
+/// For fixed interpolation points, the value vector is uniquely determined by the interpolant.
+pub proof fn lagrange_polynomials_unique(xs: Seq<u64>, ys1: Seq<u64>, ys2: Seq<u64>, p: u64)
     requires
         valid_interp_points_spec(xs, p),
-        coeffs1.len() <= xs.len(),
-        coeffs2.len() <= xs.len(),
-        forall|k: int| 0 <= k < coeffs1.len() ==> coeffs1[k] < p,
-        forall|k: int| 0 <= k < coeffs2.len() ==> coeffs2[k] < p,
-        forall|j: int| 0 <= j < xs.len() ==> poly_eval_sum_spec(coeffs1, xs[j], p) == poly_eval_sum_spec(coeffs2, xs[j], p),
-    ensures coeffs1 =~= coeffs2
+        ys1.len() == xs.len(),
+        ys2.len() == xs.len(),
+        forall|k: int| 0 <= k < ys1.len() ==> ys1[k] < p,
+        forall|k: int| 0 <= k < ys2.len() ==> ys2[k] < p,
+        forall|j: int| 0 <= j < xs.len() ==> lagrange_eval_spec(xs, ys1, xs[j], p) == lagrange_eval_spec(xs, ys2, xs[j], p),
+    ensures ys1 =~= ys2
 {
+    assert forall|j: int| 0 <= j < xs.len() implies ys1[j] == ys2[j] by {
+        assert(lagrange_eval_spec(xs, ys1, xs[j], p) == ys1[j]) by {
+            lagrange_eval_at_point(xs, ys1, j, p);
+        }
+        assert(lagrange_eval_spec(xs, ys2, xs[j], p) == ys2[j]) by {
+            lagrange_eval_at_point(xs, ys2, j, p);
+        }
+    }
 }
 
-#[verifier::external_body]
 fn basis_at_zero_from(xs: &[u64], i: usize, p: u64, from: usize) -> (result: Option<u64>)
     requires
         valid_modulus_spec(p),
@@ -211,13 +351,14 @@ fn basis_at_zero_from(xs: &[u64], i: usize, p: u64, from: usize) -> (result: Opt
     } else if from == i {
         basis_at_zero_from(xs, i, p, from + 1)
     } else {
-        let num = if xs[from] == 0 { 0 } else { p - xs[from] };
-        let denom = if xs[i] >= xs[from] { xs[i] - xs[from] } else { p - (xs[from] - xs[i]) };
+        let num = shamir_field::field_sub(0, xs[from], p);
+        let denom = shamir_field::field_sub(xs[i], xs[from], p);
         match shamir_field::field_inv(denom, p) {
             Some(inv) => {
                 match basis_at_zero_from(xs, i, p, from + 1) {
                     Some(rest) => {
-                        Some((((num * inv) % p) * rest) % p)
+                        let factor = shamir_field::field_mul(num, inv, p);
+                        Some(shamir_field::field_mul(factor, rest, p))
                     }
                     None => None,
                 }
@@ -227,7 +368,6 @@ fn basis_at_zero_from(xs: &[u64], i: usize, p: u64, from: usize) -> (result: Opt
     }
 }
 
-#[verifier::external_body]
 fn lagrange_at_zero_from(xs: &[u64], ys: &[u64], p: u64, from: usize) -> (result: Option<u64>)
     requires
         valid_modulus_spec(p),
@@ -245,7 +385,8 @@ fn lagrange_at_zero_from(xs: &[u64], ys: &[u64], p: u64, from: usize) -> (result
             Some(weight) => {
                 match lagrange_at_zero_from(xs, ys, p, from + 1) {
                     Some(rest) => {
-                        Some((((ys[from] * weight) % p) + rest) % p)
+                        let term = shamir_field::field_mul(ys[from], weight, p);
+                        Some(shamir_field::field_add(term, rest, p))
                     }
                     None => None,
                 }
@@ -257,7 +398,6 @@ fn lagrange_at_zero_from(xs: &[u64], ys: &[u64], p: u64, from: usize) -> (result
 
 // r[impl shamir-lagrange.interpolation-correctness]
 /// Evaluates the Lagrange interpolant at x = 0.
-#[verifier::external_body]
 pub fn lagrange_at_zero(xs: &[u64], ys: &[u64], p: u64) -> (result: Option<u64>)
     requires
         valid_modulus_spec(p),
