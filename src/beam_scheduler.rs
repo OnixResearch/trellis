@@ -158,7 +158,9 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::beam_process::{BEAM_ALIVE, BEAM_DEAD, BEAM_EXITING};
+    use crate::beam_process::BEAM_ALIVE;
+    use crate::beam_process::BEAM_DEAD;
+    use crate::beam_process::BEAM_EXITING;
 
     // r[verify beam-scheduler.preemption]
     #[test]

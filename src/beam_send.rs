@@ -6,11 +6,11 @@
 
 use vstd::prelude::*;
 
-use crate::beam_mailbox::{BeamMessage, mailbox_append};
-use crate::beam_process::BEAM_DEAD;
-
+use crate::beam_mailbox::BeamMessage;
+use crate::beam_mailbox::mailbox_append;
 #[cfg(verus_keep_ghost)]
 use crate::beam_mailbox::mailbox_append_spec;
+use crate::beam_process::BEAM_DEAD;
 
 verus! {
 
@@ -77,8 +77,10 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::beam_mailbox::{BeamMessage, MESSAGE_DATA};
-    use crate::beam_process::{BEAM_ALIVE, BEAM_DEAD};
+    use crate::beam_mailbox::BeamMessage;
+    use crate::beam_mailbox::MESSAGE_DATA;
+    use crate::beam_process::BEAM_ALIVE;
+    use crate::beam_process::BEAM_DEAD;
 
     fn data(sender: u64, payload: u64) -> BeamMessage {
         BeamMessage {

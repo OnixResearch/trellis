@@ -6,13 +6,17 @@
 
 use vstd::prelude::*;
 
-use crate::beam_mailbox::{BeamMessage, MESSAGE_EXIT, mailbox_append};
-use crate::beam_process::{
-    BEAM_ALIVE, REASON_KILL, REASON_KILLED, REASON_NORMAL, BeamProcess, start_exit,
-};
-
+use crate::beam_mailbox::BeamMessage;
+use crate::beam_mailbox::MESSAGE_EXIT;
+use crate::beam_mailbox::mailbox_append;
 #[cfg(verus_keep_ghost)]
 use crate::beam_mailbox::mailbox_append_spec;
+use crate::beam_process::BEAM_ALIVE;
+use crate::beam_process::BeamProcess;
+use crate::beam_process::REASON_KILL;
+use crate::beam_process::REASON_KILLED;
+use crate::beam_process::REASON_NORMAL;
+use crate::beam_process::start_exit;
 #[cfg(verus_keep_ghost)]
 use crate::beam_process::start_exit_spec;
 
@@ -288,7 +292,9 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::beam_process::{spawn_process, BEAM_DEAD, REASON_ERROR};
+    use crate::beam_process::BEAM_DEAD;
+    use crate::beam_process::REASON_ERROR;
+    use crate::beam_process::spawn_process;
 
     // r[verify beam-link.symmetry]
     #[test]
