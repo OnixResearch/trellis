@@ -12,7 +12,7 @@ priority scheduling, and registry cleanup.
 
 **Goals:**
 - Model `alive -> exiting -> dead` process lifecycle
-- Model heap isolation as distinct heap identities plus copy-on-send terms
+- Model heap isolation as pid-indexed heap identities for distinct pids plus copy-on-send terms
 - Model FIFO mailbox append and exact-match selective receive with save offset
 - Model async send as append-if-live, drop-if-dead
 - Model symmetric links and per-peer exit delivery rules
@@ -44,12 +44,13 @@ monolithic VM state.
 
 ### 2. Heap isolation modeled by identity + copying
 
-**Choice:** Represent heap isolation with unique `heap_id` values and an
-exec `copy_term` helper that clones terms before send.
+**Choice:** Represent heap isolation with `heap_id` derived from pid and an
+exec `copy_term` helper that clones terms before send. In this model,
+processes are compared by pid, so distinct pids imply distinct heap ids.
 
-**Rationale:** The requirement is non-aliasing across processes, not full GC.
-Distinct heap identity plus copy-on-send captures the semantic boundary with
-small proofs and cheap runtime tests.
+**Rationale:** The requirement is non-aliasing across distinct processes, not
+full GC. Distinct-pid heap identity plus copy-on-send captures the semantic
+boundary with small proofs and cheap runtime tests.
 
 ### 3. Selective receive uses exact message matching
 
@@ -98,4 +99,5 @@ richer pattern predicates later.
 Cross-module proofs still cover the semantic obligations of death delivery.
 
 **[Heap isolation is logical, not physical]** -> Accept. Verified clients need
-non-aliasing and copy semantics more than GC internals.
+non-aliasing and copy semantics more than GC internals, and this model keys
+that isolation to distinct pids.

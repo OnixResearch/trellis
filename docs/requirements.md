@@ -6149,9 +6149,9 @@ A BEAM process MUST move only forward through `alive -> exiting -> dead`.
 Once dead, it MUST remain dead.
 
 r[beam-process.isolation]
-Each BEAM process MUST have its own logical heap identity. Mutating one
-process heap MUST NOT mutate any other process heap. Inter-process term
-transfer MUST occur by copying.
+BEAM processes with distinct pid identities MUST have distinct logical heap
+identities. Mutating one process heap MUST NOT mutate any other process
+heap. Inter-process term transfer MUST occur by copying.
 
 r[beam-mailbox.ordering]
 A BEAM mailbox MUST append new messages at the tail. Messages from the same
@@ -6185,8 +6185,10 @@ A process with `trap_exit` enabled MUST convert incoming exit signals into
 `killed`.
 
 r[beam-monitor.unidirectional]
-A monitor MUST be unidirectional: monitor creation MUST leave the target
-process state unchanged and only the watcher observes monitor state.
+A monitor MUST be unidirectional: monitor creation MUST produce only
+watcher-owned monitor state, leave the target process state unchanged, and
+route any DOWN observation only through the watcher-side result/mailbox
+path.
 
 r[beam-monitor.down]
 An active monitor MUST deliver exactly one `DOWN` message when the target
@@ -6232,8 +6234,9 @@ r[properties.beam-death-mailbox]
 Sending to a dead BEAM process MUST leave its mailbox unchanged.
 
 r[properties.beam-death-registry]
-Cleaning up a dead BEAM pid in the registry MUST remove that pid before the
-same name can be registered again.
+Cleaning up a dead BEAM pid in the registry MUST remove that pid's entry so
+a register-then-cleanup roundtrip restores the prior registry and the same
+name can be registered again.
 
 r[properties.beam-scheduler-state]
 The scheduler MUST treat only alive processes with pending work as runnable.

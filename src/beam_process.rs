@@ -3,8 +3,8 @@
 //! Models the core BEAM process states (`alive -> exiting -> dead`),
 //! `trap_exit` flag, exit reasons, and per-process heap identity. The
 //! model is intentionally small: heap isolation is represented by deriving
-//! each `heap_id` from the process pid plus copy-on-send helpers, not a full
-//! garbage-collected heap implementation.
+//! each `heap_id` from the process pid for distinct pids plus copy-on-send
+//! helpers, not a full garbage-collected heap implementation.
 
 use vstd::prelude::*;
 
@@ -67,7 +67,7 @@ pub open spec fn dead_stays_dead_spec(proc: BeamProcess, reason: u64) -> bool {
     proc.state == BEAM_DEAD ==> start_exit_spec(proc, reason).state == BEAM_DEAD
 }
 
-/// Spec: unique heap identity assigned at spawn time.
+/// Spec: heap identity for one pid. Distinct pids get distinct heap ids.
 pub open spec fn heap_id_for_pid_spec(pid: u64) -> u64 {
     pid
 }
@@ -75,6 +75,8 @@ pub open spec fn heap_id_for_pid_spec(pid: u64) -> u64 {
 // r[impl beam-process.lifecycle]
 // r[impl beam-process.isolation]
 /// Create a new live BEAM process with a heap identity derived from pid.
+/// In this model, distinct process identities are represented by distinct
+/// pid values, so heap isolation is stated for processes with different pids.
 pub fn spawn_process(pid: u64) -> (proc: BeamProcess)
     ensures
         proc.pid == pid,
@@ -224,7 +226,7 @@ pub fn finish_exit(proc: &BeamProcess) -> (result: BeamProcess)
 }
 
 // r[depends beam-process.isolation]
-/// Spec: distinct processes have distinct logical heaps.
+/// Spec: processes with distinct pids have distinct logical heaps.
 pub open spec fn heaps_isolated_spec(a: BeamProcess, b: BeamProcess) -> bool {
     a.pid != b.pid ==> a.heap_id != b.heap_id
 }
@@ -405,6 +407,15 @@ mod tests {
         fn prop_copy_term_roundtrip(values in proptest::collection::vec(any::<u64>(), 0..16)) {
             let copied = copy_term(&values);
             prop_assert_eq!(copied, values);
+        }
+
+        // r[verify beam-process.isolation]
+        #[test]
+        fn prop_distinct_pids_get_distinct_heap_ids(pid1: u64, pid2: u64) {
+            prop_assume!(pid1 != pid2);
+            let a = spawn_process(pid1);
+            let b = spawn_process(pid2);
+            prop_assert_ne!(a.heap_id, b.heap_id);
         }
     }
 }

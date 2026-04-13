@@ -2319,33 +2319,48 @@ mod nickel_proofs {
 
     // r[impl properties.beam-death-links]
     pub open spec fn beam_death_links_prop(
+        links: Seq<u64>,
         proc: crate::beam_process::BeamProcess,
         mailbox: Seq<crate::beam_mailbox::BeamMessage>,
         source_pid: u64,
         reason: u64,
     ) -> bool {
-        let delivered = crate::beam_link::deliver_exit_signal_spec(proc, mailbox, source_pid, reason);
-        if proc.state != crate::beam_process::BEAM_ALIVE {
+        let linked = crate::beam_link::link_contains_spec(links, source_pid);
+        let delivered = if linked {
+            crate::beam_link::deliver_exit_signal_spec(proc, mailbox, source_pid, reason)
+        } else {
+            (proc, mailbox)
+        };
+        if !linked || proc.state != crate::beam_process::BEAM_ALIVE {
             delivered.0 == proc && delivered.1 =~= mailbox
         } else if reason == crate::beam_process::REASON_KILL {
             delivered.0.exit_reason == crate::beam_process::REASON_KILLED
+                && delivered.1 =~= mailbox
         } else if proc.trap_exit {
-            delivered.0 == proc && delivered.1.len() == mailbox.len() + 1
-        } else if reason == crate::beam_process::REASON_NORMAL {
             delivered.0 == proc
+                && delivered.1
+                    == crate::beam_mailbox::mailbox_append_spec(
+                        mailbox,
+                        crate::beam_link::exit_message_spec(source_pid, reason),
+                    )
+        } else if reason == crate::beam_process::REASON_NORMAL {
+            delivered.0 == proc && delivered.1 =~= mailbox
         } else {
             delivered.0.state == crate::beam_process::BEAM_EXITING
+                && delivered.0.exit_reason == reason
+                && delivered.1 =~= mailbox
         }
     }
 
     // r[verify properties.beam-death-links]
     proof fn prove_beam_death_links(
+        links: Seq<u64>,
         proc: crate::beam_process::BeamProcess,
         mailbox: Seq<crate::beam_mailbox::BeamMessage>,
         source_pid: u64,
         reason: u64,
     )
-        ensures beam_death_links_prop(proc, mailbox, source_pid, reason)
+        ensures beam_death_links_prop(links, proc, mailbox, source_pid, reason)
     {}
 
     // r[impl properties.beam-death-monitor]
@@ -2353,8 +2368,15 @@ mod nickel_proofs {
         monitor: crate::beam_monitor::BeamMonitor,
         reason: u64,
     ) -> bool {
-        let notified = crate::beam_monitor::notify_death_spec(monitor, reason);
-        monitor.active ==> (!notified.0.active && notified.1.is_some())
+        let first = crate::beam_monitor::notify_death_spec(monitor, reason);
+        let second = crate::beam_monitor::notify_death_spec(first.0, reason);
+        if monitor.active {
+            first.0.active == false
+                && first.1 == Some(crate::beam_monitor::down_message_spec(monitor, reason))
+                && second.1.is_none()
+        } else {
+            first.0 == monitor && first.1.is_none()
+        }
     }
 
     // r[verify properties.beam-death-monitor]
@@ -2392,7 +2414,10 @@ mod nickel_proofs {
             !crate::beam_registry::registry_has_name_spec(registry, name),
             !crate::beam_registry::registry_has_pid_spec(registry, pid),
     {
-        crate::beam_registry::register_spec(registry, name, pid).is_some()
+        let registered = crate::beam_registry::register_spec(registry, name, pid).unwrap();
+        let cleaned = crate::beam_registry::unregister_pid_spec(registered, pid);
+        cleaned =~= registry
+            && crate::beam_registry::register_spec(cleaned, name, pid).is_some()
     }
 
     // r[verify properties.beam-death-registry]
@@ -2408,6 +2433,7 @@ mod nickel_proofs {
         ensures beam_death_registry_prop(registry, name, pid)
     {
         crate::beam_registry::register_fresh_pair_is_some(registry, name, pid);
+        crate::beam_registry::cleanup_fresh_register_restores_registry(registry, name, pid);
     }
 
     // r[impl properties.beam-scheduler-state]
@@ -7366,20 +7392,34 @@ mod zircon_kernel_proofs {
 
     use crate::deadline_queue::is_earlier_spec;
     use crate::process_state::can_transition_spec;
-    use crate::zircon_channel::{
-        channel_signals_spec, ChannelEndpoint, ZX_CHANNEL_PEER_CLOSED, ZX_CHANNEL_READABLE,
-    };
-    use crate::zircon_event::{eventpair_signals_spec, ZX_EVENTPAIR_PEER_CLOSED};
-    use crate::zircon_fifo::{fifo_signals_spec, ZirconFifoEndpoint, ZX_FIFO_PEER_CLOSED, ZX_FIFO_READABLE};
-    use crate::zircon_futex::{requeue_result_spec, wake_released_spec};
-    use crate::zircon_handle::{
-        object_live_spec, ZirconHandle, ZX_HANDLE_BOUND, ZX_HANDLE_IN_TRANSIT,
-    };
+    use crate::zircon_channel::ChannelEndpoint;
+    use crate::zircon_channel::ZX_CHANNEL_PEER_CLOSED;
+    use crate::zircon_channel::ZX_CHANNEL_READABLE;
+    use crate::zircon_channel::channel_signals_spec;
+    use crate::zircon_event::ZX_EVENTPAIR_PEER_CLOSED;
+    use crate::zircon_event::eventpair_signals_spec;
+    use crate::zircon_fifo::ZX_FIFO_PEER_CLOSED;
+    use crate::zircon_fifo::ZX_FIFO_READABLE;
+    use crate::zircon_fifo::ZirconFifoEndpoint;
+    use crate::zircon_fifo::fifo_signals_spec;
+    use crate::zircon_futex::requeue_result_spec;
+    use crate::zircon_futex::wake_released_spec;
+    use crate::zircon_handle::ZX_HANDLE_BOUND;
+    use crate::zircon_handle::ZX_HANDLE_IN_TRANSIT;
+    use crate::zircon_handle::ZirconHandle;
+    use crate::zircon_handle::object_live_spec;
     use crate::zircon_job::process_in_subtree_spec;
-    use crate::zircon_port::{PortPacket, PortRegistration};
-    use crate::zircon_rights::{can_duplicate_spec, rights_subset_spec};
-    use crate::zircon_socket::{socket_signals_spec, ZirconSocketEndpoint, ZX_SOCKET_PEER_CLOSED, ZX_SOCKET_READABLE};
-    use crate::zircon_timer::{ZirconTimer, ZX_TIMER_ARMED, ZX_TIMER_SIGNALED_STATE};
+    use crate::zircon_port::PortPacket;
+    use crate::zircon_port::PortRegistration;
+    use crate::zircon_rights::can_duplicate_spec;
+    use crate::zircon_rights::rights_subset_spec;
+    use crate::zircon_socket::ZX_SOCKET_PEER_CLOSED;
+    use crate::zircon_socket::ZX_SOCKET_READABLE;
+    use crate::zircon_socket::ZirconSocketEndpoint;
+    use crate::zircon_socket::socket_signals_spec;
+    use crate::zircon_timer::ZX_TIMER_ARMED;
+    use crate::zircon_timer::ZX_TIMER_SIGNALED_STATE;
+    use crate::zircon_timer::ZirconTimer;
     use crate::zircon_wait::wait_ready_spec;
 
     verus! {

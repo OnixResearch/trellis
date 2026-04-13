@@ -55,7 +55,7 @@ let-it-crash supervision semantics without needing a full BEAM emulator.
 ### New Capabilities
 
 - `beam-process.lifecycle`: Verified monotonic process state transitions
-- `beam-process.isolation`: Verified heap isolation between processes
+- `beam-process.isolation`: Verified heap isolation for processes with distinct pids
 - `beam-mailbox.ordering`: Verified FIFO mailbox and selective receive
 - `beam-mailbox.save-offset`: Verified cursor correctness across receives
 - `beam-send.async`: Verified fire-and-forget delivery semantics

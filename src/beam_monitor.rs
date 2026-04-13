@@ -7,8 +7,10 @@
 
 use vstd::prelude::*;
 
-use crate::beam_mailbox::{BeamMessage, MESSAGE_DOWN};
-use crate::beam_process::{BEAM_DEAD, REASON_NOPROC};
+use crate::beam_mailbox::BeamMessage;
+use crate::beam_mailbox::MESSAGE_DOWN;
+use crate::beam_process::BEAM_DEAD;
+use crate::beam_process::REASON_NOPROC;
 
 verus! {
 
@@ -59,9 +61,23 @@ fn is_down_for_ref(msg: BeamMessage, ref_id: u64) -> (result: bool)
 }
 
 // r[depends beam-monitor.unidirectional]
-/// Spec: monitor creation does not mutate target process state.
-pub open spec fn monitor_unidirectional_spec(target_state: u64) -> bool {
-    target_state == target_state
+/// Spec helper: monitor creation leaves the target state unchanged.
+pub open spec fn target_state_after_create_monitor_spec(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> u64 {
+    let _created = create_monitor_spec(ref_id, watcher, target, target_state);
+    target_state
+}
+
+// r[depends beam-monitor.unidirectional]
+/// Spec: monitor creation produces watcher-owned state only and does not
+/// mutate the target-side process state.
+pub open spec fn monitor_unidirectional_spec(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> bool {
+    let created = create_monitor_spec(ref_id, watcher, target, target_state);
+    &&& target_state_after_create_monitor_spec(ref_id, watcher, target, target_state) == target_state
+    &&& created.0.watcher == watcher
+    &&& created.0.target == target
+    &&& created.0.ref_id == ref_id
+    &&& (target_state == BEAM_DEAD ==> !created.0.active && created.1 == Some(down_message_spec(created.0, REASON_NOPROC)))
+    &&& (target_state != BEAM_DEAD ==> created.0.active && created.1.is_none())
 }
 
 // r[depends beam-monitor.down]
@@ -213,8 +229,8 @@ pub fn demonitor_flush(mailbox: &[BeamMessage], ref_id: u64) -> (result: Vec<Bea
 }
 
 // r[verify beam-monitor.unidirectional]
-proof fn create_monitor_leaves_target_unchanged(target_state: u64)
-    ensures monitor_unidirectional_spec(target_state)
+proof fn create_monitor_leaves_target_unchanged(ref_id: u64, watcher: u64, target: u64, target_state: u64)
+    ensures monitor_unidirectional_spec(ref_id, watcher, target, target_state)
 {}
 
 // r[verify beam-monitor.down]
@@ -222,7 +238,8 @@ proof fn active_monitor_sends_exactly_one_down(monitor: BeamMonitor, reason: u64
     requires monitor.active
     ensures
         notify_death_spec(monitor, reason).0.active == false,
-        notify_death_spec(monitor, reason).1.is_some(),
+        notify_death_spec(monitor, reason).1 == Some(down_message_spec(monitor, reason)),
+        notify_death_spec(notify_death_spec(monitor, reason).0, reason).1.is_none(),
 {}
 
 // r[verify beam-monitor.late]
@@ -248,7 +265,19 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::beam_process::{BEAM_ALIVE, BEAM_DEAD};
+    use crate::beam_process::BEAM_ALIVE;
+    use crate::beam_process::BEAM_DEAD;
+
+    // r[verify beam-monitor.unidirectional]
+    #[test]
+    fn test_monitor_creation_is_watcher_owned() {
+        let (monitor, immediate) = create_monitor(7, 11, 22, BEAM_ALIVE);
+        assert_eq!(monitor.watcher, 11);
+        assert_eq!(monitor.target, 22);
+        assert_eq!(monitor.ref_id, 7);
+        assert!(monitor.active);
+        assert!(immediate.is_none());
+    }
 
     // r[verify beam-monitor.down]
     #[test]
@@ -258,7 +287,11 @@ mod tests {
 
         let (monitor, down) = notify_death(monitor, 9);
         assert!(!monitor.active);
-        assert_eq!(down.unwrap().kind, MESSAGE_DOWN);
+        let down = down.unwrap();
+        assert_eq!(down.kind, MESSAGE_DOWN);
+        assert_eq!(down.ref_id, 7);
+        assert_eq!(down.observed_pid, 2);
+        assert_eq!(down.reason, 9);
 
         let (_, again) = notify_death(monitor, 9);
         assert!(again.is_none());
@@ -275,7 +308,12 @@ mod tests {
     // r[verify beam-monitor.demonitor]
     #[test]
     fn test_demonitor_flush_removes_down() {
-        let monitor = BeamMonitor { watcher: 1, target: 2, ref_id: 7, active: true };
+        let monitor = BeamMonitor {
+            watcher: 1,
+            target: 2,
+            ref_id: 7,
+            active: true,
+        };
         let down = down_message(monitor, 9);
         let mailbox = vec![down, BeamMessage {
             sender: 9,

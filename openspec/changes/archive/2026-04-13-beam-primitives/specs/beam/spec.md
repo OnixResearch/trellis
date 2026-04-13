@@ -32,9 +32,15 @@ from `dead` to any other state is permitted.
 ### Requirement: Process Heap Isolation
 
 r[beam-process.isolation]
-Each process MUST have a logically isolated heap. A mutation to one
-process's heap MUST NOT be observable by any other process. The only
-inter-process data path is message copying.
+Processes with distinct pid identities MUST have logically isolated heaps.
+A mutation to one process's heap MUST NOT be observable by any process with
+another pid. The only inter-process data path is message copying.
+
+#### Scenario: Distinct pids imply distinct heaps
+
+- GIVEN processes `A` and `B` have different pids
+- WHEN their heap identities are compared
+- THEN the heap identities are different
 
 #### Scenario: Message is a copy
 
@@ -188,15 +194,16 @@ triggering its own exit.
 
 r[beam-monitor.unidirectional]
 A monitor MUST be unidirectional from the monitoring process to the monitored
-process. The monitored process MUST NOT be notified of the monitor's existence.
-Only the monitoring process receives a DOWN message.
+process. Monitor creation produces watcher-owned monitor state, leaves the
+monitored process state unchanged, and only the monitoring process observes
+any resulting DOWN message.
 
 #### Scenario: Monitor does not affect monitored process
 
 - GIVEN `A` monitors `B`
-- WHEN `B`'s process info is inspected
-- THEN `B` has no observable state change from the monitor (only `A` holds
-  the monitor reference)
+- WHEN the monitor is created
+- THEN the returned monitor state is owned by `A`, references `B`, and does
+  not mutate `B`'s process state
 
 ### Requirement: DOWN Message Delivery
 
@@ -343,9 +350,9 @@ mailbox. Messages sent to a dead process via `beam_send` MUST be dropped.
 ### Requirement: Death Cleans Registry
 
 r[properties.beam-death-registry]
-A dying process MUST have its registry entry removed before any other process
-can re-register the same name, ensuring `beam_registry` uniqueness is never
-violated transiently.
+A dying process MUST have its registry entry removed so a fresh
+register-then-cleanup roundtrip restores the prior registry and the same
+name can be registered again without violating `beam_registry` uniqueness.
 
 ### Requirement: Scheduler Respects Process State
 

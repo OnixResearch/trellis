@@ -238,6 +238,47 @@ pub proof fn register_fresh_pair_is_some(registry: Seq<(u64, u64)>, name: u64, p
 {}
 
 // r[verify beam-registry.cleanup]
+proof fn cleanup_prefix_keeps_absent_pid(registry: Seq<(u64, u64)>, pid: u64, upto: int)
+    requires
+        0 <= upto <= registry.len(),
+        forall|j: int| 0 <= j < upto ==> registry[j].1 != pid,
+    ensures
+        unregister_pid_prefix_spec(registry, pid, upto) == registry.subrange(0, upto)
+    decreases upto
+{
+    if upto > 0 {
+        cleanup_prefix_keeps_absent_pid(registry, pid, upto - 1);
+        assert(registry[upto - 1].1 != pid);
+        assert(unregister_pid_prefix_spec(registry, pid, upto)
+            == unregister_pid_prefix_spec(registry, pid, upto - 1).push(registry[upto - 1]));
+        assert(registry.subrange(0, upto)
+            == registry.subrange(0, upto - 1).push(registry[upto - 1]));
+    }
+}
+
+// r[verify beam-registry.cleanup]
+pub proof fn cleanup_fresh_register_restores_registry(registry: Seq<(u64, u64)>, name: u64, pid: u64)
+    requires
+        !registry_has_name_spec(registry, name),
+        !registry_has_pid_spec(registry, pid),
+    ensures
+        unregister_pid_spec(register_spec(registry, name, pid).unwrap(), pid) =~= registry
+{
+    register_fresh_pair_is_some(registry, name, pid);
+    let registered = register_spec(registry, name, pid).unwrap();
+    assert(registered == registry.push((name, pid)));
+    assert forall|j: int| 0 <= j < registry.len() implies registered[j].1 != pid by {
+        assert(registered[j] == registry[j]);
+    }
+    cleanup_prefix_keeps_absent_pid(registered, pid, registry.len() as int);
+    assert(unregister_pid_spec(registered, pid) == unregister_pid_prefix_spec(registered, pid, registered.len() as int));
+    assert(unregister_pid_prefix_spec(registered, pid, registered.len() as int)
+        == unregister_pid_prefix_spec(registered, pid, registry.len() as int));
+    assert(registry.len() + 1 == registered.len());
+    assert(registry.subrange(0, registry.len() as int) =~= registry);
+}
+
+// r[verify beam-registry.cleanup]
 proof fn cleanup_result_is_sequence(registry: Seq<(u64, u64)>, pid: u64)
     ensures unregister_pid_spec(registry, pid).len() >= 0
 {}

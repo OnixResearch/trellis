@@ -64,6 +64,8 @@
 - `scripts/check-coverage.sh` flags every public helper too, not just API surface. If a helper like `nix_attrset::vec_u8_cmp` is internal-only, make it private instead of inventing a weak `r[impl]` tag.
 - Verus does not currently model slice `.to_vec()` in verified exec code here. Use explicit clone loops with `subrange(0, i)` invariants for slice-to-Vec copies.
 - Whole-struct equality is brittle when the struct contains a `Vec` field cloned in exec code. Fieldwise ensures are much easier than `result == spec_struct` for BEAM-style state records.
+- BEAM-model gotcha: if there is no verified global pid allocator, do not claim per-spawn global heap freshness. Phrase `beam-process.isolation` as distinct-pid heap isolation and sync the prose in `docs/requirements.md` and `openspec/specs/beam/spec.md` to that model.
+- Cross-module property gotcha: done review reads the prose, not just `r[...]` tags. `properties.beam-death-links`, `properties.beam-death-monitor`, and `properties.beam-death-registry` had to encode link reachability, exact-once DOWN, and register-cleanup roundtrips explicitly before review would accept them.
 - `tracey query uncovered` and `tracey query untested` are fine after daemon startup, but parallel first-run queries can trip the startup lock timeout. Run them sequentially once if the first attempt flakes.
 - `pueue_run` only accepts pre-existing groups here. For ad hoc validation runs, use `group: "default"` unless you already know the custom group exists.
 - `src/nickel_record_merge.rs`: key-coverage proofs closed once I stopped relying on recursion alone and added two tiny helpers: `has_key_in_tail_if_not_head` to move a witness into the tail, and `has_key_in_cons` to lift a witness back through `seq![head] + tail`.
