@@ -19,6 +19,17 @@
 - `tracey-status.txt`
 - `tracey-uncovered.txt`
 - `tracey-untested.txt`
+- `durable-replay-hunk.txt`
+- `durable-resume-hunk.txt`
+
+## Source confirmation
+
+- `durable-replay-hunk.txt`
+  - shows `unrelated_effect_ids_do_not_block` now compares `events` with `events.push(DurableEvent { kind: EVENT_EFFECT_DONE, effect_id: completed_id, ... })`
+  - ensures unrelated appended marker leaves `should_execute_effect_spec(..., other_id)` unchanged
+- `durable-resume-hunk.txt`
+  - shows `prop_random_histories_invalid_checkpoint_can_survive_nonterminal_resume`
+  - generator is `vec((0usize..20, 0u8..8, 0u64..8), 0..20)` mapped through `random_event`, so test uses random mixed histories rather than contiguous work-only histories
 
 ## Key results
 
