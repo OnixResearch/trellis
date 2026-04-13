@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**5912 Verus proofs · 3365 tests · 1318 requirements · 279 modules · 69 trusted boundaries**
+**6112 Verus proofs · 3402 tests · 1345 requirements · 287 modules · 53 trusted boundaries**
 
 ## How it works
 
@@ -445,7 +445,7 @@ Each module follows the same pattern:
 
 ## Trusted items
 
-`69` items are marked `#[verifier::external_body]` across `16` files.
+`53` items are marked `#[verifier::external_body]` across `11` files.
 Those are the current trusted boundaries inside Verus.
 
 **15 permanent** (architectural trust boundaries):
@@ -458,22 +458,12 @@ Those are the current trusted boundaries inside Verus.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
 
-**54 closeable** (proof debt still tracked in the audit inventory):
+**38 closeable** (proof debt still tracked in the audit inventory):
 
-- **4 Zircon channel wrappers** (`zircon_channel.rs`) — signal calculation, send, receive,
-  and unread-handle discard are currently trusted exec/spec bridges.
-- **3 Zircon FIFO wrappers** (`zircon_fifo.rs`) — bounded element write/read and signal
-  calculation are trusted exec/spec bridges.
-- **4 Zircon job wrappers** (`zircon_job.rs`) — containment and parent-liveness queries are
-  trusted exec/spec bridges over the parent-pointer tree model.
-- **3 Zircon socket wrappers** (`zircon_socket.rs`) — stream read/write and signal
-  calculation are trusted exec/spec bridges.
 - **38 Shamir secret-sharing bridges** (`shamir_field.rs`, `shamir_poly.rs`, `shamir_lagrange.rs`,
   `shamir_split.rs`, `shamir_reconstruct.rs`, `shamir_threshold.rs`) — the initial Shamir
   implementation currently trusts its field, interpolation, and reconstruction bridges while
   runtime unit tests and proptests exercise the algebra and round-trip behavior.
-- **2 Zircon port wrappers** (`zircon_port.rs`) — packet dequeue and async delivery are
-  trusted exec/spec bridges.
 
 In addition to `external_body`, the current audit also tracks:
 

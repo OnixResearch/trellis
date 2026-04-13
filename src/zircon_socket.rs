@@ -33,6 +33,25 @@ impl ZirconSocketEndpoint {
     }
 }
 
+fn clone_bytes(data: &[u8], from: usize, to: usize) -> (result: Vec<u8>)
+    requires from as int <= to as int, to as int <= data@.len()
+    ensures result@ =~= data@.subrange(from as int, to as int)
+{
+    let mut result: Vec<u8> = Vec::new();
+    let mut i: usize = from;
+    while i < to
+        invariant
+            from <= i <= to,
+            to <= data@.len(),
+            result@ =~= data@.subrange(from as int, i as int),
+        decreases to - i,
+    {
+        result.push(data[i]);
+        i = i + 1;
+    }
+    result
+}
+
 // r[impl zircon-socket.stream]
 pub fn new_endpoint(capacity: usize) -> (result: ZirconSocketEndpoint)
     ensures result.wf(), result.capacity == capacity, result.rx@.len() == 0,
@@ -86,35 +105,35 @@ pub open spec fn socket_signals_spec(end: ZirconSocketEndpoint) -> u64
 // r[impl zircon-socket.disposition]
 // r[impl zircon-socket.thresholds]
 // r[impl zircon-socket.peer-closed]
-#[verifier::external_body]
 pub fn socket_signals(end: &ZirconSocketEndpoint) -> (result: u64)
     requires end.wf()
     ensures result == socket_signals_spec(*end)
 {
-    let mut s = 0u64;
-    if !end.rx.is_empty() {
-        s |= ZX_SOCKET_READABLE;
+    let readable = !end.rx.is_empty();
+    let write_disabled = end.write_disabled;
+    let peer_write_disabled = end.peer_write_disabled;
+    let read_threshold = end.read_threshold > 0 && end.rx.len() >= end.read_threshold;
+    let free = end.capacity - end.rx.len();
+    let write_threshold = end.write_threshold > 0 && free >= end.write_threshold;
+    let peer_closed = !end.peer_live;
+    let result = (if readable { ZX_SOCKET_READABLE } else { 0u64 })
+        | (if write_disabled { ZX_SOCKET_WRITE_DISABLED } else { 0u64 })
+        | (if peer_write_disabled { ZX_SOCKET_PEER_WRITE_DISABLED } else { 0u64 })
+        | (if read_threshold { ZX_SOCKET_READ_THRESHOLD } else { 0u64 })
+        | (if write_threshold { ZX_SOCKET_WRITE_THRESHOLD } else { 0u64 })
+        | (if peer_closed { ZX_SOCKET_PEER_CLOSED } else { 0u64 });
+    proof {
+        assert(readable == socket_readable_spec(*end));
+        assert(write_disabled == end.write_disabled);
+        assert(peer_write_disabled == end.peer_write_disabled);
+        assert(read_threshold == read_threshold_ready_spec(*end));
+        assert(write_threshold == write_threshold_ready_spec(*end));
+        assert(peer_closed == (!end.peer_live));
     }
-    if end.write_disabled {
-        s |= ZX_SOCKET_WRITE_DISABLED;
-    }
-    if end.peer_write_disabled {
-        s |= ZX_SOCKET_PEER_WRITE_DISABLED;
-    }
-    if end.read_threshold > 0 && end.rx.len() >= end.read_threshold {
-        s |= ZX_SOCKET_READ_THRESHOLD;
-    }
-    if end.write_threshold > 0 && end.capacity - end.rx.len() >= end.write_threshold {
-        s |= ZX_SOCKET_WRITE_THRESHOLD;
-    }
-    if !end.peer_live {
-        s |= ZX_SOCKET_PEER_CLOSED;
-    }
-    s
+    result
 }
 
 // r[impl zircon-socket.stream]
-#[verifier::external_body]
 pub fn socket_write(local: &ZirconSocketEndpoint, peer: &mut ZirconSocketEndpoint, data: &[u8]) -> (accepted: usize)
     requires local.wf(), old(peer).wf()
     ensures
@@ -129,13 +148,34 @@ pub fn socket_write(local: &ZirconSocketEndpoint, peer: &mut ZirconSocketEndpoin
         return 0;
     }
     let free = peer.capacity - peer.rx.len();
-    let accepted = core::cmp::min(free, data.len());
-    peer.rx.extend_from_slice(&data[..accepted]);
+    let accepted = if free <= data.len() { free } else { data.len() };
+    let ghost base = old(peer).rx@;
+    let mut i: usize = 0;
+    while i < accepted
+        invariant
+            peer.capacity == old(peer).capacity,
+            peer.write_disabled == old(peer).write_disabled,
+            peer.peer_write_disabled == old(peer).peer_write_disabled,
+            peer.peer_live == old(peer).peer_live,
+            peer.read_threshold == old(peer).read_threshold,
+            peer.write_threshold == old(peer).write_threshold,
+            0 <= i <= accepted,
+            accepted as int <= data@.len(),
+            accepted as int <= old(peer).capacity as int - old(peer).rx@.len(),
+            base.len() + accepted as int <= peer.capacity as int,
+            peer.rx@ =~= base + data@.subrange(0, i as int),
+            peer.rx@.len() <= peer.capacity as int,
+        decreases accepted - i,
+    {
+        peer.rx.push(data[i]);
+        assert(peer.rx@.len() <= peer.capacity as int);
+        i = i + 1;
+    }
+    assert(peer.rx@.len() <= peer.capacity as int);
     accepted
 }
 
 // r[impl zircon-socket.stream]
-#[verifier::external_body]
 pub fn socket_read(end: &mut ZirconSocketEndpoint, want: usize) -> (result: Vec<u8>)
     requires old(end).wf()
     ensures
@@ -144,8 +184,11 @@ pub fn socket_read(end: &mut ZirconSocketEndpoint, want: usize) -> (result: Vec<
         result@ =~= old(end).rx@.subrange(0, result@.len() as int),
         end.rx@ =~= old(end).rx@.subrange(result@.len() as int, old(end).rx@.len() as int),
 {
-    let n = core::cmp::min(want, end.rx.len());
-    end.rx.drain(0..n).collect()
+    let n = if want <= end.rx.len() { want } else { end.rx.len() };
+    let out = clone_bytes(&end.rx, 0, n);
+    let rest = clone_bytes(&end.rx, n, end.rx.len());
+    end.rx = rest;
+    out
 }
 
 // r[impl zircon-socket.disposition]

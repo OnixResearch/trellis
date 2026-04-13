@@ -16,6 +16,10 @@ pub open spec fn parents_view(parents: Seq<Option<usize>>) -> Seq<Option<int>> {
     })
 }
 
+pub open spec fn owners_view(owners: Seq<usize>) -> Seq<int> {
+    owners.map(|_i: int, j: usize| j as int)
+}
+
 // r[depends zircon-job.containment]
 pub open spec fn well_formed_jobs_from_spec(parents: Seq<Option<int>>, from: int) -> bool
     decreases if from <= parents.len() { parents.len() - from } else { 0 }
@@ -35,19 +39,36 @@ pub open spec fn well_formed_jobs_spec(parents: Seq<Option<int>>) -> bool {
     well_formed_jobs_from_spec(parents, 0)
 }
 
+proof fn well_formed_jobs_suffix(parents: Seq<Option<int>>, from: int)
+    requires well_formed_jobs_spec(parents), 0 <= from < parents.len()
+    ensures well_formed_jobs_from_spec(parents, from)
+    decreases from
+{
+    if from > 0 {
+        well_formed_jobs_suffix(parents, from - 1);
+    }
+}
+
+fn well_formed_jobs_from_exec(parents: &[Option<usize>], from: usize) -> (result: bool)
+    requires from <= parents@.len()
+    ensures result == well_formed_jobs_from_spec(parents_view(parents@), from as int)
+    decreases parents@.len() - from
+{
+    if from >= parents.len() {
+        true
+    } else {
+        (match parents[from] {
+            Some(parent) => parent < from,
+            None => true,
+        }) && well_formed_jobs_from_exec(parents, from + 1)
+    }
+}
+
 // r[impl zircon-job.containment]
-#[verifier::external_body]
 pub fn well_formed_jobs(parents: &[Option<usize>]) -> (result: bool)
     ensures result == well_formed_jobs_spec(parents_view(parents@))
 {
-    for (i, p) in parents.iter().enumerate() {
-        if let Some(parent) = p {
-            if *parent >= i {
-                return false;
-            }
-        }
-    }
-    true
+    well_formed_jobs_from_exec(parents, 0)
 }
 
 // r[depends zircon-job.containment]
@@ -79,7 +100,7 @@ pub open spec fn process_owner_spec(owners: Seq<int>, process: int) -> int
 // r[impl zircon-job.containment]
 pub fn process_owner(owners: &[usize], process: usize) -> (result: usize)
     requires process < owners@.len()
-    ensures result as int == process_owner_spec(owners@.map(|_i: int, j: usize| j as int), process as int)
+    ensures result as int == process_owner_spec(owners_view(owners@), process as int)
 {
     owners[process]
 }
@@ -105,6 +126,63 @@ pub open spec fn job_in_subtree_spec(parents: Seq<Option<int>>, root: int, job: 
     job_in_subtree_fuel(parents, root, job, (job + 1) as nat)
 }
 
+fn job_in_subtree_fuel_exec(parents: &[Option<usize>], root: usize, job: usize, fuel: usize) -> (result: bool)
+    requires
+        root < parents@.len(),
+        job < parents@.len(),
+        well_formed_jobs_spec(parents_view(parents@)),
+    ensures result == job_in_subtree_fuel(parents_view(parents@), root as int, job as int, (fuel as int + 1) as nat)
+    decreases fuel
+{
+    let ghost pv = parents_view(parents@);
+    let ghost r = root as int;
+    let ghost j = job as int;
+    if job == root {
+        proof {
+            assert(job_in_subtree_fuel(pv, r, j, (fuel as int + 1) as nat));
+        }
+        true
+    } else if fuel == 0 {
+        proof {
+            assert(job != root);
+            match parents@[j] {
+                Some(parent) => {
+                    assert(job_in_subtree_fuel(pv, r, j, 1)
+                        == job_in_subtree_fuel(pv, r, parent as int, 0));
+                    assert(job_in_subtree_fuel(pv, r, parent as int, 0) == false);
+                }
+                None => {
+                    assert(job_in_subtree_fuel(pv, r, j, 1) == false);
+                }
+            }
+        }
+        false
+    } else {
+        match parents[job] {
+            Some(parent) => {
+                proof {
+                    well_formed_jobs_suffix(pv, j);
+                    assert(pv[j] == Some(parent as int));
+                    assert(match pv[j] { Some(p) => 0 <= p < j, None => true });
+                }
+                assert(parent < job);
+                let result = job_in_subtree_fuel_exec(parents, root, parent, fuel - 1);
+                proof {
+                    assert(job_in_subtree_fuel(pv, r, j, (fuel as int + 1) as nat)
+                        == job_in_subtree_fuel(pv, r, parent as int, fuel as nat));
+                }
+                result
+            }
+            None => {
+                proof {
+                    assert(job_in_subtree_fuel(pv, r, j, (fuel as int + 1) as nat) == false);
+                }
+                false
+            }
+        }
+    }
+}
+
 // r[depends zircon-job.kill-propagation]
 pub open spec fn process_in_subtree_spec(parents: Seq<Option<int>>, owners: Seq<int>, root: int, process: int) -> bool
     recommends
@@ -117,7 +195,6 @@ pub open spec fn process_in_subtree_spec(parents: Seq<Option<int>>, owners: Seq<
 }
 
 // r[impl zircon-job.kill-propagation]
-#[verifier::external_body]
 pub fn job_in_subtree(parents: &[Option<usize>], root: usize, job: usize) -> (result: bool)
     requires
         root < parents@.len(),
@@ -125,20 +202,10 @@ pub fn job_in_subtree(parents: &[Option<usize>], root: usize, job: usize) -> (re
         well_formed_jobs_spec(parents_view(parents@)),
     ensures result == job_in_subtree_spec(parents_view(parents@), root as int, job as int)
 {
-    let mut cur = job;
-    loop {
-        if cur == root {
-            return true;
-        }
-        match parents[cur] {
-            Some(p) => cur = p,
-            None => return false,
-        }
-    }
+    job_in_subtree_fuel_exec(parents, root, job, job)
 }
 
 // r[impl zircon-job.kill-propagation]
-#[verifier::external_body]
 pub fn process_in_subtree(parents: &[Option<usize>], owners: &[usize], root: usize, process: usize) -> (result: bool)
     requires
         root < parents@.len(),
@@ -147,7 +214,7 @@ pub fn process_in_subtree(parents: &[Option<usize>], owners: &[usize], root: usi
         well_formed_jobs_spec(parents_view(parents@)),
     ensures result == process_in_subtree_spec(
         parents_view(parents@),
-        owners@.map(|_i: int, j: usize| j as int),
+        owners_view(owners@),
         root as int,
         process as int,
     )
@@ -184,6 +251,36 @@ pub open spec fn running_in_subtree_from_spec(
     }
 }
 
+fn running_in_subtree_from_exec(
+    parents: &[Option<usize>],
+    owners: &[usize],
+    running: &[bool],
+    job: usize,
+    from: usize,
+) -> (result: bool)
+    requires
+        job < parents@.len(),
+        from <= running@.len(),
+        owners@.len() == running@.len(),
+        forall|i: int| 0 <= i < owners@.len() ==> #[trigger] owners@[i] < parents@.len(),
+        well_formed_jobs_spec(parents_view(parents@)),
+    ensures result == running_in_subtree_from_spec(
+        parents_view(parents@),
+        owners_view(owners@),
+        running@,
+        job as int,
+        from as int,
+    )
+    decreases running@.len() - from
+{
+    if from >= running.len() {
+        false
+    } else {
+        (running[from] && process_in_subtree(parents, owners, job, from))
+            || running_in_subtree_from_exec(parents, owners, running, job, from + 1)
+    }
+}
+
 // r[depends zircon-job.parent-lifetime]
 pub open spec fn parent_kept_live_spec(
     parents: Seq<Option<int>>,
@@ -201,7 +298,6 @@ pub open spec fn parent_kept_live_spec(
 }
 
 // r[impl zircon-job.parent-lifetime]
-#[verifier::external_body]
 pub fn parent_kept_live(parents: &[Option<usize>], owners: &[usize], running: &[bool], job: usize) -> (result: bool)
     requires
         job < parents@.len(),
@@ -210,17 +306,12 @@ pub fn parent_kept_live(parents: &[Option<usize>], owners: &[usize], running: &[
         well_formed_jobs_spec(parents_view(parents@)),
     ensures result == parent_kept_live_spec(
         parents_view(parents@),
-        owners@.map(|_i: int, j: usize| j as int),
+        owners_view(owners@),
         running@,
         job as int,
     )
 {
-    for i in 0..running.len() {
-        if running[i] && job_in_subtree(parents, job, owners[i]) {
-            return true;
-        }
-    }
-    false
+    running_in_subtree_from_exec(parents, owners, running, job, 0)
 }
 
 // r[verify zircon-job.containment]

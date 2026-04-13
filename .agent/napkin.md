@@ -7,12 +7,12 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
 - Drift between spec and impl is structurally impossible
-- 5912 Verus proofs + 3365 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1318 requirements)
+- 6112 Verus proofs + 3402 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1345 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 69 `#[verifier::external_body]` items across 16 files.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 54 = 16 Zircon wrappers plus 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
+- Current trusted inventory: 53 `#[verifier::external_body]` items across 11 files.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.
@@ -106,6 +106,11 @@
   `decode_chunk_window_fits` bound. This avoids proving mutation-heavy loop invariants over `resize`
   and `|=`.
 
+## Corrections
+| Date | Source | What Went Wrong | What To Do Instead |
+|------|--------|----------------|-------------------|
+| 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
+
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
   - Loop invariants must track count bounds to prevent arithmetic overflow (count <= i as u64)
@@ -124,6 +129,7 @@
   - mismatch_none_implies_prefix_eq uses inductive helper proof fn
   - Seq::len() returns nat, not int — must cast with `as int` for int return types
 - Conversion module added: narrow_u32, narrow_u16, narrow_u8, signed_to_unsigned, unsigned_to_signed
+- Zircon job trust reduction: a root-first exec helper avoids `usize` overflow on spec fuel. Check `job == root` before zero-fuel failure, then prove exec fuel `job` matches public spec fuel `job + 1`.
   - Cast lints (truncation, sign_loss, wrap) allowed at module level — verified casts are the point
   - clippy::checked_conversions also allowed — can't use try_from inside verus! blocks
   - Roundtrip proofs (i64→u64→i64, u64→i64→u64) verify directly — Z3 handles cast chains

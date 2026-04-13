@@ -40,6 +40,143 @@ impl ChannelEndpoint {
     }
 }
 
+fn clone_bytes(data: &[u8], from: usize, to: usize) -> (result: Vec<u8>)
+    requires from as int <= to as int, to as int <= data@.len()
+    ensures result@ =~= data@.subrange(from as int, to as int)
+{
+    let mut result: Vec<u8> = Vec::new();
+    let mut i: usize = from;
+    while i < to
+        invariant
+            from <= i <= to,
+            to <= data@.len(),
+            result@ =~= data@.subrange(from as int, i as int),
+        decreases to - i,
+    {
+        result.push(data[i]);
+        i = i + 1;
+    }
+    result
+}
+
+fn clone_handle(handle: &ZirconHandle) -> (result: ZirconHandle)
+    ensures result == *handle
+{
+    ZirconHandle {
+        koid: handle.koid,
+        rights: handle.rights,
+        state: handle.state,
+        owner: handle.owner,
+    }
+}
+
+fn clone_handles(handles: &[ZirconHandle], from: usize, to: usize) -> (result: Vec<ZirconHandle>)
+    requires from as int <= to as int, to as int <= handles@.len()
+    ensures result@ =~= handles@.subrange(from as int, to as int)
+{
+    let mut result: Vec<ZirconHandle> = Vec::new();
+    let mut i: usize = from;
+    while i < to
+        invariant
+            from <= i <= to,
+            to <= handles@.len(),
+            result@ =~= handles@.subrange(from as int, i as int),
+        decreases to - i,
+    {
+        result.push(clone_handle(&handles[i]));
+        i = i + 1;
+    }
+    result
+}
+
+fn clone_message(msg: &ChannelMessage) -> (result: ChannelMessage)
+    ensures result.bytes@ =~= msg.bytes@, result.handles@ =~= msg.handles@
+{
+    ChannelMessage {
+        bytes: clone_bytes(&msg.bytes, 0, msg.bytes.len()),
+        handles: clone_handles(&msg.handles, 0, msg.handles.len()),
+    }
+}
+
+fn clone_message_suffix(queue: &[ChannelMessage], from: usize) -> (result: Vec<ChannelMessage>)
+    requires from <= queue@.len()
+    ensures result@.len() == queue@.len() - from as int,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].bytes@ =~= queue@[from as int + i].bytes@,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].handles@ =~= queue@[from as int + i].handles@,
+{
+    let mut result: Vec<ChannelMessage> = Vec::new();
+    let mut i: usize = from;
+    while i < queue.len()
+        invariant
+            from <= i <= queue@.len(),
+            result@.len() == i as int - from as int,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].bytes@ =~= queue@[from as int + j].bytes@,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].handles@ =~= queue@[from as int + j].handles@,
+        decreases queue@.len() - i,
+    {
+        result.push(clone_message(&queue[i]));
+        i = i + 1;
+    }
+    result
+}
+
+fn transfer_handles(handles: &[ZirconHandle], endpoint: u64) -> (result: Vec<ZirconHandle>)
+    requires
+        forall|i: int| 0 <= i < handles@.len() ==> #[trigger] handles@[i].wf() && handles@[i].state == crate::zircon_handle::ZX_HANDLE_BOUND,
+    ensures
+        result@.len() == handles@.len(),
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].koid == handles@[i].koid,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].rights == handles@[i].rights,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] is_in_transit_to_spec(result@[i], endpoint),
+{
+    let mut result: Vec<ZirconHandle> = Vec::new();
+    let mut i: usize = 0;
+    while i < handles.len()
+        invariant
+            0 <= i <= handles@.len(),
+            forall|j: int| 0 <= j < handles@.len() ==> #[trigger] handles@[j].wf() && handles@[j].state == crate::zircon_handle::ZX_HANDLE_BOUND,
+            result@.len() == i as int,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].koid == handles@[j].koid,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].rights == handles@[j].rights,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] is_in_transit_to_spec(result@[j], endpoint),
+        decreases handles@.len() - i,
+    {
+        assert(handles@[i as int].wf());
+        assert(handles@[i as int].state == crate::zircon_handle::ZX_HANDLE_BOUND);
+        result.push(transfer(&handles[i], endpoint));
+        i = i + 1;
+    }
+    result
+}
+
+fn receive_handles(handles: &[ZirconHandle], process: u64) -> (result: Vec<ZirconHandle>)
+    requires forall|i: int| 0 <= i < handles@.len() ==> #[trigger] handles@[i].wf() && handles@[i].state == crate::zircon_handle::ZX_HANDLE_IN_TRANSIT
+    ensures
+        result@.len() == handles@.len(),
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].koid == handles@[i].koid,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].rights == handles@[i].rights,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] crate::zircon_handle::is_bound_to_spec(result@[i], process),
+{
+    let mut result: Vec<ZirconHandle> = Vec::new();
+    let mut i: usize = 0;
+    while i < handles.len()
+        invariant
+            0 <= i <= handles@.len(),
+            forall|j: int| 0 <= j < handles@.len() ==> #[trigger] handles@[j].wf() && handles@[j].state == crate::zircon_handle::ZX_HANDLE_IN_TRANSIT,
+            result@.len() == i as int,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].koid == handles@[j].koid,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j].rights == handles@[j].rights,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] crate::zircon_handle::is_bound_to_spec(result@[j], process),
+        decreases handles@.len() - i,
+    {
+        assert(handles@[i as int].wf());
+        assert(handles@[i as int].state == crate::zircon_handle::ZX_HANDLE_IN_TRANSIT);
+        result.push(receive(&handles[i], process));
+        i = i + 1;
+    }
+    result
+}
+
 pub open spec fn total_handles_in_queue_from_spec(queue: Seq<ChannelMessage>, from: int) -> int
     decreases if from <= queue.len() { queue.len() - from } else { 0 }
 {
@@ -47,6 +184,64 @@ pub open spec fn total_handles_in_queue_from_spec(queue: Seq<ChannelMessage>, fr
         0
     } else {
         queue[from].handles@.len() + total_handles_in_queue_from_spec(queue, from + 1)
+    }
+}
+
+fn append_handles(dst: &mut Vec<ZirconHandle>, src: &[ZirconHandle])
+    ensures dst@ =~= old(dst)@ + src@
+{
+    let ghost base = old(dst)@;
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            0 <= i <= src@.len(),
+            dst@ =~= base + src@.subrange(0, i as int),
+        decreases src@.len() - i,
+    {
+        dst.push(clone_handle(&src[i]));
+        i = i + 1;
+    }
+}
+
+fn close_handles_from(handles: &[ZirconHandle], from: usize) -> (result: Vec<ZirconHandle>)
+    requires from <= handles@.len(), forall|i: int| 0 <= i < handles@.len() ==> #[trigger] handles@[i].wf()
+    ensures
+        result@.len() == handles@.len() - from as int,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].state == crate::zircon_handle::ZX_HANDLE_CLOSED,
+        forall|i: int| 0 <= i < result@.len() ==> !is_live_spec(result@[i]),
+    decreases handles@.len() - from
+{
+    if from >= handles.len() {
+        Vec::new()
+    } else {
+        let mut result = Vec::new();
+        result.push(close(&handles[from]));
+        let tail = close_handles_from(handles, from + 1);
+        append_handles(&mut result, &tail);
+        result
+    }
+}
+
+#[allow(clippy::only_used_in_recursion)]
+fn close_queue_from(queue: &[ChannelMessage], from: usize, endpoint: u64) -> (result: Vec<ZirconHandle>)
+    requires
+        from <= queue@.len(),
+        forall|i: int, j: int|
+            0 <= i < queue@.len() && 0 <= j < queue@[i].handles@.len()
+            ==> #[trigger] queue@[i].handles@[j].wf() && is_in_transit_to_spec(queue@[i].handles@[j], endpoint),
+    ensures
+        result@.len() == total_handles_in_queue_from_spec(queue@, from as int),
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i].state == crate::zircon_handle::ZX_HANDLE_CLOSED,
+        forall|i: int| 0 <= i < result@.len() ==> !is_live_spec(result@[i]),
+    decreases queue@.len() - from
+{
+    if from >= queue.len() {
+        Vec::new()
+    } else {
+        let mut result = close_handles_from(&queue[from].handles, 0);
+        let tail = close_queue_from(queue, from + 1, endpoint);
+        append_handles(&mut result, &tail);
+        result
     }
 }
 
@@ -66,19 +261,19 @@ pub open spec fn channel_signals_spec(end: ChannelEndpoint) -> u64
 }
 
 // r[impl zircon-channel.signals]
-#[verifier::external_body]
 pub fn channel_signals(end: &ChannelEndpoint) -> (result: u64)
     requires end.wf()
     ensures result == channel_signals_spec(*end)
 {
-    let mut s = 0u64;
-    if !end.queue.is_empty() {
-        s |= ZX_CHANNEL_READABLE;
+    let readable = !end.queue.is_empty();
+    let peer_closed = !end.peer_live;
+    let result = (if readable { ZX_CHANNEL_READABLE } else { 0u64 })
+        | (if peer_closed { ZX_CHANNEL_PEER_CLOSED } else { 0u64 });
+    proof {
+        assert(readable == channel_readable_spec(*end));
+        assert(peer_closed == (!end.peer_live));
     }
-    if !end.peer_live {
-        s |= ZX_CHANNEL_PEER_CLOSED;
-    }
-    s
+    result
 }
 
 // r[impl zircon-channel.datagram]
@@ -90,7 +285,6 @@ pub fn new_endpoint(koid: u64) -> (result: ChannelEndpoint)
 
 // r[impl zircon-channel.transfer]
 // r[impl zircon-channel.datagram]
-#[verifier::external_body]
 pub fn send_message(dst: &mut ChannelEndpoint, bytes: &[u8], handles: &[ZirconHandle]) -> (ok: bool)
     requires
         old(dst).wf(),
@@ -107,17 +301,14 @@ pub fn send_message(dst: &mut ChannelEndpoint, bytes: &[u8], handles: &[ZirconHa
     if !dst.peer_live {
         return false;
     }
-    let mut moved: Vec<ZirconHandle> = Vec::new();
-    for h in handles {
-        moved.push(transfer(h, dst.koid));
-    }
-    dst.queue.push(ChannelMessage { bytes: bytes.to_vec(), handles: moved });
+    let moved = transfer_handles(handles, dst.koid);
+    let payload = clone_bytes(bytes, 0, bytes.len());
+    dst.queue.push(ChannelMessage { bytes: payload, handles: moved });
     true
 }
 
 // r[impl zircon-channel.transfer]
 // r[impl zircon-channel.datagram]
-#[verifier::external_body]
 pub fn receive_message(dst: &mut ChannelEndpoint, process: u64) -> (result: Option<ChannelMessage>)
     requires old(dst).wf()
     ensures
@@ -130,18 +321,30 @@ pub fn receive_message(dst: &mut ChannelEndpoint, process: u64) -> (result: Opti
         result.is_some() ==> dst.queue@.len() + 1 == old(dst).queue@.len(),
 {
     if dst.queue.is_empty() {
-        return None;
+        None
+    } else {
+        proof {
+            assert forall|i: int| 0 <= i < dst.queue@[0].handles@.len()
+                implies #[trigger] dst.queue@[0].handles@[i].wf() && dst.queue@[0].handles@[i].state == crate::zircon_handle::ZX_HANDLE_IN_TRANSIT by {
+                assert(is_in_transit_to_spec(dst.queue@[0].handles@[i], dst.koid));
+            }
+        }
+        let payload = clone_bytes(&dst.queue[0].bytes, 0, dst.queue[0].bytes.len());
+        let rebound = receive_handles(&dst.queue[0].handles, process);
+        let rest = clone_message_suffix(&dst.queue, 1);
+        dst.queue = rest;
+        assert forall|i: int, j: int|
+            0 <= i < dst.queue@.len() && 0 <= j < dst.queue@[i].handles@.len()
+            implies #[trigger] is_in_transit_to_spec(dst.queue@[i].handles@[j], dst.koid) by {
+            assert(dst.queue@[i].handles@ =~= old(dst).queue@[i + 1].handles@);
+            assert(dst.queue@[i].handles@[j] == old(dst).queue@[i + 1].handles@[j]);
+            assert(is_in_transit_to_spec(old(dst).queue@[i + 1].handles@[j], old(dst).koid));
+        }
+        Some(ChannelMessage { bytes: payload, handles: rebound })
     }
-    let msg = dst.queue.remove(0);
-    let mut rebound: Vec<ZirconHandle> = Vec::new();
-    for h in &msg.handles {
-        rebound.push(receive(h, process));
-    }
-    Some(ChannelMessage { bytes: msg.bytes, handles: rebound })
 }
 
 // r[impl zircon-channel.discard]
-#[verifier::external_body]
 pub fn close_endpoint(dst: &mut ChannelEndpoint) -> (discarded: Vec<ZirconHandle>)
     requires old(dst).wf()
     ensures
@@ -151,15 +354,17 @@ pub fn close_endpoint(dst: &mut ChannelEndpoint) -> (discarded: Vec<ZirconHandle
         discarded@.len() == total_handles_in_queue_from_spec(old(dst).queue@, 0),
         forall|i: int| 0 <= i < discarded@.len() ==> #[trigger] discarded@[i].state == crate::zircon_handle::ZX_HANDLE_CLOSED && !is_live_spec(discarded@[i]),
 {
-    let mut out = Vec::new();
-    for msg in &dst.queue {
-        for h in &msg.handles {
-            out.push(close(h));
+    proof {
+        assert forall|i: int, j: int|
+            0 <= i < dst.queue@.len() && 0 <= j < dst.queue@[i].handles@.len()
+            implies #[trigger] dst.queue@[i].handles@[j].wf() && is_in_transit_to_spec(dst.queue@[i].handles@[j], dst.koid) by {
+            assert(is_in_transit_to_spec(dst.queue@[i].handles@[j], dst.koid));
         }
     }
-    dst.queue.clear();
+    let discarded = close_queue_from(&dst.queue, 0, dst.koid);
+    dst.queue = Vec::new();
     dst.peer_live = false;
-    out
+    discarded
 }
 
 // r[verify zircon-channel.signals]

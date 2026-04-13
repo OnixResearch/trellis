@@ -2,15 +2,15 @@
 
 ## Verification
 - `./scripts/verify.sh` was green before the current trust-reduction pass; rerun it before claiming a fresh full-tree green snapshot.
-- `cargo test` passes (`3365 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`5912 verified, 0 errors`).
-- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1318/1318` covered and verified).
+- `cargo test` passes (`3402 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6112 verified, 0 errors`).
+- Tracey currently reports `0 uncovered` requirements and `0 untested` requirements (`1345/1345` covered and verified).
 
 ## Tooling gotchas
 - `scripts/check-ensures.sh` now scans until the function body starts; the old 15-line false positives on `src/cron_match.rs:matches_schedule` and `src/cron_next.rs:next_occurrence` are fixed.
 - `src/cycle_detect.rs:has_cycle` no longer needs a no-ensures escape hatch; it now closes by delegating the acyclic case to the verified topological-sort result and using a local lemma that any topological order excludes nontrivial cycles.
-- `README.md`'s proof/trust counts should match the live tree. The current code has 69 `#[verifier::external_body]` items across 16 files.
+- `README.md`'s proof/trust counts should match the live tree. The current code has 53 `#[verifier::external_body]` items across 11 files.
 - For archived evidence, do not leave `external-body-sites.txt` as a raw grep dump alone; include derived totals plus the current Shamir site names/descriptions so review can reconcile it against `openspec/specs/verification-gaps/spec.md`.
-- `openspec/specs/verification-gaps/spec.md` now splits the 69 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 54 closeable bridges: 16 Zircon-model exec bridges plus 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
+- `openspec/specs/verification-gaps/spec.md` now splits the 53 trusted sites into 15 permanent boundaries (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`) and 38 closeable Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`. Keep the README summary in sync with that table.
 - `src/cron_field.rs:first_match_correct` closed once the rounding proof switched from raw nonlinear `%` algebra to `vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_multiples_basic, lemma_mod_pos_bound}`. `first_match_ge_from` also needed the natural precondition `from <= max + 1` for the `from > max` sentinel case, and both lemmas must be `pub proof fn` if another module wants to call them during verification.
 - `src/cron_next.rs:advance_one_minute` no longer needs trust and now carries useful ensures: result fields stay in basic calendar ranges and the output timestamp is strictly later than the input.
 - `src/cron_next.rs:next_occurrence` also closes now. The stable proof shape was: keep the search iterative, return `false` instead of incrementing past the horizon year, and use a lexicographic loop decreases tuple over year/month/day/hour/minute progress while proving only the conditional `found ==> ...` postcondition.
@@ -28,6 +28,7 @@
 - The `encode` exec wrapper can also be internalized cleanly by avoiding the old left/right byte formula in proofs: add a verified exec helper `bit_at_padded_exec`, build `encode_digit` from five padded bits, and map digits with a tiny verified `alphabet_char` helper. This required a precondition `bytes@.len() <= ((usize::MAX as int) - 4) / 8` so the expanded output length and `bit + 4` window stay in `usize` range.
 - The `decode` exec wrapper can be internalized without loop invariants by switching to a recursive helper `decode_prefix_exec` that mirrors `decode_prefix_spec` exactly. The hard update step becomes manageable if you first internalize `extend_to_exec` and `or_extend_at_exec`, then build `decode_step_exec` out of those pure vector constructors.
 - `src/type_unification.rs` verifies more cleanly as a fuel-bounded equation-list solver (`solve_fuel`) than as direct recursive Robinson unification on `(t1, t2)`: the App/App second recursive call can grow after substitution, so a raw `type_size(t1) + type_size(t2)` decreases argument fails. Useful proof helpers were `apply_subst_to_eqs_index`, `singleton_subst_irrelevant_if_absent`, and lifting equation satisfaction through `compose_subst_spec`.
+- `src/zircon_job.rs` internalizes subtree membership cleanly with a root-first exec helper: check `job == root` before zero-fuel failure, then prove exec fuel `job` matches the public spec's `job + 1` fuel. This avoids a `usize` overflow obligation on `job + 1` in exec code.
 
 ## Proof audit hotspots
 - Trusted boundaries are not limited to `external_body`: the real `assume(...)` soundness oracles are now gone, and there are no remaining `@verified-logic:no-ensures` / placeholder surfaces in `src/`.

@@ -27,6 +27,46 @@ impl ZirconFifoEndpoint {
     }
 }
 
+fn clone_bytes(data: &[u8], from: usize, to: usize) -> (result: Vec<u8>)
+    requires from as int <= to as int, to as int <= data@.len()
+    ensures result@ =~= data@.subrange(from as int, to as int)
+{
+    let mut result: Vec<u8> = Vec::new();
+    let mut i: usize = from;
+    while i < to
+        invariant
+            from <= i <= to,
+            to <= data.len(),
+            result@ =~= data@.subrange(from as int, i as int),
+        decreases to - i,
+    {
+        result.push(data[i]);
+        i = i + 1;
+    }
+    result
+}
+
+fn clone_elements(elements: &[Vec<u8>], from: usize, to: usize) -> (result: Vec<Vec<u8>>)
+    requires from as int <= to as int, to as int <= elements@.len()
+    ensures result@.len() == to as int - from as int,
+        forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i]@ =~= elements@[from as int + i]@
+{
+    let mut result: Vec<Vec<u8>> = Vec::new();
+    let mut i: usize = from;
+    while i < to
+        invariant
+            from <= i <= to,
+            to <= elements@.len(),
+            result@.len() == i as int - from as int,
+            forall|j: int| 0 <= j < result@.len() ==> #[trigger] result@[j]@ =~= elements@[from as int + j]@,
+        decreases to - i,
+    {
+        result.push(clone_bytes(&elements[i], 0, elements[i].len()));
+        i = i + 1;
+    }
+    result
+}
+
 // r[impl zircon-fifo.element-aligned]
 pub fn new_endpoint(element_size: usize, capacity: usize) -> (result: ZirconFifoEndpoint)
     ensures result.wf(), result.element_size == element_size, result.capacity == capacity, result.rx@.len() == 0
@@ -35,7 +75,6 @@ pub fn new_endpoint(element_size: usize, capacity: usize) -> (result: ZirconFifo
 }
 
 // r[impl zircon-fifo.element-aligned]
-#[verifier::external_body]
 pub fn fifo_write(peer: &mut ZirconFifoEndpoint, elements: &[Vec<u8>]) -> (accepted: usize)
     requires old(peer).wf(), forall|i: int| 0 <= i < elements@.len() ==> #[trigger] elements@[i]@.len() == old(peer).element_size as int
     ensures
@@ -45,15 +84,46 @@ pub fn fifo_write(peer: &mut ZirconFifoEndpoint, elements: &[Vec<u8>]) -> (accep
         peer.rx@.len() == old(peer).rx@.len() + accepted as int,
 {
     let free = peer.capacity - peer.rx.len();
-    let accepted = core::cmp::min(free, elements.len());
-    for elt in &elements[..accepted] {
-        peer.rx.push(elt.clone());
+    let accepted = if free <= elements.len() { free } else { elements.len() };
+    let ghost old_len = old(peer).rx@.len();
+    let mut i: usize = 0;
+    while i < accepted
+        invariant
+            peer.element_size == old(peer).element_size,
+            peer.capacity == old(peer).capacity,
+            peer.peer_live == old(peer).peer_live,
+            0 <= i <= accepted,
+            accepted <= elements@.len(),
+            accepted <= old(peer).capacity - old(peer).rx.len(),
+            old_len + accepted as int <= peer.capacity as int,
+            forall|j: int| 0 <= j < elements@.len() ==> #[trigger] elements@[j]@.len() == old(peer).element_size as int,
+            peer.rx@.len() == old_len + i as int,
+            peer.rx@.len() <= peer.capacity as int,
+            forall|j: int| 0 <= j < old_len ==> #[trigger] peer.rx@[j]@.len() == peer.element_size as int,
+            forall|j: int| 0 <= j < i as int ==> #[trigger] peer.rx@[old_len + j]@ =~= elements@[j]@,
+        decreases accepted - i,
+    {
+        assert(elements@[i as int]@.len() == old(peer).element_size as int);
+        let elt = clone_bytes(&elements[i], 0, elements[i].len());
+        assert(elt@ =~= elements@[i as int]@);
+        assert(elt@.len() == peer.element_size as int);
+        peer.rx.push(elt);
+        assert(peer.rx@.len() <= peer.capacity as int);
+        i = i + 1;
+    }
+    assert(peer.rx@.len() <= peer.capacity as int);
+    assert forall|j: int| 0 <= j < peer.rx@.len() implies #[trigger] peer.rx@[j]@.len() == peer.element_size as int by {
+        if j < old_len {
+        } else {
+            assert(0 <= j - old_len < accepted as int);
+            assert(old_len + (j - old_len) == j);
+            assert(peer.rx@[old_len + (j - old_len)]@ =~= elements@[j - old_len]@);
+        }
     }
     accepted
 }
 
 // r[impl zircon-fifo.element-aligned]
-#[verifier::external_body]
 pub fn fifo_read(end: &mut ZirconFifoEndpoint, want: usize) -> (result: Vec<Vec<u8>>)
     requires old(end).wf()
     ensures
@@ -62,8 +132,11 @@ pub fn fifo_read(end: &mut ZirconFifoEndpoint, want: usize) -> (result: Vec<Vec<
         forall|i: int| 0 <= i < result@.len() ==> #[trigger] result@[i]@ =~= old(end).rx@[i]@,
         end.rx@.len() + result@.len() == old(end).rx@.len(),
 {
-    let n = core::cmp::min(want, end.rx.len());
-    end.rx.drain(0..n).collect()
+    let n = if want <= end.rx.len() { want } else { end.rx.len() };
+    let out = clone_elements(&end.rx, 0, n);
+    let rest = clone_elements(&end.rx, n, end.rx.len());
+    end.rx = rest;
+    out
 }
 
 // r[depends zircon-fifo.signals]
@@ -77,22 +150,22 @@ pub open spec fn fifo_signals_spec(end: ZirconFifoEndpoint)
 }
 
 // r[impl zircon-fifo.signals]
-#[verifier::external_body]
 pub fn fifo_signals(end: &ZirconFifoEndpoint) -> (result: u64)
     requires end.wf()
     ensures result == fifo_signals_spec(*end)
 {
-    let mut s = 0u64;
-    if !end.rx.is_empty() {
-        s |= ZX_FIFO_READABLE;
+    let readable = !end.rx.is_empty();
+    let writable = end.rx.len() < end.capacity;
+    let peer_closed = !end.peer_live;
+    let result = (if readable { ZX_FIFO_READABLE } else { 0u64 })
+        | (if writable { ZX_FIFO_WRITABLE } else { 0u64 })
+        | (if peer_closed { ZX_FIFO_PEER_CLOSED } else { 0u64 });
+    proof {
+        assert(readable == (end.rx@.len() > 0));
+        assert(writable == (end.rx@.len() < end.capacity as int));
+        assert(peer_closed == (!end.peer_live));
     }
-    if end.rx.len() < end.capacity {
-        s |= ZX_FIFO_WRITABLE;
-    }
-    if !end.peer_live {
-        s |= ZX_FIFO_PEER_CLOSED;
-    }
-    s
+    result
 }
 
 // r[impl zircon-fifo.peer-closed]

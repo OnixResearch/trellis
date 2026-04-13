@@ -4630,9 +4630,13 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-14 items use `#[verifier::external_body]`. All are permanently justified:
+53 items use `#[verifier::external_body]`.
 
-### Cryptographic axioms (6 items)
+### Permanent trust boundaries (15 items)
+These remain by design or because the current abstraction boundary is the
+point of the model, not a proof target.
+
+#### Cryptographic axioms / exec bridges (6 items)
 Cryptographic primitives with closed/uninterpreted spec functions.
 These model idealized hash functions (determinism, collision resistance)
 and runtime crypto implementations. No proof is possible without opening
@@ -4645,7 +4649,7 @@ the hash function, which would defeat the abstraction.
 - `snapshot_integrity::dual_hash_collision_resistant` — dual_hash_spec collision resistance
 - `snapshot_integrity::dual_hash` — runtime dual hash
 
-### Z3 rlimit / complexity limits (7 items)
+#### Z3 rlimit / complexity limits (7 items)
 Proofs where Z3 cannot handle the spec complexity within reasonable rlimit.
 Proof bodies are structurally correct; proptest covers runtime correctness.
 
@@ -4657,11 +4661,16 @@ Proof bodies are structurally correct; proptest covers runtime correctness.
 - `log_invariant_inductive::leader_append_preserves_lmp_right` — symmetric
 - `log_invariant_inductive::leader_invariant_preserves_lmp` — system-level, multi-log
 
-### Theory bridge (1 item)
-Z3 cannot bridge between bit_vector and int-level reasoning.
+#### Hash-model bridge (2 items)
+- `nix_store_path::sha256_deterministic` — uninterpreted SHA-256 determinism axiom
+- `nix_store_path::sha256_collision_resistant` — uninterpreted SHA-256 collision-resistance axiom
 
-- `buddy::order_for_size` — bit_vector proves `1u64 << order >= size` but
-  spec uses int-level `<<` via `block_size_spec`; theories don't connect
+### Closeable trust boundaries (38 items)
+All remaining closeable trusted sites are in the Shamir secret-sharing stack:
+`shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`,
+`shamir_reconstruct`, and `shamir_threshold`.
+
+These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
 ## WAL Segment
 

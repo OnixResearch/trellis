@@ -11,13 +11,13 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
-As of `2026-04-12`, backed by fresh reruns on the current tree, the live verification pipeline is green:
+As of `2026-04-13`, backed by fresh reruns on the current tree, the live verification pipeline is green:
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3365 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`5912 verified, 0 errors`)
-- Tracey is green (`1318/1318 covered`, `1318/1318 verified`, `0 uncovered`, `0 untested`)
+- `cargo test` passes (`3402 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`6112 verified, 0 errors`)
+- Tracey is green (`1345/1345 covered`, `1345/1345 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
@@ -26,7 +26,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`69` external_body items remain across `16` files.
+`53` external_body items remain across `11` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -48,20 +48,20 @@ actual tree and not just per-file totals.
 | `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
-| `src/shamir_field.rs:23 valid_modulus` | Closeable | Prime-modulus validator is currently a trusted exec/spec bridge; runtime trial division rejects composites. | `src/shamir_field.rs` unit tests cover prime/composite acceptance directly. |
-| `src/shamir_field.rs:102 field_add` | Closeable | Initial Shamir field-add exec/spec bridge is trusted while runtime tests cover modular arithmetic identities. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
-| `src/shamir_field.rs:115 field_sub` | Closeable | Initial Shamir field-sub exec/spec bridge is trusted while runtime tests cover additive-inverse behavior. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
-| `src/shamir_field.rs:131 field_mul` | Closeable | Initial Shamir field-mul exec/spec bridge is trusted while runtime tests cover modular multiplication laws. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
-| `src/shamir_field.rs:143 field_inv` | Closeable | Extended-GCD inverse computation is currently a trusted exec/spec bridge. | `src/shamir_field.rs` unit tests + proptest cover inverse witnesses on small primes. |
-| `src/shamir_field.rs:188 field_add_zero` | Closeable | Additive-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover additive identity directly. |
-| `src/shamir_field.rs:199 field_mul_one` | Closeable | Multiplicative-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover multiplicative identity directly. |
-| `src/shamir_field.rs:210 field_commutative` | Closeable | Commutativity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover commutativity directly. |
-| `src/shamir_field.rs:221 field_closed` | Closeable | Closure proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover result range bounds directly. |
-| `src/shamir_field.rs:233 field_sub_add_roundtrip` | Closeable | Subtraction roundtrip proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover `(a-b)+b == a` directly. |
-| `src/shamir_field.rs:242 field_inv_from_spec_correct` | Closeable | Inverse-witness proof helper is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
-| `src/shamir_field.rs:257 field_inv_spec_correct` | Closeable | Inverse-spec correctness proof is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
-| `src/shamir_field.rs:266 zero_has_no_inverse` | Closeable | Zero-inverse proof stub is currently trusted. | `src/shamir_field.rs` unit tests cover `field_inv(0, p) == None`. |
-| `src/shamir_field.rs:275 field_mul_zero` | Closeable | Zero-multiplication proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest exercise zero cases. |
+| `src/shamir_field.rs:25 valid_modulus` | Closeable | Prime-modulus validator is currently a trusted exec/spec bridge; runtime trial division rejects composites. | `src/shamir_field.rs` unit tests cover prime/composite acceptance directly. |
+| `src/shamir_field.rs:104 field_add` | Closeable | Initial Shamir field-add exec/spec bridge is trusted while runtime tests cover modular arithmetic identities. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:117 field_sub` | Closeable | Initial Shamir field-sub exec/spec bridge is trusted while runtime tests cover additive-inverse behavior. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:133 field_mul` | Closeable | Initial Shamir field-mul exec/spec bridge is trusted while runtime tests cover modular multiplication laws. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:145 field_inv` | Closeable | Extended-GCD inverse computation is currently a trusted exec/spec bridge. | `src/shamir_field.rs` unit tests + proptest cover inverse witnesses on small primes. |
+| `src/shamir_field.rs:190 field_add_zero` | Closeable | Additive-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover additive identity directly. |
+| `src/shamir_field.rs:201 field_mul_one` | Closeable | Multiplicative-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover multiplicative identity directly. |
+| `src/shamir_field.rs:212 field_commutative` | Closeable | Commutativity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover commutativity directly. |
+| `src/shamir_field.rs:223 field_closed` | Closeable | Closure proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover result range bounds directly. |
+| `src/shamir_field.rs:235 field_sub_add_roundtrip` | Closeable | Subtraction roundtrip proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover `(a-b)+b == a` directly. |
+| `src/shamir_field.rs:244 field_inv_from_spec_correct` | Closeable | Inverse-witness proof helper is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:259 field_inv_spec_correct` | Closeable | Inverse-spec correctness proof is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:268 zero_has_no_inverse` | Closeable | Zero-inverse proof stub is currently trusted. | `src/shamir_field.rs` unit tests cover `field_inv(0, p) == None`. |
+| `src/shamir_field.rs:277 field_mul_zero` | Closeable | Zero-multiplication proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest exercise zero cases. |
 | `src/shamir_poly.rs:39 poly_eval_from` | Closeable | Recursive Horner helper is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
 | `src/shamir_poly.rs:59 poly_eval_horner` | Closeable | Public Horner evaluator is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
 | `src/shamir_poly.rs:72 poly_degree_bound` | Closeable | Degree-bound proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover degree-vs-length behavior. |
@@ -86,27 +86,11 @@ actual tree and not just per-file totals.
 | `src/shamir_reconstruct.rs:31 reconstruct` | Closeable | Public reconstruction exec/spec bridge is currently trusted. | `src/shamir_reconstruct.rs` unit tests + proptest cover threshold round-trips and insufficient-share behavior. |
 | `src/shamir_threshold.rs:25 threshold_completion_exists` | Closeable | Threshold-completion existence proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover single-share completion to arbitrary secrets. |
 | `src/shamir_threshold.rs:44 threshold_completion_unique` | Closeable | Threshold uniqueness proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover threshold subsets fixing the secret. |
-| `src/zircon_channel.rs:64 channel_signals` | Closeable | Signal calculation is currently a trusted exec/spec bridge over channel queue state. | `src/zircon_channel.rs` unit tests + proptest cover readable, peer-closed, and FIFO datagrams. |
-| `src/zircon_channel.rs:88 send_message` | Closeable | Handle transfer + queue append remain trusted pending a fully verified queue/ownership bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
-| `src/zircon_channel.rs:115 receive_message` | Closeable | Queue pop + handle rebind remain trusted pending a fully verified datagram dequeue bridge. | `src/zircon_channel.rs` unit tests + proptest cover send/receive behavior. |
-| `src/zircon_channel.rs:139 close_endpoint` | Closeable | Unread handle discard remains trusted pending a fully verified fold over queued messages. | `src/zircon_channel.rs` unit tests cover unread-handle cleanup. |
-| `src/zircon_fifo.rs:38 fifo_write` | Closeable | Element-bounded FIFO write remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests + proptest cover element alignment and capacity bounds. |
-| `src/zircon_fifo.rs:56 fifo_read` | Closeable | Element-bounded FIFO read remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests + proptest cover FIFO order and whole-element reads. |
-| `src/zircon_fifo.rs:80 fifo_signals` | Closeable | FIFO signal calculation remains a trusted exec/spec bridge. | `src/zircon_fifo.rs` unit tests cover readable/writable/peer-closed signals. |
-| `src/zircon_job.rs:39 well_formed_jobs` | Closeable | Parent-pointer tree validation remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover valid containment examples. |
-| `src/zircon_job.rs:120 job_in_subtree` | Closeable | Recursive subtree membership remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover descendant queries. |
-| `src/zircon_job.rs:141 process_in_subtree` | Closeable | Process ownership lift into subtree membership remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover descendant process queries. |
-| `src/zircon_job.rs:204 parent_kept_live` | Closeable | Parent-liveness scan remains a trusted exec/spec bridge. | `src/zircon_job.rs` unit tests cover running-descendant cases. |
-| `src/zircon_socket.rs:89 socket_signals` | Closeable | Socket signal calculation remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests cover readable, threshold, disabled, and peer-closed signals. |
-| `src/zircon_socket.rs:117 socket_write` | Closeable | Short-write buffer append remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests + proptest cover write bounds and order. |
-| `src/zircon_socket.rs:138 socket_read` | Closeable | Short-read buffer consumption remains a trusted exec/spec bridge. | `src/zircon_socket.rs` unit tests + proptest cover prefix consumption. |
-| `src/zircon_port.rs:73 pop_packet` | Closeable | FIFO dequeue from the port packet queue remains a trusted exec/spec bridge. | `src/zircon_port.rs` unit tests + proptest cover user-packet FIFO order. |
-| `src/zircon_port.rs:92 deliver` | Closeable | Async delivery + one-shot/repeating registration update remain a trusted exec/spec bridge. | `src/zircon_port.rs` unit tests cover async delivery and one-shot vs repeating behavior. |
 
 Summary:
 
 - Permanent external-body items: `15`
-- Closeable external-body items: `54`
+- Closeable external-body items: `38`
 
 ### `assume(...)` soundness oracles
 

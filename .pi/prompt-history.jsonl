@@ -433,3 +433,4 @@
 {"text":"implement openspec/changes/zircon-kernel-primitives/ dont stop until complete.","timestamp":1776031135046}
 {"text":"begin openspec/changes/beam-primitives/ dont stop until complete","timestamp":1776042639667}
 {"text":"- monitor_unidirectional_spec still relies on a vacuous target-state helper instead\n of a real modeled post-state.","timestamp":1776048157731}
+{"text":"whats the highest value openspec/changes/ we could tackle","timestamp":1776052884851}

@@ -1,11 +1,11 @@
 ## Why
 
 `zircon-kernel-primitives` landed green, but it did not internalize every
-exec/spec bridge. The live tree now has 16 closeable `#[verifier::external_body]`
-sites across `src/zircon_channel.rs`, `src/zircon_fifo.rs`,
-`src/zircon_job.rs`, `src/zircon_socket.rs`, and `src/zircon_port.rs`.
-The README and `openspec/specs/verification-gaps/spec.md` now inventory
-those sites explicitly.
+exec/spec bridge. At the start of this change, the live tree had 16 closeable
+`#[verifier::external_body]` sites across `src/zircon_channel.rs`,
+`src/zircon_fifo.rs`, `src/zircon_job.rs`, `src/zircon_socket.rs`, and
+`src/zircon_port.rs`. The README and
+`openspec/specs/verification-gaps/spec.md` inventoried those sites explicitly.
 
 That leaves the Zircon model semantically covered and tested, but not yet
 fully internalized. Future trust-reduction work should close those bridges
@@ -13,7 +13,7 @@ without changing the public behavior or Tracey coverage.
 
 ## What We Know
 
-- Current green snapshot: `cargo test` (`3334 passed`),
+- At change start, the green snapshot was `cargo test` (`3334 passed`),
   `cargo clippy --all-targets -- -D warnings`,
   `./scripts/verus.sh src/lib.rs` (`5902 verified, 0 errors`), and
   `./scripts/verify.sh` all pass.
@@ -46,8 +46,8 @@ without changing the public behavior or Tracey coverage.
 
 ## Evidence
 
-Current inventory snapshot:
+Starting inventory snapshot:
 
-- `31` total `#[verifier::external_body]` items across `10` files
+- `69` total `#[verifier::external_body]` items across `16` files
 - `15` permanent
 - `16` closeable Zircon exec bridges

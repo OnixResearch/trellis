@@ -33,6 +33,30 @@ impl ZirconPort {
     pub open spec fn wf(&self) -> bool { true }
 }
 
+fn clone_packet(packet: &PortPacket) -> (result: PortPacket)
+    ensures result == *packet
+{
+    PortPacket { key: packet.key, observed: packet.observed, user_queued: packet.user_queued }
+}
+
+fn clone_packet_suffix(queue: &[PortPacket], from: usize) -> (result: Vec<PortPacket>)
+    requires from <= queue@.len()
+    ensures result@ =~= queue@.subrange(from as int, queue@.len() as int)
+{
+    let mut result: Vec<PortPacket> = Vec::new();
+    let mut i: usize = from;
+    while i < queue.len()
+        invariant
+            from <= i <= queue@.len(),
+            result@ =~= queue@.subrange(from as int, i as int),
+        decreases queue@.len() - i,
+    {
+        result.push(clone_packet(&queue[i]));
+        i = i + 1;
+    }
+    result
+}
+
 // r[impl zircon-port.user-queue]
 pub fn new_port() -> (result: ZirconPort)
     ensures result.wf(), result.queue@.len() == 0, result.regs@.len() == 0
@@ -70,7 +94,6 @@ pub fn queue_user(port: &mut ZirconPort, key: u64, observed: u64)
 }
 
 // r[impl zircon-port.user-queue]
-#[verifier::external_body]
 pub fn pop_packet(port: &mut ZirconPort) -> (result: Option<PortPacket>)
     requires old(port).wf()
     ensures
@@ -84,13 +107,15 @@ pub fn pop_packet(port: &mut ZirconPort) -> (result: Option<PortPacket>)
     if port.queue.is_empty() {
         None
     } else {
-        Some(port.queue.remove(0))
+        let first = clone_packet(&port.queue[0]);
+        let rest = clone_packet_suffix(&port.queue, 1);
+        port.queue = rest;
+        Some(first)
     }
 }
 
 // r[impl zircon-port.async-wait]
 // r[impl zircon-port.one-shot]
-#[verifier::external_body]
 pub fn deliver(port: &mut ZirconPort, koid: u64, observed: u64) -> (delivered: usize)
     requires old(port).wf()
     ensures
@@ -100,7 +125,19 @@ pub fn deliver(port: &mut ZirconPort, koid: u64, observed: u64) -> (delivered: u
 {
     let mut kept = Vec::new();
     let mut delivered_count = 0usize;
-    for reg in &port.regs {
+    let ghost base_queue_len = old(port).queue@.len();
+    let ghost regs = old(port).regs@;
+    let mut i: usize = 0;
+    while i < port.regs.len()
+        invariant
+            0 <= i <= regs.len(),
+            port.regs@ =~= regs,
+            kept@.len() <= i as int,
+            delivered_count <= i,
+            port.queue@.len() == base_queue_len + delivered_count as int,
+        decreases regs.len() - i,
+    {
+        let reg = &port.regs[i];
         if reg.koid == koid && wait_ready(observed, reg.mask) {
             port.queue.push(PortPacket { key: reg.key, observed, user_queued: false });
             delivered_count += 1;
@@ -110,6 +147,7 @@ pub fn deliver(port: &mut ZirconPort, koid: u64, observed: u64) -> (delivered: u
         } else {
             kept.push(PortRegistration { koid: reg.koid, mask: reg.mask, key: reg.key, repeating: reg.repeating });
         }
+        i += 1;
     }
     port.regs = kept;
     delivered_count
