@@ -222,8 +222,9 @@ proof fn peer_closed_sets_signal(end: ZirconSocketEndpoint)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn pair(cap: usize) -> (ZirconSocketEndpoint, ZirconSocketEndpoint) {
         (new_endpoint(cap), new_endpoint(cap))

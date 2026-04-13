@@ -9,7 +9,8 @@
 
 use vstd::prelude::*;
 
-use crate::nickel_field_merge::{FieldMergeResult, field_merge};
+use crate::nickel_field_merge::FieldMergeResult;
+use crate::nickel_field_merge::field_merge;
 #[cfg(verus_keep_ghost)]
 use crate::nickel_field_merge::field_merge_spec;
 use crate::nickel_priority::*;
@@ -1043,7 +1044,10 @@ mod tests {
     // r[verify nickel-record-merge.key-coverage]
     #[test]
     fn test_merge_key_coverage() {
-        let a = vec![field("a", 1, MergePriority::Neutral), field("c", 3, MergePriority::Neutral)];
+        let a = vec![
+            field("a", 1, MergePriority::Neutral),
+            field("c", 3, MergePriority::Neutral),
+        ];
         let b = vec![field("b", 2, MergePriority::Neutral), field("c", 4, MergePriority::Top)];
         let r = record_merge(&a, &b);
         assert_eq!(r.len(), 3);
@@ -1063,9 +1067,18 @@ mod tests {
     // r[verify nickel-record-merge.associativity]
     #[test]
     fn test_associativity_runtime_for_neutral_records() {
-        let a = vec![field("a", 1, MergePriority::Neutral), field("c", 3, MergePriority::Neutral)];
-        let b = vec![field("b", 2, MergePriority::Neutral), field("c", 4, MergePriority::Neutral)];
-        let c = vec![field("c", 5, MergePriority::Neutral), field("d", 6, MergePriority::Neutral)];
+        let a = vec![
+            field("a", 1, MergePriority::Neutral),
+            field("c", 3, MergePriority::Neutral),
+        ];
+        let b = vec![
+            field("b", 2, MergePriority::Neutral),
+            field("c", 4, MergePriority::Neutral),
+        ];
+        let c = vec![
+            field("c", 5, MergePriority::Neutral),
+            field("d", 6, MergePriority::Neutral),
+        ];
         assert_eq!(record_merge(&record_merge(&a, &b), &c), record_merge(&a, &record_merge(&b, &c)));
     }
 }

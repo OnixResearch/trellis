@@ -185,11 +185,7 @@ mod tests {
     use super::*;
 
     fn all_rights() -> u64 {
-        ZX_RIGHT_DUPLICATE
-            | ZX_RIGHT_TRANSFER
-            | ZX_RIGHT_WAIT
-            | ZX_RIGHT_SIGNAL
-            | ZX_RIGHT_SIGNAL_PEER
+        ZX_RIGHT_DUPLICATE | ZX_RIGHT_TRANSFER | ZX_RIGHT_WAIT | ZX_RIGHT_SIGNAL | ZX_RIGHT_SIGNAL_PEER
     }
 
     // r[verify zircon-rights.attenuation]

@@ -299,14 +299,8 @@ mod tests {
     // r[verify consistency-vocab.history-well-formed]
     #[test]
     fn test_history_well_formed() {
-        let good = [
-            read_op(1, 7, 11, 5, 0, 1, 3),
-            write_op(2, 7, 11, 5, 2, 3, 9),
-        ];
-        let bad = [
-            read_op(1, 7, 11, 5, 0, 1, 3),
-            write_op(2, 7, 11, 5, 4, 3, 9),
-        ];
+        let good = [read_op(1, 7, 11, 5, 0, 1, 3), write_op(2, 7, 11, 5, 2, 3, 9)];
+        let bad = [read_op(1, 7, 11, 5, 0, 1, 3), write_op(2, 7, 11, 5, 4, 3, 9)];
         assert!(history_well_formed(&good));
         assert!(!history_well_formed(&bad));
     }

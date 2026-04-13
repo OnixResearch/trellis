@@ -6,12 +6,15 @@
 
 use vstd::prelude::*;
 
+use crate::consistency_history::HistoryOp;
+use crate::consistency_history::OP_READ;
+use crate::consistency_history::OP_WRITE;
 #[cfg(verus_keep_ghost)]
 use crate::consistency_history::is_complete_op_spec;
 #[cfg(verus_keep_ghost)]
-use crate::consistency_relations::{realtime_order_spec, session_order_spec};
-
-use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
+use crate::consistency_relations::realtime_order_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_relations::session_order_spec;
 
 verus! {
 
@@ -218,7 +221,9 @@ proof fn linearizability_implies_sequential_consistency(history: Seq<HistoryOp>)
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
+    use crate::consistency_history::HistoryOp;
+    use crate::consistency_history::OP_READ;
+    use crate::consistency_history::OP_WRITE;
 
     fn read(op_id: u64, session: u64, invoke: u64, respond: u64, observed: u64) -> HistoryOp {
         HistoryOp {

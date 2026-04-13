@@ -5,9 +5,9 @@
 
 use vstd::prelude::*;
 
+use crate::signal::signal_intersect;
 #[cfg(verus_keep_ghost)]
 use crate::signal::signal_intersect_spec;
-use crate::signal::signal_intersect;
 
 verus! {
 
@@ -71,9 +71,10 @@ proof fn wait_set_entry_exact(watches: Seq<ZirconWatch>, i: int)
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::*;
+
     use super::*;
     use crate::signal::signal_add;
-    use proptest::prelude::*;
 
     // r[verify zircon-wait.readiness]
     #[test]
@@ -87,8 +88,14 @@ mod tests {
     // r[verify zircon-wait.wait-set]
     #[test]
     fn test_wait_set() {
-        let a = ZirconWatch { observed: signal_add(0, 1), requested: signal_add(0, 1) };
-        let b = ZirconWatch { observed: signal_add(0, 2), requested: signal_add(0, 3) };
+        let a = ZirconWatch {
+            observed: signal_add(0, 1),
+            requested: signal_add(0, 1),
+        };
+        let b = ZirconWatch {
+            observed: signal_add(0, 2),
+            requested: signal_add(0, 3),
+        };
         let ready = wait_set_ready(&[a, b]);
         assert_eq!(ready, vec![true, false]);
     }

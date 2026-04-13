@@ -254,8 +254,9 @@ proof fn clean_exit_does_not_kill_job(is_critical: bool)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn parents() -> Vec<Option<usize>> {
         vec![None, Some(0), Some(1), Some(1)]

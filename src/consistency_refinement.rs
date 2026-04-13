@@ -6,20 +6,37 @@
 use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
-use crate::consistency_object::{
-    linearizability_flags_spec, sequential_consistency_flags_spec,
-};
+use crate::consistency_object::linearizability_flags_spec;
 #[cfg(verus_keep_ghost)]
-use crate::consistency_session::{
-    causal_consistency_spec, monotonic_reads_spec, monotonic_writes_spec, pram_spec,
-    read_your_writes_spec, writes_follow_reads_spec,
-};
+use crate::consistency_object::sequential_consistency_flags_spec;
 #[cfg(verus_keep_ghost)]
-use crate::consistency_transactional::{
-    cursor_stability_spec, monotonic_atomic_view_spec, read_committed_spec,
-    read_uncommitted_spec, repeatable_read_spec, serializability_spec,
-    snapshot_isolation_spec, strict_serializability_spec,
-};
+use crate::consistency_session::causal_consistency_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_session::monotonic_reads_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_session::monotonic_writes_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_session::pram_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_session::read_your_writes_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_session::writes_follow_reads_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::cursor_stability_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::monotonic_atomic_view_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::read_committed_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::read_uncommitted_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::repeatable_read_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::serializability_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::snapshot_isolation_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_transactional::strict_serializability_spec;
 
 verus! {
 
@@ -371,7 +388,9 @@ proof fn total_available_models()
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
+    use crate::consistency_history::HistoryOp;
+    use crate::consistency_history::OP_READ;
+    use crate::consistency_history::OP_WRITE;
 
     fn read(op_id: u64, session: u64, invoke: u64, respond: u64, observed: u64) -> HistoryOp {
         HistoryOp {

@@ -6,9 +6,12 @@
 
 use vstd::prelude::*;
 
+use crate::signal::signal_add;
 #[cfg(verus_keep_ghost)]
-use crate::signal::{signal_add_spec, signal_remove_spec};
-use crate::signal::{signal_add, signal_remove};
+use crate::signal::signal_add_spec;
+use crate::signal::signal_remove;
+#[cfg(verus_keep_ghost)]
+use crate::signal::signal_remove_spec;
 
 verus! {
 
@@ -115,8 +118,9 @@ proof fn live_peer_no_derived_closed(user_signals: u64)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify zircon-event.user-signals]
     #[test]

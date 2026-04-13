@@ -139,8 +139,9 @@ proof fn deadline_order_respected(a: ZirconTimer, b: ZirconTimer, now: u64)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify zircon-timer.lifecycle]
     #[test]

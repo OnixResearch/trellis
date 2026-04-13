@@ -6,12 +6,17 @@
 
 use vstd::prelude::*;
 
+use crate::consistency_history::HistoryOp;
+use crate::consistency_history::OP_READ;
+use crate::consistency_history::OP_WRITE;
 #[cfg(verus_keep_ghost)]
-use crate::consistency_history::{
-    is_complete_op_spec, same_object_spec, same_session_spec, same_transaction_spec,
-};
-
-use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
+use crate::consistency_history::is_complete_op_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_history::same_object_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_history::same_session_spec;
+#[cfg(verus_keep_ghost)]
+use crate::consistency_history::same_transaction_spec;
 
 verus! {
 
@@ -162,9 +167,20 @@ proof fn happens_before_irreflexive(op: HistoryOp)
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consistency_history::{HistoryOp, OP_READ, OP_WRITE};
+    use crate::consistency_history::HistoryOp;
+    use crate::consistency_history::OP_READ;
+    use crate::consistency_history::OP_WRITE;
 
-    fn op(op_id: u64, kind: u8, object: u64, txn: u64, session: u64, invoke: u64, respond: u64, observed: u64) -> HistoryOp {
+    fn op(
+        op_id: u64,
+        kind: u8,
+        object: u64,
+        txn: u64,
+        session: u64,
+        invoke: u64,
+        respond: u64,
+        observed: u64,
+    ) -> HistoryOp {
         HistoryOp {
             op_id,
             kind,

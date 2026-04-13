@@ -6,9 +6,14 @@
 
 use vstd::prelude::*;
 
+use crate::zircon_rights::can_duplicate;
 #[cfg(verus_keep_ghost)]
-use crate::zircon_rights::{can_duplicate_spec, can_replace_spec, rights_subset_spec};
-use crate::zircon_rights::{can_duplicate, can_replace};
+use crate::zircon_rights::can_duplicate_spec;
+use crate::zircon_rights::can_replace;
+#[cfg(verus_keep_ghost)]
+use crate::zircon_rights::can_replace_spec;
+#[cfg(verus_keep_ghost)]
+use crate::zircon_rights::rights_subset_spec;
 
 verus! {
 
@@ -277,7 +282,9 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::zircon_rights::{ZX_RIGHT_DUPLICATE, ZX_RIGHT_TRANSFER, ZX_RIGHT_WAIT};
+    use crate::zircon_rights::ZX_RIGHT_DUPLICATE;
+    use crate::zircon_rights::ZX_RIGHT_TRANSFER;
+    use crate::zircon_rights::ZX_RIGHT_WAIT;
 
     fn base_handle() -> ZirconHandle {
         bind(7, ZX_RIGHT_DUPLICATE | ZX_RIGHT_TRANSFER | ZX_RIGHT_WAIT, 10)

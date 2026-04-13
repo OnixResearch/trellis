@@ -5,9 +5,9 @@
 
 use vstd::prelude::*;
 
+use crate::zircon_wait::wait_ready;
 #[cfg(verus_keep_ghost)]
 use crate::zircon_wait::wait_ready_spec;
-use crate::zircon_wait::wait_ready;
 
 verus! {
 
@@ -144,8 +144,9 @@ proof fn user_queue_fifo_two_packets()
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify zircon-port.async-wait]
     #[test]

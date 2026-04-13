@@ -119,8 +119,9 @@ proof fn peer_close_sets_signal(end: ZirconFifoEndpoint)
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     fn elem(bytes: &[u8]) -> Vec<u8> {
         bytes.to_vec()

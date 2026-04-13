@@ -7,9 +7,14 @@
 
 use vstd::prelude::*;
 
+use crate::zircon_handle::ZirconHandle;
+use crate::zircon_handle::close;
 #[cfg(verus_keep_ghost)]
-use crate::zircon_handle::{is_in_transit_to_spec, is_live_spec};
-use crate::zircon_handle::{close, receive, transfer, ZirconHandle};
+use crate::zircon_handle::is_in_transit_to_spec;
+#[cfg(verus_keep_ghost)]
+use crate::zircon_handle::is_live_spec;
+use crate::zircon_handle::receive;
+use crate::zircon_handle::transfer;
 
 verus! {
 
@@ -179,11 +184,13 @@ proof fn discarded_handles_closed(h: ZirconHandle)
 
 #[cfg(test)]
 mod tests {
+    use proptest::prelude::*;
+
     use super::*;
     use crate::signal::signal_contains;
     use crate::zircon_handle::bind;
-    use crate::zircon_rights::{ZX_RIGHT_TRANSFER, ZX_RIGHT_WAIT};
-    use proptest::prelude::*;
+    use crate::zircon_rights::ZX_RIGHT_TRANSFER;
+    use crate::zircon_rights::ZX_RIGHT_WAIT;
 
     fn h(koid: u64) -> ZirconHandle {
         bind(koid, ZX_RIGHT_TRANSFER | ZX_RIGHT_WAIT, 1)

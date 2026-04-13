@@ -338,7 +338,8 @@ pub open spec fn overlapping_conflict(ws_a: Seq<u64>, ws_b: Seq<u64>) -> bool {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::consistency_history::{HistoryOp, OP_WRITE};
+    use crate::consistency_history::HistoryOp;
+    use crate::consistency_history::OP_WRITE;
 
     fn write(op_id: u64, txn: u64, session: u64, object: u64, invoke: u64, respond: u64) -> HistoryOp {
         HistoryOp {

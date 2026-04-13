@@ -134,8 +134,9 @@ proof fn requeue_move_zero_is_wake_only(src_waiters: u64, dst_waiters: u64, wake
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     // r[verify zircon-futex.wait-compare]
     #[test]
