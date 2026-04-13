@@ -5380,6 +5380,64 @@ validate_result MUST check exit code, then output hash, then output
 size, returning the first failing criterion: 0=all pass, 1=bad exit,
 2=bad hash, 3=bad size. MUST return 0 if and only if all criteria pass.
 
+## Durable Execution
+
+r[durable-execution.history-valid]
+history_valid MUST return true if and only if durable execution events
+form one contiguous append-only history: valid event kinds only,
+sequence numbers starting at 0 and increasing by 1, and no event after a
+durable terminal outcome.
+
+r[durable-execution.prefix]
+durable_prefix_len MUST return the largest prefix length with contiguous
+sequence numbers and no post-terminal append. A gap, duplicate sequence
+number, invalid event kind, or event after a terminal outcome MUST stop
+the prefix at the first invalid position.
+
+r[durable-execution.checkpoint-advance]
+advance_checkpoint MUST never move backward. For a valid checkpoint
+(old_checkpoint <= durable_prefix_len), it MUST advance to the durable
+prefix. If the caller gives an already-invalid checkpoint beyond the
+prefix, advance_checkpoint MAY leave it unchanged.
+
+r[durable-execution.checkpoint-prefix]
+A valid checkpoint MUST NOT claim durability past the contiguous durable
+prefix. Checkpoint advancement MUST stop at the first gap and MUST NOT
+skip missing prior steps.
+
+r[durable-execution.replayable-event]
+replayable_event_at MUST return Some(event) if and only if the index is
+strictly within the durable prefix. Reads at or beyond the durable prefix
+MUST return None.
+
+r[durable-execution.effect-dedup]
+should_execute_effect(seq_num, effect_id) MUST return false when the
+durable prefix already contains a matching effect-completion marker for
+that same (seq_num, effect_id) pair. Different effect ids MUST remain
+independent.
+
+r[durable-execution.resume-step]
+resume_step MUST return Some(step) for the first step not yet covered by
+the durable checkpoint / contiguous durable prefix. If durable history
+already fixes a terminal outcome, resume_step MUST return None.
+
+r[durable-execution.resume-bounds]
+When resume_step returns Some(step), step MUST be at least the current
+valid checkpoint and at most the contiguous durable prefix. Recovery MUST
+NOT rewind below a valid checkpoint and MUST NOT skip over the first
+missing durable step.
+
+r[durable-execution.terminal]
+is_terminal_execution MUST return true if and only if the valid durable
+prefix ends in a terminal event (completed, failed, or cancelled).
+Appending any later non-terminal event MUST be rejected by the append
+rule.
+
+r[durable-execution.terminal-recovery]
+recovered_status MUST return the durable terminal outcome when one
+exists, and None otherwise. Recovery of a terminal history MUST replay
+that status rather than reopening the run.
+
 ## Cross-Module: Job Execution
 
 r[properties.retry-non-retryable-never-retries]
@@ -5401,6 +5459,22 @@ should transition to FAILED.
 r[properties.retryable-disjoint-from-success]
 Exit code 0 (success) MUST NOT be in the retryable error range [100,200).
 Success and retryable errors are disjoint categories.
+
+r[properties.durable-effect-uses-idempotency]
+If durable replay suppresses an effect because a matching completion
+marker already exists, then job_idempotency duplicate-prevention intuition
+must agree: a consumed token for that same effect id would also reject a
+fresh execution attempt.
+
+r[properties.durable-history-seq-is-strict-advance]
+Adjacent sequence numbers in a valid durable history MUST satisfy
+monotonic::is_strict_advance after integer widening. Durable append-only
+histories strictly advance their sequence numbers.
+
+r[properties.durable-history-prefix-like-journal]
+An allowed durable-history append MUST preserve the same strictly
+increasing sequence-number shape used by journal-style append-only logs.
+Durable history prefix growth is journal-like.
 
 ## Consensus Path Composition
 

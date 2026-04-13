@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**6380 Verus proofs · 3474 tests · 1387 requirements · 296 modules · 15 trusted boundaries**
+**6405 Verus proofs · 3497 tests · 1400 requirements · 300 modules · 15 trusted boundaries**
 
 ## How it works
 
@@ -312,6 +312,10 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `job_slot` | bounded concurrency slot pool: acquire/release, capacity |
 | `job_cancel` | cancellation propagation: dependent cancellation, surviving paths |
 | `job_idempotency` | idempotency tokens: consume-once, duplicate rejection |
+| `durable_history` | append-only durable event history, contiguous prefix, append admission |
+| `durable_replay` | replay gate for durable prefix reads and effect deduplication |
+| `durable_resume` | checkpoint advancement and crash-recovery resume-point derivation |
+| `durable_terminal` | terminal outcome detection and deterministic recovery status |
 | `job_retry` | retry decisions: attempts, budget, retryable classification |
 | `job_timeout` | deadline computation, timeout checking, not-timed-out-at-start |
 | `job_result` | exit code classification: success/failure/error, completion status |
@@ -414,7 +418,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 3191 tests (unit + property)
+cargo test                 # 3497 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -422,7 +426,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6380 proofs)
+./scripts/verus.sh         # verus only (6405 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -430,9 +434,9 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 296 module declarations
+src/lib.rs              ← crate root, 300 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1387 tracey requirements
+docs/requirements.md    ← 1400 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

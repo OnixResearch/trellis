@@ -151,43 +151,45 @@ recorded result instead of authorizing a fresh effect execution.
 
 #### Requirement: Resume Starts At First Non-Durable Step
 
-`resume_step` MUST return the first step that is not yet covered by the
-durable checkpoint / contiguous durable prefix.
+`resume_step` MUST return `Some(step)` for the first step not yet covered
+by the durable checkpoint / contiguous durable prefix. If durable history
+already fixes a terminal outcome, `resume_step` MUST return `None`.
 
 ##### Scenario: Resume after three durable steps
 
 - GIVEN durable prefix covers steps [0, 1, 2]
 - WHEN computing resume_step
-- THEN MUST return 3
+- THEN MUST return Some(3)
 
 ##### Scenario: Fresh execution
 
 - GIVEN empty durable history
 - WHEN computing resume_step
-- THEN MUST return 0
+- THEN MUST return Some(0)
 
 ##### Scenario: Terminal history
 
 - GIVEN durable history contains a terminal event at step 4
 - WHEN computing resume_step
-- THEN resume MUST NOT schedule step 5 as normal work
+- THEN MUST return None
 
 #### Requirement: Resume Never Rewinds Or Skips Ahead
 
-`resume_step` MUST be at least the durable checkpoint and at most one
-step past the durable prefix. Recovery MUST NOT repeat durably committed
-prefix work as new work, and MUST NOT skip over missing durable steps.
+When `resume_step` returns `Some(step)`, the step MUST be at least the
+current durable checkpoint and at most the contiguous durable prefix.
+Recovery MUST NOT repeat durably committed prefix work as new work, and
+MUST NOT skip over missing durable steps.
 
 ##### Scenario: No rewind
 
 - GIVEN durable checkpoint = 6
-- WHEN computing resume_step
-- THEN the result MUST be >= 6
+- WHEN computing resume_step on non-terminal history
+- THEN the result MUST be Some(step) with step >= 6
 
 ##### Scenario: No skip over gap
 
 - GIVEN durable history has a gap before step 8
-- WHEN computing resume_step
+- WHEN computing resume_step on non-terminal history
 - THEN the result MUST stay at or before the first gap
 
 ### Terminal Durability
@@ -218,17 +220,17 @@ history. Adding more non-terminal events after that MUST be rejected.
 
 #### Requirement: Replay Of Terminal Execution Is Deterministic
 
-When an execution is terminal in durable history, replay and recovery
+When an execution is terminal in durable history, `recovered_status`
 MUST reproduce that terminal outcome rather than reopening the run.
 
 ##### Scenario: Recover completed run
 
 - GIVEN durable history ends in completion
 - WHEN recovering after a crash
-- THEN the recovered status MUST be completed
+- THEN recovered_status MUST be completed
 
 ##### Scenario: Recover cancelled run
 
 - GIVEN durable history ends in cancellation
 - WHEN recovering after a crash
-- THEN the recovered status MUST be cancelled
+- THEN recovered_status MUST be cancelled

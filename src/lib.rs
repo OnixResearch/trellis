@@ -82,6 +82,10 @@
 //! - `distributed_lock` — distributed lock tokens, deadlines, expiry, backoff
 //! - `drain` — drain-state admission protocol for graceful shutdown
 //! - `drain_protocol` — double-check admission with recheck and notification
+//! - `durable_history` — append-only durable event history with contiguous-prefix validation
+//! - `durable_replay` — replay gating and durable effect deduplication
+//! - `durable_resume` — checkpoint advancement and crash-recovery resume-point derivation
+//! - `durable_terminal` — durable terminal outcomes and recovery status reproduction
 //! - `epoch_reclaim` — epoch-based memory reclamation: pin/unpin, three-epoch cycling,
 //!   safe-to-reclaim
 //! - `election` — leader election state machine: transitions, tokens, timing
@@ -345,6 +349,10 @@ pub mod dominator_tree;
 pub mod double_entry;
 pub mod drain;
 pub mod drain_protocol;
+pub mod durable_history;
+pub mod durable_replay;
+pub mod durable_resume;
+pub mod durable_terminal;
 pub mod election;
 pub mod election_init;
 pub mod election_jitter;

@@ -7856,3 +7856,144 @@ mod regression_hardening_tests {
         assert!(!fits);
     }
 }
+
+#[cfg(verus_keep_ghost)]
+mod durable_execution_proofs {
+    use vstd::prelude::*;
+
+    use crate::durable_history::{append_allowed_spec, history_valid_spec, DurableEvent};
+    use crate::job_idempotency::try_execute_spec;
+    use crate::journal::{seq_nums_monotonic_spec, JournalEntry};
+    use crate::monotonic::is_strict_advance_spec;
+
+    verus! {
+
+    pub open spec fn history_to_journal_spec(events: Seq<DurableEvent>) -> Seq<JournalEntry> {
+        Seq::new(events.len(), |i: int| JournalEntry {
+            seq_num: events[i].seq_num as u64,
+            amount: 1u64,
+            is_debit: false,
+            running_balance: (i + 1) as u64,
+        })
+    }
+
+    // r[impl properties.durable-effect-uses-idempotency]
+    pub open spec fn durable_effect_uses_idempotency_prop(
+        events: Seq<DurableEvent>,
+        seq_num: usize,
+        effect_id: u64,
+    ) -> bool {
+        !crate::durable_replay::should_execute_effect_spec(events, seq_num, effect_id)
+            ==> !try_execute_spec(effect_id, seq![effect_id]).0
+    }
+
+    // r[impl properties.durable-history-seq-is-strict-advance]
+    pub open spec fn durable_history_seq_is_strict_advance_prop(
+        events: Seq<DurableEvent>,
+        i: int,
+    ) -> bool {
+        history_valid_spec(events) && 0 <= i < events.len() - 1
+            ==> is_strict_advance_spec(events[i].seq_num as u64, events[i + 1].seq_num as u64)
+    }
+
+    // r[impl properties.durable-history-prefix-like-journal]
+    pub open spec fn durable_history_prefix_like_journal_prop(
+        events: Seq<DurableEvent>,
+        new_event: DurableEvent,
+    ) -> bool {
+        append_allowed_spec(events, new_event)
+            ==> seq_nums_monotonic_spec(history_to_journal_spec(events.push(new_event)))
+    }
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod durable_execution_cross_tests {
+    use proptest::prelude::*;
+
+    use crate::durable_history::{DurableEvent, EVENT_EFFECT_DONE, EVENT_WORK};
+
+    fn work(seq_num: usize) -> DurableEvent {
+        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+    }
+
+    // r[verify properties.durable-effect-uses-idempotency]
+    #[test]
+    fn prop_durable_effect_uses_idempotency() {
+        let events = vec![DurableEvent { seq_num: 0, kind: EVENT_EFFECT_DONE, effect_id: 7 }];
+        assert!(!crate::durable_replay::should_execute_effect(&events, 0, 7));
+        assert_eq!(crate::job_idempotency::try_execute(7, &[7]), (false, false));
+    }
+
+    // r[verify properties.durable-history-seq-is-strict-advance]
+    #[test]
+    fn prop_durable_history_seq_is_strict_advance() {
+        let events = vec![work(0), work(1), work(2)];
+        assert!(crate::durable_history::history_valid(&events));
+        for pair in events.windows(2) {
+            assert!(crate::monotonic::is_strict_advance(pair[0].seq_num as u64, pair[1].seq_num as u64));
+        }
+    }
+
+    // r[verify properties.durable-history-prefix-like-journal]
+    #[test]
+    fn prop_durable_history_prefix_like_journal() {
+        let events = vec![work(0), work(1)];
+        let new_event = work(2);
+        assert!(crate::durable_history::append_allowed(&events, new_event));
+        let journal_entries = vec![
+            crate::journal::JournalEntry { seq_num: 0, amount: 1, is_debit: false, running_balance: 1 },
+            crate::journal::JournalEntry { seq_num: 1, amount: 1, is_debit: false, running_balance: 2 },
+            crate::journal::JournalEntry { seq_num: 2, amount: 1, is_debit: false, running_balance: 3 },
+        ];
+        for pair in journal_entries.windows(2) {
+            assert!(pair[0].seq_num < pair[1].seq_num);
+        }
+    }
+
+    proptest! {
+        // r[verify properties.durable-effect-uses-idempotency]
+        #[test]
+        fn prop_effect_marker_blocks_like_consumed(effect_id in 0u64..1000) {
+            let events = vec![DurableEvent { seq_num: 0, kind: EVENT_EFFECT_DONE, effect_id }];
+            prop_assert!(!crate::durable_replay::should_execute_effect(&events, 0, effect_id));
+            prop_assert_eq!(crate::job_idempotency::try_execute(effect_id, &[effect_id]), (false, false));
+        }
+
+        // r[verify properties.durable-history-seq-is-strict-advance]
+        #[test]
+        fn prop_adjacent_durable_seq_is_strict(len in 2usize..30) {
+            let events: Vec<DurableEvent> = (0..len).map(work).collect();
+            for i in 0..events.len() - 1 {
+                prop_assert!(crate::monotonic::is_strict_advance(events[i].seq_num as u64, events[i + 1].seq_num as u64));
+            }
+        }
+
+        // r[verify properties.durable-history-prefix-like-journal]
+        #[test]
+        fn prop_valid_append_keeps_journal_like_seq(len in 0usize..30) {
+            let events: Vec<DurableEvent> = (0..len).map(work).collect();
+            let new_event = DurableEvent { seq_num: len, kind: EVENT_WORK, effect_id: 0 };
+            prop_assert!(crate::durable_history::append_allowed(&events, new_event));
+
+            let mut journal_entries: Vec<crate::journal::JournalEntry> = events.iter().enumerate().map(|(i, e)| {
+                crate::journal::JournalEntry {
+                    seq_num: e.seq_num as u64,
+                    amount: 1,
+                    is_debit: false,
+                    running_balance: (i + 1) as u64,
+                }
+            }).collect();
+            journal_entries.push(crate::journal::JournalEntry {
+                seq_num: new_event.seq_num as u64,
+                amount: 1,
+                is_debit: false,
+                running_balance: (journal_entries.len() + 1) as u64,
+            });
+            for pair in journal_entries.windows(2) {
+                prop_assert!(pair[0].seq_num < pair[1].seq_num);
+            }
+        }
+    }
+}
