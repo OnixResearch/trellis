@@ -47,10 +47,13 @@
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `consistency_history` — shared operation vocabulary for consistency-model predicates
 //! - `consistency_object` — object-level sequential-consistency and linearizability predicates
-//! - `consistency_refinement` — implication edges and availability-envelope metadata for consistency models
-//! - `consistency_relations` — shared real-time, session, visibility, arbitration, and conflict relations
+//! - `consistency_refinement` — implication edges and availability-envelope metadata for
+//!   consistency models
+//! - `consistency_relations` — shared real-time, session, visibility, arbitration, and conflict
+//!   relations
 //! - `consistency_session` — session guarantees and causal-consistency predicates
-//! - `consistency_transactional` — abstract transactional consistency predicates and refinement skeletons
+//! - `consistency_transactional` — abstract transactional consistency predicates and refinement
+//!   skeletons
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
@@ -114,9 +117,11 @@
 //! - `learner_change` — learner add/remove primitives: no quorum impact, idempotent ops
 //! - `learner_readiness` — learner catch-up readiness for safe voter promotion
 //! - `lease` — time-bounded leases with disjointness, renewal, revocation
+//! - `lease_read` — lease-based linearizable reads with clock drift compensation
+//! - `left_right` — left-right synchronization: wait-free readers, side toggle, quiescence,
+//!   snapshot stability
 //! - `ledger` — multi-account ledger: transfers, batch, fee routing, total conservation
 //! - `settlement` — bilateral obligation netting: net positions, sum-to-zero, valid settlement
-//! - `lease_read` — lease-based linearizable reads with clock drift compensation
 //! - `lock_ordering` — lock acquisition ordering for deadlock prevention: strict total order, cycle
 //!   freedom
 //! - `lsm_level` — LSM-tree level management: target sizing, compaction triggers, amplification
@@ -211,7 +216,8 @@
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
-//! - `type_unification` — first-order type syntax, occurs check, substitution application and composition
+//! - `type_unification` — first-order type syntax, occurs check, substitution application and
+//!   composition
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `trust_level` — trust resolution with block precedence and access control
@@ -260,6 +266,7 @@ pub mod backoff;
 pub mod balance;
 pub mod ballot;
 pub mod barrier;
+pub mod batch;
 pub mod beam_link;
 pub mod beam_mailbox;
 pub mod beam_monitor;
@@ -267,7 +274,6 @@ pub mod beam_process;
 pub mod beam_registry;
 pub mod beam_scheduler;
 pub mod beam_send;
-pub mod batch;
 pub mod bitfield;
 pub mod bitmap;
 pub mod bitwise;
@@ -280,13 +286,13 @@ pub mod buddy;
 pub mod causal_order;
 pub mod concurrent_composition;
 pub mod consensus_path;
-pub mod consistent_hash;
 pub mod consistency_history;
 pub mod consistency_object;
 pub mod consistency_refinement;
 pub mod consistency_relations;
 pub mod consistency_session;
 pub mod consistency_transactional;
+pub mod consistent_hash;
 pub mod consistent_snapshot;
 pub mod containment;
 
@@ -389,6 +395,7 @@ pub mod lease;
 pub mod lease_mutex;
 pub mod lease_read;
 pub mod ledger;
+pub mod left_right;
 pub mod linearizability;
 pub mod lock_ordering;
 pub mod log;

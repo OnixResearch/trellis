@@ -33,10 +33,11 @@ existing `epoch_reclaim` and `ref_count` modules for reader tracking.
 
 ### New Capabilities
 
-- `left-right-index`: Two-copy index with atomic toggle
-- `left-right-reader`: Wait-free reader enter/exit with epoch tracking
-- `left-right-writer`: Writer swap with quiescence proof
-- `left-right-consistency`: Reader snapshot consistency theorem
+- `left-right.index-toggle`: Two-copy index with active/inactive side toggle
+- `left-right.reader-tracking`: Wait-free reader enter/exit with side-local counts
+- `left-right.writer-publish`: Writer publish step that flips to the freshly written side
+- `left-right.quiescence`: Old-side catch-up gated on reader quiescence
+- `left-right.snapshot-consistency`: Reader snapshot stability across a publish
 
 ## Impact
 

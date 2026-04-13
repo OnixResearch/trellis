@@ -3061,6 +3061,37 @@ are monotonically increasing.
 r[rwlock.expiry]
 is_reader_expired and is_writer_expired return true when now > deadline.
 
+## Left-Right
+
+r[left-right.index-toggle]
+The left-right state MUST track exactly two sides, LEFT and RIGHT. The
+other-side operation MUST flip between them, and initial_state MUST start
+with synchronized copies, zero readers, and a valid active side.
+
+r[left-right.reader-tracking]
+reader_enter MUST increment the reader count on the current active side and
+return a ticket carrying that side and its version. reader_exit MUST
+decrement the reader count on the ticket side and otherwise preserve the
+state.
+
+r[left-right.writer-publish]
+writer_publish MUST require synchronized copies, write the next version to
+the inactive side, and flip the active side atomically. The new active
+version MUST equal the old active version plus one, and the old active side
+MUST retain its previous version until catch-up.
+
+r[left-right.quiescence]
+A side MUST be quiescent exactly when its reader count is zero. can_catch_up
+MUST be true exactly when the inactive side is quiescent. writer_catch_up
+MUST only run after quiescence and MUST resynchronize both copies without
+changing the active version.
+
+r[left-right.snapshot-consistency]
+A reader ticket obtained before a publish MUST continue to name the old
+side's unchanged version after the publish. A live reader on the old side
+MUST block catch-up until it exits, so readers never observe partial writer
+updates.
+
 ## Cross-Module: Coordination
 
 r[properties.election-token-is-fencing-issue]
