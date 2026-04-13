@@ -191,6 +191,12 @@
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `surelock_deadlock` — surelock wait-edge rank and deadlock-freedom core theorem
+//! - `surelock_id` — surelock lock records with stable monotonic lock identities
+//! - `surelock_key` — surelock consumed-and-re-emitted key progression across levels
+//! - `surelock_level` — surelock total level order, lock-after relation, and derived higher levels
+//! - `surelock_lockset` — surelock same-level canonical lock-set preparation and caller-order
+//!   mapping
 //! - `snapshot_compaction` — Raft log compaction trigger: when to snapshot, prefix discard,
 //!   metadata
 //! - `spin_backoff` — spin-wait backoff: two-phase (spin then yield), exponential spin count
@@ -501,6 +507,11 @@ pub mod spin_backoff;
 pub mod split_coalesce;
 pub mod state_machine_safety;
 pub mod subsumption;
+pub mod surelock_deadlock;
+pub mod surelock_id;
+pub mod surelock_key;
+pub mod surelock_level;
+pub mod surelock_lockset;
 pub mod tcp_state;
 pub mod term_authority;
 pub mod ticket_lock;

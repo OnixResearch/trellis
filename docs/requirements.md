@@ -3092,6 +3092,75 @@ side's unchanged version after the publish. A live reader on the old side
 MUST block catch-up until it exits, so readers never observe partial writer
 updates.
 
+## Surelock
+
+r[surelock-lock-id.unique]
+allocate_lock MUST allocate a fresh lock ID for each successful allocation.
+Two successive successful allocations MUST never produce the same lock ID.
+
+r[surelock-lock-id.monotonic]
+Lock IDs MUST increase with creation order. Later successful allocations
+MUST receive strictly greater IDs than earlier successful allocations.
+
+r[surelock-lock-id.stable-identity]
+A lock's ID MUST stay attached to the lock record itself. Reordering lock
+records in a collection MUST NOT change any lock ID.
+
+r[surelock-level-order.total-order]
+Level comparison MUST be a strict total order: for any two levels exactly
+one of less-than, equality, or greater-than holds.
+
+r[surelock-level-order.lock-after]
+lock_after MUST admit acquisitions exactly when current <= next in level
+order. Equal-level reacquisition checks and upward acquisitions are allowed;
+descending acquisitions are rejected.
+
+r[surelock-level-order.derived-higher]
+new_higher_from(parent) MUST return parent + 1, or None on overflow.
+new_higher_pair(a, b) MUST return max(a, b) + 1, or None on overflow.
+
+r[surelock-key-flow.progression]
+Acquiring a lock MUST return a key at that lock's level when admitted.
+Acquiring a lock group MUST return a key at the maximum level reached by
+that group. Any lock or group below the current key level MUST be rejected.
+
+r[surelock-key-flow.subscope]
+Entering and leaving a subscope MUST preserve the current key level.
+
+r[surelock-key-flow.no-backward]
+Admitted surelock key transitions MUST be nondecreasing by level.
+Backward transitions MUST be rejected.
+
+r[surelock-lockset.canonical-ordering]
+prepare_lockset MUST accept only same-level lock groups and produce a
+canonical acquisition plan sorted by strictly increasing lock ID.
+
+r[surelock-lockset.duplicate-rejection]
+prepare_lockset MUST reject any candidate lock group that contains the
+same lock ID more than once.
+
+r[surelock-lockset.membership-preservation]
+Canonical lock-set preparation MUST preserve lock membership: sorting MAY
+change acquisition order but MUST NOT add, drop, or replace lock IDs.
+
+r[surelock-lockset.caller-order-preservation]
+caller_to_plan_positions MUST map each caller position back to the matching
+lock in canonical plan, so logical caller order remains recoverable after
+internal sorting.
+
+r[surelock-deadlock-freedom.forward-wait-rank]
+Every admitted wait edge MUST move strictly forward in lexicographic rank
+(level, id). Same-level waits advance by ID; cross-level waits advance by
+level.
+
+r[surelock-deadlock-freedom.no-circular-wait]
+Any wait graph whose every edge moves forward in surelock rank MUST be
+acyclic.
+
+r[surelock-deadlock-freedom.admitted-trace]
+Any admitted surelock acquisition trace MUST be deadlock-free with respect
+to circular wait.
+
 ## Cross-Module: Coordination
 
 r[properties.election-token-is-fencing-issue]
