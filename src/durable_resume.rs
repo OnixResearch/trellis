@@ -265,14 +265,17 @@ mod tests {
 
         // r[verify durable-execution.resume-bounds]
         #[test]
-        fn prop_invalid_checkpoint_can_survive_nonterminal_resume(
-            len in 0usize..20,
+        fn prop_random_histories_invalid_checkpoint_can_survive_nonterminal_resume(
+            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
             old_extra in 1usize..10,
         ) {
-            let events: Vec<DurableEvent> = (0..len).map(work).collect();
-            let old = len + old_extra;
-            prop_assert_eq!(advance_checkpoint(old, &events), old);
-            prop_assert_eq!(resume_step(old, &events), Some(old));
+            let events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
+            if !is_terminal_execution(&events) {
+                let prefix = durable_prefix_len(&events);
+                let old = prefix + old_extra;
+                prop_assert_eq!(advance_checkpoint(old, &events), old);
+                prop_assert_eq!(resume_step(old, &events), Some(old));
+            }
         }
     }
 }

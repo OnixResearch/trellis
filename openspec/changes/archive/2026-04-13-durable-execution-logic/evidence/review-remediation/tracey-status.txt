@@ -1,0 +1,11 @@
+$ tracey query status
+This project tracks requirements for "verified-logic". The requirements are defined in docs/*.md and are referenced in code using r[...] annotations (for example, r[verified-logic.some-requirement]).
+The implementation being checked: rust.
+
+verified-logic/rust: 1400 of 1400 requirements are covered. 1400 of 1400 have a verification reference.
+
+---
+→ Run `tracey query uncovered`
+→ Run `tracey query untested`
+→ Run `tracey query unmapped`
+

@@ -108,11 +108,68 @@ pub proof fn durable_effect_marker_blocks_reexecution(events: Seq<DurableEvent>,
 }
 
 // r[verify durable-execution.effect-dedup]
-/// Effect decisions for one id depend only on markers for that same id.
+/// Appending a valid durable marker for one effect id does not change decisions for another id.
 pub proof fn unrelated_effect_ids_do_not_block(events: Seq<DurableEvent>, seq_num: usize, completed_id: u64, other_id: u64)
-    requires completed_id != other_id
-    ensures should_execute_effect_spec(events, seq_num, other_id) == !effect_completed_spec(events, seq_num, other_id)
+    requires
+        events.len() <= usize::MAX as int,
+        completed_id != other_id,
+        crate::durable_history::history_valid_spec(events),
+        crate::durable_history::history_valid_spec(events.push(DurableEvent {
+            seq_num: events.len() as usize,
+            kind: EVENT_EFFECT_DONE,
+            effect_id: completed_id,
+        })),
+    ensures should_execute_effect_spec(events.push(DurableEvent {
+        seq_num: events.len() as usize,
+        kind: EVENT_EFFECT_DONE,
+        effect_id: completed_id,
+    }), seq_num, other_id) == should_execute_effect_spec(events, seq_num, other_id)
 {
+    let marker = DurableEvent {
+        seq_num: events.len() as usize,
+        kind: EVENT_EFFECT_DONE,
+        effect_id: completed_id,
+    };
+    let extended = events.push(marker);
+    assert(crate::durable_history::durable_prefix_len_spec(events) == events.len());
+    assert(crate::durable_history::durable_prefix_len_spec(extended) == extended.len());
+
+    assert(effect_completed_spec(extended, seq_num, other_id) ==> effect_completed_spec(events, seq_num, other_id)) by {
+        if effect_completed_spec(extended, seq_num, other_id) {
+            let i = choose|i: int| {
+                &&& 0 <= i < crate::durable_history::durable_prefix_len_spec(extended)
+                &&& extended[i].seq_num == seq_num
+                &&& extended[i].kind == EVENT_EFFECT_DONE
+                &&& extended[i].effect_id == other_id
+            };
+            if i < events.len() {
+                assert(0 <= i < crate::durable_history::durable_prefix_len_spec(events));
+                assert(extended[i] == events[i]);
+                assert(effect_completed_spec(events, seq_num, other_id));
+            } else {
+                assert(i < extended.len());
+                assert(i == events.len());
+                assert(extended[i] == marker);
+                assert(marker.effect_id == completed_id);
+                assert(marker.effect_id != other_id);
+                assert(false);
+            }
+        }
+    };
+
+    assert(effect_completed_spec(events, seq_num, other_id) ==> effect_completed_spec(extended, seq_num, other_id)) by {
+        if effect_completed_spec(events, seq_num, other_id) {
+            let i = choose|i: int| {
+                &&& 0 <= i < crate::durable_history::durable_prefix_len_spec(events)
+                &&& events[i].seq_num == seq_num
+                &&& events[i].kind == EVENT_EFFECT_DONE
+                &&& events[i].effect_id == other_id
+            };
+            assert(0 <= i < crate::durable_history::durable_prefix_len_spec(extended));
+            assert(extended[i] == events[i]);
+            assert(effect_completed_spec(extended, seq_num, other_id));
+        }
+    };
 }
 
 } // verus!
@@ -193,17 +250,28 @@ mod tests {
 
         // r[verify durable-execution.effect-dedup]
         #[test]
-        fn prop_random_histories_unrelated_effect_ids_remain_independent(
-            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
-            seq_num in 0usize..20,
+        fn prop_random_valid_histories_unrelated_effect_ids_remain_independent(
+            base in proptest::collection::vec((any::<bool>(), 0u64..8), 0..20),
+            query_seq in 0usize..21,
             completed_id in 0u64..8,
             other_id in 8u64..16,
         ) {
-            let mut events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
-            events.push(DurableEvent { seq_num, kind: EVENT_EFFECT_DONE, effect_id: completed_id });
-            let other_oracle = effect_completed_exec(&events, seq_num, other_id);
+            let events: Vec<DurableEvent> = base.into_iter().enumerate().map(|(seq_num, (is_effect, effect_id))| {
+                DurableEvent {
+                    seq_num,
+                    kind: if is_effect { EVENT_EFFECT_DONE } else { EVENT_WORK },
+                    effect_id,
+                }
+            }).collect();
+            let before = should_execute_effect(&events, query_seq, other_id);
+            let mut extended = events.clone();
+            extended.push(DurableEvent {
+                seq_num: events.len(),
+                kind: EVENT_EFFECT_DONE,
+                effect_id: completed_id,
+            });
             prop_assert!(completed_id != other_id);
-            prop_assert_eq!(should_execute_effect(&events, seq_num, other_id), !other_oracle);
+            prop_assert_eq!(should_execute_effect(&extended, query_seq, other_id), before);
         }
 
         // r[verify durable-execution.replayable-event]
