@@ -1,0 +1,49 @@
+src/shamir_lagrange.rs excerpts
+
+[polynomial uniqueness bridge]
+ 180: {
+ 181: }
+ 182: 
+ 183: // r[impl shamir-lagrange.uniqueness]
+ 184: // r[verify shamir-lagrange.uniqueness]
+ 185: /// Two degree-<k polynomials agreeing on k distinct points have identical coefficients.
+ 186: #[verifier::external_body]
+ 187: pub proof fn lagrange_polynomials_unique(xs: Seq<u64>, coeffs1: Seq<u64>, coeffs2: Seq<u64>, p: u64)
+ 188:     requires
+ 189:         valid_interp_points_spec(xs, p),
+ 190:         coeffs1.len() <= xs.len(),
+ 191:         coeffs2.len() <= xs.len(),
+ 192:         forall|k: int| 0 <= k < coeffs1.len() ==> coeffs1[k] < p,
+ 193:         forall|k: int| 0 <= k < coeffs2.len() ==> coeffs2[k] < p,
+ 194:         forall|j: int| 0 <= j < xs.len() ==> poly_eval_sum_spec(coeffs1, xs[j], p) == poly_eval_sum_spec(coeffs2, xs[j], p),
+ 195:     ensures coeffs1 =~= coeffs2
+ 196: {
+ 197: }
+
+[runtime test for distinct linear polynomials]
+ 309:             let p = 17u64;
+ 310:             prop_assume!(x1 != x2);
+ 311:             let coeffs = vec![secret, slope];
+ 312:             let xs = vec![x1, x2];
+ 313:             let ys = vec![poly_eval_horner(&coeffs, x1, p), poly_eval_horner(&coeffs, x2, p)];
+ 314:             prop_assert_eq!(lagrange_at_zero(&xs, &ys, p), Some(secret));
+ 315:         }
+ 316: 
+ 317:         // r[verify shamir-lagrange.uniqueness]
+ 318:         #[test]
+ 319:         fn prop_distinct_linear_polynomials_differ_on_two_points(
+ 320:             a0 in 0u64..17,
+ 321:             a1 in 0u64..17,
+ 322:             b0 in 0u64..17,
+ 323:             b1 in 0u64..17,
+ 324:         ) {
+ 325:             let p = 17u64;
+ 326:             let xs = [1u64, 2u64];
+ 327:             let c1 = [a0, a1];
+ 328:             let c2 = [b0, b1];
+ 329:             if c1 != c2 {
+ 330:                 let same_values = xs.iter().all(|&x| {
+ 331:                     poly_eval_horner(&c1, x, p) == poly_eval_horner(&c2, x, p)
+ 332:                 });
+ 333:                 prop_assert!(!same_values);
+ 334:             }

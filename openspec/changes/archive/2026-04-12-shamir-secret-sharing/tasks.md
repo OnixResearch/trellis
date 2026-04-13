@@ -1,3 +1,8 @@
+Archived result note: checked items below mean the shipped runtime path or a trusted
+Verus bridge landed and is covered by saved evidence. They do **not** claim that every
+listed property is fully internalized; remaining `external_body` debt stays tracked in
+`openspec/specs/verification-gaps/spec.md`.
+
 ## Phase 1: Field Arithmetic
 
 - [x] Implement `shamir_field.rs` — field_add, field_sub, field_mul with closure model/bridges (result < p)

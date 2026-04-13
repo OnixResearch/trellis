@@ -45,12 +45,12 @@ interpolation) that other cryptographic modules can use.
 
 ### New Capabilities
 
-- `shamir-field`: Verified finite field arithmetic (mod p)
-- `shamir-poly`: Verified polynomial evaluation with Horner's method
-- `shamir-lagrange`: Verified Lagrange interpolation with uniqueness proof
-- `shamir-split`: Verified share generation with count and constant-term preservation
-- `shamir-reconstruct`: Verified secret reconstruction from k shares
-- `shamir-threshold`: Threshold-security model with completion/uniqueness bridges
+- `shamir-field`: Prime-field arithmetic (mod p) with trusted exec/spec and proof bridges
+- `shamir-poly`: Polynomial evaluation with Horner's method plus trusted equivalence bridges
+- `shamir-lagrange`: Lagrange interpolation with trusted correctness/uniqueness bridges
+- `shamir-split`: Share generation with trusted count and constant-term bridges
+- `shamir-reconstruct`: Secret reconstruction from k shares via a trusted exec/spec bridge
+- `shamir-threshold`: Threshold-security model with trusted completion/uniqueness bridges
 
 ## Impact
 
