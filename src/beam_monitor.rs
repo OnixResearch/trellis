@@ -10,6 +10,7 @@ use vstd::prelude::*;
 use crate::beam_mailbox::BeamMessage;
 use crate::beam_mailbox::MESSAGE_DOWN;
 use crate::beam_process::BEAM_DEAD;
+use crate::beam_process::BeamProcess;
 use crate::beam_process::REASON_NOPROC;
 
 verus! {
@@ -61,44 +62,35 @@ fn is_down_for_ref(msg: BeamMessage, ref_id: u64) -> (result: bool)
 }
 
 // r[depends beam-monitor.unidirectional]
-/// Spec helper: monitor creation leaves the target state unchanged.
-pub open spec fn target_state_after_create_monitor_spec(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> u64 {
-    let _created = create_monitor_spec(ref_id, watcher, target, target_state);
-    target_state
+/// Spec: create a monitor and return the unchanged target-side process value.
+pub open spec fn create_monitor_view_spec(ref_id: u64, watcher: u64, target_proc: BeamProcess) -> (BeamMonitor, Option<BeamMessage>, BeamProcess) {
+    if target_proc.state == BEAM_DEAD {
+        let monitor = BeamMonitor { watcher, target: target_proc.pid, ref_id, active: false };
+        (monitor, Some(down_message_spec(monitor, REASON_NOPROC)), target_proc)
+    } else {
+        (BeamMonitor { watcher, target: target_proc.pid, ref_id, active: true }, None, target_proc)
+    }
 }
 
 // r[depends beam-monitor.unidirectional]
-/// Spec: monitor creation produces watcher-owned state only and does not
-/// mutate the target-side process state.
-pub open spec fn monitor_unidirectional_spec(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> bool {
-    let created = create_monitor_spec(ref_id, watcher, target, target_state);
-    &&& target_state_after_create_monitor_spec(ref_id, watcher, target, target_state) == target_state
+/// Spec: monitor creation produces watcher-owned state only and returns the
+/// target-side process unchanged.
+pub open spec fn monitor_unidirectional_spec(ref_id: u64, watcher: u64, target_proc: BeamProcess) -> bool {
+    let created = create_monitor_view_spec(ref_id, watcher, target_proc);
+    &&& created.2 == target_proc
     &&& created.0.watcher == watcher
-    &&& created.0.target == target
+    &&& created.0.target == target_proc.pid
     &&& created.0.ref_id == ref_id
-    &&& (target_state == BEAM_DEAD ==> !created.0.active && created.1 == Some(down_message_spec(created.0, REASON_NOPROC)))
-    &&& (target_state != BEAM_DEAD ==> created.0.active && created.1.is_none())
+    &&& (target_proc.state == BEAM_DEAD ==> !created.0.active && created.1 == Some(down_message_spec(created.0, REASON_NOPROC)))
+    &&& (target_proc.state != BEAM_DEAD ==> created.0.active && created.1.is_none())
 }
 
 // r[depends beam-monitor.down]
 // r[depends beam-monitor.late]
 /// Spec: create monitor and maybe emit immediate DOWN if target already dead.
-pub open spec fn create_monitor_spec(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> (BeamMonitor, Option<BeamMessage>) {
-    if target_state == BEAM_DEAD {
-        (
-            BeamMonitor { watcher, target, ref_id, active: false },
-            Some(BeamMessage {
-                sender: target,
-                kind: MESSAGE_DOWN,
-                payload: 0,
-                ref_id,
-                observed_pid: target,
-                reason: REASON_NOPROC,
-            }),
-        )
-    } else {
-        (BeamMonitor { watcher, target, ref_id, active: true }, None)
-    }
+pub open spec fn create_monitor_spec(ref_id: u64, watcher: u64, target_proc: BeamProcess) -> (BeamMonitor, Option<BeamMessage>) {
+    let created = create_monitor_view_spec(ref_id, watcher, target_proc);
+    (created.0, created.1)
 }
 
 // r[depends beam-monitor.down]
@@ -156,14 +148,34 @@ pub open spec fn flush_down_messages_spec(mailbox: Seq<BeamMessage>, ref_id: u64
 // r[impl beam-monitor.late]
 /// Create a monitor. If the target is already dead, return an immediate
 /// `noproc` DOWN and an inactive monitor.
-pub fn create_monitor(ref_id: u64, watcher: u64, target: u64, target_state: u64) -> (result: (BeamMonitor, Option<BeamMessage>))
-    ensures result == create_monitor_spec(ref_id, watcher, target, target_state)
+pub fn create_monitor(ref_id: u64, watcher: u64, target_proc: &BeamProcess) -> (result: (BeamMonitor, Option<BeamMessage>, BeamProcess))
+    ensures
+        result.0 == create_monitor_spec(ref_id, watcher, *target_proc).0,
+        result.1 == create_monitor_spec(ref_id, watcher, *target_proc).1,
+        result.2.pid == target_proc.pid,
+        result.2.state == target_proc.state,
+        result.2.trap_exit == target_proc.trap_exit,
+        result.2.exit_reason == target_proc.exit_reason,
+        result.2.heap_id == target_proc.heap_id,
+        result.2.heap@ =~= target_proc.heap@,
 {
-    if target_state == BEAM_DEAD {
-        let monitor = BeamMonitor { watcher, target, ref_id, active: false };
-        (monitor, Some(down_message(monitor, REASON_NOPROC)))
+    let target_after = BeamProcess {
+        pid: target_proc.pid,
+        state: target_proc.state,
+        trap_exit: target_proc.trap_exit,
+        exit_reason: target_proc.exit_reason,
+        heap_id: target_proc.heap_id,
+        heap: target_proc.heap.clone(),
+    };
+    if target_proc.state == BEAM_DEAD {
+        let monitor = BeamMonitor { watcher, target: target_proc.pid, ref_id, active: false };
+        (monitor, Some(down_message(monitor, REASON_NOPROC)), target_after)
     } else {
-        (BeamMonitor { watcher, target, ref_id, active: true }, None)
+        (
+            BeamMonitor { watcher, target: target_proc.pid, ref_id, active: true },
+            None,
+            target_after,
+        )
     }
 }
 
@@ -229,8 +241,8 @@ pub fn demonitor_flush(mailbox: &[BeamMessage], ref_id: u64) -> (result: Vec<Bea
 }
 
 // r[verify beam-monitor.unidirectional]
-proof fn create_monitor_leaves_target_unchanged(ref_id: u64, watcher: u64, target: u64, target_state: u64)
-    ensures monitor_unidirectional_spec(ref_id, watcher, target, target_state)
+proof fn create_monitor_leaves_target_unchanged(ref_id: u64, watcher: u64, target_proc: BeamProcess)
+    ensures monitor_unidirectional_spec(ref_id, watcher, target_proc)
 {}
 
 // r[verify beam-monitor.down]
@@ -243,9 +255,10 @@ proof fn active_monitor_sends_exactly_one_down(monitor: BeamMonitor, reason: u64
 {}
 
 // r[verify beam-monitor.late]
-proof fn late_monitor_gets_noproc(ref_id: u64, watcher: u64, target: u64)
-    ensures create_monitor_spec(ref_id, watcher, target, BEAM_DEAD).1.is_some(),
-        create_monitor_spec(ref_id, watcher, target, BEAM_DEAD).1.unwrap().reason == REASON_NOPROC,
+proof fn late_monitor_gets_noproc(ref_id: u64, watcher: u64, target_proc: BeamProcess)
+    requires target_proc.state == BEAM_DEAD
+    ensures create_monitor_spec(ref_id, watcher, target_proc).1.is_some(),
+        create_monitor_spec(ref_id, watcher, target_proc).1.unwrap().reason == REASON_NOPROC,
 {}
 
 // r[verify beam-monitor.demonitor]
@@ -267,23 +280,43 @@ mod tests {
     use super::*;
     use crate::beam_process::BEAM_ALIVE;
     use crate::beam_process::BEAM_DEAD;
+    use crate::beam_process::BeamProcess;
+    use crate::beam_process::REASON_NORMAL;
 
     // r[verify beam-monitor.unidirectional]
     #[test]
     fn test_monitor_creation_is_watcher_owned() {
-        let (monitor, immediate) = create_monitor(7, 11, 22, BEAM_ALIVE);
+        let target = BeamProcess {
+            pid: 22,
+            state: BEAM_ALIVE,
+            trap_exit: false,
+            exit_reason: REASON_NORMAL,
+            heap_id: 22,
+            heap: vec![1, 2, 3],
+        };
+        let (monitor, immediate, target_after) = create_monitor(7, 11, &target);
         assert_eq!(monitor.watcher, 11);
         assert_eq!(monitor.target, 22);
         assert_eq!(monitor.ref_id, 7);
         assert!(monitor.active);
         assert!(immediate.is_none());
+        assert_eq!(target_after, target);
     }
 
     // r[verify beam-monitor.down]
     #[test]
     fn test_monitor_death_delivers_down_once() {
-        let (monitor, immediate) = create_monitor(7, 1, 2, BEAM_ALIVE);
+        let target = BeamProcess {
+            pid: 2,
+            state: BEAM_ALIVE,
+            trap_exit: false,
+            exit_reason: REASON_NORMAL,
+            heap_id: 2,
+            heap: vec![],
+        };
+        let (monitor, immediate, target_after) = create_monitor(7, 1, &target);
         assert!(immediate.is_none());
+        assert_eq!(target_after, target);
 
         let (monitor, down) = notify_death(monitor, 9);
         assert!(!monitor.active);
@@ -300,9 +333,18 @@ mod tests {
     // r[verify beam-monitor.late]
     #[test]
     fn test_late_monitor_gets_noproc() {
-        let (monitor, down) = create_monitor(7, 1, 2, BEAM_DEAD);
+        let target = BeamProcess {
+            pid: 2,
+            state: BEAM_DEAD,
+            trap_exit: false,
+            exit_reason: REASON_NORMAL,
+            heap_id: 2,
+            heap: vec![7],
+        };
+        let (monitor, down, target_after) = create_monitor(7, 1, &target);
         assert!(!monitor.active);
         assert_eq!(down.unwrap().reason, REASON_NOPROC);
+        assert_eq!(target_after, target);
     }
 
     // r[verify beam-monitor.demonitor]
