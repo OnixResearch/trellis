@@ -2195,6 +2195,32 @@ r[type-lattice.temporal-widening]
 DATE MUST be convertible to DATETIME and vice versa. Both MUST
 be convertible to STRING.
 
+## Type Unification
+
+r[unify.unifier-exists]
+If some finite fuel budget makes the equation-list solver succeed, the
+public `unify_spec` chooser MUST return a substitution. This requirement
+covers witness selection, not semantic completeness of unification.
+
+r[unify.unifier-correct]
+Applying any substitution returned by the solver to both input types MUST
+yield identical resulting types.
+
+r[unify.occurs-check]
+Unification MUST reject binding a variable to a type that already
+contains that variable. The occurs check prevents infinite self-referential
+types.
+
+r[unify.subst-compose]
+Substitution composition MUST model sequential application.
+Applying compose(s2, s1) to a type MUST equal applying s1 first and s2
+second. Composition MUST be associative.
+
+r[unify.failure]
+Obvious structural clashes MUST fail. In particular, distinct concrete
+constructors MUST not unify, and an application MUST not unify with a
+concrete constructor.
+
 ## Cross-Module Properties (Wave 1)
 
 r[properties.signal-add-is-set-bit]

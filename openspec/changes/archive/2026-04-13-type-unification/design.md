@@ -10,11 +10,11 @@ instantiation, and trait resolution.
 **Goals:**
 - Type representation: Var, Con, App (type application / constructor)
 - Substitution: mapping from type variables to types
-- Unification algorithm with occurs check
-- MGU existence, correctness, and most-generality
+- Fuel-bounded unification algorithm with occurs check
+- Fuel-witness lifting from `solve_fuel` to `unify_spec`
+- Returned-unifier correctness
 - Substitution composition and associativity
-- Failure correctness
-- Idempotence
+- Direct structural-failure proofs
 
 **Non-Goals:**
 - Polymorphism / type schemes / generalization
@@ -22,6 +22,8 @@ instantiation, and trait resolution.
 - Row types or record types
 - Subtyping (unification is for equality, not ordering)
 - Union-find optimization (the model uses explicit substitution maps)
+- Full most-generality and idempotence theorems for arbitrary unifiers
+- Exec/runtime wrappers over the spec solver
 
 ## Decisions
 
@@ -47,28 +49,29 @@ Verus's `enum` support, avoiding Box.
 types. `apply_subst(subst, ty)` recursively replaces variables.
 
 **Rationale:** Explicit map is simplest for proofs. `apply_subst` is a
-structural recursion on the type. The idempotence proof shows that
-applying a substitution twice equals once (no variable in the range
-appears in the domain — the well-formedness invariant of MGUs).
+structural recursion on the type, and map-based composition matches the
+usual "apply s1, then s2" substitution algebra cleanly.
 
 ### 3. Unification Algorithm
 
-**Choice:** Recursive function:
+**Choice:** Fuel-bounded Martelli-Montanari style solver over an equation list:
 ```
-unify(t1, t2) -> Result<Substitution, Error>:
-  if t1 == Var(x): if x in t2 (occurs check) → fail, else → {x ↦ t2}
-  if t2 == Var(x): if x in t1 (occurs check) → fail, else → {x ↦ t1}
-  if t1 == Con(a), t2 == Con(b): if a == b → {} else → fail
-  if t1 == App(f1, a1), t2 == App(f2, a2):
-    s1 = unify(f1, f2)
-    s2 = unify(apply(s1, a1), apply(s1, a2))
-    → compose(s2, s1)
-  else → fail
+solve_fuel([(t1, t2)], fuel):
+  []                        -> {}
+  (t, t) :: rest            -> solve_fuel(rest, fuel-1)
+  (Var(x), t) :: rest       -> if x occurs in t fail
+                               else solve_fuel(apply({x↦t}, rest), fuel-1)
+                                    and compose returned substitution with {x↦t}
+  (t, Var(x)) :: rest       -> same, after orienting
+  (App(f1,a1), App(f2,a2))  -> solve_fuel([(f1,f2), (a1,a2)] ++ rest, fuel-1)
+  _                         -> fail
 ```
 
-**Rationale:** Robinson's algorithm. The recursive structure matches the
-type structure. The occurs check prevents infinite types. Composition
-accumulates substitutions left-to-right.
+**Rationale:** Direct recursive Robinson unification on `(t1, t2)` is a poor
+Verus termination shape because the App/App branch substitutes into the
+second recursive call, which can increase term size. Fuel plus an explicit
+equation list keeps the algorithm faithful while making termination and
+case-by-case correctness proofs straightforward.
 
 ### 4. Occurs Check
 
@@ -78,17 +81,7 @@ in `ty`. Structural recursion on `ty`.
 **Rationale:** Without the occurs check, `unify(Var(0), App(Con(0), Var(0)))` would produce `{0 ↦ App(Con(0), Var(0))}`, which is circular.
 The occurs check detects this and fails.
 
-### 5. Most General Unifier Proof
-
-**Choice:** Prove: for any other unifier σ of (t1, t2), there exists a
-substitution ρ such that σ = ρ ∘ mgu. This means the MGU is the least
-commitment — any other solution is a specialization.
-
-**Rationale:** Most-generality is the key property for type inference
-correctness. If the MGU isn't most general, the inferred type is too
-specific (rejects valid programs).
-
-### 6. Composition
+### 5. Composition
 
 **Choice:** `compose(s2, s1)` applies s2 to every type in s1's range,
 then adds s2's bindings for variables not in s1's domain.
@@ -106,4 +99,10 @@ simpler to reason about.
 
 **[First-order only]** → Higher-order unification (unifying lambda terms)
 is undecidable. This module handles first-order terms only. Sufficient for
-Hindley-Milner and most practical type checkers.
+first-order term solving and as a verified core for future type-inference work.
+
+**[Fuel-bounded spec]** → The public solver is expressed with explicit fuel
+rather than a bare recursive function on `(t1, t2)`. That is a proof-engineering
+tradeoff: it gives a clean decreases argument and keeps the proof burden local.
+The proved existence theorem is correspondingly a witness-lifting result, not a
+full semantic completeness theorem over all possible unifiers.

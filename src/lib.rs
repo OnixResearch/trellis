@@ -211,6 +211,7 @@
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
+//! - `type_unification` — first-order type syntax, occurs check, substitution application and composition
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `trust_level` — trust resolution with block precedence and access control
@@ -509,6 +510,7 @@ pub mod two_phase_lock;
 pub mod txn_dependency;
 pub mod txn_isolation;
 pub mod type_lattice;
+pub mod type_unification;
 pub mod typed_state;
 pub mod vector_clock;
 pub mod view_change;
