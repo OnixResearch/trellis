@@ -20,6 +20,13 @@
 //! - `balance` — credit/debit with overflow protection and conservation proofs
 //! - `ballot` — vote tracking for Raft elections with quorum intersection safety
 //! - `barrier` — thread barrier: arrive, release on Nth arrival, generation counter
+//! - `beam_link` — BEAM bidirectional links and exit-signal propagation
+//! - `beam_mailbox` — BEAM FIFO mailboxes with selective receive and save-offset cursor
+//! - `beam_monitor` — BEAM monitors, DOWN delivery, demonitor flush
+//! - `beam_process` — BEAM process lifecycle and heap-isolation model
+//! - `beam_registry` — BEAM name registry with bijective name↔pid mapping
+//! - `beam_scheduler` — BEAM reduction-budget preemption and priority queue selection
+//! - `beam_send` — BEAM asynchronous send: append-if-live, drop-if-dead
 //! - `bitwise` — power-of-two, bit get/set/clear/toggle
 //! - `batch` — write batch limit checking and flush decisions
 //! - `bitfield` — multi-bit field extraction and insertion with round-trip proofs
@@ -252,6 +259,13 @@ pub mod backoff;
 pub mod balance;
 pub mod ballot;
 pub mod barrier;
+pub mod beam_link;
+pub mod beam_mailbox;
+pub mod beam_monitor;
+pub mod beam_process;
+pub mod beam_registry;
+pub mod beam_scheduler;
+pub mod beam_send;
 pub mod batch;
 pub mod bitfield;
 pub mod bitmap;

@@ -211,6 +211,12 @@ exactly once per monitor reference.
 - WHEN `B` dies with reason `R`
 - THEN `A` receives `{'DOWN', Ref, process, B, R}`
 
+### Requirement: Late Monitor Delivers noproc
+
+r[beam-monitor.late]
+Creating a monitor for an already-dead process MUST immediately yield a
+`{'DOWN', Ref, process, Pid, noproc}` message.
+
 #### Scenario: Monitor after death
 
 - GIVEN `B` is already dead when `A` calls `monitor(process, B)`

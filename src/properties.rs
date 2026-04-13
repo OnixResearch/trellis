@@ -2315,6 +2315,112 @@ mod nickel_proofs {
         prove_nickel_split_disjoint_preserves_sides(a, b);
     }
 
+    // --- BEAM cross-module properties ---
+
+    // r[impl properties.beam-death-links]
+    pub open spec fn beam_death_links_prop(
+        proc: crate::beam_process::BeamProcess,
+        mailbox: Seq<crate::beam_mailbox::BeamMessage>,
+        source_pid: u64,
+        reason: u64,
+    ) -> bool {
+        let delivered = crate::beam_link::deliver_exit_signal_spec(proc, mailbox, source_pid, reason);
+        if proc.state != crate::beam_process::BEAM_ALIVE {
+            delivered.0 == proc && delivered.1 =~= mailbox
+        } else if reason == crate::beam_process::REASON_KILL {
+            delivered.0.exit_reason == crate::beam_process::REASON_KILLED
+        } else if proc.trap_exit {
+            delivered.0 == proc && delivered.1.len() == mailbox.len() + 1
+        } else if reason == crate::beam_process::REASON_NORMAL {
+            delivered.0 == proc
+        } else {
+            delivered.0.state == crate::beam_process::BEAM_EXITING
+        }
+    }
+
+    // r[verify properties.beam-death-links]
+    proof fn prove_beam_death_links(
+        proc: crate::beam_process::BeamProcess,
+        mailbox: Seq<crate::beam_mailbox::BeamMessage>,
+        source_pid: u64,
+        reason: u64,
+    )
+        ensures beam_death_links_prop(proc, mailbox, source_pid, reason)
+    {}
+
+    // r[impl properties.beam-death-monitor]
+    pub open spec fn beam_death_monitor_prop(
+        monitor: crate::beam_monitor::BeamMonitor,
+        reason: u64,
+    ) -> bool {
+        let notified = crate::beam_monitor::notify_death_spec(monitor, reason);
+        monitor.active ==> (!notified.0.active && notified.1.is_some())
+    }
+
+    // r[verify properties.beam-death-monitor]
+    proof fn prove_beam_death_monitor(
+        monitor: crate::beam_monitor::BeamMonitor,
+        reason: u64,
+    )
+        ensures beam_death_monitor_prop(monitor, reason)
+    {}
+
+    // r[impl properties.beam-death-mailbox]
+    pub open spec fn beam_death_mailbox_prop(
+        mailbox: Seq<crate::beam_mailbox::BeamMessage>,
+        msg: crate::beam_mailbox::BeamMessage,
+    ) -> bool {
+        crate::beam_send::beam_send_spec(crate::beam_process::BEAM_DEAD, mailbox, msg) =~= mailbox
+    }
+
+    // r[verify properties.beam-death-mailbox]
+    proof fn prove_beam_death_mailbox(
+        mailbox: Seq<crate::beam_mailbox::BeamMessage>,
+        msg: crate::beam_mailbox::BeamMessage,
+    )
+        ensures beam_death_mailbox_prop(mailbox, msg)
+    {}
+
+    // r[impl properties.beam-death-registry]
+    pub open spec fn beam_death_registry_prop(
+        registry: Seq<(u64, u64)>,
+        name: u64,
+        pid: u64,
+    ) -> bool
+        recommends
+            crate::beam_registry::registry_unique_spec(registry),
+            !crate::beam_registry::registry_has_name_spec(registry, name),
+            !crate::beam_registry::registry_has_pid_spec(registry, pid),
+    {
+        crate::beam_registry::register_spec(registry, name, pid).is_some()
+    }
+
+    // r[verify properties.beam-death-registry]
+    proof fn prove_beam_death_registry(
+        registry: Seq<(u64, u64)>,
+        name: u64,
+        pid: u64,
+    )
+        requires
+            crate::beam_registry::registry_unique_spec(registry),
+            !crate::beam_registry::registry_has_name_spec(registry, name),
+            !crate::beam_registry::registry_has_pid_spec(registry, pid),
+        ensures beam_death_registry_prop(registry, name, pid)
+    {
+        crate::beam_registry::register_fresh_pair_is_some(registry, name, pid);
+    }
+
+    // r[impl properties.beam-scheduler-state]
+    pub open spec fn beam_scheduler_state_prop(state: u64, has_work: bool) -> bool {
+        crate::beam_scheduler::runnable_process_spec(state, has_work)
+            == (state == crate::beam_process::BEAM_ALIVE && has_work)
+    }
+
+    // r[verify properties.beam-scheduler-state]
+    proof fn prove_beam_scheduler_state(state: u64, has_work: bool)
+        ensures beam_scheduler_state_prop(state, has_work)
+    {}
+
     } // verus!
 }
 

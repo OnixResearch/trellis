@@ -6141,3 +6141,99 @@ Running -> Terminated process-state transition.
 r[properties.zircon-futex-process-state]
 Any waiter released by futex wake or requeue MUST admit the abstract
 Blocked -> Ready process-state transition.
+
+## BEAM Primitives
+
+r[beam-process.lifecycle]
+A BEAM process MUST move only forward through `alive -> exiting -> dead`.
+Once dead, it MUST remain dead.
+
+r[beam-process.isolation]
+Each BEAM process MUST have its own logical heap identity. Mutating one
+process heap MUST NOT mutate any other process heap. Inter-process term
+transfer MUST occur by copying.
+
+r[beam-mailbox.ordering]
+A BEAM mailbox MUST append new messages at the tail. Messages from the same
+sender MUST remain in send order.
+
+r[beam-mailbox.selective-receive]
+Selective receive MUST scan from the saved cursor and return the first
+matching message. Unmatched messages MUST remain in mailbox order.
+
+r[beam-mailbox.save-offset]
+When selective receive finds a match, the save offset MUST reset to 0.
+When no match exists, the save offset MUST advance to the mailbox end so
+already-scanned non-matches are not re-scanned.
+
+r[beam-send.async]
+BEAM send MUST always succeed from the sender's point of view. Sending to a
+live process MUST append to its mailbox; sending to a dead process MUST
+silently drop the message.
+
+r[beam-link.symmetry]
+Process links MUST be symmetric. Creating a link MUST add both directions,
+and unlinking MUST remove both directions.
+
+r[beam-link.propagation]
+An abnormal exit received through a live link MUST cause a non-trapping
+alive peer to begin exiting. A normal exit MUST NOT cascade.
+
+r[beam-link.trap-exit]
+A process with `trap_exit` enabled MUST convert incoming exit signals into
+`EXIT` mailbox messages, except `kill`, which MUST terminate the process as
+`killed`.
+
+r[beam-monitor.unidirectional]
+A monitor MUST be unidirectional: monitor creation MUST leave the target
+process state unchanged and only the watcher observes monitor state.
+
+r[beam-monitor.down]
+An active monitor MUST deliver exactly one `DOWN` message when the target
+dies, and then become inactive.
+
+r[beam-monitor.late]
+Creating a monitor for an already-dead process MUST immediately yield a
+`DOWN` message with reason `noproc`.
+
+r[beam-monitor.demonitor]
+Demonitor MUST disable future DOWN delivery. Demonitor with flush MUST
+remove any queued DOWN for the monitor reference.
+
+r[beam-scheduler.preemption]
+Reduction charging MUST saturate at zero remaining budget. Zero remaining
+budget, or explicit yield, MUST trigger preemption.
+
+r[beam-scheduler.priority]
+Scheduler priority selection MUST prefer `max` over `high`, `high` over
+`normal`, and `normal` over `low`, subject to starvation-prevention for
+lower queues. Only alive processes with work are runnable.
+
+r[beam-registry.uniqueness]
+The BEAM registry MUST remain bijective: no two entries may share a name,
+and no two entries may share a pid.
+
+r[beam-registry.cleanup]
+Cleaning up a dead pid MUST remove any registry entry for that pid so the
+name can be registered again.
+
+## Cross-Module: BEAM Primitives
+
+r[properties.beam-death-links]
+A process death propagated through BEAM links MUST respect link rules:
+non-trapping peers begin exiting on abnormal signals, trapped peers receive
+EXIT messages, and unlinked peers observe nothing.
+
+r[properties.beam-death-monitor]
+A monitored process death MUST produce exactly one DOWN message for each
+active monitor reference.
+
+r[properties.beam-death-mailbox]
+Sending to a dead BEAM process MUST leave its mailbox unchanged.
+
+r[properties.beam-death-registry]
+Cleaning up a dead BEAM pid in the registry MUST remove that pid before the
+same name can be registered again.
+
+r[properties.beam-scheduler-state]
+The scheduler MUST treat only alive processes with pending work as runnable.
