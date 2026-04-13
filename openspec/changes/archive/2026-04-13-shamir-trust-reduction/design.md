@@ -22,6 +22,7 @@ Affected modules:
 - Preserve existing Tracey requirement IDs and coverage
 - Reduce the global trust inventory to the `15` permanent boundaries
 - Sync README and verification-gap inventory to the reduced counts
+- Sync the secret-sharing uniqueness prose to the verified Lagrange model already tracked in `docs/requirements.md`
 
 **Non-Goals:**
 - Expanding the Shamir feature surface beyond the current modules
@@ -77,6 +78,15 @@ only after a fresh trusted-site scan and fresh rerun of the green pipeline.
 **Rationale:** This repo's done review is strict about proof-posture claims.
 The reduced counts must come from live evidence, not arithmetic done from
 memory.
+
+### 6. Narrow uniqueness prose to the verified requirement surface
+
+**Choice:** Keep the Lagrange uniqueness proof at the fixed-x / equal-values
+level and sync `openspec/specs/secret-sharing/spec.md` to that statement.
+
+**Rationale:** The verified proof and Tracey requirement already talk about
+uniqueness of the value vector on a chosen interpolation set. The stronger
+coefficient-equality wording was spec drift, not intended new scope.
 
 ## Risks / Trade-offs
 

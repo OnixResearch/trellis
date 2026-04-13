@@ -187,9 +187,7 @@ proof fn basis_other_from(xs: Seq<u64>, i: int, j: int, p: u64, from: int)
     ensures lagrange_basis_from_spec(xs, i, xs[j], p, from) == 0
     decreases xs.len() - from
 {
-    if from == i {
-        basis_other_from(xs, i, j, p, from + 1);
-    } else if from == j {
+    if from == j {
         let denom = field_sub_spec(xs[i], xs[j], p);
         basis_from_closed(xs, i, xs[j], p, from + 1);
         field_closed(xs[i], xs[j], p);
@@ -204,7 +202,11 @@ proof fn basis_other_from(xs: Seq<u64>, i: int, j: int, p: u64, from: int)
         assert(field_sub_spec(xs[j], xs[j], p) == 0);
         field_mul_zero(inv, p);
         field_mul_zero(lagrange_basis_from_spec(xs, i, xs[j], p, from + 1), p);
+    } else if from == i {
+        basis_other_from(xs, i, j, p, from + 1);
     } else {
+        assert(from < j);
+        assert(from < xs.len());
         basis_other_from(xs, i, j, p, from + 1);
         let denom = field_sub_spec(xs[i], xs[from], p);
         let num = field_sub_spec(xs[j], xs[from], p);

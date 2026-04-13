@@ -14,6 +14,8 @@
 - Current trusted inventory: 15 `#[verifier::external_body]` items across 5 files.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable Shamir subset is now 0 because `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold` are fully internalized.
+- I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
+- If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
 - 2026-04-09 trust reduction result: closed all 7 temporary MESI/page `#[verifier::external_body]` sites; current trust inventory is 29 across 11 files, and the tree is green again.

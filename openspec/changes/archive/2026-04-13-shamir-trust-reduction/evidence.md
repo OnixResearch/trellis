@@ -27,6 +27,13 @@ src/snapshot_integrity.rs:54:#[verifier::external_body]
 src/snapshot_integrity.rs:63:#[verifier::external_body]
 ```
 
+### Archive / active-change status
+
+```text
+$ if [ -d openspec/changes/shamir-trust-reduction ]; then echo active_change=present; else echo active_change=absent; fi
+active_change=absent
+```
+
 ### Tracey
 
 ```text
@@ -41,15 +48,30 @@ verified-logic/rust: 0 untested (impl but no verify) out of 1381 rules
 
 ```text
 $ cargo test
-3465 passed; 0 failed
+...
+test result: ok. 3465 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.07s
 
 $ cargo clippy --all-targets -- -D warnings
-Finished `dev` profile [unoptimized + debuginfo] target(s) successfully
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 13.96s
 
 $ ./scripts/verus.sh src/lib.rs
-6348 verified, 0 errors
+verification results:: 6348 verified, 0 errors
+warning: 6 warnings emitted
 
 $ ./scripts/verify.sh
+...
+verification results:: 6348 verified, 0 errors
+warning: 6 warnings emitted
+
+✓ verus proofs pass
+...
+verified-logic/rust: 0 uncovered out of 1381 rules
+✓ no uncovered requirements
+
+verified-logic/rust: 0 untested (impl but no verify) out of 1381 rules
+✓ no untested requirements
+
 === ALL CHECKS PASSED ===
 ```
 
@@ -57,3 +79,4 @@ $ ./scripts/verify.sh
 
 - Shamir modules contribute zero trusted sites after this change.
 - Remaining trusted boundaries are the 15 permanent sites in `chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, and `log_invariant_inductive`.
+- Follow-up review fix: `src/shamir_lagrange.rs:basis_other_from` now makes the `from <= j < xs.len()` access argument explicit before touching `xs[from]`.

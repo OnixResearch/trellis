@@ -43,6 +43,9 @@ leader-chain invariant lemmas).
   `src/shamir_threshold.rs`.
 - Refresh `README.md` and `openspec/specs/verification-gaps/spec.md` after
   the Shamir bridges disappear.
+- Sync `openspec/specs/secret-sharing/spec.md` so the uniqueness prose
+  matches the verified Lagrange requirement already tracked in
+  `docs/requirements.md`.
 
 ## Scope
 
@@ -50,8 +53,9 @@ leader-chain invariant lemmas).
   while preserving current public behavior, requirement coverage, and green
   verification.
 - **Out of scope**: changing the permanent trust boundaries, expanding the
-  Shamir API surface, or changing requirement prose beyond trust-inventory
-  sync needed for this change.
+  Shamir API surface, or changing requirement prose beyond the narrowly
+  scoped uniqueness-wording sync needed to match the verified Lagrange
+  model already tracked in `docs/requirements.md`.
 
 ## Evidence
 

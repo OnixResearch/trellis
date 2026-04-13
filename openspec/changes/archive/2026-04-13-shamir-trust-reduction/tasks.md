@@ -22,5 +22,6 @@
 ## Phase 4: Inventory and Verification Sync
 
 - [x] Update `README.md` and `openspec/specs/verification-gaps/spec.md` to the reduced `15 / 15 / 0` trust counts
+- [x] Sync `openspec/specs/secret-sharing/spec.md` uniqueness wording to the verified Lagrange model
 - [x] Run `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, and `./scripts/verify.sh`
-- [x] Capture fresh trusted-site scan output showing zero Shamir `#[verifier::external_body]` sites
+- [x] Capture fresh trusted-site scan output showing zero Shamir `#[verifier::external_body]` sites and no active change directory
