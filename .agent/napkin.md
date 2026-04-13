@@ -13,6 +13,7 @@
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - Current trusted inventory: 15 `#[verifier::external_body]` items across 5 files.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
+- `src/liveness_analysis.rs` uses synchronous whole-graph rounds. For this model the safe convergence bound is `2 * blocks * vars`, not `blocks * vars`; a self-loop with a local use lets `live_in` become true one round before `live_out` reflects the self-successor.
 - Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable Shamir subset is now 0 because `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold` are fully internalized.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
 - If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.

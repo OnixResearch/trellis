@@ -16,6 +16,15 @@ variables to the same register (silent corruption) or fails to spill
 a variable that's actually live (crash). Both are miscompilation bugs
 that are extremely hard to diagnose.
 
+## Scope Revision Note
+
+The first draft of this change sketched a reverse-postorder implementation,
+a `V × B` convergence bound, a whole-subgraph connectivity claim, and a
+special-case exit live-out rule. The landed implementation uses synchronous
+whole-graph rounds, the correct `2 × V × B` stabilization bound for that
+model, witness-path connectivity, and local-use modeling for exit returns.
+This archive reflects the implemented scope rather than the earlier sketch.
+
 ## What Changes
 
 - **liveness_analysis**: A new module modeling backward dataflow liveness

@@ -73,6 +73,7 @@
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
 //! - `control_flow_graph` — basic block partitioning, leader identification, CFG edges, and dead-block detection
 //! - `dominator_tree` — iterative dominator sets, immediate dominators, and dominance frontiers
+//! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range projection
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -407,6 +408,7 @@ pub mod lease_read;
 pub mod ledger;
 pub mod left_right;
 pub mod linearizability;
+pub mod liveness_analysis;
 pub mod lock_ordering;
 pub mod log;
 pub mod log_compaction;

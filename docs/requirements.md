@@ -6440,3 +6440,33 @@ r[dominator-tree.dominance-frontier]
 A node MUST appear in another node's dominance frontier exactly when one of its
 predecessors is dominated by that node but the node does not strictly dominate
 the join point itself.
+
+## Liveness Analysis
+
+r[liveness.convergence]
+Backward liveness analysis MUST start from empty live sets and reach a fixed
+point within 2 × V × B synchronous rounds for V variables and B blocks. Each
+round MUST be monotonic: no live bit may flip from true back to false.
+
+r[liveness.equations]
+At a fixed point, live-out MUST equal the union of successor live-in rows, and
+live-in MUST equal use ∪ (live-out \ def) for every block.
+
+r[liveness.use-def]
+A variable MUST be live-in at a block if and only if there exists a path from
+that block to a block that uses the variable before any intervening block on
+that path defines it.
+
+r[liveness.connected]
+If a def-free witness path explains why a variable is live-in at a block, then
+that variable's projected live range MUST include every block on that witness
+path.
+
+r[liveness.def-kills]
+If a block defines a variable and does not use it before that definition, the
+variable MUST NOT be live-in to that block.
+
+r[liveness.exit]
+A block with no CFG successors MUST have empty live-out. Return values, if any,
+MUST be modeled as local uses of the exit block rather than as post-exit
+liveness.

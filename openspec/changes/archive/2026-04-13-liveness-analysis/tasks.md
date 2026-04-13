@@ -1,3 +1,10 @@
+> Scope revision note: the initial draft mentioned reverse-postorder rounds,
+> a `V × B` bound, connected-subgraph wording, and an exit-specific live-out
+> convention. The completed implementation uses synchronous whole-graph rounds,
+> a `2 × V × B` bound, witness-path connectivity, and local-use exit modeling.
+>
+> Checklist below tracks the implemented scope.
+
 ## Phase 1: Dataflow Infrastructure
 
 - [x] Define `use_set(block)` and `def_set(block)` row projections

@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**6348 Verus proofs · 3465 tests · 1381 requirements · 287 modules · 15 trusted boundaries**
+**6380 Verus proofs · 3474 tests · 1387 requirements · 296 modules · 15 trusted boundaries**
 
 ## How it works
 
@@ -289,6 +289,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `cycle_detect` | cycle detection: remaining node count proves acyclicity |
 | `reachability` | BFS reachability: soundness, visited-set monotonicity |
 | `dominator_tree` | iterative dominator sets, immediate dominators, and dominance frontiers |
+| `liveness_analysis` | backward live-in/live-out analysis, fixed-point checks, and live-range projection |
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 
@@ -421,7 +422,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (5436 proofs)
+./scripts/verus.sh         # verus only (6380 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -429,9 +430,9 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 279 module declarations
+src/lib.rs              ← crate root, 296 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1318 tracey requirements
+docs/requirements.md    ← 1387 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
