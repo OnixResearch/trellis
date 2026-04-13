@@ -317,10 +317,10 @@ removed. After cleanup, the name is available for re-registration.
 ### Requirement: Death Propagates Through Links
 
 r[properties.beam-death-links]
-When a process dies, the exit signal propagation through `beam_link` MUST
-reach every transitively linked process (unless blocked by unlink or
-trap_exit) and each reached process MUST follow the `beam_process` lifecycle
-rules.
+When a process dies, exit delivery through `beam_link` MUST respect the
+link rules for each reached peer: non-trapping alive peers begin exiting on
+abnormal signals, trapping peers receive `EXIT` messages, `kill` bypasses
+`trap_exit`, and peers with no remaining link observe nothing.
 
 ### Requirement: Death Triggers Monitor DOWN
 

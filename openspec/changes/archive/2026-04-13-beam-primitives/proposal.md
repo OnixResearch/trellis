@@ -34,9 +34,8 @@ let-it-crash supervision semantics without needing a full BEAM emulator.
   to the recipient's mailbox, and messages to dead processes are silently
   dropped.
 - **`beam_link`** — Bidirectional process links: link/unlink operations,
-  exit signal propagation through live links, trap_exit flag semantics
-  (convert exit signals to messages), and cascading failure through link
-  chains.
+  exit signal propagation through live links, trap_exit flag semantics,
+  unlink suppression, and kill-bypasses-trap semantics.
 - **`beam_monitor`** — Unidirectional monitors: monitor/demonitor
   operations, DOWN message generation on monitored process death, and
   guaranteed delivery of DOWN even if the target is already dead at
