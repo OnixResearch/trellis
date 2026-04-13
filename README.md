@@ -288,6 +288,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `topo_sort` | topological sort via Kahn's algorithm: validity, completeness |
 | `cycle_detect` | cycle detection: remaining node count proves acyclicity |
 | `reachability` | BFS reachability: soundness, visited-set monotonicity |
+| `dominator_tree` | iterative dominator sets, immediate dominators, and dominance frontiers |
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 
