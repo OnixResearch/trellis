@@ -6412,3 +6412,31 @@ all refer to existing basic blocks.
 r[control-flow-graph.reachability]
 Reachability analysis MUST mark exactly the blocks reachable from entry block 0,
 and dead-block detection MUST return exactly the complement set.
+
+## Dominator Tree
+
+r[dominator-tree.valid-graph]
+Dominator analysis MUST reject edges whose endpoints fall outside the CFG node
+range.
+
+r[dominator-tree.entry-dominates]
+The entry node MUST dominate every reachable node.
+
+r[dominator-tree.partial-order]
+The computed dominance relation MUST behave as a partial order over reachable
+nodes: reflexive, transitive, and antisymmetric.
+
+r[dominator-tree.idom-unique]
+Every reachable non-entry node MUST have exactly one immediate dominator.
+
+r[dominator-tree.tree-structure]
+Immediate-dominator links MUST form a parent-pointer tree rooted at the entry.
+
+r[dominator-tree.convergence]
+The iterative dominator algorithm MUST converge to the same dominator sets and
+immediate-dominator map as the path-based definition.
+
+r[dominator-tree.dominance-frontier]
+A node MUST appear in another node's dominance frontier exactly when one of its
+predecessors is dominated by that node but the node does not strictly dominate
+the join point itself.
