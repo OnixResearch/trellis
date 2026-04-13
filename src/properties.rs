@@ -7887,6 +7887,22 @@ mod durable_execution_proofs {
             ==> !try_execute_spec(effect_id, seq![effect_id]).0
     }
 
+    // r[verify properties.durable-effect-uses-idempotency]
+    proof fn prove_durable_effect_uses_idempotency(
+        events: Seq<DurableEvent>,
+        seq_num: usize,
+        effect_id: u64,
+    )
+        ensures durable_effect_uses_idempotency_prop(events, seq_num, effect_id)
+    {
+        if !crate::durable_replay::should_execute_effect_spec(events, seq_num, effect_id) {
+            assert(crate::job_idempotency::is_consumed_spec(effect_id, seq![effect_id])) by {
+                assert(seq![effect_id][0] == effect_id);
+            }
+            assert(!try_execute_spec(effect_id, seq![effect_id]).0);
+        }
+    }
+
     // r[impl properties.durable-history-seq-is-strict-advance]
     pub open spec fn durable_history_seq_is_strict_advance_prop(
         events: Seq<DurableEvent>,
@@ -7896,6 +7912,24 @@ mod durable_execution_proofs {
             ==> is_strict_advance_spec(events[i].seq_num as u64, events[i + 1].seq_num as u64)
     }
 
+    // r[verify properties.durable-history-seq-is-strict-advance]
+    proof fn prove_durable_history_seq_is_strict_advance(
+        events: Seq<DurableEvent>,
+        i: int,
+    )
+        requires events.len() <= usize::MAX as int
+        ensures durable_history_seq_is_strict_advance_prop(events, i)
+    {
+        if history_valid_spec(events) && 0 <= i < events.len() - 1 {
+            crate::durable_history::history_valid_pointwise(events, i);
+            crate::durable_history::history_valid_pointwise(events, i + 1);
+            assert(events[i].seq_num == i as usize);
+            assert(events[i + 1].seq_num == (i + 1) as usize);
+            assert(events[i].seq_num + 1 == events[i + 1].seq_num);
+            assert((events[i].seq_num as u64) < (events[i + 1].seq_num as u64));
+        }
+    }
+
     // r[impl properties.durable-history-prefix-like-journal]
     pub open spec fn durable_history_prefix_like_journal_prop(
         events: Seq<DurableEvent>,
@@ -7903,6 +7937,37 @@ mod durable_execution_proofs {
     ) -> bool {
         append_allowed_spec(events, new_event)
             ==> seq_nums_monotonic_spec(history_to_journal_spec(events.push(new_event)))
+    }
+
+    // r[verify properties.durable-history-prefix-like-journal]
+    proof fn prove_durable_history_prefix_like_journal(
+        events: Seq<DurableEvent>,
+        new_event: DurableEvent,
+    )
+        requires events.len() <= usize::MAX as int
+        ensures durable_history_prefix_like_journal_prop(events, new_event)
+    {
+        if append_allowed_spec(events, new_event) {
+            assert(history_valid_spec(events));
+            assert(new_event.seq_num == events.len());
+            assert forall|i: int| 0 <= i < events.push(new_event).len()
+                implies history_to_journal_spec(events.push(new_event))[i].seq_num == i as u64 by {
+                if i < events.len() {
+                    crate::durable_history::history_valid_pointwise(events, i);
+                    assert(events[i].seq_num == i as usize);
+                } else {
+                    assert(i == events.len());
+                    assert(events.push(new_event)[i] == new_event);
+                }
+            }
+            assert forall|i: int, j: int| #![trigger history_to_journal_spec(events.push(new_event))[i], history_to_journal_spec(events.push(new_event))[j]]
+                0 <= i < j < events.push(new_event).len()
+                    implies history_to_journal_spec(events.push(new_event))[i].seq_num
+                        < history_to_journal_spec(events.push(new_event))[j].seq_num by {
+                assert(history_to_journal_spec(events.push(new_event))[i].seq_num == i as u64);
+                assert(history_to_journal_spec(events.push(new_event))[j].seq_num == j as u64);
+            }
+        }
     }
 
     } // verus!

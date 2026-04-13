@@ -8,7 +8,7 @@ Every public function has a `spec fn` (mathematical definition) and an
 directly in `src/` — drift between spec and implementation is structurally
 impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
 
-**6405 Verus proofs · 3497 tests · 1400 requirements · 300 modules · 15 trusted boundaries**
+**6420 Verus proofs · 3506 tests · 1400 requirements · 300 modules · 15 trusted boundaries**
 
 ## How it works
 
@@ -418,7 +418,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 3497 tests (unit + property)
+cargo test                 # 3506 tests (unit + property)
 cargo clippy -- -D warnings
 ```
 
@@ -426,7 +426,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6405 proofs)
+./scripts/verus.sh         # verus only (6420 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```

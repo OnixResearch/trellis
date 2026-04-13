@@ -36,6 +36,22 @@ pub fn replayable_event_at(events: &[DurableEvent], index: usize) -> (result: Op
     }
 }
 
+// r[verify durable-execution.replayable-event]
+/// Replay within the durable prefix returns the recorded event.
+pub proof fn replay_inside_prefix_returns_event(events: Seq<DurableEvent>, index: int)
+    requires 0 <= index < crate::durable_history::durable_prefix_len_spec(events)
+    ensures replayable_event_at_spec(events, index) == Some(events[index])
+{
+}
+
+// r[verify durable-execution.replayable-event]
+/// Replay at or beyond the durable prefix is rejected.
+pub proof fn replay_outside_prefix_rejected(events: Seq<DurableEvent>, index: int)
+    requires index < 0 || crate::durable_history::durable_prefix_len_spec(events) <= index
+    ensures replayable_event_at_spec(events, index) == None::<DurableEvent>
+{
+}
+
 pub open spec fn effect_completed_spec(events: Seq<DurableEvent>, seq_num: usize, effect_id: u64) -> bool {
     exists|i: int| {
         &&& 0 <= i < crate::durable_history::durable_prefix_len_spec(events)
@@ -83,6 +99,21 @@ pub fn should_execute_effect(events: &[DurableEvent], seq_num: usize, effect_id:
     true
 }
 
+// r[verify durable-execution.effect-dedup]
+/// A matching durable effect marker suppresses fresh execution.
+pub proof fn durable_effect_marker_blocks_reexecution(events: Seq<DurableEvent>, seq_num: usize, effect_id: u64)
+    requires effect_completed_spec(events, seq_num, effect_id)
+    ensures !should_execute_effect_spec(events, seq_num, effect_id)
+{
+}
+
+// r[verify durable-execution.effect-dedup]
+/// Effect decisions for one id depend only on markers for that same id.
+pub proof fn unrelated_effect_ids_do_not_block(events: Seq<DurableEvent>, seq_num: usize, completed_id: u64, other_id: u64)
+    requires completed_id != other_id
+    ensures should_execute_effect_spec(events, seq_num, other_id) == !effect_completed_spec(events, seq_num, other_id)
+{
+}
 
 } // verus!
 
@@ -99,6 +130,17 @@ mod tests {
 
     fn effect(seq_num: usize, effect_id: u64) -> DurableEvent {
         DurableEvent { seq_num, kind: EVENT_EFFECT_DONE, effect_id }
+    }
+
+    fn random_event((seq_num, kind, effect_id): (usize, u8, u64)) -> DurableEvent {
+        DurableEvent { seq_num, kind, effect_id }
+    }
+
+    fn effect_completed_exec(events: &[DurableEvent], seq_num: usize, effect_id: u64) -> bool {
+        let prefix = durable_prefix_len(events);
+        events.iter().take(prefix).any(|event| {
+            event.seq_num == seq_num && event.kind == EVENT_EFFECT_DONE && event.effect_id == effect_id
+        })
     }
 
     // r[verify durable-execution.replayable-event]
@@ -135,6 +177,48 @@ mod tests {
             events.push(DurableEvent { seq_num: len + 1, kind: EVENT_WORK, effect_id: 0 });
             let prefix = durable_prefix_len(&events);
             prop_assert_eq!(replayable_event_at(&events, prefix), None);
+        }
+
+        // r[verify durable-execution.effect-dedup]
+        #[test]
+        fn prop_random_histories_match_effect_oracle(
+            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
+            seq_num in 0usize..20,
+            effect_id in 0u64..8,
+        ) {
+            let events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
+            let oracle = effect_completed_exec(&events, seq_num, effect_id);
+            prop_assert_eq!(should_execute_effect(&events, seq_num, effect_id), !oracle);
+        }
+
+        // r[verify durable-execution.effect-dedup]
+        #[test]
+        fn prop_random_histories_unrelated_effect_ids_remain_independent(
+            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
+            seq_num in 0usize..20,
+            completed_id in 0u64..8,
+            other_id in 8u64..16,
+        ) {
+            let mut events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
+            events.push(DurableEvent { seq_num, kind: EVENT_EFFECT_DONE, effect_id: completed_id });
+            let other_oracle = effect_completed_exec(&events, seq_num, other_id);
+            prop_assert!(completed_id != other_id);
+            prop_assert_eq!(should_execute_effect(&events, seq_num, other_id), !other_oracle);
+        }
+
+        // r[verify durable-execution.replayable-event]
+        #[test]
+        fn prop_random_histories_replay_obeys_prefix(
+            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
+            raw_index in 0usize..25,
+        ) {
+            let events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
+            let prefix = durable_prefix_len(&events);
+            if raw_index < prefix {
+                prop_assert_eq!(replayable_event_at(&events, raw_index), Some(events[raw_index]));
+            } else {
+                prop_assert_eq!(replayable_event_at(&events, raw_index), None);
+            }
         }
     }
 }

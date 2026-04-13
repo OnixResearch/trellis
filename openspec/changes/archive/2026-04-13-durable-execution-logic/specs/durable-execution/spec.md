@@ -175,21 +175,24 @@ already fixes a terminal outcome, `resume_step` MUST return `None`.
 
 #### Requirement: Resume Never Rewinds Or Skips Ahead
 
-When `resume_step` returns `Some(step)`, the step MUST be at least the
-current durable checkpoint and at most the contiguous durable prefix.
-Recovery MUST NOT repeat durably committed prefix work as new work, and
-MUST NOT skip over missing durable steps.
+When `resume_step` returns `Some(step)` for a caller-provided valid
+checkpoint, the step MUST be at least that checkpoint and at most the
+contiguous durable prefix. If the caller provides an already-invalid
+checkpoint beyond the durable prefix, recovery MAY preserve it unchanged
+rather than silently rewinding it. Recovery MUST NOT repeat durably
+committed prefix work as new work, and MUST NOT skip over missing
+durable steps.
 
 ##### Scenario: No rewind
 
-- GIVEN durable checkpoint = 6
+- GIVEN valid durable checkpoint = 6
 - WHEN computing resume_step on non-terminal history
 - THEN the result MUST be Some(step) with step >= 6
 
 ##### Scenario: No skip over gap
 
 - GIVEN durable history has a gap before step 8
-- WHEN computing resume_step on non-terminal history
+- WHEN computing resume_step from a valid checkpoint on non-terminal history
 - THEN the result MUST stay at or before the first gap
 
 ### Terminal Durability

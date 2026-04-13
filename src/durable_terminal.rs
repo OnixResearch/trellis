@@ -42,6 +42,14 @@ pub fn is_terminal_execution(events: &[DurableEvent]) -> (result: bool)
     recovered_status(events).is_some()
 }
 
+// r[verify durable-execution.terminal]
+/// Once durable history is terminal, appending any later event is rejected.
+pub proof fn post_terminal_append_rejected(events: Seq<DurableEvent>, new_event: DurableEvent)
+    requires is_terminal_execution_spec(events)
+    ensures !crate::durable_history::append_allowed_spec(events, new_event)
+{
+}
+
 // r[depends durable-execution.terminal-recovery]
 /// Spec: recovered terminal status, if one exists.
 pub open spec fn recovered_status_spec(events: Seq<DurableEvent>) -> Option<u8> {
@@ -70,6 +78,12 @@ pub fn recovered_status(events: &[DurableEvent]) -> (result: Option<u8>)
     }
 }
 
+// r[verify durable-execution.terminal-recovery]
+/// Recovery reports the same durable terminal outcome fixed in the prefix.
+pub proof fn terminal_recovery_reproduces_status(events: Seq<DurableEvent>)
+    ensures recovered_status_spec(events) == terminal_status_spec(events)
+{
+}
 
 } // verus!
 
@@ -78,7 +92,7 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::durable_history::{DurableEvent, EVENT_CANCELLED, EVENT_COMPLETED, EVENT_WORK};
+    use crate::durable_history::{DurableEvent, EVENT_CANCELLED, EVENT_COMPLETED, EVENT_FAILED, EVENT_WORK};
 
     fn work(seq_num: usize) -> DurableEvent {
         DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
@@ -92,6 +106,14 @@ mod tests {
         DurableEvent { seq_num, kind: EVENT_CANCELLED, effect_id: 0 }
     }
 
+    fn failed(seq_num: usize) -> DurableEvent {
+        DurableEvent { seq_num, kind: EVENT_FAILED, effect_id: 0 }
+    }
+
+    fn random_event((seq_num, kind, effect_id): (usize, u8, u64)) -> DurableEvent {
+        DurableEvent { seq_num, kind, effect_id }
+    }
+
     // r[verify durable-execution.terminal]
     #[test]
     fn test_is_terminal_execution() {
@@ -99,6 +121,7 @@ mod tests {
         assert!(!is_terminal_execution(&[work(0), work(1)]));
         assert!(is_terminal_execution(&[work(0), completed(1)]));
         assert!(is_terminal_execution(&[cancelled(0)]));
+        assert!(is_terminal_execution(&[failed(0)]));
     }
 
     // r[verify durable-execution.terminal-recovery]
@@ -108,6 +131,7 @@ mod tests {
         assert_eq!(recovered_status(&[work(0)]), None);
         assert_eq!(recovered_status(&[work(0), completed(1)]), Some(EVENT_COMPLETED));
         assert_eq!(recovered_status(&[cancelled(0)]), Some(EVENT_CANCELLED));
+        assert_eq!(recovered_status(&[failed(0)]), Some(EVENT_FAILED));
     }
 
     proptest! {
@@ -125,6 +149,37 @@ mod tests {
             let mut events: Vec<DurableEvent> = (0..prefix).map(work).collect();
             events.push(completed(prefix));
             prop_assert_eq!(recovered_status(&events), Some(EVENT_COMPLETED));
+        }
+
+        // r[verify durable-execution.terminal]
+        #[test]
+        fn prop_random_histories_post_terminal_append_rejected(
+            prefix in 0usize..12,
+            terminal_kind in prop_oneof![Just(EVENT_COMPLETED), Just(EVENT_FAILED), Just(EVENT_CANCELLED)],
+            tail in proptest::collection::vec((0usize..12, 0u8..8, 0u64..8), 0..8),
+            new_seq in 0usize..20,
+            new_kind in 0u8..8,
+            effect_id in 0u64..8,
+        ) {
+            let mut events: Vec<DurableEvent> = (0..prefix).map(work).collect();
+            events.push(DurableEvent { seq_num: prefix, kind: terminal_kind, effect_id: 0 });
+            events.extend(tail.into_iter().map(random_event));
+            let new_event = DurableEvent { seq_num: new_seq, kind: new_kind, effect_id };
+            prop_assert!(is_terminal_execution(&events));
+            prop_assert!(!crate::durable_history::append_allowed(&events, new_event));
+        }
+
+        // r[verify durable-execution.terminal-recovery]
+        #[test]
+        fn prop_random_histories_recover_terminal_prefix(
+            prefix in 0usize..12,
+            terminal_kind in prop_oneof![Just(EVENT_COMPLETED), Just(EVENT_FAILED), Just(EVENT_CANCELLED)],
+            tail in proptest::collection::vec((0usize..12, 0u8..8, 0u64..8), 0..8),
+        ) {
+            let mut events: Vec<DurableEvent> = (0..prefix).map(work).collect();
+            events.push(DurableEvent { seq_num: prefix, kind: terminal_kind, effect_id: 0 });
+            events.extend(tail.into_iter().map(random_event));
+            prop_assert_eq!(recovered_status(&events), Some(terminal_kind));
         }
     }
 }
