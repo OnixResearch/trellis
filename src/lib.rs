@@ -71,6 +71,7 @@
 //! - `commit_notify` — commit notification dispatch: newly committed ranges, proposal status
 //! - `compaction_fence` — log compaction coordination with replication: safe compact index
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
+//! - `control_flow_graph` — basic block partitioning, leader identification, CFG edges, and dead-block detection
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -325,6 +326,7 @@ pub mod commit_notify;
 pub mod compaction_fence;
 pub mod config_change;
 pub mod constant_time_eq;
+pub mod control_flow_graph;
 pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;

@@ -6375,3 +6375,40 @@ name can be registered again.
 
 r[properties.beam-scheduler-state]
 The scheduler MUST treat only alive processes with pending work as runnable.
+
+## Control Flow Graph
+
+r[control-flow-graph.valid-program]
+CFG construction MUST reject branch and conditional-branch targets that are
+out of range or that target instruction 0. The entry block model assumes no
+internal predecessor to the first instruction.
+
+r[control-flow-graph.leader]
+Leader identification MUST mark instruction 0, every branch target, and every
+instruction immediately following a terminator as a basic-block leader.
+
+r[control-flow-graph.partition]
+Basic block construction MUST produce non-empty half-open ranges that cover the
+instruction stream contiguously from 0 to N. Adjacent blocks MUST meet exactly
+at a boundary, with no gaps or overlaps.
+
+r[control-flow-graph.edges]
+CFG edges MUST follow the terminator of each basic block: normal instructions
+fall through to the next block, unconditional branches jump only to their
+unique target block, conditional branches jump to the target and fall through
+when distinct, and returns produce no successors.
+
+r[control-flow-graph.entry]
+A non-empty CFG MUST expose block 0 as its entry block.
+
+r[control-flow-graph.exit]
+A block MUST be classified as an exit block if and only if its final
+instruction is a return.
+
+r[control-flow-graph.well-formed]
+A well-formed CFG MUST have a valid instruction stream and edge endpoints that
+all refer to existing basic blocks.
+
+r[control-flow-graph.reachability]
+Reachability analysis MUST mark exactly the blocks reachable from entry block 0,
+and dead-block detection MUST return exactly the complement set.

@@ -3,11 +3,28 @@
 ## Purpose
 
 Defines requirements for verified CFG construction from a linear
-instruction sequence. Covers basic block partitioning, leader
-identification, edge correctness, entry/exit properties, well-formedness,
-and dead block detection.
+instruction sequence. Covers instruction validity, basic block
+partitioning, leader identification, edge correctness, entry/exit
+properties, well-formedness, and dead block detection.
 
 ## Requirements
+
+### Requirement: Instruction Validity
+
+Branch and conditional-branch targets MUST stay within the instruction
+stream and MUST NOT target instruction 0.
+
+#### Scenario: Out-of-range target
+
+- GIVEN a branch target T outside [0, N)
+- WHEN the instruction stream is validated
+- THEN validation fails
+
+#### Scenario: Entry target rejected
+
+- GIVEN a branch target T == 0
+- WHEN the instruction stream is validated
+- THEN validation fails
 
 ### Requirement: Instruction Partition
 
@@ -48,9 +65,9 @@ Block boundaries MUST be placed at leader instructions.
 - WHEN leaders are identified
 - THEN index T is a leader
 
-#### Scenario: After branch
+#### Scenario: After terminator
 
-- GIVEN a branch or conditional branch at index I
+- GIVEN a terminator at index I
 - WHEN leaders are identified
 - THEN index I+1 is a leader (if it exists)
 
@@ -80,7 +97,7 @@ control to B's entry.
 ### Requirement: Entry Block
 
 The entry block MUST contain the first instruction and have no
-predecessors from within the function.
+predecessors from within the function for valid instruction streams.
 
 #### Scenario: Entry is first
 
@@ -90,7 +107,7 @@ predecessors from within the function.
 
 #### Scenario: No internal predecessors
 
-- GIVEN the entry block
+- GIVEN a valid instruction stream and the entry block
 - WHEN its predecessors are listed
 - THEN the list is empty
 

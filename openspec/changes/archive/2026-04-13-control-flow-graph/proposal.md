@@ -23,18 +23,19 @@ downstream analysis to produce wrong results.
   - **Partition**: Every instruction belongs to exactly one basic block.
     The blocks partition the instruction sequence.
   - **Leader identification**: Block boundaries are placed at the correct
-    positions — targets of branches, instructions after branches, and the
+    positions — targets of branches, instructions after terminators, and the
     first instruction.
   - **Edge correctness**: An edge from block A to block B exists iff the
     last instruction of A transfers control to the first instruction of B
     (branch target or fall-through).
-  - **Entry block**: The entry block contains the first instruction and
+  - **Entry block**: The entry block contains the first instruction. The
+    instruction model rejects branches to instruction 0 so the entry block
     has no predecessors from within the function.
   - **Exit block**: The exit block(s) contain return instructions and have
     no successors.
-  - **Well-formedness**: The CFG is a directed graph with no self-loops on
-    unconditional blocks, all edges connect valid blocks, and the graph is
-    closed (no dangling references).
+  - **Well-formedness**: The CFG is a directed graph over valid basic-block
+    indices with no dangling references. The instruction model rejects
+    out-of-range targets and branches to instruction 0.
   - **Reachability from entry**: Every block reachable from the entry has
     a path from the entry (dead blocks are identified).
 

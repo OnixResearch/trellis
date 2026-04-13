@@ -27,21 +27,25 @@ primitives but no basic block or CFG model.
 
 **Choice:** Instructions are indexed by position (u32). Each instruction
 has a `kind`: `Normal`, `Branch(target)`, `ConditionalBranch(target)`,
-or `Return`. The instruction list is `Seq<InstrKind>`.
+or `Return`. The instruction list is `Seq<InstrKind>`. Branch targets
+must be in range and may not target instruction 0.
 
 **Rationale:** Minimal model that captures control flow. Normal
 instructions fall through. Branches transfer control. Conditional
-branches have fall-through and a target. Return ends the function.
+branches have fall-through and a target. Return ends the function. The
+`target != 0` restriction preserves the simple "entry has no internal
+predecessors" model used by downstream analyses.
 
 ### 2. Leader Identification
 
 **Choice:** An instruction is a leader if: (1) it's the first instruction,
-(2) it's the target of a branch, or (3) it immediately follows a branch
-or conditional branch.
+(2) it's the target of a branch, or (3) it immediately follows a
+terminator (`Branch`, `ConditionalBranch`, or `Return`).
 
-**Rationale:** Standard basic block construction rule from Aho et al.
-Leaders partition the instruction sequence into maximal straight-line
-blocks.
+**Rationale:** Standard basic block construction rule with `Return`
+counted as a terminator so later instructions never stay inside a block
+that already exited. Leaders partition the instruction sequence into
+maximal straight-line blocks.
 
 ### 3. Block Representation
 
@@ -69,20 +73,21 @@ transfer is missing.
 
 **Choice:** Block 0 is the entry. Exit blocks are blocks whose last
 instruction is `Return`. Entry has no predecessors from within the
-function. Exit has no successors.
+function because valid programs forbid branches to instruction 0. Exit
+blocks have no successors.
 
 **Rationale:** Convention that the first instruction is the entry.
-Multiple exit blocks are allowed (multiple return points). The proofs
-check these structural properties hold after construction.
+Multiple exit blocks are allowed (multiple return points). The validity
+restriction keeps the entry model simple and explicit.
 
 ### 6. Well-Formedness
 
 **Choice:** `well_formed(cfg) -> bool` checks:
 - All edge targets are valid block indices
-- No self-loops on unconditional branches (would be an infinite loop
-  with no exit — legal but flagged)
 - Every block has at least one instruction
 - Block ranges are contiguous and non-overlapping
+- All branch targets are in range and avoid instruction 0
+- All edge targets are valid block indices
 
 **Rationale:** Downstream analyses assume these properties. Checking them
 at construction time means they don't need to be reproved by every

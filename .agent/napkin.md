@@ -12,6 +12,7 @@
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - Current trusted inventory: 53 `#[verifier::external_body]` items across 11 files.
+- `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable subset is 38 Shamir-secret-sharing bridges across `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold`.
 - 2026-04-08 audit started with a broken tree: `./scripts/verify.sh` showed clippy failures, Verus failures in `src/mesi.rs` and `src/page.rs`, and 29 `#[verifier::external_body]` items while the README still said 22.
 - 2026-04-08 remediation result: `./scripts/verify.sh` is green again, Tracey is `0 uncovered` / `0 untested`, and the current trust inventory is 36 `#[verifier::external_body]` items across 13 files.
@@ -110,6 +111,8 @@
 | Date | Source | What Went Wrong | What To Do Instead |
 |------|--------|----------------|-------------------|
 | 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
+| 2026-04-13 | self | Used regex alternation/pipes directly in `rg` tool patterns; shell interpreted them as pipelines and even invoked `shutdown` from the literal pattern | For alternation searches, use `bash` with `rg 'a|b' ...` quoted, or avoid `|` in the raw `rg` tool pattern |
+| 2026-04-13 | self | Started an OpenSpec change in `../chaoscontrol` before confirming user wanted the spec in this repo | For cross-repo requests, confirm target repo first; if user says "add primitives here", default OpenSpec work to current repo, not sibling repo |
 
 ## Recent Changes
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
