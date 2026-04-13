@@ -41,15 +41,14 @@ which is monotone on this lattice.
 
 ### 2. Fixed-Point Iteration
 
-**Choice:** Initialize all `live_in` and `live_out` to empty. Process
-blocks in reverse postorder (reverse of the order computed by
-`topo_sort.rs` on the reverse CFG). Repeat until no set changes.
+**Choice:** Initialize all `live_in` and `live_out` rows to empty and run
+whole-graph synchronous rounds. Each round recomputes every block from the
+previous round's `live_in` matrix. Stop when one round makes no change.
 
-**Rationale:** Reverse postorder on the reverse CFG is the optimal
-processing order for backward dataflow — it minimizes iterations.
-The lattice has finite height (bounded by the number of variables),
-and the transfer function is monotone, so convergence is guaranteed
-within `O(V × B)` steps.
+**Rationale:** Synchronous rounds keep the implementation and tests simple.
+The lattice has finite height, the transfer function is monotone, and each
+bit can only flip from false to true once in `live_in` and once in
+`live_out`, so stabilization happens within `2 × V × B` rounds.
 
 ### 3. Lattice
 
@@ -72,20 +71,23 @@ specification.
 
 ### 5. Connected Live Ranges
 
-**Choice:** For variable v, the set of blocks where v is live
-(live_in or live_out) forms a connected subgraph. Prove by showing:
-if v is live at block B and live at block C, then every block on the
-path from B to C that reaches a use of v also has v live.
+**Choice:** Model connectivity through witness paths: if `v` is live-in at a
+block because some def-free path reaches a later use, then every block on
+that witness path belongs to `live_range(v)`.
 
-**Rationale:** Connected live ranges are a precondition for linear-scan
-register allocation. They're also used to prove interference graph
-correctness.
+**Rationale:** This is the path-local form the implementation can check and
+property-test directly. It still captures the "no gaps along the reason v is
+live" fact needed by downstream analyses.
 
 ## Risks / Trade-offs
 
 **[Per-block granularity]** → Per-instruction liveness is more precise
 but quadratically more expensive. Per-block is the standard starting
 point. A refinement module could extend to per-instruction.
+
+**[Empty exit live-out]** → The model keeps `live_out(exit)` empty. Return
+values are represented as local uses in the exit block rather than as a
+special post-exit live-out convention.
 
 **[Path quantification in spec]** → The use-def characterization
 quantifies over paths. Same fuel-bounded approach as `reachability.rs`

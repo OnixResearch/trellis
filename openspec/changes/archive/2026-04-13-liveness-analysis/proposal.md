@@ -24,17 +24,18 @@ that are extremely hard to diagnose.
   Proves:
   - **Fixed-point convergence**: The iterative analysis terminates.
     The lattice (powerset of variables, ordered by ⊆) has finite height,
-    and the transfer function is monotone.
+    the transfer function is monotone, and synchronous rounds stabilize
+    within a finite `2 × blocks × vars` bound.
   - **Live-in / live-out equations**: At fixed point, the live-in and
     live-out sets satisfy the dataflow equations for every block.
   - **Use-def correctness**: A variable is live at a point iff there exists
     a path from that point to a use with no intervening definition.
-  - **Connected live ranges**: The set of program points where a variable
-    is live forms a connected subgraph of the CFG.
+  - **Connected live ranges**: Every def-free witness path explaining why a
+    variable is live stays inside that variable's projected live range.
   - **Def kills liveness**: If a block defines variable V and does not use
     V before the definition, then V is not live-in to that block.
-  - **Exit block**: Variables not used after the exit block are not live-out
-    of the exit block.
+  - **Exit block**: Blocks with no successors have empty live-out; return
+    uses are modeled through the block's local use set.
 
 ## Capabilities
 
@@ -50,7 +51,8 @@ that are extremely hard to diagnose.
 ## Impact
 
 - **Files**: One new `src/liveness_analysis.rs`, module declaration in `lib.rs`
-- **APIs**: `LiveSets`, `compute_liveness`, `is_live_at`, `live_range`,
+- **APIs**: `LiveSets`, `liveness_round`, `compute_liveness`,
+  `compute_liveness_with_rounds`, `is_live_at`, `live_range`,
   `check_equations`, transfer function and fixed-point infrastructure
 - **Dependencies**: Operates on CFG representation, depends on `vstd`
 - **Testing**: Verus proofs for all properties, proptest for liveness

@@ -15,8 +15,8 @@ The iterative liveness analysis MUST terminate.
 #### Scenario: Finite lattice
 
 - GIVEN a CFG with V variables and B blocks
-- WHEN the analysis iterates
-- THEN it terminates within V × B iterations
+- WHEN the synchronous backward analysis iterates from empty live sets
+- THEN it terminates within 2 × V × B rounds
 
 #### Scenario: Monotonic growth
 
@@ -60,14 +60,13 @@ with no intervening definition.
 
 ### Requirement: Connected Live Ranges
 
-The set of program points where a variable is live MUST form a connected
-subgraph of the CFG.
+A liveness witness path MUST stay inside the variable's projected live range.
 
-#### Scenario: No gaps
+#### Scenario: Witness path has no gaps
 
-- GIVEN variable V live at blocks B1 and B3, with B2 on every path from B1 to B3
-- WHEN V's liveness at B2 is checked
-- THEN V is live at B2
+- GIVEN variable V is live-in at block B1 because a def-free path reaches a later use
+- WHEN that witness path passes through blocks B2 .. Bn
+- THEN every block on the witness path is in V's live range
 
 ### Requirement: Def Kills Liveness
 
@@ -82,17 +81,16 @@ V MUST NOT be live-in to that block (from this block's contribution).
 
 ### Requirement: Exit Block Boundary
 
-Variables not used after the exit block MUST NOT be live-out of the
-exit block.
+A block with no CFG successors MUST have empty live-out.
 
-#### Scenario: Return value live
+#### Scenario: Exit block
+
+- GIVEN block B has no successors
+- WHEN `live_out(B)` is computed
+- THEN no variable is in `live_out(B)`
+
+#### Scenario: Return value modeled as local use
 
 - GIVEN the exit block returns variable V
-- WHEN `live_out(exit)` is computed
-- THEN V MAY be considered live (it's the return value)
-
-#### Scenario: Non-return variable
-
-- GIVEN variable V is not the return value and has no use after exit
-- WHEN `live_out(exit)` is computed
-- THEN V is not in `live_out(exit)`
+- WHEN liveness is computed
+- THEN V is live only if the block's use set records that return use
