@@ -1626,3 +1626,7 @@
   mixed `Record -> Record -> Dict` chains (`{a:Num,b:Bool} <: {a:Num}` and `{a:Num} <: {_:Num}`
   but not `{a:Num,b:Bool} <: {_:Num}`). Strongest honest proof surface is a supported-transitivity
   predicate for Dyn/Array/Dict chains, not an unconditional theorem.
+- `src/surelock_lockset.rs:prepare_lockset` was much easier to verify once I trimmed the exec
+  ensures down to canonical-plan shape (`strict_id_order_spec`, `no_duplicate_ids_spec`, matching
+  length). Pushing full membership-preservation / rejection reasons into the exec postcondition made
+  Verus brittle; keep those behaviors covered with helper proofs and tests.
