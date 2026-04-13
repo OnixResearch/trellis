@@ -6544,3 +6544,33 @@ r[liveness.exit]
 A block with no CFG successors MUST have empty live-out. Return values, if any,
 MUST be modeled as local uses of the exit block rather than as post-exit
 liveness.
+
+## SSA Construction
+
+r[ssa.single-assignment]
+SSA construction MUST assign a fresh version to every phi definition and every
+instruction definition, with no two explicit definitions sharing the same
+version.
+
+r[ssa.dominance-of-uses]
+Every SSA use MUST be dominated by the definition of its version: instruction
+uses by a dominating phi or earlier instruction definition, and phi arguments
+by a definition that dominates the end of the predecessor edge they reference.
+
+r[ssa.phi-placement]
+Phi placement MUST insert a phi for variable V at exactly the blocks in the
+iterated dominance frontier of V's definition set. Each placed phi MUST contain
+exactly one argument slot per distinct predecessor block.
+
+r[ssa.phi-semantics]
+A phi node MUST select the version associated with the predecessor edge that was
+actually taken.
+
+r[ssa.destruction]
+Phi elimination MUST replace each block's phi nodes with parallel copies on each
+incoming edge so that executing the eliminated program along any CFG path
+produces the same versioned environment as executing the SSA program.
+
+r[ssa.idf-convergence]
+Iterated dominance frontier computation MUST grow monotonically from the empty
+set and reach a fixed point within at most N rounds for an N-block CFG.

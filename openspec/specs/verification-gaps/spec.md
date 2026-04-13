@@ -15,9 +15,9 @@ As of `2026-04-13`, backed by fresh reruns on the current tree, the live verific
 
 - `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3465 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`6348 verified, 0 errors`)
-- Tracey is green (`1381/1381 covered`, `1381/1381 verified`, `0 uncovered`, `0 untested`)
+- `cargo test` passes (`3517 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`6450 verified, 0 errors`)
+- Tracey is green (`1406/1406 covered`, `1406/1406 verified`, `0 uncovered`, `0 untested`)
 
 This green status does **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.

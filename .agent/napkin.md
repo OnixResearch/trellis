@@ -14,6 +14,8 @@
 - Current trusted inventory: 15 `#[verifier::external_body]` items across 5 files.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - `src/liveness_analysis.rs` uses synchronous whole-graph rounds. For this model the safe convergence bound is `2 * blocks * vars`, not `blocks * vars`; a self-loop with a local use lets `live_in` become true one round before `live_out` reflects the self-successor.
+- `src/ssa_construction.rs` currently keeps the heavy SSA algorithms in plain Rust helpers and uses `assume_specification[...]` declarations gated by `#[cfg(verus_keep_ghost)]` to let the verified wrappers call them. Ungated assume-spec declarations break normal cargo builds under `-F unsafe-code`.
+- SSA phi coverage must deduplicate predecessor blocks. `dominator_tree::predecessors` returns one entry per edge, so duplicate edges or self-loops otherwise create duplicate phi args for the same predecessor.
 - Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable Shamir subset is now 0 because `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold` are fully internalized.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
 - If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.
@@ -120,7 +122,9 @@
 | 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
 | 2026-04-13 | self | Used regex alternation/pipes directly in `rg` tool patterns; shell interpreted them as pipelines and even invoked `shutdown` from the literal pattern | For alternation searches, use `bash` with `rg 'a|b' ...` quoted, or avoid `|` in the raw `rg` tool pattern |
 | 2026-04-13 | self | Repeated same `rg` alternation mistake after already logging it in napkin | Default to `bash` for any regex containing `|`, even for quick README searches |
+| 2026-04-13 | self | Still reached for raw `rg` tool with `|` during README search | Treat `|` as bash-only in this harness; if pattern has alternation, switch tools before running command |
 | 2026-04-13 | self | Started an OpenSpec change in `../chaoscontrol` before confirming user wanted the spec in this repo | For cross-repo requests, confirm target repo first; if user says "add primitives here", default OpenSpec work to current repo, not sibling repo |
+| 2026-04-13 | self | Added bare `assume_specification[...]` declarations for SSA wrappers and normal cargo builds failed under `-F unsafe-code` | Gate `assume_specification[...]` with `#[cfg(verus_keep_ghost)]` so Rust builds ignore them while Verus still sees them |
 
 ## Domain Notes
 - Lazygit branch refresh panic can come from a corrupt local auto branch ref, not from repo-wide object corruption. In this repo, `.git/refs/heads/pi/auto/main` pointed to missing object `fdc4b6514488e7b441c17b3b50d15cdfc90072a4`; `git show-ref --heads` reported `bad ref`, and reflog showed last good tip `982a1021f46d3dadf56cd2c5304080a2912f92a1`.
