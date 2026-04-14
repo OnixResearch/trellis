@@ -1,3 +1,5 @@
+Validation evidence: see `evidence/final-tasks.md`, `evidence/validation.md`, and the raw transcripts in `evidence/*.txt`.
+
 ## Phase 1: Scaffold and schema
 
 - [x] Add `redb` and `blake3` dependencies, choose the index file location, and scaffold the internal modules or CLI entrypoint

@@ -6818,8 +6818,9 @@ stored extracted facts instead of reparsing the file.
 r[repo-index.cross-reference]
 The repository index MUST extract cross-reference facts needed for local repo
 navigation: Rust items and `r[...]` reference sites from `src/**/*.rs`,
-requirement definitions from `docs/requirements.md`, and headings plus active
-change/domain metadata from active OpenSpec markdown.
+requirement definitions from `docs/requirements.md` and active OpenSpec
+markdown, plus headings and active change/domain metadata from active
+OpenSpec markdown.
 
 r[repo-index.query]
 The repository index MUST support deterministic local queries over committed

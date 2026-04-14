@@ -4,7 +4,7 @@ use std::path::Path;
 use serde::Deserialize;
 use serde::Serialize;
 
-pub const CURRENT_SCHEMA_VERSION: u64 = 1;
+pub const CURRENT_SCHEMA_VERSION: u64 = 3;
 pub const DEFAULT_DB_PATH: &str = "data/repo-index.redb";
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Serialize, Deserialize)]

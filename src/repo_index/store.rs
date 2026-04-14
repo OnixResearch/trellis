@@ -53,9 +53,22 @@ impl RepoIndex {
             fs::create_dir_all(parent)
                 .with_context(|| format!("create repo-index parent directory {}", parent.display()))?;
         }
-        let db =
+        let mut db =
             Database::create(db_path).with_context(|| format!("open repo index database {}", db_path.display()))?;
-        Self::initialize(&db)?;
+        if let Err(error) = Self::initialize(&db) {
+            if schema_mismatch(&error) {
+                drop(db);
+                if db_path.exists() {
+                    fs::remove_file(db_path)
+                        .with_context(|| format!("remove stale repo index database {}", db_path.display()))?;
+                }
+                db = Database::create(db_path)
+                    .with_context(|| format!("recreate repo index database {}", db_path.display()))?;
+                Self::initialize(&db)?;
+            } else {
+                return Err(error);
+            }
+        }
         Ok(Self {
             root: root.to_path_buf(),
             db,
@@ -70,9 +83,7 @@ impl RepoIndex {
                 meta.get("schema_version").context("read repo-index schema version")?.map(|value| value.value());
             if let Some(version) = schema_value {
                 if version != CURRENT_SCHEMA_VERSION {
-                    bail!(
-                        "repo-index schema mismatch: found {version}, expected {CURRENT_SCHEMA_VERSION}; delete data/repo-index.redb and rebuild"
-                    );
+                    bail!("repo-index schema mismatch: found {version}, expected {CURRENT_SCHEMA_VERSION}");
                 }
             } else {
                 meta.insert("schema_version", CURRENT_SCHEMA_VERSION).context("write repo-index schema version")?;
@@ -398,6 +409,12 @@ impl RepoIndex {
     }
 }
 
+fn schema_mismatch(error: &anyhow::Error) -> bool {
+    error
+        .chain()
+        .any(|cause| cause.to_string().starts_with("repo-index schema mismatch:"))
+}
+
 fn path_key(generation: u64, path: &str) -> String {
     format!("{generation:020}:{path}")
 }
@@ -504,10 +521,16 @@ mod tests {
 
     use anyhow::Result;
     use proptest::prelude::*;
+    use redb::Database;
     use tempfile::TempDir;
 
+    use super::EXTRACTION_TABLE;
+    use super::META_TABLE;
+    use super::PATH_TABLE;
     use super::RefreshOptions;
     use super::RepoIndex;
+    use super::STATS_TABLE;
+    use crate::repo_index::model::CURRENT_SCHEMA_VERSION;
     use crate::repo_index::model::DEFAULT_DB_PATH;
 
     struct Fixture {
@@ -599,9 +622,9 @@ mod tests {
 
     fn openspec_template(variant: u8) -> &'static str {
         match variant % 3 {
-            0 => "# Demo\n\n### Requirement: Query\nText\n",
-            1 => "# Demo\n\n## Goals\n\n### Requirement: Digest\nText\n",
-            _ => "# Demo\n\n### Requirement: Atomic Refresh\nText\n",
+            0 => "# Demo\n\n## Requirements\n\n### Requirement: Query\n\nr[demo.query]\nText\n",
+            1 => "# Demo\n\n## Requirements\n\n### Requirement: Digest\n\nr[demo.digest]\nText\n",
+            _ => "# Demo\n\n## Requirements\n\n### Requirement: Atomic Refresh\n\nr[demo.atomic-refresh]\nText\n",
         }
     }
 
@@ -612,6 +635,33 @@ mod tests {
                 openspec_variant,
             },
         )
+    }
+
+    #[test]
+    fn stale_schema_is_recreated_on_open() -> Result<()> {
+        let fixture = Fixture::new()?;
+        fixture.write("docs/requirements.md", minimal_requirements())?;
+        let db_path = fixture.root().join(DEFAULT_DB_PATH);
+        if let Some(parent) = db_path.parent() {
+            fs::create_dir_all(parent)?;
+        }
+        let stale = Database::create(&db_path)?;
+        let write_txn = stale.begin_write()?;
+        {
+            let mut meta = write_txn.open_table(META_TABLE)?;
+            meta.insert("schema_version", CURRENT_SCHEMA_VERSION - 1)?;
+            write_txn.open_table(PATH_TABLE)?;
+            write_txn.open_table(EXTRACTION_TABLE)?;
+            write_txn.open_table(STATS_TABLE)?;
+        }
+        write_txn.commit()?;
+        drop(stale);
+
+        let index = fixture.index()?;
+        assert_eq!(index.active_generation()?, None);
+        let summary = index.refresh()?;
+        assert!(summary.tracked_paths >= 1);
+        Ok(())
     }
 
     // r[verify repo-index.content-digest]
@@ -700,7 +750,10 @@ mod tests {
     fn path_and_requirement_queries_include_expected_facts() -> Result<()> {
         let fixture = Fixture::new()?;
         fixture.write("src/sample.rs", "// r[impl repo-index.query]\npub fn alpha() {}\n")?;
-        fixture.write("openspec/changes/demo/specs/repo-index/spec.md", "# Demo\n\n### Requirement: Query\nText\n")?;
+        fixture.write(
+            "openspec/changes/demo/specs/repo-index/spec.md",
+            "# Demo\n\n## Requirements\n\n### Requirement: Query\n\nr[demo.query]\nText\n",
+        )?;
         fixture.write("docs/requirements.md", minimal_requirements())?;
         let index = fixture.index()?;
         index.refresh()?;
@@ -708,10 +761,19 @@ mod tests {
         let path = index.query_path("openspec/changes/demo/specs/repo-index/spec.md")?.expect("openspec path query");
         assert_eq!(path.row.openspec.as_ref().and_then(|ctx| ctx.change_name.as_deref()), Some("demo"));
         assert!(path.facts.headings.iter().any(|heading| heading.text == "Requirement: Query"));
+        assert!(path.facts.requirement_defs.iter().any(|definition| definition.id == "demo.query"));
 
         let requirement = index.query_requirement("repo-index.query")?;
         assert_eq!(requirement.definitions.len(), 1);
         assert_eq!(requirement.references.len(), 1);
+
+        let openspec_requirement = index.query_requirement("demo.query")?;
+        assert_eq!(openspec_requirement.definitions.len(), 1);
+        assert_eq!(
+            openspec_requirement.definitions[0].path,
+            "openspec/changes/demo/specs/repo-index/spec.md"
+        );
+        assert_eq!(openspec_requirement.references.len(), 0);
         Ok(())
     }
 

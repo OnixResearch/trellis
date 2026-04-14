@@ -33,7 +33,7 @@ pub fn extract_facts(path: &str, bytes: &[u8]) -> ExtractedFacts {
         ExtractedFacts {
             symbols: Vec::new(),
             requirement_refs: extract_requirement_refs(&text),
-            requirement_defs: Vec::new(),
+            requirement_defs: extract_requirement_definitions(&text),
             headings: extract_markdown_headings(&text),
         }
     } else {
@@ -188,7 +188,7 @@ fn extract_requirement_definitions(text: &str) -> Vec<RequirementDefinition> {
     while index < lines.len() {
         let line = lines[index].trim();
         if let Some((level, heading)) = markdown_heading(line) {
-            if level == 2 {
+            if tracks_requirement_section(level, heading) {
                 current_section = Some(heading.to_string());
             }
         }
@@ -242,6 +242,10 @@ fn markdown_heading(line: &str) -> Option<(u8, &str)> {
         return None;
     }
     Some((u8::try_from(hashes).expect("markdown heading level fits in u8"), rest))
+}
+
+fn tracks_requirement_section(level: u8, heading: &str) -> bool {
+    level == 2 || (level == 3 && (heading.starts_with("Requirement:") || heading.starts_with("Requirement ")))
 }
 
 fn requirement_definition_id(line: &str) -> Option<String> {
@@ -386,6 +390,33 @@ Refresh MUST commit atomically.
             "Queries MUST be deterministic.".to_string(),
             "They MUST stay local.".to_string()
         ]);
+    }
+
+    #[test]
+    fn openspec_extractor_collects_requirement_definitions() {
+        let facts = extract_facts(
+            "openspec/changes/demo/specs/web-of-trust/spec.md",
+            br"
+# Demo
+
+## Requirements
+
+### Requirement: Threshold Policy Counts Distinct Introducers
+
+r[web-of-trust.threshold]
+A threshold policy MUST count only distinct introducers.
+",
+        );
+        assert_eq!(facts.requirement_defs.len(), 1);
+        assert_eq!(facts.requirement_defs[0].id, "web-of-trust.threshold");
+        assert_eq!(
+            facts.requirement_defs[0].section.as_deref(),
+            Some("Requirement: Threshold Policy Counts Distinct Introducers")
+        );
+        assert_eq!(
+            facts.requirement_defs[0].body,
+            vec!["A threshold policy MUST count only distinct introducers.".to_string()]
+        );
     }
 
     #[test]

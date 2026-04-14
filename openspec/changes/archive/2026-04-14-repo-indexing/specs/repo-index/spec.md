@@ -97,7 +97,7 @@ The index MUST extract cross-reference facts needed to navigate
 
 #### Scenario: Requirement definition and uses
 
-- GIVEN a requirement id from `docs/requirements.md`
+- GIVEN a requirement id from `docs/requirements.md` or active OpenSpec markdown
 - WHEN that id is queried
 - THEN the result includes its defining location and the indexed `r[...]` reference sites that mention it
 
@@ -111,7 +111,7 @@ The index MUST extract cross-reference facts needed to navigate
 
 - GIVEN an active change spec file under `openspec/changes/`
 - WHEN it is indexed
-- THEN the result includes its change name, domain, and requirement headings
+- THEN the result includes its change name, domain, requirement headings, and requirement definitions
 
 ### Requirement: repo-index.query
 
