@@ -1,98 +1,113 @@
 ## Context
 
-Natural loops are defined in terms of dominators and back edges. The repo
-will have dominator tree and reachability modules. Loop detection builds
-directly on both: classify edges as back/forward/cross using dominance,
-then compute loop bodies via backward reachability from the back-edge
-source to the header.
+Natural loops are defined from dominators and back edges. This repo already
+has reachability and dominator modules, so loop detection builds on those
+views instead of recomputing graph facts inside every helper.
+
+The shipped module exposes exact helpers over:
+- a CFG edge list
+- a reachability bitmap for the chosen entry
+- a dominance matrix for the same graph
+
+Randomized tests then compare the computed reachable non-self loop bodies
+against a brute-force path oracle.
 
 ## Goals / Non-Goals
 
 **Goals:**
 - Back edge classification via dominance
-- Loop body computation via backward reachability
-- Header dominance proof (header dominates all body nodes)
-- Single entry proof (only the header has external predecessors)
-- Loop nesting as subset of body sets
+- Exact loop-body closure over supplied reachability/dominator views
+- Header dominance check for loop bodies
+- Exact single-entry check over supplied reachability view
+- Loop nesting as strict body inclusion
 - Nesting forest structure
 - Exit edge identification
 
 **Non-Goals:**
-- Irreducible loop handling (irreducible loops don't have natural loop
-  structure — they're detected by cycle detection instead)
+- Irreducible loop handling
 - Loop transformations (unrolling, peeling, fusion)
 - Loop-carried dependency analysis
 - Trip count estimation
+- Proving the path-oracle equivalence directly inside Verus
 
 ## Decisions
 
 ### 1. Back Edge Classification
 
-**Choice:** `is_back_edge(cfg, domtree, src, dst) -> bool` returns
-`dominates(domtree, dst, src)`. An edge (src → dst) where dst dominates
-src is a back edge.
+**Choice:** `is_back_edge(dom, src, dst) -> bool` returns whether `dst`
+dominates `src`. `find_back_edges(edges, dom)` filters the CFG edge list
+exactly by that predicate.
 
-**Rationale:** Standard definition. Forward edges go from dominator to
-dominated. Cross edges connect unrelated subtrees. Only back edges form
-loops.
+**Rationale:** Standard definition. It is easy to state and verify exactly
+against a dominance matrix.
 
 ### 2. Loop Body Computation
 
-**Choice:** Given back edge (B → H), the loop body is
-`{H} ∪ {N | N can reach B without going through H}`. Computed by
-backward BFS from B, stopping at H.
+**Choice:** `compute_loop_body(edges, reachable, dom, header, source)`
+returns the seeded backward closure for `(source -> header)`:
+start from `{header, source}`, then for `|V|` rounds add any reachable node
+that is dominated by `header` and has an edge into the current body.
+For non-self loops, `header` is treated as a barrier during the interior
+closure step.
 
-**Rationale:** The standard "natural loop" body definition. The backward
-search finds all nodes that "feed into" the back edge. H is included
-because it's the loop header. Implemented using `reachability.rs` on
-the reverse CFG with H removed.
+**Rationale:** This closure matches the actual verified implementation and
+is strong enough for the natural-loop properties used here. Tests compare it
+against the path-style natural-loop oracle for reachable non-self loops.
 
 ### 3. Loop Representation
 
-**Choice:** `NaturalLoop { header: u32, back_edges: Seq<u32>, body: Set<u32>, exits: Set<(u32, u32)> }`.
+**Choice:** `NaturalLoop { header: usize, body: Vec<bool> }`.
 
-**Rationale:** A loop can have multiple back edges to the same header
-(e.g., `continue` from different points). The body is the union of bodies
-from all back edges. Exits are edges from body nodes to non-body nodes.
+**Rationale:** The public struct stores only the facts reused across nesting
+operations. Back edges and exits are queried separately by dedicated helpers.
+If callers want to merge several back edges with the same header into one
+body, they can union the `Vec<bool>` bodies explicitly.
 
 ### 4. Header Dominance Proof
 
-**Choice:** Prove `forall n in body :: dominates(domtree, header, n)`.
-By construction: H dominates B (back edge definition), and every node
-in the body reaches B without leaving through H. Since H dominates the
-entry to the body (H itself) and every path to a body node from outside
-goes through H, H dominates all body nodes.
+**Choice:** `header_dominates_body(dom, header, body)` checks exactly that
+all body nodes are dominated by `header` in the supplied dominance matrix.
 
-**Rationale:** This is the defining property of natural loops. The proof
-follows from the back-edge definition and the transitivity of dominance.
+**Rationale:** This is the defining structural fact used by later passes.
+It is independent from how the body was obtained.
 
-### 5. Loop Nesting
+### 5. Single Entry
 
-**Choice:** Loop L1 is nested in loop L2 iff `L1.body ⊂ L2.body` and
-`L1.header ∈ L2.body`. The nesting relation is a partial order (proved
-by subset transitivity).
+**Choice:** `has_single_entry(edges, reachable, header, body)` checks exactly
+that every reachable edge entering `body` from outside targets `header`.
 
-**Rationale:** Standard definition. The nesting depth of a node is the
-number of loops whose body contains it. The nesting forest has outermost
-loops as roots and innermost loops as leaves.
+**Rationale:** This is the natural-loop single-entry property stated in terms
+of the supplied reachability view, so the exec helper can prove an exact
+`ensures` clause.
 
-### 6. Exit Edges
+### 6. Loop Nesting
 
-**Choice:** `loop_exits(loop) -> Set<(u32, u32)>` returns all edges
-(src, dst) where `src ∈ loop.body` and `dst ∉ loop.body`.
+**Choice:** `nested_in(inner, outer)` means strict body inclusion.
+`loop_nesting_forest` records a strict-superset parent for each loop and,
+when several ancestors are possible, deterministically chooses the smallest
+strict superset (ties break by lower index).
 
-**Rationale:** Exit edges are where loop-specific optimizations must
-maintain correctness (e.g., LCSSA phi placement at exit blocks). The
-set is computed by scanning all edges from body nodes.
+**Rationale:** Strict inclusion gives the right partial order. Deterministic
+parent selection makes tests and downstream use stable.
+
+### 7. Exit Edges
+
+**Choice:** `loop_exits(edges, body)` returns exactly the edges `(src, dst)`
+with `src` inside the body and `dst` outside.
+
+**Rationale:** Exit edges are a direct body partition query and verify cleanly
+as an exact filtered edge list.
 
 ## Risks / Trade-offs
 
-**[Irreducible loops missed]** → Irreducible loops (multiple entries)
-aren't natural loops. They're detected by `cycle_detect.rs` but don't
-have the header-dominates-body property. Some compilers (GCC) transform
-irreducible loops into reducible ones; that's a transformation, not
-detection.
+**[Irreducible loops]** → Irreducible loops are still out of scope. This
+module focuses on natural-loop structure.
 
-**[Multiple back edges]** → A loop with multiple back edges to the same
-header is one loop, not multiple. The body is the union. Some algorithms
-treat each back edge separately; we merge per header.
+**[Semantic equivalence lives in tests]** → The strongest proof-level body
+contract is the closure definition above. Agreement with the path-style
+oracle is established by unit/property tests, not a separate Verus theorem.
+
+**[Merged-by-header loops are caller-side]** → The public `NaturalLoop`
+struct does not store multiple back edges or precomputed exits. That keeps
+the verified core smaller but leaves header-merging as an explicit caller
+step when needed.

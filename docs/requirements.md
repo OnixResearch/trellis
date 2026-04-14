@@ -6596,18 +6596,22 @@ A CFG edge MUST be classified as a back edge if and only if its target
 block dominates its source block.
 
 r[loop.body]
-For a reachable non-self back edge (B -> H), loop-body detection MUST return
-exactly the reachable blocks dominated by H that can reach B without passing
-through H, plus H itself.
+Given a CFG, a reachability bitmap, and a dominance matrix for the same graph,
+loop-body detection MUST return exactly the seeded backward closure for (B -> H):
+start from {H, B}, then repeatedly add any reachable block dominated by H whose
+successor is already in the current body, excluding H as an interior successor
+for non-self loops. Randomized tests SHOULD match this closure against the
+path-based natural-loop oracle for reachable non-self back edges.
 
 r[loop.header-dominance]
 Every reachable block in a detected non-self loop body MUST be dominated by
 that loop's header.
 
 r[loop.single-entry]
-For a detected non-self loop body, any reachable edge entering the body from
-outside MUST target the header. Reachable non-header side entries are not
-allowed.
+Given a reachability bitmap for the CFG entry and a detected non-self loop
+body, single-entry checking MUST return true if and only if every reachable edge
+entering the body from outside targets the header. Reachable non-header side
+entries are not allowed.
 
 r[loop.nesting]
 If one detected loop is nested in another, the inner loop body MUST be a strict

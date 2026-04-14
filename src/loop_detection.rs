@@ -1,10 +1,10 @@
 //! Verified natural-loop utilities over a block CFG.
 //!
-//! Back edges are CFG edges whose target dominates their source. A loop body is
-//! modeled as the backward predecessor closure from a back-edge source, seeded
-//! with the header and iterated for at most `n` rounds on an `n`-node graph.
-//! Public checkers cover header dominance, single-entry, exit edges, and body
-//! nesting. Tests compare the computed bodies against a brute-force path oracle.
+//! Exact public helpers operate over a CFG plus previously computed reachability
+//! and dominance views. Back edges are CFG edges whose target dominates their
+//! source. Loop bodies are modeled as a seeded backward predecessor closure
+//! restricted to reachable, header-dominated blocks. Tests compare those bodies
+//! against a brute-force path oracle for reachable non-self loops.
 
 #![allow(clippy::too_many_lines)]
 
@@ -22,10 +22,6 @@ pub struct NaturalLoop {
 // Specs
 // ============================================================
 
-pub open spec fn body_shape_spec(body: Seq<bool>, n: int) -> bool {
-    body.len() == n
-}
-
 pub open spec fn has_edge_spec(edges: Seq<(usize, usize)>, src: int, dst: int) -> bool {
     exists|i: int| #![trigger edges[i]] 0 <= i < edges.len()
         && edges[i].0 as int == src
@@ -37,27 +33,27 @@ pub open spec fn is_back_edge_spec(dom: Seq<Vec<bool>>, src: int, dst: int) -> b
     0 <= src < dom.len() && 0 <= dst < dom.len() && dom[src]@[dst]
 }
 
-pub open spec fn back_edges_from_spec(
-    edges: Seq<(usize, usize)>, dom: Seq<Vec<bool>>, from: int,
+pub open spec fn back_edges_prefix_spec(
+    edges: Seq<(usize, usize)>, dom: Seq<Vec<bool>>, upto: int,
 ) -> Seq<(usize, usize)>
-    decreases if from < edges.len() as int { (edges.len() - from) as int } else { 0 },
+    decreases if upto > 0 { upto } else { 0 },
 {
-    if from < 0 || from >= edges.len() {
+    if upto <= 0 {
         seq![]
     } else {
-        let rest = back_edges_from_spec(edges, dom, from + 1);
-        let (src, dst) = edges[from];
-        if is_back_edge_spec(dom, src as int, dst as int) {
-            seq![(src, dst)] + rest
+        let prev = back_edges_prefix_spec(edges, dom, upto - 1);
+        let e = edges[upto - 1];
+        if is_back_edge_spec(dom, e.0 as int, e.1 as int) {
+            prev.push(e)
         } else {
-            rest
+            prev
         }
     }
 }
 
 // r[impl loop.back-edge]
 pub open spec fn back_edges_spec(edges: Seq<(usize, usize)>, dom: Seq<Vec<bool>>) -> Seq<(usize, usize)> {
-    back_edges_from_spec(edges, dom, 0)
+    back_edges_prefix_spec(edges, dom, edges.len() as int)
 }
 
 pub open spec fn loop_body_base_spec(n: int, header: int, source: int) -> Seq<bool>
@@ -65,17 +61,36 @@ pub open spec fn loop_body_base_spec(n: int, header: int, source: int) -> Seq<bo
     Seq::new(n as nat, |i: int| i == header || i == source)
 }
 
+pub open spec fn seeded_body_spec(prev: Seq<bool>, header: int, source: int) -> Seq<bool>
+{
+    Seq::new(prev.len(), |i: int| prev[i] || i == header || i == source)
+}
+
 pub open spec fn loop_body_round_prefix_spec(
-    edges: Seq<(usize, usize)>, prev: Seq<bool>, header: int, source: int, upto: int,
+    edges: Seq<(usize, usize)>,
+    reachable: Seq<bool>,
+    dom: Seq<Vec<bool>>,
+    prev: Seq<bool>,
+    header: int,
+    source: int,
+    upto: int,
 ) -> Seq<bool>
     decreases if upto > 0 { upto } else { 0 },
 {
     if upto <= 0 {
-        Seq::new(prev.len(), |i: int| prev[i] || i == header || i == source)
+        seeded_body_spec(prev, header, source)
     } else {
-        let prior = loop_body_round_prefix_spec(edges, prev, header, source, upto - 1);
+        let prior = loop_body_round_prefix_spec(edges, reachable, dom, prev, header, source, upto - 1);
         let (src, dst) = edges[upto - 1];
-        if dst as int != header && 0 <= dst < prev.len() && prev[dst as int] {
+        if 0 <= src < reachable.len()
+            && 0 <= src < dom.len()
+            && 0 <= header < dom[src as int]@.len()
+            && 0 <= dst < prev.len()
+            && reachable[src as int]
+            && dom[src as int]@[header]
+            && prev[dst as int]
+            && (source == header || dst as int != header)
+        {
             prior.update(src as int, true)
         } else {
             prior
@@ -84,31 +99,45 @@ pub open spec fn loop_body_round_prefix_spec(
 }
 
 pub open spec fn loop_body_round_spec(
-    edges: Seq<(usize, usize)>, prev: Seq<bool>, header: int, source: int,
+    edges: Seq<(usize, usize)>,
+    reachable: Seq<bool>,
+    dom: Seq<Vec<bool>>,
+    prev: Seq<bool>,
+    header: int,
+    source: int,
 ) -> Seq<bool>
 {
-    loop_body_round_prefix_spec(edges, prev, header, source, edges.len() as int)
+    loop_body_round_prefix_spec(edges, reachable, dom, prev, header, source, edges.len() as int)
 }
 
 pub open spec fn loop_body_iter_spec(
-    edges: Seq<(usize, usize)>, n: int, header: int, source: int, rounds: nat,
+    edges: Seq<(usize, usize)>,
+    reachable: Seq<bool>,
+    dom: Seq<Vec<bool>>,
+    header: int,
+    source: int,
+    rounds: nat,
 ) -> Seq<bool>
     decreases rounds,
 {
     if rounds == 0 {
-        loop_body_base_spec(n, header, source)
+        loop_body_base_spec(reachable.len() as int, header, source)
     } else {
-        let prev = loop_body_iter_spec(edges, n, header, source, (rounds - 1) as nat);
-        loop_body_round_spec(edges, prev, header, source)
+        let prev = loop_body_iter_spec(edges, reachable, dom, header, source, (rounds - 1) as nat);
+        loop_body_round_spec(edges, reachable, dom, prev, header, source)
     }
 }
 
 // r[impl loop.body]
 pub open spec fn loop_body_spec(
-    edges: Seq<(usize, usize)>, n: int, header: int, source: int,
+    edges: Seq<(usize, usize)>,
+    reachable: Seq<bool>,
+    dom: Seq<Vec<bool>>,
+    header: int,
+    source: int,
 ) -> Seq<bool>
 {
-    loop_body_iter_spec(edges, n, header, source, n as nat)
+    loop_body_iter_spec(edges, reachable, dom, header, source, reachable.len() as nat)
 }
 
 // r[impl loop.header-dominance]
@@ -119,37 +148,42 @@ pub open spec fn header_dominates_body_spec(dom: Seq<Vec<bool>>, header: int, bo
 }
 
 // r[impl loop.single-entry]
-pub open spec fn single_entry_spec(edges: Seq<(usize, usize)>, header: int, body: Seq<bool>) -> bool {
-    let em = edges.map(|_i: int, e: (usize, usize)| (e.0 as int, e.1 as int));
-    0 <= header < body.len()
+pub open spec fn single_entry_spec(
+    edges: Seq<(usize, usize)>,
+    reachable: Seq<bool>,
+    header: int,
+    body: Seq<bool>,
+) -> bool {
+    reachable.len() == body.len()
+        && 0 <= header < body.len()
         && forall|i: int| #![trigger edges[i]] 0 <= i < edges.len() ==> {
             let (src, dst) = edges[i];
-            let reachable_src = crate::reachability::reachable_spec(em, body.len() as int, 0, src as int);
-            0 <= src < body.len() && 0 <= dst < body.len() ==> (reachable_src && body[dst as int] && !body[src as int] ==> dst == header)
+            0 <= src < body.len() && 0 <= dst < body.len() ==>
+                (reachable[src as int] && body[dst as int] && !body[src as int] ==> dst as int == header)
         }
 }
 
-pub open spec fn exit_edges_from_spec(
-    edges: Seq<(usize, usize)>, body: Seq<bool>, from: int,
+pub open spec fn exit_edges_prefix_spec(
+    edges: Seq<(usize, usize)>, body: Seq<bool>, upto: int,
 ) -> Seq<(usize, usize)>
-    decreases if from < edges.len() as int { (edges.len() - from) as int } else { 0 },
+    decreases if upto > 0 { upto } else { 0 },
 {
-    if from < 0 || from >= edges.len() {
+    if upto <= 0 {
         seq![]
     } else {
-        let rest = exit_edges_from_spec(edges, body, from + 1);
-        let (src, dst) = edges[from];
-        if 0 <= src < body.len() && 0 <= dst < body.len() && body[src as int] && !body[dst as int] {
-            seq![(src, dst)] + rest
+        let prev = exit_edges_prefix_spec(edges, body, upto - 1);
+        let e = edges[upto - 1];
+        if 0 <= e.0 < body.len() && 0 <= e.1 < body.len() && body[e.0 as int] && !body[e.1 as int] {
+            prev.push(e)
         } else {
-            rest
+            prev
         }
     }
 }
 
 // r[impl loop.exits]
 pub open spec fn loop_exits_spec(edges: Seq<(usize, usize)>, body: Seq<bool>) -> Seq<(usize, usize)> {
-    exit_edges_from_spec(edges, body, 0)
+    exit_edges_prefix_spec(edges, body, edges.len() as int)
 }
 
 // r[depends loop.nesting]
@@ -284,12 +318,7 @@ pub fn find_back_edges(edges: &[(usize, usize)], dom: &[Vec<bool>]) -> (result: 
     requires
         crate::dominator_tree::dom_rows_shape_spec(dom@, dom@.len() as int),
         crate::dominator_tree::valid_graph_spec(edges@, dom@.len() as int),
-    ensures
-        forall|i: int| #![trigger result@[i]] 0 <= i < result@.len() ==> {
-            let (src, dst) = result@[i];
-            is_back_edge_spec(dom@, src as int, dst as int)
-                && exists|j: int| 0 <= j < edges@.len() && edges@[j] == result@[i]
-        },
+    ensures result@ == back_edges_spec(edges@, dom@)
 {
     let mut out: Vec<(usize, usize)> = Vec::new();
     let mut i: usize = 0;
@@ -298,16 +327,21 @@ pub fn find_back_edges(edges: &[(usize, usize)], dom: &[Vec<bool>]) -> (result: 
             0 <= i <= edges@.len(),
             crate::dominator_tree::dom_rows_shape_spec(dom@, dom@.len() as int),
             crate::dominator_tree::valid_graph_spec(edges@, dom@.len() as int),
-            forall|k: int| #![trigger out@[k]] 0 <= k < out@.len() ==> {
-                let (src, dst) = out@[k];
-                is_back_edge_spec(dom@, src as int, dst as int)
-                    && exists|j: int| 0 <= j < i as int && edges@[j] == out@[k]
-            },
+            out@ == back_edges_prefix_spec(edges@, dom@, i as int),
         decreases edges.len() - i,
     {
         let (src, dst) = edges[i];
         if dom[src][dst] {
             out.push((src, dst));
+            proof {
+                assert(back_edges_prefix_spec(edges@, dom@, i as int + 1)
+                    == back_edges_prefix_spec(edges@, dom@, i as int).push(edges@[i as int]));
+            }
+        } else {
+            proof {
+                assert(back_edges_prefix_spec(edges@, dom@, i as int + 1)
+                    == back_edges_prefix_spec(edges@, dom@, i as int));
+            }
         }
         i += 1;
     }
@@ -318,74 +352,85 @@ pub fn find_back_edges(edges: &[(usize, usize)], dom: &[Vec<bool>]) -> (result: 
 // Loop body and derived properties
 // ============================================================
 
-// r[depends loop.body]
+// r[impl loop.body]
 pub fn compute_loop_body(
     edges: &[(usize, usize)],
-    n: usize,
+    reachable: &[bool],
+    dom: &[Vec<bool>],
     header: usize,
     source: usize,
 ) -> (result: Vec<bool>)
     requires
-        header < n,
-        source < n,
-        crate::dominator_tree::valid_graph_spec(edges@, n as int),
-        n as int + edges@.len() as int <= usize::MAX as int,
-    ensures
-        result@.len() == n as int,
-        result@[header as int],
-        result@[source as int],
+        reachable@.len() == dom@.len(),
+        crate::dominator_tree::dom_rows_shape_spec(dom@, reachable@.len() as int),
+        crate::dominator_tree::valid_graph_spec(edges@, reachable@.len() as int),
+        header < reachable@.len(),
+        source < reachable@.len(),
+    ensures result@ == loop_body_spec(edges@, reachable@, dom@, header as int, source as int)
 {
-    let reachable = crate::reachability::reachable_from(edges, n, 0);
-    let dom = crate::dominator_tree::compute_dominators(edges, n, 0);
+    let n = reachable.len();
     let mut body = base_body(n, header, source);
     let mut iter: usize = 0;
     while iter < n
         invariant
             0 <= iter <= n,
-            header < n,
-            source < n,
-            crate::dominator_tree::valid_graph_spec(edges@, n as int),
-            n as int + edges@.len() as int <= usize::MAX as int,
-            body@.len() == n as int,
-            reachable@.len() == n as int,
-            dom@.len() == n as int,
-            body@[header as int],
-            body@[source as int],
+            reachable@.len() == dom@.len(),
+            crate::dominator_tree::dom_rows_shape_spec(dom@, reachable@.len() as int),
+            crate::dominator_tree::valid_graph_spec(edges@, reachable@.len() as int),
+            header < reachable@.len(),
+            source < reachable@.len(),
+            body@.len() == reachable@.len(),
+            body@ == loop_body_iter_spec(edges@, reachable@, dom@, header as int, source as int, iter as nat),
         decreases n - iter,
     {
         let prev = clone_body(&body);
+        assert(header < prev.len());
+        assert(source < prev.len());
         let mut next = seeded_round_body(&prev, header, source);
         let mut ei: usize = 0;
         while ei < edges.len()
             invariant
                 0 <= ei <= edges@.len(),
-                header < n,
-                source < n,
-                crate::dominator_tree::valid_graph_spec(edges@, n as int),
-                reachable@.len() == n as int,
-                dom@.len() == n as int,
-                prev@.len() == n as int,
-                next@.len() == n as int,
-                next@[header as int],
-                next@[source as int],
+                reachable@.len() == dom@.len(),
+                crate::dominator_tree::dom_rows_shape_spec(dom@, reachable@.len() as int),
+                crate::dominator_tree::valid_graph_spec(edges@, reachable@.len() as int),
+                header < reachable@.len(),
+                source < reachable@.len(),
+                prev@.len() == reachable@.len(),
+                next@.len() == reachable@.len(),
+                prev@ == loop_body_iter_spec(edges@, reachable@, dom@, header as int, source as int, iter as nat),
+                next@ == loop_body_round_prefix_spec(edges@, reachable@, dom@, prev@, header as int, source as int, ei as int),
             decreases edges.len() - ei,
         {
             let (src, dst) = edges[ei];
             proof {
                 let e = edges@[ei as int];
                 assert(e == (src, dst));
-                assert((src as int) < n as int);
-                assert((dst as int) < n as int);
+                assert((src as int) < reachable@.len());
+                assert((dst as int) < reachable@.len());
             }
-            assert(src < n);
-            assert(dst < n);
             assert(src < reachable.len());
             assert(src < dom.len());
+            assert(dst < reachable.len());
             assert(dst < prev.len());
-            if header < dom[src].len() && reachable[src] && dom[src][header] && prev[dst] && (source == header || dst != header) {
+            if reachable[src] && dom[src][header] && prev[dst] && (source == header || dst != header) {
+                assert(src < next.len());
                 next.set(src, true);
+                proof {
+                    assert(loop_body_round_prefix_spec(edges@, reachable@, dom@, prev@, header as int, source as int, ei as int + 1)
+                        == loop_body_round_prefix_spec(edges@, reachable@, dom@, prev@, header as int, source as int, ei as int).update(src as int, true));
+                }
+            } else {
+                proof {
+                    assert(loop_body_round_prefix_spec(edges@, reachable@, dom@, prev@, header as int, source as int, ei as int + 1)
+                        == loop_body_round_prefix_spec(edges@, reachable@, dom@, prev@, header as int, source as int, ei as int));
+                }
             }
             ei += 1;
+        }
+        proof {
+            assert(loop_body_iter_spec(edges@, reachable@, dom@, header as int, source as int, (iter + 1) as nat)
+                == loop_body_round_spec(edges@, reachable@, dom@, prev@, header as int, source as int));
         }
         body = next;
         iter += 1;
@@ -419,23 +464,31 @@ pub fn header_dominates_body(dom: &[Vec<bool>], header: usize, body: &[bool]) ->
     true
 }
 
-// r[depends loop.single-entry]
-pub fn has_single_entry(edges: &[(usize, usize)], header: usize, body: &[bool]) -> (result: bool)
+// r[impl loop.single-entry]
+pub fn has_single_entry(
+    edges: &[(usize, usize)],
+    reachable: &[bool],
+    header: usize,
+    body: &[bool],
+) -> (result: bool)
     requires
+        reachable@.len() == body@.len(),
         crate::dominator_tree::valid_graph_spec(edges@, body@.len() as int),
         header < body@.len(),
-        body@.len() + edges@.len() <= usize::MAX,
-    ensures result ==> header < body@.len()
+    ensures result == single_entry_spec(edges@, reachable@, header as int, body@)
 {
-    let reachable = crate::reachability::reachable_from(edges, body.len(), 0);
     let mut i: usize = 0;
     while i < edges.len()
         invariant
             0 <= i <= edges@.len(),
+            reachable@.len() == body@.len(),
             crate::dominator_tree::valid_graph_spec(edges@, body@.len() as int),
             header < body@.len(),
-            body@.len() + edges@.len() <= usize::MAX,
-            reachable@.len() == body@.len(),
+            forall|j: int| #![trigger edges@[j]] 0 <= j < i as int ==> {
+                let (src, dst) = edges@[j];
+                0 <= src < body@.len() && 0 <= dst < body@.len() ==>
+                    (reachable@[src as int] && body@[dst as int] && !body@[src as int] ==> dst as int == header as int)
+            },
         decreases edges.len() - i,
     {
         let (src, dst) = edges[i];
@@ -456,16 +509,11 @@ pub fn has_single_entry(edges: &[(usize, usize)], header: usize, body: &[bool]) 
     true
 }
 
-// r[depends loop.exits]
+// r[impl loop.exits]
 pub fn loop_exits(edges: &[(usize, usize)], body: &[bool]) -> (result: Vec<(usize, usize)>)
     requires
         crate::dominator_tree::valid_graph_spec(edges@, body@.len() as int),
-    ensures
-        forall|i: int| #![trigger result@[i]] 0 <= i < result@.len() ==> {
-            let (src, dst) = result@[i];
-            body@[src as int] && !body@[dst as int]
-                && exists|j: int| 0 <= j < edges@.len() && edges@[j] == result@[i]
-        },
+    ensures result@ == loop_exits_spec(edges@, body@)
 {
     let mut out: Vec<(usize, usize)> = Vec::new();
     let mut i: usize = 0;
@@ -473,16 +521,21 @@ pub fn loop_exits(edges: &[(usize, usize)], body: &[bool]) -> (result: Vec<(usiz
         invariant
             0 <= i <= edges@.len(),
             crate::dominator_tree::valid_graph_spec(edges@, body@.len() as int),
-            forall|k: int| #![trigger out@[k]] 0 <= k < out@.len() ==> {
-                let (src, dst) = out@[k];
-                body@[src as int] && !body@[dst as int]
-                    && exists|j: int| 0 <= j < i as int && edges@[j] == out@[k]
-            },
+            out@ == exit_edges_prefix_spec(edges@, body@, i as int),
         decreases edges.len() - i,
     {
         let (src, dst) = edges[i];
         if body[src] && !body[dst] {
             out.push((src, dst));
+            proof {
+                assert(exit_edges_prefix_spec(edges@, body@, i as int + 1)
+                    == exit_edges_prefix_spec(edges@, body@, i as int).push(edges@[i as int]));
+            }
+        } else {
+            proof {
+                assert(exit_edges_prefix_spec(edges@, body@, i as int + 1)
+                    == exit_edges_prefix_spec(edges@, body@, i as int));
+            }
         }
         i += 1;
     }
@@ -535,6 +588,30 @@ fn body_subset(a: &[bool], b: &[bool]) -> (result: bool)
     true
 }
 
+fn body_count(body: &[bool]) -> (result: usize)
+    ensures result as int == body_count_spec(body@)
+{
+    let mut count: usize = 0;
+    let mut i: usize = 0;
+    while i < body.len()
+        invariant
+            0 <= i <= body@.len(),
+            count <= i,
+            count as int == body_count_from_spec(body@, 0) - body_count_from_spec(body@, i as int),
+        decreases body.len() - i,
+    {
+        if body[i] {
+            assert(count < body.len());
+            count += 1;
+        }
+        i += 1;
+    }
+    proof {
+        assert(body_count_from_spec(body@, body@.len() as int) == 0);
+    }
+    count
+}
+
 // r[impl loop.nesting-forest]
 pub fn is_loop_header(back_edges: &[(usize, usize)], header: usize) -> (result: bool)
     requires header < usize::MAX,
@@ -585,11 +662,20 @@ pub fn loop_nesting_forest(loops: &[NaturalLoop]) -> (result: Vec<Option<usize>>
             decreases loops.len() - j,
         {
             if j != i && loops[j].body.len() == loops[i].body.len() && nested_in(&loops[i], &loops[j]) {
-                best = Some(j);
-                j = loops.len();
-            } else {
-                j += 1;
+                match best {
+                    None => best = Some(j),
+                    Some(current) => {
+                        let candidate_count = body_count(&loops[j].body);
+                        let current_count = body_count(&loops[current].body);
+                        if candidate_count < current_count
+                            || (candidate_count == current_count && j < current)
+                        {
+                            best = Some(j);
+                        }
+                    }
+                }
             }
+            j += 1;
         }
         out.push(best);
         i += 1;
@@ -736,6 +822,62 @@ mod tests {
         edges.iter().copied().filter(|(src, dst)| dom[*src][*dst]).collect()
     }
 
+    fn compute_analyses(edges: &[(usize, usize)], n: usize) -> (Vec<bool>, Vec<Vec<bool>>) {
+        let reachable = crate::reachability::reachable_from(edges, n, 0);
+        let dom = crate::dominator_tree::compute_dominators(edges, n, 0);
+        (reachable, dom)
+    }
+
+    fn body_count_runtime(body: &[bool]) -> usize {
+        body.iter().filter(|&&b| b).count()
+    }
+
+    fn merged_loops_from_cfg(edges: &[(usize, usize)], n: usize) -> Vec<NaturalLoop> {
+        let (reachable, dom) = compute_analyses(edges, n);
+        let mut by_header: BTreeMap<usize, Vec<bool>> = BTreeMap::new();
+        for (src, header) in find_back_edges(edges, &dom) {
+            if src != header {
+                let body = compute_loop_body(edges, &reachable, &dom, header, src);
+                by_header
+                    .entry(header)
+                    .and_modify(|existing| {
+                        for i in 0..existing.len() {
+                            existing[i] = existing[i] || body[i];
+                        }
+                    })
+                    .or_insert(body);
+            }
+        }
+        by_header
+            .into_iter()
+            .map(|(header, body)| NaturalLoop { header, body })
+            .collect()
+    }
+
+    fn expected_parent(loops: &[NaturalLoop], child: usize) -> Option<usize> {
+        let mut best: Option<usize> = None;
+        for candidate in 0..loops.len() {
+            if candidate == child {
+                continue;
+            }
+            if nested_in(&loops[child], &loops[candidate]) {
+                match best {
+                    None => best = Some(candidate),
+                    Some(current) => {
+                        let candidate_count = body_count_runtime(&loops[candidate].body);
+                        let current_count = body_count_runtime(&loops[current].body);
+                        if candidate_count < current_count
+                            || (candidate_count == current_count && candidate < current)
+                        {
+                            best = Some(candidate);
+                        }
+                    }
+                }
+            }
+        }
+        best
+    }
+
     fn random_graph_strategy(max_nodes: usize) -> impl Strategy<Value = (usize, Vec<(usize, usize)>)> {
         (1usize..=max_nodes).prop_flat_map(|n| {
             prop::collection::vec((0usize..n, 0usize..n), 0..=(n * n)).prop_map(move |edges| (n, edges))
@@ -747,7 +889,7 @@ mod tests {
     fn test_find_back_edges_nested_loops() {
         let n = 6;
         let edges = vec![(0, 1), (1, 2), (1, 5), (2, 3), (3, 2), (3, 4), (4, 1), (4, 5)];
-        let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+        let (_, dom) = compute_analyses(&edges, n);
         let backs = find_back_edges(&edges, &dom);
         assert_eq!(backs, vec![(3, 2), (4, 1)]);
         assert!(is_back_edge(&dom, 3, 2));
@@ -760,10 +902,24 @@ mod tests {
     fn test_compute_loop_body_nested_loops() {
         let n = 6;
         let edges = vec![(0, 1), (1, 2), (1, 5), (2, 3), (3, 2), (3, 4), (4, 1), (4, 5)];
-        let inner = compute_loop_body(&edges, n, 2, 3);
-        let outer = compute_loop_body(&edges, n, 1, 4);
+        let (reachable, dom) = compute_analyses(&edges, n);
+        let inner = compute_loop_body(&edges, &reachable, &dom, 2, 3);
+        let outer = compute_loop_body(&edges, &reachable, &dom, 1, 4);
         assert_eq!(inner, vec![false, false, true, true, false, false]);
         assert_eq!(outer, vec![false, true, true, true, true, false]);
+    }
+
+    // r[verify loop.body]
+    #[test]
+    fn test_compute_loop_body_while_if_shape() {
+        let n = 6;
+        let edges = vec![(0, 1), (1, 2), (1, 3), (2, 4), (3, 4), (4, 1), (4, 5)];
+        let (reachable, dom) = compute_analyses(&edges, n);
+        let body = compute_loop_body(&edges, &reachable, &dom, 1, 4);
+        assert_eq!(body, vec![false, true, true, true, true, false]);
+        assert_eq!(loop_exits(&edges, &body), vec![(4, 5)]);
+        assert!(has_single_entry(&edges, &reachable, 1, &body));
+        assert!(header_dominates_body(&dom, 1, &body));
     }
 
     // r[verify loop.exits]
@@ -771,8 +927,9 @@ mod tests {
     fn test_loop_exits_nested_loops() {
         let n = 6;
         let edges = vec![(0, 1), (1, 2), (1, 5), (2, 3), (3, 2), (3, 4), (4, 1), (4, 5)];
-        let inner = compute_loop_body(&edges, n, 2, 3);
-        let outer = compute_loop_body(&edges, n, 1, 4);
+        let (reachable, dom) = compute_analyses(&edges, n);
+        let inner = compute_loop_body(&edges, &reachable, &dom, 2, 3);
+        let outer = compute_loop_body(&edges, &reachable, &dom, 1, 4);
         assert_eq!(loop_exits(&edges, &inner), vec![(3, 4)]);
         assert_eq!(loop_exits(&edges, &outer), vec![(1, 5), (4, 5)]);
     }
@@ -797,15 +954,28 @@ mod tests {
         assert_eq!(parents, vec![None, Some(0)]);
     }
 
+    // r[verify loop.nesting-forest]
+    #[test]
+    fn test_loop_nesting_forest_picks_immediate_parent() {
+        let loops = vec![
+            NaturalLoop { header: 1, body: vec![false, true, true, true, true, true, true, false] },
+            NaturalLoop { header: 3, body: vec![false, false, false, true, true, false, false, false] },
+            NaturalLoop { header: 2, body: vec![false, false, true, true, true, true, false, false] },
+        ];
+        let parents = loop_nesting_forest(&loops);
+        assert_eq!(parents, vec![None, Some(2), Some(0)]);
+    }
+
     // r[verify loop.single-entry]
     #[test]
     fn test_single_entry_nested_loop() {
         let n = 6;
         let edges = vec![(0, 1), (1, 2), (1, 5), (2, 3), (3, 2), (3, 4), (4, 1), (4, 5)];
-        let inner = compute_loop_body(&edges, n, 2, 3);
-        let outer = compute_loop_body(&edges, n, 1, 4);
-        assert!(has_single_entry(&edges, 2, &inner));
-        assert!(has_single_entry(&edges, 1, &outer));
+        let (reachable, dom) = compute_analyses(&edges, n);
+        let inner = compute_loop_body(&edges, &reachable, &dom, 2, 3);
+        let outer = compute_loop_body(&edges, &reachable, &dom, 1, 4);
+        assert!(has_single_entry(&edges, &reachable, 2, &inner));
+        assert!(has_single_entry(&edges, &reachable, 1, &outer));
     }
 
     // r[verify loop.header-dominance]
@@ -813,9 +983,9 @@ mod tests {
     fn test_header_dominates_nested_loop_bodies() {
         let n = 6;
         let edges = vec![(0, 1), (1, 2), (1, 5), (2, 3), (3, 2), (3, 4), (4, 1), (4, 5)];
-        let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
-        let inner = compute_loop_body(&edges, n, 2, 3);
-        let outer = compute_loop_body(&edges, n, 1, 4);
+        let (reachable, dom) = compute_analyses(&edges, n);
+        let inner = compute_loop_body(&edges, &reachable, &dom, 2, 3);
+        let outer = compute_loop_body(&edges, &reachable, &dom, 1, 4);
         assert!(header_dominates_body(&dom, 2, &inner));
         assert!(header_dominates_body(&dom, 1, &outer));
     }
@@ -824,7 +994,7 @@ mod tests {
         // r[verify loop.back-edge]
         #[test]
         fn prop_back_edges_match_manual((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+            let (_, dom) = compute_analyses(&edges, n);
             let backs = find_back_edges(&edges, &dom);
             let manual = manual_back_edges(&edges, &manual_dominators(&edges, n, 0));
             prop_assert_eq!(backs, manual);
@@ -833,10 +1003,10 @@ mod tests {
         // r[verify loop.body]
         #[test]
         fn prop_loop_body_matches_bruteforce((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+            let (reachable, dom) = compute_analyses(&edges, n);
             for (src, header) in find_back_edges(&edges, &dom) {
                 if src != header {
-                    let body = compute_loop_body(&edges, n, header, src);
+                    let body = compute_loop_body(&edges, &reachable, &dom, header, src);
                     let manual = manual_loop_body(&edges, n, header, src);
                     prop_assert_eq!(body, manual);
                 }
@@ -846,10 +1016,10 @@ mod tests {
         // r[verify loop.header-dominance]
         #[test]
         fn prop_headers_dominate_computed_bodies((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+            let (reachable, dom) = compute_analyses(&edges, n);
             for (src, header) in find_back_edges(&edges, &dom) {
                 if src != header {
-                    let body = compute_loop_body(&edges, n, header, src);
+                    let body = compute_loop_body(&edges, &reachable, &dom, header, src);
                     prop_assert!(header_dominates_body(&dom, header, &body));
                 }
             }
@@ -858,11 +1028,11 @@ mod tests {
         // r[verify loop.single-entry]
         #[test]
         fn prop_computed_loops_have_single_entry((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+            let (reachable, dom) = compute_analyses(&edges, n);
             for (src, header) in find_back_edges(&edges, &dom) {
                 if src != header {
-                    let body = compute_loop_body(&edges, n, header, src);
-                    prop_assert!(has_single_entry(&edges, header, &body));
+                    let body = compute_loop_body(&edges, &reachable, &dom, header, src);
+                    prop_assert!(has_single_entry(&edges, &reachable, header, &body));
                 }
             }
         }
@@ -870,10 +1040,10 @@ mod tests {
         // r[verify loop.exits]
         #[test]
         fn prop_exit_edges_match_partition((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
+            let (reachable, dom) = compute_analyses(&edges, n);
             for (src, header) in find_back_edges(&edges, &dom) {
                 if src != header {
-                    let body = compute_loop_body(&edges, n, header, src);
+                    let body = compute_loop_body(&edges, &reachable, &dom, header, src);
                     let exits = loop_exits(&edges, &body);
                     let manual: Vec<_> = edges.iter().copied().filter(|(u, v)| body[*u] && !body[*v]).collect();
                     prop_assert_eq!(exits, manual);
@@ -883,32 +1053,12 @@ mod tests {
 
         // r[verify loop.nesting-forest]
         #[test]
-        fn prop_nesting_forest_parent_is_strict_superset((n, edges) in random_graph_strategy(6)) {
-            let dom = crate::dominator_tree::compute_dominators(&edges, n, 0);
-            let mut by_header: BTreeMap<usize, Vec<bool>> = BTreeMap::new();
-            for (src, header) in find_back_edges(&edges, &dom) {
-                if src != header {
-                    let body = compute_loop_body(&edges, n, header, src);
-                    by_header
-                        .entry(header)
-                        .and_modify(|existing| {
-                            for i in 0..existing.len() {
-                                existing[i] = existing[i] || body[i];
-                            }
-                        })
-                        .or_insert(body);
-                }
-            }
-            let loops: Vec<_> = by_header
-                .into_iter()
-                .map(|(header, body)| NaturalLoop { header, body })
-                .collect();
+        fn prop_nesting_forest_parent_selection((n, edges) in random_graph_strategy(6)) {
+            let loops = merged_loops_from_cfg(&edges, n);
             let parents = loop_nesting_forest(&loops);
             prop_assert_eq!(parents.len(), loops.len());
-            for (child, parent) in parents.iter().enumerate() {
-                if let Some(parent_idx) = parent {
-                    prop_assert!(nested_in(&loops[child], &loops[*parent_idx]));
-                }
+            for child in 0..loops.len() {
+                prop_assert_eq!(parents[child], expected_parent(&loops, child));
             }
 
             let mut seen_roots = BTreeSet::new();

@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6570 Verus proofs · 3543 tests · 1421 requirements · 303 modules · 18 trusted boundaries**
+**6572 Verus proofs · 3545 tests · 1421 requirements · 303 modules · 18 trusted boundaries**
 
 ## How it works
 
@@ -292,7 +292,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `cycle_detect` | cycle detection: remaining node count proves acyclicity |
 | `reachability` | BFS reachability: soundness, visited-set monotonicity |
 | `dominator_tree` | iterative dominator sets, immediate dominators, and dominance frontiers |
-| `loop_detection` | back-edge classification, natural-loop bodies, exit edges, and nesting |
+| `loop_detection` | back-edge classification, loop bodies over reachability/dominator views, exit edges, and nesting |
 | `liveness_analysis` | backward live-in/live-out analysis, fixed-point checks, and live-range projection |
 | `ssa_construction` | iterated-dominance-frontier phi placement, SSA renaming, and phi elimination |
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
@@ -423,7 +423,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 3543 tests (unit + property)
+cargo test                 # 3545 tests (unit + property)
 cargo clippy --all-targets -- -D warnings
 ```
 
@@ -431,7 +431,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6570 proofs)
+./scripts/verus.sh         # verus only (6572 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```

@@ -73,7 +73,7 @@
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
 //! - `control_flow_graph` — basic block partitioning, leader identification, CFG edges, and dead-block detection
 //! - `dominator_tree` — iterative dominator sets, immediate dominators, and dominance frontiers
-//! - `loop_detection` — back-edge classification, natural-loop bodies, exit edges, and nesting
+//! - `loop_detection` — back-edge classification, loop bodies over reachability/dominator views, exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range projection
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi elimination
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8

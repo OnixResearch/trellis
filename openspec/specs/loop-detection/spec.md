@@ -2,10 +2,11 @@
 
 ## Purpose
 
-Defines requirements for verified natural loop detection on a CFG with
-dominator information. Covers back edge classification for all CFG edges,
-and body/header/entry/nesting/exit properties for reachable non-self
-natural loops.
+Defines requirements for verified natural loop detection on a CFG together
+with reachability and dominator views for that graph. Covers back edge
+classification for all CFG edges, exact body/entry/exit helpers over those
+views, and body/header/nesting properties for reachable non-self natural
+loops.
 
 ## Requirements
 
@@ -49,45 +50,54 @@ the loop body.
 - WHEN dominance is checked
 - THEN H dominates B (by back-edge definition)
 
-### Requirement: Loop Body Correctness
+### Requirement: Loop Body Closure
 
-For reachable non-self back edges, the loop body MUST be exactly the
-header plus all reachable nodes dominated by the header that can reach the
-back-edge source without passing through the header.
+Given a CFG, a reachability bitmap, and a dominance matrix for the same
+graph, the loop body for (B → H) MUST be exactly the seeded backward
+closure: start from {H, B}, then repeatedly add any reachable node
+dominated by H whose successor is already in the current body, excluding
+H as an interior successor for non-self loops.
 
-#### Scenario: Body membership
+#### Scenario: Seeded nodes included
 
-- GIVEN node N that can reach the back-edge source B without going through H
-- WHEN body membership is checked
-- THEN N is in the loop body
+- GIVEN the loop header H and back-edge source B
+- WHEN body construction starts
+- THEN both H and B are in the body
 
-#### Scenario: Non-membership
+#### Scenario: Backward predecessor added
 
-- GIVEN node M where every path to B passes through H (and M ≠ H)
-- WHEN body membership is checked
-- THEN M is not in the loop body
+- GIVEN a reachable node N dominated by H with an edge N → M and M already in the current body
+- WHEN one closure round runs
+- THEN N is in the next body
 
-#### Scenario: Header included
+#### Scenario: Non-self header barrier respected
 
-- GIVEN the loop header H
-- WHEN body membership is checked
-- THEN H is in the loop body
+- GIVEN a non-self loop and an edge X → H
+- WHEN X is considered as an interior predecessor step
+- THEN X is not added solely by stepping through H in that round
+
+#### Scenario: Path oracle agreement in tests
+
+- GIVEN reachability and dominator views produced by the repo's analyses
+- WHEN randomized tests compare the closure result against brute-force path enumeration
+- THEN they agree for reachable non-self back edges
 
 ### Requirement: Single Entry
 
-For reachable non-self loops, the loop header MUST be the only reachable
-entry point to the loop from outside.
+Given a reachability bitmap for the CFG entry and a detected non-self loop
+body, the loop header MUST be the only reachable entry point to the loop
+from outside.
 
 #### Scenario: External edges enter header
 
 - GIVEN an edge from outside the loop body to a node inside the body
-- WHEN the target is checked
+- WHEN the target is checked using the reachability bitmap
 - THEN the target is the header H
 
-#### Scenario: No side entries
+#### Scenario: No reachable side entries
 
 - GIVEN a non-header body node N
-- WHEN N's predecessors from outside the loop are listed
+- WHEN N's reachable predecessors from outside the loop are checked
 - THEN the list is empty
 
 ### Requirement: Loop Nesting
