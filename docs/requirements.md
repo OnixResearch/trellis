@@ -6789,3 +6789,41 @@ halted.
 r[properties.hypervisor-exit-state]
 Exit handling MUST preserve vCPU state consistency: `Block` leaves the vCPU
 non-runnable, `Terminate` moves it to the terminal stopped state.
+
+## Repository Index
+
+r[repo-index.content-digest]
+The repository index MUST compute a BLAKE3 digest from the raw bytes of each
+tracked file and use that digest as the content identity key for the active
+path view. If two tracked paths have identical bytes, their active path rows
+MUST reference the same digest.
+
+r[repo-index.persistent-store]
+The repository index MUST persist committed path rows, extracted facts, and
+stats in redb so a later process can reopen the database and answer queries
+from the last successful refresh without reparsing tracked files first.
+
+r[repo-index.atomic-refresh]
+A repository-index refresh MUST publish at most one committed generation at a
+time. Readers MUST observe either the prior committed generation or the newer
+committed generation, never a mix. If a refresh fails before commit, the prior
+committed generation MUST remain readable.
+
+r[repo-index.incremental-refresh]
+A repository-index refresh MUST update the active path view for added,
+changed, unchanged, and deleted tracked files. When a tracked path keeps the
+same digest and extractor kind across refreshes, the index MUST reuse the
+stored extracted facts instead of reparsing the file.
+
+r[repo-index.cross-reference]
+The repository index MUST extract cross-reference facts needed for local repo
+navigation: Rust items and `r[...]` reference sites from `src/**/*.rs`,
+requirement definitions from `docs/requirements.md`, and headings plus active
+change/domain metadata from active OpenSpec markdown.
+
+r[repo-index.query]
+The repository index MUST support deterministic local queries over committed
+index state for `path`, `symbol`, `requirement`, `digest`, and `stats`.
+Path queries MUST report the indexed facts for a tracked file. Requirement
+queries MUST report the stored definition plus related implementation,
+verification, dependency, or related reference sites.

@@ -6,6 +6,12 @@ license = "AGPL-3.0-or-later"
 description = "Verified logic building blocks — machine-checked with Verus"
 
 [dependencies]
+anyhow = "1.0"
+blake3 = "1.8"
+redb = "2.6"
+regex = "1.12"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
 vstd = "=0.0.0-2026-01-25-0057"
 
 [package.metadata.verus]
@@ -14,6 +20,7 @@ verify = true
 [dev-dependencies]
 pretty_assertions = "1.0"
 proptest = "1.0"
+tempfile = "3.23"
 
 [features]
 default = []
