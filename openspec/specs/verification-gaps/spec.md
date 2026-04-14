@@ -12,15 +12,16 @@ place where the proof story is weaker than the fully verified
 
 ## Current Status
 
-As of `2026-04-13`, backed by fresh reruns on the current tree, the live verification pipeline is green:
+As of `2026-04-14`, fresh reruns on the current tree show:
 
-- `./scripts/verify.sh` passes
 - `cargo clippy --all-targets -- -D warnings` passes
 - `cargo test` passes (`3517 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`6450 verified, 0 errors`)
-- Tracey is green (`1406/1406 covered`, `1406/1406 verified`, `0 uncovered`, `0 untested`)
+- `./scripts/verus.sh src/lib.rs` passes (`6469 verified, 0 errors`)
+- `tracey query uncovered` returns `0 uncovered out of 1406 rules`
+- `tracey query untested` returns `0 untested out of 1406 rules`
+- `./scripts/verify.sh` still flakes during Tracey daemon auto-start on this machine with `Error: Cancelled`, so treat the direct Tracey queries above as the fresh coverage evidence
 
-This green status does **not** mean the trust surface is empty. The
+These green direct checks do **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
 
 ## Current Inventory
@@ -57,7 +58,7 @@ Summary:
 
 ### `assume_specification[...]` exec bridges
 
-`7` closeable `assume_specification[...]` bridges remain, all in
+`3` closeable `assume_specification[...]` bridges remain, all in
 `src/ssa_construction.rs`.
 
 These are trusted bridge declarations from thin verified wrappers to
@@ -66,20 +67,16 @@ architectural trust boundaries.
 
 | Site | Classification | Rationale | Test coverage |
 |---|---|---|---|
-| `src/ssa_construction.rs:191 block_defines_var_runtime` | Closeable | `def_sites` relies on a trusted bridge to the runtime block-def scan instead of an internalized proof of agreement. | Unit tests/proptests for phi placement and SSA construction exercise def-site discovery indirectly. |
-| `src/ssa_construction.rs:193 runtime_iterated_dominance_frontier_with_rounds` | Closeable | The verified wrapper only enforces output shape and `rounds <= blocks.len()`. Actual IDF semantics are trusted through the bridge. | `test_idf_diamond`, `prop_idf_matches_manual`. |
 | `src/ssa_construction.rs:195 runtime_place_phis` | Closeable | The verified wrapper only preserves block/edge lengths. Exact phi placement and predecessor coverage are checked only by executable oracles. | `test_place_phis_diamond`, `prop_place_phis_hits_manual_idf`. |
 | `src/ssa_construction.rs:197 runtime_construct_ssa` | Closeable | The verified wrapper only preserves block/edge lengths. Single-assignment and rename correctness stay in runtime checks/tests. | `test_construct_ssa_simple_branch`, `prop_constructed_program_is_ssa`. |
-| `src/ssa_construction.rs:199 runtime_check_ssa_property` | Closeable | The public checker delegates to a plain-Rust predicate through a trusted bridge. | `prop_constructed_program_is_ssa` also cross-checks a manual SSA oracle. |
-| `src/ssa_construction.rs:201 runtime_check_dominance_of_uses_with_dom` | Closeable | Dominance-of-use checking is delegated to a plain-Rust predicate instead of a proved Verus argument. | `test_dominance_of_uses_branch_phi`, `prop_constructed_program_has_dominated_uses`. |
-| `src/ssa_construction.rs:203 runtime_eliminate_phis` | Closeable | The verified wrapper only preserves block/edge/copy-table lengths. Phi-elimination semantics are covered by executable path checks. | `test_phi_elimination_roundtrip`, `prop_eliminate_phis_preserves_path_semantics`. |
+| `src/ssa_construction.rs:199 runtime_check_dominance_of_uses_with_dom` | Closeable | Dominance-of-use checking is delegated to a plain-Rust predicate instead of a proved Verus argument. | `test_dominance_of_uses_branch_phi`, `prop_constructed_program_has_dominated_uses`. |
 
 Summary:
 
 - Permanent `assume_specification[...]` bridges: `0`
-- Closeable `assume_specification[...]` bridges: `7`
+- Closeable `assume_specification[...]` bridges: `3`
 
-Overall live inventory: `22` trusted/weakened boundaries = `15` permanent + `7` closeable.
+Overall live inventory: `18` trusted/weakened boundaries = `15` permanent + `3` closeable.
 
 ### `assume(...)` soundness oracles
 

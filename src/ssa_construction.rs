@@ -187,20 +187,16 @@ pub open spec fn idf_result_shape_spec(blocks: int, result: Seq<bool>) -> bool {
     result.len() == blocks
 }
 
-#[cfg(verus_keep_ghost)]
-assume_specification[crate::ssa_construction::block_defines_var_runtime](block: &RawBlock, var: u32) -> (result: bool);
-#[cfg(verus_keep_ghost)]
-assume_specification[crate::ssa_construction::runtime_iterated_dominance_frontier_with_rounds](program: &RawProgram, dom: &[Vec<bool>], defs: &[bool]) -> (result: (Vec<bool>, usize));
+spec fn block_defines_var_spec(block: &RawBlock, var: u32) -> bool {
+    exists|i: int| 0 <= i < block.instrs@.len() && block.instrs@[i].def == Some(var)
+}
+
 #[cfg(verus_keep_ghost)]
 assume_specification[crate::ssa_construction::runtime_place_phis](program: &RawProgram, dom: &[Vec<bool>]) -> (result: SsaProgram);
 #[cfg(verus_keep_ghost)]
 assume_specification[crate::ssa_construction::runtime_construct_ssa](program: &RawProgram) -> (result: SsaProgram);
 #[cfg(verus_keep_ghost)]
-assume_specification[crate::ssa_construction::runtime_check_ssa_property](program: &SsaProgram) -> (result: bool);
-#[cfg(verus_keep_ghost)]
 assume_specification[crate::ssa_construction::runtime_check_dominance_of_uses_with_dom](program: &SsaProgram, dom: &[Vec<bool>]) -> (result: bool);
-#[cfg(verus_keep_ghost)]
-assume_specification[crate::ssa_construction::runtime_eliminate_phis](program: &SsaProgram) -> (result: PhiEliminatedProgram);
 
 // ============================================================
 // Tiny verified helpers
@@ -242,26 +238,122 @@ fn empty_blocks(n: usize) -> (result: Vec<SsaBlock>)
     blocks
 }
 
-fn empty_edge_copies(edges: &[(usize, usize)]) -> (result: Vec<EdgeCopies>)
-    ensures result@.len() == edges@.len()
+fn clone_bool_row(row: &[bool]) -> (result: Vec<bool>)
+    ensures
+        result@.len() == row@.len(),
+        forall|i: int| 0 <= i < row@.len() ==> result@[i] == row@[i],
 {
-    let mut out = Vec::new();
+    let mut out: Vec<bool> = Vec::new();
     let mut i: usize = 0;
-    while i < edges.len()
+    while i < row.len()
         invariant
-            0 <= i <= edges@.len(),
+            0 <= i <= row@.len(),
             out@.len() == i as int,
-        decreases edges.len() - i,
+            forall|j: int| 0 <= j < i as int ==> out@[j] == row@[j],
+        decreases row.len() - i,
     {
-        out.push(EdgeCopies { src: edges[i].0, dst: edges[i].1, copies: Vec::new() });
+        out.push(row[i]);
         i += 1;
     }
     out
 }
 
+fn clone_u32_vec(src: &[u32]) -> (result: Vec<u32>)
+    ensures result@ =~= src@
+{
+    let mut out: Vec<u32> = Vec::new();
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            0 <= i <= src@.len(),
+            out@ =~= src@.subrange(0, i as int),
+        decreases src.len() - i,
+    {
+        out.push(src[i]);
+        i += 1;
+    }
+    out
+}
+
+fn clone_usize_vec(src: &[usize]) -> (result: Vec<usize>)
+    ensures result@ =~= src@
+{
+    let mut out: Vec<usize> = Vec::new();
+    let mut i: usize = 0;
+    while i < src.len()
+        invariant
+            0 <= i <= src@.len(),
+            out@ =~= src@.subrange(0, i as int),
+        decreases src.len() - i,
+    {
+        out.push(src[i]);
+        i += 1;
+    }
+    out
+}
+
+fn clone_ssa_instr(instr: &SsaInstr) -> (result: SsaInstr)
+    ensures
+        result.def_base == instr.def_base,
+        result.def == instr.def,
+        result.opcode == instr.opcode,
+        result.base_uses@ =~= instr.base_uses@,
+        result.uses@ =~= instr.uses@,
+{
+    SsaInstr {
+        def_base: instr.def_base,
+        def: instr.def,
+        base_uses: clone_u32_vec(&instr.base_uses),
+        uses: clone_usize_vec(&instr.uses),
+        opcode: instr.opcode,
+    }
+}
+
+fn contains_usize(values: &[usize], target: usize) -> (result: bool)
+{
+    let mut i: usize = 0;
+    while i < values.len()
+        invariant
+            0 <= i <= values@.len(),
+        decreases values.len() - i,
+    {
+        if values[i] == target {
+            return true;
+        }
+        i += 1;
+    }
+    false
+}
+
 // ============================================================
 // Public API
 // ============================================================
+
+fn block_defines_var(block: &RawBlock, var: u32) -> (result: bool)
+    ensures result == block_defines_var_spec(block, var)
+{
+    let mut i: usize = 0;
+    while i < block.instrs.len()
+        invariant
+            0 <= i <= block.instrs@.len(),
+            forall|j: int| 0 <= j < i as int ==> block.instrs@[j].def != Some(var),
+        decreases block.instrs.len() - i,
+    {
+        if block.instrs[i].def == Some(var) {
+            proof {
+                let idx = i as int;
+                assert(0 <= idx && idx < block.instrs@.len());
+                assert(block.instrs@[idx].def == Some(var));
+                assert(block_defines_var_spec(block, var));
+            }
+            return true;
+        }
+        i += 1;
+    }
+    assert(forall|j: int| 0 <= j < block.instrs@.len() ==> block.instrs@[j].def != Some(var));
+    assert(!block_defines_var_spec(block, var));
+    false
+}
 
 // r[impl ssa.phi-placement]
 pub fn def_sites(var: u32, program: &RawProgram) -> (result: Vec<bool>)
@@ -276,7 +368,7 @@ pub fn def_sites(var: u32, program: &RawProgram) -> (result: Vec<bool>)
             out@.len() == program.blocks@.len(),
         decreases program.blocks.len() - b,
     {
-        if block_defines_var_runtime(&program.blocks[b], var) {
+        if block_defines_var(&program.blocks[b], var) {
             out.set(b, true);
         }
         b += 1;
@@ -298,14 +390,71 @@ pub fn iterated_dominance_frontier_with_rounds(
         idf_result_shape_spec(program.blocks@.len() as int, result.0@),
         result.1 <= program.blocks@.len(),
 {
-    let mut out = runtime_iterated_dominance_frontier_with_rounds(program, dom, defs);
-    if out.0.len() != program.blocks.len() {
-        out.0 = empty_bool_row(program.blocks.len(), false);
+    let n = program.blocks.len();
+    let mut current = empty_bool_row(n, false);
+    let mut rounds: usize = 0;
+    while rounds < n
+        invariant
+            0 <= rounds <= n,
+            raw_program_valid_spec(*program),
+            n as int == program.blocks@.len(),
+            defs@.len() == n as int,
+            crate::dominator_tree::dom_rows_shape_spec(dom@, n as int),
+            current@.len() == n as int,
+        decreases n - rounds,
+    {
+        let mut next = clone_bool_row(&current);
+        let mut node: usize = 0;
+        while node < n
+            invariant
+                0 <= node <= n,
+                raw_program_valid_spec(*program),
+                n as int == program.blocks@.len(),
+                defs@.len() == n as int,
+                crate::dominator_tree::dom_rows_shape_spec(dom@, n as int),
+                current@.len() == n as int,
+                next@.len() == n as int,
+            decreases n - node,
+        {
+            if (node < defs.len() && defs[node]) || current[node] {
+                proof {
+                    assert(raw_program_valid_spec(*program));
+                    assert(crate::dominator_tree::valid_graph_spec(program.edges@, n as int)) by {
+                        assert forall|i: int| #![trigger program.edges@[i]]
+                            0 <= i < program.edges@.len() implies {
+                                let (src, dst) = program.edges@[i];
+                                (src as int) < n as int && (dst as int) < n as int
+                            } by {
+                                assert(valid_edge_list_spec(n as int, program.edges@));
+                            }
+                    }
+                    assert(dom@.len() == n as int);
+                    assert(crate::dominator_tree::dom_rows_shape_spec(dom@, dom@.len() as int));
+                }
+                let frontier = crate::dominator_tree::dominance_frontier(&program.edges, dom, node);
+                let mut i: usize = 0;
+                while i < n
+                    invariant
+                        0 <= i <= n,
+                        next@.len() == n as int,
+                        frontier@.len() == n as int,
+                    decreases n - i,
+                {
+                    if frontier[i] {
+                        next.set(i, true);
+                    }
+                    i += 1;
+                }
+            }
+            node += 1;
+        }
+        if next == current {
+            return (next, rounds);
+        }
+        current = next;
+        rounds += 1;
     }
-    if out.1 > program.blocks.len() {
-        out.1 = program.blocks.len();
-    }
-    out
+    (current, rounds)
 }
 
 // r[impl ssa.idf-convergence]
@@ -362,7 +511,52 @@ pub fn check_ssa_property(program: &SsaProgram) -> (result: bool)
     requires ssa_program_valid_spec(*program)
     ensures result ==> ssa_program_valid_spec(*program)
 {
-    runtime_check_ssa_property(program)
+    let mut seen: Vec<usize> = Vec::new();
+    let mut b: usize = 0;
+    while b < program.blocks.len()
+        invariant
+            0 <= b <= program.blocks@.len(),
+        decreases program.blocks.len() - b,
+    {
+        let block = &program.blocks[b];
+        let phi_len = block.phis.len();
+        let mut p: usize = 0;
+        while p < phi_len
+            invariant
+                b < program.blocks.len(),
+                phi_len == block.phis.len(),
+                p <= phi_len,
+            decreases phi_len - p,
+        {
+            assert(p < block.phis.len());
+            let dest = block.phis[p].dest;
+            if dest < program.param_count || contains_usize(&seen, dest) {
+                return false;
+            }
+            seen.push(dest);
+            p += 1;
+        }
+        let instr_len = block.instrs.len();
+        let mut i: usize = 0;
+        while i < instr_len
+            invariant
+                b < program.blocks.len(),
+                instr_len == block.instrs.len(),
+                i <= instr_len,
+            decreases instr_len - i,
+        {
+            assert(i < block.instrs.len());
+            if let Some(dest) = block.instrs[i].def {
+                if dest < program.param_count || contains_usize(&seen, dest) {
+                    return false;
+                }
+                seen.push(dest);
+            }
+            i += 1;
+        }
+        b += 1;
+    }
+    true
 }
 
 // r[impl ssa.phi-semantics]
@@ -419,15 +613,73 @@ pub fn eliminate_phis(program: &SsaProgram) -> (result: PhiEliminatedProgram)
         result.edges@.len() == program.edges@.len(),
         result.edge_copies@.len() == program.edges@.len(),
 {
-    let mut out = runtime_eliminate_phis(program);
-    if out.blocks.len() != program.blocks.len() {
-        out.blocks = empty_blocks(program.blocks.len());
+    let mut blocks: Vec<SsaBlock> = Vec::new();
+    let mut b: usize = 0;
+    while b < program.blocks.len()
+        invariant
+            0 <= b <= program.blocks@.len(),
+            blocks@.len() == b as int,
+        decreases program.blocks.len() - b,
+    {
+        let block = &program.blocks[b];
+        let instr_len = block.instrs.len();
+        let mut instrs: Vec<SsaInstr> = Vec::new();
+        let mut i: usize = 0;
+        while i < instr_len
+            invariant
+                b < program.blocks.len(),
+                instr_len == block.instrs.len(),
+                i <= instr_len,
+                instrs@.len() == i as int,
+            decreases instr_len - i,
+        {
+            assert(i < block.instrs.len());
+            instrs.push(clone_ssa_instr(&block.instrs[i]));
+            i += 1;
+        }
+        blocks.push(SsaBlock { phis: Vec::new(), instrs });
+        b += 1;
     }
-    out.edges = program.edges.clone();
-    if out.edge_copies.len() != program.edges.len() {
-        out.edge_copies = empty_edge_copies(&program.edges);
+
+    let mut edge_copies: Vec<EdgeCopies> = Vec::new();
+    let mut e: usize = 0;
+    while e < program.edges.len()
+        invariant
+            0 <= e <= program.edges@.len(),
+            edge_copies@.len() == e as int,
+        decreases program.edges.len() - e,
+    {
+        let (src, dst) = program.edges[e];
+        let mut copies: Vec<(usize, usize)> = Vec::new();
+        if dst < program.blocks.len() {
+            let dst_block = &program.blocks[dst];
+            let phi_len = dst_block.phis.len();
+            let mut p: usize = 0;
+            while p < phi_len
+                invariant
+                    dst < program.blocks.len(),
+                    phi_len == dst_block.phis.len(),
+                    p <= phi_len,
+                    copies@.len() <= p as int,
+                decreases phi_len - p,
+            {
+                assert(p < dst_block.phis.len());
+                if let Some(v) = phi_source_for_pred(&dst_block.phis[p], src) {
+                    copies.push((dst_block.phis[p].dest, v));
+                }
+                p += 1;
+            }
+        }
+        edge_copies.push(EdgeCopies { src, dst, copies });
+        e += 1;
     }
-    out
+
+    PhiEliminatedProgram {
+        blocks,
+        edges: program.edges.clone(),
+        edge_copies,
+        param_count: program.param_count,
+    }
 }
 
 } // verus!
@@ -439,17 +691,6 @@ pub fn eliminate_phis(program: &SsaProgram) -> (result: PhiEliminatedProgram)
 #[allow(clippy::cast_possible_truncation)]
 fn usize_to_u32(value: usize) -> u32 {
     value as u32
-}
-
-fn block_defines_var_runtime(block: &RawBlock, var: u32) -> bool {
-    let mut i: usize = 0;
-    while i < block.instrs.len() {
-        if block.instrs[i].def == Some(var) {
-            return true;
-        }
-        i += 1;
-    }
-    false
 }
 
 fn clone_base_uses(uses: &[u32]) -> Vec<u32> {
@@ -769,31 +1010,6 @@ fn rename_uses_with_defs(program: &mut SsaProgram, dom: &[Vec<bool>]) {
     }
 }
 
-fn max_explicit_version(program: &SsaProgram) -> usize {
-    let mut max_v = if program.param_count == 0 { 0 } else { program.param_count - 1 };
-    let mut b: usize = 0;
-    while b < program.blocks.len() {
-        let mut p: usize = 0;
-        while p < program.blocks[b].phis.len() {
-            if program.blocks[b].phis[p].dest > max_v {
-                max_v = program.blocks[b].phis[p].dest;
-            }
-            p += 1;
-        }
-        let mut i: usize = 0;
-        while i < program.blocks[b].instrs.len() {
-            if let Some(v) = program.blocks[b].instrs[i].def {
-                if v > max_v {
-                    max_v = v;
-                }
-            }
-            i += 1;
-        }
-        b += 1;
-    }
-    max_v
-}
-
 fn check_phi_dest_coverage(program: &SsaProgram) -> bool {
     let n = program.blocks.len();
     let mut b: usize = 0;
@@ -878,7 +1094,7 @@ fn runtime_place_phis(program: &RawProgram, dom: &[Vec<bool>]) -> SsaProgram {
 fn runtime_def_sites(var: u32, program: &RawProgram) -> Vec<bool> {
     let mut out = vec![false; program.blocks.len()];
     for (b, block) in program.blocks.iter().enumerate() {
-        out[b] = block_defines_var_runtime(block, var);
+        out[b] = block_defines_var(block, var);
     }
     out
 }
@@ -896,33 +1112,6 @@ fn runtime_construct_ssa(program: &RawProgram) -> SsaProgram {
     assign_unique_versions(&mut placed);
     rename_uses_with_defs(&mut placed, &dom);
     placed
-}
-
-fn runtime_check_ssa_property(program: &SsaProgram) -> bool {
-    let seen_len = if program.blocks.is_empty() && program.param_count == 0 {
-        0
-    } else {
-        max_explicit_version(program).saturating_add(1)
-    };
-    let mut seen = vec![false; seen_len];
-    for block in &program.blocks {
-        for phi in &block.phis {
-            let dest = phi.dest;
-            if dest < program.param_count || dest >= seen.len() || seen[dest] {
-                return false;
-            }
-            seen[dest] = true;
-        }
-        for instr in &block.instrs {
-            if let Some(dest) = instr.def {
-                if dest < program.param_count || dest >= seen.len() || seen[dest] {
-                    return false;
-                }
-                seen[dest] = true;
-            }
-        }
-    }
-    true
 }
 
 fn runtime_check_dominance_of_uses_with_dom(program: &SsaProgram, dom: &[Vec<bool>]) -> bool {
@@ -953,33 +1142,6 @@ fn runtime_check_dominance_of_uses_with_dom(program: &SsaProgram, dom: &[Vec<boo
         }
     }
     true
-}
-
-fn runtime_eliminate_phis(program: &SsaProgram) -> PhiEliminatedProgram {
-    let mut blocks: Vec<SsaBlock> = Vec::new();
-    for block in &program.blocks {
-        let mut cloned = block.clone();
-        cloned.phis = Vec::new();
-        blocks.push(cloned);
-    }
-
-    let mut edge_copies = Vec::new();
-    for &(src, dst) in &program.edges {
-        let mut copies = Vec::new();
-        for phi in &program.blocks[dst].phis {
-            if let Some(v) = phi_source_for_pred(phi, src) {
-                copies.push((phi.dest, v));
-            }
-        }
-        edge_copies.push(EdgeCopies { src, dst, copies });
-    }
-
-    PhiEliminatedProgram {
-        blocks,
-        edges: program.edges.clone(),
-        edge_copies,
-        param_count: program.param_count,
-    }
 }
 
 #[cfg(test)]

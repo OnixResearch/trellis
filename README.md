@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6450 Verus proofs · 3517 tests · 1406 requirements · 301 modules · 22 trusted boundaries**
+**6469 Verus proofs · 3517 tests · 1406 requirements · 301 modules · 18 trusted boundaries**
 
 ## How it works
 
@@ -429,7 +429,7 @@ cargo clippy -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6450 proofs)
+./scripts/verus.sh         # verus only (6469 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -456,7 +456,7 @@ Most modules follow the same pattern (tracked exceptions are listed in
 ## Trusted items
 
 `15` items are marked `#[verifier::external_body]` across `5` files.
-In addition, `src/ssa_construction.rs` currently carries `7`
+In addition, `src/ssa_construction.rs` currently carries `3`
 `assume_specification[...]` bridges from thin verified wrappers to plain-Rust
 runtime helpers.
 
@@ -470,15 +470,15 @@ runtime helpers.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
 
-**7 closeable** (`src/ssa_construction.rs`) — `assume_specification[...]`
-exec bridges for def-site collection, IDF computation, phi placement, SSA
-construction, dominance/use checking, and phi elimination. The public
-wrappers prove shape/lookup facts; runtime tests and manual oracles cover the
-stronger semantic claims for now.
+**3 closeable** (`src/ssa_construction.rs`) — `assume_specification[...]`
+exec bridges for phi placement, SSA construction, and dominance/use
+checking. Def-site collection, IDF computation, SSA-property checking, and
+phi elimination are internalized now; runtime tests and manual oracles
+still cover the stronger remaining semantic claims.
 
 In addition to `external_body`, the current audit also tracks:
 
-- `7` `assume_specification[...]` exec bridges
+- `3` `assume_specification[...]` exec bridges
 - `0` `assume(...)` soundness oracles
 - `0` `@verified-logic:no-ensures` / placeholder-spec surfaces
 

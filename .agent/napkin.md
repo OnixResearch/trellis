@@ -7,16 +7,16 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
-- 6450 Verus proofs + 3517 cargo tests = current local snapshot
+- 6469 Verus proofs + 3517 cargo tests = current local snapshot
 - 0 uncovered + 0 untested = full Tracey coverage (1406 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 22 live trusted/weakened boundaries = 15 `#[verifier::external_body]` items across 5 files + 7 closeable SSA `assume_specification[...]` bridges.
+- Current trusted inventory: 18 live trusted/weakened boundaries = 15 `#[verifier::external_body]` items across 5 files + 3 closeable SSA `assume_specification[...]` bridges.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - `src/liveness_analysis.rs` uses synchronous whole-graph rounds. For this model the safe convergence bound is `2 * blocks * vars`, not `blocks * vars`; a self-loop with a local use lets `live_in` become true one round before `live_out` reflects the self-successor.
-- `src/ssa_construction.rs` currently keeps the heavy SSA algorithms in plain Rust helpers and uses `assume_specification[...]` declarations gated by `#[cfg(verus_keep_ghost)]` to let the verified wrappers call them. Ungated assume-spec declarations break normal cargo builds under `-F unsafe-code`.
+- `src/ssa_construction.rs` still keeps the heavier SSA algorithms in plain Rust helpers and uses `assume_specification[...]` declarations gated by `#[cfg(verus_keep_ghost)]` to let the verified wrappers call them. Ungated assume-spec declarations break normal cargo builds under `-F unsafe-code`. `block_defines_var`, `iterated_dominance_frontier_with_rounds`, `check_ssa_property`, and `eliminate_phis` are internalized now; remaining bridges are `runtime_place_phis`, `runtime_construct_ssa`, and `runtime_check_dominance_of_uses_with_dom`.
 - SSA phi coverage must deduplicate predecessor blocks. `dominator_tree::predecessors` returns one entry per edge, so duplicate edges or self-loops otherwise create duplicate phi args for the same predecessor.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); current closeable subset is 7 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); current closeable subset is 3 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
 - If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.
 - Before starting implementation for an old active OpenSpec change, compare it against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`. Some changes are already shipped in code and only need metadata sync plus archive.
@@ -33,6 +33,8 @@
 - Shamir tracey gotcha: requirements with only helper proofs/tests still showed uncovered until I added explicit `r[impl]` tags on the defining field/basis/threshold helpers; `r[verify]` alone was not enough.
 - Zircon port gotcha: `zircon-port.one-shot` stayed uncovered until `deliver` itself carried `r[impl zircon-port.one-shot]`; proof/test tags alone were not enough because the rule needed an implementation reference.
 - `scripts/check-ensures.sh` only looks 15 lines past a `pub fn` signature, so it false-flags long signatures like `cron_match::matches_schedule` and `cron_next::next_occurrence`.
+- `src/ssa_construction.rs`: local `valid_edge_list_spec(...)` does not automatically satisfy `dominator_tree::valid_graph_spec(...)` inside proofs even though the definitions match; for internalized IDF code, keep `raw_program_valid_spec(*program)` in loop invariants and add an explicit bridge assertion before calling `dominance_frontier`.
+- `src/ssa_construction.rs`: when Verus fights nested indexing like `program.blocks[b].phis[p]` or `dst_block.phis[p]`, bind outer vectors to locals (`block`, `dst_block`) and capture loop bounds (`phi_len`, `instr_len`) in locals before the inner loop; then assert the element index is in range before indexing.
 - Trusted boundaries also include weakened proof surfaces beyond `#[verifier::external_body]`, but the real `assume(...)` oracles are now gone and there are no remaining `@verified-logic:no-ensures` / placeholder surfaces in `src/`.
 - When a requirement has no separate exec fn, this repo still counts `r[impl]` on the defining spec fn as the implementation reference; that closed `query-cost.index-scan` and `snapshot-iso.si-allows-commit`.
 - Fixing `scripts/check-ensures.sh` by scanning until the body line (instead of only 15 lines) removes the long-signature false positives. `src/cycle_detect.rs:has_cycle` is closed now; the clean one-sided proof shape is to reuse the verified topological sort in the exec wrapper and prove locally that any topological order rules out a nontrivial cycle.
@@ -119,6 +121,7 @@
 ## Corrections
 | Date | Source | What Went Wrong | What To Do Instead |
 |------|--------|----------------|-------------------|
+| 2026-04-14 | self | Introduced a new public SSA helper without the repo's expected coverage annotation and then summarized validation from prose/docs instead of surfacing the command outputs | Keep helper-only functions private unless they need public API status, and when claiming validation include direct command output snippets for `cargo test`, `clippy`, `verus`, and Tracey |
 | 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
 | 2026-04-13 | self | Used regex alternation/pipes directly in `rg` tool patterns; shell interpreted them as pipelines and even invoked `shutdown` from the literal pattern | For alternation searches, use `bash` with `rg 'a|b' ...` quoted, or avoid `|` in the raw `rg` tool pattern |
 | 2026-04-13 | self | Repeated same `rg` alternation mistake after already logging it in napkin | Default to `bash` for any regex containing `|`, even for quick README searches |

@@ -7,11 +7,12 @@ frontier phi placement, SSA renaming, dominance-of-use checking,
 predecessor-based phi lookup, and SSA destruction via per-edge parallel
 copies.
 
-The current landed module combines thin verified wrappers with runtime
-helpers and executable oracles. The requirements below describe the
-observable SSA behavior the module and its tests/checkers enforce; they do
-not imply that every property is already internalized as an end-to-end
-Verus proof.
+The current landed module still combines thin verified wrappers with runtime
+helpers and executable oracles, though def-site discovery, iterated
+frontier computation, SSA-property checking, and phi elimination are
+internalized now. The requirements below describe the observable SSA
+behavior the module and its tests/checkers enforce; they do not imply that
+every property is already internalized as an end-to-end Verus proof.
 
 ## Requirements
 
