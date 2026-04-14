@@ -1,0 +1,6 @@
+$ rg -n '^pub mod loop_detection;$' src/lib.rs
+353:pub mod loop_detection;
+
+$ git log --oneline -- src/lib.rs | head -n 2
+f717e396 Finish loop-detection review remediation
+c6205aeb Complete loop detection verification and archive spec

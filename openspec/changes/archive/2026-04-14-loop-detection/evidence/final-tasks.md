@@ -43,4 +43,6 @@
 - synced spec: `openspec/specs/loop-detection/spec.md`
 - archived proposal/design/tasks synced under `openspec/changes/archive/2026-04-14-loop-detection/`
 - module exported from `src/lib.rs`
+  - current line evidence: `evidence/lib-export-transcript.txt`
+  - current crate root line: `353:pub mod loop_detection;`
 - README module table updated in `README.md`
