@@ -1,0 +1,41 @@
+cargo test
+3549:test result: ok. 3517 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 13.51s
+
+cargo clippy
+    Checking rand_xorshift v0.4.0
+    Checking tempfile v3.27.0
+    Checking rusty-fork v0.3.1
+    Checking proptest v1.10.0
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 2m 21s
+
+verus
+2222:verification results:: 6450 verified, 0 errors
+
+check-ensures
+
+Checked 1320 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
+
+tracey uncovered
+verified-logic/rust: 0 uncovered out of 1406 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+
+tracey untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1406 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+
+verify
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+✓ no untested requirements
+
+=== ALL CHECKS PASSED ===

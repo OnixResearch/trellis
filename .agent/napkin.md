@@ -5,18 +5,18 @@
 
 ## Project State
 - Verus specs embedded in `src/` — no separate `verus/` directory
-- Every exec fn has `ensures result == *_spec(args)` — Verus verifies the actual implementation
-- Drift between spec and impl is structurally impossible
-- 6348 Verus proofs + 3465 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1381 requirements)
+- House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
+- Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
+- 6450 Verus proofs + 3517 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1406 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 15 `#[verifier::external_body]` items across 5 files.
+- Current trusted inventory: 22 live trusted/weakened boundaries = 15 `#[verifier::external_body]` items across 5 files + 7 closeable SSA `assume_specification[...]` bridges.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - `src/liveness_analysis.rs` uses synchronous whole-graph rounds. For this model the safe convergence bound is `2 * blocks * vars`, not `blocks * vars`; a self-loop with a local use lets `live_in` become true one round before `live_out` reflects the self-successor.
 - `src/ssa_construction.rs` currently keeps the heavy SSA algorithms in plain Rust helpers and uses `assume_specification[...]` declarations gated by `#[cfg(verus_keep_ghost)]` to let the verified wrappers call them. Ungated assume-spec declarations break normal cargo builds under `-F unsafe-code`.
 - SSA phi coverage must deduplicate predecessor blocks. `dominator_tree::predecessors` returns one entry per edge, so duplicate edges or self-loops otherwise create duplicate phi args for the same predecessor.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); closeable Shamir subset is now 0 because `shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`, `shamir_reconstruct`, and `shamir_threshold` are fully internalized.
+- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); current closeable subset is 7 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
 - If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.
 - Before starting implementation for an old active OpenSpec change, compare it against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`. Some changes are already shipped in code and only need metadata sync plus archive.
@@ -125,6 +125,7 @@
 | 2026-04-13 | self | Still reached for raw `rg` tool with `|` during README search | Treat `|` as bash-only in this harness; if pattern has alternation, switch tools before running command |
 | 2026-04-13 | self | Started an OpenSpec change in `../chaoscontrol` before confirming user wanted the spec in this repo | For cross-repo requests, confirm target repo first; if user says "add primitives here", default OpenSpec work to current repo, not sibling repo |
 | 2026-04-13 | self | Added bare `assume_specification[...]` declarations for SSA wrappers and normal cargo builds failed under `-F unsafe-code` | Gate `assume_specification[...]` with `#[cfg(verus_keep_ghost)]` so Rust builds ignore them while Verus still sees them |
+| 2026-04-13 | self | Archived SSA change with proposal/tasks wording that still promised proofs even though code used thin wrappers plus `assume_specification[...]` bridges | Before archiving, compare proposal/design/tasks/spec text against actual proof boundary and update archive evidence if scope changed |
 
 ## Domain Notes
 - Lazygit branch refresh panic can come from a corrupt local auto branch ref, not from repo-wide object corruption. In this repo, `.git/refs/heads/pi/auto/main` pointed to missing object `fdc4b6514488e7b441c17b3b50d15cdfc90072a4`; `git show-ref --heads` reported `bad ref`, and reflog showed last good tip `982a1021f46d3dadf56cd2c5304080a2912f92a1`.

@@ -1,23 +1,32 @@
 ## Context
 
 SSA construction takes a CFG with arbitrary variable assignments and
-produces a form where every variable has exactly one definition. Merge
-points get phi functions. The standard algorithm (Cytron et al.) places
-phis at iterated dominance frontiers of each variable's definition set,
-then renames variables with a dominator tree walk.
+produces a form where every variable is assigned once. Merge points get
+phi functions. The classic Cytron algorithm places phis at iterated
+dominance frontiers of each variable's definition set, then renames
+variables with a dominator-tree walk.
+
+The landed module keeps that runtime shape, but not a fully internalized
+proof story. The heavy SSA algorithms are plain Rust helpers. Thin public
+Verus wrappers expose structural contracts and one exact lookup helper,
+while tests and proptests check the semantic obligations against manual or
+executable oracles.
 
 ## Goals / Non-Goals
 
 **Goals:**
-- Phi placement at iterated dominance frontiers
-- Single-assignment property after construction
-- Dominance-of-uses property
-- Phi semantics (selects correct predecessor value)
-- SSA destruction (phi elimination via copies)
-- IDF convergence
+- Runtime phi placement at iterated dominance frontiers
+- Runtime SSA renaming with fresh versions
+- Runtime checkers for explicit-definition uniqueness and dominance of uses
+- Exact phi-source lookup by predecessor
+- Phi elimination into a per-edge parallel-copy model
+- Unit tests and proptests covering IDF, phi placement, SSA uniqueness,
+  dominance of uses, and phi-elimination path semantics
+- Accurate documentation of the trust surface and evidence
 
 **Non-Goals:**
-- Pruned SSA (removing dead phis — that's DCE)
+- Fully internalized Verus proofs for end-to-end SSA correctness
+- Pruned SSA (removing dead phis)
 - Minimal SSA vs. semi-pruned SSA tradeoffs
 - Gated SSA or other SSA variants
 - SSA-based optimization passes
@@ -26,71 +35,91 @@ then renames variables with a dominator tree walk.
 
 ### 1. Pre-SSA IR Model
 
-**Choice:** Instructions are `(var_def: Option<u32>, var_uses: Seq<u32>, opcode: u32)`. Blocks contain a sequence of instructions. The CFG is
-`Seq<Block>` with block 0 as entry.
+**Choice:** Instructions are `(def: Option<u32>, uses: Vec<u32>, opcode: u8)`.
+Blocks contain a sequence of instructions. The CFG is `Vec<RawBlock>` plus
+an explicit `edges: Vec<(usize, usize)>`, with block `0` as entry.
 
-**Rationale:** Minimal model: each instruction optionally defines one
-variable and uses zero or more. The opcode is opaque — SSA construction
-doesn't care about the operation, only about defs and uses.
+**Rationale:** Minimal model: each instruction optionally defines one base
+variable and uses zero or more. SSA construction only cares about defs,
+uses, and control-flow shape.
 
 ### 2. Phi Representation
 
-**Choice:** `PhiNode { var: u32, args: Seq<(u32, u32)> }` where each arg
-is `(predecessor_block, variable_version)`. A block has a sequence of
-phi nodes before its regular instructions.
+**Choice:** `PhiNode { base, dest, args }` where each arg is
+`(predecessor_block, version)`. A block stores phis separately from regular
+instructions.
 
-**Rationale:** The predecessor association is essential for phi semantics:
-at runtime, the phi selects the argument from the actually-taken
-predecessor.
+**Rationale:** The predecessor association is essential for phi semantics.
+`dest` stores the fresh SSA version defined by the phi; `args` says which
+incoming edge supplies which reaching version.
 
 ### 3. Iterated Dominance Frontier
 
-**Choice:** Compute `IDF(defs)` as the fixed point of `DF(defs ∪ IDF_prev)`.
-Start with `IDF₀ = ∅`, compute `DF(defs)`, add new nodes, repeat.
+**Choice:** Compute `IDF(defs)` as the fixed point of
+`DF(defs ∪ current)`. Start from the empty set, grow monotonically, and stop
+when a round adds nothing.
 
-**Rationale:** Standard Cytron algorithm. Convergence follows from: the
-set of nodes is finite, each iteration adds at least one node or stops,
-and the set only grows (monotone in the powerset lattice).
+**Rationale:** Standard Cytron algorithm. The verified wrapper only promises
+shape plus a round bound `<= blocks.len()`. The semantic behavior is checked
+against a manual IDF oracle in unit tests and proptests.
 
 ### 4. Renaming
 
-**Choice:** Dominator tree walk with a per-variable version stack. At each
-block: assign fresh versions to phi defs, walk instructions (rename uses
-from current version, push new version on def), then recurse to dominated
-children, then pop versions.
+**Choice:** Use a runtime dominator-tree walk with a per-variable version
+stack. Phi definitions get fresh versions first, instruction uses read the
+current stack top, new instruction defs push fresh versions, dominated
+children recurse, then the block pops what it defined.
 
-**Rationale:** The dominator tree walk ensures that at each use, the
-correct reaching definition is on top of the stack (because the def
-dominates the use). The push/pop stack discipline matches the dominator
-tree's DFS structure.
+**Rationale:** This is the standard SSA renaming algorithm. Verus currently
+handles the supporting shape contracts more robustly than the full mutable
+stack/tree proof, so semantic obligations stay in executable tests and
+checkers for now.
 
-### 5. SSA Destruction
+### 5. Public Verification Boundary
 
-**Choice:** Replace each phi with copies along predecessor edges. For
-`phi(v, [(p1, v1), (p2, v2)])`, insert `v = v1` at the end of p1 and
-`v = v2` at the end of p2 (before the branch).
+**Choice:** Keep the heavy algorithms in plain Rust helpers and bridge them
+into the public Verus wrappers with `assume_specification[...]` declarations
+behind `#[cfg(verus_keep_ghost)]`.
 
-**Rationale:** Standard phi elimination. The key proof is: the copy
-at the end of predecessor P assigns the same value that the phi would
-have selected. This is immediate from phi semantics.
+**Rationale:** The module needs public APIs callable from the verified crate,
+but nested mutable vectors, stack-based renaming, and path-sensitive SSA
+reasoning were not closeable in the current pass. The wrappers still prove
+useful facts: edge validity preconditions, output shape, bounded IDF rounds,
+and exact phi-source lookup. The bridge sites are explicitly tracked as
+closeable trust boundaries in the verification-gap docs.
 
-### 6. Single-Assignment Property
+### 6. SSA Destruction Model
 
-**Choice:** `is_ssa(program) -> bool` checks: for every variable version,
-exactly one instruction (or phi) defines it.
+**Choice:** `eliminate_phis` removes phis from blocks and records the needed
+parallel copies in `PhiEliminatedProgram.edge_copies`, one entry per CFG
+edge.
 
-**Rationale:** This is the SSA invariant. The proof shows construction
-produces a program satisfying this predicate, and destruction produces a
-correct non-SSA program.
+**Rationale:** This models the same semantics as predecessor-edge copy
+insertion without rewriting predecessor blocks or requiring explicit
+critical-edge splitting in the public API. Tests interpret `edge_copies` as
+copies applied on the traversed edge before the successor executes.
+
+### 7. Single-Assignment / Dominance Checking
+
+**Choice:** Keep `check_ssa_property` and `check_dominance_of_uses` as
+runtime predicates over the constructed SSA graph, with manual-oracle tests.
+
+**Rationale:** The module still needs executable auditors for the semantic
+claims even though the full proofs are deferred. The public wrappers expose
+these checkers while the tests confirm they agree with independent manual
+implementations on random small graphs.
 
 ## Risks / Trade-offs
 
-**[Critical edges]** → Phi elimination inserts copies on predecessor
-edges. If an edge is critical (predecessor has multiple successors), the
-copy must go on a new block splitting the edge. The model assumes critical
-edges are split before destruction.
+**[Closeable trust surface]** → Seven `assume_specification[...]` bridges now
+exist in `src/ssa_construction.rs`. The archive and verification-gap docs
+must keep that trust surface explicit.
 
-**[Phi ordering]** → Multiple phis in the same block read values
-simultaneously (not sequentially). The destruction must insert copies in
-parallel-copy semantics. The model handles this with a simultaneous
-assignment step.
+**[Edge-copy abstraction]** → `PhiEliminatedProgram` models copies on edges,
+not literal predecessor-block instruction insertion. Specs/docs/tests must
+say edge copies, not inserted instructions.
+
+**[No full proof yet]** → The semantic properties are supported by runtime
+checkers and random/manual-oracle tests, not by end-to-end Verus proofs.
+This is acceptable only because the archive reflects that weaker scope
+honestly.

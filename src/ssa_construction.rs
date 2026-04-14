@@ -1,4 +1,4 @@
-//! Verified SSA construction utilities.
+//! SSA construction utilities with thin verified wrappers.
 //!
 //! The runtime pipeline mirrors the classic compiler flow:
 //! 1. collect per-variable def sites,
@@ -11,6 +11,10 @@
 //! structural properties (lengths, edge validity, bounded IDF rounds, exact phi
 //!-source lookup). The executable algorithms live in plain Rust helpers below
 //! the `verus!` block, and tests compare them against small brute-force oracles.
+//!
+//! Phi elimination uses an edge-copy model: the eliminated program removes phi
+//! nodes from blocks and records the parallel copies required on each incoming
+//! edge before control enters the successor block.
 
 #![allow(clippy::too_many_lines, clippy::assigning_clones)]
 

@@ -2,13 +2,15 @@
 
 Reusable logic building blocks with machine-checked correctness.
 
-Every public function has a `spec fn` (mathematical definition) and an
+The house style is a `spec fn` (mathematical definition) plus an
 `exec fn` whose `ensures result == spec(args)` clause is verified by
 [Verus](https://verus-lang.github.io/verus/guide/). The specs are embedded
-directly in `src/` — drift between spec and implementation is structurally
-impossible. Requirement coverage is tracked by [Tracey](https://tracey.bearcove.eu/).
+directly in `src/`; tracked exceptions such as `src/ssa_construction.rs`
+are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
+bridge stays explicit. Requirement coverage is tracked by
+[Tracey](https://tracey.bearcove.eu/).
 
-**6450 Verus proofs · 3517 tests · 1406 requirements · 301 modules · 15 trusted boundaries**
+**6450 Verus proofs · 3517 tests · 1406 requirements · 301 modules · 22 trusted boundaries**
 
 ## How it works
 
@@ -443,7 +445,8 @@ scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
 ```
 
-Each module follows the same pattern:
+Most modules follow the same pattern (tracked exceptions are listed in
+`openspec/specs/verification-gaps/spec.md`):
 
 1. `pub open spec fn *_spec(...)` — mathematical definition with `r[depends]` annotation
 2. `pub fn *(...)` with `ensures result == *_spec(args)` — runtime code with `r[impl]` annotation
@@ -453,7 +456,9 @@ Each module follows the same pattern:
 ## Trusted items
 
 `15` items are marked `#[verifier::external_body]` across `5` files.
-Those are the current trusted boundaries inside Verus.
+In addition, `src/ssa_construction.rs` currently carries `7`
+`assume_specification[...]` bridges from thin verified wrappers to plain-Rust
+runtime helpers.
 
 **15 permanent** (architectural trust boundaries):
 
@@ -465,10 +470,15 @@ Those are the current trusted boundaries inside Verus.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
 
-**0 closeable** (all previously tracked Shamir proof debt is closed).
+**7 closeable** (`src/ssa_construction.rs`) — `assume_specification[...]`
+exec bridges for def-site collection, IDF computation, phi placement, SSA
+construction, dominance/use checking, and phi elimination. The public
+wrappers prove shape/lookup facts; runtime tests and manual oracles cover the
+stronger semantic claims for now.
 
 In addition to `external_body`, the current audit also tracks:
 
+- `7` `assume_specification[...]` exec bridges
 - `0` `assume(...)` soundness oracles
 - `0` `@verified-logic:no-ensures` / placeholder-spec surfaces
 

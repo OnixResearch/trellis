@@ -2,31 +2,39 @@
 
 ## Purpose
 
-Defines requirements for verified SSA construction, including phi
-placement at iterated dominance frontiers, the single-assignment property,
-dominance of uses, phi semantics, and SSA destruction.
+Defines requirements for SSA-construction utilities: iterated-dominance-
+frontier phi placement, SSA renaming, dominance-of-use checking,
+predecessor-based phi lookup, and SSA destruction via per-edge parallel
+copies.
+
+The current landed module combines thin verified wrappers with runtime
+helpers and executable oracles. The requirements below describe the
+observable SSA behavior the module and its tests/checkers enforce; they do
+not imply that every property is already internalized as an end-to-end
+Verus proof.
 
 ## Requirements
 
 ### Requirement: Single Assignment
 
-In SSA form, every variable version MUST have exactly one definition point.
+In SSA form, every explicit variable version MUST have exactly one
+instruction or phi definition point.
 
 #### Scenario: Unique definition
 
 - GIVEN an SSA program and variable version V
 - WHEN all instructions and phi nodes are scanned
-- THEN exactly one defines V
+- THEN exactly one explicit definition of V exists
 
 #### Scenario: No duplicate definitions
 
-- GIVEN two instructions I1 and I2 that define the same version V
+- GIVEN two instructions or phi nodes that define the same version V
 - WHEN the SSA well-formedness check runs
 - THEN a violation is reported
 
 ### Requirement: Dominance of Uses
 
-Every use of a variable version MUST be dominated by its definition.
+Every SSA use of a variable version MUST be dominated by its definition.
 
 #### Scenario: Use in same block
 
@@ -63,40 +71,48 @@ each variable's definition set.
 - WHEN B is checked
 - THEN no phi for V exists at B
 
+#### Scenario: Distinct predecessor coverage
+
+- GIVEN a phi at block B
+- WHEN the phi's argument list is inspected
+- THEN every distinct predecessor of B has exactly one entry
+
 ### Requirement: Phi Semantics
 
-A phi function MUST select the value from the predecessor that was
-actually taken at runtime.
+A phi function MUST select the value from the predecessor edge that was
+actually taken.
 
 #### Scenario: Phi selection
 
 - GIVEN a phi at block B with arguments [(P1, V1), (P2, V2)] and control
   flow arriving from P1
-- WHEN the phi is evaluated
+- WHEN the phi source for predecessor P1 is queried
 - THEN the result is V1
 
-#### Scenario: All predecessors covered
+#### Scenario: Missing predecessor
 
-- GIVEN a phi at block B
-- WHEN the phi's argument list is inspected
-- THEN every predecessor of B has exactly one entry
+- GIVEN a phi whose argument list has no entry for predecessor P3
+- WHEN the phi source for predecessor P3 is queried
+- THEN no source version is returned
 
 ### Requirement: SSA Destruction
 
-Replacing phi functions with copies along predecessor edges MUST preserve
-program semantics.
+Replacing phi functions with per-edge parallel copies MUST preserve the
+path-by-path SSA environment semantics.
 
-#### Scenario: Copy insertion
+#### Scenario: Edge copy recording
 
 - GIVEN a phi `V = phi(P1: V1, P2: V2)` at block B
 - WHEN the phi is eliminated
-- THEN `V = V1` is inserted at the end of P1 and `V = V2` at the end of P2
+- THEN the eliminated program records copy `(V, V1)` on edge `(P1, B)` and
+  copy `(V, V2)` on edge `(P2, B)`
 
-#### Scenario: Semantics preserved
+#### Scenario: Path semantics preserved
 
-- GIVEN the original SSA program and the phi-eliminated program
-- WHEN both are executed on the same input
-- THEN they produce identical observable output
+- GIVEN an SSA program, its phi-eliminated edge-copy form, one CFG path,
+  and the same input values
+- WHEN both models are executed along that path
+- THEN they produce the same versioned environment at each block boundary
 
 ### Requirement: IDF Convergence
 

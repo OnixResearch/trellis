@@ -5,9 +5,10 @@
 Tracks every trusted or weakened proof boundary in the current tree, not
 just a historical subset of `#[verifier::external_body]` items. The goal
 is to keep the trust surface explicit: every `external_body`,
-`assume(...)` oracle, `@verified-logic:no-ensures` exemption, or
-placeholder spec is a place where the proof story is weaker than the
-fully verified `exec fn ensures result == spec(...)` pattern.
+`assume_specification[...]` bridge, `assume(...)` oracle,
+`@verified-logic:no-ensures` exemption, or placeholder/weakened spec is a
+place where the proof story is weaker than the fully verified
+`exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
@@ -54,6 +55,32 @@ Summary:
 - Permanent external-body items: `15`
 - Closeable external-body items: `0`
 
+### `assume_specification[...]` exec bridges
+
+`7` closeable `assume_specification[...]` bridges remain, all in
+`src/ssa_construction.rs`.
+
+These are trusted bridge declarations from thin verified wrappers to
+plain-Rust SSA runtime helpers. They are closeable proof debt, not
+architectural trust boundaries.
+
+| Site | Classification | Rationale | Test coverage |
+|---|---|---|---|
+| `src/ssa_construction.rs:191 block_defines_var_runtime` | Closeable | `def_sites` relies on a trusted bridge to the runtime block-def scan instead of an internalized proof of agreement. | Unit tests/proptests for phi placement and SSA construction exercise def-site discovery indirectly. |
+| `src/ssa_construction.rs:193 runtime_iterated_dominance_frontier_with_rounds` | Closeable | The verified wrapper only enforces output shape and `rounds <= blocks.len()`. Actual IDF semantics are trusted through the bridge. | `test_idf_diamond`, `prop_idf_matches_manual`. |
+| `src/ssa_construction.rs:195 runtime_place_phis` | Closeable | The verified wrapper only preserves block/edge lengths. Exact phi placement and predecessor coverage are checked only by executable oracles. | `test_place_phis_diamond`, `prop_place_phis_hits_manual_idf`. |
+| `src/ssa_construction.rs:197 runtime_construct_ssa` | Closeable | The verified wrapper only preserves block/edge lengths. Single-assignment and rename correctness stay in runtime checks/tests. | `test_construct_ssa_simple_branch`, `prop_constructed_program_is_ssa`. |
+| `src/ssa_construction.rs:199 runtime_check_ssa_property` | Closeable | The public checker delegates to a plain-Rust predicate through a trusted bridge. | `prop_constructed_program_is_ssa` also cross-checks a manual SSA oracle. |
+| `src/ssa_construction.rs:201 runtime_check_dominance_of_uses_with_dom` | Closeable | Dominance-of-use checking is delegated to a plain-Rust predicate instead of a proved Verus argument. | `test_dominance_of_uses_branch_phi`, `prop_constructed_program_has_dominated_uses`. |
+| `src/ssa_construction.rs:203 runtime_eliminate_phis` | Closeable | The verified wrapper only preserves block/edge/copy-table lengths. Phi-elimination semantics are covered by executable path checks. | `test_phi_elimination_roundtrip`, `prop_eliminate_phis_preserves_path_semantics`. |
+
+Summary:
+
+- Permanent `assume_specification[...]` bridges: `0`
+- Closeable `assume_specification[...]` bridges: `7`
+
+Overall live inventory: `22` trusted/weakened boundaries = `15` permanent + `7` closeable.
+
 ### `assume(...)` soundness oracles
 
 `0` soundness oracles remain in verified code.
@@ -62,9 +89,11 @@ No verified code in `src/` currently ends in an `assume(...)` soundness oracle.
 
 ### `@verified-logic:no-ensures` and placeholder surfaces
 
-`0` weakened exec/spec boundaries remain.
+`0` weakened exec/spec boundaries remain in those categories.
 
-No public verified functions in `src/` currently rely on `@verified-logic:no-ensures`, and no placeholder specs remain in the live tree.
+No public verified functions in `src/` currently rely on
+`@verified-logic:no-ensures`, and no placeholder specs remain in the live
+tree.
 
 ## Requirements
 
@@ -77,6 +106,7 @@ boundary in the current tree, not only a historical subset of
 Tracked categories MUST include:
 
 - `#[verifier::external_body]`
+- `assume_specification[...]` exec bridges
 - `assume(...)` soundness oracles
 - public functions exempted with `@verified-logic:no-ensures`
 - public verified functions that actually lack an `ensures` clause
@@ -84,8 +114,8 @@ Tracked categories MUST include:
 
 #### Scenario: Mixed trust surfaces exist
 
-- GIVEN the tree contains `external_body`, `assume(...)`, and
-  `@verified-logic:no-ensures` sites
+- GIVEN the tree contains `external_body`, `assume_specification[...]`,
+  `assume(...)`, or `@verified-logic:no-ensures` sites
 - WHEN the proof-gap inventory is refreshed
 - THEN every site appears in the inventory with file path,
   classification, and rationale

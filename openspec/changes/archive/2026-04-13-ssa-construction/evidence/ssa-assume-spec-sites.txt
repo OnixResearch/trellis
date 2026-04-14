@@ -1,0 +1,9 @@
+ssa_assume_spec_sites=0
+
+191:assume_specification[crate::ssa_construction::block_defines_var_runtime](block: &RawBlock, var: u32) -> (result: bool);
+193:assume_specification[crate::ssa_construction::runtime_iterated_dominance_frontier_with_rounds](program: &RawProgram, dom: &[Vec<bool>], defs: &[bool]) -> (result: (Vec<bool>, usize));
+195:assume_specification[crate::ssa_construction::runtime_place_phis](program: &RawProgram, dom: &[Vec<bool>]) -> (result: SsaProgram);
+197:assume_specification[crate::ssa_construction::runtime_construct_ssa](program: &RawProgram) -> (result: SsaProgram);
+199:assume_specification[crate::ssa_construction::runtime_check_ssa_property](program: &SsaProgram) -> (result: bool);
+201:assume_specification[crate::ssa_construction::runtime_check_dominance_of_uses_with_dom](program: &SsaProgram, dom: &[Vec<bool>]) -> (result: bool);
+203:assume_specification[crate::ssa_construction::runtime_eliminate_phis](program: &SsaProgram) -> (result: PhiEliminatedProgram);
