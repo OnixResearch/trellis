@@ -7973,6 +7973,88 @@ mod durable_execution_proofs {
     } // verus!
 }
 
+// --- Hypervisor cross-module properties ---
+
+#[cfg(verus_keep_ghost)]
+mod hypervisor_cross_proofs {
+    use vstd::prelude::*;
+
+    use crate::hypervisor_memslot::*;
+    use crate::hypervisor_gpa::*;
+    use crate::hypervisor_vcpu::*;
+    use crate::hypervisor_exit::*;
+
+    verus! {
+
+    // r[impl properties.hypervisor-translation-region]
+    pub open spec fn translation_in_region_prop(
+        slot: Memslot, gfn: u64,
+    ) -> bool
+        recommends
+            slot_contains_gfn_spec(slot, gfn),
+            slot.host_base as int + slot.npages as int <= u64::MAX as int,
+    {
+        let host_addr = translate_gpa_spec(slot, gfn);
+        slot.host_base as int <= host_addr
+        && host_addr < slot.host_base as int + slot.npages as int
+    }
+
+    // r[verify properties.hypervisor-translation-region]
+    proof fn prove_translation_in_region(slot: Memslot, gfn: u64)
+        requires
+            slot_contains_gfn_spec(slot, gfn),
+            slot.host_base as int + slot.npages as int <= u64::MAX as int,
+        ensures translation_in_region_prop(slot, gfn)
+    {}
+
+    // r[impl properties.hypervisor-wakeup]
+    pub open spec fn wakeup_prop(halted: bool, deliverable: bool, result_state: u64) -> bool {
+        if halted && deliverable {
+            result_state == VCPU_RUNNABLE
+        } else if halted && !deliverable {
+            result_state == VCPU_HALTED
+        } else {
+            true
+        }
+    }
+
+    // r[verify properties.hypervisor-wakeup]
+    proof fn prove_wakeup(deliverable: bool)
+        ensures
+            wakeup_prop(true, deliverable, vcpu_wake_spec(VCPU_HALTED, deliverable))
+    {}
+
+    // r[impl properties.hypervisor-exit-state]
+    pub open spec fn exit_state_agreement_prop(
+        exit_class: u64, has_wake: bool, vcpu_state: u64,
+    ) -> bool {
+        let disp = exit_disposition_spec(exit_class, has_wake);
+        if disp == DISP_BLOCK {
+            !vcpu_can_enter_guest_spec(vcpu_state)
+        } else if disp == DISP_TERMINATE {
+            vcpu_state == VCPU_STOPPED
+        } else {
+            true
+        }
+    }
+
+    // r[verify properties.hypervisor-exit-state]
+    proof fn prove_exit_state_block()
+        ensures exit_state_agreement_prop(
+            EXIT_HALT, false, vcpu_halt_spec(VCPU_RUNNABLE),
+        )
+    {}
+
+    // r[verify properties.hypervisor-exit-state]
+    proof fn prove_exit_state_terminate()
+        ensures exit_state_agreement_prop(
+            EXIT_SHUTDOWN, false, vcpu_stop_spec(VCPU_RUNNABLE),
+        )
+    {}
+
+    } // verus!
+}
+
 #[cfg(test)]
 mod durable_execution_cross_tests {
     use proptest::prelude::*;

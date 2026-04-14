@@ -6698,3 +6698,94 @@ values of all variables that remain live after that instruction.
 r[dce.idempotent]
 A second elimination pass on the result of DCE MUST keep every instruction,
 producing the same output as the first pass.
+
+## Hypervisor Memslots
+
+r[hypervisor-memslot.disjoint]
+A memslot table MUST represent guest-frame-number (GFN) ranges as sorted,
+non-overlapping half-open intervals `[base_gfn, base_gfn + npages)`. Adjacent
+memslots MAY touch at a boundary, but no guest frame may belong to two
+memslots at once.
+
+r[hypervisor-memslot.lookup]
+`lookup_memslot(slots, gfn)` MUST return the unique memslot whose guest-frame
+range contains `gfn`, or `None` if no memslot contains it.
+
+## Hypervisor GPA Translation
+
+r[hypervisor-gpa.translate]
+A successful GPA translation MUST preserve the byte offset inside the owning
+memslot. The translated host address MUST be `host_base + (gfn - base_gfn)`
+and MUST lie inside that memslot's host-backed region.
+
+r[hypervisor-gpa.access]
+GPA translation with access mode MUST distinguish at least three outcomes:
+`Translated`, `Unmapped`, and `ReadonlyWrite`. A write into a readonly memslot
+MUST return `ReadonlyWrite`. An address outside all memslots MUST return
+`Unmapped`.
+
+## Hypervisor Dirty Log
+
+r[hypervisor-dirty-log.index]
+The dirty-log bit index for a guest frame MUST be the frame's offset relative
+to its memslot base: `dirty_index(base_gfn, gfn) == gfn - base_gfn`, and MUST
+be in `[0, npages)` exactly when `gfn` belongs to the slot.
+
+r[hypervisor-dirty-log.mark]
+Marking a guest frame dirty MUST set exactly its relative dirty bit and leave
+all other bits unchanged. Marking the same frame multiple times MUST be
+idempotent.
+
+r[hypervisor-dirty-log.union]
+Merging dirty logs for the same memslot MUST behave as bitwise union. Clearing
+a dirty log MUST reset all tracked bits to zero.
+
+## Hypervisor vCPU State
+
+r[hypervisor-vcpu.run-state]
+A vCPU MUST be in exactly one of four abstract states: `Runnable`, `Halted`,
+`Blocked`, or `Stopped`. `vcpu_can_enter_guest` MUST return true exactly in the
+`Runnable` state. `Stopped` is terminal.
+
+r[hypervisor-vcpu.halt-wakeup]
+A halt from `Runnable` MUST move the vCPU to `Halted`. A deliverable wake event
+MUST move a halted vCPU back to `Runnable`. Non-deliverable events leave the
+state unchanged.
+
+## Hypervisor Interrupts
+
+r[hypervisor-interrupt.inject]
+The pending virtual-interrupt structure MUST support enqueue-or-mark without
+losing prior pending interrupts. Next-interrupt selection MUST be deterministic.
+Re-marking an already pending interrupt MUST be idempotent.
+
+r[hypervisor-interrupt.deliver]
+A pending interrupt MUST be delivered only when the guest is interruptible.
+Successful delivery MUST consume the selected pending interrupt. If the guest is
+not interruptible, the pending set MUST remain unchanged.
+
+## Hypervisor VM Exit
+
+r[hypervisor-exit.classify]
+VM-exit classification MUST map raw exit information into stable semantic
+classes. The same raw input MUST always classify to the same class.
+
+r[hypervisor-exit.disposition]
+A semantic exit class MUST map to exactly one disposition: `ResumeGuest`,
+`UserspaceHandle`, `Block`, or `Terminate`. IO/MMIO/Hypercall MUST map to
+`UserspaceHandle`. Shutdown/InternalError MUST map to `Terminate`.
+
+## Hypervisor Cross-Module Properties
+
+r[properties.hypervisor-translation-region]
+Every successful GPA translation MUST produce a host address contained in the
+translated memslot's host-backed region.
+
+r[properties.hypervisor-wakeup]
+If a halted vCPU has a pending deliverable interrupt, wake evaluation MUST move
+the vCPU to `Runnable`. If delivery is not permitted, the vCPU MUST remain
+halted.
+
+r[properties.hypervisor-exit-state]
+Exit handling MUST preserve vCPU state consistency: `Block` leaves the vCPU
+non-runnable, `Terminate` moves it to the terminal stopped state.
