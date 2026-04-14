@@ -3,9 +3,9 @@
 ## Purpose
 
 Defines requirements for verified natural loop detection on a CFG with
-dominator information. Covers back edge classification, loop body
-computation, header dominance, single entry, nesting structure, and
-exit edges.
+dominator information. Covers back edge classification for all CFG edges,
+and body/header/entry/nesting/exit properties for reachable non-self
+natural loops.
 
 ## Requirements
 
@@ -34,7 +34,8 @@ source.
 
 ### Requirement: Header Dominance
 
-The loop header MUST dominate every node in the loop body.
+For reachable non-self loops, the loop header MUST dominate every node in
+the loop body.
 
 #### Scenario: Header dominates body node
 
@@ -50,8 +51,9 @@ The loop header MUST dominate every node in the loop body.
 
 ### Requirement: Loop Body Correctness
 
-The loop body MUST be exactly the header plus all nodes that can reach
-the back-edge source without passing through the header.
+For reachable non-self back edges, the loop body MUST be exactly the
+header plus all reachable nodes dominated by the header that can reach the
+back-edge source without passing through the header.
 
 #### Scenario: Body membership
 
@@ -73,7 +75,8 @@ the back-edge source without passing through the header.
 
 ### Requirement: Single Entry
 
-The loop header MUST be the only entry point to the loop from outside.
+For reachable non-self loops, the loop header MUST be the only reachable
+entry point to the loop from outside.
 
 #### Scenario: External edges enter header
 

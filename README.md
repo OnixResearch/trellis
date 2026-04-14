@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6469 Verus proofs · 3517 tests · 1406 requirements · 301 modules · 18 trusted boundaries**
+**6570 Verus proofs · 3543 tests · 1421 requirements · 303 modules · 18 trusted boundaries**
 
 ## How it works
 
@@ -292,6 +292,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `cycle_detect` | cycle detection: remaining node count proves acyclicity |
 | `reachability` | BFS reachability: soundness, visited-set monotonicity |
 | `dominator_tree` | iterative dominator sets, immediate dominators, and dominance frontiers |
+| `loop_detection` | back-edge classification, natural-loop bodies, exit edges, and nesting |
 | `liveness_analysis` | backward live-in/live-out analysis, fixed-point checks, and live-range projection |
 | `ssa_construction` | iterated-dominance-frontier phi placement, SSA renaming, and phi elimination |
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
@@ -422,15 +423,15 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 3517 tests (unit + property)
-cargo clippy -- -D warnings
+cargo test                 # 3543 tests (unit + property)
+cargo clippy --all-targets -- -D warnings
 ```
 
 ## Verification
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6469 proofs)
+./scripts/verus.sh         # verus only (6570 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -438,9 +439,9 @@ cargo clippy -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 301 module declarations
+src/lib.rs              ← crate root, 303 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1406 tracey requirements
+docs/requirements.md    ← 1421 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

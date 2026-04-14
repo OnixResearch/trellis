@@ -2,9 +2,10 @@
 
 Loop detection identifies natural loops in a CFG — the most frequent
 targets for optimization (loop-invariant code motion, strength reduction,
-unrolling, vectorization). A natural loop has a single entry point (the
-header), which dominates all nodes in the loop body, and at least one
-back edge from a body node to the header.
+unrolling, vectorization). For this change, the main body/entry/nesting
+properties target reachable non-self natural loops: a loop has a single
+entry point (the header), which dominates all nodes in the loop body, and
+at least one back edge from a distinct body node to the header.
 
 The definition of "natural loop" depends on dominators: an edge (B → H) is
 a back edge iff H dominates B. The loop body is the set of nodes that can
@@ -26,9 +27,9 @@ opportunity.
     dominates B. All other edges are forward or cross edges.
   - **Header dominance**: The loop header dominates every node in the loop
     body.
-  - **Loop body correctness**: The loop body is exactly the set of nodes
-    that can reach the back-edge source B without passing through the
-    header H (plus H itself).
+  - **Loop body correctness**: For reachable non-self back edges, the loop
+    body is exactly the reachable nodes dominated by H that can reach the
+    back-edge source B without passing through H (plus H itself).
   - **Single entry**: The header is the only entry point to the loop. All
     edges from outside the loop enter through the header.
   - **Loop nesting**: If loop L1 is nested inside loop L2, then

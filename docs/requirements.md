@@ -6589,6 +6589,39 @@ A block with no CFG successors MUST have empty live-out. Return values, if any,
 MUST be modeled as local uses of the exit block rather than as post-exit
 liveness.
 
+## Loop Detection
+
+r[loop.back-edge]
+A CFG edge MUST be classified as a back edge if and only if its target
+block dominates its source block.
+
+r[loop.body]
+For a reachable non-self back edge (B -> H), loop-body detection MUST return
+exactly the reachable blocks dominated by H that can reach B without passing
+through H, plus H itself.
+
+r[loop.header-dominance]
+Every reachable block in a detected non-self loop body MUST be dominated by
+that loop's header.
+
+r[loop.single-entry]
+For a detected non-self loop body, any reachable edge entering the body from
+outside MUST target the header. Reachable non-header side entries are not
+allowed.
+
+r[loop.nesting]
+If one detected loop is nested in another, the inner loop body MUST be a strict
+subset of the outer loop body and the inner header MUST be contained in the
+outer body.
+
+r[loop.nesting-forest]
+Loop-nesting parents MUST form an acyclic forest of strict-body-superset links:
+any recorded parent of a loop MUST strictly contain that loop's body.
+
+r[loop.exits]
+Loop-exit detection MUST return exactly the CFG edges whose source is inside a
+loop body and whose destination is outside that body.
+
 ## SSA Construction
 
 r[ssa.single-assignment]
