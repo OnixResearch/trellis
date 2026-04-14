@@ -1,0 +1,2 @@
+verified-logic/rust: 0 uncovered out of 1430 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1430 rules

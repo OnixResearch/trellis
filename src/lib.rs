@@ -75,6 +75,7 @@
 //! - `dominator_tree` — iterative dominator sets, immediate dominators, and dominance frontiers
 //! - `loop_detection` — back-edge classification, loop bodies over reachability/dominator views, exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range projection
+//! - `dead_code_elimination` — dead instruction classification from side-effect tagging and live-out facts
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi elimination
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
@@ -345,6 +346,7 @@ pub mod cron_match;
 pub mod cron_next;
 pub mod ct_select;
 pub mod cycle_detect;
+pub mod dead_code_elimination;
 pub mod deadline_queue;
 pub mod delegation;
 pub mod distributed_lock;

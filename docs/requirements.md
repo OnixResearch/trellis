@@ -6655,3 +6655,46 @@ produces the same versioned environment as executing the SSA program.
 r[ssa.idf-convergence]
 Iterated dominance frontier computation MUST grow monotonically from the empty
 set and reach a fixed point within at most N rounds for an N-block CFG.
+
+## Dead Code Elimination
+
+r[dce.side-effect]
+Dead-code classification MUST treat raw opcodes `>= 128` as conservatively
+effectful, with `128` = Store, `129` = Call, and `130` = Return.
+
+r[dce.criterion]
+An instruction MUST be classified as dead if and only if it has no side effect,
+defines a variable, and that definition is not live-out at the instruction's
+program point. Instructions without a definition MUST remain conservatively
+live in this initial model.
+
+r[dce.side-effect-never-dead]
+An instruction with a side effect MUST never be classified as dead, regardless
+of its live-out row.
+
+r[dce.live-def-never-dead]
+An instruction that defines a variable that is live-out MUST never be
+classified as dead.
+
+r[dce.no-live-removed]
+Dead-code elimination MUST preserve every instruction whose output is live at
+its program point or that has a side effect. Removing dead instructions MUST
+preserve block count and CFG edges.
+
+r[dce.semantics]
+Under the raw IR's current straight-line block-order execution model, dead-code
+elimination MUST preserve the observable trace of stores, calls, and returns on
+any input environment compatible with the chosen live-out rows.
+
+r[dce.retained-identical]
+If two executions agree on a kept instruction's entry-live variables, that
+instruction MUST emit the same observable event and produce the same live-out
+values in both executions.
+
+r[dce.removed-no-effect]
+A removed dead instruction MUST emit no observable event and MUST preserve the
+values of all variables that remain live after that instruction.
+
+r[dce.idempotent]
+A second elimination pass on the result of DCE MUST keep every instruction,
+producing the same output as the first pass.

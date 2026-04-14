@@ -4,11 +4,12 @@
 - Commit messages: focus on why, use imperative mood, keep concise, avoid conventional-commit prefixes, and use paragraphs instead of bullets.
 
 ## Project State
+- Repo is now a colocated `jj`+`git` workspace (`.jj/` + `.git/`). Prefer `jj` for local status/history/bookmarks; `git` still works for remotes and Git-only tooling. `main@origin` is tracked locally. Warning: `git clean -xdf` will remove `.jj/`.
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
 - 6469 Verus proofs + 3517 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1406 requirements)
+- 0 uncovered + 0 untested = full Tracey coverage (1429 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - Current trusted inventory: 18 live trusted/weakened boundaries = 15 `#[verifier::external_body]` items across 5 files + 3 closeable SSA `assume_specification[...]` bridges.
@@ -17,6 +18,9 @@
 - `src/loop_detection.rs` review only accepted exact public contracts once the exact helpers consumed already-computed reachability/dominator views: `compute_loop_body(edges, reachable, dom, ...)` and `has_single_entry(edges, reachable, ...)`. The stronger path-oracle natural-loop statement stays as unit/property-test evidence, not a separate Verus theorem.
 - `src/loop_detection.rs:loop_nesting_forest` needs an explicit 3-level/shuffled-order parent-selection test. A 2-loop example plus a generic strict-superset property is too weak for done review.
 - `src/ssa_construction.rs` still keeps the heavier SSA algorithms in plain Rust helpers and uses `assume_specification[...]` declarations gated by `#[cfg(verus_keep_ghost)]` to let the verified wrappers call them. Ungated assume-spec declarations break normal cargo builds under `-F unsafe-code`. `block_defines_var`, `iterated_dominance_frontier_with_rounds`, `check_ssa_property`, and `eliminate_phis` are internalized now; remaining bridges are `runtime_place_phis`, `runtime_construct_ssa`, and `runtime_check_dominance_of_uses_with_dom`.
+- New compiler-pass modules can usually reuse `ssa_construction::RawInstr` / `RawBlock` / `RawProgram` as the shared raw IR. `dead_code_elimination` fits that model cleanly.
+- `dead_code_elimination` Phase 3 proof model uses straight-line block order for `RawProgram`; the program-level trace theorem composes block proofs under the adjacent-block summary condition `live.live_out[b] == live_before_spec(block[b+1], live.live_out[b+1], 0)`.
+- For `RawInstr` clones in proofs, compare projected views `(def, opcode, uses@)` instead of trying to prove whole-struct equality after cloning the `Vec<u32>` field.
 - SSA phi coverage must deduplicate predecessor blocks. `dominator_tree::predecessors` returns one entry per edge, so duplicate edges or self-loops otherwise create duplicate phi args for the same predecessor.
 - Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); current closeable subset is 3 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
@@ -123,6 +127,7 @@
 ## Corrections
 | Date | Source | What Went Wrong | What To Do Instead |
 |------|--------|----------------|-------------------|
+| 2026-04-14 | self | Added proof-only DCE Tracey requirements with only `r[verify]`, so `tracey query uncovered` still reported them as uncovered | For helper/proof-only requirements in this repo, add an `r[impl]` tag on the defining proof/spec artifact too, not just `r[verify]` |
 | 2026-04-14 | self | Introduced a new public SSA helper without the repo's expected coverage annotation and then summarized validation from prose/docs instead of surfacing the command outputs | Keep helper-only functions private unless they need public API status, and when claiming validation include direct command output snippets for `cargo test`, `clippy`, `verus`, and Tracey |
 | 2026-04-13 | self | Sent a multiline `pueue_run` command without wrapping it in `bash -lc`, so pueue collapsed the newlines and only the first command ran correctly | For multi-step validation pipelines in `pueue_run`, wrap the whole script in `bash -lc '...; ...'` with explicit separators |
 | 2026-04-13 | self | Used regex alternation/pipes directly in `rg` tool patterns; shell interpreted them as pipelines and even invoked `shutdown` from the literal pattern | For alternation searches, use `bash` with `rg 'a|b' ...` quoted, or avoid `|` in the raw `rg` tool pattern |

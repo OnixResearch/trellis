@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6572 Verus proofs · 3545 tests · 1421 requirements · 303 modules · 18 trusted boundaries**
+**6629 Verus proofs · 3563 tests · 1430 requirements · 304 modules · 18 trusted boundaries**
 
 ## How it works
 
@@ -295,6 +295,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `loop_detection` | back-edge classification, loop bodies over reachability/dominator views, exit edges, and nesting |
 | `liveness_analysis` | backward live-in/live-out analysis, fixed-point checks, and live-range projection |
 | `ssa_construction` | iterated-dominance-frontier phi placement, SSA renaming, and phi elimination |
+| `dead_code_elimination` | dead-instruction classification, block elimination, observable-trace preservation, idempotence |
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 

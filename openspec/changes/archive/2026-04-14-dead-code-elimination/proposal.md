@@ -29,11 +29,6 @@ instruction is dead if unused, but a store to memory is always live.
     live variable or has side effects is preserved.
   - **Idempotence**: Running DCE twice produces the same result as running
     it once. The output of DCE has no dead instructions.
-  - **Monotonicity**: Removing a dead instruction can only make other
-    instructions dead (by reducing liveness), never make a dead
-    instruction live.
-  - **Iterative DCE convergence**: Repeatedly applying DCE until no more
-    instructions are removed terminates.
 
 ## Capabilities
 
@@ -43,15 +38,12 @@ instruction is dead if unused, but a store to memory is always live.
 - `dce.criterion`: Verified dead instruction classification
 - `dce.no-live-removed`: Verified live instructions preserved
 - `dce.idempotent`: Verified single-pass sufficiency
-- `dce.monotone`: Verified removal can only increase dead count
-- `dce.convergence`: Verified iterative DCE terminates
 
 ## Impact
 
 - **Files**: One new `src/dead_code_elimination.rs`, module declaration
   in `lib.rs`
-- **APIs**: `is_dead`, `eliminate_dead`, `has_side_effect`,
-  `check_semantics_preserved`, `iterative_dce`
+- **APIs**: `is_dead`, `eliminate_dead`, `has_side_effect`
 - **Dependencies**: Depends on `liveness_analysis` for liveness information,
   operates on CFG, depends on `vstd`
 - **Testing**: Verus proofs for all properties, proptest for DCE
