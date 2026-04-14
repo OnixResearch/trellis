@@ -134,6 +134,7 @@
 - Lazygit branch refresh panic can come from a corrupt local auto branch ref, not from repo-wide object corruption. In this repo, `.git/refs/heads/pi/auto/main` pointed to missing object `fdc4b6514488e7b441c17b3b50d15cdfc90072a4`; `git show-ref --heads` reported `bad ref`, and reflog showed last good tip `982a1021f46d3dadf56cd2c5304080a2912f92a1`.
 
 ## Recent Changes
+- `src/set_associative_lookup.rs`: support full-width geometries with `low_mask(bits == 64) == u64::MAX` and safe shift helpers; raw `1u64 << 64`, `addr >> 64`, or `tag << 64` do not work in exec/spec paths.
 - Approval module added: count_valid_approvals, is_merge_allowed, needs_more_approvals, has_stale_approvals
   - Loop invariants must track count bounds to prevent arithmetic overflow (count <= i as u64)
   - Complex quantifiers need explicit #![trigger] annotations for Z3 inference

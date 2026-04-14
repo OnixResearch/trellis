@@ -199,6 +199,7 @@
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
+//! - `set_associative_lookup` — cache address decomposition and per-set tag lookup
 //! - `surelock_deadlock` — surelock wait-edge rank and deadlock-freedom core theorem
 //! - `surelock_id` — surelock lock records with stable monotonic lock identities
 //! - `surelock_key` — surelock consumed-and-re-emitted key progression across levels
@@ -501,6 +502,7 @@ pub mod seq_set;
 pub mod seqlock;
 pub mod sequence;
 pub mod sequential;
+pub mod set_associative_lookup;
 pub mod serialize_inj;
 pub mod session_tree;
 pub mod settlement;

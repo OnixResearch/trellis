@@ -226,6 +226,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `free_space_map` | free-space bitmap tracking: allocate/free, count, find-first-free |
 | `write_buffer` | write buffer (memtable): size tracking, flush threshold, swap |
 | `block_cache` | block cache: occupancy, eviction, dirty tracking, write-back |
+| `set_associative_lookup` | cache address decomposition, per-set tag lookup, duplicate-tag checks |
 
 ### Distributed systems
 

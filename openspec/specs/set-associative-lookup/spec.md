@@ -54,11 +54,11 @@ requested tag.
 - WHEN a lookup for tag T is performed
 - THEN the result is hit at way W
 
-#### Scenario: Hit data correspondence
+#### Scenario: Hit identifies requested line
 
 - GIVEN a hit at way W
-- WHEN the data from way W is read
-- THEN it corresponds to the cache line for the requested address
+- WHEN the way's stored tag is inspected
+- THEN it equals the requested tag and therefore identifies the requested cache line
 
 ### Requirement: Miss Completeness
 

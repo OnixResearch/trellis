@@ -23,8 +23,8 @@ breaks for coherence protocols that assume cache state is accurate.
   - **No aliasing**: Two distinct addresses with the same index but
     different tags never produce a false hit. Tag comparison is exact.
   - **Hit correctness**: A hit in way W means the tag stored in way W
-    matches the requested tag. The returned data corresponds to the
-    correct cache line.
+    matches the requested tag. The matched way identifies the correct
+    cache line.
   - **Miss completeness**: A miss means no way in the selected set holds
     a matching tag. Proved by exhaustive comparison across all ways.
   - **Set isolation**: Addresses with different indices map to different
@@ -38,7 +38,7 @@ breaks for coherence protocols that assume cache state is accurate.
 
 - `set-assoc.decomposition`: Verified address→(tag, index, offset) bijection
 - `set-assoc.no-aliasing`: Verified tag uniqueness prevents false hits
-- `set-assoc.hit`: Verified hit returns correct data
+- `set-assoc.hit`: Verified hit returns the correct matching way/tag
 - `set-assoc.miss`: Verified miss means exhaustive way comparison failed
 - `set-assoc.set-isolation`: Verified cross-set non-interference
 - `set-assoc.no-duplicates`: Verified at most one matching way per set

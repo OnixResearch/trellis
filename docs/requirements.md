@@ -1016,6 +1016,50 @@ r[eviction.evictable-count]
 evictable_count MUST return count - protected_count using saturating
 subtraction. The result MUST be <= count.
 
+## Set-Associative Lookup
+
+r[set-assoc.decomposition]
+Decomposing an address into tag, index, and offset MUST preserve all
+information needed to reconstruct the original address. For any valid
+`offset_bits` and `index_bits` with `offset_bits + index_bits <= 64`,
+`reconstruct_address(decompose_address(addr))` MUST equal `addr`.
+
+r[set-assoc.component-bounds]
+extract_offset MUST return a value that fits in `offset_bits` bits.
+extract_index MUST return a value that fits in `index_bits` bits.
+extract_tag MUST return a value that fits in the remaining
+`64 - offset_bits - index_bits` tag bits.
+
+r[set-assoc.hit]
+find_way(set, tag) MUST return `Some(i)` only when `set[i] == Some(tag)`.
+lookup_set(set, addr, offset_bits, index_bits) MUST return the way whose
+stored tag matches `extract_tag(addr, offset_bits, index_bits)`.
+
+r[set-assoc.miss]
+find_way(set, tag) MUST return `None` only when no way in the set holds
+`Some(tag)`. lookup_set MUST miss when every way disagrees with the
+requested tag.
+
+r[set-assoc.no-duplicates]
+Within a set, at most one way SHOULD hold a given non-empty tag.
+check_no_duplicate_tags MUST return true if and only if no two distinct
+ways hold the same `Some(tag)` value.
+
+r[set-assoc.insert-preserves-uniqueness]
+Inserting a tag into an empty way of a set that already has no duplicate
+tags, when that tag is absent from all other ways, MUST preserve the
+no-duplicate-tags invariant.
+
+r[set-assoc.no-aliasing]
+For two addresses with the same index but different tags, a hit for one
+MUST NOT be a hit for the other's tag. The matched way MUST identify the
+requested line, not another tag that shares the set.
+
+r[set-assoc.set-isolation]
+Changing a cache set whose index differs from the requested address's
+index MUST NOT change the lookup result for that address. Different
+indices MUST select different sets.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]
