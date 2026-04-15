@@ -6945,3 +6945,18 @@ only that waiter from its queue.
 r[sel4-endpoint.badge]
 A successful endpoint send/receive rendezvous MUST deliver the matched
 sender capability's badge to the matched receiver.
+
+## seL4 Fault IPC
+
+r[sel4-fault-ipc.preservation]
+Encoding a structured fault into an IPC-visible message and then decoding it
+MUST recover the same fault class and preserved payload fields.
+
+r[sel4-fault-ipc.delivery]
+A modeled fault delivery step MUST place the encoded fault information into
+the configured handler context so the handler can recover the original fault
+record.
+
+r[sel4-fault-ipc.payload]
+Fault payload fields preserved by the model, including the instruction
+pointer, MUST remain unmodified across encode/decode and delivery.

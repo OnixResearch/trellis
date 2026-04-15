@@ -20,7 +20,7 @@ Fault delivery in seL4 turns structured fault information into IPC-visible state
 
 - **Files**: New `src/sel4_fault_ipc.rs` module, `src/lib.rs` export, `src/properties.rs` cross-module theorems as needed, and this OpenSpec change
 - **APIs**: Public spec/exec/proof functions for fault handling
-- **Dependencies**: Reuses `sel4_endpoint` for later composition
+- **Dependencies**: Standalone for now; later changes may compose fault delivery with `sel4_endpoint`
 - **Testing**: Verus proofs, unit tests, and proptests for page fault and generic fault roundtrips
 
 ## Out of Scope

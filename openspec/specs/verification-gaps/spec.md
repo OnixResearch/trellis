@@ -12,14 +12,14 @@ place where the proof story is weaker than the fully verified
 
 ## Current Status
 
-As of `2026-04-14`, fresh reruns on the current tree show:
+As of `2026-04-15`, fresh reruns on the current tree show:
 
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3517 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`6469 verified, 0 errors`)
-- `tracey query uncovered` returns `0 uncovered out of 1406 rules`
-- `tracey query untested` returns `0 untested out of 1406 rules`
-- `./scripts/verify.sh` still flakes during Tracey daemon auto-start on this machine with `Error: Cancelled`, so treat the direct Tracey queries above as the fresh coverage evidence
+- `cargo test` passes (`3665 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`6860 verified, 0 errors`)
+- `tracey query uncovered` returns `0 uncovered out of 1476 rules`
+- `tracey query untested` returns `0 untested out of 1476 rules`
+- `./scripts/verify.sh` passes on this tree; direct Tracey query outputs remain archived as the coverage source of truth
 
 These green direct checks do **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
@@ -28,7 +28,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`15` external_body items remain across `5` files.
+`16` external_body items remain across `6` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -47,13 +47,14 @@ actual tree and not just per-file totals.
 | `src/nix_version.rs:365 compare_versions` | Permanent | Iterative exec/spec bridge still hits the same `cv_fuel` unfolding limit. | `src/nix_version.rs` unit tests + proptest cover version ordering. |
 | `src/nix_store_path.rs:27 sha256_deterministic` | Permanent | Hash determinism axiom for uninterpreted SHA-256 model. | `src/nix_store_path.rs` unit tests + proptest cover store-path roundtrips. |
 | `src/nix_store_path.rs:33 sha256_collision_resistant` | Permanent | Collision-resistance axiom for uninterpreted SHA-256 model. | `src/nix_store_path.rs` unit tests + proptest cover store-path roundtrips. |
+| `src/web_of_trust_principal.rs:95 blake3_digest_bridge` | Permanent | Trusted runtime bridge from canonical public-key bytes to the uninterpreted full-length BLAKE3 principal-ID digest model. | `src/web_of_trust_principal.rs` unit tests + proptest cover principal-ID derivation and equality. |
 | `src/log_invariant_inductive.rs:174 leader_append_preserves_lmp` | Permanent | Sound only under the system-level Raft leader-chain invariant, not as a local lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:223 leader_append_preserves_lmp_right` | Permanent | Same system-level leader-chain invariant gap as the left-extension lemma. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 | `src/log_invariant_inductive.rs:275 leader_invariant_preserves_lmp` | Permanent | Same system-level leader-chain invariant gap as the append lemmas. | `src/log_invariant_inductive.rs` unit tests + proptest cover valid log-shape behavior. |
 
 Summary:
 
-- Permanent external-body items: `15`
+- Permanent external-body items: `16`
 - Closeable external-body items: `0`
 
 ### `assume_specification[...]` exec bridges
@@ -76,7 +77,7 @@ Summary:
 - Permanent `assume_specification[...]` bridges: `0`
 - Closeable `assume_specification[...]` bridges: `3`
 
-Overall live inventory: `18` trusted/weakened boundaries = `15` permanent + `3` closeable.
+Overall live inventory: `19` trusted/weakened boundaries = `16` permanent + `3` closeable.
 
 ### `assume(...)` soundness oracles
 

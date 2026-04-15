@@ -8,11 +8,11 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
-- 6469 Verus proofs + 3517 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1429 requirements)
+- 6860 Verus proofs + 3665 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1476 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
-- Current trusted inventory: 18 live trusted/weakened boundaries = 15 `#[verifier::external_body]` items across 5 files + 3 closeable SSA `assume_specification[...]` bridges.
+- Current trusted inventory: 19 live trusted/weakened boundaries = 16 `#[verifier::external_body]` items across 6 files + 3 closeable SSA `assume_specification[...]` bridges.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in range and nonzero, and leader splitting treats `Return` as a terminator so post-return instructions always start a new block.
 - `src/liveness_analysis.rs` uses synchronous whole-graph rounds. For this model the safe convergence bound is `2 * blocks * vars`, not `blocks * vars`; a self-loop with a local use lets `live_in` become true one round before `live_out` reflects the self-successor.
 - `src/loop_detection.rs` review only accepted exact public contracts once the exact helpers consumed already-computed reachability/dominator views: `compute_loop_body(edges, reachable, dom, ...)` and `has_single_entry(edges, reachable, ...)`. The stronger path-oracle natural-loop statement stays as unit/property-test evidence, not a separate Verus theorem.
@@ -22,7 +22,7 @@
 - `dead_code_elimination` Phase 3 proof model uses straight-line block order for `RawProgram`; the program-level trace theorem composes block proofs under the adjacent-block summary condition `live.live_out[b] == live_before_spec(block[b+1], live.live_out[b+1], 0)`.
 - For `RawInstr` clones in proofs, compare projected views `(def, opcode, uses@)` instead of trying to prove whole-struct equality after cloning the `Vec<u32>` field.
 - SSA phi coverage must deduplicate predecessor blocks. `dominator_tree::predecessors` returns one entry per edge, so duplicate edges or self-loops otherwise create duplicate phi args for the same predecessor.
-- Permanent subset is 15 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `log_invariant_inductive`); current closeable subset is 3 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
+- Permanent subset is 16 (`chain`, `snapshot_integrity`, `nix_version`, `nix_store_path`, `web_of_trust_principal`, `log_invariant_inductive`); current closeable subset is 3 SSA `assume_specification[...]` bridges in `src/ssa_construction.rs`.
 - I left one proof helper under-justified once: `shamir_lagrange::basis_other_from` needs the local bound `0 <= from <= j < xs.len()` made obvious before indexing `xs[from]`. Even if upstream facts imply it, add the direct branch assertion so review sees no hidden out-of-range case.
 - If I archive an OpenSpec change after touching multiple domain specs, archive one standalone `specs/<domain>/spec.md` per changed domain. Review counts missing per-domain archive docs as drift.
 - Before starting implementation for an old active OpenSpec change, compare it against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`. Some changes are already shipped in code and only need metadata sync plus archive.
