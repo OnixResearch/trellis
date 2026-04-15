@@ -47,6 +47,20 @@ review without per-file truncation.
 
 **Rationale:** review wanted the constructor-vs-`requires` boundary chosen before task decomposition so proof obligations and public API surface do not drift.
 
+### 1b. Fix crate export policy before implementation
+
+**Choice:** each new domain module (`chaoscontrol_coverage`, `chaoscontrol_oracle`,
+`chaoscontrol_scheduler`, `chaoscontrol_fault_schedule`,
+`chaoscontrol_frontier`, `chaoscontrol_input_tree`, and
+`chaoscontrol_fault_state`) will be exported from `src/lib.rs` via `pub mod`.
+Helper-only functions inside those modules remain private unless they carry an
+intentional Tracey or public API surface. `src/properties.rs` stays in the
+public crate graph as `pub mod properties;`, but the new ChaosControl additions
+there are proof-only lemmas rather than a separate exec API.
+
+**Rationale:** proposal scope already names an intended public surface, so the
+`src/lib.rs` boundary should be fixed before implementation starts.
+
 ### 2. Pin coverage to the exact 64 KiB upstream model
 
 **Choice:** model coverage as a fixed `65536`-byte `Vec<u8>` / `Seq<u8>` with
@@ -197,8 +211,7 @@ proofs land in `src/properties.rs`:
 `chaoscontrol_subset_replay_order`, `chaoscontrol_fingerprint_trace_eq`, and
 `chaoscontrol_quorum_gate_sound`.
 
-**Upstream provenance map:** full note also recorded in
-`openspec/changes/chaoscontrol-primitives/evidence/upstream-provenance.md`.
+**Upstream provenance map:**
 - coverage -> `../chaoscontrol/crates/chaoscontrol-explore/src/coverage.rs`
 - oracle/accounting aggregation -> `../chaoscontrol/crates/chaoscontrol-vmm/src/controller.rs` and `../chaoscontrol/crates/chaoscontrol-explore/src/report.rs`
 - scheduler -> `../chaoscontrol/crates/chaoscontrol-vmm/src/scheduler.rs`
@@ -256,5 +269,5 @@ exec recursion, not just ad hoc eyeballing.
 4. Land frontier, input-tree, and fault-state modules after lower-level kernels are stable.
 5. Land cross-module proofs in `src/properties.rs` with matching `r[impl]` / `r[verify]` anchors.
 6. Run the deterministic iterative-exec audit and record `evidence/iterative-exec-audit.md`.
-7. Validate with `./scripts/check-ensures.sh`, `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, direct Tracey queries, and `./scripts/verify.sh`.
-8. Treat non-empty Tracey queries as failure unless reviewer-approved disposition is recorded in `evidence/tracey-disposition.md`.
+7. Validate with `./scripts/check-ensures.sh`, `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, exact Tracey commands `tracey query uncovered` and `tracey query untested`, and `./scripts/verify.sh`.
+8. Treat non-empty output from `tracey query uncovered` or `tracey query untested` as failure unless reviewer-approved disposition is recorded in `evidence/tracey-disposition.md`.

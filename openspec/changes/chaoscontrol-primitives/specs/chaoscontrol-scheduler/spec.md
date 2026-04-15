@@ -10,9 +10,12 @@ ChaosControl.
 ### Requirement: Scheduler Turn Semantics
 
 r[chaoscontrol-scheduler.turns]
-Scheduler primitives apply only when `num_vcpus >= 1`; public constructor and
-`apply_variant` establish valid scheduler state, and public `tick` / `advance`
-helpers require it. Stored configuration always uses `default_quantum = max(1, raw_default_quantum)`. If the stored strategy
+Scheduler primitives apply only when `num_vcpus >= 1` and valid scheduler
+state. Valid scheduler state means `0 <= active < num_vcpus`, stored
+`default_quantum >= 1`, randomized strategies satisfy `1 <= min_quantum <= max_quantum`,
+and `remaining` is either the exhausted SMP value `0` immediately after a
+`ticked-to-zero` turn and before the next `advance`, or a positive countdown
+value for the current turn's assigned quantum. Stored configuration always uses `default_quantum = max(1, raw_default_quantum)`. If the stored strategy
 is randomized, valid state also requires `1 <= min_quantum <= max_quantum`;
 constructing or applying a randomized strategy outside that bound is a
 precondition failure outside contract. Initial state is
@@ -92,8 +95,7 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 ### Requirement: Fault Schedule Replay Semantics
 
 r[chaoscontrol-fault-schedule.replay]
-Public schedule constructors plus `add` / `subset` produce normalized
-schedules; replay helpers require this normalized surface. A normalized fault
+Replay and subset helpers operate on normalized schedules. A normalized fault
 schedule has unique ordinals, stable `(time_ns, ordinal)` order, and
 `0 <= cursor <= len`. The public `add` helper is defined only on
 undrained normalized schedules with `cursor = 0`; adding to a partially drained
@@ -101,10 +103,11 @@ schedule is outside contract. On that input surface, `add` allocates fresh
 ordinals as `0` on an empty schedule and otherwise `1 + max(existing ordinals)`,
 including on subset-produced schedules whose existing ordinals came from carried
 source indices, and then normalizes by `(time_ns, ordinal)` while keeping the
-result cursor at `0`. `drain_due(t)` returns exactly the not-yet-drained faults
-with `time_ns <= t` starting at `cursor`, in schedule order, advances `cursor`
-by exactly the number returned, preserves the undrained suffix, and never
-re-delivers an already drained fault.
+result cursor at `0`, so the output remains normalized. `drain_due(t)` returns
+exactly the not-yet-drained faults with `time_ns <= t` starting at `cursor`, in
+schedule order, advances `cursor` by exactly the number returned, preserves the
+undrained suffix, keeps `0 <= cursor <= len`, is monotone in `cursor`, and
+never re-delivers an already drained fault.
 
 #### Scenario: Due faults drain in normalized order
 
@@ -118,6 +121,13 @@ re-delivers an already drained fault.
 - GIVEN a schedule already drained through time `t`
 - WHEN due faults are drained again at time `t`
 - THEN no previously delivered fault is returned again
+
+#### Scenario: Replay operations preserve normalized bounds
+
+- GIVEN a normalized schedule
+- WHEN `add` or `drain_due` is applied within contract
+- THEN the resulting schedule still satisfies `0 <= cursor <= len`
+- AND `drain_due` never decreases `cursor`
 
 ### Requirement: Fault Schedule Subset Semantics
 

@@ -18,10 +18,12 @@ into reusable verified building blocks.
 ## What Changes
 
 - Add verified coverage primitives for the existing ChaosControl 64 KiB
-  AFL-style bitmap layout: exact region boundaries, AFL bucket
-  classification, pointwise-max merge, and exact new-edge count queries.
-- Add verified primitives for cross-run assertion-oracle verdict evaluation
-  and basic run-aggregation accounting invariants.
+  AFL-style bitmap layout: exact region boundaries, non-interference for
+  region-local hit-recording helpers, AFL bucket classification,
+  pointwise-max merge, and exact new-edge count queries.
+- Add verified helpers for cross-run assertion-oracle verdict evaluation over
+  pre-aggregated records, plus exact run-accounting invariants for those
+  records; record-folding/update mechanics themselves stay out of scope.
 - Add verified primitives for deterministic vCPU scheduling: countdown,
   round-robin turn advance, randomized quantum assignment from caller-supplied
   `rng_word` values in the existing ChaosControl range model,
@@ -39,7 +41,7 @@ into reusable verified building blocks.
 ## Capabilities
 
 ### New Capabilities
-- `chaoscontrol-coverage.regions`: Verified 64 KiB coverage bitmap regions with exact cut points.
+- `chaoscontrol-coverage.regions`: Verified 64 KiB coverage bitmap regions with exact cut points and isolated region-local hit recording.
 - `chaoscontrol-coverage.union`: Verified pointwise-max merge and new-edge counting.
 - `chaoscontrol-coverage.classify`: Verified AFL bucket classification for hit counters.
 - `chaoscontrol-oracle.verdict`: Verified assertion-oracle verdict rules.
@@ -56,14 +58,10 @@ into reusable verified building blocks.
 ## Impact
 
 - **Files**: new `src/chaoscontrol_*.rs` modules, `src/properties.rs` cross-module lemmas, `docs/requirements.md` entries, and this OpenSpec change
-- **APIs**: intended public entrypoints are domain constructors/validity predicates plus the core exec/spec/proof helpers for coverage, oracle verdict/accounting, scheduler transitions/fingerprint, fault-schedule replay/subset, frontier selection, input-tree alternative generation, and fault-state quorum/healthy-gate logic; proposed validity surface per domain is: coverage constructors + requires-guarded region helpers, oracle constructors/validators + requires-guarded verdict/accounting helpers, scheduler constructor/apply-variant + requires-guarded `tick`/`advance`, fault-schedule constructors/add/subset + requires-guarded replay helpers, frontier requires-guarded greedy selection, input-tree validators + requires-guarded ranking/emission helpers, and fault-state constructors/validators + requires-guarded quorum/healthy helpers; `src/properties.rs` exposes proof-only cross-module lemmas, not a separate exec API surface
+- **APIs**: intended public surface is the core exec/spec/proof helpers for coverage, oracle verdict/accounting, scheduler transitions/fingerprint, fault-schedule replay/subset, frontier selection, input-tree alternative generation, and fault-state quorum/healthy-gate logic, each over explicitly stated valid or normalized inputs. Proposal-level validity summary: coverage uses fixed-shape bitmaps, oracle uses valid aggregate records, scheduler uses valid scheduler state, fault-schedule helpers use normalized schedules, frontier selection uses non-empty stable-order inputs, input-tree helpers use normalized choice batches, and fault-state helpers use valid fault states. Design will choose per domain whether those surfaces are produced by constructors/validators, explicit `requires` clauses, or both. `src/properties.rs` exposes proof-only cross-module lemmas, not a separate exec API surface
 - **Dependencies**: no new runtime deps expected; may reuse existing local modules such as `bitmap`, `quorum`, `monotonic`, and `seq_set` where helpful
 - **Testing**: implementation-completion validation plan uses Verus proofs, unit tests, property tests, fresh `./scripts/check-ensures.sh`, `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, direct Tracey queries, and fresh `./scripts/verify.sh`; these command captures are completion evidence, not separate proposal-stage semantic requirements, except for the deterministic iterative-exec rule tracked in `specs/chaoscontrol-validation/spec.md`
-- **Repo sync**: before implementation, compare against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`. Current preflight summary:
-  - `rg -n "chaoscontrol|chaos control" src/lib.rs docs/requirements.md README.md openspec/specs -g "*.md" -g "*.rs"` -> no output
-  - `find openspec/specs -maxdepth 2 -type f | sort` -> no ChaosControl main spec domain
-  - `rg -n "pub mod (bitmap|quorum|monotonic|seq_set)|chaoscontrol" src/lib.rs` -> only generic helper exports, no ChaosControl modules
-  - manual comparison against exported generic helpers found reusable arithmetic/set helpers (`bitmap`, `quorum`, `monotonic`, `seq_set`) but no shipped module or spec that already covers the combined coverage/oracle/scheduler/fault-schedule/frontier/input-tree/fault-state contract under another name
+- **Repo sync**: preflight comparison against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/` found no shipped ChaosControl-specific module or spec. Existing generic helpers such as `bitmap`, `quorum`, `monotonic`, and `seq_set` remain reusable, but no current shipped surface covers the combined coverage/oracle/scheduler/fault-schedule/frontier/input-tree/fault-state contract under another name. Implementation tasks keep that repo-sync check explicit so overlap is rechecked before code lands.
 - **Traceability**: `docs/requirements.md` will mirror the code-traceable requirement set in this change: `chaoscontrol-coverage.regions`, `chaoscontrol-coverage.union`, `chaoscontrol-coverage.classify`, `chaoscontrol-oracle.verdict`, `chaoscontrol-oracle.accounting`, `chaoscontrol-scheduler.turns`, `chaoscontrol-scheduler.fingerprint`, `chaoscontrol-fault-schedule.replay`, `chaoscontrol-fault-schedule.subset`, `chaoscontrol-frontier.selection`, `chaoscontrol-input-tree.alternatives`, `chaoscontrol-fault-state.quorum-health`, `chaoscontrol-fault-state.liveness-gate`, `properties.chaoscontrol-subset-replay`, `properties.chaoscontrol-fingerprint-trace`, and `properties.chaoscontrol-quorum-gate`. The validation-only requirement `chaoscontrol-validation.iterative-exec` stays change-local in `specs/chaoscontrol-validation/spec.md` and its evidence artifact. Every mirrored requirement and `properties.*` rule will map to a concrete defining `r[impl]` artifact; every proof-style rule, especially each `properties.*` requirement, will also land explicit `r[verify]` proof artifacts; tests alone are not enough
 
 ## Out of Scope

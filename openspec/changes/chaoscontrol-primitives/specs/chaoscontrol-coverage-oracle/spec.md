@@ -12,9 +12,10 @@ ChaosControl.
 r[chaoscontrol-coverage.regions]
 A coverage bitmap MUST be a `65536`-byte array partitioned into three exact,
 non-overlapping contiguous regions: code `[0, 32768)`, assertion
-`[32768, 49152)`, and schedule `[49152, 65536)`. Public constructors establish
-that fixed shape; public region helpers require it. Helpers that write one
-region MUST leave the other two regions unchanged.
+`[32768, 49152)`, and schedule `[49152, 65536)`. Coverage helpers operate on
+that fixed shape. Any public helper that records code-region hits,
+assertion-region hits, or schedule-region hits into exactly one of those
+regions MUST leave the other two regions unchanged.
 
 #### Scenario: Region partition is exact
 
@@ -74,19 +75,24 @@ r[chaoscontrol-oracle.verdict]
 Depends on `r[chaoscontrol-oracle.accounting]`.
 Verdict evaluation applies only to assertion kinds
 `{always, sometimes, reachable, unreachable}` and aggregate records whose
-counters are nonnegative by type. Public aggregate-record constructors and
-validity predicates establish this valid-record surface; public verdict helpers
-require it. Invalid non-boolean shapes are outside contract. It MUST use `hit_count > 0` as the meaning
+counters are nonnegative by type and satisfy the valid-record surface below.
+Invalid non-boolean shapes are outside contract. It MUST use `hit_count > 0` as the meaning
 of “was hit”. `always` passes iff it was hit and no false evaluation occurred.
 `sometimes` passes iff it was hit and at least one true evaluation occurred.
 `reachable` passes iff it was hit. `unreachable` passes iff it was never hit.
+Valid boolean inputs also satisfy the accounting surface from
+`r[chaoscontrol-oracle.accounting]`: `hit_count == true_count + false_count`,
+`runs_hit` counts runs with at least one evaluation and satisfies
+`runs_hit <= hit_count`, and `runs_satisfied` counts hit runs satisfying the
+corresponding boolean kind's pass condition. For `sometimes`, valid records
+also satisfy `runs_satisfied <= true_count`.
 Valid non-boolean inputs are exact: `reachable` requires
 `true_count == hit_count`, `false_count == 0`, `runs_satisfied == runs_hit`,
 and `runs_hit == 0 <=> hit_count == 0`; `unreachable` requires
 `true_count == 0`, `false_count == hit_count`, `runs_satisfied == 0`, and
 `runs_hit == 0 <=> hit_count == 0`. Every valid aggregate record MUST map to
-exactly one verdict from `{passed, failed}`. Invalid non-boolean shapes are
-outside contract.
+exactly one verdict from `{passed, failed}`. Invalid boolean or non-boolean
+shapes are outside contract.
 
 #### Scenario: Always fails on one false
 
@@ -109,12 +115,14 @@ outside contract.
 ### Requirement: Oracle Run Accounting
 
 r[chaoscontrol-oracle.accounting]
-Aggregate accounting MUST preserve exact count invariants. Public
-aggregate-record constructors and validity predicates establish the valid-record
-surface used here; public accounting helpers require it.
+Aggregate accounting MUST preserve exact count invariants.
 `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0` hold for
-all valid records. For boolean kinds, `hit_count == true_count + false_count`.
-For non-boolean kinds, valid records are exact: `reachable` requires
+all valid records. For boolean kinds, `runs_hit` counts runs in which the
+assertion was evaluated at least once, `runs_hit <= hit_count`, and
+`hit_count == true_count + false_count`. For `always`, `runs_satisfied` counts
+hit runs with no false evaluation. For `sometimes`, `runs_satisfied` counts hit
+runs with at least one true evaluation and valid records satisfy
+`runs_satisfied <= true_count`. For non-boolean kinds, valid records are exact: `reachable` requires
 `true_count == hit_count`, `false_count == 0`, and `runs_satisfied == runs_hit`;
 `unreachable` requires `true_count == 0`, `false_count == hit_count`, and
 `runs_satisfied == 0`.
@@ -130,6 +138,15 @@ For non-boolean kinds, valid records are exact: `reachable` requires
 - GIVEN an `always` or `sometimes` record
 - WHEN aggregate counters are inspected
 - THEN `hit_count == true_count + false_count`
+- AND `runs_hit` counts runs where the assertion was evaluated at least once
+
+#### Scenario: Boolean satisfied-run counts follow kind semantics
+
+- GIVEN an `always` or `sometimes` record
+- WHEN aggregate counters are inspected
+- THEN `runs_satisfied` counts hit runs satisfying that kind's pass condition
+- AND `runs_hit <= hit_count`
+- AND `sometimes` records satisfy `runs_satisfied <= true_count`
 
 #### Scenario: Non-boolean records use canonical shapes
 
