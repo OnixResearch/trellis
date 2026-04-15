@@ -74,7 +74,10 @@ r[chaoscontrol-oracle.verdict]
 Depends on `r[chaoscontrol-oracle.accounting]`.
 Verdict evaluation applies only to assertion kinds
 `{always, sometimes, reachable, unreachable}` and aggregate records whose
-counters are nonnegative by type. It MUST use `hit_count > 0` as the meaning
+counters are nonnegative by type. Public verdict helpers either consume
+constructor-normalized aggregate records or carry explicit `requires` clauses
+for this valid-record surface; invalid non-boolean shapes are outside
+contract. It MUST use `hit_count > 0` as the meaning
 of “was hit”. `always` passes iff it was hit and no false evaluation occurred.
 `sometimes` passes iff it was hit and at least one true evaluation occurred.
 `reachable` passes iff it was hit. `unreachable` passes iff it was never hit.
@@ -107,7 +110,9 @@ outside contract.
 ### Requirement: Oracle Run Accounting
 
 r[chaoscontrol-oracle.accounting]
-Aggregate accounting MUST preserve exact count invariants.
+Aggregate accounting MUST preserve exact count invariants. Public accounting
+helpers either consume constructor-normalized aggregate records or carry
+explicit `requires` clauses for the valid-record surface used here.
 `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0` hold for
 all valid records. For boolean kinds, `hit_count == true_count + false_count`.
 For non-boolean kinds, valid records are exact: `reachable` requires

@@ -40,6 +40,12 @@ openspec/specs/time/spec.md
 openspec/specs/type-unification/spec.md
 openspec/specs/verification-gaps/spec.md
 openspec/specs/zircon-kernel/spec.md
+
+$ rg -n "pub mod (bitmap|quorum|monotonic|seq_set)|chaoscontrol" src/lib.rs
+317:pub mod bitmap;
+318:pub mod quorum;
+319:pub mod monotonic;
+320:pub mod seq_set;
 ```
 
 ### Result
@@ -47,5 +53,10 @@ openspec/specs/zircon-kernel/spec.md
 - `rg` returned no `chaoscontrol` or `chaos control` hits in `src/lib.rs`,
   `docs/requirements.md`, `README.md`, or `openspec/specs/**`.
 - `openspec/specs/` currently has no ChaosControl domain spec.
-- Current shipped surfaces do not appear to already contain this change's
-  ChaosControl-specific scope.
+- `src/lib.rs` exports reusable generic helpers such as `bitmap`, `quorum`,
+  `monotonic`, and `seq_set`, but no ChaosControl-specific module.
+- Manual comparison against those exported generic helpers and
+  `evidence/reuse-plan.md` found reusable arithmetic/set facts only; no shipped
+  module or main spec currently covers the combined
+  coverage/oracle/scheduler/fault-schedule/frontier/input-tree/fault-state
+  contract under another name.

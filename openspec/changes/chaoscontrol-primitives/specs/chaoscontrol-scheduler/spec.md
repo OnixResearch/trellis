@@ -21,7 +21,9 @@ single-vCPU mode, `tick` returns `false` and `tick`/`advance` leave
 `active`, `remaining`, and `fingerprint` unchanged. In SMP mode, `tick`
 requires `remaining > 0`, decrements `remaining` by one without underflow,
 and returns `true` exactly on the positive-to-zero transition; after a `true`
-result the next legal scheduler transition is `advance`. `advance` selects
+result the next legal scheduler transition is `advance`, and any later SMP
+`tick` before that `advance` violates the same `remaining > 0` precondition and
+is outside contract. `advance` selects
 `(active + 1) mod num_vcpus` and reloads `remaining` to the assigned quantum.
 Round-robin mode uses `default_quantum`. Randomized mode consumes a caller
 `rng_word: u64` and uses the existing ChaosControl lower-inclusive,
@@ -88,14 +90,16 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 
 r[chaoscontrol-fault-schedule.replay]
 A normalized fault schedule has unique ordinals, stable `(time_ns, ordinal)`
-order, and `0 <= cursor <= len`. `add` allocates fresh ordinals as `0` on an
-empty schedule and otherwise `1 + max(existing ordinals)`, including on
-subset-produced schedules whose existing ordinals came from carried source
-indices. Normalization sorts by `(time_ns, ordinal)`. `drain_due(t)` returns
-exactly the not-yet-drained faults with `time_ns <= t` starting at `cursor`,
-in schedule order, advances `cursor` by exactly the number returned,
-preserves the undrained suffix, and never re-delivers an already drained
-fault.
+order, and `0 <= cursor <= len`. The public `add` helper is defined only on
+undrained normalized schedules with `cursor = 0`; adding to a partially drained
+schedule is outside contract. On that input surface, `add` allocates fresh
+ordinals as `0` on an empty schedule and otherwise `1 + max(existing ordinals)`,
+including on subset-produced schedules whose existing ordinals came from carried
+source indices, and then normalizes by `(time_ns, ordinal)` while keeping the
+result cursor at `0`. `drain_due(t)` returns exactly the not-yet-drained faults
+with `time_ns <= t` starting at `cursor`, in schedule order, advances `cursor`
+by exactly the number returned, preserves the undrained suffix, and never
+re-delivers an already drained fault.
 
 #### Scenario: Due faults drain in normalized order
 

@@ -56,13 +56,15 @@ into reusable verified building blocks.
 ## Impact
 
 - **Files**: new `src/chaoscontrol_*.rs` modules, `src/properties.rs` cross-module lemmas, `docs/requirements.md` entries, and this OpenSpec change
-- **APIs**: public spec/exec/proof functions for coverage, oracle verdicts, scheduling, fault schedules, frontier/input-tree heuristics, and fault-state predicates
+- **APIs**: intended public entrypoints are domain constructors/validity predicates plus the core exec/spec/proof helpers for coverage, oracle verdict/accounting, scheduler transitions/fingerprint, fault-schedule replay/subset, frontier selection, input-tree alternative generation, and fault-state quorum/healthy-gate logic; `src/properties.rs` exposes proof-only cross-module lemmas, not a separate exec API surface
 - **Dependencies**: no new runtime deps expected; may reuse existing local modules such as `bitmap`, `quorum`, `monotonic`, and `seq_set` where helpful
 - **Testing**: Verus proofs, unit tests, property tests, fresh `./scripts/check-ensures.sh`, `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, direct Tracey queries, and fresh `./scripts/verify.sh`
 - **Repo sync**: before implementation, compare against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`. Current preflight summary:
   - `rg -n "chaoscontrol|chaos control" src/lib.rs docs/requirements.md README.md openspec/specs -g "*.md" -g "*.rs"` -> no output
+  - `find openspec/specs -maxdepth 2 -type f | sort` -> no ChaosControl main spec domain
   - `rg -n "pub mod (bitmap|quorum|monotonic|seq_set)|chaoscontrol" src/lib.rs` -> only generic helper exports, no ChaosControl modules
-- **Traceability**: every new requirement and `properties.*` rule in this change will map to a concrete defining `r[impl]` artifact; every proof-style rule, especially each `properties.*` requirement, will also land explicit `r[verify]` proof artifacts; tests alone are not enough
+  - manual comparison against exported generic helpers plus `openspec/changes/chaoscontrol-primitives/evidence/reuse-plan.md` found reusable arithmetic/set helpers (`bitmap`, `quorum`, `monotonic`, `seq_set`) but no shipped module or spec that already covers the combined coverage/oracle/scheduler/fault-schedule/frontier/input-tree/fault-state contract under another name
+- **Traceability**: `docs/requirements.md` will mirror the full requirement set in this change (`chaoscontrol-coverage.*`, `chaoscontrol-oracle.*`, `chaoscontrol-scheduler.*`, `chaoscontrol-fault-schedule.*`, `chaoscontrol-frontier.selection`, `chaoscontrol-input-tree.alternatives`, `chaoscontrol-fault-state.*`, and `properties.chaoscontrol-*`). Every new requirement and `properties.*` rule will map to a concrete defining `r[impl]` artifact; every proof-style rule, especially each `properties.*` requirement, will also land explicit `r[verify]` proof artifacts; tests alone are not enough
 
 ## Out of Scope
 

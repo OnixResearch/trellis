@@ -109,16 +109,20 @@ only the stored/reset scalar quantum.
 ### 6. Make fault schedules exact normalized streams
 
 **Choice:** a normalized schedule has unique ordinals, stable `(time_ns, ordinal)`
-order, and `0 <= cursor <= len`. `add` allocates fresh ordinals as `0` for the
-first fault and otherwise `1 + max(existing ordinals)`, including schedules
-produced by subset extraction. `drain_due(t)` returns exactly the not-yet-
-drained faults with `time_ns <= t` starting at `cursor`, in normalized order,
-advances `cursor` by exactly the number returned, preserves the undrained
-suffix, and never re-delivers drained faults. `subset(indices)` ranges over the
-full normalized source schedule, clones the first occurrence of each in-bounds
-source index, ignores out-of-bounds indices and later duplicates, carries the
-source schedule index as the result ordinal, resets result `cursor = 0`, and
-renormalizes by `(time_ns, ordinal)`.
+order, and `0 <= cursor <= len`. The public `add` helper is defined only on
+undrained normalized schedules with `cursor = 0`; adding to partially drained
+schedules stays outside the verified contract. On that input surface, `add`
+allocates fresh ordinals as `0` for the first fault and otherwise
+`1 + max(existing ordinals)`, including schedules produced by subset
+extraction, then renormalizes by `(time_ns, ordinal)` and keeps result
+`cursor = 0`. `drain_due(t)` returns exactly the not-yet-drained faults with
+`time_ns <= t` starting at `cursor`, in normalized order, advances `cursor` by
+exactly the number returned, preserves the undrained suffix, and never
+re-delivers drained faults. `subset(indices)` ranges over the full normalized
+source schedule, clones the first occurrence of each in-bounds source index,
+ignores out-of-bounds indices and later duplicates, carries the source schedule
+index as the result ordinal, resets result `cursor = 0`, and renormalizes by
+`(time_ns, ordinal)`.
 
 **Rationale:** replay and minimization both depend on this exact stream model.
 
@@ -177,6 +181,24 @@ proofs land in `src/properties.rs`:
 `chaoscontrol_subset_replay_order`, `chaoscontrol_fingerprint_trace_eq`, and
 `chaoscontrol_quorum_gate_sound`.
 
+**Traceability matrix:**
+- `r[chaoscontrol-coverage.regions]` -> `docs/requirements.md` + `src/chaoscontrol_coverage.rs` constructors/region helpers + named region/non-interference proofs
+- `r[chaoscontrol-coverage.union]` -> `docs/requirements.md` + `src/chaoscontrol_coverage.rs` merge/new-edge helpers + merge/count proofs
+- `r[chaoscontrol-coverage.classify]` -> `docs/requirements.md` + `src/chaoscontrol_coverage.rs` bucket helpers + classify proofs
+- `r[chaoscontrol-oracle.verdict]` -> `docs/requirements.md` + `src/chaoscontrol_oracle.rs` verdict helpers + verdict totality/exclusivity proofs
+- `r[chaoscontrol-oracle.accounting]` -> `docs/requirements.md` + `src/chaoscontrol_oracle.rs` validity/accounting helpers + accounting proofs
+- `r[chaoscontrol-scheduler.turns]` -> `docs/requirements.md` + `src/chaoscontrol_scheduler.rs` constructor/tick/advance helpers + scheduler turn proofs
+- `r[chaoscontrol-scheduler.fingerprint]` -> `docs/requirements.md` + `src/chaoscontrol_scheduler.rs` fingerprint/apply-variant helpers + fingerprint proofs
+- `r[chaoscontrol-fault-schedule.replay]` -> `docs/requirements.md` + `src/chaoscontrol_fault_schedule.rs` add/drain/cursor helpers + replay/cursor proofs
+- `r[chaoscontrol-fault-schedule.subset]` -> `docs/requirements.md` + `src/chaoscontrol_fault_schedule.rs` subset helpers + subset-order proofs
+- `r[chaoscontrol-frontier.selection]` -> `docs/requirements.md` + `src/chaoscontrol_frontier.rs` score/select helpers + decay/tie-break proofs
+- `r[chaoscontrol-input-tree.alternatives]` -> `docs/requirements.md` + `src/chaoscontrol_input_tree.rs` ranking/emission helpers + ordering/budget proofs
+- `r[chaoscontrol-fault-state.quorum-health]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` validity/alive-mask/quorum helpers + health proofs
+- `r[chaoscontrol-fault-state.liveness-gate]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` healthy-period helper + gate proofs
+- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + proof artifact/tests (`r[verify]`)
+- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + proof artifact/tests (`r[verify]`)
+- `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + proof artifact/tests (`r[verify]`)
+
 **Rationale:** this repo repeatedly hits Tracey drift when proof-only rules lack
 concrete `r[impl]` anchors.
 
@@ -187,8 +209,11 @@ concrete `r[impl]` anchors.
 records evidence in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md`
 and applies one rule: scan those two files, collect functions that are not
 `spec fn` or `proof fn`, build the module-local call graph among those exec
-functions by exact function-name calls, and fail on any self-edge or call-graph
-cycle of length greater than one. Spec/proof recursion is exempt.
+functions by exact bare local function-name calls, and fail on any self-edge or
+call-graph cycle of length greater than one. To keep that deterministic scan
+sound, intra-module exec helper calls in those two files must use bare local
+function names rather than qualified/module-prefixed aliases. Spec/proof
+recursion and standard library method calls are exempt.
 
 **Rationale:** review wanted a reproducible rule that catches direct and mutual
 exec recursion, not just ad hoc eyeballing.
