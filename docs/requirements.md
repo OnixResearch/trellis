@@ -6974,3 +6974,17 @@ badge value being delivered and consume that delivered pending state.
 r[sel4-notification.binding]
 If a notification is bound to a TCB, delivery eligibility and wakeup MUST
 respect that binding.
+
+## seL4 Reply Capability
+
+r[sel4-reply.one-shot]
+A reply capability created by a call MUST authorize at most one successful
+reply. After reply, the reply capability MUST NOT be reusable.
+
+r[sel4-reply.pairing]
+A live reply capability MUST remain associated with the caller and callee pair
+that created it. It MUST NOT be used to reply to a different caller.
+
+r[sel4-reply.invalidate]
+Revocation or cancellation MUST invalidate a live reply capability so no later
+reply may succeed through it.

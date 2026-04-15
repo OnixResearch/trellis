@@ -1,8 +1,8 @@
 # Agent Notes
 
 ## Verification
-- Fresh local reruns on the current tree: `cargo test` passes (`3673 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6870 verified, 0 errors`).
-- Fresh direct Tracey reruns are green: `tracey query uncovered` returns `0 uncovered out of 1479 rules` and `tracey query untested` returns `0 untested out of 1479 rules`.
+- Fresh local reruns on the current tree: `cargo test` passes (`3680 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6879 verified, 0 errors`).
+- Fresh direct Tracey reruns are green: `tracey query uncovered` returns `0 uncovered out of 1482 rules` and `tracey query untested` returns `0 untested out of 1482 rules`.
 - `./scripts/verify.sh` can still fail transiently during Tracey daemon auto-start with `Error: Cancelled` even when the later direct uncovered/untested queries are green; rerun or capture the direct Tracey commands before claiming a fresh full-tree green snapshot.
 
 ## Tooling gotchas
@@ -29,7 +29,7 @@
 - If an OpenSpec validation command becomes normative, tasks should include both "tool exists / update it" and "run + capture evidence" items. Naming only the run step can still fail the tasks gate.
 - `scripts/check-iterative-exec.py` must build exec-call graphs per file, key helpers by `(path, name)` rather than bare name alone, and reject qualified intra-module calls like `self::helper(...)` or `module::helper(...)`; a global bare-name graph is not faithful to `r[chaoscontrol-validation.iterative-exec]`.
 - `./scripts/verify.sh` now has an upfront `r[impl]` coverage gate for every public fn. Small helpers like `hypervisor_gpa::is_write`, `hypervisor_memslot::slot_end_gfn`, `hypervisor_vcpu::is_valid_vcpu_state`, and `set_associative_lookup::{low_mask,fits_in_bits,safe_shr,safe_shl}` needed explicit `// r[impl ...]` tags before the repo-wide verify run went green again.
-- `cargo test --quiet` can hit a transient doctest crate-version skew at `src/web_of_trust_principal.rs` (`error[E0460]: found possibly newer version of crate arrayref which blake3 depends on`). `cargo clean -p blake3` before rerunning clears it.
+- Shared-target `cargo test --quiet` can still trip doctest crate-version skew around `src/web_of_trust_principal.rs` / `blake3` / `arrayref` across mixed rustc versions. `autoresearch.checks.sh` now avoids the flake by exporting `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic`; for manual reruns, using that target dir is more reliable than piecemeal `cargo clean -p ...`.
 - Once an active OpenSpec change adds change-local `docs/requirements.md` anchors, repo-sync evidence should pin and grep a pre-change baseline revision instead of the current working tree; otherwise the audit will rediscover the change's own new requirement IDs and look stale.
 - The internal `repo-index` tool caches extracted facts by `(digest, extractor kind)`, not digest alone: identical bytes can show up under different tracked roles, and active OpenSpec change/domain metadata stays on the path row because it is path-derived, not content-derived.
 - Active OpenSpec requirement definitions use single-token `r[...]` lines under `### Requirement:` headings. Repo-index extraction must index those lines as requirement definitions, not discard them as malformed references.

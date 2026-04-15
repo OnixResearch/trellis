@@ -8,8 +8,8 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
-- 6870 Verus proofs + 3673 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1479 requirements)
+- 6879 Verus proofs + 3680 cargo tests = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1482 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - Current trusted inventory: 19 live trusted/weakened boundaries = 16 `#[verifier::external_body]` items across 6 files + 3 closeable SSA `assume_specification[...]` bridges.
@@ -92,7 +92,7 @@
 - Repo-index OpenSpec extraction gotcha: active spec requirement IDs are often bare `r[...]` lines under `### Requirement:` headings. Those are definitions, not `r[impl ...]`-style references, so extract them with the definition parser.
 - Repo-index cache gotcha: if extractor behavior changes, old `(digest, extractor kind)` rows can stay semantically stale even with identical file bytes. Bump the schema/cache version before relying on reopened query results.
 - `pueue_run` only accepts pre-existing groups here. For ad hoc validation runs, use `group: "default"` unless you already know the custom group exists.
-- `cargo test --quiet` can hit a transient doctest crate-version skew around `src/web_of_trust_principal.rs` (`error[E0460]: found possibly newer version of crate arrayref which blake3 depends on`). `cargo clean -p blake3` before rerunning clears it.
+- Shared-target `cargo test --quiet` can still trip doctest crate-version skew around `src/web_of_trust_principal.rs` / `blake3` / `arrayref` across mixed rustc versions. `autoresearch.checks.sh` now exports `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic`; for manual reruns, using that target dir is more reliable than piecemeal `cargo clean -p ...`.
 - `src/nickel_record_merge.rs`: key-coverage proofs closed once I stopped relying on recursion alone and added two tiny helpers: `has_key_in_tail_if_not_head` to move a witness into the tail, and `has_key_in_cons` to lift a witness back through `seq![head] + tail`.
 - `src/nickel_record_merge.rs`: neutral-record associativity closed with 9 head-order cases over `(a[0], b[0], c[0])`, plus tiny sequence normalization helpers. The annoying bit was not the case split itself but rewriting `record_merge_spec(seq![head] + tail, ...)`: Verus wants explicit `cons_subrange_tail(head, tail)` to identify the helper's `subrange(1, ...)` with `tail`.
 - `src/nickel_record_merge.rs`: `resolve_field(...)` triggers `clippy::match_same_arms` if `Right`, `Equal`, and `Conflict` each clone `right` in separate arms. Collapse them into one combined pattern before rerunning `./scripts/verify.sh`.

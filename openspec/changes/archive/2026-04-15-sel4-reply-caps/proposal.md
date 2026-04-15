@@ -18,9 +18,9 @@ Reply capabilities are one of seL4's sharpest linear resources. A separate chang
 
 ## Impact
 
-- **Files**: New `src/sel4_reply.rs` module, `src/lib.rs` export, `src/properties.rs` cross-module theorems as needed, and this OpenSpec change
+- **Files**: New `src/sel4_reply.rs` module, `src/lib.rs` export, and this OpenSpec change
 - **APIs**: Public spec/exec/proof functions for linear IPC authority
-- **Dependencies**: Reuses `sel4_endpoint` and `sel4_tcb` once implemented
+- **Dependencies**: Standalone for now; later changes may compose it with `sel4_endpoint` / `sel4_tcb`
 - **Testing**: Verus proofs, unit tests, and proptests for reply, double-reply, and cancellation paths
 
 ## Out of Scope

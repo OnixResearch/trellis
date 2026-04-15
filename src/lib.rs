@@ -228,6 +228,7 @@
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
+//! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -525,6 +526,7 @@ pub mod sel4_cspace;
 pub mod sel4_endpoint;
 pub mod sel4_fault_ipc;
 pub mod sel4_notification;
+pub mod sel4_reply;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;
