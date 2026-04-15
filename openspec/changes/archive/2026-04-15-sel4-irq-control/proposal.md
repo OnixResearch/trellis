@@ -18,9 +18,9 @@ IRQ handler binding and masked delivery are compact, high-value kernel rules. A 
 
 ## Impact
 
-- **Files**: New `src/sel4_irq.rs` module, `src/lib.rs` export, `src/properties.rs` cross-module theorems as needed, and this OpenSpec change
+- **Files**: New `src/sel4_irq.rs` module, `src/lib.rs` export, and this OpenSpec change
 - **APIs**: Public spec/exec/proof functions for interrupt delivery control
-- **Dependencies**: Reuses later `sel4_notification`/`sel4_tcb` composition as needed
+- **Dependencies**: Standalone for now; later changes may compose it with `sel4_notification` / `sel4_tcb`
 - **Testing**: Verus proofs, unit tests, and proptests for bind/mask/unmask/ack cases
 
 ## Out of Scope

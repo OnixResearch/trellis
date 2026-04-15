@@ -1,0 +1,13 @@
+commit 8cab4f02952898f273cd215dada6c3af7ec01153
+Author:     brittonr <b@robitzs.ch>
+AuthorDate: Wed Apr 15 13:22:19 2026 -0400
+Commit:     brittonr <b@robitzs.ch>
+CommitDate: Wed Apr 15 13:22:19 2026 -0400
+
+    Archive sel4-reply-caps: land verified `sel4_reply` one-shot lifecycle and caller/callee pairing model, sync `docs/requirements.md`, `openspec/specs/sel4-reply/spec.md`, README and verification-gap counts, capture targeted and full validation evidence, and move the change under `openspec/changes/archive/2026-04-15-sel4-reply-caps/` to cut active change count from 27 to 26.
+    
+    Result: {"status":"keep","active_changes":26}
+--- baseline docs/requirements.md sel4-irq hits
+--- baseline src/lib.rs sel4_irq hits
+--- baseline canonical spec presence
+baseline-spec-absent

@@ -6988,3 +6988,15 @@ that created it. It MUST NOT be used to reply to a different caller.
 r[sel4-reply.invalidate]
 Revocation or cancellation MUST invalidate a live reply capability so no later
 reply may succeed through it.
+
+## seL4 IRQ Control
+
+r[sel4-irq.binding]
+Each IRQ line MUST have at most one live handler binding at a time.
+
+r[sel4-irq.masking]
+An IRQ that is masked MUST NOT be deliverable even if it is pending.
+
+r[sel4-irq.ack]
+Acknowledgement MUST clear or consume the abstract pending delivery state for
+the IRQ being acknowledged.

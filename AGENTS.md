@@ -1,8 +1,8 @@
 # Agent Notes
 
 ## Verification
-- Fresh local reruns on the current tree: `cargo test` passes (`3680 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6879 verified, 0 errors`).
-- Fresh direct Tracey reruns are green: `tracey query uncovered` returns `0 uncovered out of 1482 rules` and `tracey query untested` returns `0 untested out of 1482 rules`.
+- Fresh local reruns on the current tree: `cargo test` passes (`3687 passed`), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`6891 verified, 0 errors`).
+- Fresh direct Tracey reruns are green: `tracey query uncovered` returns `0 uncovered out of 1485 rules` and `tracey query untested` returns `0 untested out of 1485 rules`.
 - `./scripts/verify.sh` can still fail transiently during Tracey daemon auto-start with `Error: Cancelled` even when the later direct uncovered/untested queries are green; rerun or capture the direct Tracey commands before claiming a fresh full-tree green snapshot.
 
 ## Tooling gotchas
