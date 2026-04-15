@@ -1,0 +1,10 @@
+    Checking zmij v1.0.21
+    Checking anyhow v1.0.102
+    Checking num-traits v0.2.19
+    Checking blake3 v1.8.4
+    Checking serde v1.0.228
+    Checking vstd v0.0.0-2026-01-25-0057
+    Checking serde_json v1.0.149
+    Checking proptest v1.10.0
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 51.22s

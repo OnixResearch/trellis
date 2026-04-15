@@ -6908,3 +6908,23 @@ within the bounds of the resolved CNode.
 r[sel4-cspace.failure-no-mutation]
 A failed lookup MUST NOT modify CSpace state, consumed-depth accounting, or
 capability contents.
+
+## seL4 Capability Derivation Tree
+
+r[sel4-cdt.structure]
+Capability derivation MUST form an acyclic parent-child relation over live
+capabilities. Copy and mint create a new live child of the source capability,
+and the source capability remains live.
+
+r[sel4-cdt.move]
+Moving a capability to a different slot MUST preserve its derivation ancestry
+and descendant set.
+
+r[sel4-cdt.revoke]
+Revoking a capability MUST remove exactly the live target subtree,
+including the target root itself, while preserving siblings, ancestors
+outside that subtree, and unrelated branches.
+
+r[sel4-cdt.recycle]
+Recycling a capability MUST succeed only for a live leaf capability and MUST
+clear exactly that capability while preserving all other live nodes.
