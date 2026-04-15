@@ -216,15 +216,27 @@ mod tests {
     use super::*;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     fn effect(seq_num: usize, effect_id: u64) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_EFFECT_DONE, effect_id }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_EFFECT_DONE,
+            effect_id,
+        }
     }
 
     fn completed(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_COMPLETED, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_COMPLETED,
+            effect_id: 0,
+        }
     }
 
     // r[verify durable-execution.prefix]

@@ -5,9 +5,11 @@
 
 use vstd::prelude::*;
 
-use crate::durable_history::{
-    durable_prefix_len, DurableEvent, EVENT_CANCELLED, EVENT_COMPLETED, EVENT_FAILED,
-};
+use crate::durable_history::DurableEvent;
+use crate::durable_history::EVENT_CANCELLED;
+use crate::durable_history::EVENT_COMPLETED;
+use crate::durable_history::EVENT_FAILED;
+use crate::durable_history::durable_prefix_len;
 
 verus! {
 
@@ -92,26 +94,50 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::durable_history::{DurableEvent, EVENT_CANCELLED, EVENT_COMPLETED, EVENT_FAILED, EVENT_WORK};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_CANCELLED;
+    use crate::durable_history::EVENT_COMPLETED;
+    use crate::durable_history::EVENT_FAILED;
+    use crate::durable_history::EVENT_WORK;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     fn completed(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_COMPLETED, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_COMPLETED,
+            effect_id: 0,
+        }
     }
 
     fn cancelled(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_CANCELLED, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_CANCELLED,
+            effect_id: 0,
+        }
     }
 
     fn failed(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_FAILED, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_FAILED,
+            effect_id: 0,
+        }
     }
 
     fn random_event((seq_num, kind, effect_id): (usize, u8, u64)) -> DurableEvent {
-        DurableEvent { seq_num, kind, effect_id }
+        DurableEvent {
+            seq_num,
+            kind,
+            effect_id,
+        }
     }
 
     // r[verify durable-execution.terminal]

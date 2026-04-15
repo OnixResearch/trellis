@@ -9,9 +9,12 @@
 //! and returns and proves that elimination preserves that trace under the
 //! current straight-line block-order execution model for `RawProgram`.
 
-use crate::liveness_analysis::LiveSets;
-use crate::ssa_construction::{RawBlock, RawInstr, RawProgram};
 use vstd::prelude::*;
+
+use crate::liveness_analysis::LiveSets;
+use crate::ssa_construction::RawBlock;
+use crate::ssa_construction::RawInstr;
+use crate::ssa_construction::RawProgram;
 
 verus! {
 
@@ -1270,26 +1273,42 @@ pub fn eliminate_dead(program: &RawProgram, live: &LiveSets) -> (result: RawProg
 
 #[cfg(test)]
 mod tests {
-    use crate::liveness_analysis::LiveSets;
-    use crate::ssa_construction::{RawBlock, RawInstr, RawProgram};
     use proptest::prelude::*;
 
     use super::*;
+    use crate::liveness_analysis::LiveSets;
+    use crate::ssa_construction::RawBlock;
+    use crate::ssa_construction::RawInstr;
+    use crate::ssa_construction::RawProgram;
 
     fn raw_instr(def: Option<u32>, uses: &[u32], opcode: u8) -> RawInstr {
-        RawInstr { def, uses: uses.to_vec(), opcode }
+        RawInstr {
+            def,
+            uses: uses.to_vec(),
+            opcode,
+        }
     }
 
     fn single_block_program(instrs: Vec<RawInstr>) -> RawProgram {
-        RawProgram { blocks: vec![RawBlock { instrs }], edges: vec![] }
+        RawProgram {
+            blocks: vec![RawBlock { instrs }],
+            edges: vec![],
+        }
     }
 
     fn live_sets(rows: Vec<Vec<bool>>) -> LiveSets {
-        LiveSets { live_in: rows.clone(), live_out: rows }
+        LiveSets {
+            live_in: rows.clone(),
+            live_out: rows,
+        }
     }
 
     fn clone_instr_runtime(instr: &RawInstr) -> RawInstr {
-        RawInstr { def: instr.def, uses: instr.uses.clone(), opcode: instr.opcode }
+        RawInstr {
+            def: instr.def,
+            uses: instr.uses.clone(),
+            opcode: instr.opcode,
+        }
     }
 
     fn transfer_instr_runtime(instr: &RawInstr, live_after: &[bool]) -> Vec<bool> {
@@ -1365,7 +1384,10 @@ mod tests {
             }
             next_entry = entry_live;
         }
-        LiveSets { live_in: live_out.clone(), live_out }
+        LiveSets {
+            live_in: live_out.clone(),
+            live_out,
+        }
     }
 
     fn opcode_is_dead_oracle(instr: &RawInstr, live_out: &[bool]) -> bool {
@@ -1434,10 +1456,7 @@ mod tests {
     // r[verify dce.no-live-removed]
     #[test]
     fn test_eliminate_dead_preserves_live_use_chain() {
-        let program = single_block_program(vec![
-            raw_instr(Some(0u32), &[], 1),
-            raw_instr(None, &[0u32], OPCODE_CALL),
-        ]);
+        let program = single_block_program(vec![raw_instr(Some(0u32), &[], 1), raw_instr(None, &[0u32], OPCODE_CALL)]);
         let live = live_sets(vec![vec![false]]);
         let optimized = eliminate_dead(&program, &live);
         assert_eq!(optimized.blocks.len(), 1);
@@ -1446,10 +1465,7 @@ mod tests {
 
     #[test]
     fn test_eliminate_dead_removes_cascading_dead_code() {
-        let program = single_block_program(vec![
-            raw_instr(Some(0u32), &[], 1),
-            raw_instr(Some(1u32), &[0u32], 2),
-        ]);
+        let program = single_block_program(vec![raw_instr(Some(0u32), &[], 1), raw_instr(Some(1u32), &[0u32], 2)]);
         let live = live_sets(vec![vec![false, false]]);
         let optimized = eliminate_dead(&program, &live);
         assert!(optimized.blocks[0].instrs.is_empty());
@@ -1457,10 +1473,7 @@ mod tests {
 
     #[test]
     fn test_eliminate_dead_preserves_effectful_instruction() {
-        let program = single_block_program(vec![
-            raw_instr(Some(0u32), &[], 1),
-            raw_instr(None, &[0u32], OPCODE_CALL),
-        ]);
+        let program = single_block_program(vec![raw_instr(Some(0u32), &[], 1), raw_instr(None, &[0u32], OPCODE_CALL)]);
         let live = live_sets(vec![vec![false]]);
         let optimized = eliminate_dead(&program, &live);
         assert_eq!(optimized.blocks[0].instrs, program.blocks[0].instrs);
@@ -1470,8 +1483,12 @@ mod tests {
     fn test_eliminate_dead_preserves_blocks_and_edges() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![raw_instr(Some(0u32), &[], 1)] },
-                RawBlock { instrs: vec![raw_instr(None, &[0u32], OPCODE_RETURN)] },
+                RawBlock {
+                    instrs: vec![raw_instr(Some(0u32), &[], 1)],
+                },
+                RawBlock {
+                    instrs: vec![raw_instr(None, &[0u32], OPCODE_RETURN)],
+                },
             ],
             edges: vec![(0, 1)],
         };
@@ -1500,21 +1517,25 @@ mod tests {
     fn test_observable_trace_preserved_for_sequential_program() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![
-                    raw_instr(Some(0u32), &[], 1),
-                    raw_instr(Some(1u32), &[0u32], 2),
-                ] },
-                RawBlock { instrs: vec![
-                    raw_instr(None, &[0u32], OPCODE_CALL),
-                    raw_instr(None, &[1u32], OPCODE_RETURN),
-                ] },
+                RawBlock {
+                    instrs: vec![raw_instr(Some(0u32), &[], 1), raw_instr(Some(1u32), &[0u32], 2)],
+                },
+                RawBlock {
+                    instrs: vec![
+                        raw_instr(None, &[0u32], OPCODE_CALL),
+                        raw_instr(None, &[1u32], OPCODE_RETURN),
+                    ],
+                },
             ],
             edges: vec![(0, 1)],
         };
         let env = vec![3u64, 5u64];
         let live = sequential_live_rows_runtime(&program, env.len());
         let optimized = eliminate_dead(&program, &live);
-        assert_eq!(observable_trace_program_runtime(&program, &env), observable_trace_program_runtime(&optimized, &env));
+        assert_eq!(
+            observable_trace_program_runtime(&program, &env),
+            observable_trace_program_runtime(&optimized, &env)
+        );
     }
 
     proptest! {

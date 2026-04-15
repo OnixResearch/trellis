@@ -891,12 +891,7 @@ mod tests {
 
     use super::*;
 
-    fn cache_lookup_runtime(
-        cache: &[Vec<Option<u64>>],
-        addr: u64,
-        offset_bits: u64,
-        index_bits: u64,
-    ) -> Option<usize> {
+    fn cache_lookup_runtime(cache: &[Vec<Option<u64>>], addr: u64, offset_bits: u64, index_bits: u64) -> Option<usize> {
         let set_idx = usize::try_from(extract_index(addr, offset_bits, index_bits)).ok()?;
         if set_idx >= cache.len() {
             None
@@ -959,12 +954,9 @@ mod tests {
     #[test]
     fn test_cache_set_isolation() {
         let addr = reconstruct_address(0x33, 1, 0x12, 6, 2);
-        let cache = vec![
-            vec![Some(1), None],
-            vec![None, Some(0x33)],
-            vec![Some(9), None],
-            vec![None, None],
-        ];
+        let cache = vec![vec![Some(1), None], vec![None, Some(0x33)], vec![Some(9), None], vec![
+            None, None,
+        ]];
         let before = cache_lookup_runtime(&cache, addr, 6, 2);
         let mut changed = cache.clone();
         changed[2] = vec![Some(99), Some(100)];

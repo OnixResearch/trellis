@@ -230,34 +230,30 @@ mod tests {
     use super::*;
 
     fn mk(base_gfn: u64, npages: u64, host_base: u64, readonly: bool) -> Memslot {
-        Memslot { base_gfn, npages, host_base, readonly }
+        Memslot {
+            base_gfn,
+            npages,
+            host_base,
+            readonly,
+        }
     }
 
     fn slots() -> Vec<Memslot> {
-        vec![
-            mk(0, 16, 0x8000, false),
-            mk(16, 16, 0xA000, true),
-        ]
+        vec![mk(0, 16, 0x8000, false), mk(16, 16, 0xA000, true)]
     }
 
     // r[test hypervisor-gpa.translate]
     #[test]
     fn test_translate_first_byte() {
         let s = slots();
-        assert!(matches!(
-            access_gpa(&s, 0, AccessMode::Read),
-            GpaResult::Translated { host_addr: 0x8000 }
-        ));
+        assert!(matches!(access_gpa(&s, 0, AccessMode::Read), GpaResult::Translated { host_addr: 0x8000 }));
     }
 
     // r[test hypervisor-gpa.translate]
     #[test]
     fn test_translate_offset_preserved() {
         let s = slots();
-        assert!(matches!(
-            access_gpa(&s, 5, AccessMode::Read),
-            GpaResult::Translated { host_addr: 0x8005 }
-        ));
+        assert!(matches!(access_gpa(&s, 5, AccessMode::Read), GpaResult::Translated { host_addr: 0x8005 }));
     }
 
     // r[test hypervisor-gpa.access]
@@ -271,19 +267,13 @@ mod tests {
     #[test]
     fn test_readonly_write() {
         let s = slots();
-        assert!(matches!(
-            access_gpa(&s, 20, AccessMode::Write),
-            GpaResult::ReadonlyWrite
-        ));
+        assert!(matches!(access_gpa(&s, 20, AccessMode::Write), GpaResult::ReadonlyWrite));
     }
 
     // r[test hypervisor-gpa.access]
     #[test]
     fn test_readonly_read_ok() {
         let s = slots();
-        assert!(matches!(
-            access_gpa(&s, 20, AccessMode::Read),
-            GpaResult::Translated { host_addr: 0xA004 }
-        ));
+        assert!(matches!(access_gpa(&s, 20, AccessMode::Read), GpaResult::Translated { host_addr: 0xA004 }));
     }
 }

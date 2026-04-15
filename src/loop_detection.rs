@@ -687,7 +687,8 @@ pub fn loop_nesting_forest(loops: &[NaturalLoop]) -> (result: Vec<Option<usize>>
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{BTreeMap, BTreeSet};
+    use std::collections::BTreeMap;
+    use std::collections::BTreeSet;
 
     use proptest::prelude::*;
 
@@ -700,13 +701,7 @@ mod tests {
         header: usize,
         source: usize,
     ) -> bool {
-        fn dfs(
-            edges: &[(usize, usize)],
-            cur: usize,
-            header: usize,
-            source: usize,
-            seen: &mut [bool],
-        ) -> bool {
+        fn dfs(edges: &[(usize, usize)], cur: usize, header: usize, source: usize, seen: &mut [bool]) -> bool {
             if cur == source {
                 return true;
             }
@@ -736,19 +731,12 @@ mod tests {
         let dom = manual_dominators(edges, n, 0);
         (0..n)
             .map(|node| {
-                reachable[node]
-                    && dom[node][header]
-                    && manual_reachable_avoiding_header(edges, n, node, header, source)
+                reachable[node] && dom[node][header] && manual_reachable_avoiding_header(edges, n, node, header, source)
             })
             .collect()
     }
 
-    fn all_simple_paths(
-        edges: &[(usize, usize)],
-        entry: usize,
-        target: usize,
-        n: usize,
-    ) -> Vec<Vec<usize>> {
+    fn all_simple_paths(edges: &[(usize, usize)], entry: usize, target: usize, n: usize) -> Vec<Vec<usize>> {
         fn dfs(
             edges: &[(usize, usize)],
             cur: usize,
@@ -848,10 +836,7 @@ mod tests {
                     .or_insert(body);
             }
         }
-        by_header
-            .into_iter()
-            .map(|(header, body)| NaturalLoop { header, body })
-            .collect()
+        by_header.into_iter().map(|(header, body)| NaturalLoop { header, body }).collect()
     }
 
     fn expected_parent(loops: &[NaturalLoop], child: usize) -> Option<usize> {
@@ -866,8 +851,7 @@ mod tests {
                     Some(current) => {
                         let candidate_count = body_count_runtime(&loops[candidate].body);
                         let current_count = body_count_runtime(&loops[current].body);
-                        if candidate_count < current_count
-                            || (candidate_count == current_count && candidate < current)
+                        if candidate_count < current_count || (candidate_count == current_count && candidate < current)
                         {
                             best = Some(candidate);
                         }
@@ -937,8 +921,14 @@ mod tests {
     // r[verify loop.nesting]
     #[test]
     fn test_loop_nesting_nested_loops() {
-        let inner = NaturalLoop { header: 2, body: vec![false, false, true, true, false, false] };
-        let outer = NaturalLoop { header: 1, body: vec![false, true, true, true, true, false] };
+        let inner = NaturalLoop {
+            header: 2,
+            body: vec![false, false, true, true, false, false],
+        };
+        let outer = NaturalLoop {
+            header: 1,
+            body: vec![false, true, true, true, true, false],
+        };
         assert!(nested_in(&inner, &outer));
         assert!(!nested_in(&outer, &inner));
     }
@@ -947,8 +937,14 @@ mod tests {
     #[test]
     fn test_loop_nesting_forest_nested_loops() {
         let loops = vec![
-            NaturalLoop { header: 1, body: vec![false, true, true, true, true, false] },
-            NaturalLoop { header: 2, body: vec![false, false, true, true, false, false] },
+            NaturalLoop {
+                header: 1,
+                body: vec![false, true, true, true, true, false],
+            },
+            NaturalLoop {
+                header: 2,
+                body: vec![false, false, true, true, false, false],
+            },
         ];
         let parents = loop_nesting_forest(&loops);
         assert_eq!(parents, vec![None, Some(0)]);
@@ -958,9 +954,18 @@ mod tests {
     #[test]
     fn test_loop_nesting_forest_picks_immediate_parent() {
         let loops = vec![
-            NaturalLoop { header: 1, body: vec![false, true, true, true, true, true, true, false] },
-            NaturalLoop { header: 3, body: vec![false, false, false, true, true, false, false, false] },
-            NaturalLoop { header: 2, body: vec![false, false, true, true, true, true, false, false] },
+            NaturalLoop {
+                header: 1,
+                body: vec![false, true, true, true, true, true, true, false],
+            },
+            NaturalLoop {
+                header: 3,
+                body: vec![false, false, false, true, true, false, false, false],
+            },
+            NaturalLoop {
+                header: 2,
+                body: vec![false, false, true, true, true, true, false, false],
+            },
         ];
         let parents = loop_nesting_forest(&loops);
         assert_eq!(parents, vec![None, Some(2), Some(0)]);

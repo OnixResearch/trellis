@@ -71,12 +71,17 @@
 //! - `commit_notify` — commit notification dispatch: newly committed ranges, proposal status
 //! - `compaction_fence` — log compaction coordination with replication: safe compact index
 //! - `constant_time_eq` — fixed-iteration XOR-fold comparison for 32-byte hashes
-//! - `control_flow_graph` — basic block partitioning, leader identification, CFG edges, and dead-block detection
+//! - `control_flow_graph` — basic block partitioning, leader identification, CFG edges, and
+//!   dead-block detection
 //! - `dominator_tree` — iterative dominator sets, immediate dominators, and dominance frontiers
-//! - `loop_detection` — back-edge classification, loop bodies over reachability/dominator views, exit edges, and nesting
-//! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range projection
-//! - `dead_code_elimination` — dead instruction classification from side-effect tagging and live-out facts
-//! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi elimination
+//! - `loop_detection` — back-edge classification, loop bodies over reachability/dominator views,
+//!   exit edges, and nesting
+//! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
+//!   projection
+//! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
+//!   live-out facts
+//! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi
+//!   elimination
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -253,6 +258,7 @@
 //! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
 //! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write
 //!   detection
+//! - `web_of_trust_principal` — canonical principal IDs as full 32-byte BLAKE3 digests with full-byte equality
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
 //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
 //! - `zeroize` — verified memory scrubbing: write zero to every byte, idempotence, detection
@@ -352,7 +358,6 @@ pub mod delegation;
 pub mod distributed_lock;
 pub mod dominator_tree;
 pub mod double_entry;
-pub mod loop_detection;
 pub mod drain;
 pub mod drain_protocol;
 pub mod durable_history;
@@ -430,11 +435,11 @@ pub mod left_right;
 pub mod linearizability;
 pub mod liveness_analysis;
 pub mod lock_ordering;
-pub mod ssa_construction;
 pub mod log;
 pub mod log_compaction;
 pub mod log_conflict;
 pub mod log_invariant_inductive;
+pub mod loop_detection;
 pub mod lsm_level;
 pub mod markov;
 pub mod match_index;
@@ -512,9 +517,9 @@ pub mod seq_set;
 pub mod seqlock;
 pub mod sequence;
 pub mod sequential;
-pub mod set_associative_lookup;
 pub mod serialize_inj;
 pub mod session_tree;
+pub mod set_associative_lookup;
 pub mod settlement;
 pub mod shamir_field;
 pub mod shamir_lagrange;
@@ -533,6 +538,7 @@ pub mod snapshot_isolation;
 pub mod snapshot_transfer;
 pub mod spin_backoff;
 pub mod split_coalesce;
+pub mod ssa_construction;
 pub mod state_machine_safety;
 pub mod subsumption;
 pub mod surelock_deadlock;
@@ -566,6 +572,7 @@ pub mod wal_recovery;
 pub mod wal_segment;
 pub mod watermark;
 pub mod weighted_round_robin;
+pub mod web_of_trust_principal;
 pub mod witness;
 pub mod work_stealing;
 pub mod write_buffer;

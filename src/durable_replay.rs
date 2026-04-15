@@ -5,7 +5,9 @@
 
 use vstd::prelude::*;
 
-use crate::durable_history::{durable_prefix_len, DurableEvent, EVENT_EFFECT_DONE};
+use crate::durable_history::DurableEvent;
+use crate::durable_history::EVENT_EFFECT_DONE;
+use crate::durable_history::durable_prefix_len;
 
 verus! {
 
@@ -179,34 +181,61 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::durable_history::{DurableEvent, EVENT_CANCELLED, EVENT_EFFECT_DONE, EVENT_WORK};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_CANCELLED;
+    use crate::durable_history::EVENT_EFFECT_DONE;
+    use crate::durable_history::EVENT_WORK;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     fn effect(seq_num: usize, effect_id: u64) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_EFFECT_DONE, effect_id }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_EFFECT_DONE,
+            effect_id,
+        }
     }
 
     fn random_event((seq_num, kind, effect_id): (usize, u8, u64)) -> DurableEvent {
-        DurableEvent { seq_num, kind, effect_id }
+        DurableEvent {
+            seq_num,
+            kind,
+            effect_id,
+        }
     }
 
     fn effect_completed_exec(events: &[DurableEvent], seq_num: usize, effect_id: u64) -> bool {
         let prefix = durable_prefix_len(events);
-        events.iter().take(prefix).any(|event| {
-            event.seq_num == seq_num && event.kind == EVENT_EFFECT_DONE && event.effect_id == effect_id
-        })
+        events
+            .iter()
+            .take(prefix)
+            .any(|event| event.seq_num == seq_num && event.kind == EVENT_EFFECT_DONE && event.effect_id == effect_id)
     }
 
     // r[verify durable-execution.replayable-event]
     #[test]
     fn test_replayable_event_at() {
-        let events = vec![work(0), effect(1, 9), DurableEvent { seq_num: 2, kind: EVENT_CANCELLED, effect_id: 0 }];
+        let events = vec![work(0), effect(1, 9), DurableEvent {
+            seq_num: 2,
+            kind: EVENT_CANCELLED,
+            effect_id: 0,
+        }];
         assert_eq!(replayable_event_at(&events, 0), Some(work(0)));
         assert_eq!(replayable_event_at(&events, 1), Some(effect(1, 9)));
-        assert_eq!(replayable_event_at(&events, 2), Some(DurableEvent { seq_num: 2, kind: EVENT_CANCELLED, effect_id: 0 }));
+        assert_eq!(
+            replayable_event_at(&events, 2),
+            Some(DurableEvent {
+                seq_num: 2,
+                kind: EVENT_CANCELLED,
+                effect_id: 0
+            })
+        );
         assert_eq!(replayable_event_at(&events, 3), None);
     }
 

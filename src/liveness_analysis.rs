@@ -574,8 +574,9 @@ pub fn check_equations(
 
 #[cfg(test)]
 mod tests {
-    use super::*;
     use proptest::prelude::*;
+
+    use super::*;
 
     type LivenessInput = (Vec<(usize, usize)>, Vec<Vec<bool>>, Vec<Vec<bool>>);
 
@@ -596,7 +597,13 @@ mod tests {
         true
     }
 
-    fn manual_live_in(edges: &[(usize, usize)], uses: &[Vec<bool>], defs: &[Vec<bool>], block: usize, var: usize) -> bool {
+    fn manual_live_in(
+        edges: &[(usize, usize)],
+        uses: &[Vec<bool>],
+        defs: &[Vec<bool>],
+        block: usize,
+        var: usize,
+    ) -> bool {
         fn dfs(
             edges: &[(usize, usize)],
             uses: &[Vec<bool>],

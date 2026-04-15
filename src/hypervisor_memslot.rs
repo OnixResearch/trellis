@@ -414,7 +414,12 @@ mod tests {
     use super::*;
 
     fn mk(base_gfn: u64, npages: u64, host_base: u64, readonly: bool) -> Memslot {
-        Memslot { base_gfn, npages, host_base, readonly }
+        Memslot {
+            base_gfn,
+            npages,
+            host_base,
+            readonly,
+        }
     }
 
     // r[test hypervisor-memslot.disjoint]
@@ -448,10 +453,7 @@ mod tests {
     // r[test hypervisor-memslot.lookup]
     #[test]
     fn test_lookup_hit() {
-        let slots = vec![
-            mk(0, 64, 0x1000, false),
-            mk(64, 64, 0x2000, false),
-        ];
+        let slots = vec![mk(0, 64, 0x1000, false), mk(64, 64, 0x2000, false)];
         assert!(table_valid(&slots));
         assert_eq!(lookup_memslot(&slots, 96), Some(1));
     }
@@ -459,10 +461,7 @@ mod tests {
     // r[test hypervisor-memslot.lookup]
     #[test]
     fn test_lookup_miss() {
-        let slots = vec![
-            mk(0, 64, 0x1000, false),
-            mk(128, 64, 0x2000, false),
-        ];
+        let slots = vec![mk(0, 64, 0x1000, false), mk(128, 64, 0x2000, false)];
         assert!(table_valid(&slots));
         assert_eq!(lookup_memslot(&slots, 100), None);
     }

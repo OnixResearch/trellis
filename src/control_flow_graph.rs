@@ -614,7 +614,11 @@ mod tests {
                         1 => InstrKind::Return,
                         2 => {
                             let target = if n <= 1 { 0 } else { 1 + (raw_target % (n - 1)) };
-                            if n <= 1 { InstrKind::Return } else { InstrKind::Branch { target } }
+                            if n <= 1 {
+                                InstrKind::Return
+                            } else {
+                                InstrKind::Branch { target }
+                            }
                         }
                         _ => {
                             let target = if n <= 1 { 0 } else { 1 + (raw_target % (n - 1)) };
@@ -718,11 +722,7 @@ mod tests {
     // r[verify control-flow-graph.reachability]
     #[test]
     fn test_find_dead_blocks() {
-        let instrs = [
-            InstrKind::Branch { target: 2 },
-            InstrKind::Return,
-            InstrKind::Return,
-        ];
+        let instrs = [InstrKind::Branch { target: 2 }, InstrKind::Return, InstrKind::Return];
         let blocks = build_blocks(&instrs);
         let edges = build_edges(&instrs, &blocks);
         let dead = find_dead_blocks(&blocks, &edges);

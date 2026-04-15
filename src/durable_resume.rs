@@ -6,7 +6,8 @@
 
 use vstd::prelude::*;
 
-use crate::durable_history::{durable_prefix_len, DurableEvent};
+use crate::durable_history::DurableEvent;
+use crate::durable_history::durable_prefix_len;
 
 verus! {
 
@@ -156,18 +157,29 @@ mod tests {
     use proptest::prelude::*;
 
     use super::*;
-    use crate::durable_history::{
-        durable_prefix_len, DurableEvent, EVENT_CANCELLED, EVENT_COMPLETED, EVENT_EFFECT_DONE,
-        EVENT_FAILED, EVENT_WORK,
-    };
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_CANCELLED;
+    use crate::durable_history::EVENT_COMPLETED;
+    use crate::durable_history::EVENT_EFFECT_DONE;
+    use crate::durable_history::EVENT_FAILED;
+    use crate::durable_history::EVENT_WORK;
+    use crate::durable_history::durable_prefix_len;
     use crate::durable_terminal::is_terminal_execution;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     fn random_event((seq_num, kind, effect_id): (usize, u8, u64)) -> DurableEvent {
-        DurableEvent { seq_num, kind, effect_id }
+        DurableEvent {
+            seq_num,
+            kind,
+            effect_id,
+        }
     }
 
     // r[verify durable-execution.checkpoint-advance]
@@ -189,7 +201,11 @@ mod tests {
         assert_eq!(resume_step(0, &[]), Some(0));
         assert_eq!(resume_step(5, &[]), Some(5));
 
-        let terminal = vec![work(0), DurableEvent { seq_num: 1, kind: EVENT_CANCELLED, effect_id: 0 }];
+        let terminal = vec![work(0), DurableEvent {
+            seq_num: 1,
+            kind: EVENT_CANCELLED,
+            effect_id: 0,
+        }];
         assert_eq!(resume_step(0, &terminal), None);
     }
 

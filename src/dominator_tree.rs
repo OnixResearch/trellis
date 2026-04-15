@@ -365,18 +365,14 @@ pub fn compute_domtree(edges: &[(usize, usize)], n: usize, entry: usize) -> (res
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{HashSet, VecDeque};
+    use std::collections::HashSet;
+    use std::collections::VecDeque;
 
     use proptest::prelude::*;
 
     use super::*;
 
-    fn all_simple_paths(
-        edges: &[(usize, usize)],
-        entry: usize,
-        target: usize,
-        n: usize,
-    ) -> Vec<Vec<usize>> {
+    fn all_simple_paths(edges: &[(usize, usize)], entry: usize, target: usize, n: usize) -> Vec<Vec<usize>> {
         fn dfs(
             edges: &[(usize, usize)],
             cur: usize,
@@ -455,9 +451,7 @@ mod tests {
             }
             let mut strict: Vec<usize> = (0..n).filter(|&a| a != b && dom[b][a]).collect();
             strict.sort_unstable();
-            out[b] = strict.into_iter().find(|&d| {
-                (0..n).all(|c| c == d || c == b || !dom[b][c] || dom[d][c])
-            });
+            out[b] = strict.into_iter().find(|&d| (0..n).all(|c| c == d || c == b || !dom[b][c] || dom[d][c]));
         }
         out
     }

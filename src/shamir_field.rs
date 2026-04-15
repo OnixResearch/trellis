@@ -6,7 +6,9 @@
 #![allow(clippy::cast_possible_truncation, clippy::cast_sign_loss)]
 
 #[cfg(verus_keep_ghost)]
-use vstd::arithmetic::div_mod::{lemma_fundamental_div_mod, lemma_mod_pos_bound};
+use vstd::arithmetic::div_mod::lemma_fundamental_div_mod;
+#[cfg(verus_keep_ghost)]
+use vstd::arithmetic::div_mod::lemma_mod_pos_bound;
 use vstd::prelude::*;
 
 verus! {

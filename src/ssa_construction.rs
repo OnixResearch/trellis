@@ -730,7 +730,10 @@ fn clone_raw_block_as_ssa(block: &RawBlock) -> SsaBlock {
         instrs.push(clone_raw_instr_as_ssa(&block.instrs[i]));
         i += 1;
     }
-    SsaBlock { phis: Vec::new(), instrs }
+    SsaBlock {
+        phis: Vec::new(),
+        instrs,
+    }
 }
 
 fn program_var_bound(program: &RawProgram) -> usize {
@@ -840,7 +843,9 @@ fn collect_ssa_defs(program: &SsaProgram) -> Vec<SsaDef> {
         }
         let mut i: usize = 0;
         while i < program.blocks[b].instrs.len() {
-            if let (Some(base_var), Some(version)) = (program.blocks[b].instrs[i].def_base, program.blocks[b].instrs[i].def) {
+            if let (Some(base_var), Some(version)) =
+                (program.blocks[b].instrs[i].def_base, program.blocks[b].instrs[i].def)
+            {
                 defs.push(SsaDef {
                     base: base_var,
                     version,
@@ -1146,7 +1151,8 @@ fn runtime_check_dominance_of_uses_with_dom(program: &SsaProgram, dom: &[Vec<boo
 
 #[cfg(test)]
 mod tests {
-    use std::collections::{BTreeMap, BTreeSet};
+    use std::collections::BTreeMap;
+    use std::collections::BTreeSet;
 
     use proptest::prelude::*;
 
@@ -1329,12 +1335,7 @@ mod tests {
         let max_version = program
             .blocks
             .iter()
-            .flat_map(|b| {
-                b.phis
-                    .iter()
-                    .map(|phi| phi.dest)
-                    .chain(b.instrs.iter().flat_map(|i| i.def.into_iter()))
-            })
+            .flat_map(|b| b.phis.iter().map(|phi| phi.dest).chain(b.instrs.iter().flat_map(|i| i.def.into_iter())))
             .max()
             .unwrap_or_else(|| program.param_count.saturating_sub(1));
         let mut env = vec![0u64; max_version.saturating_add(1)];
@@ -1369,12 +1370,7 @@ mod tests {
             .blocks
             .iter()
             .flat_map(|b| b.instrs.iter().flat_map(|i| i.def.into_iter()))
-            .chain(
-                program
-                    .edge_copies
-                    .iter()
-                    .flat_map(|edge| edge.copies.iter().flat_map(|(dst, src)| [*dst, *src])),
-            )
+            .chain(program.edge_copies.iter().flat_map(|edge| edge.copies.iter().flat_map(|(dst, src)| [*dst, *src])))
             .max()
             .unwrap_or_else(|| program.param_count.saturating_sub(1));
         let mut env = vec![0u64; max_version.saturating_add(1)];
@@ -1403,13 +1399,7 @@ mod tests {
     }
 
     fn all_paths_bounded(program: &RawProgram, max_len: usize) -> Vec<Vec<usize>> {
-        fn dfs(
-            program: &RawProgram,
-            cur: usize,
-            max_len: usize,
-            path: &mut Vec<usize>,
-            out: &mut Vec<Vec<usize>>,
-        ) {
+        fn dfs(program: &RawProgram, cur: usize, max_len: usize, path: &mut Vec<usize>, out: &mut Vec<Vec<usize>>) {
             out.push(path.clone());
             if path.len() >= max_len {
                 return;
@@ -1441,7 +1431,10 @@ mod tests {
             )
                 .prop_map(|(def, uses, opcode)| RawInstr { def, uses, opcode });
             (
-                prop::collection::vec(prop::collection::vec(instr, 0..=3).prop_map(|instrs| RawBlock { instrs }), blocks),
+                prop::collection::vec(
+                    prop::collection::vec(instr, 0..=3).prop_map(|instrs| RawBlock { instrs }),
+                    blocks,
+                ),
                 prop::collection::vec((0usize..blocks, 0usize..blocks), 0..=(blocks * blocks)),
             )
                 .prop_map(|(blocks, edges)| RawProgram { blocks, edges })
@@ -1453,10 +1446,34 @@ mod tests {
     fn test_idf_diamond() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![], opcode: 0 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 1 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 2 }] },
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![0], opcode: 3 }] },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![],
+                        opcode: 0,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 1,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 2,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![0],
+                        opcode: 3,
+                    }],
+                },
             ],
             edges: vec![(0, 1), (0, 2), (1, 3), (2, 3)],
         };
@@ -1473,10 +1490,34 @@ mod tests {
     fn test_place_phis_diamond() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![], opcode: 0 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 1 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 2 }] },
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![0], opcode: 3 }] },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![],
+                        opcode: 0,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 1,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 2,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![0],
+                        opcode: 3,
+                    }],
+                },
             ],
             edges: vec![(0, 1), (0, 2), (1, 3), (2, 3)],
         };
@@ -1497,10 +1538,34 @@ mod tests {
     fn test_construct_ssa_simple_branch() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![], opcode: 0 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 1 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 2 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(1), uses: vec![0], opcode: 3 }] },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![],
+                        opcode: 0,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 1,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 2,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(1),
+                        uses: vec![0],
+                        opcode: 3,
+                    }],
+                },
             ],
             edges: vec![(0, 1), (0, 2), (1, 3), (2, 3)],
         };
@@ -1515,10 +1580,34 @@ mod tests {
     fn test_dominance_of_uses_branch_phi() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![], opcode: 0 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 1 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![], opcode: 2 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(1), uses: vec![0], opcode: 3 }] },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![],
+                        opcode: 0,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 1,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![],
+                        opcode: 2,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(1),
+                        uses: vec![0],
+                        opcode: 3,
+                    }],
+                },
             ],
             edges: vec![(0, 1), (0, 2), (1, 3), (2, 3)],
         };
@@ -1546,10 +1635,34 @@ mod tests {
     fn test_phi_elimination_roundtrip() {
         let program = RawProgram {
             blocks: vec![
-                RawBlock { instrs: vec![RawInstr { def: None, uses: vec![], opcode: 0 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![1], opcode: 1 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(0), uses: vec![2], opcode: 2 }] },
-                RawBlock { instrs: vec![RawInstr { def: Some(1), uses: vec![0], opcode: 3 }] },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: None,
+                        uses: vec![],
+                        opcode: 0,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![1],
+                        opcode: 1,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(0),
+                        uses: vec![2],
+                        opcode: 2,
+                    }],
+                },
+                RawBlock {
+                    instrs: vec![RawInstr {
+                        def: Some(1),
+                        uses: vec![0],
+                        opcode: 3,
+                    }],
+                },
             ],
             edges: vec![(0, 1), (0, 2), (1, 3), (2, 3)],
         };
