@@ -225,6 +225,7 @@
 //! - `sel4_cap_rights` — seL4 rights-mask attenuation, masking laws, and operation gates
 //! - `sel4_cdt` — capability derivation ancestry, subtree revoke, and leaf recycle
 //! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot resolution
+//! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -519,6 +520,7 @@ pub mod sel4_asid;
 pub mod sel4_cap_rights;
 pub mod sel4_cdt;
 pub mod sel4_cspace;
+pub mod sel4_endpoint;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;

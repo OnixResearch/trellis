@@ -6928,3 +6928,20 @@ outside that subtree, and unrelated branches.
 r[sel4-cdt.recycle]
 Recycling a capability MUST succeed only for a live leaf capability and MUST
 clear exactly that capability while preserving all other live nodes.
+
+## seL4 Endpoint IPC
+
+r[sel4-endpoint.rendezvous]
+When a sender and receiver are both available on the same endpoint, the
+kernel MUST match exactly one sender with exactly one receiver and wake both
+threads. Public send/receive helpers may require caller TCB IDs that are not
+already queued on that endpoint.
+
+r[sel4-endpoint.queue-discipline]
+Unmatched waiters on an endpoint MUST preserve queue order under match and
+cancellation. Cancelling a blocked sender or blocked receiver MUST remove
+only that waiter from its queue.
+
+r[sel4-endpoint.badge]
+A successful endpoint send/receive rendezvous MUST deliver the matched
+sender capability's badge to the matched receiver.
