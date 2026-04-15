@@ -27,6 +27,7 @@ pub open spec fn is_write_spec(mode: AccessMode) -> bool {
     mode == AccessMode::Write
 }
 
+// r[impl hypervisor-gpa.access]
 /// Returns true for write access.
 pub fn is_write(mode: &AccessMode) -> (result: bool)
     ensures result == is_write_spec(*mode)

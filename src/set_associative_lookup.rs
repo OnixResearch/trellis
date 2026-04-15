@@ -24,6 +24,7 @@ pub open spec fn low_mask_spec(bits: u64) -> u64
     }
 }
 
+// r[impl set-assoc.decomposition]
 /// Runtime low-bit mask.
 pub fn low_mask(bits: u64) -> (result: u64)
     requires bits <= 64
@@ -51,6 +52,7 @@ pub open spec fn fits_in_bits_spec(value: u64, bits: u64) -> bool
     if bits == 64 { true } else { value < (1u64 << bits) }
 }
 
+// r[impl set-assoc.component-bounds]
 /// Runtime bit-width check.
 pub fn fits_in_bits(value: u64, bits: u64) -> (result: bool)
     requires bits <= 64
@@ -66,6 +68,7 @@ pub open spec fn safe_shr_spec(value: u64, shift: u64) -> u64
     if shift == 64 { 0 } else { value >> shift }
 }
 
+// r[impl set-assoc.decomposition]
 pub fn safe_shr(value: u64, shift: u64) -> (result: u64)
     requires shift <= 64
     ensures result == safe_shr_spec(value, shift)
@@ -81,6 +84,7 @@ pub open spec fn safe_shl_spec(value: u64, shift: u64) -> u64
     if shift == 64 { 0 } else { value << shift }
 }
 
+// r[impl set-assoc.decomposition]
 pub fn safe_shl(value: u64, shift: u64) -> (result: u64)
     requires shift <= 64
     ensures result == safe_shl_spec(value, shift)

@@ -1,0 +1,33 @@
+
+=== cargo test sel4_asid ===
+   Compiling verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 6.78s
+     Running unittests src/lib.rs (/home/brittonr/.cargo-target/debug/deps/verified_logic-cdc3e384fdaa47e6)
+
+running 17 tests
+test sel4_asid::tests::test_allocation_preserves_unrelated_slots ... ok
+test sel4_asid::tests::test_capacity_one_reuse ... ok
+test sel4_asid::tests::test_distinct_successful_allocations_differ ... ok
+test sel4_asid::tests::test_duplicate_release_fails ... ok
+test sel4_asid::tests::test_out_of_range_release_fails ... ok
+test sel4_asid::tests::test_owner_mismatch_release_fails ... ok
+test sel4_asid::tests::test_release_preserves_unrelated_slots ... ok
+test sel4_asid::tests::test_failed_allocation_unchanged_state ... ok
+test sel4_asid::tests::test_same_owner_can_hold_multiple_live_asids ... ok
+test sel4_asid::tests::test_successful_allocation_creates_live_owner ... ok
+test sel4_asid::tests::test_successful_release ... ok
+test sel4_asid::tests::test_zero_capacity_exhausted ... ok
+test sel4_asid::tests::proptest_capacity_one_forced_reuse ... ok
+test sel4_asid::tests::proptest_distinct_allocations ... ok
+test sel4_asid::tests::proptest_exhausted_allocation_unchanged ... ok
+test sel4_asid::tests::proptest_same_owner_multiple_asids ... ok
+test sel4_asid::tests::proptest_release_failures_leave_state ... ok
+
+test result: ok. 17 passed; 0 failed; 0 ignored; 0 measured; 3606 filtered out; finished in 0.00s
+
+     Running unittests src/bin/repo-index.rs (/home/brittonr/.cargo-target/debug/deps/repo_index-6b445a17c76fc2d7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+

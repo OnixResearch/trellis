@@ -6852,3 +6852,26 @@ A principal identifier MUST be the full 32-byte BLAKE3 digest of the
 principal's canonical public-key bytes. The same canonical bytes MUST always
 produce the same identifier, and equality checks MUST use all 32 digest
 bytes rather than a truncated prefix.
+
+## seL4 ASID Pool
+
+r[sel4-asid.uniqueness]
+A successful ASID allocation MUST make the returned ASID live for the
+requesting address-space object ID, change only that returned slot, and leave
+all other live ASID ownership unchanged. One owner MAY hold multiple live
+ASIDs, but each live ASID MUST be bound to at most one live owner at a time.
+
+r[sel4-asid.release-state]
+A valid release MUST require an exact `(asid, owner)` match, return success,
+clear only the released ASID slot, and leave all unrelated live ownership
+unchanged. Invalid, out-of-range, mismatched-owner, or duplicate release MUST
+return failure and leave pool ownership unchanged.
+
+r[sel4-asid.reuse]
+A released ASID MAY be reused later, but only after the release step has
+cleared the prior live binding for that numeric ASID.
+
+r[sel4-asid.pool-bounds]
+Allocation MUST succeed whenever some free ASID exists, return only ASIDs in
+`0..capacity-1`, and fail exactly when no free ASIDs remain. Failed allocation
+MUST leave pool ownership unchanged, including the zero-capacity case.

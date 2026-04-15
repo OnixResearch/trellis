@@ -1,1 +1,2 @@
 {"type":"config","name":"Complete active OpenSpec changes by reducing active change count","metricName":"active_changes","metricUnit":"","bestDirection":"lower"}
+{"run":1,"commit":"a6392fb","metric":34,"metrics":{},"status":"keep","description":"Baseline: 34 active OpenSpec changes remain before sel4-asid-pools remediation.","timestamp":1776234523598,"segment":0,"confidence":null,"iterationTokens":1297,"asi":{"hypothesis":"Establish baseline active change count before reducing it by completing and archiving changes."}}

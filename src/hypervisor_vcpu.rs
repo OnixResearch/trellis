@@ -24,6 +24,7 @@ pub open spec fn is_valid_vcpu_state_spec(state: u64) -> bool {
     state <= 3
 }
 
+// r[impl hypervisor-vcpu.run-state]
 pub fn is_valid_vcpu_state(state: u64) -> (result: bool)
     ensures result == is_valid_vcpu_state_spec(state)
 {

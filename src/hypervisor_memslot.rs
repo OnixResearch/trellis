@@ -51,6 +51,7 @@ pub open spec fn slot_end_gfn_spec(slot: Memslot) -> int {
     slot.base_gfn as int + slot.npages as int
 }
 
+// r[impl hypervisor-memslot.lookup]
 /// Returns the exclusive end GFN.
 pub fn slot_end_gfn(slot: &Memslot) -> (result: u64)
     requires slot.base_gfn as int + slot.npages as int <= u64::MAX as int
