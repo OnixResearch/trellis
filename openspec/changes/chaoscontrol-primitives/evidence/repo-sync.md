@@ -1,14 +1,19 @@
 ## Repo sync audit
 
-Date: 2026-04-14
+Date: 2026-04-15
 
 Goal: confirm `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`
 do not already ship ChaosControl-specific primitives before new implementation.
 
 ### Commands
 
+Baseline commit before the ChaosControl change stack: `acddde9851a3`.
+Current working tree now contains active-change `docs/requirements.md`
+anchors, so the overlap audit must read that baseline commit rather than the
+working tree.
+
 ```text
-$ rg -n "chaoscontrol|chaos control" src/lib.rs docs/requirements.md README.md openspec/specs -g "*.md" -g "*.rs" || true
+$ git grep -n -i "chaoscontrol\|chaos control" acddde9851a3 -- src/lib.rs docs/requirements.md README.md openspec/specs '*.md' '*.rs' || true
 
 $ find openspec/specs -maxdepth 2 -type f | sort
 openspec/specs/beam/spec.md
@@ -41,20 +46,26 @@ openspec/specs/type-unification/spec.md
 openspec/specs/verification-gaps/spec.md
 openspec/specs/zircon-kernel/spec.md
 
-$ rg -n "pub mod (bitmap|quorum|monotonic|seq_set)|chaoscontrol" src/lib.rs
-317:pub mod bitmap;
-318:pub mod quorum;
-319:pub mod monotonic;
-320:pub mod seq_set;
+$ git show acddde9851a3:src/lib.rs | rg -n "pub mod (bitmap|quorum|monotonic|seq_set|properties)|chaoscontrol"
+301:pub mod bitmap;
+449:pub mod monotonic;
+492:pub mod properties;
+494:pub mod quorum;
+516:pub mod seq_set;
 ```
 
 ### Result
 
-- `rg` returned no `chaoscontrol` or `chaos control` hits in `src/lib.rs`,
-  `docs/requirements.md`, `README.md`, or `openspec/specs/**`.
-- `openspec/specs/` currently has no ChaosControl domain spec.
-- `src/lib.rs` exports reusable generic helpers such as `bitmap`, `quorum`,
-  `monotonic`, and `seq_set`, but no ChaosControl-specific module.
+- Baseline commit `acddde9851a3` returned no `chaoscontrol` or
+  `chaos control` hits in `src/lib.rs`, `docs/requirements.md`, `README.md`,
+  or `openspec/specs/**`.
+- `openspec/specs/` currently has no shipped ChaosControl domain spec.
+- Baseline `src/lib.rs` exports reusable generic helpers such as `bitmap`,
+  `monotonic`, `properties`, `quorum`, and `seq_set`, but no
+  ChaosControl-specific module.
+- Current working-tree `docs/requirements.md` does contain active-change
+  `properties.chaoscontrol-*` anchors; those are change-local additions, not
+  evidence of an already shipped overlapping domain.
 - Manual comparison against those exported generic helpers and
   `evidence/reuse-plan.md` found reusable arithmetic/set facts only; no shipped
   module or main spec currently covers the combined

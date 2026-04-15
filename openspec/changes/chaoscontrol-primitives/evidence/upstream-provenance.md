@@ -1,5 +1,8 @@
 # Upstream provenance map
 
+Pinned upstream revision: `fa5123f04b017d5d3e260215eb71026e79033b3a`
+(`../chaoscontrol`, captured 2026-04-15).
+
 These upstream files define the current ChaosControl semantics this change is
 trying to preserve exactly at the pure-kernel boundary.
 

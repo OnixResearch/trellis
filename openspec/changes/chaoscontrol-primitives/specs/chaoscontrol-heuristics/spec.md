@@ -19,9 +19,12 @@ exact rational
 `base_score / (1u64 + times_selected as u64)`. The pure greedy-selection
 helper is defined only for non-empty frontiers. Executable comparison may use
 equivalent exact `u64` cross-products instead of floating point, but the exec
-ordering MUST match the rational ordering exactly. Effective score MUST not
-increase as `times_selected` increases. Greedy selection MUST choose an entry
-with maximal effective score, with ties broken by the lowest input index.
+ordering MUST match the rational ordering exactly. Those cross-products MUST be
+proved overflow-safe: both multiplicands come from `u32`-bounded fields
+(`base_score` and `1 + times_selected as u64`), so each product stays below
+`u64::MAX`. Effective score MUST not increase as `times_selected` increases.
+Greedy selection MUST choose an entry with maximal effective score, with ties
+broken by the lowest input index.
 
 #### Scenario: Re-selected entry decays
 
@@ -51,9 +54,10 @@ Input-tree generation operates on normalized tuples
 `n_options as u64 * (100 + sequence_id) <= u64::MAX`, and unique
 `(vm_id, sequence_id)` pairs within a batch. Ordering semantics use the exact
 rational score `100 / (n_options * (100 + sequence_id))`, with higher scores
-first and ties broken by lower `(vm_id, sequence_id)`. Because the numerator is
-constant, the executable comparator MUST realize the same order by verified
-no-overflow `u64` comparison of the denominators
+first and ties broken lexicographically by lower `(vm_id, sequence_id)`
+(`vm_id` first, then `sequence_id`). Because the numerator is constant, the
+executable comparator MUST realize the same order by verified no-overflow `u64`
+comparison of the denominators
 `n_options * (100 + sequence_id)`, and the exec result MUST match the
 mathematical ordering exactly. Each ranked choice contributes the ascending
 distinct values from `0 .. n_options` excluding `original_value`, preserving
@@ -78,7 +82,7 @@ exact prefix of that deterministic stream with length
 
 - GIVEN two normalized choices with equal scores
 - WHEN alternatives are generated
-- THEN the lower `(vm_id, sequence_id)` appears earlier
+- THEN the lexicographically lower `(vm_id, sequence_id)` pair appears earlier, comparing `vm_id` first and `sequence_id` second
 
 #### Scenario: Budget uses exact deterministic prefix
 

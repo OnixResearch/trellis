@@ -37,15 +37,15 @@ review without per-file truncation.
 ### 1a. Fix one public validity surface per domain before implementation
 
 **Choice:** public validity/API boundaries are fixed per module:
-- `chaoscontrol_coverage`: public constructors establish fixed `65536`-byte shape; public region helpers require it
-- `chaoscontrol_oracle`: public aggregate-record constructors/validity predicates establish valid records; verdict/accounting helpers require them
-- `chaoscontrol_scheduler`: public constructor and `apply_variant` establish valid scheduler state; `tick` / `advance` require it
-- `chaoscontrol_fault_schedule`: public constructors plus `add` / `subset` produce normalized schedules; replay helpers require them; `add` additionally requires `cursor = 0`
-- `chaoscontrol_frontier`: public greedy selection is a `requires`-guarded helper over non-empty stable-order inputs; no separate normalization constructor is promised
-- `chaoscontrol_input_tree`: public choice-batch validators establish normalized batches; ranking/emission helpers require them
-- `chaoscontrol_fault_state`: public validity predicates/constructors establish valid states; quorum/healthy helpers require them
+- `chaoscontrol_coverage`: constructor `new_coverage_bitmap(...)` establishes fixed `65536`-byte shape; validator `valid_coverage_bitmap(...)` and region helpers require it
+- `chaoscontrol_oracle`: constructors `new_boolean_record(...)`, `new_reachable_record(...)`, and `new_unreachable_record(...)`, plus validator `valid_oracle_record(...)`, establish valid records; verdict/accounting helpers require them
+- `chaoscontrol_scheduler`: constructor `new_scheduler_state(...)` and updater `apply_variant(...)` establish valid scheduler state; `tick(...)` / `advance(...)` require it
+- `chaoscontrol_fault_schedule`: constructors `empty_fault_schedule(...)` and `new_fault_schedule(...)`, plus `add(...)` / `subset(...)`, produce normalized schedules; replay helpers require them; `add(...)` additionally requires `cursor = 0`
+- `chaoscontrol_frontier`: public greedy selection helper `select_frontier_greedy(...)` is `requires`-guarded over non-empty stable-order inputs; no separate normalization constructor is promised
+- `chaoscontrol_input_tree`: validator `valid_choice_batch(...)` and normalizer `normalize_choice_batch(...)` establish normalized batches; ranking/emission helpers require them
+- `chaoscontrol_fault_state`: constructor `new_fault_state(...)` and validator `valid_fault_state(...)` establish valid states; quorum/healthy helpers require them
 
-**Rationale:** review wanted the constructor-vs-`requires` boundary chosen before task decomposition so proof obligations and public API surface do not drift.
+**Rationale:** review wanted the constructor-vs-`requires` boundary chosen before task decomposition so proof obligations and public API surface do not drift. The semantic contract is the validity boundary itself; the concrete helper names below are intended implementation spellings for reviewability, not separate delta-spec requirements unless later promoted into specs.
 
 ### 1b. Fix crate export policy before implementation
 
@@ -58,8 +58,8 @@ intentional Tracey or public API surface. `src/properties.rs` stays in the
 public crate graph as `pub mod properties;`, but the new ChaosControl additions
 there are proof-only lemmas rather than a separate exec API.
 
-**Rationale:** proposal scope already names an intended public surface, so the
-`src/lib.rs` boundary should be fixed before implementation starts.
+**Rationale:** proposal scope already names an intended implementation surface, so the
+`src/lib.rs` boundary should be fixed before implementation starts. This export plan is an implementation/tasking decision, not a separate semantic requirement beyond the validity surfaces and proof obligations already captured in the delta specs.
 
 ### 2. Pin coverage to the exact 64 KiB upstream model
 
@@ -183,7 +183,8 @@ lowest input index.
 that numerator is constant, exec ordering must compare the denominators
 `n_options * (100 + sequence_id)` by verified no-overflow `u64` arithmetic;
 smaller denominator wins, and the exec result must match the mathematical
-ordering exactly. Equal scores break by lower `(vm_id, sequence_id)`. Each
+ordering exactly. Equal scores break lexicographically by lower
+`(vm_id, sequence_id)`, comparing `vm_id` first and `sequence_id` second. Each
 choice contributes ascending distinct alternatives from `0 .. n_options`
 excluding the original value. Output is the exact prefix of length
 `min(budget, full_stream_len)`.
@@ -215,7 +216,7 @@ proofs land in `src/properties.rs`:
 `chaoscontrol_subset_replay_order`, `chaoscontrol_fingerprint_trace_eq`, and
 `chaoscontrol_quorum_gate_sound`.
 
-**Upstream provenance map:**
+**Upstream provenance map (pinned at `../chaoscontrol` revision `fa5123f04b017d5d3e260215eb71026e79033b3a`):**
 - coverage -> `../chaoscontrol/crates/chaoscontrol-explore/src/coverage.rs`
 - oracle/accounting aggregation -> `../chaoscontrol/crates/chaoscontrol-vmm/src/controller.rs` and `../chaoscontrol/crates/chaoscontrol-explore/src/report.rs`
 - scheduler -> `../chaoscontrol/crates/chaoscontrol-vmm/src/scheduler.rs`
@@ -267,7 +268,7 @@ exec recursion, not just ad hoc eyeballing.
 
 ## Migration Plan
 
-1. Keep repo-sync evidence current in `openspec/changes/chaoscontrol-primitives/evidence/repo-sync.md` and reuse existing generic helpers where they already match.
+1. Keep repo-sync evidence current in `openspec/changes/chaoscontrol-primitives/evidence/repo-sync.md` and reuse existing generic helpers where they already match. Current pinned baseline is `acddde9851a3`; that audit found no shipped ChaosControl-specific module/spec overlap and treats current working-tree `properties.chaoscontrol-*` anchors in `docs/requirements.md` as change-local additions rather than shipped surfaces.
 2. Land coverage and oracle modules first, including tests and `docs/requirements.md` anchors.
 3. Land scheduler and fault-schedule modules next, preserving exact replay and fingerprint rules.
 4. Land frontier, input-tree, and fault-state modules after lower-level kernels are stable.
