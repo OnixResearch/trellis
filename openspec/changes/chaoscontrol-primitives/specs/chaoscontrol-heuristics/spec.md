@@ -10,10 +10,13 @@ from ChaosControl.
 ### Requirement: Frontier Effective Score Ordering
 
 r[chaoscontrol-frontier.selection]
-Frontier entries use `u32` `base_score` and `u32` `times_selected` values.
-Each frontier input sequence also has a stable zero-based input index given by
-its position in that sequence; tie-breaking refers to that position, not a
-separate stored field. Effective score is the exact rational
+Public greedy frontier selection is a `requires`-guarded helper over non-empty,
+stable-order input sequences; this change does not promise a separate frontier
+normalization constructor. Frontier entries use `u32` `base_score` and `u32`
+`times_selected` values. Each frontier input sequence also has a stable
+zero-based input index given by its position in that sequence; tie-breaking
+refers to that position, not a separate stored field. Effective score is the
+exact rational
 `base_score / (1u64 + times_selected as u64)`. The pure greedy-selection
 helper is defined only for non-empty frontiers. Executable comparison may use
 equivalent exact `u64` cross-products instead of floating point, but the exec
@@ -42,7 +45,8 @@ with maximal effective score, with ties broken by the lowest input index.
 ### Requirement: Input-Tree Alternatives Respect Budget
 
 r[chaoscontrol-input-tree.alternatives]
-Input-tree generation operates on normalized tuples
+Public choice-batch validators establish the normalized input surface below,
+and ranking/emission helpers require it. Input-tree generation operates on normalized tuples
 `(vm_id: u32, sequence_id: u64, n_options: u32, original_value: u64)` with
 `n_options >= 2`, `original_value < n_options`,
 `sequence_id <= u64::MAX - 100`,

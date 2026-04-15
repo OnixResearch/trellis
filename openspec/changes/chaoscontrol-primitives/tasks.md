@@ -3,6 +3,7 @@
 - [x] Compare this change against `src/lib.rs`, `docs/requirements.md`, `README.md`, and `openspec/specs/`; confirm no shipped ChaosControl-specific modules or specs overlap this scope
 - [x] Record the repo-sync result in `openspec/changes/chaoscontrol-primitives/evidence/repo-sync.md`
 - [x] Record which existing generic helpers (`bitmap`, `quorum`, `monotonic`, `seq_set`) will be reused in `openspec/changes/chaoscontrol-primitives/evidence/reuse-plan.md`
+- [x] Record and keep current the upstream source mapping promised in `openspec/changes/chaoscontrol-primitives/evidence/upstream-provenance.md`
 
 ## Phase 1: Coverage and Oracle
 
@@ -16,14 +17,16 @@
 
 ## Phase 2: Scheduler and Fault Schedule
 
-- [ ] `src/chaoscontrol_scheduler.rs`: constructor canonicalization, randomized-state validity, `apply_variant` preconditions for invalid randomized overrides, and constructor / `apply_variant` RNG-consumption neutrality (`r[chaoscontrol-scheduler.turns]`)
+- [ ] `src/chaoscontrol_scheduler.rs`: constructor canonicalization, randomized-state validity, `apply_variant` preconditions for invalid randomized overrides, constructor / `apply_variant` RNG-consumption neutrality, and bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]` (`r[chaoscontrol-scheduler.turns]`)
 - [ ] `src/chaoscontrol_scheduler.rs`: single-vCPU no-op rules, SMP `tick` positive-to-zero switch rule, explicit `tick == true -> next transition is advance` contract, round-robin `advance`, and exact randomized quantum assignment from caller `rng_word` (`r[chaoscontrol-scheduler.turns]`)
 - [ ] `src/chaoscontrol_scheduler.rs`: exact fingerprint mix, tick neutrality, `apply_variant` persistence / `None`-keeps-current semantics, reset-to-zero epoch, and post-reset lower-inclusive / upper-exclusive randomized range behavior (`r[chaoscontrol-scheduler.fingerprint]`)
 - [ ] Add explicit scheduler proof artifacts in `src/chaoscontrol_scheduler.rs` for turn semantics and fingerprint semantics, with code-side `r[impl]` / `r[verify]` anchors for `chaoscontrol-scheduler.turns` and `chaoscontrol-scheduler.fingerprint`
 - [ ] Scheduler unit/property tests plus explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-scheduler.*`
-- [ ] `src/chaoscontrol_fault_schedule.rs`: normalized schedule validity, public `add` precondition `cursor = 0`, fresh-ordinal allocation `0` else `1 + max(existing)`, and stable `(time_ns, ordinal)` normalization after `add` with result `cursor = 0` (`r[chaoscontrol-fault-schedule.replay]`)
+- [ ] `src/chaoscontrol_fault_schedule.rs`: normalized schedule validity, public `add` precondition `cursor = 0`, fresh-ordinal allocation `0` else `1 + max(existing)`, stable `(time_ns, ordinal)` normalization after `add` with result `cursor = 0`, and bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]` (`r[chaoscontrol-fault-schedule.replay]`)
 - [ ] `src/chaoscontrol_fault_schedule.rs`: exact `drain_due(t)` selection, cursor monotonicity / bounds, preserved undrained suffix, and non-re-delivery (`r[chaoscontrol-fault-schedule.replay]`)
+- [ ] Add explicit replay/cursor `proof fn` artifacts in `src/chaoscontrol_fault_schedule.rs` for `r[chaoscontrol-fault-schedule.replay]`, with code-side `r[verify]` anchors
 - [ ] `src/chaoscontrol_fault_schedule.rs`: subset first-occurrence selection over the full normalized source schedule, out-of-bounds ignore, carried source-index ordinals, `cursor = 0`, and re-normalization (`r[chaoscontrol-fault-schedule.subset]`)
+- [ ] Add explicit subset-order `proof fn` artifacts in `src/chaoscontrol_fault_schedule.rs` for `r[chaoscontrol-fault-schedule.subset]`, with code-side `r[verify]` anchors
 - [ ] Fault-schedule unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_fault_schedule.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-fault-schedule.*`
 - [ ] `src/properties.rs`: `proof fn chaoscontrol_subset_replay_order(...)` defining artifact with explicit code-side `r[impl]` / `r[verify]` anchors and tests for `r[properties.chaoscontrol-subset-replay]`
 - [ ] `src/properties.rs`: `proof fn chaoscontrol_fingerprint_trace_eq(...)` defining artifact with explicit code-side `r[impl]` / `r[verify]` anchors and tests for `r[properties.chaoscontrol-fingerprint-trace]`
@@ -33,10 +36,12 @@
 
 - [ ] `src/chaoscontrol_frontier.rs`: non-empty frontier validity, exact rational score `base_score / (1 + times_selected)`, and verified no-overflow `u64` cross-product comparator (`r[chaoscontrol-frontier.selection]`)
 - [ ] `src/chaoscontrol_frontier.rs`: greedy maximality, monotone decay under re-selection, and lowest-input-index tie-break proofs (`r[chaoscontrol-frontier.selection]`)
+- [ ] Add named frontier `proof fn` artifacts in `src/chaoscontrol_frontier.rs` for effective-score comparison, decay, maximality, and tie-break behavior, with code-side `r[verify]` anchors for `r[chaoscontrol-frontier.selection]`
 - [ ] Frontier unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_frontier.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-frontier.selection`
 - [ ] `src/chaoscontrol_input_tree.rs`: normalized choice-record validity and arithmetic bounds `sequence_id <= u64::MAX - 100` plus `n_options as u64 * (100 + sequence_id) <= u64::MAX` (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] `src/chaoscontrol_input_tree.rs`: exact exec comparator where smaller denominator `n_options * (100 + sequence_id)` wins because the numerator is constant, with proof that exec order matches the mathematical score order (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] `src/chaoscontrol_input_tree.rs`: lower `(vm_id, sequence_id)` tie-breaks, emitted output identity `(vm_id, sequence_id, alternative_value)`, ascending distinct alternative emission excluding the original value, and exact budget prefix `min(budget, full_stream_len)` (`r[chaoscontrol-input-tree.alternatives]`)
+- [ ] Add named input-tree `proof fn` artifacts in `src/chaoscontrol_input_tree.rs` for comparator equivalence, tie-break correctness, identity preservation, and exact budget-prefix behavior, with code-side `r[verify]` anchors for `r[chaoscontrol-input-tree.alternatives]`
 - [ ] Input-tree unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_input_tree.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-input-tree.alternatives`
 - [ ] `src/chaoscontrol_fault_state.rs`: `2 <= num_nodes <= 64` validity, exact `num_nodes x num_nodes` shape, diagonal-false matrix, exact alive-mask bit encoding (`bit i` iff participant `i` is alive), cleared high bits in `alive_mask`, and exact directed non-diagonal `partition_count` (`r[chaoscontrol-fault-state.quorum-health]`)
 - [ ] `src/chaoscontrol_fault_state.rs`: majority threshold failure, exact bidirectional-pair `quorum_reachable` heuristic, and healthy gate `alive_count == num_nodes && quorum_reachable` (`r[chaoscontrol-fault-state.quorum-health]`, `r[chaoscontrol-fault-state.liveness-gate]`)
@@ -47,7 +52,8 @@
 ## Phase 4: Integration and Validation
 
 - [ ] Export the new `src/chaoscontrol_*.rs` modules from `src/lib.rs`, keep helper-only functions private unless they intentionally carry public API / Tracey surface, and ensure `src/properties.rs` is wired into the crate graph for the new cross-module proof artifacts
-- [ ] Run the deterministic non-recursive exec audit for `src/chaoscontrol_scheduler.rs` and `src/chaoscontrol_fault_schedule.rs`: collect non-`spec fn` / non-`proof fn`, require intra-module exec helper calls to use bare local function names, build the exec call graph by exact bare local function-name calls, fail on any self-edge or cycle, and record the result in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md`
+- [x] Add or verify `scripts/check-iterative-exec.py` so it implements the specified deterministic audit semantics for bare local exec-call cycle detection used by `r[chaoscontrol-validation.iterative-exec]`
+- [ ] Run `python3 scripts/check-iterative-exec.py src/chaoscontrol_scheduler.rs src/chaoscontrol_fault_schedule.rs`: collect non-`spec fn` / non-`proof fn`, require intra-module exec helper calls to use bare local function names, build the exec call graph by exact bare local function-name calls, fail on any self-edge or cycle, and record the result in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md` (`r[chaoscontrol-validation.iterative-exec]`)
 - [ ] Run `./scripts/check-ensures.sh` and capture output in `openspec/changes/chaoscontrol-primitives/evidence/validation-check-ensures.txt`
 - [ ] Run `cargo test` and capture output in `openspec/changes/chaoscontrol-primitives/evidence/validation-cargo-test.txt`
 - [ ] Run `cargo clippy --all-targets -- -D warnings` and capture output in `openspec/changes/chaoscontrol-primitives/evidence/validation-clippy.txt`

@@ -12,8 +12,8 @@ ChaosControl.
 r[chaoscontrol-coverage.regions]
 A coverage bitmap MUST be a `65536`-byte array partitioned into three exact,
 non-overlapping contiguous regions: code `[0, 32768)`, assertion
-`[32768, 49152)`, and schedule `[49152, 65536)`. Constructors or explicit
-`requires` clauses must establish that fixed shape. Helpers that write one
+`[32768, 49152)`, and schedule `[49152, 65536)`. Public constructors establish
+that fixed shape; public region helpers require it. Helpers that write one
 region MUST leave the other two regions unchanged.
 
 #### Scenario: Region partition is exact
@@ -74,10 +74,9 @@ r[chaoscontrol-oracle.verdict]
 Depends on `r[chaoscontrol-oracle.accounting]`.
 Verdict evaluation applies only to assertion kinds
 `{always, sometimes, reachable, unreachable}` and aggregate records whose
-counters are nonnegative by type. Public verdict helpers either consume
-constructor-normalized aggregate records or carry explicit `requires` clauses
-for this valid-record surface; invalid non-boolean shapes are outside
-contract. It MUST use `hit_count > 0` as the meaning
+counters are nonnegative by type. Public aggregate-record constructors and
+validity predicates establish this valid-record surface; public verdict helpers
+require it. Invalid non-boolean shapes are outside contract. It MUST use `hit_count > 0` as the meaning
 of “was hit”. `always` passes iff it was hit and no false evaluation occurred.
 `sometimes` passes iff it was hit and at least one true evaluation occurred.
 `reachable` passes iff it was hit. `unreachable` passes iff it was never hit.
@@ -110,9 +109,9 @@ outside contract.
 ### Requirement: Oracle Run Accounting
 
 r[chaoscontrol-oracle.accounting]
-Aggregate accounting MUST preserve exact count invariants. Public accounting
-helpers either consume constructor-normalized aggregate records or carry
-explicit `requires` clauses for the valid-record surface used here.
+Aggregate accounting MUST preserve exact count invariants. Public
+aggregate-record constructors and validity predicates establish the valid-record
+surface used here; public accounting helpers require it.
 `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0` hold for
 all valid records. For boolean kinds, `hit_count == true_count + false_count`.
 For non-boolean kinds, valid records are exact: `reachable` requires

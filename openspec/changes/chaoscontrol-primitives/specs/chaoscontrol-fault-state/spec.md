@@ -10,6 +10,8 @@ gate.
 ### Requirement: Fault-State Quorum Health
 
 r[chaoscontrol-fault-state.quorum-health]
+Public fault-state validity predicates and constructors establish the
+valid-state surface below; quorum and healthy-gate helpers require it.
 Fault-state helpers apply only to states with `2 <= num_nodes <= 64`, an exact
 `num_nodes x num_nodes` directed partition matrix, diagonal-false entries, and
 an `alive_mask` whose bits above `num_nodes - 1` are clear. `alive_mask` MUST

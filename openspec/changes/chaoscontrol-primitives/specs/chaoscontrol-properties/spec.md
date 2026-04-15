@@ -27,14 +27,17 @@ subset faults, delivered faults MUST appear in the same relative order as in
 
 r[properties.chaoscontrol-fingerprint-trace]
 Depends on `r[chaoscontrol-scheduler.fingerprint]`.
-For schedulers that start from the same initial state, or the same full
-post-`apply_variant` reset state, executions with the same post-advance
+For schedulers that start from the same full scheduler state, or from the same
+full post-`apply_variant` reset state, executions with the same post-advance
 turn/quantum trace MUST produce the same fingerprint even if the imperative
-shell path differs.
+shell path differs. Here “same full post-`apply_variant` reset state” means the
+same `num_vcpus`, the same persisted strategy parameters, the same stored
+`default_quantum`, and the same reset fields `active = 0`,
+`remaining = default_quantum`, and `fingerprint = 0`.
 
 #### Scenario: Equal turn traces force equal fingerprints
 
-- GIVEN two schedulers with the same initial state or the same full post-`apply_variant` reset state
+- GIVEN two schedulers with the same initial state or the same full post-`apply_variant` reset state, including matching `num_vcpus`, persisted strategy parameters, and stored `default_quantum`
 - WHEN both executions produce the same post-advance `(active_turn, assigned_quantum)` trace
 - THEN their final fingerprints are equal
 

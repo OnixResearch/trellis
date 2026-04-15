@@ -34,6 +34,19 @@ review without per-file truncation.
 **Rationale:** provenance stays obvious, names do not collide with existing
 `bitmap` / `quorum`-style helpers, and stage gates can inspect complete specs.
 
+### 1a. Fix one public validity surface per domain before implementation
+
+**Choice:** public validity/API boundaries are fixed per module:
+- `chaoscontrol_coverage`: public constructors establish fixed `65536`-byte shape; public region helpers require it
+- `chaoscontrol_oracle`: public aggregate-record constructors/validity predicates establish valid records; verdict/accounting helpers require them
+- `chaoscontrol_scheduler`: public constructor and `apply_variant` establish valid scheduler state; `tick` / `advance` require it
+- `chaoscontrol_fault_schedule`: public constructors plus `add` / `subset` produce normalized schedules; replay helpers require them; `add` additionally requires `cursor = 0`
+- `chaoscontrol_frontier`: public greedy selection is a `requires`-guarded helper over non-empty stable-order inputs; no separate normalization constructor is promised
+- `chaoscontrol_input_tree`: public choice-batch validators establish normalized batches; ranking/emission helpers require them
+- `chaoscontrol_fault_state`: public validity predicates/constructors establish valid states; quorum/healthy helpers require them
+
+**Rationale:** review wanted the constructor-vs-`requires` boundary chosen before task decomposition so proof obligations and public API surface do not drift.
+
 ### 2. Pin coverage to the exact 64 KiB upstream model
 
 **Choice:** model coverage as a fixed `65536`-byte `Vec<u8>` / `Seq<u8>` with
@@ -75,8 +88,11 @@ Initial state is `active = 0`, `remaining = default_quantum`, `fingerprint = 0`.
 Single-vCPU `tick` and `advance` are no-ops and `tick` returns `false`.
 SMP `tick` requires `remaining > 0`, decrements by one, and returns `true`
 exactly on the positive-to-zero transition; after `true`, the next legal
-transition is `advance`. `advance` moves to `(active + 1) % num_vcpus` and
-reloads `remaining` to the assigned quantum. Round-robin uses
+transition is `advance`. SMP `advance` is otherwise still defined on any valid
+state: if called early, it ends the current turn immediately and performs the
+same next-vCPU / quantum-reload transition and fingerprint update. `advance`
+moves to `(active + 1) % num_vcpus` and reloads `remaining` to the assigned
+quantum. Round-robin uses
 `default_quantum`. Randomized advance consumes a caller `rng_word: u64` and
 uses the existing ChaosControl lower-inclusive, upper-exclusive rule: when
 `min_quantum < max_quantum`, assigned quantum is
@@ -181,6 +197,16 @@ proofs land in `src/properties.rs`:
 `chaoscontrol_subset_replay_order`, `chaoscontrol_fingerprint_trace_eq`, and
 `chaoscontrol_quorum_gate_sound`.
 
+**Upstream provenance map:** full note also recorded in
+`openspec/changes/chaoscontrol-primitives/evidence/upstream-provenance.md`.
+- coverage -> `../chaoscontrol/crates/chaoscontrol-explore/src/coverage.rs`
+- oracle/accounting aggregation -> `../chaoscontrol/crates/chaoscontrol-vmm/src/controller.rs` and `../chaoscontrol/crates/chaoscontrol-explore/src/report.rs`
+- scheduler -> `../chaoscontrol/crates/chaoscontrol-vmm/src/scheduler.rs`
+- fault schedule -> `../chaoscontrol/crates/chaoscontrol-fault/src/schedule.rs`
+- frontier -> `../chaoscontrol/crates/chaoscontrol-explore/src/frontier.rs`
+- input tree -> `../chaoscontrol/crates/chaoscontrol-explore/src/input_tree.rs`
+- fault state / healthy-period heuristic -> `../chaoscontrol/crates/chaoscontrol-raft-guest/src/main.rs`
+
 **Traceability matrix:**
 - `r[chaoscontrol-coverage.regions]` -> `docs/requirements.md` + `src/chaoscontrol_coverage.rs` constructors/region helpers + named region/non-interference proofs
 - `r[chaoscontrol-coverage.union]` -> `docs/requirements.md` + `src/chaoscontrol_coverage.rs` merge/new-edge helpers + merge/count proofs
@@ -195,9 +221,10 @@ proofs land in `src/properties.rs`:
 - `r[chaoscontrol-input-tree.alternatives]` -> `docs/requirements.md` + `src/chaoscontrol_input_tree.rs` ranking/emission helpers + ordering/budget proofs
 - `r[chaoscontrol-fault-state.quorum-health]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` validity/alive-mask/quorum helpers + health proofs
 - `r[chaoscontrol-fault-state.liveness-gate]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` healthy-period helper + gate proofs
-- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + proof artifact/tests (`r[verify]`)
-- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + proof artifact/tests (`r[verify]`)
-- `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + proof artifact/tests (`r[verify]`)
+- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
+- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
+- `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
+- `r[chaoscontrol-validation.iterative-exec]` -> `specs/chaoscontrol-validation/spec.md` + `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md` + deterministic audit task / transcript (change-local validation rule; not mirrored into `docs/requirements.md`)
 
 **Rationale:** this repo repeatedly hits Tracey drift when proof-only rules lack
 concrete `r[impl]` anchors.
@@ -205,8 +232,11 @@ concrete `r[impl]` anchors.
 ### 11. Make the iterative-exec audit deterministic
 
 **Choice:** `src/chaoscontrol_scheduler.rs` and
-`src/chaoscontrol_fault_schedule.rs` must keep exec code acyclic. The audit
-records evidence in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md`
+`src/chaoscontrol_fault_schedule.rs` must keep exec code acyclic. This design
+choice is also tracked by `r[chaoscontrol-validation.iterative-exec]`. The audit
+runs as concrete command
+`python3 scripts/check-iterative-exec.py src/chaoscontrol_scheduler.rs src/chaoscontrol_fault_schedule.rs`,
+records evidence in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md`,
 and applies one rule: scan those two files, collect functions that are not
 `spec fn` or `proof fn`, build the module-local call graph among those exec
 functions by exact bare local function-name calls, and fail on any self-edge or

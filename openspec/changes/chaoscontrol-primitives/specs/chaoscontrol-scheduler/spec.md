@@ -10,9 +10,9 @@ ChaosControl.
 ### Requirement: Scheduler Turn Semantics
 
 r[chaoscontrol-scheduler.turns]
-Scheduler primitives apply only when `num_vcpus >= 1`; constructors or
-explicit `requires` clauses establish valid state. Stored configuration always
-uses `default_quantum = max(1, raw_default_quantum)`. If the stored strategy
+Scheduler primitives apply only when `num_vcpus >= 1`; public constructor and
+`apply_variant` establish valid scheduler state, and public `tick` / `advance`
+helpers require it. Stored configuration always uses `default_quantum = max(1, raw_default_quantum)`. If the stored strategy
 is randomized, valid state also requires `1 <= min_quantum <= max_quantum`;
 constructing or applying a randomized strategy outside that bound is a
 precondition failure outside contract. Initial state is
@@ -23,8 +23,11 @@ requires `remaining > 0`, decrements `remaining` by one without underflow,
 and returns `true` exactly on the positive-to-zero transition; after a `true`
 result the next legal scheduler transition is `advance`, and any later SMP
 `tick` before that `advance` violates the same `remaining > 0` precondition and
-is outside contract. `advance` selects
-`(active + 1) mod num_vcpus` and reloads `remaining` to the assigned quantum.
+is outside contract. SMP `advance` itself is defined on any valid scheduler
+state: if called before countdown exhaustion, it ends the current turn early,
+then performs the same next-vCPU / quantum-reload transition and fingerprint
+update as any other `advance`. `advance` selects `(active + 1) mod num_vcpus`
+and reloads `remaining` to the assigned quantum.
 Round-robin mode uses `default_quantum`. Randomized mode consumes a caller
 `rng_word: u64` and uses the existing ChaosControl lower-inclusive,
 upper-exclusive rule: when `min_quantum < max_quantum`, assigned quantum is
@@ -89,8 +92,10 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 ### Requirement: Fault Schedule Replay Semantics
 
 r[chaoscontrol-fault-schedule.replay]
-A normalized fault schedule has unique ordinals, stable `(time_ns, ordinal)`
-order, and `0 <= cursor <= len`. The public `add` helper is defined only on
+Public schedule constructors plus `add` / `subset` produce normalized
+schedules; replay helpers require this normalized surface. A normalized fault
+schedule has unique ordinals, stable `(time_ns, ordinal)` order, and
+`0 <= cursor <= len`. The public `add` helper is defined only on
 undrained normalized schedules with `cursor = 0`; adding to a partially drained
 schedule is outside contract. On that input surface, `add` allocates fresh
 ordinals as `0` on an empty schedule and otherwise `1 + max(existing ordinals)`,
