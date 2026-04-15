@@ -7000,3 +7000,18 @@ An IRQ that is masked MUST NOT be deliverable even if it is pending.
 r[sel4-irq.ack]
 Acknowledgement MUST clear or consume the abstract pending delivery state for
 the IRQ being acknowledged.
+
+## seL4 TCB States
+
+r[sel4-tcb.state]
+A TCB MUST be in exactly one legal state: runnable, running, blocked on send,
+blocked on receive, blocked on notification, blocked on reply, restart, or
+inactive.
+
+r[sel4-tcb.blocking-object]
+Every blocked TCB state MUST identify the kernel object responsible for the
+block.
+
+r[sel4-tcb.transitions]
+Block, wake, restart, and deactivate operations MUST move a TCB only along
+allowed state transitions.

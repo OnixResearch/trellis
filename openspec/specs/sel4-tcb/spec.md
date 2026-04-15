@@ -9,7 +9,7 @@ Defines requirements for verified `sel4_tcb` semantics in this repo. Scope is th
 ### Requirement: TCB State Legality
 
 r[sel4-tcb.state]
-A TCB MUST be in exactly one legal state such as runnable, running, blocked on send, blocked on receive, blocked on notification, blocked on reply, restart, or inactive.
+A TCB MUST be in exactly one legal state: runnable, running, blocked on send, blocked on receive, blocked on notification, blocked on reply, restart, or inactive.
 
 #### Scenario: Blocked-on-send carries endpoint
 
