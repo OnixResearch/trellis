@@ -237,6 +237,22 @@ If logs_match_prefix(a, b, k) holds, the term sequences of a and b
 MUST be equal over [0, k). Log term-agreement is equivalent to prefix
 equality on the projected term sequence.
 
+r[properties.chaoscontrol-subset-replay]
+For normalized schedules, if `subset(source, indices)` is replayed from
+`cursor = 0` by any nondecreasing time sequence whose final horizon covers all
+subset faults, delivered faults MUST appear in the same relative order as in
+`source`.
+
+r[properties.chaoscontrol-fingerprint-trace]
+For schedulers that start from the same initial state, or the same full
+post-`apply_variant` reset state, executions with the same post-advance
+turn/quantum trace MUST produce the same fingerprint even if the imperative
+shell path differs.
+
+r[properties.chaoscontrol-quorum-gate]
+For valid fault states, a healthy-period gate MUST never report healthy unless
+the corresponding `quorum_reachable` predicate holds for that same state.
+
 ## Consistency Model Vocabulary
 
 r[consistency-vocab.valid-op-kind]
@@ -6828,3 +6844,11 @@ index state for `path`, `symbol`, `requirement`, `digest`, and `stats`.
 Path queries MUST report the indexed facts for a tracked file. Requirement
 queries MUST report the stored definition plus related implementation,
 verification, dependency, or related reference sites.
+
+## Web of Trust
+
+r[web-of-trust.principal-fingerprint]
+A principal identifier MUST be the full 32-byte BLAKE3 digest of the
+principal's canonical public-key bytes. The same canonical bytes MUST always
+produce the same identifier, and equality checks MUST use all 32 digest
+bytes rather than a truncated prefix.

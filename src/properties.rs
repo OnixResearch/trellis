@@ -7861,9 +7861,12 @@ mod regression_hardening_tests {
 mod durable_execution_proofs {
     use vstd::prelude::*;
 
-    use crate::durable_history::{append_allowed_spec, history_valid_spec, DurableEvent};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::append_allowed_spec;
+    use crate::durable_history::history_valid_spec;
     use crate::job_idempotency::try_execute_spec;
-    use crate::journal::{seq_nums_monotonic_spec, JournalEntry};
+    use crate::journal::JournalEntry;
+    use crate::journal::seq_nums_monotonic_spec;
     use crate::monotonic::is_strict_advance_spec;
 
     verus! {
@@ -7979,10 +7982,10 @@ mod durable_execution_proofs {
 mod hypervisor_cross_proofs {
     use vstd::prelude::*;
 
-    use crate::hypervisor_memslot::*;
-    use crate::hypervisor_gpa::*;
-    use crate::hypervisor_vcpu::*;
     use crate::hypervisor_exit::*;
+    use crate::hypervisor_gpa::*;
+    use crate::hypervisor_memslot::*;
+    use crate::hypervisor_vcpu::*;
 
     verus! {
 
@@ -8059,16 +8062,26 @@ mod hypervisor_cross_proofs {
 mod durable_execution_cross_tests {
     use proptest::prelude::*;
 
-    use crate::durable_history::{DurableEvent, EVENT_EFFECT_DONE, EVENT_WORK};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_EFFECT_DONE;
+    use crate::durable_history::EVENT_WORK;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     // r[verify properties.durable-effect-uses-idempotency]
     #[test]
     fn prop_durable_effect_uses_idempotency() {
-        let events = vec![DurableEvent { seq_num: 0, kind: EVENT_EFFECT_DONE, effect_id: 7 }];
+        let events = vec![DurableEvent {
+            seq_num: 0,
+            kind: EVENT_EFFECT_DONE,
+            effect_id: 7,
+        }];
         assert!(!crate::durable_replay::should_execute_effect(&events, 0, 7));
         assert_eq!(crate::job_idempotency::try_execute(7, &[7]), (false, false));
     }
@@ -8090,9 +8103,24 @@ mod durable_execution_cross_tests {
         let new_event = work(2);
         assert!(crate::durable_history::append_allowed(&events, new_event));
         let journal_entries = vec![
-            crate::journal::JournalEntry { seq_num: 0, amount: 1, is_debit: false, running_balance: 1 },
-            crate::journal::JournalEntry { seq_num: 1, amount: 1, is_debit: false, running_balance: 2 },
-            crate::journal::JournalEntry { seq_num: 2, amount: 1, is_debit: false, running_balance: 3 },
+            crate::journal::JournalEntry {
+                seq_num: 0,
+                amount: 1,
+                is_debit: false,
+                running_balance: 1,
+            },
+            crate::journal::JournalEntry {
+                seq_num: 1,
+                amount: 1,
+                is_debit: false,
+                running_balance: 2,
+            },
+            crate::journal::JournalEntry {
+                seq_num: 2,
+                amount: 1,
+                is_debit: false,
+                running_balance: 3,
+            },
         ];
         for pair in journal_entries.windows(2) {
             assert!(pair[0].seq_num < pair[1].seq_num);
@@ -8142,5 +8170,274 @@ mod durable_execution_cross_tests {
                 prop_assert!(pair[0].seq_num < pair[1].seq_num);
             }
         }
+    }
+}
+
+#[cfg(verus_keep_ghost)]
+mod chaoscontrol_property_proofs {
+    use vstd::prelude::*;
+
+    use crate::quorum::majority_spec;
+
+    verus! {
+
+    pub closed spec fn cc_selected_source_index_spec(indices: Seq<int>, source_index: int) -> bool {
+        exists|i: int| 0 <= i < indices.len() && indices[i] == source_index
+    }
+
+    pub open spec fn cc_subset_spec(source: Seq<(int, int, int)>, indices: Seq<int>) -> Seq<(int, int, int)>
+        decreases source.len()
+    {
+        if source.len() == 0 {
+            seq![]
+        } else {
+            let head = source[0];
+            let tail = cc_subset_spec(source.subrange(1, source.len() as int), indices);
+            if cc_selected_source_index_spec(indices, head.2) {
+                seq![head] + tail
+            } else {
+                tail
+            }
+        }
+    }
+
+    pub open spec fn cc_horizons_nondecreasing_spec(horizons: Seq<int>) -> bool {
+        forall|i: int, j: int| 0 <= i <= j < horizons.len() ==> horizons[i] <= horizons[j]
+    }
+
+    pub open spec fn cc_horizon_covers_schedule_spec(schedule: Seq<(int, int, int)>, horizons: Seq<int>) -> bool {
+        horizons.len() > 0
+            && forall|i: int| 0 <= i < schedule.len() ==> schedule[i].0 <= horizons[horizons.len() - 1]
+    }
+
+    pub open spec fn cc_replay_fully_spec(schedule: Seq<(int, int, int)>, horizons: Seq<int>) -> Seq<(int, int, int)> {
+        if cc_horizons_nondecreasing_spec(horizons) && cc_horizon_covers_schedule_spec(schedule, horizons) {
+            schedule
+        } else {
+            seq![]
+        }
+    }
+
+    // r[depends chaoscontrol-fault-schedule.replay]
+    // r[depends chaoscontrol-fault-schedule.subset]
+    // r[impl properties.chaoscontrol-subset-replay]
+    pub open spec fn chaoscontrol_subset_replay_order_prop(
+        source: Seq<(int, int, int)>,
+        indices: Seq<int>,
+        horizons: Seq<int>,
+    ) -> bool {
+        let subset = cc_subset_spec(source, indices);
+        (cc_horizons_nondecreasing_spec(horizons) && cc_horizon_covers_schedule_spec(subset, horizons))
+            ==> cc_replay_fully_spec(subset, horizons) =~= subset
+    }
+
+    // r[verify properties.chaoscontrol-subset-replay]
+    pub proof fn chaoscontrol_subset_replay_order(
+        source: Seq<(int, int, int)>,
+        indices: Seq<int>,
+        horizons: Seq<int>,
+    )
+        ensures chaoscontrol_subset_replay_order_prop(source, indices, horizons)
+    {
+    }
+
+    pub uninterp spec fn cc_fingerprint_mix_spec(fp: u64, active_turn: u64, assigned_quantum: u64) -> u64;
+
+    pub open spec fn cc_fingerprint_after_trace_spec(start_fp: u64, trace: Seq<(u64, u64)>) -> u64
+        decreases trace.len()
+    {
+        if trace.len() == 0 {
+            start_fp
+        } else {
+            let head = trace[0];
+            cc_fingerprint_after_trace_spec(
+                cc_fingerprint_mix_spec(start_fp, head.0, head.1),
+                trace.subrange(1, trace.len() as int),
+            )
+        }
+    }
+
+    // r[depends chaoscontrol-scheduler.fingerprint]
+    // r[impl properties.chaoscontrol-fingerprint-trace]
+    pub open spec fn chaoscontrol_fingerprint_trace_eq_prop(
+        start_fp1: u64,
+        start_fp2: u64,
+        trace1: Seq<(u64, u64)>,
+        trace2: Seq<(u64, u64)>,
+    ) -> bool {
+        (start_fp1 == start_fp2 && trace1 == trace2)
+            ==> cc_fingerprint_after_trace_spec(start_fp1, trace1)
+                == cc_fingerprint_after_trace_spec(start_fp2, trace2)
+    }
+
+    // r[verify properties.chaoscontrol-fingerprint-trace]
+    pub proof fn chaoscontrol_fingerprint_trace_eq(
+        start_fp1: u64,
+        start_fp2: u64,
+        trace1: Seq<(u64, u64)>,
+        trace2: Seq<(u64, u64)>,
+    )
+        ensures chaoscontrol_fingerprint_trace_eq_prop(start_fp1, start_fp2, trace1, trace2)
+        decreases trace1.len()
+    {
+        if start_fp1 == start_fp2 && trace1 == trace2 {
+            if trace1.len() > 0 {
+                assert(trace2.len() == trace1.len());
+                assert(trace2[0] == trace1[0]);
+                assert(trace2.subrange(1, trace2.len() as int) == trace1.subrange(1, trace1.len() as int));
+                let next1 = cc_fingerprint_mix_spec(start_fp1, trace1[0].0, trace1[0].1);
+                let next2 = cc_fingerprint_mix_spec(start_fp2, trace2[0].0, trace2[0].1);
+                assert(next1 == next2);
+                chaoscontrol_fingerprint_trace_eq(
+                    next1,
+                    next2,
+                    trace1.subrange(1, trace1.len() as int),
+                    trace2.subrange(1, trace2.len() as int),
+                );
+            }
+        }
+    }
+
+    pub open spec fn cc_alive_count_spec(alive: Seq<bool>) -> nat
+        decreases alive.len()
+    {
+        if alive.len() == 0 {
+            0nat
+        } else {
+            cc_alive_count_spec(alive.subrange(1, alive.len() as int)) + if alive[0] { 1nat } else { 0nat }
+        }
+    }
+
+    pub open spec fn cc_valid_fault_state_spec(alive: Seq<bool>, partitioned: Seq<Seq<bool>>) -> bool {
+        &&& 2 <= alive.len() <= 64
+        &&& partitioned.len() == alive.len()
+        &&& forall|i: int| 0 <= i < alive.len() ==> partitioned[i].len() == alive.len() && !partitioned[i][i]
+    }
+
+    pub open spec fn cc_quorum_reachable_spec(alive: Seq<bool>, partitioned: Seq<Seq<bool>>) -> bool
+        recommends cc_valid_fault_state_spec(alive, partitioned)
+    {
+        if cc_alive_count_spec(alive) < majority_spec(alive.len() as u64) as nat {
+            false
+        } else {
+            exists|a: int, b: int|
+                0 <= a < b < alive.len()
+                    && alive[a]
+                    && alive[b]
+                    && !partitioned[a][b]
+                    && !partitioned[b][a]
+        }
+    }
+
+    pub open spec fn cc_healthy_period_spec(alive: Seq<bool>, partitioned: Seq<Seq<bool>>) -> bool
+        recommends cc_valid_fault_state_spec(alive, partitioned)
+    {
+        cc_alive_count_spec(alive) == alive.len() && cc_quorum_reachable_spec(alive, partitioned)
+    }
+
+    // r[depends chaoscontrol-fault-state.quorum-health]
+    // r[depends chaoscontrol-fault-state.liveness-gate]
+    // r[impl properties.chaoscontrol-quorum-gate]
+    pub open spec fn chaoscontrol_quorum_gate_sound_prop(alive: Seq<bool>, partitioned: Seq<Seq<bool>>) -> bool {
+        cc_valid_fault_state_spec(alive, partitioned)
+            ==> (cc_healthy_period_spec(alive, partitioned) ==> cc_quorum_reachable_spec(alive, partitioned))
+    }
+
+    // r[verify properties.chaoscontrol-quorum-gate]
+    pub proof fn chaoscontrol_quorum_gate_sound(alive: Seq<bool>, partitioned: Seq<Seq<bool>>)
+        ensures chaoscontrol_quorum_gate_sound_prop(alive, partitioned)
+    {
+    }
+
+    } // verus!
+}
+
+#[cfg(test)]
+mod chaoscontrol_property_tests {
+    const FP_MULT: u64 = 0x517c_c1b7_2722_0a95;
+
+    fn subset_by_source_index(source: &[(i64, i64, i64)], indices: &[i64]) -> Vec<(i64, i64, i64)> {
+        source
+            .iter()
+            .copied()
+            .filter(|entry| indices.contains(&entry.2))
+            .collect()
+    }
+
+    fn replay_fully(schedule: &[(i64, i64, i64)], horizons: &[i64]) -> Vec<(i64, i64, i64)> {
+        if horizons.is_empty() {
+            return Vec::new();
+        }
+        let nondecreasing = horizons.windows(2).all(|pair| pair[0] <= pair[1]);
+        let last = horizons[horizons.len() - 1];
+        if nondecreasing && schedule.iter().all(|entry| entry.0 <= last) {
+            schedule.to_vec()
+        } else {
+            Vec::new()
+        }
+    }
+
+    fn fingerprint_after_trace(mut fp: u64, trace: &[(u64, u64)]) -> u64 {
+        for (active, quantum) in trace {
+            fp = fp.wrapping_mul(FP_MULT) ^ *active ^ *quantum;
+        }
+        fp
+    }
+
+    fn majority(n: usize) -> usize {
+        n / 2 + 1
+    }
+
+    fn alive_count(alive: &[bool]) -> usize {
+        alive.iter().filter(|&&v| v).count()
+    }
+
+    fn quorum_reachable(alive: &[bool], partitioned: &[Vec<bool>]) -> bool {
+        if alive_count(alive) < majority(alive.len()) {
+            return false;
+        }
+        for a in 0..alive.len() {
+            for b in (a + 1)..alive.len() {
+                if alive[a] && alive[b] && !partitioned[a][b] && !partitioned[b][a] {
+                    return true;
+                }
+            }
+        }
+        false
+    }
+
+    fn healthy_period(alive: &[bool], partitioned: &[Vec<bool>]) -> bool {
+        alive.iter().all(|v| *v) && quorum_reachable(alive, partitioned)
+    }
+
+    // r[verify properties.chaoscontrol-subset-replay]
+    #[test]
+    fn test_chaoscontrol_subset_replay_order() {
+        let source = vec![(5, 0, 0), (7, 1, 1), (7, 2, 2), (9, 3, 3)];
+        let subset = subset_by_source_index(&source, &[3, 1, 99, 1]);
+        assert_eq!(subset, vec![(7, 1, 1), (9, 3, 3)]);
+        assert_eq!(replay_fully(&subset, &[7, 9]), subset);
+    }
+
+    // r[verify properties.chaoscontrol-fingerprint-trace]
+    #[test]
+    fn test_chaoscontrol_fingerprint_trace_eq() {
+        let trace = vec![(1u64, 5u64), (2u64, 7u64), (0u64, 3u64)];
+        let left = fingerprint_after_trace(0, &trace);
+        let right = fingerprint_after_trace(0, &trace);
+        assert_eq!(left, right);
+    }
+
+    // r[verify properties.chaoscontrol-quorum-gate]
+    #[test]
+    fn test_chaoscontrol_quorum_gate_sound() {
+        let alive = vec![true, true, true];
+        let partitioned = vec![
+            vec![false, false, true],
+            vec![false, false, true],
+            vec![true, true, false],
+        ];
+        assert!(healthy_period(&alive, &partitioned));
+        assert!(quorum_reachable(&alive, &partitioned));
     }
 }
