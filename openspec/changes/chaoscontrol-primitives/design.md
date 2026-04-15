@@ -82,11 +82,13 @@ iff hit and never false; `sometimes` passes iff hit and at least one true;
 `reachable` passes iff hit; `unreachable` passes iff never hit. The shared
 valid-record surface includes `runs_satisfied <= runs_hit` and
 `runs_hit == 0 <=> hit_count == 0`. Boolean records also satisfy
-`hit_count == true_count + false_count`. Non-boolean records are exact:
-`reachable` requires `true_count == hit_count`, `false_count == 0`,
+`hit_count == true_count + false_count`, `runs_hit <= hit_count`, and for
+`sometimes` additionally `runs_satisfied <= true_count`. Non-boolean records
+are exact: `reachable` requires `true_count == hit_count`, `false_count == 0`,
 `runs_satisfied == runs_hit`; `unreachable` requires `true_count == 0`,
 `false_count == hit_count`, `runs_satisfied == 0`. Verdict helpers are total
-only over those valid inputs; invalid non-boolean shapes stay outside contract.
+only over those valid inputs; invalid boolean or non-boolean shapes stay
+outside contract.
 
 **Rationale:** review wanted exact non-boolean validity, not a loose “depends on
 hit_count only” contract.
@@ -161,9 +163,11 @@ index as the result ordinal, resets result `cursor = 0`, and renormalizes by
 **Choice:** frontier entries use `u32` `base_score` and `times_selected`.
 Effective score is the rational `base_score / (1u64 + times_selected as u64)`.
 The greedy helper is defined only for non-empty frontiers. Exec comparison uses
-exact `u64` cross-products equivalent to the rational order. Re-selection is
-monotone non-increasing, greedy selection returns a maximal entry, and equal
-maximal scores break to the lowest input index.
+exact `u64` cross-products equivalent to the rational order; this is
+overflow-safe because both multiplicands come from `u32`-bounded fields, so the
+products stay below `u64::MAX`. Re-selection is monotone non-increasing,
+greedy selection returns a maximal entry, and equal maximal scores break to the
+lowest input index.
 
 **Rationale:** proof needs exact ordering, not floating-point drift.
 
@@ -234,9 +238,9 @@ proofs land in `src/properties.rs`:
 - `r[chaoscontrol-input-tree.alternatives]` -> `docs/requirements.md` + `src/chaoscontrol_input_tree.rs` ranking/emission helpers + ordering/budget proofs
 - `r[chaoscontrol-fault-state.quorum-health]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` validity/alive-mask/quorum helpers + health proofs
 - `r[chaoscontrol-fault-state.liveness-gate]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` healthy-period helper + gate proofs
-- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
-- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
-- `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests
+- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: replay `subset(source, indices)` from `cursor = 0` by any nondecreasing time sequence whose final horizon covers all subset faults
+- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: same full scheduler state, or same full post-`apply_variant` reset state, plus the same post-advance `(active_turn, assigned_quantum)` trace
+- `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: valid fault state implies `healthy_period ==> quorum_reachable`
 - `r[chaoscontrol-validation.iterative-exec]` -> `specs/chaoscontrol-validation/spec.md` + `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md` + deterministic audit task / transcript (change-local validation rule; not mirrored into `docs/requirements.md`)
 
 **Rationale:** this repo repeatedly hits Tracey drift when proof-only rules lack
@@ -263,7 +267,7 @@ exec recursion, not just ad hoc eyeballing.
 
 ## Migration Plan
 
-1. Keep repo-sync evidence current and reuse existing generic helpers where they already match.
+1. Keep repo-sync evidence current in `openspec/changes/chaoscontrol-primitives/evidence/repo-sync.md` and reuse existing generic helpers where they already match.
 2. Land coverage and oracle modules first, including tests and `docs/requirements.md` anchors.
 3. Land scheduler and fault-schedule modules next, preserving exact replay and fingerprint rules.
 4. Land frontier, input-tree, and fault-state modules after lower-level kernels are stable.

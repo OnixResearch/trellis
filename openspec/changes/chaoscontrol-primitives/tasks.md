@@ -4,25 +4,27 @@
 - [x] Record the repo-sync result in `openspec/changes/chaoscontrol-primitives/evidence/repo-sync.md`
 - [x] Record which existing generic helpers (`bitmap`, `quorum`, `monotonic`, `seq_set`) will be reused in `openspec/changes/chaoscontrol-primitives/evidence/reuse-plan.md`
 - [x] Record and keep current the upstream source mapping promised in `openspec/changes/chaoscontrol-primitives/evidence/upstream-provenance.md`
+- [ ] Confirm or add `pub mod properties;` in `src/lib.rs` before module work depends on the new cross-module proof lemmas in `src/properties.rs`
+- [ ] For each new `src/chaoscontrol_*.rs` file, add the matching `pub mod chaoscontrol_*;` line to `src/lib.rs` together with that module's first implementation task; keep helper-only functions private unless they intentionally carry public API / Tracey surface
 
 ## Phase 1: Coverage and Oracle
 
-- [ ] `src/chaoscontrol_coverage.rs`: fixed-`65536` constructors or `requires`-guarded validity, exact region cut points, and region-writer non-interference (`r[chaoscontrol-coverage.regions]`)
+- [ ] `src/chaoscontrol_coverage.rs`: fixed-`65536` constructors establish valid coverage values, region helpers require that shape, exact region cut points plus region-writer non-interference hold, and `src/lib.rs` gains `pub mod chaoscontrol_coverage;` with that first implementation (`r[chaoscontrol-coverage.regions]`)
 - [ ] `src/chaoscontrol_coverage.rs`: pointwise-max merge, exact `u32` new-edge count, and zero/nonzero count facts (`r[chaoscontrol-coverage.union]`)
 - [ ] `src/chaoscontrol_coverage.rs`: exact AFL bucket map `0,1,2,3,4..7,8..15,16..31,32..127,128..255` with named proof artifacts for region/merge/classify soundness (`r[chaoscontrol-coverage.classify]`)
 - [ ] Coverage unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_coverage.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-coverage.*`
-- [ ] `src/chaoscontrol_oracle.rs`: shared validity helpers for `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0`, plus exact boolean and non-boolean record shapes (`r[chaoscontrol-oracle.accounting]`)
+- [ ] `src/chaoscontrol_oracle.rs`: shared validity helpers for `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0`, plus exact boolean and non-boolean record shapes, and `src/lib.rs` gains `pub mod chaoscontrol_oracle;` with that first implementation (`r[chaoscontrol-oracle.accounting]`)
 - [ ] `src/chaoscontrol_oracle.rs`: verdict helpers total over valid inputs, exact pass/fail complements, and invalid non-boolean shapes outside contract (`r[chaoscontrol-oracle.verdict]`)
 - [ ] Named oracle `proof fn` artifacts for accounting and verdict totality/exclusivity, plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_oracle.rs`, oracle unit/property tests, and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-oracle.*`
 
 ## Phase 2: Scheduler and Fault Schedule
 
-- [ ] `src/chaoscontrol_scheduler.rs`: constructor canonicalization, randomized-state validity, `apply_variant` preconditions for invalid randomized overrides, constructor / `apply_variant` RNG-consumption neutrality, and bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]` (`r[chaoscontrol-scheduler.turns]`)
+- [ ] `src/chaoscontrol_scheduler.rs`: constructor canonicalization, randomized-state validity, `apply_variant` preconditions for invalid randomized overrides, constructor / `apply_variant` RNG-consumption neutrality, bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]`, and `src/lib.rs` gains `pub mod chaoscontrol_scheduler;` with that first implementation (`r[chaoscontrol-scheduler.turns]`)
 - [ ] `src/chaoscontrol_scheduler.rs`: single-vCPU no-op rules, SMP `tick` positive-to-zero switch rule, explicit `tick == true -> next transition is advance` contract, round-robin `advance`, and exact randomized quantum assignment from caller `rng_word` (`r[chaoscontrol-scheduler.turns]`)
 - [ ] `src/chaoscontrol_scheduler.rs`: exact fingerprint mix, tick neutrality, `apply_variant` persistence / `None`-keeps-current semantics, reset-to-zero epoch, and post-reset lower-inclusive / upper-exclusive randomized range behavior (`r[chaoscontrol-scheduler.fingerprint]`)
 - [ ] Add explicit scheduler proof artifacts in `src/chaoscontrol_scheduler.rs` for turn semantics and fingerprint semantics, with code-side `r[impl]` / `r[verify]` anchors for `chaoscontrol-scheduler.turns` and `chaoscontrol-scheduler.fingerprint`
 - [ ] Scheduler unit/property tests plus explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-scheduler.*`
-- [ ] `src/chaoscontrol_fault_schedule.rs`: normalized schedule validity, public `add` precondition `cursor = 0`, fresh-ordinal allocation `0` else `1 + max(existing)`, stable `(time_ns, ordinal)` normalization after `add` with result `cursor = 0`, and bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]` (`r[chaoscontrol-fault-schedule.replay]`)
+- [ ] `src/chaoscontrol_fault_schedule.rs`: normalized schedule validity, public `add` precondition `cursor = 0`, fresh-ordinal allocation `0` else `1 + max(existing)`, stable `(time_ns, ordinal)` normalization after `add` with result `cursor = 0`, bare-local-call exec helper style required by `r[chaoscontrol-validation.iterative-exec]`, and `src/lib.rs` gains `pub mod chaoscontrol_fault_schedule;` with that first implementation (`r[chaoscontrol-fault-schedule.replay]`)
 - [ ] `src/chaoscontrol_fault_schedule.rs`: exact `drain_due(t)` selection, cursor monotonicity / bounds, preserved undrained suffix, and non-re-delivery (`r[chaoscontrol-fault-schedule.replay]`)
 - [ ] Add explicit replay/cursor `proof fn` artifacts in `src/chaoscontrol_fault_schedule.rs` for `r[chaoscontrol-fault-schedule.replay]`, with code-side `r[verify]` anchors
 - [ ] `src/chaoscontrol_fault_schedule.rs`: subset first-occurrence selection over the full normalized source schedule, out-of-bounds ignore, carried source-index ordinals, `cursor = 0`, and re-normalization (`r[chaoscontrol-fault-schedule.subset]`)
@@ -34,17 +36,17 @@
 
 ## Phase 3: Heuristics and Fault State
 
-- [ ] `src/chaoscontrol_frontier.rs`: non-empty frontier validity, exact rational score `base_score / (1 + times_selected)`, and verified no-overflow `u64` cross-product comparator (`r[chaoscontrol-frontier.selection]`)
+- [ ] `src/chaoscontrol_frontier.rs`: non-empty frontier validity, exact rational score `base_score / (1 + times_selected)`, verified no-overflow `u64` cross-product comparator, and `src/lib.rs` gains `pub mod chaoscontrol_frontier;` with that first implementation (`r[chaoscontrol-frontier.selection]`)
 - [ ] `src/chaoscontrol_frontier.rs`: greedy maximality, monotone decay under re-selection, and lowest-input-index tie-break proofs (`r[chaoscontrol-frontier.selection]`)
 - [ ] Add named frontier `proof fn` artifacts in `src/chaoscontrol_frontier.rs` for effective-score comparison, decay, maximality, and tie-break behavior, with code-side `r[verify]` anchors for `r[chaoscontrol-frontier.selection]`
 - [ ] Frontier unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_frontier.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-frontier.selection`
-- [ ] `src/chaoscontrol_input_tree.rs`: normalized choice-record validity and arithmetic bounds `sequence_id <= u64::MAX - 100` plus `n_options as u64 * (100 + sequence_id) <= u64::MAX` (`r[chaoscontrol-input-tree.alternatives]`)
+- [ ] `src/chaoscontrol_input_tree.rs`: normalized choice-record validity and arithmetic bounds `sequence_id <= u64::MAX - 100` plus `n_options as u64 * (100 + sequence_id) <= u64::MAX`, and `src/lib.rs` gains `pub mod chaoscontrol_input_tree;` with that first implementation (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] `src/chaoscontrol_input_tree.rs`: enforce and prove unique `(vm_id, sequence_id)` pairs within each normalized input batch (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] `src/chaoscontrol_input_tree.rs`: exact exec comparator where smaller denominator `n_options * (100 + sequence_id)` wins because the numerator is constant, with proof that exec order matches the mathematical score order (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] `src/chaoscontrol_input_tree.rs`: lower `(vm_id, sequence_id)` tie-breaks, emitted output identity `(vm_id, sequence_id, alternative_value)`, ascending distinct alternative emission excluding the original value, and exact budget prefix `min(budget, full_stream_len)` (`r[chaoscontrol-input-tree.alternatives]`)
 - [ ] Add named input-tree `proof fn` artifacts in `src/chaoscontrol_input_tree.rs` for comparator equivalence, tie-break correctness, identity preservation, and exact budget-prefix behavior, with code-side `r[verify]` anchors for `r[chaoscontrol-input-tree.alternatives]`
 - [ ] Input-tree unit/property tests plus explicit code-side `r[impl]` / `r[verify]` anchors in `src/chaoscontrol_input_tree.rs` and explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-input-tree.alternatives`
-- [ ] `src/chaoscontrol_fault_state.rs`: `2 <= num_nodes <= 64` validity, exact `num_nodes x num_nodes` shape, diagonal-false matrix, exact alive-mask bit encoding (`bit i` iff participant `i` is alive), cleared high bits in `alive_mask`, and exact directed non-diagonal `partition_count` (`r[chaoscontrol-fault-state.quorum-health]`)
+- [ ] `src/chaoscontrol_fault_state.rs`: `2 <= num_nodes <= 64` validity, exact `num_nodes x num_nodes` shape, diagonal-false matrix, exact alive-mask bit encoding (`bit i` iff participant `i` is alive), cleared high bits in `alive_mask`, exact directed non-diagonal `partition_count`, and `src/lib.rs` gains `pub mod chaoscontrol_fault_state;` with that first implementation (`r[chaoscontrol-fault-state.quorum-health]`)
 - [ ] `src/chaoscontrol_fault_state.rs`: majority threshold failure, exact bidirectional-pair `quorum_reachable` heuristic, and healthy gate `alive_count == num_nodes && quorum_reachable` (`r[chaoscontrol-fault-state.quorum-health]`, `r[chaoscontrol-fault-state.liveness-gate]`)
 - [ ] Add explicit fault-state proof artifacts in `src/chaoscontrol_fault_state.rs` for quorum-health and liveness-gate semantics, with code-side `r[impl]` / `r[verify]` anchors for `chaoscontrol-fault-state.*`
 - [ ] Fault-state unit/property tests plus explicit `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `chaoscontrol-fault-state.*`
@@ -52,8 +54,7 @@
 
 ## Phase 4: Integration and Validation
 
-- [ ] Export the new `src/chaoscontrol_*.rs` modules from `src/lib.rs`, keep helper-only functions private unless they intentionally carry public API / Tracey surface, and ensure `src/properties.rs` is wired into the crate graph for the new cross-module proof artifacts
-- [x] Add or verify `scripts/check-iterative-exec.py` so it implements the specified deterministic audit semantics for bare local exec-call cycle detection used by `r[chaoscontrol-validation.iterative-exec]`
+- [ ] Add or verify `scripts/check-iterative-exec.py` so it implements the specified deterministic audit semantics for bare local exec-call cycle detection used by `r[chaoscontrol-validation.iterative-exec]`
 - [ ] Run `python3 scripts/check-iterative-exec.py src/chaoscontrol_scheduler.rs src/chaoscontrol_fault_schedule.rs`: collect non-`spec fn` / non-`proof fn`, require intra-module exec helper calls to use bare local function names, build the exec call graph by exact bare local function-name calls, fail on any self-edge or cycle, and record the result in `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md` (`r[chaoscontrol-validation.iterative-exec]`)
 - [ ] Run `./scripts/check-ensures.sh` and capture output in `openspec/changes/chaoscontrol-primitives/evidence/validation-check-ensures.txt`
 - [ ] Run `cargo test` and capture output in `openspec/changes/chaoscontrol-primitives/evidence/validation-cargo-test.txt`
