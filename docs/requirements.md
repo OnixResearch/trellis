@@ -6875,3 +6875,21 @@ r[sel4-asid.pool-bounds]
 Allocation MUST succeed whenever some free ASID exists, return only ASIDs in
 `0..capacity-1`, and fail exactly when no free ASIDs remain. Failed allocation
 MUST leave pool ownership unchanged, including the zero-capacity case.
+
+## seL4 Capability Rights
+
+r[sel4-cap-rights.attenuation]
+A derived capability MUST NOT grant any right absent from its source
+capability. Copy MAY preserve rights and masking MAY drop rights, but
+attenuation MUST NOT add authority.
+
+r[sel4-cap-rights.operation-gates]
+Kernel operations MUST require the corresponding authority on the acting
+capability. Send requires send authority, receive requires receive authority,
+grant-like transfer requires grant authority, mapping requires map authority,
+and control operations require control authority.
+
+r[sel4-cap-rights.masking]
+Rights masking MUST be idempotent and monotone. Applying the same mask twice
+MUST equal applying it once, and masking with a smaller mask MUST NOT produce
+a larger rights set.

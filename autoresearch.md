@@ -40,4 +40,6 @@ Reduce the number of active directories under `openspec/changes/` by actually fi
 
 ## What's Been Tried
 - Baseline: 34 active changes before sel4-asid-pools remediation.
-- Current candidate: archive `sel4-asid-pools` by landing `src/sel4_asid.rs`, syncing `docs/requirements.md` and `openspec/specs/sel4-asid/spec.md`, and moving change under `openspec/changes/archive/2026-04-15-sel4-asid-pools/` with evidence.
+- Kept: archived `sel4-asid-pools` by landing `src/sel4_asid.rs`, syncing `docs/requirements.md` and `openspec/specs/sel4-asid/spec.md`, and moving the change under `openspec/changes/archive/2026-04-15-sel4-asid-pools/` with evidence. New active count: 33.
+- Kept: archived `sel4-cap-rights` by landing `src/sel4_cap_rights.rs`, syncing `docs/requirements.md` and `openspec/specs/sel4-cap-rights/spec.md`, and moving the change under `openspec/changes/archive/2026-04-15-sel4-cap-rights/` with captured validation evidence. New active count: 32.
+- Next shortlist from repo scan: `sel4-cspace-lookup`, `sel4-cap-derivation`, `sel4-endpoint-ipc`, then larger follow-on changes like `moesi-protocol`.

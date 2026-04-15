@@ -222,6 +222,7 @@
 //! - `slab` — slab allocation: slot index/address, capacity, generation counters, handle packing
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `sel4_asid` — finite ASID pool ownership: allocate, release, reuse, exhaustion
+//! - `sel4_cap_rights` — seL4 rights-mask attenuation, masking laws, and operation gates
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -513,6 +514,7 @@ pub mod rwlock;
 pub mod scope;
 pub mod segregated_free;
 pub mod sel4_asid;
+pub mod sel4_cap_rights;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;

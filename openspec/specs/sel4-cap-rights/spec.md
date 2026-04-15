@@ -26,12 +26,18 @@ A derived capability MUST NOT grant any right absent from its source capability.
 ### Requirement: Capability Rights Gate Operations
 
 r[sel4-cap-rights.operation-gates]
-Kernel operations MUST require the corresponding authority on the acting capability. Send requires send authority, receive requires receive authority, mapping requires mapping authority, and control operations require control authority.
+Kernel operations MUST require the corresponding authority on the acting capability. Send requires send authority, receive requires receive authority, grant-like transfer requires grant authority, mapping requires mapping authority, and control operations require control authority.
 
 #### Scenario: Send denied without send right
 
 - GIVEN an endpoint capability lacking send authority
 - WHEN send is attempted
+- THEN the operation is invalid
+
+#### Scenario: Grant denied without grant right
+
+- GIVEN a capability lacking grant authority
+- WHEN grant-like transfer is attempted
 - THEN the operation is invalid
 
 #### Scenario: Map denied without map right
