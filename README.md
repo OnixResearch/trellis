@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6940 Verus proofs · 3705 tests · 1491 requirements · 322 modules · 19 trusted boundaries**
+**6969 Verus proofs · 3711 tests · 1494 requirements · 323 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -458,20 +458,21 @@ Most modules follow the same pattern (tracked exceptions are listed in
 
 ## Trusted items
 
-`15` items are marked `#[verifier::external_body]` across `5` files.
+`16` items are marked `#[verifier::external_body]` across `6` files.
 In addition, `src/ssa_construction.rs` currently carries `3`
 `assume_specification[...]` bridges from thin verified wrappers to plain-Rust
 runtime helpers.
 
-**15 permanent** (architectural trust boundaries):
+**16 permanent** (architectural trust boundaries):
 
 - **6 cryptographic axioms / exec bridges** (`chain.rs`, `snapshot_integrity.rs`) —
-  Blake3-style hashing is modeled with uninterpreted specs plus trusted exec wrappers.
+  BLAKE3-style hashing is modeled with uninterpreted specs plus trusted exec wrappers.
 - **4 version comparison bridges** (`nix_version.rs`) — the recursive `cv_fuel`
   reasoning still exceeds solver budget.
 - **2 nix store-path hash bridges** (`nix_store_path.rs`) — external hash/model bridge.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
   only sound under the global Raft leader-chain invariant.
+- **1 web-of-trust principal bridge** (`web_of_trust_principal.rs`) — principal digest bytes stay behind a trusted exec/model boundary.
 
 **3 closeable** (`src/ssa_construction.rs`) — `assume_specification[...]`
 exec bridges for phi placement, SSA construction, and dominance/use

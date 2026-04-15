@@ -232,6 +232,7 @@
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
 //! - `sel4_tcb` — TCB state legality, blocking-object identity, and legal wake/restart/deactivate transitions
 //! - `sel4_ready_queue` — per-priority ready queues, runnable/queued consistency, and highest-priority selection
+//! - `sel4_vspace` — aligned non-overlapping mappings, exact unmap, and rights restriction
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -533,6 +534,7 @@ pub mod sel4_reply;
 pub mod sel4_irq;
 pub mod sel4_tcb;
 pub mod sel4_ready_queue;
+pub mod sel4_vspace;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;

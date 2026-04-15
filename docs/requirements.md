@@ -7029,3 +7029,17 @@ non-empty ready queue.
 r[sel4-ready-queue.order]
 Within one priority queue, enqueue, dequeue, and remove operations MUST
 preserve the relative order of unaffected TCBs.
+
+## seL4 VSpace Mappings
+
+r[sel4-vspace.map]
+Installing a mapping into a VSpace MUST respect object alignment and MUST NOT
+create overlapping live mappings in that VSpace.
+
+r[sel4-vspace.unmap]
+Unmapping MUST remove exactly the targeted mapping and leave unrelated
+mappings unchanged.
+
+r[sel4-vspace.rights]
+Effective mapping rights MUST be no greater than the rights carried by the
+capability used to install the mapping.

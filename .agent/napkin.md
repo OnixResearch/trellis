@@ -1390,6 +1390,10 @@
   fails with 218 import errors.
 - Spec fns (e.g. `is_terminal_spec`) erased in `#[cfg(test)]` builds — proptests must use
   exec fns or inline the logic.
+- `src/sel4_vspace.rs` only closed cleanly when map used a zero-rights candidate for
+  overlap checks and failure proofs, then constructed the final masked-rights mapping
+  only after the scan. Trying to prove the failure path against the installed record
+  made Verus fight irrelevant rights fields.
 
 ## Job Execution Verification (2026-03-29)
 - is_cooldown_elapsed overflow: spec uses int arithmetic (`now as int >= last + cool`),
