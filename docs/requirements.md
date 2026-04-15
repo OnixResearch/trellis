@@ -7015,3 +7015,17 @@ block.
 r[sel4-tcb.transitions]
 Block, wake, restart, and deactivate operations MUST move a TCB only along
 allowed state transitions.
+
+## seL4 Ready Queues
+
+r[sel4-ready-queue.consistency]
+A runnable TCB MUST appear in exactly one ready queue at its runnable priority,
+and a TCB present in a ready queue MUST be runnable.
+
+r[sel4-ready-queue.selection]
+Scheduler selection MUST choose a runnable TCB from a highest-priority
+non-empty ready queue.
+
+r[sel4-ready-queue.order]
+Within one priority queue, enqueue, dequeue, and remove operations MUST
+preserve the relative order of unaffected TCBs.

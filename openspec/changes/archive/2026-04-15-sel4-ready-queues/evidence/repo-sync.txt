@@ -1,0 +1,5 @@
+commit 4a1ead2931923bbde06821091a1d90f6a804389e
+--- baseline docs/requirements.md sel4-ready-queue hits
+--- baseline src/lib.rs sel4_ready_queue hits
+--- baseline canonical spec presence
+baseline-spec-absent

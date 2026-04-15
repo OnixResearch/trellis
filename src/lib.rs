@@ -231,6 +231,7 @@
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
 //! - `sel4_tcb` — TCB state legality, blocking-object identity, and legal wake/restart/deactivate transitions
+//! - `sel4_ready_queue` — per-priority ready queues, runnable/queued consistency, and highest-priority selection
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -531,6 +532,7 @@ pub mod sel4_notification;
 pub mod sel4_reply;
 pub mod sel4_irq;
 pub mod sel4_tcb;
+pub mod sel4_ready_queue;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;
