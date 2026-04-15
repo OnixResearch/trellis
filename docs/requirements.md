@@ -6960,3 +6960,17 @@ record.
 r[sel4-fault-ipc.payload]
 Fault payload fields preserved by the model, including the instruction
 pointer, MUST remain unmodified across encode/decode and delivery.
+
+## seL4 Notification
+
+r[sel4-notification.pending-badge]
+A notification object MUST accumulate undelivered badge bits by bitwise OR of
+all delivered signals that have not yet been consumed.
+
+r[sel4-notification.consume]
+Waiting or polling a signaled notification MUST return exactly the pending
+badge value being delivered and consume that delivered pending state.
+
+r[sel4-notification.binding]
+If a notification is bound to a TCB, delivery eligibility and wakeup MUST
+respect that binding.

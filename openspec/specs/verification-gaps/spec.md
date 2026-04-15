@@ -15,10 +15,10 @@ place where the proof story is weaker than the fully verified
 As of `2026-04-15`, fresh reruns on the current tree show:
 
 - `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3665 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`6860 verified, 0 errors`)
-- `tracey query uncovered` returns `0 uncovered out of 1476 rules`
-- `tracey query untested` returns `0 untested out of 1476 rules`
+- `cargo test` passes (`3673 passed`)
+- `./scripts/verus.sh src/lib.rs` passes (`6870 verified, 0 errors`)
+- `tracey query uncovered` returns `0 uncovered out of 1479 rules`
+- `tracey query untested` returns `0 untested out of 1479 rules`
 - `./scripts/verify.sh` passes on this tree; direct Tracey query outputs remain archived as the coverage source of truth
 
 These green direct checks do **not** mean the trust surface is empty. The

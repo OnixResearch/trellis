@@ -18,9 +18,9 @@ Notifications are separate from endpoints in seL4 and have their own sharp rule:
 
 ## Impact
 
-- **Files**: New `src/sel4_notification.rs` module, `src/lib.rs` export, `src/properties.rs` cross-module theorems as needed, and this OpenSpec change
+- **Files**: New `src/sel4_notification.rs` module, `src/lib.rs` export, and this OpenSpec change
 - **APIs**: Public spec/exec/proof functions for notification signaling
-- **Dependencies**: Reuses `signal` patterns and later `sel4_tcb` integration
+- **Dependencies**: Standalone for now; later changes may compose it with `sel4_tcb` / ready-queue state
 - **Testing**: Verus proofs, unit tests, and proptests for accumulation and consumption scenarios
 
 ## Out of Scope
