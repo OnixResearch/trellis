@@ -1,0 +1,19 @@
+$ jj st
+Working copy changes:
+M autoresearch.jsonl
+M docs/requirements.md
+A openspec/changes/sel4-cspace-lookup/evidence/cargo-test-sel4-cspace.txt
+A openspec/changes/sel4-cspace-lookup/evidence/repo-sync.txt
+M src/lib.rs
+A src/sel4_cspace.rs
+Working copy  (@) : txozrrrk 33717f1f (no description set)
+Parent commit (@-): rswwkxvv 4906f450 Archive sel4-cap-rights: land verified rights-mask algebra, sync sel4-cap-rights requirements/spec text, and move change into archive to cut active change count from 33 to 32.
+
+$ git grep -n -E "sel4_cspace|sel4-cspace" 4906f450 -- src/lib.rs docs/requirements.md openspec/specs || true
+
+$ bash -lc "rg -n \"sel4_cspace|sel4-cspace\" src/lib.rs docs/requirements.md openspec/specs openspec/changes/archive || true"
+src/lib.rs:226://! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot resolution
+src/lib.rs:519:pub mod sel4_cspace;
+docs/requirements.md:6899:r[sel4-cspace.lookup]
+docs/requirements.md:6904:r[sel4-cspace.unique-slot]
+docs/requirements.md:6908:r[sel4-cspace.failure-no-mutation]

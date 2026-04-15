@@ -6893,3 +6893,18 @@ r[sel4-cap-rights.masking]
 Rights masking MUST be idempotent and monotone. Applying the same mask twice
 MUST equal applying it once, and masking with a smaller mask MUST NOT produce
 a larger rights set.
+
+## seL4 CSpace Lookup
+
+r[sel4-cspace.lookup]
+CSpace lookup MUST resolve a slot by guarded radix traversal. Each level MUST
+check the guard, consume the matching guard depth plus one slot-selection
+segment, and select exactly one child slot within the current CNode.
+
+r[sel4-cspace.unique-slot]
+A successful lookup MUST identify exactly one slot, and that slot MUST be
+within the bounds of the resolved CNode.
+
+r[sel4-cspace.failure-no-mutation]
+A failed lookup MUST NOT modify CSpace state, consumed-depth accounting, or
+capability contents.

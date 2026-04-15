@@ -1,0 +1,9 @@
+## Phase 1: Core model and proofs
+
+- [x] Compare this change against `src/lib.rs`, `docs/requirements.md`, and `openspec/specs/`; the repo-sync audit in `evidence/repo-sync.txt` pinned baseline commit `4906f450` and confirmed `sel4_cspace` / `sel4-cspace.*` were net-new rather than already shipped.
+- [x] Create `src/sel4_cspace.rs` with explicit path-segment guard matching, slot selection, rooted lookup, and explicit consumed-depth helper `lookup_from`.
+- [x] Add real `proof fn` artifacts for guarded-step lookup, full-path consumption on success, exact one-slot in-bounds resolution, and guard-mismatch / insufficient-depth failure cases.
+- [x] Add unit tests and proptests for root lookup, nested lookup, explicit-depth lookup, guard-mismatch failure, insufficient-depth failure, and failed nested follow cases; capture the explicit module test run in `evidence/cargo-test-sel4-cspace.txt` and module Verus run in `evidence/verus-sel4-cspace.txt`.
+- [x] Mirror `r[sel4-cspace.lookup]`, `r[sel4-cspace.unique-slot]`, and `r[sel4-cspace.failure-no-mutation]` into `docs/requirements.md`, add Tracey anchors on the defining helpers/proofs/tests, and export the module from `src/lib.rs`.
+- [x] Run repo-level validation with fresh captured output: `cargo test`, `cargo clippy --all-targets -- -D warnings`, `./scripts/verus.sh src/lib.rs`, `./scripts/check-ensures.sh`, `./scripts/verify.sh`, then `tracey query uncovered` and `tracey query untested` sequentially. Saved evidence: `evidence/cargo-test.txt`, `evidence/clippy.txt`, `evidence/verus.txt`, `evidence/check-ensures.txt`, `evidence/verify.txt`, `evidence/tracey-uncovered.txt`, `evidence/tracey-untested.txt`.
+- [x] Sync the landed spec text into `openspec/specs/sel4-cspace/spec.md` and archive `openspec/changes/sel4-cspace-lookup` after validation passes.

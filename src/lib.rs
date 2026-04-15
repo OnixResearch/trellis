@@ -223,6 +223,7 @@
 //! - `scope` — prefix-based scope coverage, compound scoping, optional constraints
 //! - `sel4_asid` — finite ASID pool ownership: allocate, release, reuse, exhaustion
 //! - `sel4_cap_rights` — seL4 rights-mask attenuation, masking laws, and operation gates
+//! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot resolution
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
 //! - `shamir_field` — finite-field arithmetic modulo an explicit prime-sized modulus
@@ -515,6 +516,7 @@ pub mod scope;
 pub mod segregated_free;
 pub mod sel4_asid;
 pub mod sel4_cap_rights;
+pub mod sel4_cspace;
 pub mod semaphore;
 pub mod seq_fold;
 pub mod seq_set;

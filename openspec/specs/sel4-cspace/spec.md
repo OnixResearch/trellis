@@ -9,7 +9,7 @@ Defines requirements for verified `sel4_cspace` semantics in this repo. Scope is
 ### Requirement: Guarded CSpace Lookup
 
 r[sel4-cspace.lookup]
-CSpace lookup MUST resolve a slot by guarded radix traversal. Each level MUST check the guard, consume the correct depth, and select exactly one child slot within the current CNode.
+CSpace lookup MUST resolve a slot by guarded radix traversal. Each level MUST check the guard, consume the matching guard depth plus one slot-selection segment, and select exactly one child slot within the current CNode.
 
 #### Scenario: Lookup succeeds when guard and radix match
 
