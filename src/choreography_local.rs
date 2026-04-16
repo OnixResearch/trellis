@@ -501,6 +501,51 @@ proof fn clone_suffix_view(branches: Seq<LBranch>, from: int)
 {
 }
 
+proof fn prepend_preserves_strict_labels(head: LBranch, tail: Seq<LBranch>)
+    requires
+        branch_labels_strict_spec(tail),
+        tail.len() > 0 ==> head.label < tail[0].label,
+    ensures
+        branch_labels_strict_spec(seq![head] + tail)
+{
+    let result = seq![head] + tail;
+    assert forall|i: int, j: int| #![trigger result[i], result[j]]
+        0 <= i < j < result.len() implies result[i].label < result[j].label
+    by {
+        if i == 0 {
+            assert(result[0] == head);
+            assert(result[j] == tail[j - 1]);
+            if j == 1 {
+                assert(result[j] == tail[0]);
+            } else {
+                assert(0 < j - 1 < tail.len());
+                assert(tail[0].label < tail[j - 1].label);
+            }
+        } else {
+            assert(result[i] == tail[i - 1]);
+            assert(result[j] == tail[j - 1]);
+            assert(0 <= i - 1 < j - 1 < tail.len());
+        }
+    }
+}
+
+proof fn subrange_preserves_strict_labels(branches: Seq<LBranch>, from: int, to: int)
+    requires
+        branch_labels_strict_spec(branches),
+        0 <= from <= to <= branches.len(),
+    ensures
+        branch_labels_strict_spec(branches.subrange(from, to))
+{
+    let sub = branches.subrange(from, to);
+    assert forall|i: int, j: int| #![trigger sub[i], sub[j]]
+        0 <= i < j < sub.len() implies sub[i].label < sub[j].label
+    by {
+        assert(sub[i] == branches[from + i]);
+        assert(sub[j] == branches[from + j]);
+        assert(0 <= from + i < from + j < branches.len());
+    }
+}
+
 // r[verify choreography.merge]
 proof fn merge_identical_prefix_exact(
     decider: RoleId,
@@ -662,11 +707,98 @@ proof fn merge_choice_branches_well_formed(
                 ==> well_formed_local_spec(
                     merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap()[i].body,
                 ),
+        match (left_parent, right_parent) {
+            (LChoreo::InternalChoice { branches: left }, LChoreo::InternalChoice { branches: right }) =>
+                merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap().len() == left.len() - from
+                    && merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap().len() == right.len() - from
+                    && (from < left.len() ==> merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap()[0].label == left[from].label),
+            _ => true,
+        },
     decreases left_parent, 0int, right_parent, 0int,
         if from >= 0 && from < lchoreo_branch_count(left_parent) { (lchoreo_branch_count(left_parent) - from) as nat } else { 0nat }
 {
-    // TODO: complete branch_labels_strict_spec composition proof
-    admit();
+    match left_parent {
+        LChoreo::InternalChoice { branches: left } => match right_parent {
+            LChoreo::InternalChoice { branches: right } => {
+                well_formed_local_implies_branch_wf(left_parent);
+                well_formed_local_implies_branch_wf(right_parent);
+                if from == left.len() && from == right.len() {
+                    let result = merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap();
+                    assert(result.len() == 0);
+                } else {
+                    assert(from < left.len() && from < right.len() && left[from].label == right[from].label);
+                    assert(well_formed_local_choice_prefix_spec(left_parent, left.len() as int));
+                    assert(well_formed_local_choice_prefix_spec(right_parent, right.len() as int));
+                    well_formed_prefix_implies_branch_wf(left_parent, left.len() as int, from);
+                    well_formed_prefix_implies_branch_wf(right_parent, right.len() as int, from);
+                    assert(well_formed_local_spec(left[from].body));
+                    assert(well_formed_local_spec(right[from].body));
+                    merge_preserves_well_formed_local(decider, left[from].body, right[from].body);
+                    merge_choice_branches_well_formed(decider, left_parent, right_parent, from + 1);
+                    let body = merge_local_spec(decider, left[from].body, right[from].body).unwrap();
+                    let head = LBranch { label: left[from].label, body };
+                    let tail = merge_choice_branches_from_spec(decider, left_parent, right_parent, from + 1).unwrap();
+                    let result = merge_choice_branches_from_spec(decider, left_parent, right_parent, from).unwrap();
+                    assert(result == seq![head] + tail);
+                    assert(result.len() == left.len() - from);
+                    assert(result.len() == right.len() - from);
+                    assert(result[0].label == left[from].label);
+                    if tail.len() > 0 {
+                        assert(from + 1 < left.len());
+                        assert(tail[0].label == left[from + 1].label);
+                        assert(left[from].label < left[from + 1].label);
+                    }
+                    prepend_preserves_strict_labels(head, tail);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        if i == 0 {
+                            assert(result[0] == head);
+                        } else {
+                            assert(0 <= i - 1 < tail.len());
+                            assert(result[i] == tail[i - 1]);
+                        }
+                    }
+                }
+            }
+            _ => {}
+        },
+        _ => {}
+    }
+}
+
+proof fn internal_choice_prefix_from_all_wf(branches: Seq<LBranch>, n: int)
+    requires
+        0 <= n <= branches.len(),
+        forall|i: int| #![trigger branches[i]] 0 <= i < n ==> well_formed_local_spec(branches[i].body),
+    ensures
+        well_formed_local_choice_prefix_spec(LChoreo::InternalChoice { branches }, n)
+    decreases n
+{
+    if n > 0 {
+        internal_choice_prefix_from_all_wf(branches, n - 1);
+        assert(well_formed_local_spec(branches[n - 1].body));
+        assert(well_formed_local_choice_prefix_spec(LChoreo::InternalChoice { branches }, n)
+            == (well_formed_local_choice_prefix_spec(LChoreo::InternalChoice { branches }, n - 1)
+                && well_formed_local_spec(branches[n - 1].body)));
+    }
+}
+
+proof fn offer_prefix_from_all_wf(decider: RoleId, branches: Seq<LBranch>, n: int)
+    requires
+        0 <= n <= branches.len(),
+        forall|i: int| #![trigger branches[i]] 0 <= i < n ==> well_formed_local_spec(branches[i].body),
+    ensures
+        well_formed_local_choice_prefix_spec(LChoreo::Offer { from: decider, branches }, n)
+    decreases n
+{
+    if n > 0 {
+        offer_prefix_from_all_wf(decider, branches, n - 1);
+        assert(well_formed_local_spec(branches[n - 1].body));
+        assert(well_formed_local_choice_prefix_spec(LChoreo::Offer { from: decider, branches }, n)
+            == (well_formed_local_choice_prefix_spec(LChoreo::Offer { from: decider, branches }, n - 1)
+                && well_formed_local_spec(branches[n - 1].body)));
+    }
 }
 
 proof fn merge_offer_branches_well_formed(
@@ -692,12 +824,174 @@ proof fn merge_offer_branches_well_formed(
                 ==> well_formed_local_spec(
                     merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap()[i].body,
                 ),
+        match (left_parent, right_parent) {
+            (LChoreo::Offer { branches: left, .. }, LChoreo::Offer { branches: right, .. }) => ({
+                let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                ((li < left.len() || ri < right.len()) ==> result.len() > 0)
+                    && (result.len() > 0 ==> (
+                        (li < left.len() && result[0].label == left[li].label)
+                        || (ri < right.len() && result[0].label == right[ri].label)
+                    ))
+            }),
+            _ => true,
+        },
     decreases left_parent, 0int, right_parent, 0int,
         if li >= 0 && ri >= 0 && li <= lchoreo_branch_count(left_parent) && ri <= lchoreo_branch_count(right_parent)
         { (lchoreo_branch_count(left_parent) - li + lchoreo_branch_count(right_parent) - ri) as nat } else { 0nat }
 {
-    // TODO: complete branch_labels_strict_spec composition proof
-    admit();
+    match left_parent {
+        LChoreo::Offer { from: left_from, branches: left } => match right_parent {
+            LChoreo::Offer { from: right_from, branches: right } => {
+                well_formed_local_implies_branch_wf(left_parent);
+                well_formed_local_implies_branch_wf(right_parent);
+                if li == left.len() && ri == right.len() {
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result.len() == 0);
+                } else if li == left.len() {
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result == right.subrange(ri, right.len() as int));
+                    assert(well_formed_local_choice_prefix_spec(right_parent, right.len() as int));
+                    clone_suffix_view(right, ri);
+                    subrange_preserves_strict_labels(right, ri, right.len() as int);
+                    assert(result.len() > 0);
+                    assert(result[0] == right[ri]);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        assert(result[i] == right[ri + i]);
+                        assert(0 <= ri + i < right.len());
+                        well_formed_prefix_implies_branch_wf(right_parent, right.len() as int, ri + i);
+                        assert(well_formed_local_spec(right[ri + i].body));
+                    }
+                } else if ri == right.len() {
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result == left.subrange(li, left.len() as int));
+                    assert(well_formed_local_choice_prefix_spec(left_parent, left.len() as int));
+                    clone_suffix_view(left, li);
+                    subrange_preserves_strict_labels(left, li, left.len() as int);
+                    assert(result.len() > 0);
+                    assert(result[0] == left[li]);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        assert(result[i] == left[li + i]);
+                        assert(0 <= li + i < left.len());
+                        well_formed_prefix_implies_branch_wf(left_parent, left.len() as int, li + i);
+                        assert(well_formed_local_spec(left[li + i].body));
+                    }
+                } else if left[li].label < right[ri].label {
+                    assert(well_formed_local_choice_prefix_spec(left_parent, left.len() as int));
+                    well_formed_prefix_implies_branch_wf(left_parent, left.len() as int, li);
+                    merge_offer_branches_well_formed(decider, left_parent, right_parent, li + 1, ri);
+                    let head = left[li];
+                    let tail = merge_offer_branches_from_spec(decider, left_parent, right_parent, li + 1, ri).unwrap();
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result == seq![head] + tail);
+                    assert(result.len() > 0);
+                    assert(result[0].label == left[li].label);
+                    if tail.len() > 0 {
+                        assert((li + 1 < left.len() && tail[0].label == left[li + 1].label)
+                            || (ri < right.len() && tail[0].label == right[ri].label));
+                        if li + 1 < left.len() && tail[0].label == left[li + 1].label {
+                            assert(head.label < tail[0].label);
+                        }
+                        if ri < right.len() && tail[0].label == right[ri].label {
+                            assert(head.label < tail[0].label);
+                        }
+                    }
+                    prepend_preserves_strict_labels(head, tail);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        if i == 0 {
+                            assert(result[0] == head);
+                            assert(well_formed_local_spec(head.body));
+                        } else {
+                            assert(0 <= i - 1 < tail.len());
+                            assert(result[i] == tail[i - 1]);
+                            assert(well_formed_local_spec(tail[i - 1].body));
+                        }
+                    }
+                } else if right[ri].label < left[li].label {
+                    assert(well_formed_local_choice_prefix_spec(right_parent, right.len() as int));
+                    well_formed_prefix_implies_branch_wf(right_parent, right.len() as int, ri);
+                    merge_offer_branches_well_formed(decider, left_parent, right_parent, li, ri + 1);
+                    let head = right[ri];
+                    let tail = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri + 1).unwrap();
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result == seq![head] + tail);
+                    assert(result.len() > 0);
+                    assert(result[0].label == right[ri].label);
+                    if tail.len() > 0 {
+                        assert((li < left.len() && tail[0].label == left[li].label)
+                            || (ri + 1 < right.len() && tail[0].label == right[ri + 1].label));
+                        if li < left.len() && tail[0].label == left[li].label {
+                            assert(head.label < tail[0].label);
+                        }
+                        if ri + 1 < right.len() && tail[0].label == right[ri + 1].label {
+                            assert(head.label < tail[0].label);
+                        }
+                    }
+                    prepend_preserves_strict_labels(head, tail);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        if i == 0 {
+                            assert(result[0] == head);
+                            assert(well_formed_local_spec(head.body));
+                        } else {
+                            assert(0 <= i - 1 < tail.len());
+                            assert(result[i] == tail[i - 1]);
+                            assert(well_formed_local_spec(tail[i - 1].body));
+                        }
+                    }
+                } else {
+                    assert(left[li].label == right[ri].label);
+                    assert(well_formed_local_choice_prefix_spec(left_parent, left.len() as int));
+                    assert(well_formed_local_choice_prefix_spec(right_parent, right.len() as int));
+                    well_formed_prefix_implies_branch_wf(left_parent, left.len() as int, li);
+                    well_formed_prefix_implies_branch_wf(right_parent, right.len() as int, ri);
+                    assert(well_formed_local_spec(left[li].body));
+                    assert(well_formed_local_spec(right[ri].body));
+                    merge_preserves_well_formed_local(decider, left[li].body, right[ri].body);
+                    merge_offer_branches_well_formed(decider, left_parent, right_parent, li + 1, ri + 1);
+                    let body = merge_local_spec(decider, left[li].body, right[ri].body).unwrap();
+                    let head = LBranch { label: left[li].label, body };
+                    let tail = merge_offer_branches_from_spec(decider, left_parent, right_parent, li + 1, ri + 1).unwrap();
+                    let result = merge_offer_branches_from_spec(decider, left_parent, right_parent, li, ri).unwrap();
+                    assert(result == seq![head] + tail);
+                    assert(result.len() > 0);
+                    assert(result[0].label == left[li].label);
+                    if tail.len() > 0 {
+                        assert((li + 1 < left.len() && tail[0].label == left[li + 1].label)
+                            || (ri + 1 < right.len() && tail[0].label == right[ri + 1].label));
+                        if li + 1 < left.len() && tail[0].label == left[li + 1].label {
+                            assert(head.label < tail[0].label);
+                        }
+                        if ri + 1 < right.len() && tail[0].label == right[ri + 1].label {
+                            assert(right[ri].label < right[ri + 1].label);
+                            assert(head.label < tail[0].label);
+                        }
+                    }
+                    prepend_preserves_strict_labels(head, tail);
+                    assert forall|i: int| #![trigger result[i]]
+                        0 <= i < result.len() implies well_formed_local_spec(result[i].body)
+                    by {
+                        if i == 0 {
+                            assert(result[0] == head);
+                            assert(well_formed_local_spec(head.body));
+                        } else {
+                            assert(0 <= i - 1 < tail.len());
+                            assert(result[i] == tail[i - 1]);
+                            assert(well_formed_local_spec(tail[i - 1].body));
+                        }
+                    }
+                }
+            }
+            _ => {}
+        },
+        _ => {}
+    }
 }
 
 proof fn two_branch_offer_well_formed(decider: RoleId, first: LBranch, second: LBranch)
@@ -730,8 +1024,104 @@ proof fn merge_preserves_well_formed_local(decider: RoleId, left: LChoreo, right
     ensures well_formed_local_spec(merge_local_spec(decider, left, right).unwrap())
     decreases left, 1int, right, 1int, 0nat
 {
-    // TODO: complete well-formedness preservation proof (depends on branch proofs above)
-    admit();
+    match (left, right) {
+        (LChoreo::End, LChoreo::End) => {}
+        (
+            LChoreo::Send { peer: l_peer, label: l_label, payload_tag: l_payload, next: l_next },
+            LChoreo::Send { peer: r_peer, label: r_label, payload_tag: r_payload, next: r_next },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload {
+                merge_preserves_well_formed_local(decider, *l_next, *r_next);
+                assert(merge_local_spec(decider, left, right)
+                    == match merge_local_spec(decider, *l_next, *r_next) {
+                        Some(next) => Some(LChoreo::Send {
+                            peer: l_peer,
+                            label: l_label,
+                            payload_tag: l_payload,
+                            next: Box::new(next),
+                        }),
+                        None => None,
+                    });
+            }
+        }
+        (
+            LChoreo::Recv { peer: l_peer, label: l_label, payload_tag: l_payload, next: l_next },
+            LChoreo::Recv { peer: r_peer, label: r_label, payload_tag: r_payload, next: r_next },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload {
+                merge_preserves_well_formed_local(decider, *l_next, *r_next);
+                merge_identical_prefix_exact(decider, l_peer, l_label, l_payload, *l_next, *r_next);
+            } else if l_peer == decider && r_peer == decider && l_label != r_label {
+                let left_branch = LBranch {
+                    label: l_label,
+                    body: LChoreo::Recv {
+                        peer: l_peer,
+                        label: l_label,
+                        payload_tag: l_payload,
+                        next: l_next,
+                    },
+                };
+                let right_branch = LBranch {
+                    label: r_label,
+                    body: LChoreo::Recv {
+                        peer: r_peer,
+                        label: r_label,
+                        payload_tag: r_payload,
+                        next: r_next,
+                    },
+                };
+                if l_label < r_label {
+                    merge_recv_distinct_labels_into_offer(decider, l_label, r_label, l_payload, r_payload, *l_next, *r_next);
+                    two_branch_offer_well_formed(decider, left_branch, right_branch);
+                } else {
+                    merge_recv_distinct_labels_into_offer(decider, l_label, r_label, l_payload, r_payload, *l_next, *r_next);
+                    two_branch_offer_well_formed(decider, right_branch, left_branch);
+                }
+            }
+        }
+        (LChoreo::InternalChoice { branches: left_branches }, LChoreo::InternalChoice { branches: right_branches }) => {
+            merge_choice_branches_well_formed(
+                decider,
+                LChoreo::InternalChoice { branches: left_branches },
+                LChoreo::InternalChoice { branches: right_branches },
+                0,
+            );
+            let merged = merge_choice_branches_from_spec(
+                decider,
+                LChoreo::InternalChoice { branches: left_branches },
+                LChoreo::InternalChoice { branches: right_branches },
+                0,
+            ).unwrap();
+            assert(merged.len() > 0);
+            internal_choice_prefix_from_all_wf(merged, merged.len() as int);
+            assert(well_formed_local_spec(LChoreo::InternalChoice { branches: merged }));
+        }
+        (
+            LChoreo::Offer { from: left_from, branches: left_branches },
+            LChoreo::Offer { from: right_from, branches: right_branches },
+        ) => {
+            if left_from == decider && right_from == decider {
+                merge_offer_branches_well_formed(
+                    decider,
+                    LChoreo::Offer { from: left_from, branches: left_branches },
+                    LChoreo::Offer { from: right_from, branches: right_branches },
+                    0,
+                    0,
+                );
+                let merged = merge_offer_branches_from_spec(
+                    decider,
+                    LChoreo::Offer { from: left_from, branches: left_branches },
+                    LChoreo::Offer { from: right_from, branches: right_branches },
+                    0,
+                    0,
+                ).unwrap();
+                assert(merged.len() > 0);
+                offer_prefix_from_all_wf(decider, merged, merged.len() as int);
+                assert(well_formed_local_spec(LChoreo::Offer { from: decider, branches: merged }));
+            }
+        }
+        _ => {}
+    }
 }
 
 #[verifier::exec_allows_no_decreases_clause]

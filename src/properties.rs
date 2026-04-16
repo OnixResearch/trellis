@@ -27,8 +27,12 @@ mod verus_proofs {
     use crate::fencing::issue_token_spec;
     use crate::monotonic::is_strict_advance_spec;
     use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
-    use crate::choreography_local::{LChoreo, branch_labels_spec};
-    use crate::choreography_projection::{project_decider_choice_from_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_local::{LBranch, LChoreo, branch_labels_spec};
+    use crate::choreography_projection::{
+        all_decider_guarded_spec, common_recv_tails_spec, common_send_tails_spec, project_decider_choice_from_len,
+        project_decider_choice_from_pointwise, project_decider_choice_from_spec, project_endpoint_spec,
+        projected_branch_suffix_size, projectable_spec, same_projected_bodies_spec,
+    };
     use crate::choreography_step::{
         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
         local_recv_step_spec, local_send_step_spec,
@@ -2470,8 +2474,12 @@ mod retry_proofs {
     use crate::retry::classify_outcome_spec;
     use crate::retry::should_retry_spec;
     use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
-    use crate::choreography_local::{LChoreo, branch_labels_spec};
-    use crate::choreography_projection::{project_decider_choice_from_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_local::{LBranch, LChoreo, branch_labels_spec};
+    use crate::choreography_projection::{
+        all_decider_guarded_spec, common_recv_tails_spec, common_send_tails_spec, project_decider_choice_from_len,
+        project_decider_choice_from_pointwise, project_decider_choice_from_spec, project_endpoint_spec,
+        projected_branch_suffix_size, projectable_spec, same_projected_bodies_spec,
+    };
     use crate::choreography_step::{
         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
         local_recv_step_spec, local_send_step_spec,
@@ -2531,6 +2539,125 @@ mod retry_proofs {
         crate::choreography_projection::receiver_projection_shape(from, to, label, payload_tag, next);
     }
 
+    pub(crate) open spec fn first_branch_dependent_offer_labels_fuel_spec(
+        decider: RoleId,
+        branches: Seq<LBranch>,
+        fuel: nat,
+    ) -> Option<Seq<LabelId>>
+        decreases fuel
+    {
+        if fuel == 0 || branches.len() == 0 {
+            None
+        } else if same_projected_bodies_spec(branches) {
+            None
+        } else {
+            match common_send_tails_spec(branches) {
+                Some((_, _, _, tails)) => {
+                    match first_branch_dependent_offer_labels_fuel_spec(decider, tails, (fuel - 1) as nat) {
+                        Some(_) => Some(branch_labels_spec(branches)),
+                        None => None,
+                    }
+                }
+                None => match common_recv_tails_spec(branches) {
+                    Some((_, _, _, tails)) => {
+                        match first_branch_dependent_offer_labels_fuel_spec(decider, tails, (fuel - 1) as nat) {
+                            Some(_) => Some(branch_labels_spec(branches)),
+                            None => None,
+                        }
+                    }
+                    None => {
+                        if all_decider_guarded_spec(decider, branches) {
+                            Some(branch_labels_spec(branches))
+                        } else {
+                            None
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    pub(crate) open spec fn first_branch_dependent_offer_labels_spec(
+        decider: RoleId,
+        branches: Seq<LBranch>,
+    ) -> Option<Seq<LabelId>> {
+        first_branch_dependent_offer_labels_fuel_spec(decider, branches, projected_branch_suffix_size(branches, 0))
+    }
+
+    proof fn projected_choice_labels_match_global(
+        role: RoleId,
+        decider: RoleId,
+        branches: Seq<GBranch>,
+    )
+        requires projectable_spec(GChoreo::Choice { decider, branches })
+        ensures
+            branch_labels_spec(project_decider_choice_from_spec(role, GChoreo::Choice { decider, branches }, 0).unwrap())
+                == branches.map_values(|branch: GBranch| branch.label)
+    {
+        let choice = GChoreo::Choice { decider, branches };
+        project_decider_choice_from_len(role, choice, 0);
+        let projected = project_decider_choice_from_spec(role, choice, 0).unwrap();
+        assert(projected.len() == branches.len());
+        assert(branch_labels_spec(projected).len() == branches.len());
+        assert(branches.map_values(|branch: GBranch| branch.label).len() == branches.len());
+        assert forall|i: int| #![trigger projected[i]] 0 <= i < projected.len()
+            implies branch_labels_spec(projected)[i] == branches.map_values(|branch: GBranch| branch.label)[i]
+        by {
+            project_decider_choice_from_pointwise(role, choice, 0, i);
+        }
+    }
+
+    proof fn first_branch_dependent_offer_labels_match_branches_fuel(
+        decider: RoleId,
+        branches: Seq<LBranch>,
+        fuel: nat,
+    )
+        requires first_branch_dependent_offer_labels_fuel_spec(decider, branches, fuel).is_some()
+        ensures first_branch_dependent_offer_labels_fuel_spec(decider, branches, fuel).unwrap() == branch_labels_spec(branches)
+        decreases fuel
+    {
+        if fuel == 0 || branches.len() == 0 {
+            assert(false);
+        } else if same_projected_bodies_spec(branches) {
+            assert(false);
+        } else {
+            match common_send_tails_spec(branches) {
+                Some((_, _, _, tails)) => {
+                    match first_branch_dependent_offer_labels_fuel_spec(decider, tails, (fuel - 1) as nat) {
+                        Some(_) => {
+                            first_branch_dependent_offer_labels_match_branches_fuel(decider, tails, (fuel - 1) as nat);
+                        }
+                        None => { assert(false); }
+                    }
+                }
+                None => match common_recv_tails_spec(branches) {
+                    Some((_, _, _, tails)) => {
+                        match first_branch_dependent_offer_labels_fuel_spec(decider, tails, (fuel - 1) as nat) {
+                            Some(_) => {
+                                first_branch_dependent_offer_labels_match_branches_fuel(decider, tails, (fuel - 1) as nat);
+                            }
+                            None => { assert(false); }
+                        }
+                    }
+                    None => {
+                        assert(all_decider_guarded_spec(decider, branches));
+                    }
+                }
+            }
+        }
+    }
+
+    proof fn first_branch_dependent_offer_labels_match_branches(
+        decider: RoleId,
+        branches: Seq<LBranch>,
+    )
+        requires first_branch_dependent_offer_labels_spec(decider, branches).is_some()
+        ensures first_branch_dependent_offer_labels_spec(decider, branches).unwrap() == branch_labels_spec(branches)
+    {
+        let fuel = projected_branch_suffix_size(branches, 0);
+        first_branch_dependent_offer_labels_match_branches_fuel(decider, branches, fuel);
+    }
+
     // r[impl properties.choreography-choice-agreement]
     // r[verify properties.choreography-choice-agreement]
     proof fn choreography_choice_label_agreement(
@@ -2542,13 +2669,21 @@ mod retry_proofs {
         ensures
             branch_labels_spec(project_decider_choice_from_spec(decider, GChoreo::Choice { decider, branches }, 0).unwrap())
                 == branches.map_values(|branch: GBranch| branch.label),
-            match first_offer_labels_from_spec(project_endpoint_spec(role, GChoreo::Choice { decider, branches }), decider) {
+            match first_branch_dependent_offer_labels_spec(
+                decider,
+                project_decider_choice_from_spec(role, GChoreo::Choice { decider, branches }, 0).unwrap(),
+            ) {
                 Some(labels) => labels == branches.map_values(|branch: GBranch| branch.label),
                 None => true,
             }
     {
-        // TODO: prove label agreement (depends on decider projection shape + label preservation)
-        admit();
+        let choice = GChoreo::Choice { decider, branches };
+        projected_choice_labels_match_global(decider, decider, branches);
+        projected_choice_labels_match_global(role, decider, branches);
+        let projected = project_decider_choice_from_spec(role, choice, 0).unwrap();
+        if first_branch_dependent_offer_labels_spec(decider, projected).is_some() {
+            first_branch_dependent_offer_labels_match_branches(decider, projected);
+        }
     }
 
     // r[impl properties.choreography-step-correspondence]

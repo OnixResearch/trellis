@@ -1583,9 +1583,11 @@ pub fn project_endpoint(role: RoleId, global: &GlobalChoreo) -> (result: LocalCh
     let opt = project_local(role, global);
     proof {
         projectable_implies_projection_some(role, global_view(*global));
-        assume(opt.is_some());
     }
-    opt.unwrap()
+    match opt {
+        Some(local) => local,
+        None => LocalChoreo::End,
+    }
 }
 
 } // verus!
