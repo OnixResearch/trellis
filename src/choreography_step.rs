@@ -660,7 +660,7 @@ mod tests {
         match (merged, chosen_proj) {
             (LocalChoreo::Send { next, .. }, LocalChoreo::Send { next: chosen_next, .. }) => match *next {
                 LocalChoreo::Offer { .. } => {
-                    assert_eq!(local_offer_step(&*next, 4), Some(*chosen_next));
+                    assert_eq!(local_offer_step(&next, 4), Some(*chosen_next));
                 }
                 _ => panic!("expected shared-prefix offer"),
             },

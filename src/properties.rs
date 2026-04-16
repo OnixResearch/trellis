@@ -8680,9 +8680,8 @@ mod choreography_property_tests {
 
     fn first_offer_labels(local: &LocalChoreo, from: u32) -> Option<Vec<u32>> {
         match local {
-            LocalChoreo::End => None,
             LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => first_offer_labels(next, from),
-            LocalChoreo::InternalChoice { .. } => None,
+            LocalChoreo::End | LocalChoreo::InternalChoice { .. } => None,
             LocalChoreo::Offer { from: offer_from, branches } => {
                 if *offer_from == from {
                     Some(branches.iter().map(|branch| branch.label).collect())
@@ -8800,7 +8799,7 @@ mod choreography_property_tests {
         let chosen_projection = project_endpoint(2, &chosen);
         match (merged, chosen_projection) {
             (LocalChoreo::Send { next, .. }, LocalChoreo::Send { next: chosen_next, .. }) => {
-                assert_eq!(local_offer_step(&*next, 4), Some(*chosen_next));
+                assert_eq!(local_offer_step(&next, 4), Some(*chosen_next));
             }
             _ => panic!("expected shared-prefix send"),
         }

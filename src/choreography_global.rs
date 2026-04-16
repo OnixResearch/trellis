@@ -333,6 +333,23 @@ pub(crate) open spec fn well_formed_global_spec(global: GChoreo) -> bool
     }
 }
 
+pub(crate) open spec fn participants_branches_exec_prefix_spec(branches: Seq<GlobalBranch>, upto: int) -> Seq<RoleId>
+    decreases if upto > 0 { upto } else { 0int }
+{
+    if upto <= 0 || upto > branches.len() {
+        seq![]
+    } else {
+        union_roles_spec(
+            participants_branches_exec_prefix_spec(branches, upto - 1),
+            participants_spec(global_view(branches[upto - 1].body)),
+        )
+    }
+}
+
+pub(crate) open spec fn participants_choice_exec_spec(branches: Seq<GlobalBranch>, decider: RoleId) -> Seq<RoleId> {
+    insert_role_spec(participants_branches_exec_prefix_spec(branches, branches.len() as int), decider)
+}
+
 // r[impl choreography.participants]
 pub closed spec fn participants_exec_spec(global: GlobalChoreo) -> Seq<RoleId> {
     participants_spec(global_view(global))
@@ -343,6 +360,25 @@ pub closed spec fn comm_parts_exec_spec(global: GlobalChoreo) -> Option<(RoleId,
     match global {
         GlobalChoreo::Comm { from, to, label, payload_tag, next } => Some((from, to, label, payload_tag, *next)),
         _ => None,
+    }
+}
+
+// r[impl choreography.communication]
+pub closed spec fn comm_parts_post_spec(global: GlobalChoreo, result: Option<(RoleId, RoleId, LabelId, PayloadTag, GlobalChoreo)>) -> bool {
+    match global {
+        GlobalChoreo::Comm { from, to, label, payload_tag, next } => {
+            match result {
+                Some((r_from, r_to, r_label, r_payload, r_next)) => {
+                    r_from == from
+                        && r_to == to
+                        && r_label == label
+                        && r_payload == payload_tag
+                        && global_view(r_next) == global_view(*next)
+                }
+                None => false,
+            }
+        }
+        _ => result.is_none(),
     }
 }
 
@@ -523,12 +559,16 @@ fn append_unique(roles: &mut Vec<RoleId>, more: &[RoleId])
 
 #[verifier::exec_allows_no_decreases_clause]
 fn clone_global_branch(branch: &GlobalBranch) -> (result: GlobalBranch)
+    ensures
+        result.label == branch.label,
+        global_view(result.body) == global_view(branch.body)
 {
     GlobalBranch { label: branch.label, body: clone_global(&branch.body) }
 }
 
 #[verifier::exec_allows_no_decreases_clause]
 pub(crate) fn clone_global(global: &GlobalChoreo) -> (result: GlobalChoreo)
+    ensures global_view(result) == global_view(*global)
 {
     match global {
         GlobalChoreo::End => GlobalChoreo::End,
@@ -542,21 +582,175 @@ pub(crate) fn clone_global(global: &GlobalChoreo) -> (result: GlobalChoreo)
         GlobalChoreo::Choice { decider, branches } => {
             let mut out: Vec<GlobalBranch> = Vec::new();
             let mut i: usize = 0;
-            while i < branches.len() {
+            while i < branches.len()
+                invariant
+                    0 <= i <= branches@.len(),
+                    out@.len() == i as int,
+                    forall|j: int| #![trigger out@[j], branches@[j]]
+                        0 <= j < i as int ==> out@[j].label == branches@[j].label
+                            && global_view(out@[j].body) == global_view(branches@[j].body),
+                decreases branches@.len() - i,
+            {
                 out.push(clone_global_branch(&branches[i]));
                 i += 1;
             }
-            GlobalChoreo::Choice { decider: *decider, branches: out }
+            let result = GlobalChoreo::Choice { decider: *decider, branches: out };
+            proof {
+                global_choice_branches_view_len(*global, 0);
+                global_choice_branches_view_len(result, 0);
+                assert forall|k: int|
+                    #![trigger global_choice_branches_view(result, 0)[k], global_choice_branches_view(*global, 0)[k]]
+                    0 <= k < branches@.len()
+                    implies global_choice_branches_view(result, 0)[k] == global_choice_branches_view(*global, 0)[k]
+                by {
+                    global_choice_branches_view_nth(result, 0, k);
+                    global_choice_branches_view_nth(*global, 0, k);
+                    assert(out@[k].label == branches@[k].label);
+                    assert(global_view(out@[k].body) == global_view(branches@[k].body));
+                }
+                assert(global_choice_branches_view(result, 0) == global_choice_branches_view(*global, 0));
+                assert(global_view(result) == global_view(*global));
+            }
+            result
         }
+    }
+}
+
+proof fn global_choice_branches_view_len(choice: GlobalChoreo, from: int)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } => 0 <= from <= branches@.len(),
+            _ => false,
+        },
+    ensures
+        match choice {
+            GlobalChoreo::Choice { branches, .. } =>
+                global_choice_branches_view(choice, from).len() == branches@.len() - from,
+            _ => false,
+        }
+    decreases match choice {
+        GlobalChoreo::Choice { branches, .. } => branches@.len() - from,
+        _ => 0int,
+    }
+{
+    if let GlobalChoreo::Choice { branches, .. } = choice {
+        if from < branches@.len() {
+            global_choice_branches_view_len(choice, from + 1);
+        }
+    }
+}
+
+proof fn global_choice_branches_view_nth(choice: GlobalChoreo, from: int, k: int)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } => 0 <= from <= k < branches@.len(),
+            _ => false,
+        },
+    ensures ({
+        let viewed = global_choice_branches_view(choice, from);
+        match choice {
+            GlobalChoreo::Choice { branches, .. } => {
+                &&& viewed.len() == branches@.len() - from
+                &&& viewed[k - from].label == branches[k].label
+                &&& viewed[k - from].body == global_view(branches[k].body)
+            }
+            _ => false,
+        }
+    })
+    decreases k - from
+{
+    if let GlobalChoreo::Choice { branches, .. } = choice {
+        if from == k {
+            global_choice_branches_view_len(choice, from);
+        } else {
+            global_choice_branches_view_nth(choice, from + 1, k);
+            global_choice_branches_view_len(choice, from);
+        }
+    }
+}
+
+proof fn participants_prefix_view_eq(choice: GlobalChoreo, n: int)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } => 0 <= n <= branches@.len(),
+            _ => false,
+        },
+    ensures
+        match choice {
+            GlobalChoreo::Choice { branches, .. } =>
+                participants_choice_branches_prefix_spec(global_view(choice), n)
+                    == participants_branches_exec_prefix_spec(branches@, n),
+            _ => false,
+        }
+    decreases n
+{
+    if n > 0 {
+        participants_prefix_view_eq(choice, n - 1);
+        global_choice_branches_view_nth(choice, 0, n - 1);
+    }
+}
+
+proof fn participants_exec_choice_eq(choice: GlobalChoreo)
+    requires
+        match choice {
+            GlobalChoreo::Choice { .. } => true,
+            _ => false,
+        }
+    ensures
+        participants_exec_spec(choice) == match choice {
+            GlobalChoreo::Choice { decider, branches } => participants_choice_exec_spec(branches@, decider),
+            _ => seq![],
+        }
+{
+    reveal(participants_exec_spec);
+    if let GlobalChoreo::Choice { decider, branches } = choice {
+        participants_prefix_view_eq(choice, branches@.len() as int);
+        assert(participants_choice_branches_prefix_spec(global_view(choice), branches@.len() as int)
+            == participants_branches_exec_prefix_spec(branches@, branches@.len() as int));
+        assert(global_view(choice) == GChoreo::Choice {
+            decider,
+            branches: global_choice_branches_view(choice, 0),
+        });
+        global_choice_branches_view_len(choice, 0);
+        assert(global_choice_branches_view(choice, 0).len() == branches@.len());
+        assert(participants_spec(GChoreo::Choice {
+            decider,
+            branches: global_choice_branches_view(choice, 0),
+        })
+            == insert_role_spec(
+                participants_choice_branches_prefix_spec(
+                    GChoreo::Choice { decider, branches: global_choice_branches_view(choice, 0) },
+                    branches@.len() as int,
+                ),
+                decider,
+            ));
+        assert(participants_spec(global_view(choice))
+            == insert_role_spec(
+                participants_choice_branches_prefix_spec(global_view(choice), branches@.len() as int),
+                decider,
+            ));
+        assert(participants_exec_spec(choice) == participants_spec(global_view(choice)));
+        assert(participants_exec_spec(choice)
+            == insert_role_spec(
+                participants_choice_branches_prefix_spec(global_view(choice), branches@.len() as int),
+                decider,
+            ));
+        assert(participants_exec_spec(choice) == participants_choice_exec_spec(branches@, decider));
     }
 }
 
 #[verifier::exec_allows_no_decreases_clause]
 fn participants_branches(branches: &[GlobalBranch]) -> (result: Vec<RoleId>)
+    ensures result@ == participants_branches_exec_prefix_spec(branches@, branches.len() as int)
 {
     let mut roles: Vec<RoleId> = Vec::new();
     let mut i: usize = 0;
-    while i < branches.len() {
+    while i < branches.len()
+        invariant
+            0 <= i <= branches@.len(),
+            roles@ == participants_branches_exec_prefix_spec(branches@, i as int),
+        decreases branches@.len() - i,
+    {
         let branch_roles = participants(&branches[i].body);
         append_unique(&mut roles, &branch_roles);
         i += 1;
@@ -567,18 +761,33 @@ fn participants_branches(branches: &[GlobalBranch]) -> (result: Vec<RoleId>)
 // r[impl choreography.participants]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn participants(global: &GlobalChoreo) -> (result: Vec<RoleId>)
+    ensures result@ == participants_exec_spec(*global)
 {
     match global {
-        GlobalChoreo::End => Vec::new(),
+        GlobalChoreo::End => {
+            proof {
+                reveal(participants_exec_spec);
+            }
+            Vec::new()
+        }
         GlobalChoreo::Comm { from, to, next, .. } => {
             let mut roles = participants(next);
             push_unique(&mut roles, *from);
             push_unique(&mut roles, *to);
+            proof {
+                reveal(participants_exec_spec);
+            }
             roles
         }
         GlobalChoreo::Choice { decider, branches } => {
             let mut roles = participants_branches(branches);
             push_unique(&mut roles, *decider);
+            proof {
+                participants_exec_choice_eq(*global);
+                reveal(participants_exec_spec);
+            }
+            assert(roles@ == participants_choice_exec_spec(branches@, *decider));
+            assert(participants_exec_spec(*global) == participants_choice_exec_spec(branches@, *decider));
             roles
         }
     }
@@ -586,6 +795,7 @@ pub fn participants(global: &GlobalChoreo) -> (result: Vec<RoleId>)
 
 // r[impl choreography.communication]
 pub fn comm_parts(global: &GlobalChoreo) -> (result: Option<(RoleId, RoleId, LabelId, PayloadTag, GlobalChoreo)>)
+    ensures comm_parts_post_spec(*global, result)
 {
     match global {
         GlobalChoreo::Comm { from, to, label, payload_tag, next } => {

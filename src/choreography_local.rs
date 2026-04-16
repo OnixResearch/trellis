@@ -1186,7 +1186,7 @@ fn clone_branches_from(branches: &[LocalBranch], from: usize) -> (result: Vec<Lo
     result
 }
 
-fn prepend_branch(branch: LocalBranch, tail: Vec<LocalBranch>) -> (result: Vec<LocalBranch>)
+fn prepend_branch(branch: LocalBranch, tail: &[LocalBranch]) -> (result: Vec<LocalBranch>)
 {
     let mut result: Vec<LocalBranch> = Vec::new();
     result.push(branch);
@@ -1216,7 +1216,7 @@ fn merge_choice_branches_from(
         if let Some(body) = merge_local(decider, &left[from].body, &right[from].body) {
             if let Some(tail) = merge_choice_branches_from(decider, left, right, from + 1) {
                 let branch = LocalBranch { label: left[from].label, body };
-                return Some(prepend_branch(branch, tail));
+                return Some(prepend_branch(branch, &tail));
             }
         }
     }
@@ -1244,16 +1244,16 @@ fn merge_offer_branches_from(
     }
     if left[li].label < right[ri].label {
         if let Some(tail) = merge_offer_branches_from(decider, left, right, li + 1, ri) {
-            return Some(prepend_branch(clone_local_branch(&left[li]), tail));
+            return Some(prepend_branch(clone_local_branch(&left[li]), &tail));
         }
     } else if right[ri].label < left[li].label {
         if let Some(tail) = merge_offer_branches_from(decider, left, right, li, ri + 1) {
-            return Some(prepend_branch(clone_local_branch(&right[ri]), tail));
+            return Some(prepend_branch(clone_local_branch(&right[ri]), &tail));
         }
     } else if let Some(body) = merge_local(decider, &left[li].body, &right[ri].body) {
         if let Some(tail) = merge_offer_branches_from(decider, left, right, li + 1, ri + 1) {
             let branch = LocalBranch { label: left[li].label, body };
-            return Some(prepend_branch(branch, tail));
+            return Some(prepend_branch(branch, &tail));
         }
     }
     None
