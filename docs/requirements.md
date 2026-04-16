@@ -7189,10 +7189,12 @@ well-formed inputs MUST preserve local branch-order invariants.
 r[choreography.projectability]
 A finite choreography MUST be projectable exactly when it is well formed and,
 for every choice and every non-decider role appearing in at least one branch,
-that role's branch projections merge successfully under the exact merge rules.
-For choices with more than two branches, non-decider merge MUST use a left fold
-over the stored branch order. If a projectable choreography takes one global
-head step, the post-step choreography MUST remain projectable.
+that role's branch projections admit the exact projection-side merge: preserve
+any shared local `Send` / `Recv` prefix common to every branch in stored order,
+and when behavior first diverges, expose an `Offer` from the decider keyed by
+the stored global branch labels for the remaining branch-local continuations.
+If a projectable choreography takes one global head step, the post-step
+choreography MUST remain projectable.
 
 r[choreography.projection]
 For every projectable finite choreography `g` and role `r`,
@@ -7200,10 +7202,11 @@ For every projectable finite choreography `g` and role `r`,
 exact local view implied by `g`: `End -> End`; a communication prefix projects
 to `Send` for the sender, `Recv` for the receiver, and the projected
 continuation for every uninvolved role; a choice projects to a normalized
-`InternalChoice` for the decider; and a choice projects to the exact normalized
-left-fold branch-merge result for every non-decider role, preserving any shared
-local prefix and introducing an `Offer` only at the first branch-dependent
-point. A role outside `participants(g)` MUST project to `End`.
+`InternalChoice` for the decider; and a choice projects for every non-decider
+role to the exact outer-label-preserving merge of the per-branch projections,
+preserving any shared local prefix and introducing an `Offer` from the decider
+whose branch labels are the stored global choice labels exactly at the first
+branch-dependent point. A role outside `participants(g)` MUST project to `End`.
 
 r[choreography.steps]
 A projectable finite choreography MUST have exact one-step global and local
@@ -7233,8 +7236,8 @@ the decider's local projection MUST expose exactly `L` as a normalized
 `InternalChoice`. Every non-decider role whose branch behavior is identical
 across all branches MUST collapse to that exact common local behavior. Every
 other non-decider role MUST preserve any exact shared local prefix produced by
-merge and, at the first exposed `Offer` from `D` if one appears, MUST expose
-exactly `L`.
+projection-side merge and, at the first exposed `Offer` from `D` if one
+appears, MUST expose exactly `L`.
 
 r[properties.choreography-step-correspondence]
 If a projectable choreography takes one global head step to `g'`, then the

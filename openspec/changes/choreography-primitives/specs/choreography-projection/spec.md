@@ -20,9 +20,10 @@ is equally admissible for roles outside `participants(g)`:
   receiver, and the projected continuation for every uninvolved role
 - a choice projects to a normalized `InternalChoice` for the decider over the
   projected branches in branch-label order
-- a choice projects to the exact normalized left-fold branch-merge result for
-  every non-decider role, preserving any shared local prefix and introducing an
-  `Offer` only at the first branch-dependent receive from the decider
+- a choice projects for every non-decider role to the exact outer-label-
+  preserving merge of the per-branch projections, preserving any shared local
+  prefix and introducing an `Offer` from the decider whose branch labels are the
+  stored global choice labels exactly at the first branch-dependent point
 - a role outside `participants(g)` projects to `End`
 
 #### Scenario: Sender projection produces send head

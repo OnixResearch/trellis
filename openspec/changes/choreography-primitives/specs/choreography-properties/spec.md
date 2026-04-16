@@ -34,8 +34,9 @@ the decider's local projection MUST expose exactly `L` as a normalized
 `InternalChoice`. Every non-decider role whose branch behavior is identical
 across all branches MUST collapse to that exact common local behavior. Every
 other non-decider role MUST preserve any exact shared local prefix produced by
-merge and, at the first branch-dependent receive from `D` if one is exposed,
-MUST expose exactly `L` as a normalized `Offer` from `D`.
+the projection-side merge and, at the first branch-dependent point if an
+`Offer` from `D` is exposed, MUST expose exactly `L` as a normalized `Offer`
+from `D`.
 
 #### Scenario: Decider and first exposed offer share the same label set
 

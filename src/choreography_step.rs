@@ -8,14 +8,23 @@ use crate::choreography_global::{GlobalBranch, GlobalChoreo, LabelId, PayloadTag
 use crate::choreography_local::{LocalBranch, LocalChoreo, clone_local};
 
 #[cfg(verus_keep_ghost)]
-use crate::choreography_global::{GBranch, GChoreo, gbranches_view, global_view};
+use crate::choreography_global::{
+    GBranch, GChoreo, gbranches_view, global_branch_labels_strict_spec, global_view,
+    role_in_branches_spec, role_in_global_spec,
+};
 #[cfg(verus_keep_ghost)]
 use crate::choreography_local::{
-    LBranch, LChoreo, lbranches_view, local_view, lookup_branch_from_spec, lookup_branch_spec,
+    LBranch, LChoreo, lbranches_view, local_size, local_view, lookup_branch_from_spec, lookup_branch_spec,
     option_local_view,
 };
 #[cfg(verus_keep_ghost)]
-use crate::choreography_projection::{project_endpoint_spec, project_local_spec, projectable_spec};
+use crate::choreography_projection::{
+    absent_from_branches_excludes_each, absent_role_projects_to_end, decider_choice_projects_to_internal_choice,
+    lookup_in_strictly_labeled_branches, merge_projected_absent_role_is_end, merge_projected_alignment,
+    merge_projected_branches_spec, merge_projected_labeled_branches_spec, project_decider_choice_from_pointwise,
+    project_decider_choice_strict_labels, project_decider_choice_from_spec, project_endpoint_spec, project_local_spec,
+    projectable_spec,
+};
 
 verus! {
 
@@ -141,36 +150,37 @@ pub(crate) open spec fn first_offer_labels_from_spec(local: LChoreo, from: RoleI
     }
 }
 
-pub(crate) open spec fn choice_alignment_spec(local: LChoreo, label: LabelId) -> Option<LChoreo>
-    decreases local
+pub(crate) open spec fn choice_alignment_spec(before: LChoreo, label: LabelId, after: LChoreo) -> bool
+    decreases local_size(before) + local_size(after)
 {
-    match local {
-        LChoreo::End => Some(LChoreo::End),
-        LChoreo::Send { peer, label: msg_label, payload_tag, next } => {
-            match choice_alignment_spec(*next, label) {
-                Some(next_local) => Some(LChoreo::Send {
-                    peer,
-                    label: msg_label,
-                    payload_tag,
-                    next: Box::new(next_local),
-                }),
-                None => None,
+    before == after
+        || match before {
+            LChoreo::End => false,
+            LChoreo::Send { peer, label: msg_label, payload_tag, next } => {
+                match after {
+                    LChoreo::Send { peer: after_peer, label: after_label, payload_tag: after_payload, next: after_next } => {
+                        peer == after_peer
+                            && msg_label == after_label
+                            && payload_tag == after_payload
+                            && choice_alignment_spec(*next, label, *after_next)
+                    }
+                    _ => false,
+                }
             }
-        }
-        LChoreo::Recv { peer, label: msg_label, payload_tag, next } => {
-            match choice_alignment_spec(*next, label) {
-                Some(next_local) => Some(LChoreo::Recv {
-                    peer,
-                    label: msg_label,
-                    payload_tag,
-                    next: Box::new(next_local),
-                }),
-                None => None,
+            LChoreo::Recv { peer, label: msg_label, payload_tag, next } => {
+                match after {
+                    LChoreo::Recv { peer: after_peer, label: after_label, payload_tag: after_payload, next: after_next } => {
+                        peer == after_peer
+                            && msg_label == after_label
+                            && payload_tag == after_payload
+                            && choice_alignment_spec(*next, label, *after_next)
+                    }
+                    _ => false,
+                }
             }
+            LChoreo::InternalChoice { branches } => lookup_branch_spec(branches, label) == Some(after),
+            LChoreo::Offer { branches, .. } => lookup_branch_spec(branches, label) == Some(after),
         }
-        LChoreo::InternalChoice { branches } => lookup_branch_spec(branches, label),
-        LChoreo::Offer { branches, .. } => lookup_branch_spec(branches, label),
-    }
 }
 
 // r[impl choreography.steps]
@@ -322,11 +332,55 @@ pub(crate) proof fn choice_projection_alignment(
         projectable_spec(GChoreo::Choice { decider, branches }),
         lookup_global_branch_spec(branches, label).is_some(),
     ensures
-        choice_alignment_spec(project_endpoint_spec(role, GChoreo::Choice { decider, branches }), label)
-            == Some(project_endpoint_spec(role, lookup_global_branch_spec(branches, label).unwrap()))
+        choice_alignment_spec(
+            project_endpoint_spec(role, GChoreo::Choice { decider, branches }),
+            label,
+            project_endpoint_spec(role, lookup_global_branch_spec(branches, label).unwrap()),
+        )
 {
-    // TODO: prove choice/projection alignment (depends on projection shape proofs)
-    admit();
+    let choice = GChoreo::Choice { decider, branches };
+    lookup_global_branch_from_witness(branches, label, 0);
+    let idx = choose|i: int| 0 <= i < branches.len()
+        && branches[i].label == label
+        && lookup_global_branch_spec(branches, label) == Some(branches[i].body);
+    assert(projectable_spec(branches[idx].body));
+
+    if role == decider {
+        decider_choice_projects_to_internal_choice(decider, branches);
+        project_decider_choice_strict_labels(role, decider, branches);
+        project_decider_choice_from_pointwise(role, choice, 0, idx);
+        let projected = project_decider_choice_from_spec(role, choice, 0).unwrap();
+        lookup_in_strictly_labeled_branches(projected, idx);
+        assert(lookup_branch_spec(projected, label) == Some(projected[idx].body));
+        assert(projected[idx].body == project_endpoint_spec(role, branches[idx].body));
+        assert(choice_alignment_spec(
+            LChoreo::InternalChoice { branches: projected },
+            label,
+            project_endpoint_spec(role, branches[idx].body),
+        ));
+    } else if role_in_branches_spec(role, branches) {
+        project_decider_choice_strict_labels(role, decider, branches);
+        project_decider_choice_from_pointwise(role, choice, 0, idx);
+        let projected = project_decider_choice_from_spec(role, choice, 0).unwrap();
+        lookup_in_strictly_labeled_branches(projected, idx);
+        assert(lookup_branch_spec(projected, label) == Some(projected[idx].body));
+        assert(projected[idx].body == project_endpoint_spec(role, branches[idx].body));
+        assert(merge_projected_branches_spec(role, decider, branches)
+            == merge_projected_labeled_branches_spec(decider, projected));
+        merge_projected_alignment(decider, projected, label);
+    } else {
+        assert(role != decider);
+        absent_from_branches_excludes_each(role, branches);
+        assert forall|i: int| #![trigger branches[i]]
+            0 <= i < branches.len() implies project_local_spec(role, branches[i].body) == Some(LChoreo::End)
+        by {
+            absent_role_projects_to_end(role, branches[i].body);
+        }
+        merge_projected_absent_role_is_end(role, decider, branches);
+        assert(project_endpoint_spec(role, choice) == LChoreo::End);
+        assert(!role_in_global_spec(role, branches[idx].body));
+        absent_role_projects_to_end(role, branches[idx].body);
+    }
 }
 
 fn lookup_global_branch_from(branches: &[GlobalBranch], label: LabelId, from: usize) -> (result: Option<GlobalChoreo>)
@@ -537,6 +591,33 @@ mod tests {
         let receiver = project_endpoint(2, &global);
         assert_eq!(local_send_step(&sender), Some(project_endpoint(1, &next)));
         assert_eq!(local_recv_step(&receiver), Some(project_endpoint(2, &next)));
+    }
+
+    // r[verify choreography.steps]
+    #[test]
+    fn test_outer_choice_label_drives_offer_step() {
+        let global = GlobalChoreo::Choice {
+            decider: 0,
+            branches: vec![
+                branch(10, GlobalChoreo::Comm {
+                    from: 0,
+                    to: 1,
+                    label: 100,
+                    payload_tag: 1,
+                    next: Box::new(GlobalChoreo::End),
+                }),
+                branch(20, GlobalChoreo::Comm {
+                    from: 0,
+                    to: 1,
+                    label: 200,
+                    payload_tag: 2,
+                    next: Box::new(GlobalChoreo::End),
+                }),
+            ],
+        };
+        let projected = project_endpoint(1, &global);
+        assert_eq!(local_offer_step(&projected, 20), Some(recv(0, 200, 2, LocalChoreo::End)));
+        assert_eq!(local_offer_step(&projected, 200), None);
     }
 
     // r[verify choreography.steps]

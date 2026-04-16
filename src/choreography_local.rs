@@ -700,6 +700,27 @@ proof fn merge_offer_branches_well_formed(
     admit();
 }
 
+proof fn two_branch_offer_well_formed(decider: RoleId, first: LBranch, second: LBranch)
+    requires
+        first.label < second.label,
+        well_formed_local_spec(first.body),
+        well_formed_local_spec(second.body),
+    ensures
+        well_formed_local_spec(LChoreo::Offer { from: decider, branches: seq![first, second] })
+{
+    let offer = LChoreo::Offer { from: decider, branches: seq![first, second] };
+    let branches = seq![first, second];
+    assert(branches.len() == 2);
+    assert(branch_labels_strict_spec(branches));
+    assert(well_formed_local_choice_prefix_spec(offer, 0));
+    assert(well_formed_local_choice_prefix_spec(offer, 1)
+        == (well_formed_local_choice_prefix_spec(offer, 0) && well_formed_local_spec(branches[0].body)));
+    assert(well_formed_local_choice_prefix_spec(offer, 1));
+    assert(well_formed_local_choice_prefix_spec(offer, 2)
+        == (well_formed_local_choice_prefix_spec(offer, 1) && well_formed_local_spec(branches[1].body)));
+    assert(well_formed_local_choice_prefix_spec(offer, 2));
+}
+
 // r[verify choreography.merge]
 proof fn merge_preserves_well_formed_local(decider: RoleId, left: LChoreo, right: LChoreo)
     requires

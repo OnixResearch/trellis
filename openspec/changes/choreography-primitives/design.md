@@ -165,14 +165,13 @@ cases behind vague prose. These checks define the admitted syntax surface.
 
 The executable helper returns `Option<LocalChoreo>` and is total over all
 inputs, but `projectable_spec(...)` requires successful merges where needed.
-For choices with more than two branches, non-decider merge is defined as a
-left fold over the already normalized branch list, so result order is exact and
-stable. The verified recursion decreases structurally on the sum of remaining
-continuation sizes, and any branch-list fold additionally decreases on the
-remaining normalized suffix length. Because identical heads recurse before any
-`Offer` is formed, a projected non-decider may preserve an exact shared local
-prefix and expose an `Offer` only at the first branch-dependent receive from
-`decider`.
+For non-decider choice projection, the merge is projection-specific rather than
+a raw left fold on unlabeled locals: it preserves the stored outer branch labels
+while stripping any shared local `Send` / `Recv` prefix common to every branch.
+When behavior first diverges, it exposes one `Offer` from `decider` whose
+branch labels are exactly those stored outer branch labels, and whose branch
+bodies are the remaining branch-local continuations. The verified recursion
+decreases structurally on the sum of remaining continuation sizes.
 
 **Rationale:** this is strong enough to model common-prefix merging and
 choice-derived offers without pulling in a larger session-type environment.
@@ -184,8 +183,9 @@ The failure cases are also explicit, which matters for OpenSpec review.
 - `global` is well-formed
 - every branch subtree is projectable
 - for each `Choice { decider, branches }` and each non-decider role appearing in
-  any branch participant set, the branch projections merge successfully under
-  `merge_local_spec(decider, ...)`
+  any branch participant set, the branch projections succeed under the exact
+  projection-side merge that preserves outer branch labels through shared
+  prefixes and exposes them at the first branch-dependent `Offer`
 
 Projection is exact only over that surface.
 
@@ -204,9 +204,10 @@ rules:
 - `Choice { decider, branches }`
   - if `role == decider`, project to a normalized `InternalChoice` over
     per-branch projections in branch-label order
-  - otherwise project to the exact left-fold merge of per-branch projections in
-    branch-label order, preserving any shared local prefix and introducing an
-    `Offer` only at the first branch-dependent receive from `decider`
+  - otherwise project to the exact outer-label-preserving merge of per-branch
+    projections in branch-label order, preserving any shared local prefix and
+    introducing an `Offer` from `decider` whose branch labels are exactly the
+    stored outer branch labels at the first branch-dependent point
 
 Executable `project_endpoint(...) -> LocalChoreo` is preconditioned-total:
 it uses `requires projectable_spec(global)` rather than returning `Option`.

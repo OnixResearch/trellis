@@ -133,10 +133,12 @@ MUST fail the merge.
 r[choreography.projectability]
 A finite choreography MUST be projectable exactly when it is well formed and,
 for every choice and every non-decider role appearing in at least one branch,
-the role's branch projections merge successfully under the exact merge rules.
-For choices with more than two branches, non-decider merge MUST use a left fold
-over the already normalized branch order. Projectability MUST fail on malformed
-syntax or on any non-mergeable branch conflict.
+the role's branch projections admit the exact projection-side merge: preserve
+any shared local `Send` / `Recv` prefix common to every branch in stored order,
+and when behavior first diverges, expose an `Offer` from the decider keyed by
+the stored global branch labels for the remaining branch-local continuations.
+Projectability MUST fail on malformed syntax or on any non-mergeable branch
+conflict.
 
 #### Scenario: Common continuation is projectable
 
@@ -152,10 +154,12 @@ syntax or on any non-mergeable branch conflict.
 - WHEN checking projectability
 - THEN the choreography MUST be reported as not projectable
 
-#### Scenario: Three-branch projectability uses normalized left-fold order
+#### Scenario: Three-branch projectability preserves stored outer branch labels
 
 - GIVEN a well-formed choice with stored branch labels `1 < 4 < 9`
 - AND a non-decider role whose projections require more than one merge step
 - WHEN checking projectability
-- THEN successful branch merging MUST evaluate those projections by a left fold
-  in the exact stored order `1`, then `4`, then `9`
+- THEN successful branch projection MUST preserve the exact stored order `1`,
+  then `4`, then `9`
+- AND the first exposed `Offer`, if one appears, MUST use those stored outer
+  branch labels exactly

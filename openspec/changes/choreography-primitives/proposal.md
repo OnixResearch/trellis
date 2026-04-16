@@ -46,8 +46,8 @@ whole choreographic compiler in one pass.
 - `choreography.merge`: Verified local branch-merge semantics for non-decider
   roles.
 - `choreography.projectability`: Verified exact conditions under which a
-  finite choreography can be projected, including exact left-fold merge over
-  normalized branch order.
+  finite choreography can be projected, including the exact outer-label-
+  preserving merge for non-decider branches.
 - `choreography.projection`: Verified endpoint projection from a global
   choreography to one role's local view.
 - `choreography.steps`: Verified one-step global and local semantics for

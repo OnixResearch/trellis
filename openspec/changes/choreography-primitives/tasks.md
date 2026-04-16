@@ -26,7 +26,7 @@
 - [ ] `src/choreography_projection.rs`: land preconditioned-total `project_endpoint_spec` / `project_endpoint` over `requires projectable_spec(global)` (`r[choreography.projection]`)
 - [ ] `src/choreography_projection.rs`: prove communication-prefix projection shape for sender, receiver, and uninvolved roles (`r[choreography.projection]`)
 - [ ] `src/choreography_projection.rs`: prove decider-side `Choice` projection becomes exact `InternalChoice` over branch projections (`r[choreography.projection]`)
-- [ ] `src/choreography_projection.rs`: prove non-decider-side `Choice` projection is exactly the normalized left-fold branch merge result, preserves any shared local prefix before the first branch-dependent `Offer`, and projectability fails on non-mergeable branches (`r[choreography.projectability]`, `r[choreography.projection]`)
+- [ ] `src/choreography_projection.rs`: prove non-decider-side `Choice` projection uses the exact outer-label-preserving projection merge, preserves any shared local prefix before the first branch-dependent `Offer`, and exposes stored global branch labels at that first `Offer`; projectability still fails on non-mergeable branches (`r[choreography.projectability]`, `r[choreography.projection]`)
 - [ ] `src/choreography_projection.rs`: prove roles outside `participants(global)` project to `End` (`r[choreography.participants]`, `r[choreography.projection]`)
 - [ ] Add named projection proof artifacts in `src/choreography_projection.rs`
 - [ ] Add `docs/requirements.md` `r[impl]` / `r[verify]` anchors for `choreography.projectability` and `choreography.projection`

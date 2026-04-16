@@ -28,7 +28,7 @@ mod verus_proofs {
     use crate::monotonic::is_strict_advance_spec;
     use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
     use crate::choreography_local::{LChoreo, branch_labels_spec};
-    use crate::choreography_projection::{project_decider_branches_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_projection::{project_decider_choice_from_spec, project_endpoint_spec, projectable_spec};
     use crate::choreography_step::{
         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
         local_recv_step_spec, local_send_step_spec,
@@ -2471,7 +2471,7 @@ mod retry_proofs {
     use crate::retry::should_retry_spec;
     use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
     use crate::choreography_local::{LChoreo, branch_labels_spec};
-    use crate::choreography_projection::{project_decider_branches_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_projection::{project_decider_choice_from_spec, project_endpoint_spec, projectable_spec};
     use crate::choreography_step::{
         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
         local_recv_step_spec, local_send_step_spec,
@@ -2540,7 +2540,7 @@ mod retry_proofs {
     )
         requires projectable_spec(GChoreo::Choice { decider, branches })
         ensures
-            branch_labels_spec(project_decider_branches_spec(decider, branches).unwrap())
+            branch_labels_spec(project_decider_choice_from_spec(decider, GChoreo::Choice { decider, branches }, 0).unwrap())
                 == branches.map_values(|branch: GBranch| branch.label),
             match first_offer_labels_from_spec(project_endpoint_spec(role, GChoreo::Choice { decider, branches }), decider) {
                 Some(labels) => labels == branches.map_values(|branch: GBranch| branch.label),
@@ -2568,8 +2568,11 @@ mod retry_proofs {
                 || project_endpoint_spec(role, global) == project_endpoint_spec(role, global_comm_step_spec(global).unwrap())
             ),
             global_choice_step_spec(global, label).is_some() ==> (
-                choice_alignment_spec(project_endpoint_spec(role, global), label)
-                    == Some(project_endpoint_spec(role, global_choice_step_spec(global, label).unwrap()))
+                choice_alignment_spec(
+                    project_endpoint_spec(role, global),
+                    label,
+                    project_endpoint_spec(role, global_choice_step_spec(global, label).unwrap()),
+                )
             )
     {
         if global_comm_step_spec(global).is_some() {
