@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**6969 Verus proofs · 3711 tests · 1494 requirements · 323 modules · 19 trusted boundaries**
+**7082 Verus proofs · 3743 tests · 1518 requirements · 327 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -225,6 +225,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `page_checksum` | Fletcher-style two-sum checksum, torn-write detection |
 | `free_space_map` | free-space bitmap tracking: allocate/free, count, find-first-free |
 | `write_buffer` | write buffer (memtable): size tracking, flush threshold, swap |
+| `write_policy` | write-back/write-through dirty invariants, eviction, flush, read equivalence |
 | `block_cache` | block cache: occupancy, eviction, dirty tracking, write-back |
 | `set_associative_lookup` | cache address decomposition, per-set tag lookup, duplicate-tag checks |
 
@@ -243,6 +244,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `markov` | Markov chain prediction |
 | `merkle` | Merkle proof verification |
 | `rwlock` | read-write lock mode transitions, mutual exclusion |
+| `per_core_rwlock` | per-core reader aggregation, writer drain, and rwlock mode refinement |
 | `vector_clock` | vector clock merge, happens-before, concurrency |
 
 ### Nix package manager

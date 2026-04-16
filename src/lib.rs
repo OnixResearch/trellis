@@ -106,6 +106,7 @@
 //! - `fast_backtrack` — Raft accelerated log backtracking: skip conflicting terms in one RPC (§5.3)
 //! - `fee` — proportional fee computation: basis points, tiered, conservation
 //! - `fencing` — fencing tokens for stale-write rejection
+//! - `fetch_add` — wrapping/saturating fetch-and-add, CAS refinement, and fetch-sub roundtrips
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry
@@ -203,6 +204,7 @@
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
+//! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode refinement
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
@@ -232,6 +234,7 @@
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
 //! - `sel4_tcb` — TCB state legality, blocking-object identity, and legal wake/restart/deactivate transitions
 //! - `sel4_ready_queue` — per-priority ready queues, runnable/queued consistency, and highest-priority selection
+//! - `sel4_untyped` — aligned contained child layouts plus revoke/reset reclaim of an untyped source
 //! - `sel4_vspace` — aligned non-overlapping mappings, exact unmap, and rights restriction
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
@@ -266,6 +269,7 @@
 //! - `wal_segment` — WAL segment management: contiguity, space, truncation safety, replay range
 //! - `watermark` — bump allocation: remaining, fits, alloc, reset, non-overlap
 //! - `write_buffer` — memtable flush thresholds, buffer swap, write amplification, flush counting
+//! - `write_policy` — write-back/write-through dirty invariants, eviction, flush, read equivalence
 //! - `block_cache` — cache slot states: insert, evict, mark-dirty, write-back, clock-hand sweep
 //! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
 //! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write
@@ -393,6 +397,7 @@ pub mod fair_share;
 pub mod fast_backtrack;
 pub mod fee;
 pub mod fencing;
+pub mod fetch_add;
 pub mod follower_commit;
 pub mod follower_read;
 pub mod follower_redirect;
@@ -521,6 +526,7 @@ pub mod result;
 pub mod retry;
 pub mod ring_buffer;
 pub mod rwlock;
+pub mod per_core_rwlock;
 pub mod scope;
 pub mod segregated_free;
 pub mod sel4_asid;
@@ -534,6 +540,7 @@ pub mod sel4_reply;
 pub mod sel4_irq;
 pub mod sel4_tcb;
 pub mod sel4_ready_queue;
+pub mod sel4_untyped;
 pub mod sel4_vspace;
 pub mod semaphore;
 pub mod seq_fold;
@@ -600,6 +607,7 @@ pub mod web_of_trust_principal;
 pub mod witness;
 pub mod work_stealing;
 pub mod write_buffer;
+pub mod write_policy;
 pub mod zeroize;
 pub mod zircon_channel;
 pub mod zircon_event;

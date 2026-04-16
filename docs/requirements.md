@@ -1076,6 +1076,36 @@ Changing a cache set whose index differs from the requested address's
 index MUST NOT change the lookup result for that address. Different
 indices MUST select different sets.
 
+## Write Policy
+
+r[write-policy.write-back-dirty]
+Under write-back policy, a store MUST set the dirty bit and a freshly
+loaded line MUST be clean.
+
+r[write-policy.write-back-eviction]
+Evicting a dirty line MUST write its data to memory at the selected
+address. Evicting a clean line MUST leave memory unchanged.
+
+r[write-policy.write-through-clean]
+Under write-through policy, stores and loads MUST leave the dirty bit
+clear.
+
+r[write-policy.write-through-memory]
+A write-through store MUST update memory immediately at the selected
+address, and the updated memory cell MUST equal the cache line's new data.
+
+r[write-policy.policy-non-interference]
+Updating one cache line in a mixed-policy cache MUST NOT change any other
+line's state.
+
+r[write-policy.flush-all]
+When every clean line already matches memory, flush_all MUST clear every
+line's dirty bit and leave memory matching every cache line's data.
+
+r[write-policy.read-equivalence]
+A read hit MUST return the cached data regardless of whether the line uses
+write-back or write-through policy.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]
@@ -3120,6 +3150,31 @@ are monotonically increasing.
 
 r[rwlock.expiry]
 is_reader_expired and is_writer_expired return true when now > deadline.
+
+## Per-Core RWLock
+
+r[per-core-rwlock.aggregation]
+sum_readers computes the exact mathematical sum of all per-core reader counts.
+aggregate_reader_count computes the same sum with u64 saturation in exec code.
+
+r[per-core-rwlock.independence]
+read_acquire_core and read_release_core update only the selected core's count.
+All other core counts remain unchanged.
+
+r[per-core-rwlock.mutual-exclusion]
+Readers may acquire only when the write flag is clear. Aggregated mutual
+exclusion holds exactly when either no writer flag is set or the aggregated
+reader count is zero.
+
+r[per-core-rwlock.writer-drain]
+set_write_flag starts writer drain by setting the global write flag.
+writer_drain_complete is true exactly when the aggregate reader count is zero.
+Releasing one active reader decreases the mathematical aggregate by exactly 1.
+
+r[per-core-rwlock.mode-equivalence]
+per_core_mode maps aggregated per-core state to the same Free/Read/Write mode
+surface as the global rwlock. clear_write_flag clears the writer flag, and if
+no readers remain the resulting observable mode is Free.
 
 ## Left-Right
 
@@ -7043,3 +7098,59 @@ mappings unchanged.
 r[sel4-vspace.rights]
 Effective mapping rights MUST be no greater than the rights carried by the
 capability used to install the mapping.
+
+## Fetch-and-Add
+
+r[fetch-add.semantics]
+Fetch-and-add MUST return the old cell value and the new cell value after
+applying the chosen arithmetic variant.
+
+r[fetch-add.identity]
+Fetch-and-add with addend zero MUST leave the cell unchanged and return the
+original value.
+
+r[fetch-add.commutativity]
+Applying two fetch-and-add operations with addends `a` and `b` MUST yield the
+same final cell value regardless of order for both wrapping and saturating
+variants.
+
+r[fetch-add.associativity]
+Sequential fetch-and-add with addends `a` then `b` MUST yield the same final
+cell value as one fetch-and-add with the combined addend for both wrapping and
+saturating variants.
+
+r[fetch-add.monotonicity]
+For wrapping arithmetic, a positive addend without overflow MUST strictly
+increase the cell value.
+
+r[fetch-add.cas-refinement]
+Wrapping fetch-and-add MUST refine a single successful compare-and-swap that
+uses the old value as expected and the wrapped sum as desired.
+
+r[fetch-add.wrapping]
+The wrapping-add helper MUST satisfy modular arithmetic over `u64`, including
+commutativity, identity, and the `u64::MAX + 1 == 0` overflow case.
+
+r[fetch-add.saturating]
+The saturating-add helper MUST clamp at `u64::MAX` and remain fixed once
+saturated.
+
+r[fetch-add.fetch-sub]
+Fetch-sub MUST equal wrapping fetch-and-add with the two's-complement negation
+of the subtrahend, and add/sub round-trips MUST restore the original value in
+non-wrapping cases.
+
+## seL4 Untyped Memory
+
+r[sel4-untyped.retype]
+Retyping an untyped region into typed kernel objects MUST conserve address
+space, and every created child region MUST lie wholly within the parent
+untyped region.
+
+r[sel4-untyped.child-layout]
+Live child objects derived from one untyped parent MUST satisfy their required
+alignment and MUST NOT overlap one another.
+
+r[sel4-untyped.reclaim]
+Revoking or resetting an untyped object MUST remove all live children and
+restore the parent to an empty-child reclaimed state.
