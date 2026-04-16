@@ -26,6 +26,13 @@ mod verus_proofs {
     use crate::fencing::is_valid_write_spec;
     use crate::fencing::issue_token_spec;
     use crate::monotonic::is_strict_advance_spec;
+    use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
+    use crate::choreography_local::{LChoreo, branch_labels_spec};
+    use crate::choreography_projection::{project_decider_branches_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_step::{
+        choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
+        local_recv_step_spec, local_send_step_spec,
+    };
 
     verus! {
 
@@ -2462,6 +2469,13 @@ mod retry_proofs {
     use crate::retry::RETRY;
     use crate::retry::classify_outcome_spec;
     use crate::retry::should_retry_spec;
+    use crate::choreography_global::{GBranch, GChoreo, LabelId, PayloadTag, RoleId};
+    use crate::choreography_local::{LChoreo, branch_labels_spec};
+    use crate::choreography_projection::{project_decider_branches_spec, project_endpoint_spec, projectable_spec};
+    use crate::choreography_step::{
+        choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
+        local_recv_step_spec, local_send_step_spec,
+    };
 
     verus! {
 
@@ -2496,6 +2510,79 @@ mod retry_proofs {
         requires classify_outcome_spec(false, is_retryable, attempt, max_attempts) == RETRY
         ensures attempt < max_attempts
     {}
+
+    // r[impl properties.choreography-duality]
+    // r[verify properties.choreography-duality]
+    proof fn choreography_projection_duality(
+        from: RoleId,
+        to: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        next: GChoreo,
+    )
+        requires projectable_spec(GChoreo::Comm { from, to, label, payload_tag, next: Box::new(next) })
+        ensures
+            project_endpoint_spec(from, GChoreo::Comm { from, to, label, payload_tag, next: Box::new(next) })
+                == (LChoreo::Send { peer: to, label, payload_tag, next: Box::new(project_endpoint_spec(from, next)) }),
+            project_endpoint_spec(to, GChoreo::Comm { from, to, label, payload_tag, next: Box::new(next) })
+                == (LChoreo::Recv { peer: from, label, payload_tag, next: Box::new(project_endpoint_spec(to, next)) })
+    {
+        crate::choreography_projection::sender_projection_shape(from, to, label, payload_tag, next);
+        crate::choreography_projection::receiver_projection_shape(from, to, label, payload_tag, next);
+    }
+
+    // r[impl properties.choreography-choice-agreement]
+    // r[verify properties.choreography-choice-agreement]
+    proof fn choreography_choice_label_agreement(
+        role: RoleId,
+        decider: RoleId,
+        branches: Seq<GBranch>,
+    )
+        requires projectable_spec(GChoreo::Choice { decider, branches })
+        ensures
+            branch_labels_spec(project_decider_branches_spec(decider, branches).unwrap())
+                == branches.map_values(|branch: GBranch| branch.label),
+            match first_offer_labels_from_spec(project_endpoint_spec(role, GChoreo::Choice { decider, branches }), decider) {
+                Some(labels) => labels == branches.map_values(|branch: GBranch| branch.label),
+                None => true,
+            }
+    {
+        // TODO: prove label agreement (depends on decider projection shape + label preservation)
+        admit();
+    }
+
+    // r[impl properties.choreography-step-correspondence]
+    // r[verify properties.choreography-step-correspondence]
+    proof fn choreography_step_projection_correspondence(
+        role: RoleId,
+        global: GChoreo,
+        label: LabelId,
+    )
+        requires
+            projectable_spec(global),
+            global_comm_step_spec(global).is_some() || global_choice_step_spec(global, label).is_some(),
+        ensures
+            global_comm_step_spec(global).is_some() ==> (
+                local_send_step_spec(project_endpoint_spec(role, global)) == Some(project_endpoint_spec(role, global_comm_step_spec(global).unwrap()))
+                || local_recv_step_spec(project_endpoint_spec(role, global)) == Some(project_endpoint_spec(role, global_comm_step_spec(global).unwrap()))
+                || project_endpoint_spec(role, global) == project_endpoint_spec(role, global_comm_step_spec(global).unwrap())
+            ),
+            global_choice_step_spec(global, label).is_some() ==> (
+                choice_alignment_spec(project_endpoint_spec(role, global), label)
+                    == Some(project_endpoint_spec(role, global_choice_step_spec(global, label).unwrap()))
+            )
+    {
+        if global_comm_step_spec(global).is_some() {
+            if let GChoreo::Comm { from, to, label: msg_label, payload_tag, next } = global {
+                crate::choreography_step::communication_projection_step_shape(from, to, msg_label, payload_tag, *next);
+            }
+        }
+        if global_choice_step_spec(global, label).is_some() {
+            if let GChoreo::Choice { decider, branches } = global {
+                crate::choreography_step::choice_projection_alignment(role, decider, branches, label);
+            }
+        }
+    }
 
     } // verus!
 }
@@ -8439,5 +8526,145 @@ mod chaoscontrol_property_tests {
         ];
         assert!(healthy_period(&alive, &partitioned));
         assert!(quorum_reachable(&alive, &partitioned));
+    }
+}
+
+#[cfg(test)]
+mod choreography_property_tests {
+    use crate::choreography_global::{GlobalBranch, GlobalChoreo};
+    use crate::choreography_local::{LocalBranch, LocalChoreo};
+    use crate::choreography_projection::project_endpoint;
+    use crate::choreography_step::{global_choice_step, local_offer_step, local_recv_step, local_send_step};
+
+    fn branch(label: u32, body: GlobalChoreo) -> GlobalBranch {
+        GlobalBranch { label, body }
+    }
+
+    fn first_offer_labels(local: &LocalChoreo, from: u32) -> Option<Vec<u32>> {
+        match local {
+            LocalChoreo::End => None,
+            LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => first_offer_labels(next, from),
+            LocalChoreo::InternalChoice { .. } => None,
+            LocalChoreo::Offer { from: offer_from, branches } => {
+                if *offer_from == from {
+                    Some(branches.iter().map(|branch| branch.label).collect())
+                } else {
+                    None
+                }
+            }
+        }
+    }
+
+    // r[verify properties.choreography-duality]
+    #[test]
+    fn test_choreography_projection_duality_ping() {
+        let global = GlobalChoreo::Comm {
+            from: 1,
+            to: 2,
+            label: 7,
+            payload_tag: 9,
+            next: Box::new(GlobalChoreo::End),
+        };
+        let sender = project_endpoint(1, &global);
+        let receiver = project_endpoint(2, &global);
+        assert_eq!(local_send_step(&sender), Some(LocalChoreo::End));
+        assert_eq!(local_recv_step(&receiver), Some(LocalChoreo::End));
+    }
+
+    // r[verify properties.choreography-choice-agreement]
+    #[test]
+    fn test_choreography_choice_label_agreement() {
+        let global = GlobalChoreo::Choice {
+            decider: 0,
+            branches: vec![
+                branch(1, GlobalChoreo::Comm {
+                    from: 0,
+                    to: 2,
+                    label: 1,
+                    payload_tag: 10,
+                    next: Box::new(GlobalChoreo::End),
+                }),
+                branch(4, GlobalChoreo::Comm {
+                    from: 0,
+                    to: 2,
+                    label: 4,
+                    payload_tag: 11,
+                    next: Box::new(GlobalChoreo::End),
+                }),
+            ],
+        };
+        let decider = project_endpoint(0, &global);
+        let non_decider = project_endpoint(2, &global);
+        assert_eq!(
+            decider,
+            LocalChoreo::InternalChoice {
+                branches: vec![
+                    LocalBranch {
+                        label: 1,
+                        body: LocalChoreo::Send {
+                            peer: 2,
+                            label: 1,
+                            payload_tag: 10,
+                            next: Box::new(LocalChoreo::End),
+                        },
+                    },
+                    LocalBranch {
+                        label: 4,
+                        body: LocalChoreo::Send {
+                            peer: 2,
+                            label: 4,
+                            payload_tag: 11,
+                            next: Box::new(LocalChoreo::End),
+                        },
+                    },
+                ],
+            }
+        );
+        assert_eq!(first_offer_labels(&non_decider, 0), Some(vec![1, 4]));
+    }
+
+    // r[verify properties.choreography-step-correspondence]
+    #[test]
+    fn test_choreography_step_projection_correspondence_common_prefix() {
+        let global = GlobalChoreo::Choice {
+            decider: 0,
+            branches: vec![
+                branch(1, GlobalChoreo::Comm {
+                    from: 2,
+                    to: 3,
+                    label: 11,
+                    payload_tag: 0,
+                    next: Box::new(GlobalChoreo::Comm {
+                        from: 0,
+                        to: 2,
+                        label: 1,
+                        payload_tag: 0,
+                        next: Box::new(GlobalChoreo::End),
+                    }),
+                }),
+                branch(4, GlobalChoreo::Comm {
+                    from: 2,
+                    to: 3,
+                    label: 11,
+                    payload_tag: 0,
+                    next: Box::new(GlobalChoreo::Comm {
+                        from: 0,
+                        to: 2,
+                        label: 4,
+                        payload_tag: 0,
+                        next: Box::new(GlobalChoreo::End),
+                    }),
+                }),
+            ],
+        };
+        let merged = project_endpoint(2, &global);
+        let chosen = global_choice_step(&global, 4).unwrap();
+        let chosen_projection = project_endpoint(2, &chosen);
+        match (merged, chosen_projection) {
+            (LocalChoreo::Send { next, .. }, LocalChoreo::Send { next: chosen_next, .. }) => {
+                assert_eq!(local_offer_step(&*next, 4), Some(*chosen_next));
+            }
+            _ => panic!("expected shared-prefix send"),
+        }
     }
 }

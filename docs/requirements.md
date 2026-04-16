@@ -7154,3 +7154,93 @@ alignment and MUST NOT overlap one another.
 r[sel4-untyped.reclaim]
 Revoking or resetting an untyped object MUST remove all live children and
 restore the parent to an empty-child reclaimed state.
+
+## Choreography
+
+r[choreography.participants]
+Finite choreography primitives MUST operate on exact `u32` role identifiers,
+branch labels, and payload tags. A communication prefix is well formed only if
+`from != to`. A choice is well formed only if its branch list is non-empty and
+its branch labels are pairwise distinct and stored in strict increasing label
+order. `participants(choreo)` MUST contain exactly the roles that appear as
+communication endpoints or as a branch decider in `choreo`.
+
+r[choreography.communication]
+A global communication prefix
+`Comm { from, to, label, payload_tag, next }` MUST denote one exact
+point-to-point interaction from `from` to `to` carrying the exact symbolic
+message metadata `(label, payload_tag)` and continuing with the exact stored
+continuation `next`.
+
+r[choreography.merge]
+For a non-decider role, local branch projections over exact local nodes
+`End`, `Send`, `Recv`, `InternalChoice`, and `Offer` MUST merge by a total
+helper `merge_local(decider, left, right) -> Option<LocalChoreo>`.
+Identical `Send` or `Recv` heads merge only when peer, label, and payload tag
+all match, keeping that exact head and recursively merging continuations.
+Distinct `Recv` heads from the decider with distinct labels MUST merge into one
+normalized `Offer` from that decider whose branch labels stay in strict
+increasing order. `Offer` heads from the same decider MUST merge by sorted
+label-set union, recursively merging shared labels and preserving unshared
+labels. Every other head conflict MUST fail the merge. Merge recursion MUST use
+an explicit structurally decreasing local-size measure, and successful merges of
+well-formed inputs MUST preserve local branch-order invariants.
+
+r[choreography.projectability]
+A finite choreography MUST be projectable exactly when it is well formed and,
+for every choice and every non-decider role appearing in at least one branch,
+that role's branch projections merge successfully under the exact merge rules.
+For choices with more than two branches, non-decider merge MUST use a left fold
+over the stored branch order. If a projectable choreography takes one global
+head step, the post-step choreography MUST remain projectable.
+
+r[choreography.projection]
+For every projectable finite choreography `g` and role `r`,
+`project_endpoint(r, g)` MUST be a preconditioned-total helper that returns the
+exact local view implied by `g`: `End -> End`; a communication prefix projects
+to `Send` for the sender, `Recv` for the receiver, and the projected
+continuation for every uninvolved role; a choice projects to a normalized
+`InternalChoice` for the decider; and a choice projects to the exact normalized
+left-fold branch-merge result for every non-decider role, preserving any shared
+local prefix and introducing an `Offer` only at the first branch-dependent
+point. A role outside `participants(g)` MUST project to `End`.
+
+r[choreography.steps]
+A projectable finite choreography MUST have exact one-step global and local
+semantics. `global_comm_step` returns `Some(next)` exactly on a global `Comm`
+head. `global_choice_step(g, label)` returns `Some(branch_l)` exactly when the
+head is a `Choice` carrying branch label `label`. `local_send_step` and
+`local_recv_step` return `Some(next)` exactly on `Send` and `Recv` heads.
+`local_internal_choice_step` and `local_offer_step` return `Some(branch_l)`
+exactly when the head is `InternalChoice` or `Offer` carrying label `label`.
+Missing labels or wrong-head calls MUST return `None`. Sender and receiver
+heads, and any currently exposed `InternalChoice` or `Offer` heads, MUST stay
+aligned with the exact endpoint projection of the post-step choreography.
+Roles hidden behind shared prefixes MUST stay aligned without fabricating a
+spurious local head step.
+
+## Choreography Cross-Module Properties
+
+r[properties.choreography-duality]
+For any projectable communication prefix, projection to the sender and
+receiver MUST yield exact dual local heads: the sender sees
+`Send { peer = receiver, ... }` and the receiver sees
+`Recv { peer = sender, ... }` with the same exact `label` and `payload_tag`.
+
+r[properties.choreography-choice-agreement]
+For any projectable choice with decider `D` and global branch-label set `L`,
+the decider's local projection MUST expose exactly `L` as a normalized
+`InternalChoice`. Every non-decider role whose branch behavior is identical
+across all branches MUST collapse to that exact common local behavior. Every
+other non-decider role MUST preserve any exact shared local prefix produced by
+merge and, at the first exposed `Offer` from `D` if one appears, MUST expose
+exactly `L`.
+
+r[properties.choreography-step-correspondence]
+If a projectable choreography takes one global head step to `g'`, then the
+projected local views MUST stay exactly aligned with `project_endpoint(_, g')`.
+Sender and receiver heads, and any currently exposed `InternalChoice` or
+`Offer` heads, MUST take one matching local step to those exact endpoint
+projections. Roles whose projection already collapses the global head behind a
+shared prefix or identical behavior MUST already equal the corresponding
+endpoint projection without inventing an extra local step.

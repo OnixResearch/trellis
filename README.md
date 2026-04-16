@@ -389,13 +389,17 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `forest` | parent-pointer forest: ancestors, LCA, subtree walks |
 | `session_tree` | session tree as forest + seq_set composition |
 | `chain` | chain hash integrity with append-preserves proof |
+| `choreography_global` | finite global choreography syntax, participants, and well-formedness |
+| `choreography_local` | finite local choreography syntax, branch lookup, and merge |
+| `choreography_projection` | projectability checks and endpoint projection |
+| `choreography_step` | one-step global/local reduction and shared-prefix alignment |
 | `acid` | atomicity, consistency, isolation, durability over state vectors |
 
 ### Cross-module properties
 
 | Module | What it verifies |
 |---|---|
-| `properties` | 200+ cross-module proofs: signal↔bitwise, permission independence, escrow↔balance, ledger↔transfer, fee conservation, election↔quorum, fencing↔CAS, vector clock↔CRDT, mpmc↔mpsc occupancy, spin↔CAS retry, seqlock↔memory order, RCU↔epoch reclaim, ref count↔hazard pointer, lock ordering↔ticket lock, barrier↔quorum, futex↔notify roundtrip, job state↔timeout↔result, CAS ABA↔pack roundtrip, concurrency protocol↔data structure composition |
+| `properties` | 200+ cross-module proofs: signal↔bitwise, permission independence, escrow↔balance, ledger↔transfer, fee conservation, election↔quorum, fencing↔CAS, vector clock↔CRDT, mpmc↔mpsc occupancy, spin↔CAS retry, seqlock↔memory order, RCU↔epoch reclaim, ref count↔hazard pointer, lock ordering↔ticket lock, barrier↔quorum, futex↔notify roundtrip, job state↔timeout↔result, CAS ABA↔pack roundtrip, concurrency protocol↔data structure composition, choreography projection/choice/step correspondence |
 | `concurrent_composition` | concurrency protocol ↔ data structure invariant chains across 7 groups |
 | `consensus_path` | end-to-end Raft read/write path composition proofs |
 

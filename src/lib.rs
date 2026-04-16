@@ -60,6 +60,10 @@
 //! - `cas_loop` — CAS retry loop modeling: success/failure, ABA detection via generation counters,
 //!   retry bounds
 //! - `chain` — chain hash integrity with append-preserves proof
+//! - `choreography_global` — finite global choreography syntax, participants, and well-formedness
+//! - `choreography_local` — finite local choreography syntax, branch lookup, and merge
+//! - `choreography_projection` — projectability checks and endpoint projection
+//! - `choreography_step` — one-step global/local reduction and projection alignment helpers
 //! - `check_quorum` — leader liveness: step down when quorum contact lost
 //! - `circuit_breaker` — three-state circuit breaker: closed/open/half-open
 //! - `chunk` — ceiling-division chunk arithmetic, offset↔chunk mapping
@@ -346,6 +350,10 @@ pub mod calendar;
 pub mod cas;
 pub mod cas_loop;
 pub mod chain;
+pub mod choreography_global;
+pub mod choreography_local;
+pub mod choreography_projection;
+pub mod choreography_step;
 pub mod check_quorum;
 pub mod chunk;
 pub mod circuit_breaker;
