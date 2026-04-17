@@ -1,0 +1,140 @@
+$ jj diff --git src/web_of_trust_resolution.rs
+
+diff --git a/src/web_of_trust_resolution.rs b/src/web_of_trust_resolution.rs
+new file mode 100644
+index 0000000000..2a74f6033f
+--- /dev/null
++++ b/src/web_of_trust_resolution.rs
+@@ -0,0 +1,947 @@
++//! Verified web-of-trust rooted resolution.
++//!
++//! Resolves trust from a root set with a depth bound. The root base case
++//! uses the empty witness; non-root resolutions use bounded search over
++//! finite attestation-index witnesses.
++
++#![allow(clippy::ptr_arg)]
++
++use crate::web_of_trust_attestation::Attestation;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_attestation::{attestation_record_ids_match_bytes_spec, invalid_attestation_is_inactive};
++use crate::web_of_trust_chain::chain_valid_at;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_chain::{
++    chain_indices_in_range_from_spec,
++    chain_indices_in_range_spec,
++    chain_valid_at_spec,
++    chain_valid_requires_active_edges,
++    root_member_from_spec,
++    root_member_spec,
++};
++use crate::web_of_trust_principal::PrincipalId;
++use crate::web_of_trust_revocation::Revocation;
++use vstd::prelude::*;
++
++verus! {
++
++// r[depends web-of-trust.rooted-resolution]
++/// Existential rooted-resolution semantics over attestation-index witnesses.
++pub open spec fn resolves_trusted_witness_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++) -> bool {
++    &&& root_member_spec(roots, subject)
++        || exists|witness: Seq<usize>|
++            0 < witness.len() <= depth as int
++                && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t)
++}
++
++// r[impl web-of-trust.rooted-resolution]
++pub open spec fn exact_suffix_from_spec(
++    prefix: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    remaining: nat,
++    next: nat,
++) -> bool {
++    exists|suffix: Seq<usize>|
++        suffix.len() == remaining as int
++            && chain_valid_at_spec(prefix + suffix, roots, attestations, revocations, subject, t)
++            && (
++                remaining == 0
++                    || suffix[0] == next as usize
++                    || next < suffix[0] as nat
++            )
++}
++
++// r[impl web-of-trust.rooted-resolution]
++pub open spec fn search_exact_len_from_spec(
++    prefix: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    remaining: nat,
++    next: nat,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++    decreases remaining, if next <= attestations.len() { attestations.len() - next } else { 0 }
++{
++    if remaining == 0 {
++        chain_valid_at_spec(prefix, roots, attestations, revocations, subject, t)
++    } else if next >= attestations.len() {
++        false
++    } else {
++        search_exact_len_from_spec(
++            prefix + seq![next as usize],
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            (remaining - 1) as nat,
++            0,
++        ) || search_exact_len_from_spec(
++            prefix,
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            remaining,
++            next + 1,
++        )
++    }
++}
++
++// r[impl web-of-trust.rooted-resolution]
++pub open spec fn search_upto_len_from_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++    current: nat,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++{
++    exists|len: nat|
++        current <= len <= depth
++            && search_exact_len_from_spec(
++                Seq::empty(),
++                roots,
++                attestations,
++                revocations,
++                subject,
++                t,
++                len,
++                0,
++            )
++}
++
++// r[depends web-of-trust.rooted-resolution]

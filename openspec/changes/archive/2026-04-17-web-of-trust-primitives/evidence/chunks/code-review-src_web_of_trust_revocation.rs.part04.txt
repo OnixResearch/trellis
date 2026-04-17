@@ -1,0 +1,140 @@
++            assert(rev.family_subject.digest@ == family_subject.digest@);
++        }
++        if revocation_record_ids_match_bytes_spec(*rev) {
++            assert(rev.issuer.digest@ == issuer.digest@);
++            assert(rev.family_subject.digest@ == family_subject.digest@);
++        }
++    }
++    result
++}
++
++// r[impl web-of-trust.revocation]
++/// Check semantic exact-payload or family-target matching.
++pub fn revocation_matches(rev: &Revocation, att: &Attestation) -> (result: bool)
++    ensures result == revocation_matches_spec(*rev, *att)
++{
++    if rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG {
++        bytes_equal(&rev.issuer.digest, &att.issuer.digest)
++            && attestation_payload_matches(att, &rev.exact_payload_target)
++    } else if rev.target_kind_tag == FAMILY_TARGET_KIND_TAG {
++        bytes_equal(&rev.issuer.digest, &att.issuer.digest)
++            && bytes_equal(&rev.family_subject.digest, &att.subject.digest)
++            && rev.family_role_tag == att.role_tag
++    } else {
++        false
++    }
++}
++
++// r[impl web-of-trust.revocation]
++/// Check whether a revocation is effective against an attestation at time `t`.
++pub fn revocation_effective_at(rev: &Revocation, att: &Attestation, t: u64) -> (result: bool)
++    ensures result == revocation_effective_at_spec(*rev, *att, t)
++{
++    let rev_ids_match = revocation_record_ids_match_bytes_exec(rev);
++    let att_ids_match = crate::web_of_trust_attestation::attestation_record_ids_match_bytes_exec(att);
++    rev_ids_match && att_ids_match && revocation_signature_valid(rev) && revocation_matches(rev, att) && rev.effective_time <= t
++}
++
++// r[verify web-of-trust.revocation]
++/// Canonical revocation payload bytes use the exact required field order.
++pub proof fn revocation_payload_field_order(
++    issuer_key_bytes: Seq<u8>,
++    target_kind_tag: u8,
++    target_encoding: Seq<u8>,
++    effective_time: u64,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(target_encoding.len()),
++    ensures
++        revocation_payload_bytes_spec(
++            issuer_key_bytes,
++            target_kind_tag,
++            target_encoding,
++            effective_time,
++        ) == Some(
++            canonical_byte_string_spec(issuer_key_bytes).unwrap()
++                + seq![target_kind_tag]
++                + canonical_byte_string_spec(target_encoding).unwrap()
++                + encode_u64_spec(effective_time),
++        ),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Effective time uses exact little-endian `u64` encoding at the end of the payload.
++pub proof fn revocation_payload_little_endian(
++    issuer_key_bytes: Seq<u8>,
++    target_kind_tag: u8,
++    target_encoding: Seq<u8>,
++    effective_time: u64,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(target_encoding.len()),
++    ensures
++        revocation_payload_bytes_spec(
++            issuer_key_bytes,
++            target_kind_tag,
++            target_encoding,
++            effective_time,
++        ).unwrap().subrange(
++            (canonical_byte_string_spec(issuer_key_bytes).unwrap().len() + 1 + canonical_byte_string_spec(target_encoding).unwrap().len()) as int,
++            (canonical_byte_string_spec(issuer_key_bytes).unwrap().len() + 1 + canonical_byte_string_spec(target_encoding).unwrap().len() + 8) as int,
++        ) == encode_u64_spec(effective_time),
++{
++    revocation_payload_field_order(issuer_key_bytes, target_kind_tag, target_encoding, effective_time);
++}
++
++// r[verify web-of-trust.revocation]
++/// Family targets encode exact `(issuer, subject, role)` bytes.
++pub proof fn revocation_family_target_encoding(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(subject_key_bytes.len()),
++    ensures
++        family_target_encoding_spec(issuer_key_bytes, subject_key_bytes, role_tag)
++            == Some(
++                canonical_byte_string_spec(issuer_key_bytes).unwrap()
++                    + canonical_byte_string_spec(subject_key_bytes).unwrap()
++                    + seq![role_tag],
++            ),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Exact-payload targets encode one length-prefixed canonical attestation payload byte string.
++pub proof fn revocation_exact_payload_target_encoding(exact_payload_target: Seq<u8>)
++    requires length_fits_u32_spec(exact_payload_target.len())
++    ensures exact_payload_target_encoding_spec(exact_payload_target) == Some(canonical_byte_string_spec(exact_payload_target).unwrap())
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Target-kind tags distinguish exact-payload and family targets.
++pub proof fn revocation_target_kind_tags()
++    ensures
++        EXACT_PAYLOAD_TARGET_KIND_TAG != FAMILY_TARGET_KIND_TAG,
++        EXACT_PAYLOAD_TARGET_KIND_TAG == 0x01,
++        FAMILY_TARGET_KIND_TAG == 0x02,
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Revocation issuer and family-subject IDs match their canonical key bytes.
++pub proof fn revocation_record_ids_match_bytes(rev: Revocation)
++    requires revocation_record_ids_match_bytes_spec(rev)
++    ensures
++        rev.issuer.digest@ == principal_id_bytes_spec(rev.issuer_key_bytes@),
++        rev.family_subject.digest@ == principal_id_bytes_spec(rev.family_subject_key_bytes@),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Invalid revocations can never become effective.
++pub proof fn invalid_revocation_never_effective(rev: Revocation, att: Attestation, t: u64)
++    requires !revocation_record_ids_match_bytes_spec(rev) || !attestation_record_ids_match_bytes_spec(att)

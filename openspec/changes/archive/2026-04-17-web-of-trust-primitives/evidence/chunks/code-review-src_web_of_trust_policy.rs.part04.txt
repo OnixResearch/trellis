@@ -1,0 +1,140 @@
++    attestations: &Vec<Attestation>,
++    digest: &Vec<u8>,
++    from: usize,
++) -> (result: bool)
++    requires
++        from <= seen.len(),
++        seen_indices_in_range_spec(seen@, attestations@),
++    ensures
++        result == seen_introducer_from_spec(seen@, attestations@, digest@, from as int)
++    decreases seen.len() - from
++{
++    if from >= seen.len() {
++        false
++    } else {
++        proof {
++            seen_indices_in_range_from_implies_index(seen@, attestations@, 0, from as int);
++        }
++        let att = &attestations[seen[from]];
++        digest_equal(&att.issuer.digest, digest)
++            || seen_introducer_from(seen, attestations, digest, from + 1)
++    }
++}
++
++fn search_chain_with_final_exact_len_from(
++    prefix: &Vec<usize>,
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    t: u64,
++    final_idx: usize,
++    remaining: usize,
++    next: usize,
++) -> (result: bool)
++    requires next <= attestations.len()
++    ensures result == search_chain_with_final_exact_len_from_spec(prefix@, roots@, attestations@, revocations@, *subject, t, final_idx as nat, remaining as nat, next as nat)
++    decreases remaining, attestations.len() - next
++{
++    if final_idx >= attestations.len() {
++        false
++    } else if remaining == 0 {
++        let witness = clone_append(prefix, final_idx);
++        chain_valid_at(&witness, roots, attestations, revocations, subject, t)
++    } else if next >= attestations.len() {
++        false
++    } else {
++        let extended = clone_append(prefix, next);
++        search_chain_with_final_exact_len_from(&extended, roots, attestations, revocations, subject, t, final_idx, remaining - 1, 0)
++            || search_chain_with_final_exact_len_from(prefix, roots, attestations, revocations, subject, t, final_idx, remaining, next + 1)
++    }
++}
++
++fn search_chain_with_final_upto_len_from(
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    t: u64,
++    final_idx: usize,
++    depth: usize,
++    current: usize,
++) -> (result: bool)
++    requires attestations@.len() <= usize::MAX as int
++    ensures result == search_chain_with_final_upto_len_from_spec(roots@, attestations@, revocations@, *subject, t, final_idx as nat, depth as nat, current as nat)
++    decreases if current < depth { depth - current } else { 0 }
++{
++    proof {
++        assert(attestations@.len() == attestations.len() as int);
++        assert(attestations.len() as int <= usize::MAX as int);
++    }
++    if current >= depth {
++        false
++    } else {
++        let exact = search_chain_with_final_exact_len_from(
++            &Vec::new(),
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            final_idx,
++            current,
++            0,
++        );
++        if current + 1 < depth {
++            exact || search_chain_with_final_upto_len_from(roots, attestations, revocations, subject, t, final_idx, depth, current + 1)
++        } else {
++            exact
++        }
++    }
++}
++
++fn introducer_qualifies_at(
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    final_idx: usize,
++    depth: usize,
++    t: u64,
++) -> (result: bool)
++    requires attestations@.len() <= usize::MAX as int
++    ensures result == introducer_qualifies_at_spec(roots@, attestations@, revocations@, *subject, final_idx as nat, depth as nat, t)
++{
++    if depth == 0 {
++        false
++    } else {
++        search_chain_with_final_upto_len_from(roots, attestations, revocations, subject, t, final_idx, depth, 0)
++    }
++}
++
++fn threshold_accepts_from(
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    k: usize,
++    depth: usize,
++    t: u64,
++    from: usize,
++    seen: &Vec<usize>,
++) -> (result: bool)
++    requires
++        attestations@.len() <= usize::MAX as int,
++        from <= attestations.len(),
++        seen_indices_in_range_spec(seen@, attestations@),
++    ensures
++        result == threshold_accepts_from_spec(roots@, attestations@, revocations@, *subject, k as nat, depth as nat, t, from as nat, seen@)
++    decreases attestations.len() - from
++{
++    if k == 0 {
++        true
++    } else if from >= attestations.len() {
++        false
++    } else {
++        let include = introducer_qualifies_at(roots, attestations, revocations, subject, from, depth, t)
++            && !seen_introducer_from(seen, attestations, &attestations[from].issuer.digest, 0);
++        if include {
++            let next_seen = clone_append(seen, from);
++            proof {

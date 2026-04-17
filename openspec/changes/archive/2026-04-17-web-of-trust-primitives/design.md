@@ -6,10 +6,24 @@ property-style tests. A web-of-trust change fits that style, but only if
 the identity, payload, revocation, and graph semantics are fixed before
 code lands.
 
-Fresh audit against `src/lib.rs`, `docs/requirements.md`, `README.md`,
-and `openspec/specs/` shows this is net-new work: no shipped
-`web_of_trust` modules, no shipped `web-of-trust.*` requirements, and
-no main-spec web-of-trust domain.
+Fresh audit against pinned pre-change shipped surfaces `src/lib.rs`,
+`docs/requirements.md`, `README.md`, and `openspec/specs/` showed this
+was net-new work: no shipped `web_of_trust` modules, no shipped
+`web-of-trust.*` requirements, and no main-spec web-of-trust domain.
+The live working tree now contains landed Phase 1+2, the full Phase 3
+chain/rooted-resolution/property slices, and the full Phase 4
+threshold slice from this active change: `web_of_trust_principal`,
+`web_of_trust_attestation`, `web_of_trust_revocation`,
+`web_of_trust_chain`, `web_of_trust_resolution`,
+`web_of_trust_policy`, plus cross-module web-of-trust lemmas in
+`src/properties.rs`, along with the mirrored
+`web-of-trust.principal-fingerprint`,
+`web-of-trust.attestation-signature`,
+`web-of-trust.attestation-window`, `web-of-trust.revocation`,
+`web-of-trust.chain-validity`, `web-of-trust.rooted-resolution`,
+`properties.web-of-trust.revocation-cuts-trust`,
+`properties.web-of-trust.depth-monotone`, `web-of-trust.threshold`,
+and `properties.web-of-trust.threshold-dedup` requirements.
 
 ## Goals / Non-Goals
 
@@ -207,6 +221,10 @@ Before implementation is considered complete or green to claim:
   mirror
 - every defining source artifact named above must carry its planned
   source-level `r[impl]` / `r[verify]` anchors
+- every public function introduced or changed by this change must carry
+  required `r[impl]` coverage aligned with the repo-wide `./scripts/verify.sh`
+  public-function coverage gate, not only the specifically named helpers
+  above
 - `openspec/changes/web-of-trust-primitives/evidence/trusted-bridge-review.md`
   must exist before completion and must record explicit human approval
   of the reviewed contracts for `blake3_digest_bridge`,

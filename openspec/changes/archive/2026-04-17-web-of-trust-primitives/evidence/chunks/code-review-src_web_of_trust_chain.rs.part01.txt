@@ -1,0 +1,140 @@
+$ jj diff --git src/web_of_trust_chain.rs
+
+diff --git a/src/web_of_trust_chain.rs b/src/web_of_trust_chain.rs
+new file mode 100644
+index 0000000000..9ecca2ed57
+--- /dev/null
++++ b/src/web_of_trust_chain.rs
+@@ -0,0 +1,801 @@
++//! Verified web-of-trust chain validity.
++//!
++//! Models simple active `trust`-edge chains whose witnesses are finite
++//! sequences of attestation indices.
++
++#![allow(clippy::ptr_arg)]
++
++use crate::web_of_trust_attestation::{attestation_active_at, Attestation, TRUST_ROLE_TAG};
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_attestation::{attestation_active_at_spec, attestation_record_ids_match_bytes_spec};
++use crate::web_of_trust_principal::PrincipalId;
++use crate::web_of_trust_revocation::Revocation;
++use vstd::prelude::*;
++
++verus! {
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn root_member_from_spec(roots: Seq<PrincipalId>, principal: PrincipalId, from: int) -> bool
++    decreases if from < roots.len() { roots.len() - from } else { 0 }
++{
++    if from >= roots.len() {
++        false
++    } else {
++        roots[from].digest@ == principal.digest@ || root_member_from_spec(roots, principal, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn root_member_spec(roots: Seq<PrincipalId>, principal: PrincipalId) -> bool {
++    root_member_from_spec(roots, principal, 0)
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn seq_contains_bytes_spec(values: Seq<Seq<u8>>, digest: Seq<u8>) -> bool {
++    exists|i: int| 0 <= i < values.len() && values[i] == digest
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn chain_indices_in_range_from_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++) -> bool
++    decreases if from < witness.len() { witness.len() - from } else { 0 }
++{
++    if from >= witness.len() {
++        true
++    } else {
++        (witness[from] as int) < attestations.len()
++            && chain_indices_in_range_from_spec(witness, attestations, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn chain_indices_in_range_spec(witness: Seq<usize>, attestations: Seq<Attestation>) -> bool {
++    chain_indices_in_range_from_spec(witness, attestations, 0)
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn chain_edges_active_from_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    t: u64,
++    from: int,
++) -> bool
++    decreases if from < witness.len() { witness.len() - from } else { 0 }
++{
++    if from >= witness.len() {
++        true
++    } else if (witness[from] as int) >= attestations.len() {
++        false
++    } else {
++        let att = attestations[witness[from] as int];
++        att.role_tag == TRUST_ROLE_TAG
++            && attestation_active_at_spec(att, revocations, t)
++            && chain_edges_active_from_spec(witness, attestations, revocations, t, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn chain_adjacency_from_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++) -> bool
++    decreases if from + 1 < witness.len() { witness.len() - from } else { 0 }
++{
++    if from + 1 >= witness.len() {
++        true
++    } else if (witness[from] as int) >= attestations.len() || (witness[from + 1] as int) >= attestations.len() {
++        false
++    } else {
++        let left = attestations[witness[from] as int];
++        let right = attestations[witness[from + 1] as int];
++        left.subject.digest@ == right.issuer.digest@
++            && chain_adjacency_from_spec(witness, attestations, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn chain_principal_at_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    pos: int,
++) -> Seq<u8> {
++    if witness.len() == 0 || pos < 0 || pos > witness.len() || !chain_indices_in_range_spec(witness, attestations) {
++        Seq::empty()
++    } else if pos == 0 {
++        attestations[witness[0] as int].issuer.digest@
++    } else {
++        attestations[witness[pos - 1] as int].subject.digest@
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn subject_fresh_upto_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    edge_idx: int,
++    upto: int,
++) -> bool
++    decreases if upto >= 0 { upto + 1 } else { 0 }
++{
++    if upto < 0 {
++        true
++    } else {
++        chain_principal_at_spec(witness, attestations, upto)
++            != attestations[witness[edge_idx] as int].subject.digest@
++            && subject_fresh_upto_spec(witness, attestations, edge_idx, upto - 1)
++    }
++}

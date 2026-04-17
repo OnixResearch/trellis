@@ -1,0 +1,140 @@
++    signature: Seq<u8>,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        attestation_signature_valid_bytes_spec(issuer_key_bytes, payload1, signature),
++        attestation_signature_valid_bytes_spec(issuer_key_bytes, payload2, signature),
++    ensures
++        payload1 == payload2,
++{
++    assert(attestation_signature_input_spec(issuer_key_bytes, payload1) == Some(signature));
++    assert(attestation_signature_input_spec(issuer_key_bytes, payload2) == Some(signature));
++    assert(attestation_signature_input_spec(issuer_key_bytes, payload1)
++        == attestation_signature_input_spec(issuer_key_bytes, payload2));
++    let prefix = seq![ATTESTATION_SIGNATURE_DOMAIN_TAG]
++        + canonical_byte_string_spec(issuer_key_bytes).unwrap();
++    concat_right_cancel(prefix, payload1, payload2);
++}
++
++// r[verify web-of-trust.attestation-window]
++/// Attestation issuer and subject IDs match their canonical key bytes.
++pub proof fn attestation_record_ids_match_bytes(att: Attestation)
++    requires attestation_record_ids_match_bytes_spec(att)
++    ensures
++        att.issuer.digest@ == principal_id_bytes_spec(att.issuer_key_bytes@),
++        att.subject.digest@ == principal_id_bytes_spec(att.subject_key_bytes@),
++{
++}
++
++// r[verify web-of-trust.attestation-window]
++/// Invalid attestation records are never active.
++pub proof fn invalid_attestation_is_inactive(att: Attestation, revocations: Seq<Revocation>, t: u64)
++    requires !attestation_record_ids_match_bytes_spec(att)
++    ensures !attestation_active_at_spec(att, revocations, t)
++{
++}
++
++// r[verify web-of-trust.attestation-window]
++/// Active attestations require a valid signature.
++pub proof fn attestation_active_requires_signature(att: Attestation, revocations: Seq<Revocation>, t: u64)
++    requires attestation_active_at_spec(att, revocations, t)
++    ensures attestation_signature_valid_spec(att)
++{
++}
++
++// r[verify web-of-trust.attestation-window]
++/// Active attestations use the exact half-open validity window.
++pub proof fn attestation_active_half_open_window(att: Attestation, revocations: Seq<Revocation>, t: u64)
++    requires attestation_active_at_spec(att, revocations, t)
++    ensures
++        att.not_before <= t,
++        t < att.not_after,
++{
++}
++
++proof fn clear_prefix_excludes_index(att: Attestation, revocations: Seq<Revocation>, t: u64, upto: nat, idx: nat)
++    requires
++        idx < upto,
++        upto <= revocations.len(),
++        no_effective_revocation_prefix_spec(revocations, att, t, upto),
++    ensures
++        !revocation_effective_at_spec(revocations[idx as int], att, t),
++    decreases upto,
++{
++    if idx + 1 == upto {
++    } else {
++        clear_prefix_excludes_index(att, revocations, t, (upto - 1) as nat, idx);
++    }
++}
++
++// r[verify web-of-trust.attestation-window]
++/// Any effective revocation makes the attestation inactive at that time.
++pub proof fn attestation_active_respects_revocation(att: Attestation, revocations: Seq<Revocation>, t: u64)
++    requires exists|i: int| 0 <= i < revocations.len() && revocation_effective_at_spec(revocations[i], att, t)
++    ensures !attestation_active_at_spec(att, revocations, t)
++{
++    let i = choose|i: int| 0 <= i < revocations.len() && revocation_effective_at_spec(revocations[i], att, t);
++    if attestation_active_at_spec(att, revocations, t) {
++        clear_prefix_excludes_index(att, revocations, t, revocations.len(), i as nat);
++        assert(false);
++    }
++}
++
++} // verus!
++
++#[cfg(test)]
++mod tests {
++    use proptest::prelude::*;
++
++    use super::*;
++    use crate::web_of_trust_principal::principal_id_from_bytes;
++    use crate::web_of_trust_revocation::{revocation_payload_bytes, Revocation, FAMILY_TARGET_KIND_TAG};
++
++    fn signed_attestation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        not_before: u64,
++        not_after: u64,
++        sequence_no: u64,
++    ) -> Attestation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Attestation {
++            issuer_key_bytes,
++            issuer,
++            subject_key_bytes,
++            subject,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++            signature: Vec::new(),
++        };
++        let payload = attestation_payload_bytes(&unsigned).unwrap();
++        let signature = attestation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Attestation { signature, ..unsigned }
++    }
++
++    // r[verify web-of-trust.attestation-signature]
++    #[test]
++    fn test_exact_payload_verifies() {
++        let att = signed_attestation(
++            vec![0x10, 0x20, 0x30],
++            vec![0x40, 0x50, 0x60],
++            TRUST_ROLE_TAG,
++            7,
++            19,
++            23,
++        );
++        let payload = attestation_payload_bytes(&att).unwrap();
++        assert_eq!(payload[11], 0x40);
++        assert!(attestation_signature_valid(&att));
++    }
++
++    // r[verify web-of-trust.attestation-signature]
++    #[test]
++    fn test_tampered_subject_invalidates_signature() {

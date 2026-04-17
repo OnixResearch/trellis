@@ -1,0 +1,126 @@
++        let mut count = 0usize;
++        for att in attestations {
++            if att.subject.digest != subject.digest {
++                continue;
++            }
++            if att.issuer.digest == subject.digest {
++                continue;
++            }
++            if att.role_tag != TRUST_ROLE_TAG || !attestation_active_at(att, revocations, t) {
++                continue;
++            }
++            if seen.contains(&att.issuer.digest) {
++                continue;
++            }
++            let mut visited = vec![subject.digest.clone(), att.issuer.digest.clone()];
++            if rooted_oracle_dfs(&att.issuer, roots, attestations, revocations, depth - 1, t, &mut visited) {
++                seen.push(att.issuer.digest.clone());
++                count += 1;
++            }
++        }
++        count
++    }
++
++    // r[verify properties.web-of-trust.revocation-cuts-trust]
++    #[test]
++    fn test_revocation_cuts_designated_witness_only() {
++        let root_key = vec![1, 2, 3];
++        let a_key = vec![4, 5, 6];
++        let b_key = vec![7, 8, 9];
++        let subject_key = vec![10, 11, 12];
++
++        let att_ra = signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_as = signed_attestation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_rb = signed_attestation(root_key.clone(), b_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let att_bs = signed_attestation(b_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 4);
++        let revoke_as = signed_family_revocation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 6);
++
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let attestations = vec![att_ra, att_as, att_rb, att_bs];
++        let revocations = vec![revoke_as];
++        let witness = vec![0usize, 1usize];
++
++        assert!(chain_valid_at(&witness, &roots, &attestations, &Vec::new(), &subject, 5));
++        assert!(!chain_valid_at(&witness, &roots, &attestations, &revocations, &subject, 7));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 2, 7));
++    }
++
++    // r[verify properties.web-of-trust.depth-monotone]
++    #[test]
++    fn test_depth_monotone_preserves_chain_resolution() {
++        let root_key = vec![1, 2, 3];
++        let mid_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_key.clone(), mid_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(mid_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let attestations = vec![att1, att2];
++        let revocations = Vec::new();
++
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 2, 5));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 4, 5));
++    }
++
++    // r[verify properties.web-of-trust.depth-monotone]
++    #[test]
++    fn test_depth_monotone_preserves_root_base_case() {
++        let root_key = vec![1, 2, 3];
++        let root = principal_id_from_bytes(&root_key);
++        let roots = vec![root];
++        let attestations = Vec::new();
++        let revocations = Vec::new();
++
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &roots[0], 0, 5));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &roots[0], 3, 5));
++    }
++
++    // r[verify properties.web-of-trust.threshold-dedup]
++    #[test]
++    fn test_threshold_dedup_preserves_count() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++
++        let att_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_a2 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let dedup_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let dedup_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let revocations = Vec::new();
++        let with_duplicates = vec![att_a1, att_a2, att_b];
++        let deduped = vec![dedup_a1, dedup_b];
++
++        assert_eq!(threshold_distinct_count_oracle(&roots, &with_duplicates, &revocations, &subject, 1, 5), 2);
++        assert_eq!(threshold_distinct_count_oracle(&roots, &deduped, &revocations, &subject, 1, 5), 2);
++    }
++
++    // r[verify properties.web-of-trust.threshold-dedup]
++    #[test]
++    fn test_threshold_dedup_preserves_result() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++
++        let att_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_a2 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let dedup_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let dedup_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let revocations = Vec::new();
++        let with_duplicates = vec![att_a1, att_a2, att_b];
++        let deduped = vec![dedup_a1, dedup_b];
++
++        assert!(threshold_accepts(&roots, &with_duplicates, &revocations, &subject, 2, 1, 5));
++        assert!(threshold_accepts(&roots, &deduped, &revocations, &subject, 2, 1, 5));
++        assert!(!threshold_accepts(&roots, &with_duplicates, &revocations, &subject, 3, 1, 5));
++        assert!(!threshold_accepts(&roots, &deduped, &revocations, &subject, 3, 1, 5));
++    }
++}

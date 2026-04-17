@@ -1,0 +1,140 @@
++) -> Option<Seq<u8>> {
++    match canonical_byte_string_spec(issuer_key_bytes) {
++        Some(issuer_enc) => Some(seq![REVOCATION_SIGNATURE_DOMAIN_TAG] + issuer_enc + payload_bytes),
++        None => None,
++    }
++}
++
++// r[depends web-of-trust.revocation]
++/// Exact revocation-signature validity surface over canonical bytes.
++pub open spec fn revocation_signature_valid_bytes_spec(
++    issuer_key_bytes: Seq<u8>,
++    payload_bytes: Seq<u8>,
++    signature: Seq<u8>,
++) -> bool {
++    match revocation_signature_input_spec(issuer_key_bytes, payload_bytes) {
++        Some(expected) => signature == expected,
++        None => false,
++    }
++}
++
++// r[depends web-of-trust.revocation]
++/// Exact revocation-signature validity for a full record.
++pub open spec fn revocation_signature_valid_spec(rev: Revocation) -> bool {
++    match revocation_payload_of_spec(rev) {
++        Some(payload) => revocation_signature_valid_bytes_spec(rev.issuer_key_bytes@, payload, rev.signature@),
++        None => false,
++    }
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn same_principal_spec(rev: Revocation, att: Attestation) -> bool {
++    rev.issuer.digest@ == att.issuer.digest@
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn revocation_matches_exact_payload_spec(rev: Revocation, att: Attestation) -> bool {
++    &&& rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG
++    &&& attestation_payload_of_spec(att) == Some(rev.exact_payload_target@)
++    &&& same_principal_spec(rev, att)
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn revocation_matches_family_spec(rev: Revocation, att: Attestation) -> bool {
++    &&& rev.target_kind_tag == FAMILY_TARGET_KIND_TAG
++    &&& same_principal_spec(rev, att)
++    &&& rev.family_subject.digest@ == att.subject.digest@
++    &&& rev.family_role_tag == att.role_tag
++}
++
++// r[depends web-of-trust.revocation]
++/// Semantic target match for exact-payload and family revocations.
++pub open spec fn revocation_matches_spec(rev: Revocation, att: Attestation) -> bool {
++    if rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG {
++        match attestation_payload_of_spec(att) {
++            Some(payload) => rev.issuer.digest@ == att.issuer.digest@ && rev.exact_payload_target@ == payload,
++            None => false,
++        }
++    } else if rev.target_kind_tag == FAMILY_TARGET_KIND_TAG {
++        rev.issuer.digest@ == att.issuer.digest@
++            && rev.family_subject.digest@ == att.subject.digest@
++            && rev.family_role_tag == att.role_tag
++    } else {
++        false
++    }
++}
++
++// r[depends web-of-trust.revocation]
++/// Effective revocation semantics at evaluation time `t`.
++pub open spec fn revocation_effective_at_spec(rev: Revocation, att: Attestation, t: u64) -> bool {
++    &&& revocation_record_ids_match_bytes_spec(rev)
++    &&& attestation_record_ids_match_bytes_spec(att)
++    &&& revocation_signature_valid_spec(rev)
++    &&& revocation_matches_spec(rev, att)
++    &&& rev.effective_time <= t
++}
++
++proof fn concat_right_cancel(prefix: Seq<u8>, a: Seq<u8>, b: Seq<u8>)
++    requires
++        prefix + a == prefix + b,
++    ensures
++        a == b,
++{
++    assert((prefix + a).len() == prefix.len() + a.len());
++    assert((prefix + b).len() == prefix.len() + b.len());
++    assert(a.len() == b.len());
++    assert forall|i: int| 0 <= i < a.len() implies a[i] == b[i] by {
++        assert((prefix + a)[prefix.len() + i] == a[i]);
++        assert((prefix + b)[prefix.len() + i] == b[i]);
++    }
++    assert(a =~= b);
++}
++
++fn append_vec(dst: &mut Vec<u8>, src: &Vec<u8>)
++    ensures dst@ == old(dst)@ + src@
++{
++    let ghost old_dst = dst@;
++    let mut i: usize = 0;
++    while i < src.len()
++        invariant
++            i <= src.len(),
++            dst@ == old_dst + src@.subrange(0, i as int),
++        decreases src.len() - i,
++    {
++        dst.push(src[i]);
++        i += 1;
++    }
++}
++
++fn bytes_equal(a: &Vec<u8>, b: &Vec<u8>) -> (result: bool)
++    ensures result == (a@ =~= b@)
++{
++    if a.len() != b.len() {
++        false
++    } else {
++        let mut i: usize = 0;
++        let mut eq = true;
++        while i < a.len()
++            invariant
++                i <= a.len(),
++                a.len() == b.len(),
++                eq == (forall|j: int| 0 <= j < i as int ==> a@[j] == b@[j]),
++            decreases a.len() - i,
++        {
++            eq = eq && a[i] == b[i];
++            i += 1;
++        }
++        eq
++    }
++}
++
++#[allow(clippy::checked_conversions)]
++fn length_fits_u32(len: usize) -> (result: bool)
++    ensures result == length_fits_u32_spec(len as nat)
++{
++    len <= u32::MAX as usize
++}
++
++#[allow(clippy::cast_possible_truncation)]
++fn canonical_byte_string(bytes: &Vec<u8>) -> (result: Option<Vec<u8>>)
++    ensures match result {

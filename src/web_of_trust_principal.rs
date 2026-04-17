@@ -41,11 +41,13 @@ pub open spec fn principal_id_bytes_spec(canonical_key_bytes: Seq<u8>) -> Seq<u8
 }
 
 /// Well-formed principal IDs are exactly 32 bytes long.
+// r[impl web-of-trust.principal-fingerprint]
 pub open spec fn principal_id_valid_spec(id: PrincipalId) -> bool {
     id.digest.len() == PRINCIPAL_ID_LEN
 }
 
 /// Prefix equality over the first `upto` digest bytes.
+// r[impl web-of-trust.principal-fingerprint]
 pub open spec fn principal_id_equal_prefix_spec(a: Seq<u8>, b: Seq<u8>, upto: int) -> bool
     recommends a.len() == PRINCIPAL_ID_LEN, b.len() == PRINCIPAL_ID_LEN, 0 <= upto <= PRINCIPAL_ID_LEN
 {

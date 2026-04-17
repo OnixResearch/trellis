@@ -15,17 +15,30 @@ formats, keyservers, or UI policy.
 
 ## Current Tree Audit
 
-- Checked `src/lib.rs`, `docs/requirements.md`, `README.md`, and
-  `openspec/specs/`.
-- The current tree exports no `src/web_of_trust*.rs` modules.
-- `docs/requirements.md` currently defines no `web-of-trust.*` or
-  `properties.web-of-trust.*` requirements.
-- The main `openspec/specs/` tree currently has no shipped web-of-trust
+- Checked pinned pre-change shipped surfaces `src/lib.rs`,
+  `docs/requirements.md`, `README.md`, and `openspec/specs/`.
+- At change inception, those shipped surfaces exported no
+  `src/web_of_trust*.rs` modules, no `web-of-trust.*` or
+  `properties.web-of-trust.*` requirements, and no shipped web-of-trust
   domain spec.
-- The only existing `web-of-trust` strings in the repo are repo-index
-  extractor fixtures/tests, not shipped trust-graph logic.
+- The live working tree now contains landed Phase 1+2, the full Phase 3
+  chain/rooted-resolution/property slices, and the full Phase 4
+  threshold slice from this active change: `web_of_trust_principal`,
+  `web_of_trust_attestation`, `web_of_trust_revocation`,
+  `web_of_trust_chain`, `web_of_trust_resolution`,
+  `web_of_trust_policy`, plus cross-module web-of-trust lemmas in
+  `src/properties.rs`, along with mirrored
+  `web-of-trust.principal-fingerprint`,
+  `web-of-trust.attestation-signature`,
+  `web-of-trust.attestation-window`, `web-of-trust.revocation`,
+  `web-of-trust.chain-validity`, `web-of-trust.rooted-resolution`,
+  `properties.web-of-trust.revocation-cuts-trust`,
+  `properties.web-of-trust.depth-monotone`, `web-of-trust.threshold`,
+  and `properties.web-of-trust.threshold-dedup` requirements.
+- The main `openspec/specs/` tree still has no shipped web-of-trust
+  domain spec.
 
-This is net-new functionality, not archive cleanup or spec-sync-only
+This remains net-new functionality, not archive cleanup or spec-sync-only
 work.
 
 ## What Changes

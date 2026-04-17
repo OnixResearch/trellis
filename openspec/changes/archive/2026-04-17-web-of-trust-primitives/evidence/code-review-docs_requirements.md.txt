@@ -1,0 +1,90 @@
+$ jj diff --git docs/requirements.md
+
+diff --git a/docs/requirements.md b/docs/requirements.md
+index aaa6019615..1874be8274 100644
+--- a/docs/requirements.md
++++ b/docs/requirements.md
+@@ -6908,6 +6908,83 @@
+ produce the same identifier, and equality checks MUST use all 32 digest
+ bytes rather than a truncated prefix.
+ 
++r[web-of-trust.attestation-signature]
++An attestation signature MUST authenticate the issuer's canonical public-key
++bytes, the subject's canonical public-key bytes, trust role, validity window,
++and `sequence_no` exactly, using the canonical attestation payload-byte
++grammar. Changing any signed field MUST invalidate the signature, and inputs
++whose canonical byte-string fields exceed `u32::MAX` bytes MUST be rejected as
++non-canonical.
++
++r[web-of-trust.attestation-window]
++An attestation MUST be active at time `t` iff its signature is valid, `t` is
++inside the half-open window `[not_before, not_after)`, and no effective
++revocation targets it at or before `t`.
++
++r[web-of-trust.revocation]
++A revocation record MUST be authenticated over its issuer, target reference,
++and effective time using the canonical revocation payload-byte grammar.
++Tampering with issuer, target reference, or effective time MUST invalidate
++verification, and inputs whose canonical byte-string fields exceed `u32::MAX`
++bytes MUST be rejected as non-canonical. A revocation record MUST be issued
++by the same principal as the targeted attestation or targeted attestation
++family. A revocation record MUST carry either an exact-payload target
++reference or a family target reference. An exact-payload target identifies
++attestation content by canonical attestation payload bytes; if multiple
++records carry identical canonical attestation payload bytes, they are the same
++exact-payload target and the revocation disables all such copies. A family
++target MUST disable exactly the attestations in the named `(issuer, subject,
++role)` family. Once effective, the revocation MUST remain effective for all
++later times.
++
++r[web-of-trust.chain-validity]
++A trust chain MUST be valid only when every attestation in the chain is an
++active `trust` edge at the evaluation time, the first issuer is a trust root,
++each attestation's subject is the next attestation's issuer, and no principal
++repeats in the chain.
++
++r[web-of-trust.rooted-resolution]
++For a fixed trust-root set `Roots` and fixed evaluation time `t`, a
++rooted-trust decision for subject `S` under natural-number depth bound `d`
++MUST return trusted iff either `S` is itself in `Roots` and the witness is the
++empty chain, or there exists a valid trust chain at time `t` from some root in
++`Roots` to `S` of length at most `d`.
++
++r[properties.web-of-trust.revocation-cuts-trust]
++For fixed trust roots and fixed evaluation times, if a successful
++rooted-trust witness chain `C` for subject `S` includes attestation `A`, then
++once `A` is effectively revoked, that same witness chain `C` MUST no longer
++justify trust for `S` at later times. This requirement is witness-local and
++does not forbid a different valid chain from still trusting `S`.
++
++r[properties.web-of-trust.depth-monotone]
++For a fixed trust-root set and fixed evaluation time, if a subject resolves as
++trusted under depth bound `d`, then it MUST also resolve as trusted under
++every depth bound `d' >= d`.
++
++r[web-of-trust.threshold]
++A threshold policy is parameterized by a natural `k`, an evaluation time `t`,
++and a natural-number depth bound `d`. The policy MUST reject when `k = 0`.
++For `k > 0`, it MUST accept subject `S` iff there exist at least `k` distinct
++introducers `I` such that `d > 0`, `I` itself resolves as trusted at time `t`
++under bound `d - 1`, `I` has an active direct trust edge to `S` at time `t`,
++and appending that final direct edge yields a valid simple trust chain to `S`,
++so repeated-principal final hops MUST NOT count. Multiple active attestations
++from the same introducer to the same subject MUST contribute at most one
++count. When `d = 0`, the threshold policy MUST reject every subject because no
++final trust-edge hop fits inside the bound. Threshold policy does not
++special-case root subjects; a root subject is accepted only if the same
++`k`-introducer rule is met.
++
++r[properties.web-of-trust.threshold-dedup]
++For fixed trust roots, evaluation time, depth bound, threshold `k`, and
++subject `S`, once one active direct trust edge from introducer `I` to `S` has
++already been counted, any later active direct trust edge from that same
++introducer to `S` MUST leave both the remaining qualifying distinct-introducer
++count and the final threshold accept/reject result unchanged. Equivalently,
++replacing multiple such same-introducer final hops with a single counted edge
++MUST not change the threshold outcome.
++
+ ## seL4 ASID Pool
+ 
+ r[sel4-asid.uniqueness]

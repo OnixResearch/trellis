@@ -1,0 +1,140 @@
++    witness: Seq<usize>,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        current >= 1,
++        current <= witness.len() as nat,
++        witness.len() <= depth as int,
++        chain_valid_at_spec(witness, roots, attestations, revocations, subject, t),
++    ensures
++        search_upto_len_from_spec(roots, attestations, revocations, subject, depth, t, current),
++    decreases if current <= witness.len() as nat { witness.len() as nat - current + 1 } else { 0 }
++{
++    if current == witness.len() as nat {
++        search_exact_len_complete_from(Seq::empty(), roots, attestations, revocations, subject, t, current, 0, witness);
++    } else {
++        search_upto_len_complete_from(roots, attestations, revocations, subject, depth, t, current + 1, witness);
++    }
++}
++
++// r[verify web-of-trust.rooted-resolution]
++/// Rooted-resolution search is sound for the existential witness semantics.
++pub proof fn resolves_trusted_at_sound(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t)
++    ensures resolves_trusted_witness_spec(roots, attestations, revocations, subject, depth, t)
++{
++    if root_member_spec(roots, subject) {
++    } else {
++        search_upto_len_sound_from(roots, attestations, revocations, subject, depth, t, 1);
++    }
++}
++
++// r[verify web-of-trust.rooted-resolution]
++/// Every existential rooted-resolution witness is found by the bounded search.
++pub proof fn resolves_trusted_at_complete(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        resolves_trusted_witness_spec(roots, attestations, revocations, subject, depth, t)
++    ensures resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t)
++{
++    if root_member_spec(roots, subject) {
++    } else {
++        let witness = choose|witness: Seq<usize>|
++            0 < witness.len() <= depth as int
++                && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t);
++        search_upto_len_complete_from(roots, attestations, revocations, subject, depth, t, 1, witness);
++    }
++}
++
++// r[verify web-of-trust.rooted-resolution]
++/// Prepending an already-present root does not change rooted resolution.
++pub proof fn duplicate_roots_ignored(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++    duplicate: PrincipalId,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        root_member_spec(roots, duplicate)
++    ensures
++        resolves_trusted_at_spec(seq![duplicate] + roots, attestations, revocations, subject, depth, t)
++            == resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t)
++{
++    assert(resolves_trusted_at_spec(seq![duplicate] + roots, attestations, revocations, subject, depth, t)
++        ==> resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t)) by {
++        if resolves_trusted_at_spec(seq![duplicate] + roots, attestations, revocations, subject, depth, t) {
++            resolves_trusted_at_sound(seq![duplicate] + roots, attestations, revocations, subject, depth, t);
++            if root_member_spec(seq![duplicate] + roots, subject) {
++                root_member_prepend_existing_same(roots, duplicate, subject);
++            } else {
++                let witness = choose|witness: Seq<usize>|
++                    0 < witness.len() <= depth as int
++                        && chain_valid_at_spec(witness, seq![duplicate] + roots, attestations, revocations, subject, t);
++                root_member_prepend_existing_same(roots, duplicate, attestations[witness[0] as int].issuer);
++                assert(chain_valid_at_spec(witness, roots, attestations, revocations, subject, t));
++                assert(resolves_trusted_witness_spec(roots, attestations, revocations, subject, depth, t));
++                resolves_trusted_at_complete(roots, attestations, revocations, subject, depth, t);
++            }
++        }
++    }
++    assert(resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t)
++        ==> resolves_trusted_at_spec(seq![duplicate] + roots, attestations, revocations, subject, depth, t)) by {
++        if resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t) {
++            resolves_trusted_at_sound(roots, attestations, revocations, subject, depth, t);
++            if root_member_spec(roots, subject) {
++                root_member_prepend_existing_same(roots, duplicate, subject);
++            } else {
++                let witness = choose|witness: Seq<usize>|
++                    0 < witness.len() <= depth as int
++                        && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t);
++                root_member_prepend_existing_same(roots, duplicate, attestations[witness[0] as int].issuer);
++                assert(chain_valid_at_spec(witness, seq![duplicate] + roots, attestations, revocations, subject, t));
++                assert(resolves_trusted_witness_spec(seq![duplicate] + roots, attestations, revocations, subject, depth, t));
++                resolves_trusted_at_complete(seq![duplicate] + roots, attestations, revocations, subject, depth, t);
++            }
++        }
++    }
++}
++
++// r[verify web-of-trust.rooted-resolution]
++/// Any witness that uses an invalid attestation record is ignored by rooted resolution.
++pub proof fn invalid_records_ignored_by_resolution(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    pos: nat,
++)
++    requires
++        pos < witness.len(),
++        (witness[pos as int] as int) < attestations.len(),
++        !attestation_record_ids_match_bytes_spec(attestations[witness[pos as int] as int]),
++    ensures
++        !chain_valid_at_spec(witness, roots, attestations, revocations, subject, t)
++{
++    if chain_valid_at_spec(witness, roots, attestations, revocations, subject, t) {
++        chain_valid_requires_active_edges(witness, roots, attestations, revocations, subject, t, pos);
++        invalid_attestation_is_inactive(attestations[witness[pos as int] as int], revocations, t);
++        assert(false);

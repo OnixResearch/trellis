@@ -1,0 +1,140 @@
++        length_fits_u32_spec(subject_key_bytes.len()),
++    ensures
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ) == Some(
++            attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes)
++                + seq![role_tag]
++                + encode_u64_spec(not_before)
++                + encode_u64_spec(not_after)
++                + encode_u64_spec(sequence_no),
++        ),
++{
++}
++
++// r[verify web-of-trust.attestation-signature]
++/// Time and sequence fields use exact little-endian `u64` encodings.
++pub proof fn attestation_payload_little_endian(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++    not_before: u64,
++    not_after: u64,
++    sequence_no: u64,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(subject_key_bytes.len()),
++    ensures
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ).unwrap().subrange(
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 1) as int,
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 9) as int,
++        ) == encode_u64_spec(not_before),
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ).unwrap().subrange(
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 9) as int,
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 17) as int,
++        ) == encode_u64_spec(not_after),
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ).unwrap().subrange(
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 17) as int,
++            (attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() + 25) as int,
++        ) == encode_u64_spec(sequence_no),
++{
++    attestation_payload_field_order(
++        issuer_key_bytes,
++        subject_key_bytes,
++        role_tag,
++        not_before,
++        not_after,
++        sequence_no,
++    );
++}
++
++// r[verify web-of-trust.attestation-signature]
++/// Role-tag encoding is exact and occupies the single byte after the two key-byte strings.
++pub proof fn attestation_payload_tag_encoding(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++    not_before: u64,
++    not_after: u64,
++    sequence_no: u64,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(subject_key_bytes.len()),
++    ensures
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ).unwrap()[attestation_payload_prefix_spec(issuer_key_bytes, subject_key_bytes).len() as int] == role_tag,
++{
++    attestation_payload_field_order(
++        issuer_key_bytes,
++        subject_key_bytes,
++        role_tag,
++        not_before,
++        not_after,
++        sequence_no,
++    );
++}
++
++// r[verify web-of-trust.attestation-signature]
++/// Overlong canonical key-byte strings are rejected as non-canonical.
++pub proof fn attestation_payload_overlong_rejected(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++    not_before: u64,
++    not_after: u64,
++    sequence_no: u64,
++)
++    requires
++        !length_fits_u32_spec(issuer_key_bytes.len()) || !length_fits_u32_spec(subject_key_bytes.len()),
++    ensures
++        attestation_payload_bytes_spec(
++            issuer_key_bytes,
++            subject_key_bytes,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++        ).is_none(),
++{
++}
++
++// r[verify web-of-trust.attestation-signature]
++/// A fixed signature cannot validate two different canonical payloads for the same issuer bytes.
++pub proof fn attestation_signature_binds_payload(
++    issuer_key_bytes: Seq<u8>,
++    payload1: Seq<u8>,
++    payload2: Seq<u8>,

@@ -1,0 +1,101 @@
+# Review Scope — web-of-trust-primitives
+
+This artifact clarifies the review slice after done-review flagged mixed-tree ambiguity.
+
+## In-scope source files
+- src/lib.rs
+- src/web_of_trust_principal.rs
+- src/web_of_trust_attestation.rs
+- src/web_of_trust_revocation.rs
+- src/web_of_trust_chain.rs
+- src/web_of_trust_resolution.rs
+- src/web_of_trust_policy.rs
+- src/properties.rs
+- docs/requirements.md
+- openspec/specs/web-of-trust/spec.md
+- openspec/changes/archive/2026-04-17-web-of-trust-primitives/**
+
+## Out-of-scope source files
+- src/collections.rs
+- src/seq_set.rs
+
+Status at remediation time: both out-of-scope files were restored before the fresh validation reruns below.
+
+## Auxiliary non-semantic repo files updated in this worktree
+- AGENTS.md
+- .agent/napkin.md
+
+These are repo-memory updates, not part of the semantic web-of-trust code review slice.
+
+## Current scoped status (after restoring out-of-scope files)
+Working copy changes:
+M .agent/napkin.md
+M AGENTS.md
+M docs/requirements.md
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/.openspec.yaml
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/design.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/anchor-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-audit.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-contract-audit.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/cargo-test.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/check-ensures.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/clippy.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/mirror-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/public-fn-anchor-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/review-scope.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-uncovered.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-untested.txt
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/evidence/trusted-bridge-review.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verify.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verus.txt
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/proposal.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/specs/web-of-trust/spec.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/tasks.md
+D openspec/changes/web-of-trust-primitives/tasks.md
+R openspec/{changes/web-of-trust-primitives => }/specs/web-of-trust/spec.md
+M src/lib.rs
+M src/properties.rs
+A src/web_of_trust_attestation.rs
+A src/web_of_trust_chain.rs
+A src/web_of_trust_policy.rs
+M src/web_of_trust_principal.rs
+A src/web_of_trust_resolution.rs
+A src/web_of_trust_revocation.rs
+Working copy  (@) : yxytlzxv 45e32efe (no description set)
+Parent commit (@-): uwvtmuqs c7ea91c3 Finish seL4 kernel-invariant composition so endpoint and untyped steps preserve the modeled kernel state.
+
+## Current in-scope diff summary
+M docs/requirements.md
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/.openspec.yaml
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/design.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/anchor-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-audit.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-contract-audit.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/cargo-test.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/check-ensures.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/clippy.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/mirror-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/public-fn-anchor-check.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/review-scope.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-uncovered.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-untested.txt
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/evidence/trusted-bridge-review.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verify.txt
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verus.txt
+R openspec/changes/{web-of-trust-primitives => archive/2026-04-17-web-of-trust-primitives}/proposal.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/specs/web-of-trust/spec.md
+A openspec/changes/archive/2026-04-17-web-of-trust-primitives/tasks.md
+R openspec/{changes/web-of-trust-primitives => }/specs/web-of-trust/spec.md
+M src/lib.rs
+M src/properties.rs
+A src/web_of_trust_attestation.rs
+A src/web_of_trust_chain.rs
+A src/web_of_trust_policy.rs
+M src/web_of_trust_principal.rs
+A src/web_of_trust_resolution.rs
+A src/web_of_trust_revocation.rs
+
+## Sanity checks
+OK src/collections.rs clean
+OK src/seq_set.rs clean
+OK src/lib.rs remains in-scope because it adds module docs/exports for the new web-of-trust modules.

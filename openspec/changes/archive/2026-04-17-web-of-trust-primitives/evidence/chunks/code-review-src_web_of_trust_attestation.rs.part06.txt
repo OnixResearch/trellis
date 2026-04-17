@@ -1,0 +1,140 @@
++        let att = signed_attestation(
++            vec![0x01, 0x02, 0x03],
++            vec![0x04, 0x05, 0x06],
++            TRUST_ROLE_TAG,
++            11,
++            29,
++            31,
++        );
++        let tampered_subject = vec![0x04, 0x05, 0x99];
++        let tampered = Attestation {
++            issuer_key_bytes: att.issuer_key_bytes.clone(),
++            issuer: principal_id_from_bytes(&att.issuer_key_bytes),
++            subject_key_bytes: tampered_subject.clone(),
++            subject: principal_id_from_bytes(&tampered_subject),
++            role_tag: att.role_tag,
++            not_before: att.not_before,
++            not_after: att.not_after,
++            sequence_no: att.sequence_no,
++            signature: att.signature.clone(),
++        };
++        assert!(!attestation_signature_valid(&tampered));
++    }
++
++    fn signed_family_revocation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        effective_time: u64,
++    ) -> Revocation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let family_subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Revocation {
++            issuer_key_bytes,
++            issuer,
++            target_kind_tag: FAMILY_TARGET_KIND_TAG,
++            exact_payload_target: Vec::new(),
++            family_subject_key_bytes: subject_key_bytes,
++            family_subject,
++            family_role_tag: role_tag,
++            effective_time,
++            signature: Vec::new(),
++        };
++        let payload = revocation_payload_bytes(&unsigned).unwrap();
++        let signature = crate::web_of_trust_revocation::revocation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Revocation { signature, ..unsigned }
++    }
++
++    // r[verify web-of-trust.attestation-signature]
++    #[test]
++    fn test_overlong_identity_bytes_are_rejected_as_noncanonical() {
++        if usize::BITS > 32 {
++            let too_long = (u32::MAX as usize) + 1;
++            assert!(!length_fits_u32(too_long));
++        }
++    }
++
++    // r[verify web-of-trust.attestation-window]
++    #[test]
++    fn test_in_window_unrevoked_attestation_is_active() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 10, 20, 1);
++        assert!(attestation_active_at(&att, &Vec::new(), 15));
++    }
++
++    // r[verify web-of-trust.attestation-window]
++    #[test]
++    fn test_expired_or_future_attestation_is_inactive() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 10, 20, 1);
++        assert!(!attestation_active_at(&att, &Vec::new(), 9));
++        assert!(!attestation_active_at(&att, &Vec::new(), 20));
++    }
++
++    // r[verify web-of-trust.attestation-window]
++    #[test]
++    fn test_revoked_at_time_attestation_is_inactive() {
++        let att = signed_attestation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 0, 20, 1);
++        let rev = signed_family_revocation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 10);
++        let revocations = vec![rev];
++        assert!(!attestation_active_at(&att, &revocations, 10));
++    }
++
++    // r[verify web-of-trust.attestation-window]
++    #[test]
++    fn test_wrong_issuer_revocation_does_not_disable_attestation() {
++        let att = signed_attestation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 0, 20, 1);
++        let wrong = signed_family_revocation(vec![9, 9, 9], vec![8, 8, 8], TRUST_ROLE_TAG, 10);
++        let revocations = vec![wrong];
++        assert!(attestation_active_at(&att, &revocations, 10));
++    }
++
++    // r[verify web-of-trust.attestation-window]
++    #[test]
++    fn test_invalid_attestation_ids_are_inactive() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 0, 10, 1);
++        let invalid = Attestation {
++            issuer: principal_id_from_bytes(&[9, 9, 9]),
++            ..att
++        };
++        assert!(!attestation_active_at(&invalid, &Vec::new(), 5));
++    }
++
++    proptest! {
++        // r[verify web-of-trust.attestation-signature]
++        #[test]
++        fn prop_attestation_signature_oracle(
++            issuer in prop::collection::vec(any::<u8>(), 0..64),
++            subject in prop::collection::vec(any::<u8>(), 0..64),
++            role_tag in any::<u8>(),
++            not_before in any::<u64>(),
++            not_after in any::<u64>(),
++            sequence_no in any::<u64>(),
++        ) {
++            let att = signed_attestation(
++                issuer.clone(),
++                subject,
++                role_tag,
++                not_before,
++                not_after,
++                sequence_no,
++            );
++            let payload = attestation_payload_bytes(&att).unwrap();
++            let oracle = attestation_signature_bytes_runtime(issuer.as_slice(), payload.as_slice()) == att.signature;
++            prop_assert_eq!(attestation_signature_valid(&att), oracle);
++        }
++
++        // r[verify web-of-trust.attestation-signature]
++        #[test]
++        fn prop_tampered_payload_fails_verification(
++            issuer in prop::collection::vec(any::<u8>(), 0..64),
++            mut subject in prop::collection::vec(any::<u8>(), 0..64),
++            role_tag in any::<u8>(),
++            not_before in any::<u64>(),
++            not_after in any::<u64>(),
++            sequence_no in any::<u64>(),
++        ) {
++            let att = signed_attestation(
++                issuer.clone(),
++                subject.clone(),

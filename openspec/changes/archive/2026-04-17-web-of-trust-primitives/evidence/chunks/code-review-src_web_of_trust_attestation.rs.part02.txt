@@ -1,0 +1,140 @@
++
++// r[depends web-of-trust.attestation-signature]
++/// Exact attestation-signature validity surface over canonical bytes.
++pub open spec fn attestation_signature_valid_bytes_spec(
++    issuer_key_bytes: Seq<u8>,
++    payload_bytes: Seq<u8>,
++    signature: Seq<u8>,
++) -> bool {
++    match attestation_signature_input_spec(issuer_key_bytes, payload_bytes) {
++        Some(expected) => signature == expected,
++        None => false,
++    }
++}
++
++// r[depends web-of-trust.attestation-signature]
++/// Exact attestation-signature validity for a full record.
++pub open spec fn attestation_signature_valid_spec(att: Attestation) -> bool {
++    match attestation_payload_of_spec(att) {
++        Some(payload) => attestation_signature_valid_bytes_spec(att.issuer_key_bytes@, payload, att.signature@),
++        None => false,
++    }
++}
++
++// r[impl web-of-trust.attestation-window]
++pub open spec fn attestation_record_ids_match_bytes_spec(att: Attestation) -> bool {
++    &&& att.issuer.digest@ == principal_id_bytes_spec(att.issuer_key_bytes@)
++    &&& att.subject.digest@ == principal_id_bytes_spec(att.subject_key_bytes@)
++}
++
++// r[impl web-of-trust.attestation-window]
++pub open spec fn no_effective_revocation_prefix_spec(
++    revocations: Seq<Revocation>,
++    att: Attestation,
++    t: u64,
++    upto: nat,
++) -> bool
++    recommends upto <= revocations.len()
++    decreases upto
++{
++    if upto == 0 {
++        true
++    } else {
++        no_effective_revocation_prefix_spec(revocations, att, t, (upto - 1) as nat)
++            && !revocation_effective_at_spec(revocations[(upto - 1) as int], att, t)
++    }
++}
++
++// r[depends web-of-trust.attestation-window]
++/// Exact active-attestation semantics at time `t`.
++pub open spec fn attestation_active_at_spec(att: Attestation, revocations: Seq<Revocation>, t: u64) -> bool {
++    &&& attestation_record_ids_match_bytes_spec(att)
++    &&& attestation_signature_valid_spec(att)
++    &&& att.not_before <= t
++    &&& t < att.not_after
++    &&& no_effective_revocation_prefix_spec(revocations, att, t, revocations.len())
++}
++
++proof fn concat_right_cancel(prefix: Seq<u8>, a: Seq<u8>, b: Seq<u8>)
++    requires
++        prefix + a == prefix + b,
++    ensures
++        a == b,
++{
++    assert((prefix + a).len() == prefix.len() + a.len());
++    assert((prefix + b).len() == prefix.len() + b.len());
++    assert(a.len() == b.len());
++    assert forall|i: int| 0 <= i < a.len() implies a[i] == b[i] by {
++        assert((prefix + a)[prefix.len() + i] == a[i]);
++        assert((prefix + b)[prefix.len() + i] == b[i]);
++    }
++    assert(a =~= b);
++}
++
++pub(crate) fn encode_u32_le(v: u32) -> (result: Vec<u8>)
++    ensures result@ == encode_u32_le_spec(v)
++{
++    let b0 = (v & 0xff) as u8;
++    let b1 = ((v >> 8u32) & 0xff) as u8;
++    let b2 = ((v >> 16u32) & 0xff) as u8;
++    let b3 = ((v >> 24u32) & 0xff) as u8;
++    let result = vec![b0, b1, b2, b3];
++    proof {
++        assert(result@ =~= encode_u32_le_spec(v));
++    }
++    result
++}
++
++fn append_vec(dst: &mut Vec<u8>, src: &Vec<u8>)
++    ensures dst@ == old(dst)@ + src@
++{
++    let ghost old_dst = dst@;
++    let mut i: usize = 0;
++    while i < src.len()
++        invariant
++            i <= src.len(),
++            dst@ == old_dst + src@.subrange(0, i as int),
++        decreases src.len() - i,
++    {
++        dst.push(src[i]);
++        i += 1;
++    }
++}
++
++#[allow(clippy::checked_conversions)]
++fn length_fits_u32(len: usize) -> (result: bool)
++    ensures result == length_fits_u32_spec(len as nat)
++{
++    len <= u32::MAX as usize
++}
++
++#[allow(clippy::cast_possible_truncation)]
++fn canonical_byte_string(bytes: &Vec<u8>) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => canonical_byte_string_spec(bytes@) == Some(v@),
++        None => canonical_byte_string_spec(bytes@).is_none(),
++    }
++{
++    if !length_fits_u32(bytes.len()) {
++        return None;
++    }
++
++    let len_u32 = bytes.len() as u32;
++    let mut result = encode_u32_le(len_u32);
++    let ghost prefix = encode_u32_le_spec(len_u32);
++    let mut i: usize = 0;
++    while i < bytes.len()
++        invariant
++            i <= bytes.len(),
++            bytes.len() == len_u32 as usize,
++            result@ == prefix + bytes@.subrange(0, i as int),
++        decreases bytes.len() - i,
++    {
++        result.push(bytes[i]);
++        i += 1;
++    }
++    Some(result)
++}
++
++// r[impl web-of-trust.attestation-signature]
++/// Exact canonical payload-byte builder for an attestation record.

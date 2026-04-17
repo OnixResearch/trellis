@@ -1,0 +1,21 @@
+# Code Review Packet — web-of-trust-primitives
+
+This file is a small pointer to the non-truncated per-file review packets.
+Use `review-index.md` for the full list.
+
+Primary code diffs:
+- code-review-src_properties.rs.txt
+- code-review-src_web_of_trust_principal.rs.txt
+- code-review-src_web_of_trust_attestation.rs.txt
+- code-review-src_web_of_trust_revocation.rs.txt
+- code-review-src_web_of_trust_chain.rs.txt
+- code-review-src_web_of_trust_resolution.rs.txt
+- code-review-src_web_of_trust_policy.rs.txt
+- code-review-src_lib.rs.txt
+
+Spec/docs diffs:
+- code-review-docs_requirements.md.txt
+- code-review-openspec_specs_web-of-trust_spec.md.txt
+
+Task checklist packet:
+- tasks-review-packet.txt

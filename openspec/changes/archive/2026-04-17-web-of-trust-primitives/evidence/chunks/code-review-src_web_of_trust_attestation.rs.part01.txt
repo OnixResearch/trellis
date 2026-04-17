@@ -1,0 +1,140 @@
+$ jj diff --git src/web_of_trust_attestation.rs
+
+diff --git a/src/web_of_trust_attestation.rs b/src/web_of_trust_attestation.rs
+new file mode 100644
+index 0000000000..5ddd96732e
+--- /dev/null
++++ b/src/web_of_trust_attestation.rs
+@@ -0,0 +1,874 @@
++//! Verified web-of-trust attestation payloads and signature binding.
++//!
++//! Models exact canonical payload bytes for signed attestations over
++//! `(issuer_bytes, subject_bytes, role_tag, not_before, not_after,
++//! sequence_no)`.
++
++#![allow(clippy::ptr_arg)]
++
++use crate::serialize_inj::encode_u64;
++#[cfg(verus_keep_ghost)]
++use crate::serialize_inj::encode_u64_spec;
++use crate::web_of_trust_principal::PrincipalId;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_principal::principal_id_bytes_spec;
++use crate::web_of_trust_revocation::{revocation_effective_at, Revocation};
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_revocation::revocation_effective_at_spec;
++use vstd::prelude::*;
++
++#[cfg(verus_keep_ghost)]
++pub(crate) fn attestation_signature_bytes_runtime(_issuer_key_bytes: &[u8], _payload_bytes: &[u8]) -> Vec<u8> {
++    Vec::new()
++}
++
++#[cfg(not(verus_keep_ghost))]
++pub(crate) fn attestation_signature_bytes_runtime(issuer_key_bytes: &[u8], payload_bytes: &[u8]) -> Vec<u8> {
++    let mut out = Vec::new();
++    out.push(0xa1);
++    let issuer_len = u32::try_from(issuer_key_bytes.len()).expect("issuer key bytes must fit u32");
++    out.extend_from_slice(&issuer_len.to_le_bytes());
++    out.extend_from_slice(issuer_key_bytes);
++    out.extend_from_slice(payload_bytes);
++    out
++}
++
++verus! {
++
++pub const TRUST_ROLE_TAG: u8 = 0x01;
++pub const ATTESTATION_SIGNATURE_DOMAIN_TAG: u8 = 0xa1;
++
++/// Signed attestation record.
++pub struct Attestation {
++    pub issuer_key_bytes: Vec<u8>,
++    pub issuer: PrincipalId,
++    pub subject_key_bytes: Vec<u8>,
++    pub subject: PrincipalId,
++    pub role_tag: u8,
++    pub not_before: u64,
++    pub not_after: u64,
++    pub sequence_no: u64,
++    pub signature: Vec<u8>,
++}
++
++pub closed spec fn encode_u32_le_spec(v: u32) -> Seq<u8> {
++    seq![
++        (v & 0xff) as u8,
++        ((v >> 8u32) & 0xff) as u8,
++        ((v >> 16u32) & 0xff) as u8,
++        ((v >> 24u32) & 0xff) as u8,
++    ]
++}
++
++// r[impl web-of-trust.attestation-signature]
++pub open spec fn length_fits_u32_spec(len: nat) -> bool {
++    len <= u32::MAX as nat
++}
++
++// r[impl web-of-trust.attestation-signature]
++pub open spec fn canonical_byte_string_spec(bytes: Seq<u8>) -> Option<Seq<u8>> {
++    if length_fits_u32_spec(bytes.len()) {
++        Some(encode_u32_le_spec(bytes.len() as u32) + bytes)
++    } else {
++        None
++    }
++}
++
++// r[impl web-of-trust.attestation-signature]
++pub open spec fn attestation_payload_prefix_spec(issuer_key_bytes: Seq<u8>, subject_key_bytes: Seq<u8>) -> Seq<u8>
++    recommends
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        length_fits_u32_spec(subject_key_bytes.len()),
++{
++    canonical_byte_string_spec(issuer_key_bytes).unwrap()
++        + canonical_byte_string_spec(subject_key_bytes).unwrap()
++}
++
++// r[depends web-of-trust.attestation-signature]
++/// Canonical attestation payload-byte grammar.
++pub open spec fn attestation_payload_bytes_spec(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++    not_before: u64,
++    not_after: u64,
++    sequence_no: u64,
++) -> Option<Seq<u8>> {
++    match (canonical_byte_string_spec(issuer_key_bytes), canonical_byte_string_spec(subject_key_bytes)) {
++        (Some(issuer_enc), Some(subject_enc)) => Some(
++            issuer_enc
++                + subject_enc
++                + seq![role_tag]
++                + encode_u64_spec(not_before)
++                + encode_u64_spec(not_after)
++                + encode_u64_spec(sequence_no),
++        ),
++        _ => None,
++    }
++}
++
++// r[depends web-of-trust.attestation-signature]
++/// Canonical attestation payload for a full record.
++pub open spec fn attestation_payload_of_spec(att: Attestation) -> Option<Seq<u8>> {
++    attestation_payload_bytes_spec(
++        att.issuer_key_bytes@,
++        att.subject_key_bytes@,
++        att.role_tag,
++        att.not_before,
++        att.not_after,
++        att.sequence_no,
++    )
++}
++
++// r[impl web-of-trust.attestation-signature]
++pub open spec fn attestation_signature_input_spec(
++    issuer_key_bytes: Seq<u8>,
++    payload_bytes: Seq<u8>,
++) -> Option<Seq<u8>> {
++    match canonical_byte_string_spec(issuer_key_bytes) {
++        Some(issuer_enc) => Some(seq![ATTESTATION_SIGNATURE_DOMAIN_TAG] + issuer_enc + payload_bytes),
++        None => None,
++    }
++}

@@ -1,0 +1,140 @@
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn no_repeated_from_spec(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++) -> bool
++    decreases if from < witness.len() { witness.len() - from } else { 0 }
++{
++    if from >= witness.len() {
++        true
++    } else {
++        subject_fresh_upto_spec(witness, attestations, from, from)
++            && no_repeated_from_spec(witness, attestations, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++pub open spec fn no_repeated_principal_spec(witness: Seq<usize>, attestations: Seq<Attestation>) -> bool {
++    if witness.len() == 0 || !chain_indices_in_range_spec(witness, attestations) {
++        false
++    } else {
++        no_repeated_from_spec(witness, attestations, 0)
++    }
++}
++
++// r[depends web-of-trust.chain-validity]
++/// Exact chain-validity semantics for a witness of attestation indices.
++pub open spec fn chain_valid_at_spec(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++) -> bool {
++    &&& witness.len() > 0
++    &&& chain_indices_in_range_spec(witness, attestations)
++    &&& root_member_spec(roots, attestations[witness[0] as int].issuer)
++    &&& chain_edges_active_from_spec(witness, attestations, revocations, t, 0)
++    &&& chain_adjacency_from_spec(witness, attestations, 0)
++    &&& no_repeated_principal_spec(witness, attestations)
++    &&& attestations[witness[witness.len() - 1] as int].subject.digest@ == subject.digest@
++}
++
++fn digest_equal(left: &Vec<u8>, right: &Vec<u8>) -> (result: bool)
++    ensures result == (left@ =~= right@)
++{
++    if left.len() != right.len() {
++        false
++    } else {
++        let mut i: usize = 0;
++        let mut eq = true;
++        while i < left.len()
++            invariant
++                i <= left.len(),
++                left.len() == right.len(),
++                eq == (forall|j: int| 0 <= j < i as int ==> left@[j] == right@[j]),
++            decreases left.len() - i,
++        {
++            eq = eq && left[i] == right[i];
++            i += 1;
++        }
++        eq
++    }
++}
++
++
++proof fn chain_indices_in_range_from_implies_index(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++    idx: int,
++)
++    requires
++        chain_indices_in_range_from_spec(witness, attestations, from),
++        from <= idx < witness.len(),
++    ensures
++        (witness[idx] as int) < attestations.len(),
++    decreases if from <= idx { idx - from + 1 } else { 0 }
++{
++    if from == idx {
++    } else {
++        chain_indices_in_range_from_implies_index(witness, attestations, from + 1, idx);
++    }
++}
++
++fn root_member_from(roots: &Vec<PrincipalId>, principal: &PrincipalId, from: usize) -> (result: bool)
++    requires from <= roots.len()
++    ensures result == root_member_from_spec(roots@, *principal, from as int)
++    decreases roots.len() - from
++{
++    if from >= roots.len() {
++        false
++    } else {
++        digest_equal(&roots[from].digest, &principal.digest)
++            || root_member_from(roots, principal, from + 1)
++    }
++}
++
++fn chain_indices_in_range_from(
++    witness: &Vec<usize>,
++    attestations: &Vec<Attestation>,
++    from: usize,
++) -> (result: bool)
++    requires from <= witness.len()
++    ensures result == chain_indices_in_range_from_spec(witness@, attestations@, from as int)
++    decreases witness.len() - from
++{
++    if from >= witness.len() {
++        true
++    } else {
++        witness[from] < attestations.len() && chain_indices_in_range_from(witness, attestations, from + 1)
++    }
++}
++
++fn chain_edges_active_from(
++    witness: &Vec<usize>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    t: u64,
++    from: usize,
++) -> (result: bool)
++    requires
++        from <= witness.len(),
++        chain_indices_in_range_from_spec(witness@, attestations@, from as int),
++    ensures result == chain_edges_active_from_spec(witness@, attestations@, revocations@, t, from as int)
++    decreases witness.len() - from
++{
++    if from >= witness.len() {
++        true
++    } else {
++        proof {
++            chain_indices_in_range_from_implies_index(witness@, attestations@, from as int, from as int);
++        }
++        let att = &attestations[witness[from]];
++        (att.role_tag == TRUST_ROLE_TAG && attestation_active_at(att, revocations, t))
++            && chain_edges_active_from(witness, attestations, revocations, t, from + 1)
++    }
++}
