@@ -543,6 +543,7 @@ pub mod sel4_cdt;
 pub mod sel4_cspace;
 pub mod sel4_endpoint;
 pub mod sel4_fault_ipc;
+pub mod sel4_invocation;
 pub mod sel4_notification;
 pub mod sel4_reply;
 pub mod sel4_irq;

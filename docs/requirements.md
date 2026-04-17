@@ -7099,6 +7099,25 @@ r[sel4-vspace.rights]
 Effective mapping rights MUST be no greater than the rights carried by the
 capability used to install the mapping.
 
+## seL4 Invocation Decode
+
+r[sel4-invocation.decode-soundness]
+Invocation decode MUST return a typed kernel invocation only when the supplied
+message shape, looked-up capability kinds, and rights satisfy that label's
+preconditions. In this repo's starter set, the modeled typed invocations are
+endpoint send, endpoint receive, frame map, and untyped retype.
+
+r[sel4-invocation.reject]
+Malformed messages, wrong-type capabilities, missing required secondary
+capabilities, or missing required rights MUST cause decode failure with no
+typed invocation result.
+
+r[sel4-invocation.no-invented-authority]
+A successful decode MUST mention only object identifiers already present in the
+supplied decode context. Endpoint and untyped invocations use the primary
+capability object, and frame-map uses only the primary frame object plus the
+supplied secondary VSpace object.
+
 ## Fetch-and-Add
 
 r[fetch-add.semantics]

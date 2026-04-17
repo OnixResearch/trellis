@@ -1403,6 +1403,10 @@
   overlap checks and failure proofs, then constructed the final masked-rights mapping
   only after the scan. Trying to prove the failure path against the installed record
   made Verus fight irrelevant rights fields.
+- `src/sel4_invocation.rs` verified cleanly only after capability-kind checks stopped using
+  direct enum `==` / `!=` on `CapKind`. Give Verus small match-based `is_*_kind_spec(...)`
+  helpers for spec code and use `matches!(...)` in exec code; otherwise it tries to reason
+  through the derived `PartialEq` impl and asks for an assume-spec bridge.
 
 ## Job Execution Verification (2026-03-29)
 - is_cooldown_elapsed overflow: spec uses int arithmetic (`now as int >= last + cool`),
