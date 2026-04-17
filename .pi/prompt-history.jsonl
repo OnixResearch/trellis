@@ -499,3 +499,5 @@
 {"text":"continue","timestamp":1776268844191}
 {"text":"continue","timestamp":1776279142687}
 {"text":"Gaps\n\n - Missing reviewable\n openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/cargo-test.txt.\n - Large code-review packets remain truncated in the supplied review evidence.\n - Most validation artifacts referenced by checked tasks are not included in the\n review scope, so task completion remains only partially checkable.\n\n Next Steps\n\n - Include\n openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/cargo-test.txt\n in the review packet, not just cargo-test.raw.txt.\n - Re-supply the large code-review-src_properties.rs.txt and\n code-review-src_web_of_trust_*.txt packets in a form that is fully visible to review,\n without truncation.\n - Include the validation artifacts referenced by checked Phase 4 tasks if those task\n completions are being claimed in this review.","timestamp":1776466065405}
+{"text":"lets add an openspec for chainshedding","timestamp":1776468517188}
+{"text":"lets add an openspec for chainshedding/cryptoshedding","timestamp":1776468529065}
