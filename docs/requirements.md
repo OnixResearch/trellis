@@ -7105,12 +7105,16 @@ r[sel4-invocation.decode-soundness]
 Invocation decode MUST return a typed kernel invocation only when the supplied
 message shape, looked-up capability kinds, and rights satisfy that label's
 preconditions. In this repo's starter set, the modeled typed invocations are
-endpoint send, endpoint receive, frame map, and untyped retype.
+endpoint send, endpoint receive, frame map, and untyped retype. For frame-map,
+authority is checked on the primary frame capability; the secondary VSpace
+capability is a typed root reference in this abstract decode surface.
 
 r[sel4-invocation.reject]
 Malformed messages, wrong-type capabilities, missing required secondary
 capabilities, or missing required rights MUST cause decode failure with no
-typed invocation result.
+typed invocation result. Decode-level malformed checks reject zero size / zero
+alignment in the starter set, while exact alignment and layout validity remain
+downstream obligations of the modeled operation modules.
 
 r[sel4-invocation.no-invented-authority]
 A successful decode MUST mention only object identifiers already present in the

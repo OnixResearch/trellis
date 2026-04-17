@@ -233,6 +233,7 @@
 //! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot resolution
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
+//! - `sel4_invocation` — abstract typed invocation decode over explicit capability contexts
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption

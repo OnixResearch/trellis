@@ -3,6 +3,13 @@
 //! Models decode as a local check over an abstract message and an explicit
 //! capability context. Scope is intentionally small: endpoint send, endpoint
 //! receive, frame map, and untyped retype.
+//!
+//! For this starter set, frame-map authorization is checked against the primary
+//! frame capability only; the secondary VSpace capability is a typed object
+//! reference that selects the address-space root. Exact mapping alignment,
+//! page-size constraints, and untyped layout constraints stay in the downstream
+//! `sel4_vspace` / `sel4_untyped` modules rather than in decode. Decode only
+//! treats zero size / zero alignment as malformed message shapes.
 
 use vstd::prelude::*;
 
@@ -85,6 +92,8 @@ pub open spec fn endpoint_receive_shape_spec(message: InvocationMessage) -> bool
 
 // r[impl sel4-invocation.decode-soundness]
 // r[depends sel4-invocation.decode-soundness]
+/// Decode-level shape check only: downstream `sel4_vspace` handles exact
+/// alignment and page-size validity.
 pub open spec fn frame_map_shape_spec(message: InvocationMessage) -> bool {
     &&& message.arg_count == 3u8
     &&& message.has_extra_cap
@@ -93,6 +102,8 @@ pub open spec fn frame_map_shape_spec(message: InvocationMessage) -> bool {
 
 // r[impl sel4-invocation.decode-soundness]
 // r[depends sel4-invocation.decode-soundness]
+/// Decode-level shape check only: downstream `sel4_untyped` handles exact
+/// layout and alignment discipline.
 pub open spec fn untyped_retype_shape_spec(message: InvocationMessage) -> bool {
     &&& message.arg_count == 4u8
     &&& !message.has_extra_cap
@@ -165,6 +176,9 @@ pub open spec fn invocation_type_correct_spec(inv: Invocation, ctx: DecodeContex
 
 // r[impl sel4-invocation.decode-soundness]
 // r[depends sel4-invocation.decode-soundness]
+/// Authorization stays local to the acting capability for this starter set.
+/// `FrameMap` checks the frame capability's map right; the secondary VSpace
+/// capability is modeled only as a typed root reference.
 pub open spec fn invocation_authorized_spec(inv: Invocation, ctx: DecodeContext) -> bool {
     match inv {
         Invocation::EndpointSend { .. } => can_send_spec(ctx.primary.rights),
