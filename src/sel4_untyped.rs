@@ -24,6 +24,7 @@ pub struct ChildObject {
     pub kind: u8,
 }
 
+#[derive(Clone)]
 pub struct UntypedMemory {
     pub base: u64,
     pub size: u64,

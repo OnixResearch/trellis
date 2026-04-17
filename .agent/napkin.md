@@ -8,8 +8,8 @@
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
-- 6940 Verus proofs + 3705 cargo tests = current local snapshot
-- 0 uncovered + 0 untested = full Tracey coverage (1491 requirements)
+- 7329 Verus proofs + 3783 cargo tests (+ 13 doc tests) = current local snapshot
+- 0 uncovered + 0 untested = full Tracey coverage (1533 requirements)
 - `vstd` is a cargo dependency — `verus!` blocks compile normally (ghost code erased)
 - `rust_verify` runs on `src/lib.rs` — verifies the whole crate
 - Current trusted inventory: 19 live trusted/weakened boundaries = 16 `#[verifier::external_body]` items across 6 files + 3 closeable SSA `assume_specification[...]` bridges.
@@ -1407,6 +1407,10 @@
   direct enum `==` / `!=` on `CapKind`. Give Verus small match-based `is_*_kind_spec(...)`
   helpers for spec code and use `matches!(...)` in exec code; otherwise it tries to reason
   through the derived `PartialEq` impl and asks for an assume-spec bridge.
+- `src/sel4_invariants.rs` endpoint-step preservation stayed tractable only after I narrowed
+  the wrappers to a `Running` sender, treated the head receiver's blocked-on-this-endpoint
+  state and ready-queue-fit priority as explicit wrapper preconditions, and used tiny local
+  `is_*_tcb_state_spec(...)` helpers instead of direct enum equality in proof-facing code.
 
 ## Job Execution Verification (2026-03-29)
 - is_cooldown_elapsed overflow: spec uses int arithmetic (`now as int >= last + cool`),

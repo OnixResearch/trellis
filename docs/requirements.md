@@ -7122,6 +7122,31 @@ supplied decode context. Endpoint and untyped invocations use the primary
 capability object, and frame-map uses only the primary frame object plus the
 supplied secondary VSpace object.
 
+## seL4 Kernel Invariants
+
+r[sel4-invariants.compose]
+The kernel state MUST satisfy one composed invariant covering at least
+object-reference validity, capability derivation-tree well-formedness, CSpace
+root and slot validity, TCB state legality, ready-queue consistency,
+untyped-child ownership and disjointness, ASID pool well-formedness, VSpace
+mapping consistency, and IRQ binding uniqueness.
+
+r[sel4-invariants.decomposition]
+The composed kernel invariant MUST decompose into named sub-invariants so local
+proofs can depend only on the obligations they use. For this repo's starter
+surface, the named obligations are object-reference validity, CDT
+well-formedness, CSpace validity, TCB legality, scheduler consistency,
+untyped ownership and top-level disjointness, ASID pool well-formedness,
+VSpace consistency, and IRQ uniqueness.
+
+r[sel4-invariants.step-preservation]
+Each modeled primitive step in this change's initial preservation set MUST
+preserve the composed kernel invariant whenever its explicit preconditions
+hold. The initial set is endpoint send that blocks a running sender on an
+empty receive queue, endpoint send that rendezvous-matches a queued receiver
+and wakes it onto the ready queue, and untyped revoke that clears one untyped
+object's live children.
+
 ## Fetch-and-Add
 
 r[fetch-add.semantics]

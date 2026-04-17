@@ -234,6 +234,7 @@
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
 //! - `sel4_invocation` — abstract typed invocation decode over explicit capability contexts
+//! - `sel4_invariants` — composed kernel-state invariants over the local seL4 models
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
@@ -545,6 +546,7 @@ pub mod sel4_cspace;
 pub mod sel4_endpoint;
 pub mod sel4_fault_ipc;
 pub mod sel4_invocation;
+pub mod sel4_invariants;
 pub mod sel4_notification;
 pub mod sel4_reply;
 pub mod sel4_irq;
