@@ -480,6 +480,113 @@ pub closed spec fn well_formed_local_exec_spec(local: LocalChoreo) -> bool {
     well_formed_local_spec(local_view(local))
 }
 
+pub open spec fn local_exec_branch_labels_strict_spec(branches: Seq<LocalBranch>) -> bool {
+    forall|i: int, j: int| #![trigger branches[i], branches[j]]
+        0 <= i < j < branches.len() ==> branches[i].label < branches[j].label
+}
+
+pub closed spec fn well_formed_local_runtime_branches_spec(branches: Seq<LocalBranch>) -> bool {
+    branches.len() > 0
+        && local_exec_branch_labels_strict_spec(branches)
+        && forall|i: int| #![trigger branches[i]]
+            0 <= i < branches.len() ==> well_formed_local_result_spec(branches[i].body)
+}
+
+pub open spec fn well_formed_local_result_spec(local: LocalChoreo) -> bool
+    decreases local, 1int, 0int
+{
+    match local {
+        LocalChoreo::End => true,
+        LocalChoreo::Send { next, .. } => well_formed_local_result_spec(*next),
+        LocalChoreo::Recv { next, .. } => well_formed_local_result_spec(*next),
+        LocalChoreo::InternalChoice { branches } =>
+            branches.len() > 0
+                && local_exec_branch_labels_strict_spec(branches@)
+                && forall|i: int| #![trigger branches@[i]]
+                    0 <= i < branches@.len() ==> well_formed_local_result_spec(branches@[i].body),
+        LocalChoreo::Offer { branches, .. } =>
+            branches.len() > 0
+                && local_exec_branch_labels_strict_spec(branches@)
+                && forall|i: int| #![trigger branches@[i]]
+                    0 <= i < branches@.len() ==> well_formed_local_result_spec(branches@[i].body),
+    }
+}
+
+pub open spec fn well_formed_local_runtime_spec(local: LocalChoreo) -> bool
+    decreases local, 1int, 0int
+{
+    match local {
+        LocalChoreo::End => true,
+        LocalChoreo::Send { next, .. } => well_formed_local_runtime_spec(*next),
+        LocalChoreo::Recv { next, .. } => well_formed_local_runtime_spec(*next),
+        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+            branches.len() > 0
+                && local_exec_branch_labels_strict_spec(branches@)
+                && forall|i: int| #![trigger branches@[i]]
+                    0 <= i < branches@.len() ==> well_formed_local_runtime_spec(branches@[i].body),
+    }
+}
+
+pub closed spec fn well_formed_local_post_spec(local: LocalChoreo, result: bool) -> bool {
+    match local {
+        LocalChoreo::End => result == true,
+        LocalChoreo::Send { next, .. } => result == well_formed_local_runtime_spec(*next),
+        LocalChoreo::Recv { next, .. } => result == well_formed_local_runtime_spec(*next),
+        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+            result == (branches.len() > 0
+                && local_exec_branch_labels_strict_spec(branches@)
+                && forall|i: int| #![trigger branches@[i]]
+                    0 <= i < branches@.len() ==> well_formed_local_runtime_spec(branches@[i].body)),
+    }
+}
+
+proof fn local_adjacent_increasing_prefix_implies_pairwise_prefix(branches: Seq<LocalBranch>, n: int)
+    requires
+        0 <= n <= branches.len(),
+        forall|j: int| #![trigger branches[j]]
+            0 < j < n ==> branches[j - 1].label < branches[j].label,
+    ensures
+        forall|i: int, j: int| #![trigger branches[i], branches[j]]
+            0 <= i < j < n ==> branches[i].label < branches[j].label
+    decreases if n > 0 { n } else { 0int }
+{
+    if n > 1 {
+        local_adjacent_increasing_prefix_implies_pairwise_prefix(branches, n - 1);
+        assert forall|i: int, j: int| #![trigger branches[i], branches[j]]
+            0 <= i < j < n implies branches[i].label < branches[j].label by {
+            if j < n - 1 {
+                assert(branches[i].label < branches[j].label);
+            } else {
+                assert(j == n - 1);
+                if i == n - 2 {
+                    assert(branches[i].label < branches[j].label);
+                } else {
+                    assert(0 <= i);
+                    assert(i < n - 2);
+                    assert(n - 2 < n - 1);
+                    assert(branches[i].label < branches[n - 2].label);
+                    assert(branches[n - 2].label < branches[n - 1].label);
+                }
+            }
+        };
+    }
+}
+
+proof fn local_adjacent_violation_exec_not_strict(branches: Seq<LocalBranch>, bad: int)
+    requires
+        0 < bad < branches.len(),
+        branches[bad - 1].label >= branches[bad].label,
+    ensures
+        !local_exec_branch_labels_strict_spec(branches)
+{
+    assert(!local_exec_branch_labels_strict_spec(branches)) by {
+        assert(0 <= bad - 1);
+        assert(bad - 1 < bad);
+        assert(bad < branches.len());
+        assert(branches[bad - 1].label >= branches[bad].label);
+    }
+}
+
 // r[impl choreography.merge]
 pub closed spec fn merge_local_post_spec(
     decider: RoleId,
@@ -487,7 +594,63 @@ pub closed spec fn merge_local_post_spec(
     right: LocalChoreo,
     result: Option<LocalChoreo>,
 ) -> bool {
-    true
+    match result {
+        None => true,
+        Some(local) => {
+            match (left, right) {
+                (LocalChoreo::End, LocalChoreo::End) => local == LocalChoreo::End,
+                (
+                    LocalChoreo::Send { peer: left_peer, label: left_label, payload_tag: left_payload, .. },
+                    LocalChoreo::Send { peer: right_peer, label: right_label, payload_tag: right_payload, .. },
+                ) => {
+                    left_peer == right_peer && left_label == right_label && left_payload == right_payload
+                        && match local {
+                            LocalChoreo::Send { peer, label, payload_tag, .. } => {
+                                peer == left_peer && label == left_label && payload_tag == left_payload
+                            }
+                            _ => false,
+                        }
+                }
+                (
+                    LocalChoreo::Recv { peer: left_peer, label: left_label, payload_tag: left_payload, .. },
+                    LocalChoreo::Recv { peer: right_peer, label: right_label, payload_tag: right_payload, .. },
+                ) => {
+                    if left_peer == right_peer && left_label == right_label && left_payload == right_payload {
+                        match local {
+                            LocalChoreo::Recv { peer, label, payload_tag, .. } => {
+                                peer == left_peer && label == left_label && payload_tag == left_payload
+                            }
+                            _ => false,
+                        }
+                    } else if left_peer == decider && right_peer == decider && left_label != right_label {
+                        match local {
+                            LocalChoreo::Offer { from, branches } => from == decider && branches.len() == 2,
+                            _ => false,
+                        }
+                    } else {
+                        false
+                    }
+                }
+                (LocalChoreo::InternalChoice { .. }, LocalChoreo::InternalChoice { .. }) => {
+                    match local {
+                        LocalChoreo::InternalChoice { .. } => true,
+                        _ => false,
+                    }
+                }
+                (
+                    LocalChoreo::Offer { from: left_from, .. },
+                    LocalChoreo::Offer { from: right_from, .. },
+                ) => {
+                    left_from == decider && right_from == decider
+                        && match local {
+                            LocalChoreo::Offer { from, .. } => from == decider,
+                            _ => false,
+                        }
+                }
+                _ => false,
+            }
+        }
+    }
 }
 
 proof fn prepend_branch_view(branch: LBranch, tail: Seq<LBranch>)
@@ -1259,30 +1422,89 @@ fn merge_offer_branches_from(
     None
 }
 
+#[verifier::exec_allows_no_decreases_clause]
+fn well_formed_local_branches(branches: &[LocalBranch]) -> (result: bool)
+    ensures
+        result == (branches@.len() > 0
+            && local_exec_branch_labels_strict_spec(branches@)
+            && forall|j: int| #![trigger branches@[j]]
+                0 <= j < branches@.len() ==> well_formed_local_result_spec(branches@[j].body))
+{
+    if branches.is_empty() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < branches.len()
+        invariant
+            0 < branches@.len(),
+            0 <= i <= branches@.len(),
+            forall|j: int| #![trigger branches@[j]]
+                0 < j < i as int ==> branches@[j - 1].label < branches@[j].label,
+            forall|j: int| #![trigger branches@[j]]
+                0 <= j < i as int ==> well_formed_local_result_spec(branches@[j].body),
+        decreases branches@.len() - i,
+    {
+        if i > 0 && branches[i - 1].label >= branches[i].label {
+            proof {
+                local_adjacent_violation_exec_not_strict(branches@, i as int);
+                assert(!(branches@.len() > 0
+                    && local_exec_branch_labels_strict_spec(branches@)
+                    && forall|j: int| #![trigger branches@[j]]
+                        0 <= j < branches@.len() ==> well_formed_local_result_spec(branches@[j].body)));
+            }
+            return false;
+        }
+        if !well_formed_local(&branches[i].body) {
+            proof {
+                assert(!well_formed_local_result_spec(branches@[i as int].body));
+                assert(!(forall|j: int| #![trigger branches@[j]]
+                    0 <= j < branches@.len() ==> well_formed_local_result_spec(branches@[j].body))) by {
+                    assert((i as int) < branches@.len());
+                    assert(!well_formed_local_result_spec(branches@[i as int].body));
+                }
+                assert(!(branches@.len() > 0
+                    && local_exec_branch_labels_strict_spec(branches@)
+                    && forall|j: int| #![trigger branches@[j]]
+                        0 <= j < branches@.len() ==> well_formed_local_result_spec(branches@[j].body)));
+            }
+            return false;
+        }
+        proof {
+            assert(well_formed_local_result_spec(branches@[i as int].body));
+            if i > 0 {
+                assert(branches@[i as int - 1].label < branches@[i as int].label);
+            }
+        }
+        i += 1;
+    }
+    proof {
+        local_adjacent_increasing_prefix_implies_pairwise_prefix(branches@, branches@.len() as int);
+        assert(local_exec_branch_labels_strict_spec(branches@));
+        assert(forall|j: int| #![trigger branches@[j]]
+            0 <= j < branches@.len() ==> well_formed_local_result_spec(branches@[j].body));
+    }
+    true
+}
+
 // r[impl choreography.merge]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn well_formed_local(local: &LocalChoreo) -> (result: bool)
+    ensures result == well_formed_local_result_spec(*local)
 {
     match local {
-        LocalChoreo::End => true,
-        LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => well_formed_local(next),
-        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } => {
-            if branches.is_empty() {
-                return false;
-            }
-            let mut i: usize = 0;
-            while i < branches.len()
-                decreases branches@.len() - i,
-            {
-                if i > 0 && branches[i - 1].label >= branches[i].label {
-                    return false;
-                }
-                if !well_formed_local(&branches[i].body) {
-                    return false;
-                }
-                i += 1;
-            }
+        LocalChoreo::End => {
+            proof { reveal(well_formed_local_result_spec); }
             true
+        }
+        LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => {
+            let result = well_formed_local(next);
+            proof { reveal(well_formed_local_result_spec); }
+            result
+        }
+        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } => {
+            let result = well_formed_local_branches(branches);
+            proof { reveal(well_formed_local_result_spec); }
+            result
         }
     }
 }
@@ -1290,6 +1512,7 @@ pub fn well_formed_local(local: &LocalChoreo) -> (result: bool)
 // r[impl choreography.merge]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn merge_local(decider: RoleId, left: &LocalChoreo, right: &LocalChoreo) -> (result: Option<LocalChoreo>)
+    ensures merge_local_post_spec(decider, *left, *right, result)
 {
     match (left, right) {
         (LocalChoreo::End, LocalChoreo::End) => Some(LocalChoreo::End),

@@ -1029,6 +1029,32 @@ pub closed spec fn project_endpoint_post_spec(role: RoleId, global: GlobalChoreo
     local_view(result) == project_endpoint_spec(role, global_view(global))
 }
 
+pub closed spec fn project_endpoint_shape_post_spec(role: RoleId, global: GlobalChoreo, result: LocalChoreo) -> bool {
+    match global {
+        GlobalChoreo::End => result == LocalChoreo::End,
+        GlobalChoreo::Comm { from, to, label, payload_tag, .. } => {
+            if role == from {
+                match result {
+                    LocalChoreo::Send { peer, label: out_label, payload_tag: out_tag, .. } => {
+                        peer == to && out_label == label && out_tag == payload_tag
+                    }
+                    _ => false,
+                }
+            } else if role == to {
+                match result {
+                    LocalChoreo::Recv { peer, label: out_label, payload_tag: out_tag, .. } => {
+                        peer == from && out_label == label && out_tag == payload_tag
+                    }
+                    _ => false,
+                }
+            } else {
+                true
+            }
+        }
+        GlobalChoreo::Choice { .. } => true,
+    }
+}
+
 proof fn project_decider_choice_from_some(role: RoleId, global: GChoreo, from: int)
     requires
         0 <= from,
@@ -1540,10 +1566,26 @@ fn participants_in_branches(branches: &[GlobalBranch]) -> Vec<RoleId> {
 // r[impl choreography.projectability]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn projectable(global: &GlobalChoreo) -> (result: bool)
+    ensures result ==> crate::choreography_global::well_formed_global_runtime_spec(*global)
 {
     match global {
-        GlobalChoreo::End => true,
-        GlobalChoreo::Comm { from, to, next, .. } => *from != *to && projectable(next),
+        GlobalChoreo::End => {
+            proof {
+                reveal(crate::choreography_global::well_formed_global_runtime_spec);
+            }
+            true
+        }
+        GlobalChoreo::Comm { from, to, next, .. } => {
+            let result = *from != *to && projectable(next);
+            proof {
+                reveal(crate::choreography_global::well_formed_global_runtime_spec);
+                if result {
+                    assert(*from != *to);
+                    assert(crate::choreography_global::well_formed_global_runtime_spec(**next));
+                }
+            }
+            result
+        }
         GlobalChoreo::Choice { decider, branches } => {
             if branches.is_empty() {
                 return false;
@@ -1570,23 +1612,57 @@ pub fn projectable(global: &GlobalChoreo) -> (result: bool)
                 }
                 i += 1;
             }
+            proof {
+                assert(crate::choreography_global::well_formed_global_runtime_spec(*global));
+            }
             true
         }
     }
 }
 
 // r[impl choreography.projection]
-// TODO: restore postcondition once exec-spec bridge is proved
+#[verifier::exec_allows_no_decreases_clause]
 pub fn project_endpoint(role: RoleId, global: &GlobalChoreo) -> (result: LocalChoreo)
     requires projectable_exec_spec(*global)
+    ensures project_endpoint_shape_post_spec(role, *global, result)
 {
-    let opt = project_local(role, global);
-    proof {
-        projectable_implies_projection_some(role, global_view(*global));
-    }
-    match opt {
-        Some(local) => local,
-        None => LocalChoreo::End,
+    match global {
+        GlobalChoreo::End => LocalChoreo::End,
+        GlobalChoreo::Comm { from, to, label, payload_tag, next } => {
+            proof {
+                reveal(projectable_exec_spec);
+            }
+            if role == *from {
+                LocalChoreo::Send {
+                    peer: *to,
+                    label: *label,
+                    payload_tag: *payload_tag,
+                    next: Box::new(project_endpoint(role, next)),
+                }
+            } else if role == *to {
+                LocalChoreo::Recv {
+                    peer: *from,
+                    label: *label,
+                    payload_tag: *payload_tag,
+                    next: Box::new(project_endpoint(role, next)),
+                }
+            } else {
+                project_endpoint(role, next)
+            }
+        }
+        GlobalChoreo::Choice { decider, branches } => {
+            if role == *decider {
+                match project_decider_branches(role, branches) {
+                    Some(local_branches) => LocalChoreo::InternalChoice { branches: local_branches },
+                    None => LocalChoreo::End,
+                }
+            } else {
+                match merge_projected_branches(role, *decider, branches) {
+                    Some(local) => local,
+                    None => LocalChoreo::End,
+                }
+            }
+        }
     }
 }
 

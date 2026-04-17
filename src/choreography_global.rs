@@ -387,6 +387,187 @@ pub closed spec fn well_formed_global_exec_spec(global: GlobalChoreo) -> bool {
     well_formed_global_spec(global_view(global))
 }
 
+pub open spec fn global_exec_branch_labels_strict_spec(branches: Seq<GlobalBranch>) -> bool {
+    forall|i: int, j: int| #![trigger branches[i], branches[j]]
+        0 <= i < j < branches.len() ==> branches[i].label < branches[j].label
+}
+
+pub open spec fn well_formed_global_runtime_spec(global: GlobalChoreo) -> bool
+    decreases global
+{
+    match global {
+        GlobalChoreo::End => true,
+        GlobalChoreo::Comm { from, to, next, .. } => from != to && well_formed_global_runtime_spec(*next),
+        GlobalChoreo::Choice { branches, .. } =>
+            branches.len() > 0
+                && global_exec_branch_labels_strict_spec(branches@)
+                && forall|i: int| #![trigger branches@[i]]
+                    0 <= i < branches@.len() ==> well_formed_global_runtime_spec(branches@[i].body),
+    }
+}
+
+proof fn adjacent_violation_exec_not_strict(branches: Seq<GlobalBranch>, bad: int)
+    requires
+        0 < bad < branches.len(),
+        branches[bad - 1].label >= branches[bad].label,
+    ensures
+        !global_exec_branch_labels_strict_spec(branches)
+{
+    assert(!global_exec_branch_labels_strict_spec(branches)) by {
+        assert(0 <= bad - 1);
+        assert(bad - 1 < bad);
+        assert(bad < branches.len());
+        assert(branches[bad - 1].label >= branches[bad].label);
+    }
+}
+
+proof fn adjacent_increasing_prefix_implies_pairwise_prefix(branches: Seq<GlobalBranch>, n: int)
+    requires
+        0 <= n <= branches.len(),
+        forall|j: int| #![trigger branches[j]]
+            0 < j < n ==> branches[j - 1].label < branches[j].label,
+    ensures
+        forall|i: int, j: int| #![trigger branches[i], branches[j]]
+            0 <= i < j < n ==> branches[i].label < branches[j].label
+    decreases if n > 0 { n } else { 0int }
+{
+    if n > 1 {
+        adjacent_increasing_prefix_implies_pairwise_prefix(branches, n - 1);
+        assert forall|i: int, j: int| #![trigger branches[i], branches[j]]
+            0 <= i < j < n implies branches[i].label < branches[j].label by {
+            if j < n - 1 {
+                assert(branches[i].label < branches[j].label);
+            } else {
+                assert(j == n - 1);
+                if i == n - 2 {
+                    assert(branches[i].label < branches[j].label);
+                } else {
+                    assert(0 <= i);
+                    assert(i < n - 2);
+                    assert(n - 2 < n - 1);
+                    assert(branches[i].label < branches[n - 2].label);
+                    assert(branches[n - 2].label < branches[n - 1].label);
+                }
+            }
+        };
+    }
+}
+
+proof fn choice_adjacent_violation_not_strict(choice: GlobalChoreo, bad: int)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } =>
+                0 < bad < branches@.len() && branches@[bad - 1].label >= branches@[bad].label,
+            _ => false,
+        }
+    ensures
+        match global_view(choice) {
+            GChoreo::Choice { branches, .. } => !global_branch_labels_strict_spec(branches),
+            _ => false,
+        }
+{
+    if let GlobalChoreo::Choice { branches, .. } = choice {
+        let viewed = global_choice_branches_view(choice, 0);
+        global_choice_branches_view_len(choice, 0);
+        global_choice_branches_view_nth(choice, 0, bad - 1);
+        global_choice_branches_view_nth(choice, 0, bad);
+        assert(!global_branch_labels_strict_spec(viewed)) by {
+            assert(0 <= bad - 1);
+            assert(bad - 1 < bad);
+            assert(bad < viewed.len());
+            assert(viewed[bad - 1].label == branches@[bad - 1].label);
+            assert(viewed[bad].label == branches@[bad].label);
+            assert(viewed[bad - 1].label >= viewed[bad].label);
+        }
+    }
+}
+
+proof fn choice_adjacent_exec_labels_imply_strict(choice: GlobalChoreo)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } =>
+                forall|j: int| #![trigger branches@[j]]
+                    0 < j < branches@.len() ==> branches@[j - 1].label < branches@[j].label,
+            _ => false,
+        }
+    ensures
+        match global_view(choice) {
+            GChoreo::Choice { branches, .. } => global_branch_labels_strict_spec(branches),
+            _ => false,
+        }
+{
+    if let GlobalChoreo::Choice { branches, .. } = choice {
+        let viewed = global_choice_branches_view(choice, 0);
+        adjacent_increasing_prefix_implies_pairwise_prefix(branches@, branches@.len() as int);
+        global_choice_branches_view_len(choice, 0);
+        assert forall|i: int, j: int| #![trigger viewed[i], viewed[j]]
+            0 <= i < j < viewed.len() implies viewed[i].label < viewed[j].label by {
+            global_choice_branches_view_nth(choice, 0, i);
+            global_choice_branches_view_nth(choice, 0, j);
+            assert(viewed[i].label == branches@[i].label);
+            assert(viewed[j].label == branches@[j].label);
+            assert(branches@[i].label < branches@[j].label);
+        }
+    }
+}
+
+proof fn well_formed_choice_prefix_exec_iff(choice: GlobalChoreo, upto: int)
+    requires
+        match choice {
+            GlobalChoreo::Choice { branches, .. } => 0 <= upto <= branches@.len(),
+            _ => false,
+        }
+    ensures
+        match choice {
+            GlobalChoreo::Choice { branches, .. } =>
+                well_formed_choice_prefix_spec(global_view(choice), upto)
+                    <==> (forall|j: int| #![trigger branches@[j]]
+                        0 <= j < upto ==> well_formed_global_exec_spec(branches@[j].body)),
+            _ => false,
+        }
+    decreases if upto > 0 { upto } else { 0int }
+{
+    if let GlobalChoreo::Choice { decider, branches } = choice {
+        reveal(well_formed_global_exec_spec);
+        if upto > 0 {
+            well_formed_choice_prefix_exec_iff(choice, upto - 1);
+            global_choice_branches_view_nth(choice, 0, upto - 1);
+            assert(global_view(choice) == GChoreo::Choice {
+                decider,
+                branches: global_choice_branches_view(choice, 0),
+            });
+            assert(well_formed_choice_prefix_spec(global_view(choice), upto)
+                <==> (well_formed_choice_prefix_spec(global_view(choice), upto - 1)
+                    && well_formed_global_exec_spec(branches@[upto - 1].body)));
+            assert((forall|j: int| #![trigger branches@[j]]
+                0 <= j < upto ==> well_formed_global_exec_spec(branches@[j].body))
+                <==> ((forall|j: int| #![trigger branches@[j]]
+                    0 <= j < upto - 1 ==> well_formed_global_exec_spec(branches@[j].body))
+                    && well_formed_global_exec_spec(branches@[upto - 1].body))) by {
+                if (forall|j: int| #![trigger branches@[j]]
+                    0 <= j < upto ==> well_formed_global_exec_spec(branches@[j].body)) {
+                    assert(well_formed_global_exec_spec(branches@[upto - 1].body));
+                }
+                if ((forall|j: int| #![trigger branches@[j]]
+                    0 <= j < upto - 1 ==> well_formed_global_exec_spec(branches@[j].body))
+                    && well_formed_global_exec_spec(branches@[upto - 1].body)) {
+                    assert forall|j: int| #![trigger branches@[j]]
+                        0 <= j < upto implies well_formed_global_exec_spec(branches@[j].body) by {
+                        if j < upto - 1 {
+                        } else {
+                            assert(j == upto - 1);
+                        }
+                    };
+                }
+            }
+        } else {
+            assert(well_formed_choice_prefix_spec(global_view(choice), 0));
+            assert(forall|j: int| #![trigger branches@[j]]
+                0 <= j < 0 ==> well_formed_global_exec_spec(branches@[j].body));
+        }
+    }
+}
+
 proof fn insert_role_membership(roles: Seq<RoleId>, role: RoleId, target: RoleId)
     ensures role_in_list_spec(insert_role_spec(roles, role), target) <==> (target == role || role_in_list_spec(roles, target))
 {
@@ -805,28 +986,89 @@ pub fn comm_parts(global: &GlobalChoreo) -> (result: Option<(RoleId, RoleId, Lab
     }
 }
 
+#[verifier::exec_allows_no_decreases_clause]
+fn well_formed_global_choice(branches: &[GlobalBranch]) -> (result: bool)
+    ensures
+        result == (branches@.len() > 0
+            && global_exec_branch_labels_strict_spec(branches@)
+            && forall|j: int| #![trigger branches@[j]]
+                0 <= j < branches@.len() ==> well_formed_global_runtime_spec(branches@[j].body))
+{
+    if branches.is_empty() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < branches.len()
+        invariant
+            0 < branches@.len(),
+            0 <= i <= branches@.len(),
+            forall|j: int| #![trigger branches@[j]]
+                0 < j < i as int ==> branches@[j - 1].label < branches@[j].label,
+            forall|j: int| #![trigger branches@[j]]
+                0 <= j < i as int ==> well_formed_global_runtime_spec(branches@[j].body),
+        decreases branches@.len() - i,
+    {
+        if i > 0 && branches[i - 1].label >= branches[i].label {
+            proof {
+                adjacent_violation_exec_not_strict(branches@, i as int);
+                assert(!(branches@.len() > 0
+                    && global_exec_branch_labels_strict_spec(branches@)
+                    && forall|j: int| #![trigger branches@[j]]
+                        0 <= j < branches@.len() ==> well_formed_global_runtime_spec(branches@[j].body)));
+            }
+            return false;
+        }
+        if !well_formed_global(&branches[i].body) {
+            proof {
+                assert(!well_formed_global_runtime_spec(branches@[i as int].body));
+                assert(!(forall|j: int| #![trigger branches@[j]]
+                    0 <= j < branches@.len() ==> well_formed_global_runtime_spec(branches@[j].body))) by {
+                    assert((i as int) < branches@.len());
+                    assert(!well_formed_global_runtime_spec(branches@[i as int].body));
+                }
+                assert(!(branches@.len() > 0
+                    && global_exec_branch_labels_strict_spec(branches@)
+                    && forall|j: int| #![trigger branches@[j]]
+                        0 <= j < branches@.len() ==> well_formed_global_runtime_spec(branches@[j].body)));
+            }
+            return false;
+        }
+        proof {
+            assert(well_formed_global_runtime_spec(branches@[i as int].body));
+            if i > 0 {
+                assert(branches@[i as int - 1].label < branches@[i as int].label);
+            }
+        }
+        i += 1;
+    }
+    proof {
+        adjacent_increasing_prefix_implies_pairwise_prefix(branches@, branches@.len() as int);
+        assert(global_exec_branch_labels_strict_spec(branches@));
+        assert(forall|j: int| #![trigger branches@[j]]
+            0 <= j < branches@.len() ==> well_formed_global_runtime_spec(branches@[j].body));
+    }
+    true
+}
+
 // r[impl choreography.participants]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn well_formed_global(global: &GlobalChoreo) -> (result: bool)
+    ensures result == well_formed_global_runtime_spec(*global)
 {
     match global {
-        GlobalChoreo::End => true,
-        GlobalChoreo::Comm { from, to, next, .. } => *from != *to && well_formed_global(next),
-        GlobalChoreo::Choice { branches, .. } => {
-            if branches.is_empty() {
-                return false;
-            }
-            let mut i: usize = 0;
-            while i < branches.len() {
-                if i > 0 && branches[i - 1].label >= branches[i].label {
-                    return false;
-                }
-                if !well_formed_global(&branches[i].body) {
-                    return false;
-                }
-                i += 1;
-            }
+        GlobalChoreo::End => {
+            proof { reveal(well_formed_global_runtime_spec); }
             true
+        }
+        GlobalChoreo::Comm { from, to, next, .. } => {
+            let result = *from != *to && well_formed_global(next);
+            proof { reveal(well_formed_global_runtime_spec); }
+            result
+        }
+        GlobalChoreo::Choice { branches, .. } => {
+            let result = well_formed_global_choice(branches);
+            proof { reveal(well_formed_global_runtime_spec); }
+            result
         }
     }
 }
