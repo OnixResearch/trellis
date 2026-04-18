@@ -511,6 +511,26 @@ pub closed spec fn top_env_spec(vars: nat) -> Seq<ConstLat> {
     Seq::new(vars, |_i: int| ConstLat::Top)
 }
 
+spec fn env_rank_sum_spec(env: Seq<ConstLat>, from: int) -> int
+    decreases env.len() - from,
+{
+    if from >= env.len() {
+        0
+    } else {
+        lattice_rank_spec(env[from]) as int + env_rank_sum_spec(env, from + 1)
+    }
+}
+
+spec fn matrix_rank_sum_spec(matrix: Seq<Vec<ConstLat>>, from: int) -> int
+    decreases matrix.len() - from,
+{
+    if from >= matrix.len() {
+        0
+    } else {
+        env_rank_sum_spec(matrix[from]@, 0) + matrix_rank_sum_spec(matrix, from + 1)
+    }
+}
+
 pub closed spec fn meet_env_spec(a: Seq<ConstLat>, b: Seq<ConstLat>) -> Seq<ConstLat>
     recommends a.len() == b.len()
 {
@@ -576,6 +596,17 @@ pub closed spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat
         }
 }
 
+pub closed spec fn round_from_out_env_spec(program: RawProgram, entry_env: Seq<ConstLat>, prev_out: Seq<Vec<ConstLat>>, next: ConstPropSets) -> bool {
+    &&& valid_constprop_program_spec(program)
+    &&& constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int)
+    &&& constprop_sets_shape_spec(next, program.blocks@.len() as int, entry_env.len() as int)
+    &&& forall|b: int| #![trigger next.in_env@[b], next.out_env@[b]]
+        0 <= b < program.blocks@.len() ==> {
+            &&& next.in_env@[b]@ == block_in_env_spec(program, entry_env, prev_out, b)
+            &&& next.out_env@[b]@ == block_out_env_spec(program, entry_env, prev_out, b)
+        }
+}
+
 pub closed spec fn valid_constprop_program_spec(program: RawProgram) -> bool {
     forall|i: int| #![trigger program.edges[i]] 0 <= i < program.edges.len() ==> {
         let (src, dst) = program.edges[i];
@@ -620,6 +651,181 @@ proof fn env_le_top(env: Seq<ConstLat>)
         assert(top_env_spec(env.len() as nat)[i] == ConstLat::Top);
         lattice_le_top(env[i]);
     };
+}
+
+proof fn lattice_le_rank_le(a: ConstLat, b: ConstLat)
+    requires lattice_le_spec(a, b)
+    ensures lattice_rank_spec(a) <= lattice_rank_spec(b)
+{
+    match a {
+        ConstLat::Bottom => {}
+        ConstLat::Top => {}
+        ConstLat::Const(x) => {
+            match b {
+                ConstLat::Bottom => { assert(false); }
+                ConstLat::Top => {}
+                ConstLat::Const(y) => {
+                    assert(x == y);
+                }
+            }
+        }
+    }
+}
+
+proof fn lattice_le_rank_lt(a: ConstLat, b: ConstLat)
+    requires
+        lattice_le_spec(a, b),
+        a != b,
+    ensures lattice_rank_spec(a) < lattice_rank_spec(b)
+{
+    match a {
+        ConstLat::Bottom => {
+            match b {
+                ConstLat::Bottom => { assert(false); }
+                ConstLat::Top => {}
+                ConstLat::Const(_) => {}
+            }
+        }
+        ConstLat::Top => {
+            assert(false);
+        }
+        ConstLat::Const(x) => {
+            match b {
+                ConstLat::Bottom => { assert(false); }
+                ConstLat::Top => {}
+                ConstLat::Const(y) => {
+                    assert(x == y);
+                    assert(false);
+                }
+            }
+        }
+    }
+}
+
+proof fn seq_constlat_neq_has_witness(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires
+        a.len() == b.len(),
+        a != b,
+    ensures exists|i: int| 0 <= i < a.len() && a[i] != b[i]
+{
+    if !(exists|i: int| 0 <= i < a.len() && a[i] != b[i]) {
+        assert forall|i: int| 0 <= i < a.len() implies a[i] == b[i] by {};
+        assert(a == b);
+        assert(false);
+    }
+}
+
+proof fn env_rank_le_from(a: Seq<ConstLat>, b: Seq<ConstLat>, from: int)
+    requires
+        env_le_spec(a, b),
+        0 <= from <= a.len(),
+    ensures env_rank_sum_spec(a, from) <= env_rank_sum_spec(b, from)
+    decreases a.len() - from,
+{
+    if from < a.len() {
+        lattice_le_rank_le(a[from], b[from]);
+        env_rank_le_from(a, b, from + 1);
+        assert(env_rank_sum_spec(a, from) == lattice_rank_spec(a[from]) as int + env_rank_sum_spec(a, from + 1));
+        assert(env_rank_sum_spec(b, from) == lattice_rank_spec(b[from]) as int + env_rank_sum_spec(b, from + 1));
+        assert((lattice_rank_spec(a[from]) as int) <= (lattice_rank_spec(b[from]) as int));
+        assert(env_rank_sum_spec(a, from + 1) <= env_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a, from) <= env_rank_sum_spec(b, from));
+    }
+}
+
+proof fn env_rank_lt_at(a: Seq<ConstLat>, b: Seq<ConstLat>, from: int, witness: int)
+    requires
+        env_le_spec(a, b),
+        0 <= from <= witness < a.len(),
+        a[witness] != b[witness],
+    ensures env_rank_sum_spec(a, from) < env_rank_sum_spec(b, from)
+    decreases a.len() - from,
+{
+    if from == witness {
+        lattice_le_rank_lt(a[from], b[from]);
+        env_rank_le_from(a, b, from + 1);
+        assert(env_rank_sum_spec(a, from) == lattice_rank_spec(a[from]) as int + env_rank_sum_spec(a, from + 1));
+        assert(env_rank_sum_spec(b, from) == lattice_rank_spec(b[from]) as int + env_rank_sum_spec(b, from + 1));
+        assert((lattice_rank_spec(a[from]) as int) < (lattice_rank_spec(b[from]) as int));
+        assert(env_rank_sum_spec(a, from + 1) <= env_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a, from) < env_rank_sum_spec(b, from));
+    } else {
+        lattice_le_rank_le(a[from], b[from]);
+        env_rank_lt_at(a, b, from + 1, witness);
+        assert(env_rank_sum_spec(a, from) == lattice_rank_spec(a[from]) as int + env_rank_sum_spec(a, from + 1));
+        assert(env_rank_sum_spec(b, from) == lattice_rank_spec(b[from]) as int + env_rank_sum_spec(b, from + 1));
+        assert((lattice_rank_spec(a[from]) as int) <= (lattice_rank_spec(b[from]) as int));
+        assert(env_rank_sum_spec(a, from + 1) < env_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a, from) < env_rank_sum_spec(b, from));
+    }
+}
+
+proof fn env_rank_lt(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires
+        env_le_spec(a, b),
+        exists|i: int| 0 <= i < a.len() && a[i] != b[i],
+    ensures env_rank_sum_spec(a, 0) < env_rank_sum_spec(b, 0)
+{
+    let witness = choose|i: int| 0 <= i < a.len() && a[i] != b[i];
+    assert(0 <= witness < a.len() && a[witness] != b[witness]);
+    env_rank_lt_at(a, b, 0, witness);
+}
+
+proof fn matrix_rank_le_from(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>, from: int)
+    requires
+        constprop_matrix_le_spec(a, b),
+        0 <= from <= a.len(),
+    ensures matrix_rank_sum_spec(a, from) <= matrix_rank_sum_spec(b, from)
+    decreases a.len() - from,
+{
+    if from < a.len() {
+        env_rank_le_from(a[from]@, b[from]@, 0);
+        matrix_rank_le_from(a, b, from + 1);
+        assert(matrix_rank_sum_spec(a, from) == env_rank_sum_spec(a[from]@, 0) + matrix_rank_sum_spec(a, from + 1));
+        assert(matrix_rank_sum_spec(b, from) == env_rank_sum_spec(b[from]@, 0) + matrix_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a[from]@, 0) <= env_rank_sum_spec(b[from]@, 0));
+        assert(matrix_rank_sum_spec(a, from + 1) <= matrix_rank_sum_spec(b, from + 1));
+        assert(matrix_rank_sum_spec(a, from) <= matrix_rank_sum_spec(b, from));
+    }
+}
+
+proof fn matrix_rank_lt_at(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>, from: int, witness: int)
+    requires
+        constprop_matrix_le_spec(a, b),
+        0 <= from <= witness < a.len(),
+        a[witness]@ != b[witness]@,
+    ensures matrix_rank_sum_spec(a, from) < matrix_rank_sum_spec(b, from)
+    decreases a.len() - from,
+{
+    if from == witness {
+        seq_constlat_neq_has_witness(a[from]@, b[from]@);
+        env_rank_lt(a[from]@, b[from]@);
+        matrix_rank_le_from(a, b, from + 1);
+        assert(matrix_rank_sum_spec(a, from) == env_rank_sum_spec(a[from]@, 0) + matrix_rank_sum_spec(a, from + 1));
+        assert(matrix_rank_sum_spec(b, from) == env_rank_sum_spec(b[from]@, 0) + matrix_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a[from]@, 0) < env_rank_sum_spec(b[from]@, 0));
+        assert(matrix_rank_sum_spec(a, from + 1) <= matrix_rank_sum_spec(b, from + 1));
+        assert(matrix_rank_sum_spec(a, from) < matrix_rank_sum_spec(b, from));
+    } else {
+        env_rank_le_from(a[from]@, b[from]@, 0);
+        matrix_rank_lt_at(a, b, from + 1, witness);
+        assert(matrix_rank_sum_spec(a, from) == env_rank_sum_spec(a[from]@, 0) + matrix_rank_sum_spec(a, from + 1));
+        assert(matrix_rank_sum_spec(b, from) == env_rank_sum_spec(b[from]@, 0) + matrix_rank_sum_spec(b, from + 1));
+        assert(env_rank_sum_spec(a[from]@, 0) <= env_rank_sum_spec(b[from]@, 0));
+        assert(matrix_rank_sum_spec(a, from + 1) < matrix_rank_sum_spec(b, from + 1));
+        assert(matrix_rank_sum_spec(a, from) < matrix_rank_sum_spec(b, from));
+    }
+}
+
+proof fn matrix_rank_lt(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>)
+    requires
+        constprop_matrix_le_spec(a, b),
+        exists|r: int| 0 <= r < a.len() && a[r]@ != b[r]@,
+    ensures matrix_rank_sum_spec(a, 0) < matrix_rank_sum_spec(b, 0)
+{
+    let witness = choose|r: int| 0 <= r < a.len() && a[r]@ != b[r]@;
+    assert(0 <= witness < a.len() && a[witness]@ != b[witness]@);
+    matrix_rank_lt_at(a, b, 0, witness);
 }
 
 // r[verify constfold.convergence]
