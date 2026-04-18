@@ -49,9 +49,10 @@ structure (immutable) from the liveness state (mutable).
 
 ### 3. Chain Membership
 
-**Choice:** `on_chain(tree, leaf, ancestor) -> bool` is true iff
-following parent links from `leaf` eventually reaches `ancestor`.
-Recursive spec with fuel bounded by tree size.
+**Choice:** `on_chain(tree, leaf, ancestor) -> bool` is the strict
+ancestor relation: true iff following one-or-more parent links from
+`leaf` eventually reaches `ancestor`. Recursive spec with fuel bounded by
+tree size.
 
 **Rationale:** This is the core predicate. Recoverability, shedding
 completeness, and isolation all reduce to chain membership queries.
@@ -85,8 +86,14 @@ node, root)` or `node == root`.
 ### 7. Rotation
 
 **Choice:** `rotate(tree, leaf, new_parent) -> tree'` where
-`tree'[leaf] = Some(new_parent)` and all other entries unchanged.
+`tree'[leaf] = Some(new_parent)` and all other entries unchanged. Valid
+rotation requires `new_parent` already exists, `leaf` is a leaf, the
+update stays acyclic, and the new parent chain does not pass through the
+old parent.
 
 **Rationale:** Rotation re-parents a leaf. The correctness proof is:
 after rotation, recoverability depends on the new chain, not the old one.
-The old parent's destruction no longer affects the rotated leaf.
+Excluding re-parenting under a descendant of the old parent ensures the
+old parent's destruction no longer affects the rotated leaf. The proof
+surface is root-agnostic: no shared-root precondition is used, so the
+same rotation proofs cover valid same-tree and cross-tree reparenting.

@@ -629,6 +629,6 @@ mod tests {
         assert_eq!(merge_sorted(&[], &[4, 5, 6]), vec![4, 5, 6]);
         assert_eq!(merge_sorted(&[1, 1], &[1, 1]), vec![1, 1, 1, 1]);
         let empty: &[u64] = &[];
-        assert_eq!(merge_sorted(empty, empty), vec![]);
+        assert_eq!(merge_sorted(empty, empty), Vec::<u64>::new());
     }
 }

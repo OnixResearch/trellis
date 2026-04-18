@@ -55,6 +55,7 @@
 //! - `consistency_transactional` — abstract transactional consistency predicates and refinement
 //!   skeletons
 //! - `crdt` — G-Counter, PN-Counter, LWW-Register with merge laws
+//! - `cryptoshedding` — key-tree recoverability, shedding, subtree effects, rotation
 //! - `bounds` — range predicates, clamping
 //! - `cas` — compare-and-swap condition evaluation
 //! - `cas_loop` — CAS retry loop modeling: success/failure, ABA detection via generation counters,
@@ -391,6 +392,7 @@ pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
 pub mod crdt;
+pub mod cryptoshedding;
 pub mod cron_field;
 pub mod cron_match;
 pub mod cron_next;

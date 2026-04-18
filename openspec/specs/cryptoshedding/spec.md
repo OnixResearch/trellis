@@ -127,9 +127,10 @@ r[cryptoshedding.shed-isolation]
 ### Requirement: Subtree Shedding
 
 Destroying an internal key K MUST shed the entire subtree rooted at K:
-every datum whose chain passes through any descendant of K (including K
-itself) becomes irrecoverable. (Derived lemma from chain-recoverability
-and shed-completeness; verified as an explicit proof artifact.)
+every datum bound to a leaf whose chain passes through K or any
+descendant of K becomes irrecoverable. (Derived lemma from
+chain-recoverability and shed-completeness; verified as an explicit
+proof artifact.)
 
 r[cryptoshedding.subtree-shedding]
 
@@ -143,7 +144,10 @@ r[cryptoshedding.subtree-shedding]
 
 Rotation is an atomic re-parent: `tree'[L] = Some(P_new)`, all other
 entries unchanged. P_new MUST already exist in the tree. Cross-tree
-rotation (P_new in a different forest root) is in scope. After rotating
+rotation (P_new in a different forest root) is in scope. For a valid
+rotation, if L previously had parent P_old, the new parent chain MUST
+NOT pass through P_old (re-parenting under a descendant of P_old is out
+of scope because it keeps the old key on the new chain). After rotating
 leaf L from old parent P_old to new parent P_new: the old parent's
 destruction does not affect L's recoverability, and L is recoverable iff
 the new chain (L→P_new→...→root) is fully present.

@@ -1158,7 +1158,7 @@ mod tests {
             let mut rng = seed;
             for _ in 0..num_ways {
                 rng = rng.wrapping_mul(6364136223846793005).wrapping_add(1);
-                map.push((rng as u32) % num_partitions);
+                map.push(u32::try_from(rng % (num_partitions as u64)).expect("partition index fits in u32"));
                 rng = rng.wrapping_mul(6364136223846793005).wrapping_add(1);
                 if rng % 3 == 0 {
                     set.push(None);
@@ -1189,7 +1189,7 @@ mod tests {
             let mut rng = seed;
             for _ in 0..num_ways {
                 rng = rng.wrapping_mul(6364136223846793005).wrapping_add(1);
-                map.push((rng as u32) % num_partitions);
+                map.push(u32::try_from(rng % (num_partitions as u64)).expect("partition index fits in u32"));
             }
 
             let mut total = 0usize;
@@ -1211,13 +1211,13 @@ mod tests {
             let mut rng = seed;
             for _ in 0..num_ways {
                 rng = rng.wrapping_mul(6364136223846793005).wrapping_add(1);
-                map.push((rng as u32) % num_partitions);
+                map.push(u32::try_from(rng % (num_partitions as u64)).expect("partition index fits in u32"));
                 rng = rng.wrapping_mul(6364136223846793005).wrapping_add(1);
                 set.push(if rng % 2 == 0 { Some(rng) } else { None });
             }
 
             // Transfer some ways from partition 0 to partition 1
-            let ways_to_transfer: Vec<u32> = (0..num_ways as u32)
+            let ways_to_transfer: Vec<u32> = (0..u32::try_from(num_ways).expect("num_ways fits in u32"))
                 .filter(|&w| map[w as usize] == 0)
                 .take(2)
                 .collect();

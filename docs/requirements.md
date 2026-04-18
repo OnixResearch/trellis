@@ -7494,3 +7494,40 @@ otherwise true when some bidirectional alive pair exists.
 r[chaoscontrol-fault-state.liveness-gate]
 The healthy-period gate is alive_count == num_nodes AND
 quorum_reachable.
+
+## Cryptoshedding
+
+r[cryptoshedding.tree-well-formedness]
+well_formed_spec MUST accept only finite parent-indexed forests: every
+parent reference is in bounds and no strict parent walk cycles back to
+its start.
+
+r[cryptoshedding.shed-definition]
+shed MUST remove exactly the requested key from the keystore model and
+leave the key tree unchanged.
+
+r[cryptoshedding.chain-recoverability]
+recoverable_spec MUST hold exactly when the given leaf is in bounds, is a
+leaf, and every key on its leaf-to-root chain is present in the keystore.
+
+r[cryptoshedding.shed-completeness]
+Shedding any key on a leaf's chain, including the leaf itself, MUST make
+that leaf irrecoverable.
+
+r[cryptoshedding.shed-isolation]
+Shedding a key not equal to the leaf and not on the leaf's strict
+ancestor chain MUST leave that leaf's recoverability unchanged.
+
+r[cryptoshedding.subtree-shedding]
+For any in-bounds internal key K, shedding K MUST make every leaf in K's
+subtree irrecoverable and MUST leave leaves outside that subtree
+unaffected.
+
+r[cryptoshedding.rotation-correctness]
+rotate MUST update only the chosen leaf parent, make the new parent an
+ancestor of that leaf in the rotated tree, and drive recoverability by
+the rotated leaf's new chain.
+
+r[cryptoshedding.idempotent-destruction]
+Shedding the same key twice MUST leave both the keystore model and every
+leaf's recoverability unchanged after the first shed.

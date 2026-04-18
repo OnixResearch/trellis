@@ -867,7 +867,7 @@ mod tests {
         assert_eq!(r, vec![1, 2, 3]);
 
         let r = set_difference(&[1, 2], &[1, 2, 3], 10);
-        assert_eq!(r, vec![]);
+        assert_eq!(r, Vec::<i64>::new());
 
         let r = set_difference(&[1, 2, 3], &[], 10);
         assert_eq!(r, vec![1, 2, 3]);
@@ -880,7 +880,7 @@ mod tests {
         assert_eq!(r, vec![2, 3]);
 
         let r = set_intersection(&[1, 2], &[3, 4], 10);
-        assert_eq!(r, vec![]);
+        assert_eq!(r, Vec::<i64>::new());
 
         let r = set_intersection(&[1, 2, 3], &[1, 2, 3], 10);
         assert_eq!(r, vec![1, 2, 3]);

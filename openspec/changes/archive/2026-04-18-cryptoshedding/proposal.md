@@ -25,7 +25,8 @@ The correctness properties are:
   its chain from root to leaf is present.
 - **Rotation safety**: re-encrypting data under a new key preserves
   recoverability and does not create a second path to the plaintext
-  through the old key.
+  through the old key; valid rotation excludes re-parenting under a
+  descendant of the old parent.
 
 ## What Changes
 
@@ -51,8 +52,8 @@ The correctness properties are:
 
 This module is pure logic over abstract key trees and presence sets. It
 does not model specific ciphers, key derivation functions, or storage
-backends. The encryption relation is abstract: `encrypted_under(datum, key)`
-is a structural fact, not a cryptographic operation.
+backends. Data are represented only by their bound leaf key; there is no
+separate datum object or `encrypted_under(datum, key)` relation in scope.
 
 ## Verification Strategy
 
