@@ -1010,6 +1010,35 @@ start_drain_decision MUST return 0 if already draining, 1 if drain
 completes immediately (no in-flight ops), 2 if drain starts but must
 wait. The result MUST always be 0, 1, or 2.
 
+## Cache Partitioning
+
+r[cache-partition.isolation]
+A lookup for partition P MUST NOT hit a line stored in a way assigned to
+partition Q (Q ≠ P). lookup_partitioned MUST only examine ways assigned
+to the requesting partition.
+
+r[cache-partition.eviction-containment]
+Eviction within partition P MUST only select victim ways assigned to P.
+Lines in other partitions MUST be untouched by the eviction.
+
+r[cache-partition.capacity]
+The sum of all partition sizes (in ways) MUST equal the total number of
+ways. No capacity is lost or double-counted at partition boundaries.
+
+r[cache-partition.assignment]
+Every way MUST be assigned to exactly one valid partition. A valid
+assignment maps every way to a partition ID in [0, num_partitions).
+
+r[cache-partition.resize]
+Resizing a partition MUST invalidate transferred ways before
+reassignment. Non-transferred ways MUST remain unchanged in both
+assignment and data. Total capacity MUST be preserved.
+
+r[cache-partition.full-equivalence]
+A single partition containing all ways MUST behave identically to an
+unpartitioned cache: lookup examines all ways and eviction considers
+all ways.
+
 ## Eviction
 
 r[eviction.should-evict]
