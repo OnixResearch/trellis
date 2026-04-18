@@ -7372,3 +7372,96 @@ Sender and receiver heads, and any currently exposed `InternalChoice` or
 projections. Roles whose projection already collapses the global head behind a
 shared prefix or identical behavior MUST already equal the corresponding
 endpoint projection without inventing an extra local step.
+
+## ChaosControl Coverage
+
+r[chaoscontrol-coverage.regions]
+A coverage bitmap MUST be a 65536-byte array partitioned into three exact,
+non-overlapping contiguous regions: code `[0, 32768)`, assertion
+`[32768, 49152)`, and schedule `[49152, 65536)`. Any public helper that
+records hits into one region MUST leave the other two regions unchanged.
+
+r[chaoscontrol-coverage.union]
+Coverage merge MUST be exact pointwise max over u8 counters. A new-edge
+query MUST return the exact u32 count of indices i with branch[i] > 0
+and global[i] == 0.
+
+r[chaoscontrol-coverage.classify]
+Coverage classification MUST use the exact AFL bucket map:
+0 -> 0, 1 -> 1, 2 -> 2, 3 -> 3, 4..7 -> 4, 8..15 -> 8,
+16..31 -> 16, 32..127 -> 32, 128..255 -> 128.
+
+## ChaosControl Oracle
+
+r[chaoscontrol-oracle.verdict]
+Verdict evaluation MUST use hit_count > 0 as the meaning of "was hit".
+always passes iff hit and no false. sometimes passes iff hit and at
+least one true. reachable passes iff hit. unreachable passes iff never
+hit. Every valid record maps to exactly one verdict.
+
+r[chaoscontrol-oracle.accounting]
+Aggregate accounting MUST preserve runs_satisfied <= runs_hit and
+runs_hit == 0 iff hit_count == 0. Boolean records satisfy
+hit_count == true_count + false_count and runs_hit <= hit_count.
+Non-boolean records use exact canonical shapes.
+
+## ChaosControl Scheduler
+
+r[chaoscontrol-scheduler.turns]
+Scheduler turn primitives require num_vcpus >= 1 and valid scheduler
+state. Single-vCPU tick and advance are no-ops. SMP tick decrements
+remaining by one and returns true on the positive-to-zero transition.
+Advance moves to (active + 1) mod num_vcpus and reloads remaining.
+Round-robin reloads default_quantum. Randomized advance consumes a
+caller rng_word and assigns min_quantum + (rng_word mod (max_quantum -
+min_quantum)) for [min_quantum, max_quantum).
+
+r[chaoscontrol-scheduler.fingerprint]
+The rolling schedule fingerprint updates by
+fp.wrapping_mul(0x517cc1b72722_0a95).bitxor(active).bitxor(quantum)
+on each SMP advance. Tick is fingerprint-neutral. apply_variant resets
+fingerprint to 0.
+
+## ChaosControl Fault Schedule
+
+r[chaoscontrol-fault-schedule.replay]
+A normalized fault schedule has unique ordinals, stable (time_ns, ordinal)
+order, and 0 <= cursor <= len. drain_due(t) returns exactly the
+not-yet-drained faults with time_ns <= t, advances cursor monotonically,
+preserves the undrained suffix, and never re-delivers.
+
+r[chaoscontrol-fault-schedule.subset]
+Subset extraction clones the first occurrence of each in-bounds source
+index, ignores out-of-bounds and repeated selections, carries source
+ordinals, resets cursor to 0, and renormalizes by (time_ns, ordinal).
+
+## ChaosControl Frontier
+
+r[chaoscontrol-frontier.selection]
+Frontier effective score is base_score / (1 + times_selected). Greedy
+selection returns a maximal entry with lowest-index tie-break.
+Re-selection is monotone non-increasing. Exec comparison uses exact
+u64 cross-products.
+
+## ChaosControl Input Tree
+
+r[chaoscontrol-input-tree.alternatives]
+Input-tree generation operates on normalized choice tuples with
+n_options >= 2, original_value < n_options, arithmetic bounds on
+sequence_id and n_options, and unique (vm_id, sequence_id) pairs.
+Exact rational score uses constant-numerator denominator comparison.
+Alternatives exclude the original value, use ascending distinct values,
+and output is the exact prefix of the deterministic stream truncated
+to min(budget, full_stream_len).
+
+## ChaosControl Fault State
+
+r[chaoscontrol-fault-state.quorum-health]
+Valid fault states require 2 <= num_nodes <= 64, exact num_nodes x
+num_nodes partition matrix, diagonal-false, and cleared high bits in
+alive_mask. quorum_reachable is false when alive_count < majority and
+otherwise true when some bidirectional alive pair exists.
+
+r[chaoscontrol-fault-state.liveness-gate]
+The healthy-period gate is alive_count == num_nodes AND
+quorum_reachable.

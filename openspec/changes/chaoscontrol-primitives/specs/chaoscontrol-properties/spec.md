@@ -13,14 +13,14 @@ r[properties.chaoscontrol-subset-replay]
 Depends on `r[chaoscontrol-fault-schedule.replay]` and
 `r[chaoscontrol-fault-schedule.subset]`.
 For normalized schedules, if `subset(source, indices)` is replayed from
-`cursor = 0` by any nondecreasing time sequence whose final horizon covers all
-subset faults, delivered faults MUST appear in the same relative order as in
-`source`.
+`cursor = 0` by any nondecreasing time sequence whose final drain time
+`t_final >= max(time_ns)` over all faults in the subset, delivered faults MUST
+appear in the same relative order as in `source`.
 
 #### Scenario: Fully replayed subset preserves source relative order
 
 - GIVEN a normalized source schedule and any subset extracted from source indices
-- WHEN that subset is replayed from `cursor = 0` by a nondecreasing time sequence whose final horizon covers all subset faults
+- WHEN that subset is replayed from `cursor = 0` by a nondecreasing time sequence whose final drain time `t_final >= max(time_ns)` over all subset faults
 - THEN delivered faults appear in the same relative order as in the source schedule
 
 ### Requirement: Scheduler Fingerprint Depends Only on Turn Trace
@@ -29,16 +29,16 @@ r[properties.chaoscontrol-fingerprint-trace]
 Depends on `r[chaoscontrol-scheduler.fingerprint]`.
 For schedulers that start from the same full scheduler state, or from the same
 full post-`apply_variant` reset state, executions with the same post-advance
-turn/quantum trace MUST produce the same fingerprint even if the imperative
-shell path differs. Here “same full post-`apply_variant` reset state” means the
-same `num_vcpus`, the same persisted strategy parameters, the same stored
-`default_quantum`, and the same reset fields `active = 0`,
+`(active, assigned_quantum)` trace MUST produce the same fingerprint even if
+the imperative shell path differs. Here "same full post-`apply_variant` reset
+state" means the same `num_vcpus`, the same persisted strategy parameters, the
+same stored `default_quantum`, and the same reset fields `active = 0`,
 `remaining = default_quantum`, and `fingerprint = 0`.
 
 #### Scenario: Equal turn traces force equal fingerprints
 
 - GIVEN two schedulers with the same initial state or the same full post-`apply_variant` reset state, including matching `num_vcpus`, persisted strategy parameters, and stored `default_quantum`
-- WHEN both executions produce the same post-advance `(active_turn, assigned_quantum)` trace
+- WHEN both executions produce the same post-advance `(active, assigned_quantum)` trace
 - THEN their final fingerprints are equal
 
 ### Requirement: Healthy Quorum Gates Liveness Checks

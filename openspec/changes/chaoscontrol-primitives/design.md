@@ -97,10 +97,15 @@ hit_count only” contract.
 
 **Choice:** verified scheduler state is
 `(num_vcpus, active, remaining, default_quantum, strategy, fingerprint)`.
-Stored `default_quantum` is always `max(1, raw_default_quantum)`. Valid
-randomized state requires `1 <= min_quantum <= max_quantum`; invalid
-randomized construction or override is a `requires` failure outside contract.
-Initial state is `active = 0`, `remaining = default_quantum`, `fingerprint = 0`.
+Stored `default_quantum` is always `max(1, raw_default_quantum)` and is a
+caller-provided scalar independent of strategy: it is accepted regardless of
+whether the strategy is round-robin or randomized. Round-robin advance reloads
+`remaining` from the stored `default_quantum`; randomized advance ignores
+`default_quantum` and derives the reload from `rng_word` and the strategy's
+`[min_quantum, max_quantum)` range. Valid randomized state requires
+`1 <= min_quantum <= max_quantum`; invalid randomized construction or override
+is a `requires` failure outside contract. Initial state is
+`active = 0`, `remaining = default_quantum`, `fingerprint = 0`.
 Single-vCPU `tick` and `advance` are no-ops and `tick` returns `false`.
 SMP `tick` requires `remaining > 0`, decrements by one, and returns `true`
 exactly on the positive-to-zero transition; after `true`, the next legal
@@ -122,9 +127,11 @@ Constructor and `apply_variant` consume no RNG word.
 ### 5. Keep fingerprint semantics separate and exact
 
 **Choice:** fingerprint update is the exact wrapping-`u64` rule
-`fp' = fp * 0x517c_c1b7_2722_0a95 ^ active_turn ^ assigned_quantum`.
+`fp' = fp.wrapping_mul(0x517c_c1b7_2722_0a95).bitxor(active as u64).bitxor(assigned_quantum as u64)`,
+where `active` is the post-advance vCPU index and `assigned_quantum` is the
+reload value chosen by that advance.
 `tick` is fingerprint-neutral. Each SMP `advance` performs exactly one mix on
-the post-advance `(active_turn, assigned_quantum)` pair. `ScheduleVariant` is
+the post-advance `(active, assigned_quantum)` pair. `ScheduleVariant` is
 `(strategy_override, quantum_override)`. `apply_variant` persists any present
 `strategy_override`; when `quantum_override` is present, it updates stored
 `default_quantum` to `max(1, raw_quantum_override)`, and when it is `None` the
@@ -239,8 +246,8 @@ proofs land in `src/properties.rs`:
 - `r[chaoscontrol-input-tree.alternatives]` -> `docs/requirements.md` + `src/chaoscontrol_input_tree.rs` ranking/emission helpers + ordering/budget proofs
 - `r[chaoscontrol-fault-state.quorum-health]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` validity/alive-mask/quorum helpers + health proofs
 - `r[chaoscontrol-fault-state.liveness-gate]` -> `docs/requirements.md` + `src/chaoscontrol_fault_state.rs` healthy-period helper + gate proofs
-- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: replay `subset(source, indices)` from `cursor = 0` by any nondecreasing time sequence whose final horizon covers all subset faults
-- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: same full scheduler state, or same full post-`apply_variant` reset state, plus the same post-advance `(active_turn, assigned_quantum)` trace
+- `r[properties.chaoscontrol-subset-replay]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_subset_replay_order` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: replay `subset(source, indices)` from `cursor = 0` by any nondecreasing time sequence whose final drain time `t_final >= max(time_ns)` over all subset faults
+- `r[properties.chaoscontrol-fingerprint-trace]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_fingerprint_trace_eq` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: same full scheduler state, or same full post-`apply_variant` reset state, plus the same post-advance `(active, assigned_quantum)` trace
 - `r[properties.chaoscontrol-quorum-gate]` -> `docs/requirements.md` + `src/properties.rs::chaoscontrol_quorum_gate_sound` (`r[impl]`) + named `proof fn` artifact in code (`r[verify]`) + supplemental tests; proof hypothesis is exactly: valid fault state implies `healthy_period ==> quorum_reachable`
 - `r[chaoscontrol-validation.iterative-exec]` -> `specs/chaoscontrol-validation/spec.md` + `openspec/changes/chaoscontrol-primitives/evidence/iterative-exec-audit.md` + deterministic audit task / transcript (change-local validation rule; not mirrored into `docs/requirements.md`)
 

@@ -15,11 +15,17 @@ state. Valid scheduler state means `0 <= active < num_vcpus`, stored
 `default_quantum >= 1`, randomized strategies satisfy `1 <= min_quantum <= max_quantum`,
 and `remaining` is either the exhausted SMP value `0` immediately after a
 `ticked-to-zero` turn and before the next `advance`, or a positive countdown
-value for the current turn's assigned quantum. Stored configuration always uses `default_quantum = max(1, raw_default_quantum)`. If the stored strategy
-is randomized, valid state also requires `1 <= min_quantum <= max_quantum`;
-constructing or applying a randomized strategy outside that bound is a
-precondition failure outside contract. Initial state is
-`active = 0`, `remaining = default_quantum`, `fingerprint = 0`. In
+value for the current turn's assigned quantum. Stored configuration always uses
+`default_quantum = max(1, raw_default_quantum)`. `default_quantum` is a
+caller-provided scalar independent of strategy: the constructor accepts it
+regardless of whether the strategy is round-robin or randomized. Round-robin
+advance reloads `remaining` from the stored `default_quantum`; randomized
+advance ignores `default_quantum` and instead derives the reload value from
+`rng_word` and the strategy's `[min_quantum, max_quantum)` range. If the stored
+strategy is randomized, valid state also requires
+`1 <= min_quantum <= max_quantum`; constructing or applying a randomized
+strategy outside that bound is a precondition failure outside contract. Initial
+state is `active = 0`, `remaining = default_quantum`, `fingerprint = 0`. In
 single-vCPU mode, `tick` returns `false` and `tick`/`advance` leave
 `active`, `remaining`, and `fingerprint` unchanged. In SMP mode, `tick`
 requires `remaining > 0`, decrements `remaining` by one without underflow,
@@ -64,10 +70,12 @@ Constructor and `apply_variant` consume no RNG word.
 
 r[chaoscontrol-scheduler.fingerprint]
 The rolling schedule fingerprint MUST update by exact wrapping-`u64`
-transition rule
-`fp' = fp * 0x517c_c1b7_2722_0a95 ^ active_turn ^ assigned_quantum`.
-`tick` is fingerprint-neutral. Each SMP `advance` performs exactly one mix
-using the post-advance `(active_turn, assigned_quantum)` pair, so the
+transition rule:
+`fp' = fp.wrapping_mul(0x517c_c1b7_2722_0a95).bitxor(active as u64).bitxor(assigned_quantum as u64)`,
+where `active` is the post-advance vCPU index (the `active` field after the
+round-robin step) and `assigned_quantum` is the reload value chosen by that
+advance. `tick` is fingerprint-neutral. Each SMP `advance` performs exactly one
+mix using the post-advance `(active, assigned_quantum)` pair, so the
 fingerprint is a deterministic function of that trace. A schedule variant is
 `(strategy_override, quantum_override)`. `apply_variant` persists any present
 `strategy_override`. When `quantum_override` is present, it updates the stored
@@ -83,7 +91,7 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 #### Scenario: Same transition sequence reproduces fingerprint
 
 - GIVEN two schedulers with the same initial state
-- WHEN they execute the same post-advance turn/quantum trace
+- WHEN they execute the same post-advance `(active, assigned_quantum)` trace
 - THEN their fingerprints are equal
 
 #### Scenario: Variant application resets fingerprint epoch
