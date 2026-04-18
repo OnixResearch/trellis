@@ -910,7 +910,7 @@ proof fn resize_capacity_preserved(
 
 // ── Full-cache equivalence ───────────────────────────────────────────
 
-// r[depends cache-partition.full-equivalence]
+// r[impl cache-partition.full-equivalence]
 /// All ways assigned to partition 0.
 pub open spec fn single_partition_map_spec(num_ways: nat) -> Seq<u32> {
     Seq::new(num_ways, |_w: int| 0u32)
