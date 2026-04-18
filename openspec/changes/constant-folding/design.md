@@ -3,8 +3,9 @@
 Constant folding is the simplest lattice-based dataflow analysis. Each
 variable maps to a value in `{⊤, constants, ⊥}`. The analysis propagates
 constants forward through the CFG. When all operands of an expression are
-constants, the expression is folded. The repo has `algebraic.rs` for
-lattice property predicates and `arithmetic.rs` for verified arithmetic.
+constants, the expression is folded. This slice proves the lattice laws by
+explicit case analysis and proves wrapping arithmetic folds with local
+bit-vector lemmas plus `fetch_add::u64_wrapping_add` reuse.
 
 ## Goals / Non-Goals
 
@@ -46,18 +47,23 @@ meet(_, Bottom) = Bottom
 ```
 
 **Rationale:** Standard lattice meet. Proves: commutative, associative,
-idempotent (lattice axioms). Uses predicates from `algebraic.rs`.
+idempotent (lattice axioms) by explicit case analysis over `Top`, `Const`,
+and `Bottom`.
 
 ### 3. Transfer Function
 
 **Choice:** Per instruction `transfer(instr, env) -> env'` where
 `env: Seq<ConstLat>` maps variable indices to lattice values. For
 `v = op(a, b)`: if `env[a]` and `env[b]` are both `Const`, compute
-the result and set `env'[v] = Const(result)`. Otherwise `env'[v] = Bottom`.
+the result and set `env'[v] = Const(result)`. If either operand is
+`Bottom`, set `env'[v] = Bottom`. Otherwise propagate `Top`.
+Malformed or unsupported instructions conservatively set the defined
+variable to `Bottom`.
 
-**Rationale:** Sound because: if both operands are constant on all paths,
-the result is constant. If either is Bottom (different values on different
-paths), the result could be anything.
+**Rationale:** This keeps the transfer monotone on the standard
+`Bottom <= Const(c) <= Top` lattice while staying sound: two constants fold,
+a conflicting operand stays conflicting, and a not-yet-known operand does not
+prematurely collapse to `Bottom`.
 
 ### 4. Fold Operation
 
@@ -66,19 +72,23 @@ at compile time. Supported ops: add, sub, mul, div (checked), and, or,
 xor, shl, shr, eq, ne, lt, le.
 
 **Rationale:** Each fold must match the runtime evaluation exactly.
-Proved per-operation using `arithmetic.rs`. Division by zero returns
-Bottom (not foldable).
+Wrapping add reuses `fetch_add::u64_wrapping_add`; wrapping sub/mul use local
+specs plus `by(bit_vector)` lemmas; the remaining ops are proved by the exec
+wrapper's exact `ensures`. Division by zero returns Bottom (not foldable).
 
 ### 5. Forward Iteration
 
 **Choice:** Process blocks in reverse postorder. Initialize entry block's
-env from function parameters (Bottom for unknown args). At each block,
-apply transfer functions sequentially. At merge points, meet incoming
-environments. Iterate until stable.
+env from a caller-supplied entry environment. At each block, apply transfer
+functions sequentially. At merge points, meet incoming environments. The
+current engine uses synchronous rounds over predecessor out-environments and a
+conservative `2 × V × B + 1` budget while checking successive rounds for
+stability.
 
-**Rationale:** Forward analysis, RPO processing, monotone function on
-finite lattice → guaranteed convergence. Bound: at most `V × B` steps
-(each of V variables can descend at most 2 steps across B blocks).
+**Rationale:** Forward analysis plus RPO improves practical convergence. With
+height-2 lattice slots, each block-variable entry can strictly descend at most
+`Top -> Const -> Bottom`; the extra `+ 1` round is for the final no-change
+stability check. Later proof work can tighten the exact bound if desired.
 
 ### 6. Soundness Statement
 

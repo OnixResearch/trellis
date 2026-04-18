@@ -30,8 +30,9 @@ propagation miscompiles programs silently.
   - **Transfer function monotonicity**: The transfer function is monotone
     with respect to the lattice ordering. If input A ≤ input B, then
     transfer(A) ≤ transfer(B).
-  - **Fixed-point convergence**: The iterative analysis terminates within
-    O(V × B) steps (V variables, B blocks).
+  - **Fixed-point convergence**: The iterative analysis uses reverse-postorder
+    passes plus a conservative `2 × V × B + 1` round budget (V variables,
+    B blocks), with later proof work closing the exact stabilization bound.
   - **Soundness**: If the analysis says variable V is constant C at
     program point P, then on every execution path reaching P, V holds C.
   - **Fold correctness**: Folding an expression with constant operands
@@ -54,7 +55,7 @@ propagation miscompiles programs silently.
 - **Files**: One new `src/constant_folding.rs`, module declaration in `lib.rs`
 - **APIs**: `ConstLattice` enum (Top/Const/Bottom), `meet`, `transfer`,
   `fold_expr`, `propagate`, `is_sound`
-- **Dependencies**: Uses `algebraic.rs` for lattice property predicates,
-  `arithmetic.rs` for fold correctness, depends on `vstd`
+- **Dependencies**: Uses local lattice case analysis, local wrapping specs,
+  `fetch_add::u64_wrapping_add` reuse for wrapping add, and `vstd`
 - **Testing**: Verus proofs for all properties, proptest for fold
   correctness against runtime evaluation and soundness on random CFGs

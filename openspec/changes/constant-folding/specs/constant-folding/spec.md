@@ -65,7 +65,7 @@ The iterative analysis MUST reach a fixed point.
 
 - GIVEN a CFG with V variables and B blocks
 - WHEN the analysis iterates
-- THEN it terminates within V × B iterations
+- THEN it terminates within 2 × V × B + 1 iterations
 
 #### Scenario: Stability
 

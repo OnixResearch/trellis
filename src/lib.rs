@@ -85,6 +85,8 @@
 //!   projection
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
+//! - `constant_folding` — constant-propagation lattice, exact fold semantics, and per-instruction
+//!   transfer over the shared raw IR
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi
 //!   elimination
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
@@ -388,6 +390,7 @@ pub mod commit_advance;
 pub mod commit_notify;
 pub mod compaction_fence;
 pub mod config_change;
+pub mod constant_folding;
 pub mod constant_time_eq;
 pub mod control_flow_graph;
 pub mod conversion;

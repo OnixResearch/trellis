@@ -6836,6 +6836,40 @@ r[dce.idempotent]
 A second elimination pass on the result of DCE MUST keep every instruction,
 producing the same output as the first pass.
 
+## Constant Folding
+
+r[constfold.lattice]
+Constant propagation MUST use a three-valued lattice with `Top`, `Const(c)`,
+and `Bottom`, ordered so `Bottom <= Const(c) <= Top` and incomparable
+constants meet at `Bottom`. The lattice meet MUST be commutative,
+associative, and idempotent, with `Top` as identity and `Bottom` as
+absorbing element.
+
+r[constfold.finite-height]
+The constant-propagation lattice MUST have height 2: there MUST NOT exist a
+strict descending chain longer than `Top > Const(c) > Bottom`.
+
+r[constfold.monotone]
+Per-instruction transfer over the shared raw IR MUST be monotone under the
+pointwise lattice order. `copy` MUST propagate an operand's current lattice
+value. Supported binary ops MUST fold two constants, propagate `Bottom` if any
+operand is `Bottom`, propagate `Top` when at least one operand is `Top` and no
+operand is `Bottom`, and set malformed or unsupported definitions to
+`Bottom`.
+
+r[constfold.fold]
+Compile-time folding MUST exactly match the modeled runtime semantics for the
+supported raw opcodes: wrapping add/sub/mul, checked div-by-zero rejection,
+bitwise and/or/xor, bounded shifts (`rhs < 64`), and comparisons encoded as
+`0` or `1`.
+
+r[constfold.convergence]
+The current forward constant-propagation engine MUST process blocks in reverse
+postorder, use the supplied entry environment for block 0, use pointwise meet
+of predecessor out-environments for non-entry block inputs, and use a
+conservative round budget of `2 × V × B + 1` for `V` variables and `B` blocks
+while checking successive rounds for stability.
+
 ## Hypervisor Memslots
 
 r[hypervisor-memslot.disjoint]
