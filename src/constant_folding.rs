@@ -592,6 +592,14 @@ pub closed spec fn block_out_env_spec(program: RawProgram, entry_env: Seq<ConstL
     apply_block_spec(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block))
 }
 
+proof fn block_out_env_unfold(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>, block: int)
+    requires 0 <= block < program.blocks@.len()
+    ensures block_out_env_spec(program, entry_env, out_env, block)
+        == apply_block_spec(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block))
+{
+    reveal(block_out_env_spec);
+}
+
 pub open spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, sets: ConstPropSets) -> bool {
     &&& valid_constprop_program_spec(program)
     &&& constprop_sets_shape_spec(sets, program.blocks@.len() as int, entry_env.len() as int)
