@@ -614,6 +614,45 @@ pub closed spec fn valid_constprop_program_spec(program: RawProgram) -> bool {
     }
 }
 
+proof fn env_rank_sum_nonneg(env: Seq<ConstLat>, from: int)
+    requires 0 <= from <= env.len()
+    ensures 0 <= env_rank_sum_spec(env, from)
+    decreases env.len() - from,
+{
+    if from < env.len() {
+        env_rank_sum_nonneg(env, from + 1);
+        assert(0 <= lattice_rank_spec(env[from]) as int);
+        assert(env_rank_sum_spec(env, from) == lattice_rank_spec(env[from]) as int + env_rank_sum_spec(env, from + 1));
+    }
+}
+
+proof fn matrix_rank_sum_nonneg(matrix: Seq<Vec<ConstLat>>, from: int)
+    requires 0 <= from <= matrix.len()
+    ensures 0 <= matrix_rank_sum_spec(matrix, from)
+    decreases matrix.len() - from,
+{
+    if from < matrix.len() {
+        env_rank_sum_nonneg(matrix[from]@, 0);
+        matrix_rank_sum_nonneg(matrix, from + 1);
+        assert(matrix_rank_sum_spec(matrix, from) == env_rank_sum_spec(matrix[from]@, 0) + matrix_rank_sum_spec(matrix, from + 1));
+    }
+}
+
+proof fn env_rank_sum_bound(env: Seq<ConstLat>, from: int)
+    requires 0 <= from <= env.len()
+    ensures env_rank_sum_spec(env, from) <= 2 * (env.len() - from)
+    decreases env.len() - from,
+{
+    if from < env.len() {
+        env_rank_sum_bound(env, from + 1);
+        assert(lattice_rank_spec(env[from]) <= 2);
+        assert(env_rank_sum_spec(env, from) == lattice_rank_spec(env[from]) as int + env_rank_sum_spec(env, from + 1));
+        assert(env_rank_sum_spec(env, from + 1) <= 2 * (env.len() - (from + 1)));
+        assert(2 * (env.len() - (from + 1)) == 2 * (env.len() - from) - 2);
+        assert(env_rank_sum_spec(env, from) <= 2 + (2 * (env.len() - from) - 2));
+    }
+}
+
 proof fn lattice_le_refl(a: ConstLat)
     ensures lattice_le_spec(a, a)
 {
@@ -990,6 +1029,56 @@ proof fn block_out_env_monotone(program: RawProgram, entry_env: Seq<ConstLat>, o
         block_in_env_spec(program, entry_env, out1, block),
         block_in_env_spec(program, entry_env, out2, block),
     );
+}
+
+proof fn round_matrix_descends(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    prev_prev_out: Seq<Vec<ConstLat>>,
+    prev_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(prev_prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(prev_out, prev_prev_out),
+        forall|b: int| #![trigger prev_out[b]]
+            0 <= b < program.blocks@.len() ==> prev_out[b]@ == block_out_env_spec(program, entry_env, prev_prev_out, b),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
+    ensures constprop_matrix_le_spec(next_out, prev_out)
+{
+    assert forall|b: int| 0 <= b < program.blocks@.len() implies env_le_spec(next_out[b]@, prev_out[b]@) by {
+        assert(prev_out[b] == prev_out[b]);
+        assert(next_out[b] == next_out[b]);
+        block_out_env_monotone(program, entry_env, prev_out, prev_prev_out, b);
+    };
+}
+
+proof fn round_matrix_strict_rank_drop(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    prev_prev_out: Seq<Vec<ConstLat>>,
+    prev_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(prev_prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(prev_out, prev_prev_out),
+        forall|b: int| #![trigger prev_out[b]]
+            0 <= b < program.blocks@.len() ==> prev_out[b]@ == block_out_env_spec(program, entry_env, prev_prev_out, b),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
+        exists|r: int| 0 <= r < next_out.len() && next_out[r]@ != prev_out[r]@,
+    ensures matrix_rank_sum_spec(next_out, 0) < matrix_rank_sum_spec(prev_out, 0)
+{
+    round_matrix_descends(program, entry_env, prev_prev_out, prev_out, next_out);
+    matrix_rank_lt(next_out, prev_out);
 }
 
 // r[verify constfold.convergence]
