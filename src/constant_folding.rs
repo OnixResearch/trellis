@@ -511,6 +511,12 @@ pub closed spec fn top_env_spec(vars: nat) -> Seq<ConstLat> {
     Seq::new(vars, |_i: int| ConstLat::Top)
 }
 
+spec fn matrix_is_top_spec(matrix: Seq<Vec<ConstLat>>, rows: int, cols: int) -> bool {
+    constprop_matrix_shape_spec(matrix, rows, cols)
+        && forall|r: int, c: int| #![trigger matrix[r]@[c]]
+            0 <= r < rows && 0 <= c < cols ==> matrix[r]@[c] == ConstLat::Top
+}
+
 spec fn env_rank_sum_spec(env: Seq<ConstLat>, from: int) -> int
     decreases env.len() - from,
 {
@@ -690,6 +696,21 @@ proof fn env_le_top(env: Seq<ConstLat>)
         assert(top_env_spec(env.len() as nat)[i] == ConstLat::Top);
         lattice_le_top(env[i]);
     };
+}
+
+proof fn top_matrix_row_is_top_env(matrix: Seq<Vec<ConstLat>>, rows: int, cols: int, row: int)
+    requires
+        matrix_is_top_spec(matrix, rows, cols),
+        0 <= row < rows,
+    ensures matrix[row]@ == top_env_spec(cols as nat)
+{
+    assert(matrix[row]@.len() == cols);
+    assert(top_env_spec(cols as nat).len() == cols);
+    assert forall|i: int| 0 <= i < cols implies #[trigger] matrix[row]@[i] == top_env_spec(cols as nat)[i] by {
+        assert(matrix[row]@[i] == ConstLat::Top);
+        assert(top_env_spec(cols as nat)[i] == ConstLat::Top);
+    };
+    assert(matrix[row]@ == top_env_spec(cols as nat));
 }
 
 proof fn lattice_le_rank_le(a: ConstLat, b: ConstLat)

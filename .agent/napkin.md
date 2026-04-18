@@ -11,6 +11,7 @@
 - Another constant-folding Phase 4 proof gotcha: after using `update_env_monotone` against an all-`Top` row, Verus still needed a separate `update_top_env_is_top(...)` lemma to rewrite `update_env_spec(top_env_spec(vars), dst, ConstLat::Top)` back to `top_env_spec(vars)`.
 - Rank-proof gotcha in constant folding: Verus would not derive "`Seq<ConstLat>` values differ => some index differs" automatically. `env_rank_lt` / `matrix_rank_lt_at` only closed after adding `seq_constlat_neq_has_witness(...)` and using it before `choose` on differing indices.
 - More rank-proof gotcha: recursive bound proofs over `matrix_rank_sum_spec` needed explicit nonneg lemmas for head/tail sums plus two small monotone arithmetic steps (`head + tail <= A + tail`, then `A + tail <= A + B`). Trying to discharge `head + tail <= A + B` in one shot was brittle.
+- Top-matrix proof shape that works in constant folding: encode "all rows are Top" as a predicate over `Seq<Vec<ConstLat>>`, then prove one row equals `top_env_spec(...)`. Avoid trying to build a spec top-matrix value just to compare against it.
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
