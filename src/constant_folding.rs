@@ -195,6 +195,90 @@ proof fn meet_bottom_absorbing(a: ConstLat)
     }
 }
 
+// r[verify constfold.convergence]
+proof fn meet_lower_bound_left(a: ConstLat, b: ConstLat)
+    ensures lattice_le_spec(meet_spec(a, b), a)
+{
+    match a {
+        ConstLat::Top => {}
+        ConstLat::Bottom => {}
+        ConstLat::Const(x) => match b {
+            ConstLat::Top => {}
+            ConstLat::Bottom => {}
+            ConstLat::Const(y) => {
+                if x != y {
+                    assert(lattice_le_spec(ConstLat::Bottom, ConstLat::Const(x)));
+                }
+            }
+        },
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn meet_lower_bound_right(a: ConstLat, b: ConstLat)
+    ensures lattice_le_spec(meet_spec(a, b), b)
+{
+    meet_commutative(a, b);
+    meet_lower_bound_left(b, a);
+}
+
+// r[verify constfold.convergence]
+proof fn meet_monotone(a1: ConstLat, a2: ConstLat, b1: ConstLat, b2: ConstLat)
+    requires
+        lattice_le_spec(a1, a2),
+        lattice_le_spec(b1, b2),
+    ensures lattice_le_spec(meet_spec(a1, b1), meet_spec(a2, b2))
+{
+    match a1 {
+        ConstLat::Bottom => {}
+        ConstLat::Top => {
+            assert(a2 == ConstLat::Top);
+            assert(meet_spec(a1, b1) == b1);
+            assert(meet_spec(a2, b2) == b2);
+        }
+        ConstLat::Const(x1) => {
+            match a2 {
+                ConstLat::Bottom => { assert(false); }
+                ConstLat::Top => {
+                    match b1 {
+                        ConstLat::Bottom => {}
+                        ConstLat::Top => {
+                            assert(b2 == ConstLat::Top);
+                        }
+                        ConstLat::Const(y1) => {
+                            match b2 {
+                                ConstLat::Bottom => { assert(false); }
+                                ConstLat::Top => {}
+                                ConstLat::Const(y2) => {
+                                    assert(y1 == y2);
+                                }
+                            }
+                        }
+                    }
+                }
+                ConstLat::Const(x2) => {
+                    assert(x1 == x2);
+                    match b1 {
+                        ConstLat::Bottom => {}
+                        ConstLat::Top => {
+                            assert(b2 == ConstLat::Top);
+                        }
+                        ConstLat::Const(y1) => {
+                            match b2 {
+                                ConstLat::Bottom => { assert(false); }
+                                ConstLat::Top => {}
+                                ConstLat::Const(y2) => {
+                                    assert(y1 == y2);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
 // r[impl constfold.finite-height]
 // r[verify constfold.finite-height]
 proof fn finite_height_no_three_step_descent(a: ConstLat, b: ConstLat, c: ConstLat, d: ConstLat)
@@ -487,6 +571,129 @@ pub closed spec fn valid_constprop_program_spec(program: RawProgram) -> bool {
     forall|i: int| #![trigger program.edges[i]] 0 <= i < program.edges.len() ==> {
         let (src, dst) = program.edges[i];
         src < program.blocks.len() && dst < program.blocks.len()
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn meet_env_lower_bound_left(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires a.len() == b.len()
+    ensures env_le_spec(meet_env_spec(a, b), a)
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] lattice_le_spec(meet_env_spec(a, b)[i], a[i]) by {
+        meet_lower_bound_left(a[i], b[i]);
+    };
+}
+
+// r[verify constfold.convergence]
+proof fn meet_env_lower_bound_right(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires a.len() == b.len()
+    ensures env_le_spec(meet_env_spec(a, b), b)
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] lattice_le_spec(meet_env_spec(a, b)[i], b[i]) by {
+        meet_lower_bound_right(a[i], b[i]);
+    };
+}
+
+// r[verify constfold.convergence]
+proof fn meet_env_monotone(a1: Seq<ConstLat>, a2: Seq<ConstLat>, b1: Seq<ConstLat>, b2: Seq<ConstLat>)
+    requires
+        env_le_spec(a1, a2),
+        env_le_spec(b1, b2),
+        a1.len() == b1.len(),
+        a2.len() == b2.len(),
+    ensures env_le_spec(meet_env_spec(a1, b1), meet_env_spec(a2, b2))
+{
+    assert forall|i: int| 0 <= i < a1.len() implies #[trigger] lattice_le_spec(meet_env_spec(a1, b1)[i], meet_env_spec(a2, b2)[i]) by {
+        meet_monotone(a1[i], a2[i], b1[i], b2[i]);
+    };
+}
+
+// r[verify constfold.convergence]
+proof fn apply_block_prefix_monotone(instrs: Seq<RawInstr>, env1: Seq<ConstLat>, env2: Seq<ConstLat>, upto: int)
+    requires
+        env_le_spec(env1, env2),
+        0 <= upto <= instrs.len(),
+    ensures env_le_spec(apply_block_prefix_spec(instrs, env1, upto), apply_block_prefix_spec(instrs, env2, upto))
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        apply_block_prefix_monotone(instrs, env1, env2, upto - 1);
+        transfer_monotone(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            apply_block_prefix_spec(instrs, env1, upto - 1),
+            apply_block_prefix_spec(instrs, env2, upto - 1),
+        );
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn apply_block_monotone(instrs: Seq<RawInstr>, env1: Seq<ConstLat>, env2: Seq<ConstLat>)
+    requires env_le_spec(env1, env2)
+    ensures env_le_spec(apply_block_spec(instrs, env1), apply_block_spec(instrs, env2))
+{
+    apply_block_prefix_monotone(instrs, env1, env2, instrs.len() as int);
+}
+
+// r[verify constfold.convergence]
+proof fn pred_meet_prefix_has_len(edges: Seq<(usize, usize)>, out_env: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int)
+    requires
+        0 <= upto <= edges.len(),
+        forall|i: int| #![trigger edges[i]] 0 <= i < edges.len() ==> {
+            let (src, dst) = edges[i];
+            src < out_env.len() && dst < out_env.len()
+        },
+        forall|i: int| #![trigger out_env[i]] 0 <= i < out_env.len() ==> out_env[i]@.len() == vars,
+    ensures pred_meet_prefix_spec(edges, out_env, vars, block, upto).len() == vars
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        pred_meet_prefix_has_len(edges, out_env, vars, block, upto - 1);
+        let edge = edges[upto - 1];
+        if edge.1 as int == block {
+            assert(pred_meet_prefix_spec(edges, out_env, vars, block, upto - 1).len() == vars);
+            assert(out_env[edge.0 as int]@.len() == vars);
+        }
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn pred_meet_prefix_monotone(
+    edges: Seq<(usize, usize)>, out1: Seq<Vec<ConstLat>>, out2: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int,
+)
+    requires
+        out1.len() == out2.len(),
+        forall|i: int| #![trigger out1[i], out2[i]] 0 <= i < out1.len() ==> env_le_spec(out1[i]@, out2[i]@),
+        0 <= upto <= edges.len(),
+        forall|i: int| #![trigger edges[i]] 0 <= i < edges.len() ==> {
+            let (src, dst) = edges[i];
+            src < out1.len() && dst < out1.len()
+        },
+        forall|i: int| #![trigger out1[i]] 0 <= i < out1.len() ==> out1[i]@.len() == vars,
+        forall|i: int| #![trigger out2[i]] 0 <= i < out2.len() ==> out2[i]@.len() == vars,
+    ensures env_le_spec(
+        pred_meet_prefix_spec(edges, out1, vars, block, upto),
+        pred_meet_prefix_spec(edges, out2, vars, block, upto),
+    )
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        pred_meet_prefix_monotone(edges, out1, out2, vars, block, upto - 1);
+        let edge = edges[upto - 1];
+        if edge.1 as int == block {
+            pred_meet_prefix_has_len(edges, out1, vars, block, upto - 1);
+            pred_meet_prefix_has_len(edges, out2, vars, block, upto - 1);
+            meet_env_monotone(
+                pred_meet_prefix_spec(edges, out1, vars, block, upto - 1),
+                pred_meet_prefix_spec(edges, out2, vars, block, upto - 1),
+                out1[edge.0 as int]@,
+                out2[edge.0 as int]@,
+            );
+        }
     }
 }
 

@@ -7,6 +7,7 @@
 - Repo is now a colocated `jj`+`git` workspace (`.jj/` + `.git/`). Prefer `jj` for local status/history/bookmarks; `git` still works for remotes and Git-only tooling. `main@origin` is tracked locally. Warning: `git clean -xdf` will remove `.jj/`.
 - Scope-check gotcha: `jj diff --name-only` does not show files sitting only in Git's staged index. Before claiming a change is scope-clean, also check `git diff --cached --name-only`.
 - Verus gotcha: exec code inside `verus!` cannot call a plain Rust helper declared outside the `verus!` block without an `assume_specification[...]` bridge. For partial feature landings, either keep helpers in `verus!` or move the unfinished exec surface outside `verus!` until proofs catch up.
+- Constant-folding Phase 4 proof gotcha: recursive env builders need their own length lemmas. `pred_meet_prefix_monotone(...)` did not verify until `pred_meet_prefix_has_len(...)` made `pred_meet_prefix_spec(...).len() == vars` explicit for the recursive prefix.
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.
