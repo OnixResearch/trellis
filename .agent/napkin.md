@@ -13,6 +13,7 @@
 - More rank-proof gotcha: recursive bound proofs over `matrix_rank_sum_spec` needed explicit nonneg lemmas for head/tail sums plus two small monotone arithmetic steps (`head + tail <= A + tail`, then `A + tail <= A + B`). Trying to discharge `head + tail <= A + B` in one shot was brittle.
 - Top-matrix proof shape that works in constant folding: encode "all rows are Top" as a predicate over `Seq<Vec<ConstLat>>`, then prove one row equals `top_env_spec(...)`. Avoid trying to build a spec top-matrix value just to compare against it.
 - Next step after that also works cleanly: prove `first_round_descends(...)` separately, using `block_out_env_top_bounded(...)` + row equality to top, instead of forcing a more general round lemma to handle the top case implicitly.
+- Closed spec wrapper trap in constant folding: trying to prove through `fixed_point_spec` / `round_from_out_env_spec` with quantified clauses was brittle even for direct restatement. Switching those wrappers to `open spec fn` was cleaner than fighting reveal/reassertion weirdness.
 - Verus specs embedded in `src/` — no separate `verus/` directory
 - House style is `ensures result == *_spec(args)` with Verus checking the actual implementation, but `src/ssa_construction.rs` is a current exception: thin wrappers + `assume_specification[...]` bridges.
 - Drift between spec and impl is usually structurally impossible here, except at currently tracked trust/weakened boundaries.

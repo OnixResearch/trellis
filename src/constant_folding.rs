@@ -592,7 +592,7 @@ pub closed spec fn block_out_env_spec(program: RawProgram, entry_env: Seq<ConstL
     apply_block_spec(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block))
 }
 
-pub closed spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, sets: ConstPropSets) -> bool {
+pub open spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, sets: ConstPropSets) -> bool {
     &&& valid_constprop_program_spec(program)
     &&& constprop_sets_shape_spec(sets, program.blocks@.len() as int, entry_env.len() as int)
     &&& forall|b: int| #![trigger sets.in_env@[b], sets.out_env@[b]]
@@ -602,7 +602,7 @@ pub closed spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat
         }
 }
 
-pub closed spec fn round_from_out_env_spec(program: RawProgram, entry_env: Seq<ConstLat>, prev_out: Seq<Vec<ConstLat>>, next: ConstPropSets) -> bool {
+pub open spec fn round_from_out_env_spec(program: RawProgram, entry_env: Seq<ConstLat>, prev_out: Seq<Vec<ConstLat>>, next: ConstPropSets) -> bool {
     &&& valid_constprop_program_spec(program)
     &&& constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int)
     &&& constprop_sets_shape_spec(next, program.blocks@.len() as int, entry_env.len() as int)
