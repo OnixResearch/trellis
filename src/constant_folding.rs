@@ -502,6 +502,11 @@ pub closed spec fn constprop_sets_shape_spec(sets: ConstPropSets, blocks: int, v
         && constprop_matrix_shape_spec(sets.out_env@, blocks, vars)
 }
 
+pub closed spec fn constprop_matrix_le_spec(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>) -> bool {
+    a.len() == b.len()
+        && forall|r: int| #![trigger a[r], b[r]] 0 <= r < a.len() ==> env_le_spec(a[r]@, b[r]@)
+}
+
 pub closed spec fn top_env_spec(vars: nat) -> Seq<ConstLat> {
     Seq::new(vars, |_i: int| ConstLat::Top)
 }
@@ -557,6 +562,10 @@ pub closed spec fn block_in_env_spec(program: RawProgram, entry_env: Seq<ConstLa
     }
 }
 
+pub closed spec fn block_out_env_spec(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>, block: int) -> Seq<ConstLat> {
+    apply_block_spec(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block))
+}
+
 pub closed spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, sets: ConstPropSets) -> bool {
     &&& valid_constprop_program_spec(program)
     &&& constprop_sets_shape_spec(sets, program.blocks@.len() as int, entry_env.len() as int)
@@ -572,6 +581,45 @@ pub closed spec fn valid_constprop_program_spec(program: RawProgram) -> bool {
         let (src, dst) = program.edges[i];
         src < program.blocks.len() && dst < program.blocks.len()
     }
+}
+
+proof fn lattice_le_refl(a: ConstLat)
+    ensures lattice_le_spec(a, a)
+{
+    match a {
+        ConstLat::Top => {}
+        ConstLat::Bottom => {}
+        ConstLat::Const(_) => {}
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn lattice_le_top(a: ConstLat)
+    ensures lattice_le_spec(a, ConstLat::Top)
+{
+    match a {
+        ConstLat::Top => {}
+        ConstLat::Bottom => {}
+        ConstLat::Const(_) => {}
+    }
+}
+
+proof fn env_le_refl(env: Seq<ConstLat>)
+    ensures env_le_spec(env, env)
+{
+    assert forall|i: int| 0 <= i < env.len() implies #[trigger] lattice_le_spec(env[i], env[i]) by {
+        lattice_le_refl(env[i]);
+    };
+}
+
+// r[verify constfold.convergence]
+proof fn env_le_top(env: Seq<ConstLat>)
+    ensures env_le_spec(env, top_env_spec(env.len() as nat))
+{
+    assert forall|i: int| 0 <= i < env.len() implies #[trigger] lattice_le_spec(env[i], top_env_spec(env.len() as nat)[i]) by {
+        assert(top_env_spec(env.len() as nat)[i] == ConstLat::Top);
+        lattice_le_top(env[i]);
+    };
 }
 
 // r[verify constfold.convergence]
@@ -697,6 +745,47 @@ proof fn pred_meet_prefix_monotone(
     }
 }
 
+// r[verify constfold.convergence]
+proof fn block_in_env_monotone(program: RawProgram, entry_env: Seq<ConstLat>, out1: Seq<Vec<ConstLat>>, out2: Seq<Vec<ConstLat>>, block: int)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(out1, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(out2, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(out1, out2),
+        0 <= block < program.blocks@.len(),
+    ensures env_le_spec(
+        block_in_env_spec(program, entry_env, out1, block),
+        block_in_env_spec(program, entry_env, out2, block),
+    )
+{
+    if block == 0 {
+        env_le_refl(entry_env);
+    } else {
+        pred_meet_prefix_monotone(program.edges@, out1, out2, entry_env.len() as nat, block, program.edges@.len() as int);
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn block_out_env_monotone(program: RawProgram, entry_env: Seq<ConstLat>, out1: Seq<Vec<ConstLat>>, out2: Seq<Vec<ConstLat>>, block: int)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(out1, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(out2, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(out1, out2),
+        0 <= block < program.blocks@.len(),
+    ensures env_le_spec(
+        block_out_env_spec(program, entry_env, out1, block),
+        block_out_env_spec(program, entry_env, out2, block),
+    )
+{
+    block_in_env_monotone(program, entry_env, out1, out2, block);
+    apply_block_monotone(
+        program.blocks@[block].instrs@,
+        block_in_env_spec(program, entry_env, out1, block),
+        block_in_env_spec(program, entry_env, out2, block),
+    );
+}
+
 // r[impl constfold.monotone]
 // r[depends constfold.monotone]
 pub closed spec fn transfer_spec(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<ConstLat>) -> Seq<ConstLat> {
@@ -807,6 +896,87 @@ proof fn update_env_monotone(env1: Seq<ConstLat>, env2: Seq<ConstLat>, dst: u32,
             }
         };
     }
+}
+
+proof fn update_top_env_is_top(vars: nat, dst: u32)
+    ensures update_env_spec(top_env_spec(vars), dst, ConstLat::Top) == top_env_spec(vars)
+{
+    if (dst as int) < vars {
+        assert forall|i: int| 0 <= i < vars implies #[trigger] update_env_spec(top_env_spec(vars), dst, ConstLat::Top)[i] == top_env_spec(vars)[i] by {
+            if i == dst as int {
+                assert(update_env_spec(top_env_spec(vars), dst, ConstLat::Top)[i] == ConstLat::Top);
+            } else {
+                assert(update_env_spec(top_env_spec(vars), dst, ConstLat::Top)[i] == top_env_spec(vars)[i]);
+            }
+        };
+    }
+}
+
+proof fn transfer_value_le_top(opcode: u8, uses: Seq<u32>, env: Seq<ConstLat>)
+    ensures lattice_le_spec(transfer_value_spec(opcode, uses, env), ConstLat::Top)
+{
+    if opcode == OPCODE_COPY {
+        if uses.len() == 1 {
+            if (uses[0] as int) < env.len() {
+                lattice_le_top(env[uses[0] as int]);
+            }
+        }
+    } else if is_binary_opcode_spec(opcode) {
+        if uses.len() == 2 {
+            if (uses[0] as int) < env.len() && (uses[1] as int) < env.len() {
+                let a = env[uses[0] as int];
+                let b = env[uses[1] as int];
+                match (a, b) {
+                    (ConstLat::Bottom, _) | (_, ConstLat::Bottom) => {}
+                    (ConstLat::Top, _) | (_, ConstLat::Top) => {}
+                    (ConstLat::Const(x), ConstLat::Const(y)) => {
+                        lattice_le_top(fold_expr_spec(opcode, x, y));
+                    }
+                }
+            }
+        }
+    }
+}
+
+proof fn transfer_top_bounded(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<ConstLat>)
+    requires env_le_spec(env, top_env_spec(env.len() as nat))
+    ensures env_le_spec(transfer_spec(def, uses, opcode, env), top_env_spec(env.len() as nat))
+{
+    match def {
+        None => {}
+        Some(dst) => {
+            transfer_value_le_top(opcode, uses, env);
+            update_env_monotone(env, top_env_spec(env.len() as nat), dst, transfer_value_spec(opcode, uses, env), ConstLat::Top);
+            update_top_env_is_top(env.len() as nat, dst);
+        }
+    }
+}
+
+proof fn apply_block_prefix_top_bounded(instrs: Seq<RawInstr>, env: Seq<ConstLat>, upto: int)
+    requires
+        env_le_spec(env, top_env_spec(env.len() as nat)),
+        0 <= upto <= instrs.len(),
+    ensures env_le_spec(apply_block_prefix_spec(instrs, env, upto), top_env_spec(env.len() as nat))
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        apply_block_prefix_top_bounded(instrs, env, upto - 1);
+        transfer_top_bounded(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            apply_block_prefix_spec(instrs, env, upto - 1),
+        );
+    }
+}
+
+// r[verify constfold.convergence]
+proof fn apply_block_top_bounded(instrs: Seq<RawInstr>, env: Seq<ConstLat>)
+    requires env_le_spec(env, top_env_spec(env.len() as nat))
+    ensures env_le_spec(apply_block_spec(instrs, env), top_env_spec(env.len() as nat))
+{
+    apply_block_prefix_top_bounded(instrs, env, instrs.len() as int);
 }
 
 // r[verify constfold.monotone]
