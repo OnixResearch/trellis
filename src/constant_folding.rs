@@ -1052,6 +1052,27 @@ proof fn block_out_env_monotone(program: RawProgram, entry_env: Seq<ConstLat>, o
     );
 }
 
+proof fn first_round_descends(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        matrix_is_top_spec(top_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, top_out, b),
+    ensures constprop_matrix_le_spec(next_out, top_out)
+{
+    assert forall|b: int| 0 <= b < program.blocks@.len() implies env_le_spec(next_out[b]@, top_out[b]@) by {
+        assert(next_out[b] == next_out[b]);
+        block_out_env_top_bounded(program, entry_env, top_out, b);
+        top_matrix_row_is_top_env(top_out, program.blocks@.len() as int, entry_env.len() as int, b);
+    };
+}
+
 proof fn round_matrix_descends(
     program: RawProgram,
     entry_env: Seq<ConstLat>,
