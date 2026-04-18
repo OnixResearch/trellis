@@ -25,14 +25,13 @@ decomposition and proves mitigation strategies (padding, alignment).
 ### 1. Same-Line Predicate
 
 **Choice:** `same_cache_line(a: u64, b: u64, line_size: u64) -> bool`
-defined as `a / line_size == b / line_size` (integer division) in the spec,
-with a bit-mask implementation `(a & !mask) == (b & !mask)` where
-`mask = line_size - 1` in the exec function. Requires `line_size` is a
-power of two.
+uses the same quotient-equality definition in both spec and exec:
+`a / line_size == b / line_size`.
 
-**Rationale:** Integer division is the clearest spec. Bit masking is the
-efficient implementation. The equivalence proof (division equals masking
-when divisor is a power of two) is a standard `by(bit_vector)` result.
+**Rationale:** Integer division is the clearest contract and verified much
+more cleanly than a mask-based exec surface in this repo. The bit-level
+view still appears in the decomposition-equivalence proof, which is where
+it matters semantically for cache-line identity.
 
 ### 2. Line Size Constraint
 
@@ -53,22 +52,36 @@ The offset is the only part that can differ within a line.
 
 ### 4. Padding Proof
 
-**Choice:** `padding_prevents_sharing(addr_a: u64, size_a: u64, addr_b: u64, line_size: u64) -> bool` where `addr_b >= addr_a + size_a` and
-`addr_b - addr_a >= line_size`. Prove this implies `!same_cache_line(addr_a, addr_b, line_size)`.
+**Choice:** `padding_prevents_sharing(addr_a: u64, size_a: u64, addr_b: u64, line_size: u64) -> bool` states that object B begins at least one full cache line after the end of object A, i.e.
+`addr_b >= addr_a + size_a + line_size`. Prove this implies that no byte
+of object A can share a cache line with any byte of object B.
 
-**Rationale:** The standard mitigation is to pad structs to cache-line
-boundaries. If two objects are at least one line size apart, they can't
-share a line (assuming each fits within one line).
+**Rationale:** The mitigation needs an explicit end-to-start gap, not just
+start-address distance. That formulation stays correct even when object A
+is unaligned or already spans multiple lines.
 
 ### 5. Object Span Formula
 
 **Choice:** `cache_lines_spanned(addr: u64, size: u64, line_size: u64) -> u64`
-computes `((addr % line_size) + size + line_size - 1) / line_size`. The
-inner-offset of the start address plus the object size, rounded up.
+computes `div_ceil((addr % line_size) + size, line_size)` for positive-size
+objects, with a precondition that the intermediate sum fits in `u64`.
+The inner-offset of the start address plus the object size, rounded up.
 
 **Rationale:** An object starting at a non-aligned address may span one
 more line than its size suggests. A 60-byte object starting at byte 4 of
-a 64-byte line spans 2 lines, not 1.
+a 64-byte line spans 2 lines, not 1. Using `div_ceil` matches the repo's
+existing verified ceiling-division surface and avoids a bespoke overflow
+story.
+
+### 6. Alignment Helper
+
+**Choice:** `is_line_aligned(addr, line_size)` uses `addr % line_size == 0`
+in the spec and exec code, while `line_start(addr, line_size)` returns the
+floor multiple `addr - (addr % line_size)` / `(addr / line_size) * line_size`.
+
+**Rationale:** Alignment and line-start are the natural helper views for the
+same-line proof family. The floor-multiple helper preserves the exact line
+boundary value without introducing extra mask-specific proof obligations.
 
 ## Risks / Trade-offs
 
@@ -76,5 +89,6 @@ a 64-byte line spans 2 lines, not 1.
 same set but different lines (same index, different tag). That causes
 conflict misses, not false sharing. The module only models same-line.
 
-**[Single-object padding]** → The padding proof assumes each object fits
-within one cache line. Multi-line objects need the span formula instead.
+**[One-sided gap API]** → `padding_prevents_sharing` is phrased for the
+ordered case where object B starts after object A. Callers comparing
+arbitrary object pairs should normalize the order first.

@@ -1105,6 +1105,43 @@ Changing a cache set whose index differs from the requested address's
 index MUST NOT change the lookup result for that address. Different
 indices MUST select different sets.
 
+## False Sharing Detection
+
+r[false-sharing.same-line]
+same_cache_line MUST return true if and only if the two addresses are in
+the same cache line. For power-of-two `line_size`, this is equivalent to
+comparing the address bits above the offset.
+
+r[false-sharing.distinct-line]
+If two addresses are on different cache lines, they MUST NOT false-share.
+For canonical tag/index decomposition, this means at least one of tag or
+index differs.
+
+r[false-sharing.alignment]
+is_line_aligned MUST return true if and only if `addr % line_size == 0`.
+line_start MUST clear the offset bits and return the first byte address of
+the containing line.
+
+r[false-sharing.padding]
+padding_prevents_sharing(addr_a, size_a, addr_b, line_size) MUST return
+true if and only if object B starts at least one full cache line after the
+end of object A: `addr_b >= addr_a + size_a + line_size`. Under that
+condition, no byte of A may share a cache line with any byte at or after
+`addr_b`.
+
+r[false-sharing.object-span]
+cache_lines_spanned MUST return the number of cache lines touched by a
+positive-size object, equal to `ceil((addr % line_size + size) /
+line_size)`. For this computation, `(addr % line_size) + size` MUST fit
+in `u64`.
+
+r[false-sharing.decomposition-equivalence]
+For `offset_bits < 64` and `offset_bits + index_bits <= 64`,
+same_cache_line(a, b, 1 << offset_bits) MUST be equivalent to
+`extract_tag(a, offset_bits, index_bits) == extract_tag(b, offset_bits,
+index_bits)` and `extract_index(a, offset_bits, index_bits) ==
+extract_index(b, offset_bits, index_bits)`.
+
 ## Write Policy
 
 r[write-policy.write-back-dirty]

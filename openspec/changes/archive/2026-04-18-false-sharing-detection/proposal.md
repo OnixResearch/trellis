@@ -26,14 +26,17 @@ decomposition to the sharing predicate.
     they are on different lines and cannot false-share.
   - **Alignment boundary**: An address is cache-line-aligned iff its
     offset bits are all zero. Aligned allocations start at line boundaries.
-  - **Padding sufficiency**: If two objects are separated by at least one
-    cache line size, they cannot share a line. Proves the standard
-    padding mitigation is correct.
-  - **Object span**: An object of size S starting at address A occupies
-    `ceil((A % line_size + S) / line_size)` cache lines. Proves the
+  - **Padding sufficiency**: If object B starts at least one full cache
+    line after the end of object A (`addr_b >= addr_a + size_a + line_size`),
+    the two objects cannot share a cache line. This makes the mitigation
+    statement explicit in terms of object size and end-to-start gap.
+  - **Object span**: A positive-size object of size S starting at address A
+    occupies `ceil((A % line_size + S) / line_size)` cache lines. Proves the
     line-count formula.
   - **Composability with set-associative lookup**: The same-line predicate
-    is equivalent to `decompose(a).tag == decompose(b).tag && decompose(a).index == decompose(b).index`.
+    is equivalent to tag+index equality using the canonical
+    `set_associative_lookup::{extract_tag_spec, extract_index_spec}`
+    decomposition.
 
 ## Capabilities
 
@@ -46,12 +49,23 @@ decomposition to the sharing predicate.
 - `false-sharing.object-span`: Verified cache-line count for an object
 - `false-sharing.decomposition-equivalence`: Verified link to set-associative decomposition
 
+## Non-Goals
+
+- Runtime false-sharing detection via perf counters, sampling, or tracing
+- Multi-level cache hierarchy or NUMA-topology modeling
+- Automatic padding insertion or struct-layout optimization
+- Performance impact estimation or cache-bounce counter modeling
+
 ## Impact
 
 - **Files**: One new `src/false_sharing.rs`, module declaration in `lib.rs`
-- **APIs**: `same_cache_line`, `is_line_aligned`, `padding_prevents_sharing`,
-  `cache_lines_spanned`, parameterized by line_size (power of 2)
+- **APIs**: `same_cache_line`, `is_line_aligned`,
+  `padding_prevents_sharing(addr_a, size_a, addr_b, line_size)`,
+  `cache_lines_spanned`; all require `line_size > 0` and a power-of-two
+  line size, and `cache_lines_spanned` additionally requires
+  `(addr % line_size) + size` to fit in `u64`
 - **Dependencies**: Depends on `vstd`, references `set_associative_lookup`
   for decomposition equivalence proof
 - **Testing**: Verus proofs for all properties, proptest for same-line
-  predicate against brute-force mask comparison
+  predicate against brute-force mask comparison and for span/padding edge
+  cases

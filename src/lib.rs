@@ -112,6 +112,8 @@
 //! - `fee` — proportional fee computation: basis points, tiered, conservation
 //! - `fencing` — fencing tokens for stale-write rejection
 //! - `fetch_add` — wrapping/saturating fetch-and-add, CAS refinement, and fetch-sub roundtrips
+//! - `false_sharing` — cache-line identity, alignment, padding separation, object span, and
+//!   equivalence with canonical tag/index decomposition
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry
@@ -428,6 +430,7 @@ pub mod fast_backtrack;
 pub mod fee;
 pub mod fencing;
 pub mod fetch_add;
+pub mod false_sharing;
 pub mod follower_commit;
 pub mod follower_read;
 pub mod follower_redirect;
