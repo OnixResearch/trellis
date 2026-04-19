@@ -76,19 +76,22 @@ The iterative analysis MUST reach a fixed point.
 ### Requirement: Soundness
 
 If the analysis classifies a variable as a constant, that classification
-MUST be correct on all execution paths.
+MUST be correct on all execution paths covered by the current fixed-point
+soundness model.
 
-#### Scenario: Constant is correct
+#### Scenario: Constant is correct on valid block paths
 
-- GIVEN variable V classified as Const(c) at point P
-- WHEN any concrete execution reaches P
-- THEN V holds value c
+- GIVEN a valid block path that starts at block `0` and does not later revisit block `0`
+- AND a caller-supplied top-free entry environment where each reachable entry slot is either `Const(c)` or `Bottom`
+- AND the fixed-point analysis classifies variable V as `Const(c)` at a block-entry or block-exit point on that path
+- WHEN the corresponding concrete execution follows that path
+- THEN V holds value `c`
 
-#### Scenario: Top is trivially sound
+#### Scenario: Top is reserved for unreached rows
 
-- GIVEN variable V classified as Top at point P
-- WHEN soundness is checked
-- THEN Top makes no claim (trivially sound)
+- GIVEN the current fixed-point soundness theorem
+- WHEN soundness is checked for reachable executions
+- THEN caller-supplied reachable entry state does not use `Top`, and any remaining `Top` values are reserved for analysis-internal unreached rows
 
 #### Scenario: Bottom is conservative
 

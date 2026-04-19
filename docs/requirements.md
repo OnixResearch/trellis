@@ -6870,6 +6870,15 @@ of predecessor out-environments for non-entry block inputs, and use a
 conservative round budget of `2 × V × B + 1` for `V` variables and `B` blocks
 while checking successive rounds for stability.
 
+r[constfold.soundness]
+For the current fixed-point soundness theorem, caller-supplied reachable entry
+state MUST be modeled with a top-free entry environment: each entry slot is
+`Const(c)` for an exact known value or `Bottom` for an unknown/overdefined
+value, while `Top` is reserved for analysis-internal unreached rows. Along any
+valid block path that starts at block `0` and does not later revisit block `0`,
+every fixed-point `Const(c)` classification at block entry or block exit MUST
+match the concrete value `c`, and `Bottom` MUST remain conservative.
+
 ## Hypervisor Memslots
 
 r[hypervisor-memslot.disjoint]

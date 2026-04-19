@@ -670,6 +670,35 @@ spec fn env_sound_spec(abs_env: Seq<ConstLat>, concrete_env: Seq<u64>) -> bool {
         && forall|i: int| 0 <= i < abs_env.len() ==> #[trigger] constlat_sound_spec(abs_env[i], concrete_env[i])
 }
 
+pub open spec fn top_free_env_spec(env: Seq<ConstLat>) -> bool {
+    forall|i: int| 0 <= i < env.len() ==> #[trigger] env[i] != ConstLat::Top
+}
+
+pub open spec fn has_path_edge_spec(edges: Seq<(usize, usize)>, src: int, dst: int) -> bool {
+    exists|i: int| #![trigger edges[i]] 0 <= i < edges.len() && edges[i].0 as int == src && edges[i].1 as int == dst
+}
+
+pub open spec fn valid_block_path_spec(program: RawProgram, path: Seq<usize>) -> bool {
+    &&& path.len() > 0
+    &&& path[0] == 0usize
+    &&& forall|i: int| #![trigger path[i]] 0 <= i < path.len() ==> path[i] < program.blocks.len()
+    &&& forall|i: int| 0 < i < path.len() ==> #[trigger] path[i] != 0usize
+    &&& forall|i: int| #![trigger path[i], path[i + 1]] 0 <= i < path.len() - 1 ==> has_path_edge_spec(program.edges@, path[i] as int, path[i + 1] as int)
+}
+
+spec fn concrete_path_prefix_out_spec(program: RawProgram, concrete_entry: Seq<u64>, path: Seq<usize>, upto: int) -> Seq<u64>
+    decreases if upto >= 0 { upto } else { 0 },
+{
+    if upto <= 0 {
+        concrete_entry
+    } else {
+        concrete_apply_block_spec(
+            program.blocks@[path[upto - 1] as int].instrs@,
+            concrete_path_prefix_out_spec(program, concrete_entry, path, upto - 1),
+        )
+    }
+}
+
 pub closed spec fn pred_meet_prefix_spec(
     edges: Seq<(usize, usize)>, out_env: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int,
 ) -> Seq<ConstLat>
@@ -1967,6 +1996,363 @@ proof fn concrete_apply_block_sound(instrs: Seq<RawInstr>, abs_env: Seq<ConstLat
     ensures env_sound_spec(apply_block_spec(instrs, abs_env), concrete_apply_block_spec(instrs, concrete_env))
 {
     concrete_apply_block_prefix_sound(instrs, abs_env, concrete_env, instrs.len() as int);
+}
+
+proof fn transfer_value_top_free(opcode: u8, uses: Seq<u32>, env: Seq<ConstLat>)
+    requires top_free_env_spec(env)
+    ensures transfer_value_spec(opcode, uses, env) != ConstLat::Top
+{
+    if opcode == OPCODE_COPY {
+        if uses.len() == 1 && (uses[0] as int) < env.len() {
+            assert(env[uses[0] as int] != ConstLat::Top);
+        }
+    } else if is_binary_opcode_spec(opcode) {
+        if uses.len() == 2 && (uses[0] as int) < env.len() && (uses[1] as int) < env.len() {
+            assert(env[uses[0] as int] != ConstLat::Top);
+            assert(env[uses[1] as int] != ConstLat::Top);
+            match (env[uses[0] as int], env[uses[1] as int]) {
+                (ConstLat::Bottom, _) | (_, ConstLat::Bottom) => {}
+                (ConstLat::Const(a), ConstLat::Const(b)) => {
+                    assert(transfer_value_spec(opcode, uses, env) != ConstLat::Top);
+                }
+                (ConstLat::Top, _) | (_, ConstLat::Top) => {
+                    assert(false);
+                }
+            }
+        }
+    }
+}
+
+proof fn transfer_preserves_top_free(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<ConstLat>)
+    requires top_free_env_spec(env)
+    ensures top_free_env_spec(transfer_spec(def, uses, opcode, env))
+{
+    transfer_spec_preserves_len(def, uses, opcode, env);
+    match def {
+        None => {}
+        Some(dst) => {
+            transfer_value_top_free(opcode, uses, env);
+            assert forall|i: int| 0 <= i < env.len() implies #[trigger] transfer_spec(def, uses, opcode, env)[i] != ConstLat::Top by {
+                if i == dst as int && i < env.len() {
+                    assert(transfer_spec(def, uses, opcode, env)[i] == transfer_value_spec(opcode, uses, env));
+                } else {
+                    assert(transfer_spec(def, uses, opcode, env)[i] == env[i]);
+                }
+            };
+        }
+    }
+}
+
+proof fn apply_block_prefix_preserves_top_free(instrs: Seq<RawInstr>, env: Seq<ConstLat>, upto: int)
+    requires
+        top_free_env_spec(env),
+        0 <= upto <= instrs.len(),
+    ensures top_free_env_spec(apply_block_prefix_spec(instrs, env, upto))
+    decreases upto,
+{
+    if upto > 0 {
+        apply_block_prefix_preserves_top_free(instrs, env, upto - 1);
+        transfer_preserves_top_free(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            apply_block_prefix_spec(instrs, env, upto - 1),
+        );
+    }
+}
+
+proof fn apply_block_preserves_top_free(instrs: Seq<RawInstr>, env: Seq<ConstLat>)
+    requires top_free_env_spec(env)
+    ensures top_free_env_spec(apply_block_spec(instrs, env))
+{
+    apply_block_prefix_preserves_top_free(instrs, env, instrs.len() as int);
+}
+
+proof fn concrete_apply_block_prefix_preserves_len(instrs: Seq<RawInstr>, env: Seq<u64>, upto: int)
+    requires 0 <= upto <= instrs.len()
+    ensures concrete_apply_block_prefix_spec(instrs, env, upto).len() == env.len()
+    decreases upto,
+{
+    if upto > 0 {
+        concrete_apply_block_prefix_preserves_len(instrs, env, upto - 1);
+        concrete_transfer_spec_preserves_len(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            concrete_apply_block_prefix_spec(instrs, env, upto - 1),
+        );
+    }
+}
+
+proof fn concrete_apply_block_preserves_len(instrs: Seq<RawInstr>, env: Seq<u64>)
+    ensures concrete_apply_block_spec(instrs, env).len() == env.len()
+{
+    concrete_apply_block_prefix_preserves_len(instrs, env, instrs.len() as int);
+}
+
+proof fn meet_sound_left_if_top_free(a: ConstLat, b: ConstLat, value: u64)
+    requires
+        constlat_sound_spec(a, value),
+        a != ConstLat::Top,
+    ensures constlat_sound_spec(meet_spec(a, b), value)
+{
+    match a {
+        ConstLat::Bottom => {}
+        ConstLat::Const(c) => {
+            assert(c == value);
+            match b {
+                ConstLat::Top => {}
+                ConstLat::Bottom => {}
+                ConstLat::Const(d) => {
+                    if c != d {
+                        assert(meet_spec(a, b) == ConstLat::Bottom);
+                    }
+                }
+            }
+        }
+        ConstLat::Top => { assert(false); }
+    }
+}
+
+proof fn meet_sound_right_if_top_free(a: ConstLat, b: ConstLat, value: u64)
+    requires
+        constlat_sound_spec(b, value),
+        b != ConstLat::Top,
+    ensures constlat_sound_spec(meet_spec(a, b), value)
+{
+    meet_commutative(a, b);
+    meet_sound_left_if_top_free(b, a, value);
+}
+
+proof fn meet_top_free_left(a: ConstLat, b: ConstLat)
+    requires a != ConstLat::Top
+    ensures meet_spec(a, b) != ConstLat::Top
+{
+    match a {
+        ConstLat::Bottom => {}
+        ConstLat::Const(_) => {}
+        ConstLat::Top => { assert(false); }
+    }
+}
+
+proof fn meet_top_free_right(a: ConstLat, b: ConstLat)
+    requires b != ConstLat::Top
+    ensures meet_spec(a, b) != ConstLat::Top
+{
+    meet_commutative(a, b);
+    meet_top_free_left(b, a);
+}
+
+proof fn meet_env_sound_left_if_top_free(a: Seq<ConstLat>, b: Seq<ConstLat>, concrete_env: Seq<u64>)
+    requires
+        env_sound_spec(a, concrete_env),
+        top_free_env_spec(a),
+        a.len() == b.len(),
+    ensures env_sound_spec(meet_env_spec(a, b), concrete_env)
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] constlat_sound_spec(meet_env_spec(a, b)[i], concrete_env[i]) by {
+        meet_sound_left_if_top_free(a[i], b[i], concrete_env[i]);
+    };
+}
+
+proof fn meet_env_sound_right_if_top_free(a: Seq<ConstLat>, b: Seq<ConstLat>, concrete_env: Seq<u64>)
+    requires
+        env_sound_spec(b, concrete_env),
+        top_free_env_spec(b),
+        a.len() == b.len(),
+    ensures env_sound_spec(meet_env_spec(a, b), concrete_env)
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] constlat_sound_spec(meet_env_spec(a, b)[i], concrete_env[i]) by {
+        meet_sound_right_if_top_free(a[i], b[i], concrete_env[i]);
+    };
+}
+
+proof fn meet_env_top_free_left(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires
+        top_free_env_spec(a),
+        a.len() == b.len(),
+    ensures top_free_env_spec(meet_env_spec(a, b))
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] meet_env_spec(a, b)[i] != ConstLat::Top by {
+        meet_top_free_left(a[i], b[i]);
+    };
+}
+
+proof fn meet_env_top_free_right(a: Seq<ConstLat>, b: Seq<ConstLat>)
+    requires
+        top_free_env_spec(b),
+        a.len() == b.len(),
+    ensures top_free_env_spec(meet_env_spec(a, b))
+{
+    assert forall|i: int| 0 <= i < a.len() implies #[trigger] meet_env_spec(a, b)[i] != ConstLat::Top by {
+        meet_top_free_right(a[i], b[i]);
+    };
+}
+
+proof fn pred_meet_prefix_sound_top_free_hit(
+    edges: Seq<(usize, usize)>,
+    out_env: Seq<Vec<ConstLat>>,
+    vars: nat,
+    block: int,
+    pred: int,
+    hit: int,
+    upto: int,
+    concrete_env: Seq<u64>,
+)
+    requires
+        0 <= hit < upto <= edges.len(),
+        concrete_env.len() == vars,
+        constprop_matrix_shape_spec(out_env, out_env.len() as int, vars as int),
+        forall|i: int| #![trigger edges[i]] 0 <= i < edges.len() ==> {
+            let (src, dst) = edges[i];
+            src < out_env.len() && dst < out_env.len()
+        },
+        0 <= pred < out_env.len(),
+        edges[hit].0 as int == pred,
+        edges[hit].1 as int == block,
+        env_sound_spec(out_env[pred]@, concrete_env),
+        top_free_env_spec(out_env[pred]@),
+    ensures
+        env_sound_spec(pred_meet_prefix_spec(edges, out_env, vars, block, upto), concrete_env),
+        top_free_env_spec(pred_meet_prefix_spec(edges, out_env, vars, block, upto))
+    decreases upto,
+{
+    if upto > 0 {
+        let edge = edges[upto - 1];
+        if hit == upto - 1 {
+            assert(edge.0 as int == pred);
+            assert(edge.1 as int == block);
+            pred_meet_prefix_has_len(edges, out_env, vars, block, upto - 1);
+            meet_env_sound_right_if_top_free(
+                pred_meet_prefix_spec(edges, out_env, vars, block, upto - 1),
+                out_env[pred]@,
+                concrete_env,
+            );
+            meet_env_top_free_right(
+                pred_meet_prefix_spec(edges, out_env, vars, block, upto - 1),
+                out_env[pred]@,
+            );
+        } else {
+            pred_meet_prefix_sound_top_free_hit(edges, out_env, vars, block, pred, hit, upto - 1, concrete_env);
+            if edge.1 as int == block {
+                pred_meet_prefix_has_len(edges, out_env, vars, block, upto - 1);
+                meet_env_sound_left_if_top_free(
+                    pred_meet_prefix_spec(edges, out_env, vars, block, upto - 1),
+                    out_env[edge.0 as int]@,
+                    concrete_env,
+                );
+                meet_env_top_free_left(
+                    pred_meet_prefix_spec(edges, out_env, vars, block, upto - 1),
+                    out_env[edge.0 as int]@,
+                );
+            }
+        }
+    }
+}
+
+proof fn concrete_path_prefix_out_has_len(program: RawProgram, concrete_entry: Seq<u64>, path: Seq<usize>, upto: int)
+    requires
+        valid_block_path_spec(program, path),
+        0 <= upto <= path.len(),
+    ensures concrete_path_prefix_out_spec(program, concrete_entry, path, upto).len() == concrete_entry.len()
+    decreases upto,
+{
+    if upto > 0 {
+        concrete_path_prefix_out_has_len(program, concrete_entry, path, upto - 1);
+        concrete_apply_block_preserves_len(
+            program.blocks@[path[upto - 1] as int].instrs@,
+            concrete_path_prefix_out_spec(program, concrete_entry, path, upto - 1),
+        );
+    }
+}
+
+// r[impl constfold.soundness]
+// r[verify constfold.soundness]
+proof fn fixed_point_path_sound_top_free(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    concrete_entry: Seq<u64>,
+    fixed_out: Seq<Vec<ConstLat>>,
+    path: Seq<usize>,
+    idx: int,
+)
+    requires
+        out_matrix_fixed_point_spec(program, entry_env, fixed_out),
+        valid_block_path_spec(program, path),
+        env_sound_spec(entry_env, concrete_entry),
+        top_free_env_spec(entry_env),
+        0 <= idx < path.len(),
+    ensures
+        env_sound_spec(
+            block_in_env_spec(program, entry_env, fixed_out, path[idx] as int),
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx),
+        ),
+        top_free_env_spec(block_in_env_spec(program, entry_env, fixed_out, path[idx] as int)),
+        env_sound_spec(
+            fixed_out[path[idx] as int]@,
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx + 1),
+        ),
+        top_free_env_spec(fixed_out[path[idx] as int]@),
+    decreases idx,
+{
+    let block = path[idx] as int;
+    if idx == 0 {
+        assert(path[0] == 0usize);
+        assert(block == 0);
+        reveal(block_in_env_spec);
+        assert(block_in_env_spec(program, entry_env, fixed_out, block) == entry_env);
+        assert(concrete_path_prefix_out_spec(program, concrete_entry, path, 0) == concrete_entry);
+        assert(env_sound_spec(
+            block_in_env_spec(program, entry_env, fixed_out, block),
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx),
+        ));
+        assert(fixed_out[block]@ == block_out_env_spec(program, entry_env, fixed_out, block));
+        block_out_env_unfold(program, entry_env, fixed_out, block);
+        concrete_apply_block_sound(
+            program.blocks@[block].instrs@,
+            block_in_env_spec(program, entry_env, fixed_out, block),
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx),
+        );
+        apply_block_preserves_top_free(
+            program.blocks@[block].instrs@,
+            block_in_env_spec(program, entry_env, fixed_out, block),
+        );
+    } else {
+        assert(block != 0);
+        let pred = path[idx - 1] as int;
+        fixed_point_path_sound_top_free(program, entry_env, concrete_entry, fixed_out, path, idx - 1);
+        assert(forall|i: int| #![trigger program.edges@[i]] 0 <= i < program.edges@.len() ==> {
+            let (src, dst) = program.edges@[i];
+            src < fixed_out.len() && dst < fixed_out.len()
+        });
+        let hit = choose|i: int| #![trigger program.edges@[i]]
+            0 <= i < program.edges@.len() && program.edges@[i].0 as int == pred && program.edges@[i].1 as int == block;
+        concrete_path_prefix_out_has_len(program, concrete_entry, path, idx);
+        pred_meet_prefix_sound_top_free_hit(
+            program.edges@,
+            fixed_out,
+            entry_env.len() as nat,
+            block,
+            pred,
+            hit,
+            program.edges@.len() as int,
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx),
+        );
+        reveal(block_in_env_spec);
+        assert(block_in_env_spec(program, entry_env, fixed_out, block)
+            == pred_meet_prefix_spec(program.edges@, fixed_out, entry_env.len() as nat, block, program.edges@.len() as int));
+        assert(fixed_out[block]@ == block_out_env_spec(program, entry_env, fixed_out, block));
+        block_out_env_unfold(program, entry_env, fixed_out, block);
+        concrete_apply_block_sound(
+            program.blocks@[block].instrs@,
+            block_in_env_spec(program, entry_env, fixed_out, block),
+            concrete_path_prefix_out_spec(program, concrete_entry, path, idx),
+        );
+        apply_block_preserves_top_free(
+            program.blocks@[block].instrs@,
+            block_in_env_spec(program, entry_env, fixed_out, block),
+        );
+    }
 }
 
 proof fn transfer_value_monotone_copy(uses: Seq<u32>, env1: Seq<ConstLat>, env2: Seq<ConstLat>)

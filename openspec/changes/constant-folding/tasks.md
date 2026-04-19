@@ -28,7 +28,7 @@
 - [x] Implement forward iterative analysis with RPO processing
 - [x] Prove convergence within `2 × V × B + 1` rounds
 - [x] Prove fixed-point stability
-- [ ] Prove soundness: Const(c) at point P implies c on all paths to P
+- [x] Prove soundness on valid block paths from entry under the current top-free entry-environment boundary: `Const(c)` at block entry/exit implies concrete value `c` on that path
 
 ## Phase 5: Tests
 

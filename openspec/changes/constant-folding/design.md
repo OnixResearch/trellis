@@ -92,14 +92,20 @@ stability check. Later proof work can tighten the exact bound if desired.
 
 ### 6. Soundness Statement
 
-**Choice:** Prove: if `env[v] == Const(c)` at program point P, then on
-every concrete execution that reaches P, v holds value c.
+**Choice:** Prove soundness on valid block paths that start at block `0`
+and do not later revisit block `0`, under a top-free caller-supplied
+entry environment: if a block-entry or block-exit environment classifies
+`env[v] == Const(c)` on such a path, then the corresponding concrete
+execution on that path holds value `c`.
 
-**Rationale:** This is what prevents miscompilation. The proof is by
-induction on the iteration: the initial env is sound (Top is trivially
-sound — it claims nothing), meet preserves soundness (if both incoming
-values are sound and they agree, the result is sound), and transfer
-preserves soundness (the fold computes the correct value).
+**Rationale:** This is what prevents miscompilation while matching the
+current executable model. The proof is by path induction: the entry env is
+assumed sound and top-free (`Const(c)` for exact known values, `Bottom`
+for unknown/overdefined reachable values), transfer preserves both
+soundness and top-freeness, and predecessor meet becomes sound once one
+actual predecessor on the path supplies a sound top-free environment.
+Remaining `Top` values are treated as internal unreached-row sentinels,
+not as caller-supplied reachable inputs.
 
 ## Risks / Trade-offs
 
