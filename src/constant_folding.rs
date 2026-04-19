@@ -487,6 +487,14 @@ spec fn update_env_spec(env: Seq<ConstLat>, dst: u32, value: ConstLat) -> Seq<Co
     }
 }
 
+proof fn update_env_preserves_len(env: Seq<ConstLat>, dst: u32, value: ConstLat)
+    ensures update_env_spec(env, dst, value).len() == env.len()
+{
+    if (dst as int) < env.len() {
+        assert(update_env_spec(env, dst, value).len() == env.len());
+    }
+}
+
 spec fn env_le_spec(a: Seq<ConstLat>, b: Seq<ConstLat>) -> bool {
     a.len() == b.len()
         && forall|i: int| 0 <= i < a.len() ==> #[trigger] lattice_le_spec(a[i], b[i])
@@ -598,6 +606,18 @@ proof fn block_out_env_unfold(program: RawProgram, entry_env: Seq<ConstLat>, out
         == apply_block_spec(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block))
 {
     reveal(block_out_env_spec);
+}
+
+proof fn block_in_env_has_len(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>, block: int)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(out_env, program.blocks@.len() as int, entry_env.len() as int),
+        0 <= block < program.blocks@.len(),
+    ensures block_in_env_spec(program, entry_env, out_env, block).len() == entry_env.len()
+{
+    if block != 0 {
+        pred_meet_prefix_has_len(program.edges@, out_env, entry_env.len() as nat, block, program.edges@.len() as int);
+    }
 }
 
 pub open spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, sets: ConstPropSets) -> bool {
@@ -974,6 +994,29 @@ proof fn meet_env_monotone(a1: Seq<ConstLat>, a2: Seq<ConstLat>, b1: Seq<ConstLa
     };
 }
 
+proof fn apply_block_prefix_preserves_len(instrs: Seq<RawInstr>, env: Seq<ConstLat>, upto: int)
+    requires 0 <= upto <= instrs.len()
+    ensures apply_block_prefix_spec(instrs, env, upto).len() == env.len()
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        apply_block_prefix_preserves_len(instrs, env, upto - 1);
+        transfer_spec_preserves_len(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            apply_block_prefix_spec(instrs, env, upto - 1),
+        );
+    }
+}
+
+proof fn apply_block_preserves_len(instrs: Seq<RawInstr>, env: Seq<ConstLat>)
+    ensures apply_block_spec(instrs, env).len() == env.len()
+{
+    apply_block_prefix_preserves_len(instrs, env, instrs.len() as int);
+}
+
 // r[verify constfold.convergence]
 proof fn apply_block_prefix_monotone(instrs: Seq<RawInstr>, env1: Seq<ConstLat>, env2: Seq<ConstLat>, upto: int)
     requires
@@ -1200,6 +1243,110 @@ proof fn round_matrix_rank_drop_gap(
     assert(matrix_rank_sum_spec(next_out, 0) + 1 <= matrix_rank_sum_spec(prev_out, 0));
 }
 
+proof fn convergence_step(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    prev_prev_out: Seq<Vec<ConstLat>>,
+    prev_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(prev_prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(prev_out, prev_prev_out),
+        forall|b: int| #![trigger prev_out[b]]
+            0 <= b < program.blocks@.len() ==> prev_out[b]@ == block_out_env_spec(program, entry_env, prev_prev_out, b),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
+    ensures
+        constprop_matrix_le_spec(next_out, prev_out),
+        (forall|r: int| 0 <= r < next_out.len() ==> next_out[r]@ == prev_out[r]@)
+            || matrix_rank_sum_spec(next_out, 0) + 1 <= matrix_rank_sum_spec(prev_out, 0)
+{
+    round_matrix_descends(program, entry_env, prev_prev_out, prev_out, next_out);
+    if exists|r: int| 0 <= r < next_out.len() && next_out[r]@ != prev_out[r]@ {
+        round_matrix_rank_drop_gap(program, entry_env, prev_prev_out, prev_out, next_out);
+    } else {
+        assert forall|r: int| 0 <= r < next_out.len() implies next_out[r]@ == prev_out[r]@ by {
+            if next_out[r]@ != prev_out[r]@ {
+                assert(exists|w: int| 0 <= w < next_out.len() && next_out[w]@ != prev_out[w]@);
+            }
+        };
+    }
+}
+
+proof fn first_round_convergence_step(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    first_out: Seq<Vec<ConstLat>>,
+    second_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        matrix_is_top_spec(top_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(first_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(second_out, program.blocks@.len() as int, entry_env.len() as int),
+        forall|b: int| #![trigger first_out[b]]
+            0 <= b < program.blocks@.len() ==> first_out[b]@ == block_out_env_spec(program, entry_env, top_out, b),
+        forall|b: int| #![trigger second_out[b]]
+            0 <= b < program.blocks@.len() ==> second_out[b]@ == block_out_env_spec(program, entry_env, first_out, b),
+    ensures
+        constprop_matrix_le_spec(first_out, top_out),
+        constprop_matrix_le_spec(second_out, first_out),
+        (forall|r: int| 0 <= r < second_out.len() ==> second_out[r]@ == first_out[r]@)
+            || matrix_rank_sum_spec(second_out, 0) + 1 <= matrix_rank_sum_spec(first_out, 0),
+        matrix_rank_sum_spec(first_out, 0) <= 2 * (program.blocks@.len() as int) * (entry_env.len() as int)
+{
+    first_round_descends(program, entry_env, top_out, first_out);
+    convergence_step(program, entry_env, top_out, first_out, second_out);
+    constprop_matrix_rank_bound(first_out, program.blocks@.len() as int, entry_env.len() as int);
+    assert(2 * (entry_env.len() as int) * (program.blocks@.len() as int)
+        == 2 * (program.blocks@.len() as int) * (entry_env.len() as int)) by(nonlinear_arith);
+}
+
+proof fn pred_meet_prefix_extensional(
+    edges: Seq<(usize, usize)>, out1: Seq<Vec<ConstLat>>, out2: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int,
+)
+    requires
+        out1.len() == out2.len(),
+        forall|i: int| #![trigger out1[i], out2[i]] 0 <= i < out1.len() ==> out1[i]@ == out2[i]@,
+        0 <= upto <= edges.len(),
+        forall|i: int| #![trigger edges[i]] 0 <= i < edges.len() ==> {
+            let (src, dst) = edges[i];
+            src < out1.len() && dst < out1.len()
+        },
+        forall|i: int| #![trigger out1[i]] 0 <= i < out1.len() ==> out1[i]@.len() == vars,
+        forall|i: int| #![trigger out2[i]] 0 <= i < out2.len() ==> out2[i]@.len() == vars,
+    ensures pred_meet_prefix_spec(edges, out1, vars, block, upto) == pred_meet_prefix_spec(edges, out2, vars, block, upto)
+    decreases upto,
+{
+    if upto <= 0 {
+    } else {
+        pred_meet_prefix_extensional(edges, out1, out2, vars, block, upto - 1);
+        let edge = edges[upto - 1];
+        if edge.1 as int == block {
+            assert(out1[edge.0 as int]@ == out2[edge.0 as int]@);
+        }
+    }
+}
+
+proof fn block_in_env_extensional(program: RawProgram, entry_env: Seq<ConstLat>, out1: Seq<Vec<ConstLat>>, out2: Seq<Vec<ConstLat>>, block: int)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(out1, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(out2, program.blocks@.len() as int, entry_env.len() as int),
+        forall|i: int| #![trigger out1[i], out2[i]] 0 <= i < program.blocks@.len() ==> out1[i]@ == out2[i]@,
+        0 <= block < program.blocks@.len(),
+    ensures block_in_env_spec(program, entry_env, out1, block) == block_in_env_spec(program, entry_env, out2, block)
+{
+    if block != 0 {
+        pred_meet_prefix_extensional(program.edges@, out1, out2, entry_env.len() as nat, block, program.edges@.len() as int);
+    }
+}
+
 // r[verify constfold.convergence]
 proof fn pred_meet_prefix_top_bounded(edges: Seq<(usize, usize)>, out_env: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int)
     requires
@@ -1260,6 +1407,18 @@ proof fn block_out_env_top_bounded(program: RawProgram, entry_env: Seq<ConstLat>
     apply_block_top_bounded(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block));
 }
 
+proof fn block_out_env_has_len(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>, block: int)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(out_env, program.blocks@.len() as int, entry_env.len() as int),
+        0 <= block < program.blocks@.len(),
+    ensures block_out_env_spec(program, entry_env, out_env, block).len() == entry_env.len()
+{
+    block_in_env_has_len(program, entry_env, out_env, block);
+    block_out_env_unfold(program, entry_env, out_env, block);
+    apply_block_preserves_len(program.blocks@[block].instrs@, block_in_env_spec(program, entry_env, out_env, block));
+}
+
 // r[verify constfold.convergence]
 proof fn all_block_out_env_top_bounded(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>)
     requires
@@ -1278,6 +1437,17 @@ pub closed spec fn transfer_spec(def: Option<u32>, uses: Seq<u32>, opcode: u8, e
     match def {
         Some(dst) => update_env_spec(env, dst, transfer_value_spec(opcode, uses, env)),
         None => env,
+    }
+}
+
+proof fn transfer_spec_preserves_len(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<ConstLat>)
+    ensures transfer_spec(def, uses, opcode, env).len() == env.len()
+{
+    match def {
+        Some(dst) => {
+            update_env_preserves_len(env, dst, transfer_value_spec(opcode, uses, env));
+        }
+        None => {}
     }
 }
 
