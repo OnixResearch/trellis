@@ -294,6 +294,18 @@
 //! - `web_of_trust_resolution` — rooted depth-bounded trust resolution with the empty-chain root base case
 //! - `web_of_trust_policy` — threshold acceptance over distinct rooted-trusted introducers with
 //!   explicit `k = 0` / `d = 0` rejection and repeated-final-hop filtering
+//! - `ucan_ability` — string-based ability hierarchy with subsumption, glob matching, namespace
+//!   isolation, and containment monotonicity
+//! - `ucan_caveat` — composable attenuation constraints with conjunction satisfaction,
+//!   containment monotonicity, intersection soundness/minimality, and delegation-only-adds
+//! - `ucan_cid` — CIDv1 construction with determinism, version correctness, byte injectivity,
+//!   and multihash round-trip
+//! - `ucan_did` — did:key encode/decode with verified round-trip, injectivity, codec preservation,
+//!   and varint framing
+//! - `ucan_signature` — Ed25519 sign/verify primitives with verified round-trip, key-binding,
+//!   message-binding, determinism, and length contracts
+//! - `ucan_token` — UCAN token envelope with temporal validity, self-delegation rejection,
+//!   attenuation monotonicity, and sound/complete validation pipeline
 //! - `web_of_trust_revocation` — exact revocation payload bytes, signature binding, same-issuer,
 //!   exact-payload, and family-target matching
 //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
@@ -641,6 +653,12 @@ pub mod wal_recovery;
 pub mod wal_segment;
 pub mod watermark;
 pub mod weighted_round_robin;
+pub mod ucan_ability;
+pub mod ucan_caveat;
+pub mod ucan_cid;
+pub mod ucan_did;
+pub mod ucan_signature;
+pub mod ucan_token;
 pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;
 pub mod web_of_trust_principal;

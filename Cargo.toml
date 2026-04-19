@@ -8,6 +8,8 @@ description = "Verified logic building blocks — machine-checked with Verus"
 [dependencies]
 anyhow = "1.0"
 blake3 = "1.8"
+bs58 = "0.5"
+ed25519-dalek = { version = "2.1", features = ["rand_core"] }
 redb = "2.6"
 regex = "1.12"
 serde = { version = "1.0", features = ["derive"] }

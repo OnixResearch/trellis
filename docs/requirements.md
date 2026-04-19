@@ -7611,3 +7611,167 @@ the rotated leaf's new chain.
 r[cryptoshedding.idempotent-destruction]
 Shedding the same key twice MUST leave both the keystore model and every
 leaf's recoverability unchanged after the first shed.
+
+## UCAN Signature
+
+r[ucan-signature.round-trip]
+Signing a message with a secret key and verifying with the corresponding
+public key MUST succeed.
+
+r[ucan-signature.key-binding]
+Verifying a signature with a public key that does not correspond to the
+signing secret key MUST fail.
+
+r[ucan-signature.message-binding]
+Verifying a signature against a different message than the one signed
+MUST fail.
+
+r[ucan-signature.deterministic]
+Signing the same message with the same key MUST produce the same
+signature.
+
+r[ucan-signature.signature-length]
+An Ed25519 signature MUST always be exactly 64 bytes.
+
+r[ucan-signature.public-key-length]
+An Ed25519 public key derived from a secret key MUST be exactly 32 bytes.
+
+## UCAN DID
+
+r[ucan-did.round-trip]
+Encoding a public key as a did:key and decoding the result MUST recover
+the original key and codec.
+
+r[ucan-did.injective]
+Distinct public keys encoded with the same codec MUST produce distinct
+did:key strings.
+
+r[ucan-did.prefix-valid]
+An encoded did:key MUST always start with the string "did:key:z".
+
+r[ucan-did.codec-preserved]
+The codec recovered from decoding a did:key MUST match the codec used
+for encoding.
+
+r[ucan-did.varint-round-trip]
+Encoding a value as a LEB128 varint and decoding MUST recover the
+original value.
+
+r[ucan-did.varint-rejects-empty]
+Decoding a varint from an empty byte sequence MUST return None.
+
+r[ucan-did.base58btc-round-trip]
+Encoding bytes as base58btc and decoding MUST recover the original bytes.
+
+## UCAN Token
+
+r[ucan-token.temporal-validity]
+Temporal validity MUST be the conjunction of not-expired (with tolerance)
+and not-before-satisfied (with tolerance).
+
+r[ucan-token.self-delegation-rejected]
+A UCAN token where issuer equals audience MUST be rejected.
+
+r[ucan-token.attenuation-monotone]
+Each child token's capabilities MUST be contained by its parent's
+capabilities.
+
+r[ucan-token.validation-sound]
+If validate_envelope succeeds, then signature is valid, temporal constraints
+hold, identity constraints hold, and required fields are present.
+
+r[ucan-token.validation-complete]
+If all sub-checks pass individually, validate_envelope MUST succeed.
+
+r[ucan-token.issuer-present]
+A validated UCAN MUST have a non-empty issuer DID.
+
+r[ucan-token.audience-present]
+A validated UCAN MUST have a non-empty audience DID.
+
+r[ucan-token.attenuations-present]
+A validated UCAN MUST have at least one capability in att.
+
+## UCAN Ability
+
+r[ucan-ability.subsumption-reflexive]
+A non-glob ability MUST subsume itself.
+
+r[ucan-ability.subsumption-transitive]
+If pattern A subsumes pattern B and B subsumes ability C, then A MUST
+subsume C.
+
+r[ucan-ability.top-subsumes-all]
+The top ability pattern "*" MUST subsume every ability.
+
+r[ucan-ability.namespace-isolation]
+Abilities in different top-level namespaces MUST NOT subsume each other
+unless one is the top pattern.
+
+r[ucan-ability.glob-one-level]
+A single "*" in an ability pattern MUST match exactly one path segment,
+not deeper nesting.
+
+r[ucan-ability.containment-monotone]
+If parent ability contains child ability, then everything the child
+subsumes is also subsumed by the parent.
+
+## UCAN Caveat
+
+r[ucan-caveat.satisfaction-decidable]
+For each concrete caveat type, satisfaction against a context MUST be
+a total, decidable function.
+
+r[ucan-caveat.set-conjunction]
+A caveat set is satisfied if and only if every caveat in the set is
+individually satisfied.
+
+r[ucan-caveat.containment-monotone]
+If parent contains child, then any context satisfying the child also
+satisfies the parent.
+
+r[ucan-caveat.set-containment-monotone]
+If parent set contains child set, then any context satisfying the child
+set also satisfies the parent set.
+
+r[ucan-caveat.delegation-only-adds]
+A child caveat set in a delegation chain MUST be at least as restrictive
+as its parent.
+
+r[ucan-caveat.intersection-sound]
+The intersection of two caveat sets MUST imply both original sets.
+
+r[ucan-caveat.intersection-minimal]
+The intersection MUST not be more restrictive than the conjunction of
+both sets.
+
+## UCAN CID
+
+r[ucan-cid.cid-deterministic]
+Constructing a CID from the same content, codec, and hash function MUST
+always produce the same CID.
+
+r[ucan-cid.cid-version]
+Constructed CIDs MUST always have version 1.
+
+r[ucan-cid.cid-round-trip]
+Encoding a CID as a multibase string and decoding MUST recover the
+original CID.
+
+r[ucan-cid.cid-injectivity]
+If two CIDs have the same byte representation, their version and codec
+MUST be identical.
+
+r[ucan-cid.multihash-digest-length]
+The digest in a wrapped multihash MUST have the same length as the input
+digest.
+
+r[ucan-cid.multihash-round-trip]
+Encoding a multihash to bytes and parsing MUST recover the original code
+and digest.
+
+r[ucan-cid.varint-round-trip]
+Encoding a value as a varint and decoding MUST recover the original value.
+
+r[ucan-cid.varint-rejects-empty]
+Decoding a varint from an empty byte sequence MUST return None.
