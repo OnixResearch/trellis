@@ -929,6 +929,17 @@ proof fn matrix_rank_lt(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>)
     matrix_rank_lt_at(a, b, 0, witness);
 }
 
+proof fn matrix_rank_strict_drop_gap(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>)
+    requires
+        constprop_matrix_le_spec(a, b),
+        exists|r: int| 0 <= r < a.len() && a[r]@ != b[r]@,
+    ensures matrix_rank_sum_spec(a, 0) + 1 <= matrix_rank_sum_spec(b, 0)
+{
+    matrix_rank_lt(a, b);
+    assert(matrix_rank_sum_spec(a, 0) < matrix_rank_sum_spec(b, 0));
+    assert(matrix_rank_sum_spec(a, 0) + 1 <= matrix_rank_sum_spec(b, 0));
+}
+
 // r[verify constfold.convergence]
 proof fn meet_env_lower_bound_left(a: Seq<ConstLat>, b: Seq<ConstLat>)
     requires a.len() == b.len()
@@ -1162,6 +1173,31 @@ proof fn round_matrix_strict_rank_drop(
 {
     round_matrix_descends(program, entry_env, prev_prev_out, prev_out, next_out);
     matrix_rank_lt(next_out, prev_out);
+}
+
+proof fn round_matrix_rank_drop_gap(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    prev_prev_out: Seq<Vec<ConstLat>>,
+    prev_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(prev_prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_le_spec(prev_out, prev_prev_out),
+        forall|b: int| #![trigger prev_out[b]]
+            0 <= b < program.blocks@.len() ==> prev_out[b]@ == block_out_env_spec(program, entry_env, prev_prev_out, b),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
+        exists|r: int| 0 <= r < next_out.len() && next_out[r]@ != prev_out[r]@,
+    ensures matrix_rank_sum_spec(next_out, 0) + 1 <= matrix_rank_sum_spec(prev_out, 0)
+{
+    round_matrix_strict_rank_drop(program, entry_env, prev_prev_out, prev_out, next_out);
+    assert(matrix_rank_sum_spec(next_out, 0) < matrix_rank_sum_spec(prev_out, 0));
+    assert(matrix_rank_sum_spec(next_out, 0) + 1 <= matrix_rank_sum_spec(prev_out, 0));
 }
 
 // r[verify constfold.convergence]
