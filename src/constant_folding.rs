@@ -2778,6 +2778,153 @@ fn is_fixed_point(program: &RawProgram, entry_env: &[ConstLat], sets: &ConstProp
 mod tests {
     use super::*;
     use crate::ssa_construction::RawBlock;
+    use proptest::prelude::*;
+
+    const SUPPORTED_OPCODES: [u8; 14] = [
+        OPCODE_COPY,
+        OPCODE_ADD,
+        OPCODE_SUB,
+        OPCODE_MUL,
+        OPCODE_DIV,
+        OPCODE_AND,
+        OPCODE_OR,
+        OPCODE_XOR,
+        OPCODE_SHL,
+        OPCODE_SHR,
+        OPCODE_EQ,
+        OPCODE_NE,
+        OPCODE_LT,
+        OPCODE_LE,
+    ];
+
+    fn arb_constlat() -> impl Strategy<Value = ConstLat> {
+        prop_oneof![
+            Just(ConstLat::Top),
+            any::<u64>().prop_map(ConstLat::Const),
+            Just(ConstLat::Bottom),
+        ]
+    }
+
+    fn arb_supported_opcode() -> impl Strategy<Value = u8> {
+        proptest::sample::select(&SUPPORTED_OPCODES)
+    }
+
+    fn concrete_eval_expr_runtime(opcode: u8, a: u64, b: u64) -> u64 {
+        match opcode {
+            OPCODE_ADD => a.wrapping_add(b),
+            OPCODE_SUB => a.wrapping_sub(b),
+            OPCODE_MUL => a.wrapping_mul(b),
+            OPCODE_DIV => a.checked_div(b).unwrap_or(0),
+            OPCODE_AND => a & b,
+            OPCODE_OR => a | b,
+            OPCODE_XOR => a ^ b,
+            OPCODE_SHL if b < 64 => a << u32::try_from(b).expect("bounded shift"),
+            OPCODE_SHR if b < 64 => a >> u32::try_from(b).expect("bounded shift"),
+            OPCODE_EQ => u64::from(a == b),
+            OPCODE_NE => u64::from(a != b),
+            OPCODE_LT => u64::from(a < b),
+            OPCODE_LE => u64::from(a <= b),
+            _ => 0,
+        }
+    }
+
+    fn concrete_transfer_runtime(instr: &RawInstr, env: &[u64]) -> Vec<u64> {
+        let mut out = env.to_vec();
+        if let Some(dst) = instr.def {
+            let value = if instr.opcode == OPCODE_COPY {
+                if instr.uses.len() == 1 {
+                    let src = usize::try_from(instr.uses[0]).expect("small test index");
+                    if src < env.len() { env[src] } else { 0 }
+                } else {
+                    0
+                }
+            } else if SUPPORTED_OPCODES[1..].contains(&instr.opcode) {
+                if instr.uses.len() == 2 {
+                    let left = usize::try_from(instr.uses[0]).expect("small test index");
+                    let right = usize::try_from(instr.uses[1]).expect("small test index");
+                    if left < env.len() && right < env.len() {
+                        concrete_eval_expr_runtime(instr.opcode, env[left], env[right])
+                    } else {
+                        0
+                    }
+                } else {
+                    0
+                }
+            } else {
+                0
+            };
+            let idx = usize::try_from(dst).expect("small test index");
+            if idx < out.len() {
+                out[idx] = value;
+            }
+        }
+        out
+    }
+
+    fn concrete_apply_block_runtime(instrs: &[RawInstr], env: &[u64]) -> Vec<u64> {
+        let mut cur = env.to_vec();
+        for instr in instrs {
+            cur = concrete_transfer_runtime(instr, &cur);
+        }
+        cur
+    }
+
+    fn soundness_case_strategy() -> impl Strategy<Value = (RawProgram, Vec<ConstLat>, Vec<u64>, Vec<usize>)> {
+        (1usize..=5, 1usize..=4).prop_flat_map(|(blocks, vars)| {
+            let instr_strategy = (
+                proptest::option::of(0usize..vars),
+                proptest::collection::vec(0usize..vars, 0..=2),
+                arb_supported_opcode(),
+            );
+            let blocks_strategy = proptest::collection::vec(
+                proptest::collection::vec(instr_strategy, 0..=3),
+                blocks,
+            );
+            let path_tail_strategy = if blocks == 1 {
+                Just(Vec::new()).boxed()
+            } else {
+                proptest::collection::vec(1usize..blocks, 0..=4).boxed()
+            };
+            (
+                Just(blocks),
+                blocks_strategy,
+                path_tail_strategy,
+                proptest::collection::vec(any::<u64>(), vars),
+                proptest::collection::vec(any::<bool>(), vars),
+                proptest::collection::vec((0usize..blocks, 0usize..blocks), 0..=blocks),
+            )
+                .prop_map(|(_blocks, block_seeds, path_tail, concrete_entry, known_mask, extra_edges)| {
+                    let path: Vec<usize> = std::iter::once(0usize).chain(path_tail).collect();
+                    let mut edges: Vec<(usize, usize)> = path.windows(2).map(|w| (w[0], w[1])).collect();
+                    edges.extend(extra_edges);
+                    let program = raw_program(
+                        block_seeds
+                            .into_iter()
+                            .map(|instrs| {
+                                instrs
+                                    .into_iter()
+                                    .map(|(def, uses, opcode)| RawInstr {
+                                        def: def.map(|v| u32::try_from(v).expect("small test index")),
+                                        uses: uses
+                                            .into_iter()
+                                            .map(|v| u32::try_from(v).expect("small test index"))
+                                            .collect(),
+                                        opcode,
+                                    })
+                                    .collect()
+                            })
+                            .collect(),
+                        &edges,
+                    );
+                    let entry_env: Vec<ConstLat> = concrete_entry
+                        .iter()
+                        .zip(known_mask)
+                        .map(|(&value, known)| if known { ConstLat::Const(value) } else { ConstLat::Bottom })
+                        .collect();
+                    (program, entry_env, concrete_entry, path)
+                })
+        })
+    }
 
     fn raw_instr(def: Option<u32>, uses: &[u32], opcode: u8) -> RawInstr {
         RawInstr {
@@ -2901,5 +3048,69 @@ mod tests {
         assert_eq!(sets.out_env[2][2], ConstLat::Const(5));
         assert_eq!(sets.in_env[3][2], ConstLat::Bottom);
         assert!(is_fixed_point(&program, &entry_env, &sets));
+    }
+
+    proptest! {
+        // r[verify constfold.lattice]
+        #[test]
+        fn prop_meet_commutative_and_associative(a in arb_constlat(), b in arb_constlat(), c in arb_constlat()) {
+            prop_assert_eq!(meet(a, b), meet(b, a));
+            prop_assert_eq!(meet(meet(a, b), c), meet(a, meet(b, c)));
+        }
+
+        // r[verify constfold.fold]
+        #[test]
+        fn prop_fold_matches_runtime(opcode in arb_supported_opcode(), a: u64, b: u64) {
+            let expected = if opcode == OPCODE_DIV && b == 0 {
+                ConstLat::Bottom
+            } else if (opcode == OPCODE_SHL || opcode == OPCODE_SHR) && b >= 64 {
+                ConstLat::Bottom
+            } else if opcode == OPCODE_COPY {
+                ConstLat::Bottom
+            } else {
+                ConstLat::Const(concrete_eval_expr_runtime(opcode, a, b))
+            };
+            prop_assert_eq!(fold_expr(opcode, a, b), expected);
+        }
+
+        // r[verify constfold.soundness]
+        #[test]
+        fn prop_constprop_soundness_on_random_path(
+            (program, entry_env, concrete_entry, path) in soundness_case_strategy()
+        ) {
+            let sets = compute_constprop(&program, &entry_env);
+            prop_assert!(is_fixed_point(&program, &entry_env, &sets));
+
+            let mut concrete_in = concrete_entry;
+            for &block in &path {
+                let in_abs = &sets.in_env[block];
+                for (var, abs) in in_abs.iter().enumerate() {
+                    if let ConstLat::Const(value) = abs {
+                        prop_assert_eq!(
+                            *value,
+                            concrete_in[var],
+                            "block {} in_env var {} mismatch",
+                            block,
+                            var,
+                        );
+                    }
+                }
+
+                let concrete_out = concrete_apply_block_runtime(&program.blocks[block].instrs, &concrete_in);
+                let out_abs = &sets.out_env[block];
+                for (var, abs) in out_abs.iter().enumerate() {
+                    if let ConstLat::Const(value) = abs {
+                        prop_assert_eq!(
+                            *value,
+                            concrete_out[var],
+                            "block {} out_env var {} mismatch",
+                            block,
+                            var,
+                        );
+                    }
+                }
+                concrete_in = concrete_out;
+            }
+        }
     }
 }

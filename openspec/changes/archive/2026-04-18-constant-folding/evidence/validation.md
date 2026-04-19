@@ -7,23 +7,16 @@ Date: 2026-04-18
 Command:
 
 ```bash
-jj diff --name-only
+jj st
 ```
 
 Output:
 
 ```text
-.agent/napkin.md
-.agent/review-metrics.jsonl
-.pi/prompt-history.jsonl
-AGENTS.md
-docs/requirements.md
-openspec/changes/constant-folding/design.md
-openspec/changes/constant-folding/evidence/validation.md
-openspec/changes/constant-folding/proposal.md
-openspec/changes/constant-folding/tasks.md
-src/constant_folding.rs
-src/lib.rs
+Working copy changes:
+M .pi/prompt-history.jsonl
+M openspec/changes/constant-folding/tasks.md
+M src/constant_folding.rs
 ```
 
 Command:
@@ -35,10 +28,7 @@ git diff --cached --name-only
 Output:
 
 ```text
-openspec/changes/constant-folding/tasks.md
 ```
-
-This confirms the earlier stray Git-index entries for `openspec/specs/zircon-kernel/spec.md` and `src/zircon_wait.rs` are no longer part of the current constant-folding work.
 
 ## cargo test --quiet
 
@@ -52,13 +42,13 @@ cargo test --quiet
 Output excerpt:
 
 ```text
-running 3949 tests
+running 3952 tests
 ...
-test result: ok. 3949 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 12.16s
+test result: ok. 3952 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.56s
 
 running 13 tests
 .............
-test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 116.91s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.61s
 
 running 0 tests
 
@@ -77,7 +67,7 @@ export CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic
 Output excerpt:
 
 ```text
-verification results:: 7878 verified, 0 errors
+verification results:: 7973 verified, 0 errors
 warning: 18 warnings emitted
 ```
 
@@ -93,8 +83,7 @@ cargo clippy --all-targets -- -D warnings
 Output:
 
 ```text
-    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 10.79s
+Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.05s
 ```
 
 ## ./scripts/verify.sh
@@ -110,13 +99,11 @@ Output excerpt:
 
 ```text
 === Coverage: r[impl] on every pub fn ===
-
-Checked 1561 pub fn declarations, 2 exempted
+...
 ✓ all pub fns have r[impl] annotations
 
 === Coverage: ensures on every verified pub fn ===
-
-Checked 1544 pub fn in verus! blocks, 0 exempted
+...
 ✓ all verified pub fns have ensures clauses
 
 === Clippy ===
@@ -125,24 +112,24 @@ Checked 1544 pub fn in verus! blocks, 0 exempted
 
 === Tests ===
 ...
-running 3949 tests
+running 3952 tests
 ...
-test result: ok. 3949 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
+test result: ok. 3952 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out
 
 === Verus ===
 ...
-verification results:: 7878 verified, 0 errors
+verification results:: 7973 verified, 0 errors
 warning: 18 warnings emitted
 
 ✓ verus proofs pass
 
 === Tracey coverage ===
 ...
-verified-logic/rust: 0 uncovered out of 1580 rules
+verified-logic/rust: 0 uncovered out of 1581 rules
 ...
 ✓ no uncovered requirements
 
-verified-logic/rust: 0 untested (impl but no verify) out of 1580 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1581 rules
 ...
 ✓ no untested requirements
 
@@ -161,11 +148,11 @@ tracey query untested
 Output:
 
 ```text
-verified-logic/rust: 0 uncovered out of 1580 rules
-verified-logic/rust: 0 untested (impl but no verify) out of 1580 rules
+verified-logic/rust: 0 uncovered out of 1581 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1581 rules
 ```
 
 ## Notes
 
-- This evidence covers the current implemented slice through the first landed Phase 4 engine work.
-- The final Phase 6 rerun task remains open until the remaining Phase 4/5 proof and test work lands.
+- This rerun covers the completed constant-folding change, including Phase 4 soundness and Phase 5 proptests.
+- `./scripts/verify.sh` still printed a transient Tracey daemon auto-start warning before finishing green; the direct sequential Tracey queries above were rerun afterward and were also green.

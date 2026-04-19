@@ -35,12 +35,12 @@
 - [x] Unit tests for lattice meet on all combinations
 - [x] Unit tests for fold: known arithmetic, edge cases, division by zero
 - [x] Unit tests for propagation on straight-line and branching CFGs
-- [ ] Proptest: meet commutativity and associativity for random lattice values
-- [ ] Proptest: fold correctness against runtime evaluation for random ops
-- [ ] Proptest: soundness — constant classification agrees with concrete execution
+- [x] Proptest: meet commutativity and associativity for random lattice values
+- [x] Proptest: fold correctness against runtime evaluation for random ops
+- [x] Proptest: soundness — constant classification agrees with concrete execution
 
 ## Phase 6: Coverage and Validation
 
 - [x] Add `constfold.*` requirement anchors to `docs/requirements.md` and matching `r[impl]`/`r[verify]` tags to the current `src/constant_folding.rs` public surface
 - [x] Run `cargo clippy --all-targets -- -D warnings`, `cargo test --quiet`, `./scripts/verus.sh src/lib.rs`, and `./scripts/verify.sh` for the current implemented slice; capture the results in `openspec/changes/constant-folding/evidence/validation.md`
-- [ ] Re-run the Phase 6 validation commands after Phase 4/5 completion and refresh `openspec/changes/constant-folding/evidence/validation.md`
+- [x] Re-run the Phase 6 validation commands after Phase 4/5 completion and refresh `openspec/changes/constant-folding/evidence/validation.md`
