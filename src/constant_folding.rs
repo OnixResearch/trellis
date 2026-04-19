@@ -515,6 +515,11 @@ pub closed spec fn constprop_matrix_le_spec(a: Seq<Vec<ConstLat>>, b: Seq<Vec<Co
         && forall|r: int| #![trigger a[r], b[r]] 0 <= r < a.len() ==> env_le_spec(a[r]@, b[r]@)
 }
 
+pub closed spec fn matrix_same_spec(a: Seq<Vec<ConstLat>>, b: Seq<Vec<ConstLat>>) -> bool {
+    a.len() == b.len()
+        && forall|r: int| #![trigger a[r], b[r]] 0 <= r < a.len() ==> a[r]@ == b[r]@
+}
+
 pub closed spec fn top_env_spec(vars: nat) -> Seq<ConstLat> {
     Seq::new(vars, |_i: int| ConstLat::Top)
 }
@@ -1262,7 +1267,7 @@ proof fn convergence_step(
             0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
     ensures
         constprop_matrix_le_spec(next_out, prev_out),
-        (forall|r: int| 0 <= r < next_out.len() ==> next_out[r]@ == prev_out[r]@)
+        matrix_same_spec(next_out, prev_out)
             || matrix_rank_sum_spec(next_out, 0) + 1 <= matrix_rank_sum_spec(prev_out, 0)
 {
     round_matrix_descends(program, entry_env, prev_prev_out, prev_out, next_out);
@@ -1296,7 +1301,7 @@ proof fn first_round_convergence_step(
     ensures
         constprop_matrix_le_spec(first_out, top_out),
         constprop_matrix_le_spec(second_out, first_out),
-        (forall|r: int| 0 <= r < second_out.len() ==> second_out[r]@ == first_out[r]@)
+        matrix_same_spec(second_out, first_out)
             || matrix_rank_sum_spec(second_out, 0) + 1 <= matrix_rank_sum_spec(first_out, 0),
         matrix_rank_sum_spec(first_out, 0) <= 2 * (program.blocks@.len() as int) * (entry_env.len() as int)
 {
@@ -1344,6 +1349,39 @@ proof fn block_in_env_extensional(program: RawProgram, entry_env: Seq<ConstLat>,
 {
     if block != 0 {
         pred_meet_prefix_extensional(program.edges@, out1, out2, entry_env.len() as nat, block, program.edges@.len() as int);
+    }
+}
+
+proof fn matrix_progress_chain_budget_from(chain: Seq<Seq<Vec<ConstLat>>>, from: int, budget: int)
+    requires
+        0 <= budget,
+        0 <= from < chain.len(),
+        matrix_rank_sum_spec(chain[from], 0) <= budget,
+        forall|i: int| #![trigger chain[i], chain[i + 1]]
+            from <= i < chain.len() - 1 ==> constprop_matrix_le_spec(chain[i + 1], chain[i]),
+        forall|i: int| #![trigger chain[i], chain[i + 1]]
+            from <= i < chain.len() - 1 ==> matrix_same_spec(chain[i + 1], chain[i])
+                || matrix_rank_sum_spec(chain[i + 1], 0) + 1 <= matrix_rank_sum_spec(chain[i], 0),
+    ensures
+        chain.len() - from > budget + 1 ==> exists|i: int| #![trigger chain[i], chain[i + 1]] from <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i])
+    decreases budget,
+{
+    if chain.len() - from > budget + 1 {
+        assert(from + 1 < chain.len());
+        if matrix_same_spec(chain[from + 1], chain[from]) {
+            assert(exists|i: int| #![trigger chain[i], chain[i + 1]] from <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i]));
+        } else {
+            assert(matrix_rank_sum_spec(chain[from + 1], 0) + 1 <= matrix_rank_sum_spec(chain[from], 0));
+            matrix_rank_sum_nonneg(chain[from + 1], 0);
+            assert(0 <= matrix_rank_sum_spec(chain[from + 1], 0));
+            assert(matrix_rank_sum_spec(chain[from + 1], 0) <= budget - 1);
+            matrix_progress_chain_budget_from(chain, from + 1, budget - 1);
+            assert(chain.len() - (from + 1) > (budget - 1) + 1);
+            let witness = choose|i: int| #![trigger chain[i], chain[i + 1]]
+                from + 1 <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i]);
+            assert(from <= witness < chain.len() - 1);
+            assert(exists|i: int| #![trigger chain[i], chain[i + 1]] from <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i]));
+        }
     }
 }
 
