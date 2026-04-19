@@ -26,8 +26,8 @@
 ## Phase 4: Fixed-Point Analysis
 
 - [x] Implement forward iterative analysis with RPO processing
-- [ ] Prove convergence within `2 × V × B + 1` rounds
-- [ ] Prove fixed-point stability
+- [x] Prove convergence within `2 × V × B + 1` rounds
+- [x] Prove fixed-point stability
 - [ ] Prove soundness: Const(c) at point P implies c on all paths to P
 
 ## Phase 5: Tests

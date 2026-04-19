@@ -575,6 +575,101 @@ pub closed spec fn apply_block_spec(instrs: Seq<RawInstr>, env: Seq<ConstLat>) -
     apply_block_prefix_spec(instrs, env, instrs.len() as int)
 }
 
+spec fn concrete_eval_expr_spec(opcode: u8, a: u64, b: u64) -> u64 {
+    if opcode == OPCODE_ADD {
+        u64_wrapping_add_spec(a, b)
+    } else if opcode == OPCODE_SUB {
+        u64_wrapping_sub_spec(a, b)
+    } else if opcode == OPCODE_MUL {
+        u64_wrapping_mul_spec(a, b)
+    } else if opcode == OPCODE_DIV {
+        if b != 0 { a / b } else { 0u64 }
+    } else if opcode == OPCODE_AND {
+        a & b
+    } else if opcode == OPCODE_OR {
+        a | b
+    } else if opcode == OPCODE_XOR {
+        a ^ b
+    } else if opcode == OPCODE_SHL {
+        if b < 64 { a << (b as u32) } else { 0u64 }
+    } else if opcode == OPCODE_SHR {
+        if b < 64 { a >> (b as u32) } else { 0u64 }
+    } else if opcode == OPCODE_EQ {
+        if a == b { 1u64 } else { 0u64 }
+    } else if opcode == OPCODE_NE {
+        if a != b { 1u64 } else { 0u64 }
+    } else if opcode == OPCODE_LT {
+        if a < b { 1u64 } else { 0u64 }
+    } else if opcode == OPCODE_LE {
+        if a <= b { 1u64 } else { 0u64 }
+    } else {
+        0u64
+    }
+}
+
+spec fn concrete_transfer_value_spec(opcode: u8, uses: Seq<u32>, env: Seq<u64>) -> u64 {
+    if opcode == OPCODE_COPY {
+        if uses.len() == 1 && (uses[0] as int) < env.len() {
+            env[uses[0] as int]
+        } else {
+            0u64
+        }
+    } else if is_binary_opcode_spec(opcode) {
+        if uses.len() == 2 && (uses[0] as int) < env.len() && (uses[1] as int) < env.len() {
+            concrete_eval_expr_spec(opcode, env[uses[0] as int], env[uses[1] as int])
+        } else {
+            0u64
+        }
+    } else {
+        0u64
+    }
+}
+
+spec fn concrete_transfer_spec(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<u64>) -> Seq<u64> {
+    match def {
+        Some(dst) => {
+            if (dst as int) < env.len() {
+                env.update(dst as int, concrete_transfer_value_spec(opcode, uses, env))
+            } else {
+                env
+            }
+        }
+        None => env,
+    }
+}
+
+spec fn concrete_apply_block_prefix_spec(instrs: Seq<RawInstr>, env: Seq<u64>, upto: int) -> Seq<u64>
+    decreases if upto >= 0 { upto } else { 0 },
+{
+    if upto <= 0 {
+        env
+    } else {
+        concrete_transfer_spec(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            concrete_apply_block_prefix_spec(instrs, env, upto - 1),
+        )
+    }
+}
+
+spec fn concrete_apply_block_spec(instrs: Seq<RawInstr>, env: Seq<u64>) -> Seq<u64> {
+    concrete_apply_block_prefix_spec(instrs, env, instrs.len() as int)
+}
+
+spec fn constlat_sound_spec(abs: ConstLat, value: u64) -> bool {
+    match abs {
+        ConstLat::Const(c) => c == value,
+        ConstLat::Top => true,
+        ConstLat::Bottom => true,
+    }
+}
+
+spec fn env_sound_spec(abs_env: Seq<ConstLat>, concrete_env: Seq<u64>) -> bool {
+    abs_env.len() == concrete_env.len()
+        && forall|i: int| 0 <= i < abs_env.len() ==> #[trigger] constlat_sound_spec(abs_env[i], concrete_env[i])
+}
+
 pub closed spec fn pred_meet_prefix_spec(
     edges: Seq<(usize, usize)>, out_env: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int,
 ) -> Seq<ConstLat>
@@ -633,6 +728,13 @@ pub open spec fn fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>,
             &&& sets.in_env@[b]@ == block_in_env_spec(program, entry_env, sets.out_env@, b)
             &&& sets.out_env@[b]@ == apply_block_spec(program.blocks@[b].instrs@, sets.in_env@[b]@)
         }
+}
+
+pub open spec fn out_matrix_fixed_point_spec(program: RawProgram, entry_env: Seq<ConstLat>, out_env: Seq<Vec<ConstLat>>) -> bool {
+    &&& valid_constprop_program_spec(program)
+    &&& constprop_matrix_shape_spec(out_env, program.blocks@.len() as int, entry_env.len() as int)
+    &&& forall|b: int| #![trigger out_env[b]]
+        0 <= b < program.blocks@.len() ==> out_env[b]@ == block_out_env_spec(program, entry_env, out_env, b)
 }
 
 pub open spec fn round_from_out_env_spec(program: RawProgram, entry_env: Seq<ConstLat>, prev_out: Seq<Vec<ConstLat>>, next: ConstPropSets) -> bool {
@@ -1546,6 +1648,81 @@ proof fn constprop_converges_within_round_budget(
     }
 }
 
+proof fn stable_round_yields_out_matrix_fixed_point(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    prev_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        valid_constprop_program_spec(program),
+        constprop_matrix_shape_spec(prev_out, program.blocks@.len() as int, entry_env.len() as int),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        matrix_same_spec(next_out, prev_out),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b),
+    ensures out_matrix_fixed_point_spec(program, entry_env, prev_out)
+{
+    assert forall|b: int| #![trigger prev_out[b]]
+        0 <= b < program.blocks@.len() ==> prev_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b) by {
+        if 0 <= b < program.blocks@.len() {
+            assert(prev_out[b]@ == next_out[b]@);
+            assert(next_out[b]@ == block_out_env_spec(program, entry_env, prev_out, b));
+        }
+    };
+}
+
+proof fn out_matrix_fixed_point_round_is_stable(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    fixed_out: Seq<Vec<ConstLat>>,
+    next_out: Seq<Vec<ConstLat>>,
+)
+    requires
+        out_matrix_fixed_point_spec(program, entry_env, fixed_out),
+        constprop_matrix_shape_spec(next_out, program.blocks@.len() as int, entry_env.len() as int),
+        forall|b: int| #![trigger next_out[b]]
+            0 <= b < program.blocks@.len() ==> next_out[b]@ == block_out_env_spec(program, entry_env, fixed_out, b),
+    ensures matrix_same_spec(next_out, fixed_out)
+{
+    assert forall|b: int| #![trigger next_out[b], fixed_out[b]]
+        0 <= b < program.blocks@.len() ==> next_out[b]@ == fixed_out[b]@ by {
+        if 0 <= b < program.blocks@.len() {
+            assert(next_out[b]@ == block_out_env_spec(program, entry_env, fixed_out, b));
+            assert(fixed_out[b]@ == block_out_env_spec(program, entry_env, fixed_out, b));
+        }
+    };
+}
+
+proof fn constprop_chain_reaches_fixed_point_within_round_budget(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+    ensures
+        chain.len() > 2 * (program.blocks@.len() as int) * (entry_env.len() as int) + 1
+            ==> exists|i: int| #![trigger chain[i]] 0 <= i < chain.len() - 1 && out_matrix_fixed_point_spec(program, entry_env, chain[i])
+{
+    if chain.len() > 2 * (program.blocks@.len() as int) * (entry_env.len() as int) + 1 {
+        constprop_converges_within_round_budget(program, entry_env, top_out, chain);
+        let stable = choose|i: int| #![trigger chain[i], chain[i + 1]]
+            0 <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i]);
+        constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, stable);
+        constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, stable + 1);
+        assert forall|b: int| #![trigger chain[stable + 1][b]]
+            0 <= b < program.blocks@.len() ==> chain[stable + 1][b]@ == block_out_env_spec(program, entry_env, chain[stable], b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_step_out_eq(program, entry_env, top_out, chain, stable, b);
+            }
+        };
+        stable_round_yields_out_matrix_fixed_point(program, entry_env, chain[stable], chain[stable + 1]);
+        assert(exists|i: int| #![trigger chain[i]] 0 <= i < chain.len() - 1 && out_matrix_fixed_point_spec(program, entry_env, chain[i]));
+    }
+}
+
 // r[verify constfold.convergence]
 proof fn pred_meet_prefix_top_bounded(edges: Seq<(usize, usize)>, out_env: Seq<Vec<ConstLat>>, vars: nat, block: int, upto: int)
     requires
@@ -1648,6 +1825,148 @@ proof fn transfer_spec_preserves_len(def: Option<u32>, uses: Seq<u32>, opcode: u
         }
         None => {}
     }
+}
+
+proof fn concrete_transfer_spec_preserves_len(def: Option<u32>, uses: Seq<u32>, opcode: u8, env: Seq<u64>)
+    ensures concrete_transfer_spec(def, uses, opcode, env).len() == env.len()
+{
+    match def {
+        Some(dst) => {
+            if (dst as int) < env.len() {
+                assert(concrete_transfer_spec(def, uses, opcode, env).len() == env.len());
+            }
+        }
+        None => {}
+    }
+}
+
+proof fn fold_expr_const_sound(opcode: u8, a: u64, b: u64)
+    ensures constlat_sound_spec(fold_expr_spec(opcode, a, b), concrete_eval_expr_spec(opcode, a, b))
+{
+    if opcode == OPCODE_ADD {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(u64_wrapping_add_spec(a, b)));
+    } else if opcode == OPCODE_SUB {
+        wrapping_sub_matches_spec(a, b);
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(u64_wrapping_sub_spec(a, b)));
+    } else if opcode == OPCODE_MUL {
+        wrapping_mul_matches_spec(a, b);
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(u64_wrapping_mul_spec(a, b)));
+    } else if opcode == OPCODE_DIV {
+        if b != 0 {
+            assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a / b));
+        }
+    } else if opcode == OPCODE_AND {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a & b));
+    } else if opcode == OPCODE_OR {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a | b));
+    } else if opcode == OPCODE_XOR {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a ^ b));
+    } else if opcode == OPCODE_SHL {
+        if b < 64 {
+            assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a << (b as u32)));
+        }
+    } else if opcode == OPCODE_SHR {
+        if b < 64 {
+            assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(a >> (b as u32)));
+        }
+    } else if opcode == OPCODE_EQ {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(if a == b { 1u64 } else { 0u64 }));
+    } else if opcode == OPCODE_NE {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(if a != b { 1u64 } else { 0u64 }));
+    } else if opcode == OPCODE_LT {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(if a < b { 1u64 } else { 0u64 }));
+    } else if opcode == OPCODE_LE {
+        assert(fold_expr_spec(opcode, a, b) == ConstLat::Const(if a <= b { 1u64 } else { 0u64 }));
+    }
+}
+
+proof fn transfer_value_sound(opcode: u8, uses: Seq<u32>, abs_env: Seq<ConstLat>, concrete_env: Seq<u64>)
+    requires env_sound_spec(abs_env, concrete_env)
+    ensures constlat_sound_spec(transfer_value_spec(opcode, uses, abs_env), concrete_transfer_value_spec(opcode, uses, concrete_env))
+{
+    if opcode == OPCODE_COPY {
+        if uses.len() == 1 && (uses[0] as int) < abs_env.len() {
+            assert((uses[0] as int) < concrete_env.len());
+            match abs_env[uses[0] as int] {
+                ConstLat::Const(c) => {
+                    assert(constlat_sound_spec(abs_env[uses[0] as int], concrete_env[uses[0] as int]));
+                    assert(concrete_env[uses[0] as int] == c);
+                }
+                ConstLat::Top => {}
+                ConstLat::Bottom => {}
+            }
+        }
+    } else if is_binary_opcode_spec(opcode) {
+        if uses.len() == 2 && (uses[0] as int) < abs_env.len() && (uses[1] as int) < abs_env.len() {
+            assert((uses[0] as int) < concrete_env.len());
+            assert((uses[1] as int) < concrete_env.len());
+            match (abs_env[uses[0] as int], abs_env[uses[1] as int]) {
+                (ConstLat::Const(a), ConstLat::Const(b)) => {
+                    assert(constlat_sound_spec(abs_env[uses[0] as int], concrete_env[uses[0] as int]));
+                    assert(constlat_sound_spec(abs_env[uses[1] as int], concrete_env[uses[1] as int]));
+                    assert(concrete_env[uses[0] as int] == a);
+                    assert(concrete_env[uses[1] as int] == b);
+                    fold_expr_const_sound(opcode, a, b);
+                }
+                (ConstLat::Bottom, _) | (_, ConstLat::Bottom) => {}
+                (ConstLat::Top, _) | (_, ConstLat::Top) => {}
+            }
+        }
+    }
+}
+
+proof fn transfer_preserves_soundness(def: Option<u32>, uses: Seq<u32>, opcode: u8, abs_env: Seq<ConstLat>, concrete_env: Seq<u64>)
+    requires env_sound_spec(abs_env, concrete_env)
+    ensures env_sound_spec(transfer_spec(def, uses, opcode, abs_env), concrete_transfer_spec(def, uses, opcode, concrete_env))
+{
+    transfer_spec_preserves_len(def, uses, opcode, abs_env);
+    concrete_transfer_spec_preserves_len(def, uses, opcode, concrete_env);
+    match def {
+        None => {}
+        Some(dst) => {
+            transfer_value_sound(opcode, uses, abs_env, concrete_env);
+            assert forall|i: int| 0 <= i < abs_env.len() implies #[trigger] constlat_sound_spec(
+                transfer_spec(def, uses, opcode, abs_env)[i],
+                concrete_transfer_spec(def, uses, opcode, concrete_env)[i],
+            ) by {
+                if i == dst as int && i < abs_env.len() {
+                    assert((dst as int) < concrete_env.len());
+                } else {
+                    assert(transfer_spec(def, uses, opcode, abs_env)[i] == abs_env[i]);
+                    assert(concrete_transfer_spec(def, uses, opcode, concrete_env)[i] == concrete_env[i]);
+                }
+            };
+        }
+    }
+}
+
+proof fn concrete_apply_block_prefix_sound(instrs: Seq<RawInstr>, abs_env: Seq<ConstLat>, concrete_env: Seq<u64>, upto: int)
+    requires
+        env_sound_spec(abs_env, concrete_env),
+        0 <= upto <= instrs.len(),
+    ensures env_sound_spec(
+        apply_block_prefix_spec(instrs, abs_env, upto),
+        concrete_apply_block_prefix_spec(instrs, concrete_env, upto),
+    )
+    decreases upto,
+{
+    if upto > 0 {
+        concrete_apply_block_prefix_sound(instrs, abs_env, concrete_env, upto - 1);
+        transfer_preserves_soundness(
+            instrs[upto - 1].def,
+            instrs[upto - 1].uses@,
+            instrs[upto - 1].opcode,
+            apply_block_prefix_spec(instrs, abs_env, upto - 1),
+            concrete_apply_block_prefix_spec(instrs, concrete_env, upto - 1),
+        );
+    }
+}
+
+proof fn concrete_apply_block_sound(instrs: Seq<RawInstr>, abs_env: Seq<ConstLat>, concrete_env: Seq<u64>)
+    requires env_sound_spec(abs_env, concrete_env)
+    ensures env_sound_spec(apply_block_spec(instrs, abs_env), concrete_apply_block_spec(instrs, concrete_env))
+{
+    concrete_apply_block_prefix_sound(instrs, abs_env, concrete_env, instrs.len() as int);
 }
 
 proof fn transfer_value_monotone_copy(uses: Seq<u32>, env1: Seq<ConstLat>, env2: Seq<ConstLat>)
