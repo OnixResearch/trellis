@@ -667,6 +667,39 @@ proof fn env_rank_sum_bound(env: Seq<ConstLat>, from: int)
     }
 }
 
+proof fn matrix_rank_sum_bound(matrix: Seq<Vec<ConstLat>>, cols: int, from: int)
+    requires
+        0 <= cols,
+        0 <= from <= matrix.len(),
+        forall|i: int| #![trigger matrix[i]] 0 <= i < matrix.len() ==> matrix[i]@.len() == cols,
+    ensures matrix_rank_sum_spec(matrix, from) <= 2 * cols * (matrix.len() - from)
+    decreases matrix.len() - from,
+{
+    if from < matrix.len() {
+        env_rank_sum_bound(matrix[from]@, 0);
+        matrix_rank_sum_bound(matrix, cols, from + 1);
+        assert(env_rank_sum_spec(matrix[from]@, 0) <= 2 * cols);
+        assert(matrix_rank_sum_spec(matrix, from + 1) <= 2 * cols * (matrix.len() - (from + 1)));
+        assert(matrix_rank_sum_spec(matrix, from) == env_rank_sum_spec(matrix[from]@, 0) + matrix_rank_sum_spec(matrix, from + 1));
+        assert(env_rank_sum_spec(matrix[from]@, 0) + matrix_rank_sum_spec(matrix, from + 1)
+            <= 2 * cols + matrix_rank_sum_spec(matrix, from + 1));
+        assert(2 * cols + matrix_rank_sum_spec(matrix, from + 1)
+            <= 2 * cols + 2 * cols * (matrix.len() - (from + 1)));
+        assert(2 * cols + 2 * cols * (matrix.len() - (from + 1)) == 2 * cols * (matrix.len() - from)) by(nonlinear_arith)
+            requires from < matrix.len(), cols >= 0;
+    }
+}
+
+proof fn constprop_matrix_rank_bound(matrix: Seq<Vec<ConstLat>>, rows: int, cols: int)
+    requires
+        0 <= cols,
+        constprop_matrix_shape_spec(matrix, rows, cols),
+    ensures matrix_rank_sum_spec(matrix, 0) <= 2 * cols * rows
+{
+    assert(matrix.len() == rows);
+    matrix_rank_sum_bound(matrix, cols, 0);
+}
+
 proof fn lattice_le_refl(a: ConstLat)
     ensures lattice_le_spec(a, a)
 {
