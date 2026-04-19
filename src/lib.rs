@@ -298,8 +298,6 @@
 //!   isolation, and containment monotonicity
 //! - `ucan_caveat` — composable attenuation constraints with conjunction satisfaction,
 //!   containment monotonicity, intersection soundness/minimality, and delegation-only-adds
-//! - `ucan_cid` — CIDv1 construction with determinism, version correctness, byte injectivity,
-//!   and multihash round-trip
 //! - `ucan_did` — did:key encode/decode with verified round-trip, injectivity, codec preservation,
 //!   and varint framing
 //! - `ucan_signature` — Ed25519 sign/verify primitives with verified round-trip, key-binding,
