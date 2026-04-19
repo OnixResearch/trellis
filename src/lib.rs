@@ -619,6 +619,7 @@ pub mod spin_backoff;
 pub mod split_coalesce;
 pub mod ssa_construction;
 pub mod state_machine_safety;
+pub mod store_buffer;
 pub mod subsumption;
 pub mod surelock_deadlock;
 pub mod surelock_id;

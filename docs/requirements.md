@@ -787,6 +787,44 @@ r[ring-buffer.full-batches]
 full_batches MUST return the number of complete batches of the given
 size that can be popped from the current contents.
 
+## Store Buffer
+
+r[store-buffer.input-domain]
+The modeled store-buffer domain uses byte-addressed `u64` addresses,
+store/load widths in `1..=8`, and buffers whose entries are kept in
+strictly increasing sequence-number order. Successful enqueue preserves
+that modeled order; non-increasing sequence inputs are outside the
+modeled input domain.
+
+r[store-buffer.full-coverage]
+can_forward MUST return true only when a buffered store fully covers the
+load byte range. Partial overlap or reversed address ordering MUST return
+false.
+
+r[store-buffer.youngest-match]
+forward_lookup MUST return the covering buffered store with the greatest
+sequence number. If multiple entries cover the same load, the youngest
+matching store MUST win.
+
+r[store-buffer.cache-fallback]
+forward_lookup MUST return None when no buffered store fully covers the
+load. A miss in the store buffer MUST fall back to the cache.
+
+r[store-buffer.drain-ordering]
+drain_oldest MUST remove and return the oldest buffered store. Repeated
+drains MUST reproduce enqueue order, and the remaining entries' sequence
+numbers MUST stay in order.
+
+r[store-buffer.fence]
+is_fence_satisfied MUST return true if and only if the buffer is empty.
+Draining all buffered stores MUST make the fence satisfied, and a
+post-fence store MUST enter an empty buffer.
+
+r[store-buffer.capacity]
+enqueue MUST return None when the buffer is full and MUST NOT silently
+drop stores. Successful enqueue MUST increase length by one, and
+drain_oldest on a non-empty buffer MUST decrease length by one.
+
 ## Quorum
 
 r[quorum.majority]

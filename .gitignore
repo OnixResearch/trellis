@@ -19,3 +19,4 @@ doc/
 data/
 target-test/
 *.long-type-*.txt
+.pi/

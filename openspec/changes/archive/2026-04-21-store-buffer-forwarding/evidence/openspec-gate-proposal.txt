@@ -1,0 +1,8 @@
+OpenSpec proposal gate (store-buffer-forwarding)
+
+Latest rerun verdict: PASS
+
+Key points:
+- Proposal/spec align on `store-buffer.input-domain`, `full-coverage`, `youngest-match`, `cache-fallback`, `drain-ordering`, `fence`, and `capacity`.
+- Proposal names the pre-change HEAD repo audit, model boundaries, validation commands, and `r[impl]`/`r[verify]` traceability expectations.
+- No blocking proposal-stage findings remained.

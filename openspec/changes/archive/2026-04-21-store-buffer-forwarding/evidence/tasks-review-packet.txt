@@ -1,0 +1,16 @@
+# Tasks Review Packet
+
+## Phase 1
+- Repo audit captured in `evidence/repo-sync.txt`.
+- Core implementation landed in `src/store_buffer.rs` and exported from `src/lib.rs`.
+
+## Phase 2
+- Proof artifacts for input domain, forwarding, drain ordering, fence semantics, and capacity are in `src/store_buffer.rs`.
+- Targeted tests and proptests are in `src/store_buffer.rs` test module.
+- Targeted validation is captured in `evidence/cargo-test-store-buffer.txt` and `evidence/verus-store-buffer.txt`.
+
+## Phase 3
+- Requirement sync landed in `docs/requirements.md` and `openspec/specs/store-buffer/spec.md`.
+- Gate summaries are captured in `evidence/openspec-gate-proposal.txt`, `evidence/openspec-gate-design.txt`, and `evidence/openspec-gate-tasks.txt`.
+- Repo validation is captured in the repo-validation evidence files listed in `evidence/review-index.md`.
+- Archive packet contents are indexed in `evidence/review-index.md`.

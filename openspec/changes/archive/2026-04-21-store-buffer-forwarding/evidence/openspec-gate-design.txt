@@ -1,0 +1,8 @@
+OpenSpec design gate (store-buffer-forwarding)
+
+Latest rerun verdict: PASS
+
+Key points:
+- Design decisions map directly to the delta spec requirements and the planned proof/test artifacts.
+- Design explicitly covers docs/Tracey sync, validation transcript capture, and `r[impl]`/`r[verify]` traceability.
+- No blocking design-stage findings remained.

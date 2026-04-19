@@ -1,0 +1,23 @@
+# Pre-change repo audit for store-buffer-forwarding
+
+Command:
+
+```bash
+git show HEAD:src/lib.rs | rg -n '^pub mod store_buffer;' || true
+git show HEAD:docs/requirements.md | rg -n 'store-buffer\.' || true
+git ls-tree -r --name-only HEAD openspec/specs | rg 'store-buffer/spec.md' || true
+git show HEAD:README.md | rg -n 'store buffer|store-buffer' || true
+```
+
+Output:
+
+```text
+HEAD lib:
+HEAD reqs:
+HEAD specs:
+HEAD readme:
+```
+
+Conclusion: pre-change `HEAD` had no exported `store_buffer` module, no
+`store-buffer.*` requirement IDs, no canonical `openspec/specs/store-buffer/spec.md`,
+and no `README.md` mention of a store-buffer surface.

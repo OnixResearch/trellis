@@ -1,0 +1,224 @@
+note: automatically chose triggers for this expression:
+  --> src/store_buffer.rs:77:9
+   |
+77 |     &&& forall|i: int| 0 <= i < buffer.len() ==> valid_entry_spec(buffer[i])
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/store_buffer.rs:77:67
+   |
+77 |     &&& forall|i: int| 0 <= i < buffer.len() ==> valid_entry_spec(buffer[i])
+   |                                                                   ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/store_buffer.rs:78:9
+   |
+78 |     &&& forall|i: int, j: int| 0 <= i < j < buffer.len() ==> buffer[i].seq < buffer[j].seq
+   |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/store_buffer.rs:78:62
+   |
+78 |     &&& forall|i: int, j: int| 0 <= i < j < buffer.len() ==> buffer[i].seq < buffer[j].seq
+   |                                                              ^^^^^^^^^       ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:321:5
+    |
+321 |     assert forall|i: int| 0 <= i < buffer.push(entry).len() implies valid_entry_spec(buffer.push(entry)[i]) by {
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:321:86
+    |
+321 |     assert forall|i: int| 0 <= i < buffer.push(entry).len() implies valid_entry_spec(buffer.push(entry)[i]) by {
+    |                                                                                      ^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:328:5
+    |
+328 |     assert forall|i: int, j: int| 0 <= i < j < buffer.push(entry).len() implies buffer.push(entry)[i].seq < buffer.push(entry)[j].s...
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:328:81
+    |
+328 | ...< j < buffer.push(entry).len() implies buffer.push(entry)[i].seq < buffer.push(entry)[j].seq by {
+    |                                           ^^^^^^^^^^^^^^^^^^^^^       ^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:304:5
+    |
+304 |     assert forall|i: int| 0 <= i < buffer.subrange(from, buffer.len() as int).len() implies valid_entry_spec(buffer.subrange(from, ...
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:304:110
+    |
+304 | ...) as int).len() implies valid_entry_spec(buffer.subrange(from, buffer.len() as int)[i]) by {
+    |                                             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:307:5
+    |
+307 |     assert forall|i: int, j: int| 0 <= i < j < buffer.subrange(from, buffer.len() as int).len() implies buffer.subrange(from, buffe...
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:307:105
+    |
+307 | ....len() implies buffer.subrange(from, buffer.len() as int)[i].seq < buffer.subrange(from, buffer.len() as int)[j].seq by {
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:373:21
+    |
+373 |                 &&& forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) ==> j <= idx
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:373:77
+    |
+373 |                 &&& forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) ==> j <= idx
+    |                                                                             ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:375:21
+    |
+375 |             None => forall|j: int| 0 <= j < upto as int ==> !can_forward_spec(buffer[j], load_addr, load_size),
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:375:79
+    |
+375 |             None => forall|j: int| 0 <= j < upto as int ==> !can_forward_spec(buffer[j], load_addr, load_size),
+    |                                                                               ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:385:13
+    |
+385 |             assert forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) implies j <= idx by {
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:385:76
+    |
+385 |             assert forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) implies j <= idx by {
+    |                                                                            ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:391:21
+    |
+391 | ...   assert forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) implies j <= prev by {
+    |       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:391:84
+    |
+391 | ...   assert forall|j: int| 0 <= j < upto as int && can_forward_spec(buffer[j], load_addr, load_size) implies j <= prev by {
+    |                                                                      ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:399:21
+    |
+399 |                     assert forall|j: int| 0 <= j < upto as int implies !can_forward_spec(buffer[j], load_addr, load_size) by {
+    |                     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:399:90
+    |
+399 |                     assert forall|j: int| 0 <= j < upto as int implies !can_forward_spec(buffer[j], load_addr, load_size) by {
+    |                                                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:420:21
+    |
+420 | ...&&& forall|j: int| 0 <= j < buffer.len() && can_forward_spec(buffer[j], load_addr, load_size) ==> buffer[j].seq <= entry.seq
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:420:78
+    |
+420 | ...   &&& forall|j: int| 0 <= j < buffer.len() && can_forward_spec(buffer[j], load_addr, load_size) ==> buffer[j].seq <= entry.seq
+    |                                                                    ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:422:21
+    |
+422 |             None => forall|j: int| 0 <= j < buffer.len() ==> !can_forward_spec(buffer[j], load_addr, load_size),
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:422:80
+    |
+422 |             None => forall|j: int| 0 <= j < buffer.len() ==> !can_forward_spec(buffer[j], load_addr, load_size),
+    |                                                                                ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:431:13
+    |
+431 | ...   assert forall|j: int| 0 <= j < buffer.len() && can_forward_spec(buffer[j], load_addr, load_size) implies buffer[j].seq <= buf...
+    |       ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:431:77
+    |
+431 | ...   assert forall|j: int| 0 <= j < buffer.len() && can_forward_spec(buffer[j], load_addr, load_size) implies buffer[j].seq <= buf...
+    |                                                                       ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:440:13
+    |
+440 |             assert forall|j: int| 0 <= j < buffer.len() implies !can_forward_spec(buffer[j], load_addr, load_size) by {
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:440:83
+    |
+440 |             assert forall|j: int| 0 <= j < buffer.len() implies !can_forward_spec(buffer[j], load_addr, load_size) by {
+    |                                                                                   ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:467:9
+    |
+467 | /         forall|i: int| 0 <= i < buffer.subrange(1, buffer.len() as int).len()
+468 | |             ==> buffer.subrange(1, buffer.len() as int)[i].seq == buffer[i + 1].seq,
+    | |___________________________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:468:17
+    |
+468 |             ==> buffer.subrange(1, buffer.len() as int)[i].seq == buffer[i + 1].seq,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/store_buffer.rs:470:5
+    |
+470 |     assert forall|i: int| 0 <= i < buffer.subrange(1, buffer.len() as int).len()
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/store_buffer.rs:471:17
+    |
+471 |         implies buffer.subrange(1, buffer.len() as int)[i].seq == buffer[i + 1].seq by {
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> src/store_buffer.rs:470:5
+    |
+470 |     assert forall|i: int| 0 <= i < buffer.subrange(1, buffer.len() as int).len()
+    |     ^^^^^^
+
+verification results:: 35 verified, 0 errors

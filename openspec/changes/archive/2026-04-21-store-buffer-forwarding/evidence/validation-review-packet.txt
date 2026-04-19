@@ -1,0 +1,22 @@
+# Validation Review Packet
+
+## Targeted module validation
+- `cargo test --quiet store_buffer` → `evidence/cargo-test-store-buffer.txt`
+- `./scripts/verus.sh src/store_buffer.rs` → `evidence/verus-store-buffer.txt`
+
+## Repo validation
+- `cargo test --quiet` → `evidence/cargo-test.txt`
+- `cargo clippy --all-targets -- -D warnings` → `evidence/clippy.txt`
+- `./scripts/verus.sh src/lib.rs` → `evidence/verus.txt`
+- `./scripts/check-ensures.sh` → `evidence/check-ensures.txt`
+- `./scripts/verify.sh` → `evidence/verify.txt`
+- `tracey query uncovered` → `evidence/tracey-uncovered.txt`
+- `tracey query untested` → `evidence/tracey-untested.txt`
+
+## Result summary
+- Full cargo tests: pass
+- Clippy: pass with `-D warnings`
+- Full-lib Verus: pass
+- check-ensures: pass
+- verify.sh: `=== ALL CHECKS PASSED ===`
+- Tracey: `0 uncovered`, `0 untested`

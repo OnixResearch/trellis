@@ -1,0 +1,8 @@
+OpenSpec tasks gate (store-buffer-forwarding)
+
+Latest rerun verdict: PASS
+
+Key points:
+- Tasks cover repo audit, implementation, named proofs, targeted validation, docs/Tracey sync, repo-wide validation, gate captures, and archive packet assembly.
+- Each `store-buffer.*` requirement has explicit implementation/proof/test traceability in the task list.
+- No blocking task-stage findings remained.
