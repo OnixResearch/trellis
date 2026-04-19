@@ -7775,3 +7775,118 @@ Encoding a value as a varint and decoding MUST recover the original value.
 
 r[ucan-cid.varint-rejects-empty]
 Decoding a varint from an empty byte sequence MUST return None.
+
+## UCAN Proof Chain
+
+r[ucan-chain.issuer-audience-link]
+Each hop in a delegation chain MUST have the child's issuer equal to the
+parent's audience DID.
+
+r[ucan-chain.signature-check]
+Every token in the chain MUST have a valid signature.
+
+r[ucan-chain.attenuation-narrowing]
+At each hop, the child's attenuations MUST be contained within the
+parent's attenuations (resource prefix match, ability equality).
+
+r[ucan-chain.temporal-validity]
+Every token in the chain MUST be temporally valid at the time of
+evaluation.
+
+r[ucan-chain.chain-validity]
+A chain is valid only when it is non-empty, linked, all signatures
+are valid, attenuation narrows at every hop, and all entries are
+temporally valid.
+
+r[ucan-chain.root-authority]
+The root authority of a valid chain is the attenuation set of the
+first (root) entry.
+
+## UCAN Revocation
+
+r[ucan-revocation.cid-lookup]
+A CID is revoked if and only if it appears in the revocation set.
+
+r[ucan-revocation.chain-integration]
+A chain is revocation-free if no proof CID in the chain is in the
+revocation set.
+
+r[ucan-revocation.monotonicity]
+Adding entries to the revocation set MUST NOT un-revoke a previously
+revoked CID.
+
+## UCAN Delegation Depth
+
+r[ucan-delegation-depth.depth-definition]
+Delegation depth is the number of hops (entries minus one) in a
+proof chain. A single token has depth 0.
+
+r[ucan-delegation-depth.budget-check]
+A chain respects a depth budget if its depth does not exceed the
+maximum allowed depth.
+
+## UCAN Temporal Composition
+
+r[ucan-temporal.window-valid]
+A time window is non-empty if nbf <= exp.
+
+r[ucan-temporal.window-intersection]
+The intersection of two windows uses max(nbf) and min(exp).
+
+r[ucan-temporal.chain-composition]
+The effective validity window of a delegation chain is the
+intersection of all individual token windows.
+
+## UCAN Invocation
+
+r[ucan-invocation.invoker-matches-audience]
+An invocation is only authorized if the invoker DID matches the
+leaf token's audience DID.
+
+r[ucan-invocation.executor-is-invoker]
+A valid receipt confirms that the executor (ran_by) matches the
+invoker from the invocation.
+
+r[ucan-invocation.receipt-ordering]
+The receipt timestamp MUST be at or after the invocation timestamp.
+
+r[ucan-invocation.receipt-validity]
+A receipt is valid if the executor matches the invoker and
+timestamps are properly ordered.
+
+r[ucan-invocation.authorization-check]
+An authorized invocation's resource MUST be a refinement of the
+leaf capability's resource (prefix match) with matching ability.
+
+## UCAN Principal Linking
+
+r[ucan-principal-link.did-to-key]
+Extracting a public key from a valid did:key encoding MUST recover
+the original key bytes.
+
+r[ucan-principal-link.key-to-principal]
+Computing a principal fingerprint from a key is deterministic: the
+same key always yields the same principal ID.
+
+r[ucan-principal-link.did-to-principal]
+Deriving a principal from a DID goes through key extraction then
+BLAKE3 hashing.
+
+r[ucan-principal-link.same-key-same-principal]
+If two DID encodings represent the same key, they yield the same
+principal fingerprint.
+
+## UCAN Capability Merge
+
+r[ucan-capability-merge.containment]
+Capability containment: a child capability is contained in a parent
+if the child's resource has the parent's resource as prefix and
+abilities match.
+
+r[ucan-capability-merge.union]
+The union of two capability sets is their concatenation, and it
+contains every capability authorized by either set.
+
+r[ucan-capability-merge.authorization]
+A capability is authorized by a set if some entry in the set
+contains it.

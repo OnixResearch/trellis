@@ -654,10 +654,24 @@ pub mod wal_segment;
 pub mod watermark;
 pub mod weighted_round_robin;
 pub mod ucan_ability;
+/// Verified UCAN capability merge from multiple delegation paths.
+pub mod ucan_capability_merge;
 pub mod ucan_caveat;
+/// Verified UCAN proof chain walk and delegation chain validation.
+pub mod ucan_chain;
+/// Verified UCAN delegation depth budget.
+pub mod ucan_delegation_depth;
 pub mod ucan_cid;
 pub mod ucan_did;
+/// Verified UCAN invocation and receipt model.
+pub mod ucan_invocation;
+/// Verified bridge between UCAN did:key and web-of-trust principal fingerprints.
+pub mod ucan_principal_link;
+/// Verified UCAN revocation set checking and monotonicity.
+pub mod ucan_revocation;
 pub mod ucan_signature;
+/// Verified UCAN time-bounded delegation composition.
+pub mod ucan_temporal;
 pub mod ucan_token;
 pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;
