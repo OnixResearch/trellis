@@ -646,6 +646,23 @@ pub open spec fn round_from_out_env_spec(program: RawProgram, entry_env: Seq<Con
         }
 }
 
+spec fn constprop_round_chain_spec(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+) -> bool {
+    &&& valid_constprop_program_spec(program)
+    &&& matrix_is_top_spec(top_out, program.blocks@.len() as int, entry_env.len() as int)
+    &&& 1 <= chain.len()
+    &&& forall|i: int| #![trigger chain[i]]
+        0 <= i < chain.len() ==> constprop_matrix_shape_spec(chain[i], program.blocks@.len() as int, entry_env.len() as int)
+    &&& forall|b: int| #![trigger chain[0][b]]
+        0 <= b < program.blocks@.len() ==> chain[0][b]@ == block_out_env_spec(program, entry_env, top_out, b)
+    &&& forall|i: int| #![trigger chain[i + 1]] 0 <= i < chain.len() - 1 ==> forall|b: int| #![trigger chain[i + 1][b]]
+        0 <= b < program.blocks@.len() ==> chain[i + 1][b]@ == block_out_env_spec(program, entry_env, chain[i], b)
+}
+
 pub closed spec fn valid_constprop_program_spec(program: RawProgram) -> bool {
     forall|i: int| #![trigger program.edges[i]] 0 <= i < program.edges.len() ==> {
         let (src, dst) = program.edges[i];
@@ -1382,6 +1399,150 @@ proof fn matrix_progress_chain_budget_from(chain: Seq<Seq<Vec<ConstLat>>>, from:
             assert(from <= witness < chain.len() - 1);
             assert(exists|i: int| #![trigger chain[i], chain[i + 1]] from <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i]));
         }
+    }
+}
+
+proof fn constprop_chain_matrix_has_shape(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+    i: int,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+        0 <= i < chain.len(),
+    ensures constprop_matrix_shape_spec(chain[i], program.blocks@.len() as int, entry_env.len() as int)
+{
+}
+
+proof fn constprop_chain_head_out_eq(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+    b: int,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+        0 <= b < program.blocks@.len(),
+    ensures chain[0][b]@ == block_out_env_spec(program, entry_env, top_out, b)
+{
+}
+
+proof fn constprop_chain_step_out_eq(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+    i: int,
+    b: int,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+        0 <= i < chain.len() - 1,
+        0 <= b < program.blocks@.len(),
+    ensures chain[i + 1][b]@ == block_out_env_spec(program, entry_env, chain[i], b)
+{
+}
+
+proof fn constprop_round_chain_step(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+    i: int,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+        0 <= i < chain.len() - 1,
+    ensures
+        constprop_matrix_le_spec(chain[i + 1], chain[i]),
+        matrix_same_spec(chain[i + 1], chain[i])
+            || matrix_rank_sum_spec(chain[i + 1], 0) + 1 <= matrix_rank_sum_spec(chain[i], 0),
+    decreases i,
+{
+    constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, i);
+    constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, i + 1);
+    if i == 0 {
+        assert(1 < chain.len());
+        assert forall|b: int| #![trigger chain[0][b]]
+            0 <= b < program.blocks@.len() ==> chain[0][b]@ == block_out_env_spec(program, entry_env, top_out, b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_head_out_eq(program, entry_env, top_out, chain, b);
+            }
+        };
+        assert forall|b: int| #![trigger chain[1][b]]
+            0 <= b < program.blocks@.len() ==> chain[1][b]@ == block_out_env_spec(program, entry_env, chain[0], b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_step_out_eq(program, entry_env, top_out, chain, 0, b);
+            }
+        };
+        first_round_convergence_step(program, entry_env, top_out, chain[0], chain[1]);
+    } else {
+        constprop_round_chain_step(program, entry_env, top_out, chain, i - 1);
+        assert(constprop_matrix_le_spec(chain[i], chain[i - 1]));
+        assert forall|b: int| #![trigger chain[i][b]]
+            0 <= b < program.blocks@.len() ==> chain[i][b]@ == block_out_env_spec(program, entry_env, chain[i - 1], b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_step_out_eq(program, entry_env, top_out, chain, i - 1, b);
+            }
+        };
+        assert forall|b: int| #![trigger chain[i + 1][b]]
+            0 <= b < program.blocks@.len() ==> chain[i + 1][b]@ == block_out_env_spec(program, entry_env, chain[i], b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_step_out_eq(program, entry_env, top_out, chain, i, b);
+            }
+        };
+        convergence_step(program, entry_env, chain[i - 1], chain[i], chain[i + 1]);
+    }
+}
+
+proof fn constprop_converges_within_round_budget(
+    program: RawProgram,
+    entry_env: Seq<ConstLat>,
+    top_out: Seq<Vec<ConstLat>>,
+    chain: Seq<Seq<Vec<ConstLat>>>,
+)
+    requires
+        constprop_round_chain_spec(program, entry_env, top_out, chain),
+    ensures
+        chain.len() > 2 * (program.blocks@.len() as int) * (entry_env.len() as int) + 1
+            ==> exists|i: int| #![trigger chain[i], chain[i + 1]] 0 <= i < chain.len() - 1 && matrix_same_spec(chain[i + 1], chain[i])
+{
+    if chain.len() > 2 * (program.blocks@.len() as int) * (entry_env.len() as int) + 1 {
+        assert(2 * (entry_env.len() as int) * (program.blocks@.len() as int)
+            == 2 * (program.blocks@.len() as int) * (entry_env.len() as int)) by(nonlinear_arith);
+        assert(1 < chain.len());
+        constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, 0);
+        constprop_chain_matrix_has_shape(program, entry_env, top_out, chain, 1);
+        assert forall|b: int| #![trigger chain[0][b]]
+            0 <= b < program.blocks@.len() ==> chain[0][b]@ == block_out_env_spec(program, entry_env, top_out, b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_head_out_eq(program, entry_env, top_out, chain, b);
+            }
+        };
+        assert forall|b: int| #![trigger chain[1][b]]
+            0 <= b < program.blocks@.len() ==> chain[1][b]@ == block_out_env_spec(program, entry_env, chain[0], b) by {
+            if 0 <= b < program.blocks@.len() {
+                constprop_chain_step_out_eq(program, entry_env, top_out, chain, 0, b);
+            }
+        };
+        first_round_convergence_step(program, entry_env, top_out, chain[0], chain[1]);
+        assert forall|i: int| #![trigger chain[i], chain[i + 1]]
+            0 <= i < chain.len() - 1 ==> constprop_matrix_le_spec(chain[i + 1], chain[i]) by {
+            if 0 <= i < chain.len() - 1 {
+                constprop_round_chain_step(program, entry_env, top_out, chain, i);
+            }
+        };
+        assert forall|i: int| #![trigger chain[i], chain[i + 1]]
+            0 <= i < chain.len() - 1 ==> matrix_same_spec(chain[i + 1], chain[i])
+                || matrix_rank_sum_spec(chain[i + 1], 0) + 1 <= matrix_rank_sum_spec(chain[i], 0) by {
+            if 0 <= i < chain.len() - 1 {
+                constprop_round_chain_step(program, entry_env, top_out, chain, i);
+            }
+        };
+        matrix_progress_chain_budget_from(chain, 0, 2 * (program.blocks@.len() as int) * (entry_env.len() as int));
     }
 }
 
