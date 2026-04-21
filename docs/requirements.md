@@ -1108,6 +1108,46 @@ l2_miss_implies_l1_miss MUST encode the inclusive snoop-scope rule:
 when a line is absent from L2 in an Inclusive hierarchy, it is also
 absent from L1.
 
+## TLB Shootdown
+
+r[tlb-shootdown.freshness]
+check_tlb_freshness MUST return true if and only if every core in a
+request-compatible per-core TLB slice is fresh for the request range:
+no remaining entry may have vpn in [vpn_start, vpn_end).
+
+r[tlb-shootdown.termination]
+acknowledge_shootdown MUST remove a core from pending_acks only when
+that core is still pending and its TLB is already fresh for the request
+range. It MUST preserve new_ppn unchanged. request.completed MUST equal
+pending_acks.is_empty(), and all_acknowledged MUST return that same
+predicate. Exact remote-core set claims are stated for well-formed
+requests: pending_acks is duplicate-free, excludes the initiator, and
+every pending core index is within the supplied TLB slice.
+
+r[tlb-shootdown.initiator-safety]
+safe_to_proceed MUST return true if and only if the request is
+completed and every core in a request-compatible per-core TLB slice is
+fresh for the request range.
+
+r[tlb-shootdown.self-invalidation]
+initiate_shootdown requires initiator < core_count and vpn_start <
+vpn_end. It MUST invalidate the initiator's local TLB for the request
+range while constructing the request, MUST store the supplied new_ppn,
+MUST populate pending_acks with each remote core in 0..core_count
+exactly once, MUST exclude the initiator from pending_acks, MUST keep
+every pending core < core_count, and MUST set completed ==
+pending_acks.is_empty(). initiate_single_shootdown MUST be the
+single-VPN specialization with range [vpn, vpn + 1) and requires vpn <
+u64::MAX so vpn + 1 is defined.
+
+r[tlb-shootdown.isolation]
+Shootdowns for disjoint VPN ranges MUST not invalidate entries outside
+their own range.
+
+r[tlb-shootdown.range]
+handle_shootdown_ipi MUST remove every entry whose vpn lies in
+[vpn_start, vpn_end) and MUST preserve every entry outside that range.
+
 ## Eviction
 
 r[eviction.should-evict]

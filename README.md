@@ -156,6 +156,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `buddy` | block sizing, buddy addressing, alignment, coalescing, order-for-size |
 | `page` | virtual address decomposition, frame numbers, page alignment |
 | `region` | address region contains, disjoint, adjacent, merge, split |
+| `tlb_shootdown` | cross-core TLB invalidation: self-invalidation, pending acks, completion freshness, exact range removal |
 | `slab` | slot index/offset/address, generation handles, slab capacity |
 | `watermark` | bump allocation with remaining/fits/alloc/reset |
 | `heap_index` | binary heap parent/left/right child index arithmetic |
@@ -494,3 +495,8 @@ In addition to `external_body`, the current audit also tracks:
 - `0` `@verified-logic:no-ensures` / placeholder-spec surfaces
 
 All trusted items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.
+
+## References
+
+- [orium/rpds](https://github.com/orium/rpds) — reference surface for fully persistent list, stack, queue, vector, HAMT map/set, and red-black tree map/set collections
+- [Persistent data structure — Wikipedia](https://en.wikipedia.org/wiki/Persistent_data_structure) — background on full persistence, path copying, fat nodes, and structural sharing
