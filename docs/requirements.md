@@ -1077,6 +1077,37 @@ A single partition containing all ways MUST behave identically to an
 unpartitioned cache: lookup examines all ways and eviction considers
 all ways.
 
+## Cache Hierarchy
+
+r[hierarchy.inclusive-invariant]
+check_inclusive_invariant MUST return true if and only if every line
+present in L1 is also present in L2.
+
+r[hierarchy.back-invalidation]
+Under the Inclusive policy, l2_evict MUST remove the evicted line from
+L2 and MUST also remove it from L1.
+
+r[hierarchy.exclusive-invariant]
+check_exclusive_invariant MUST return true if and only if no line is
+present in both L1 and L2.
+
+r[hierarchy.exclusive-swap]
+Under the Exclusive policy, l2_to_l1_promote MUST move a present line
+from L2 to L1 without leaving a duplicate copy in L2.
+
+r[hierarchy.non-inclusive]
+Under the NonInclusive policy, check_valid MUST accept any L1/L2
+relationship, including presence in both levels.
+
+r[hierarchy.capacity]
+effective_capacity MUST return |L2| for Inclusive hierarchies and
+|L1| + |L2| for Exclusive hierarchies.
+
+r[hierarchy.snoop-scope]
+l2_miss_implies_l1_miss MUST encode the inclusive snoop-scope rule:
+when a line is absent from L2 in an Inclusive hierarchy, it is also
+absent from L1.
+
 ## Eviction
 
 r[eviction.should-evict]

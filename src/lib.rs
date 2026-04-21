@@ -282,6 +282,8 @@
 //! - `write_buffer` — memtable flush thresholds, buffer swap, write amplification, flush counting
 //! - `write_policy` — write-back/write-through dirty invariants, eviction, flush, read equivalence
 //! - `block_cache` — cache slot states: insert, evict, mark-dirty, write-back, clock-hand sweep
+//! - `cache_hierarchy` — two-level inclusive, exclusive, and non-inclusive hierarchy invariants,
+//!   back-invalidation, exclusive promotion, capacity formulas, and snoop scope
 //! - `cache_partition` — way-based cache partitioning: isolation, eviction containment, capacity,
 //!   resize, single-partition equivalence
 //! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
@@ -373,6 +375,7 @@ pub mod block_cache;
 pub mod bounded_mpmc;
 pub mod bounded_peers;
 pub mod bounds;
+pub mod cache_hierarchy;
 pub mod cache_partition;
 pub mod calendar;
 pub mod cas;

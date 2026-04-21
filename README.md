@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**7082 Verus proofs · 3743 tests · 1518 requirements · 327 modules · 19 trusted boundaries**
+**8171 Verus proofs · 4061 tests · 1663 requirements · 365 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -227,6 +227,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `write_buffer` | write buffer (memtable): size tracking, flush threshold, swap |
 | `write_policy` | write-back/write-through dirty invariants, eviction, flush, read equivalence |
 | `block_cache` | block cache: occupancy, eviction, dirty tracking, write-back |
+| `cache_hierarchy` | two-level inclusive/exclusive/non-inclusive cache hierarchy transitions, back-invalidation, capacity, and snoop scope |
 | `set_associative_lookup` | cache address decomposition, per-set tag lookup, duplicate-tag checks |
 
 ### Distributed systems
