@@ -1,18 +1,29 @@
 # Tasks Review Packet
 
-## Phase 0: Audit and change-spec hygiene
-- Audit and overlap disposition are captured in `evidence/R1-audit.md`.
-- Gate reruns are captured in `evidence/R2-gates.md` and `evidence/R4-post-sync-gates.md`.
+## Completed checklist slices
+- Phase 1 model/helper slice completed in `src/instruction_selection.rs` and `src/lib.rs`:
+  - tree model, `NodePath`, well-formedness boundary
+  - valid tile-pattern boundary including root-`Specific`
+  - const-literal match boundary for const tiles
+  - helper surfaces `tiling_cost`, `check_coverage`, `check_soundness`
+- Phase 2 matching/failure slice completed:
+  - `tile_matches`
+  - canonical uncovered-root ordering
+  - invalid root-`Any` rejection
+  - root failure identity and canonical first-unmatched-root reporting
+  - negative const-literal mismatch test
+- Phase 3 DP/determinism slice completed:
+  - recursive candidate formation
+  - total-cost comparison and tie-break ordering
+  - canonical preorder `Tiling` serialization
+  - repeated-run deterministic output coverage
+- Phase 4 coverage/soundness slice completed:
+  - `check_coverage` now recomputes coverage from the tree plus selections instead of trusting stored `covered_paths`
+  - selected-tile semantic checking / successful-tiling soundness helper surface
+- Phase 5 evidence slice completed:
+  - raw validation transcripts saved under `evidence/raw/`
+  - validation summary updated in `evidence/validation-review-packet.txt`
 
-## Phase 1: Interpretable matching core
-- `src/instruction_selection.rs` landed the `Leaf` / `Add` / `Mul` tile-matching and failure-reporting surface.
-- Phase 1 validation is summarized in `evidence/V1-matching-failure.md`.
-
-## Phase 2: Dynamic-programming selection
-- Recursive candidate formation, optimal-cost selection, and deterministic tie-break behavior landed in `src/instruction_selection.rs`.
-- Phase 2 validation is summarized in `evidence/V2-dp-determinism.md`.
-
-## Phase 3: Soundness, sync, and archive
-- Soundness/completeness validation is summarized in `evidence/V3-soundness-completeness.md`.
-- Sync is captured in `evidence/R3-sync.md` and combined targeted + repo validation is summarized in `evidence/V4-repo-validation.md`.
-- Archive state is summarized in `evidence/R5-archive.md` and indexed in `evidence/review-index.md`.
+## Archive traceability checkpoint
+- Archive/finish remains blocked unless checklist items are visibly checked with saved evidence.
+- This packet exists to preserve task-level traceability that was previously lost during archive attempts.

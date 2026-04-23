@@ -1,20 +1,15 @@
 # Validation Review Packet
 
-## Phase validation summaries
-- `V1-matching-failure.md` — leaf/add/mul matching, mismatch, missing-tile, and overflow validation
-- `V2-dp-determinism.md` — brute-force oracle, recurrence, and deterministic tie-break validation
-- `V3-soundness-completeness.md` — selected-value and recursive-cover validation
+## Targeted validation
+- `cargo test --quiet instruction_selection` — see `evidence/raw/cargo-test-instruction-selection.txt`
+- `cargo test --quiet --lib` — see `evidence/raw/cargo-test-lib.txt`
+- `./scripts/verus.sh src/lib.rs` — see `evidence/raw/verus-lib.txt`
 
-## Targeted and repo validation
-- `V4-repo-validation.md` records:
-  - targeted Verus: `16 verified, 0 errors`
-  - targeted cargo tests: `7 passed; 0 failed`
-  - repo cargo test: `4145 passed; 0 failed` for the main crate, plus `13` `repo-index` tests
-  - cargo clippy: success under `-D warnings`
-  - full-lib Verus: `8499 verified, 0 errors`
-  - check-ensures: success
-  - Tracey: `0 uncovered`, `0 untested` out of `1715` rules
-  - verify.sh: `=== ALL CHECKS PASSED ===`
+## OpenSpec gates
+- `openspec_gate proposal instruction-selection` — PASS; see `evidence/raw/openspec-gate-proposal.txt`
+- `openspec_gate design instruction-selection` — PASS/WARN review packet recorded in this session; see `evidence/raw/openspec-gate-design.txt`
+- `openspec_gate tasks instruction-selection` — PASS/WARN review packet recorded in this session; see `evidence/raw/openspec-gate-tasks.txt`
 
-## Archive status
-- `R5-archive.md` records the archive move and the canonical final review surface.
+## Notes
+- This packet now points at saved raw validation artifacts created in this session instead of only handwritten summaries.
+- The implementation was corrected so const-tile matching now includes root literal equality and `check_coverage` recomputes coverage from the tree plus selections.

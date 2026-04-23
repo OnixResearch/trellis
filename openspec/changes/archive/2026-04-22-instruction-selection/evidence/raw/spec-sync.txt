@@ -1,0 +1,4 @@
+Canonical spec sync evidence for the archived final state:
+- canonical destination exists: `openspec/specs/instruction-selection/spec.md`
+- archived snapshot copy exists: `openspec/changes/archive/2026-04-22-instruction-selection/evidence/spec-synced-copy.md`
+- active change source path was removed as part of archive finalization; the archived evidence packet preserves the synced content snapshot instead of pointing at a live active-change file.

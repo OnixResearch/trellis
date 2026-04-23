@@ -1,0 +1,40 @@
+OpenSpec tasks gate (instruction-selection)
+
+Strategy: same-family
+
+VERDICT: PASS
+
+## Findings
+- [medium] [class=omission] [scope=review] [route=human] [promoted=no] Implementation evidence is referenced but not inspectable in this gate packet
+  - Evidence: `tasks.md` cites concrete artifacts such as `src/instruction_selection.rs`, `src/lib.rs`, `openspec/specs/instruction-selection/spec.md`, and raw outputs under `evidence/raw/*.txt`, but the supplied evidence here includes only the task text and delta spec excerpt, not the contents of those files.
+
+## Stage Check
+- Matches:
+  - The tasks cover the proposal/design/spec contract end-to-end:
+    - matching: `tile_matches`, const-literal boundary, wrong-arity/op mismatch, uncovered-root ordering, failure identity
+    - DP/optimality/determinism: recurrence, minimum-cost selection, tie-break `(total_cost, tie_break_rank, tile index)`, canonical serialization, repeated-run determinism
+    - completeness/soundness boundaries: `complete_tile_set(tree, tiles)`, exact coverage only under that predicate, soundness for any successful tiling
+    - API/model constraints: well-formed trees, valid root-`Specific` tile patterns, ordered tile sequence, explicit failure on incomplete tile sets
+    - verification work: unit tests, proptests, Verus output, `openspec_gate` outputs, spec sync, and archive-traceability evidence
+  - Task ordering is sensible:
+    - model and invariants first
+    - matching/failure surface next
+    - DP and deterministic selection after that
+    - completeness/soundness proofs after the core algorithm
+    - tests/validation/spec sync/archive evidence last
+  - Tasks are small enough to verify individually because nearly every item names a concrete API, proof obligation, test, or evidence artifact.
+  - The change-specific archive/sync requirement from the proposal is reflected in tasks:
+    - spec sync task: `Sync the landed canonical spec to openspec/specs/instruction-selection/spec.md`
+    - archive traceability task: `Mark completed checklist items with task-level traceable evidence before archive`
+- Missing:
+  - No material traceability gap is visible in the task list against `proposal.md`, `design.md`, or `openspec/changes/instruction-selection/specs/instruction-selection/spec.md`.
+  - No missing requirement/scenario coverage is evident from the supplied artifacts.
+- Ready to proceed:
+  - For the tasks stage itself, yes.
+  - Because the checklist reports `58 done, 0 in progress, 0 todo`, this stage no longer blocks on task definition/completeness.
+  - Per the change contract, the next gated step is archive/finish readiness with preserved evidence, not more task authoring.
+
+## Next Actions
+- Preserve and carry forward the cited evidence artifacts for archive/finish review.
+- At archive/finish, verify the referenced implementation and raw outputs actually exist and match the completed checklist items.
+- If archive is not being opened yet, no additional task-stage edits are required.

@@ -1,0 +1,33 @@
+OpenSpec design gate (instruction-selection)
+
+Strategy: same-family
+
+VERDICT: PASS
+
+## Findings
+- None.
+
+## Stage Check
+- Proposal/design/spec alignment is present on the main normative boundaries:
+  - Pure tree-only semantics and well-formedness/no-overflow boundary are stated in `proposal.md`, expanded in `design.md` Decision 1 and Decision 6, and carried into `openspec/changes/instruction-selection/specs/instruction-selection/spec.md` Model.
+  - Canonical `NodePath` ordering is defined in `design.md` Decision 1 and used for uncovered-root ordering, failure reporting, and serialized tiling shape in Decision 3 and Decision 4; the same ordering appears in the spec Model and scenarios `r[isel.matching.canonical-uncovered-order]` and `r[isel.incomplete-tile-set-failure.global-first]`.
+  - Deterministic tie-break behavior is concrete in `design.md` Decision 2 and Decision 4 as `(total_cost, tie_break_rank, tile index)`, matching `proposal.md` “Determinism” and spec scenario `r[isel.determinism.tie-break]`.
+  - Incomplete-tile failure vs completeness-under-precondition is explicit in `design.md` Decision 4 and Decision 5, matching `proposal.md` “Incomplete tile-set rejection” and the spec requirements `r[isel.incomplete-tile-set-failure]` and `r[isel.completeness]`.
+- Key decisions, trade-offs, risks, and verification strategy are explicit:
+  - Data model, matching model, DP result shape, failure surface, completeness precondition, and reference semantics are all concrete in `design.md` Decisions 1–6.
+  - Verification coverage in `design.md` “Verification Plan” traces to the spec requirement families for matching, recurrence, optimality, determinism, completeness, soundness, and runtime validation.
+  - API traceability is explicit in `design.md` “API Traceability” and consistent with `proposal.md` Impact.
+- No unresolved human-oracle choice is evident from the supplied artifacts. The design is concrete enough to proceed to tasks.
+- No napkin evidence was supplied, so no repo-memory conflict or promotion decision can be assessed from evidence.
+
+## Next Actions
+- Draft tasks directly against the verified surfaces and requirement families already named in `design.md` and `spec.md`.
+- When tasks are written, keep explicit traceability to:
+  - `r[isel.matching]`
+  - `r[isel.dp-recurrence]`
+  - `r[isel.optimality]`
+  - `r[isel.determinism]`
+  - `r[isel.completeness]`
+  - `r[isel.soundness]`
+  - `r[isel.incomplete-tile-set-failure]`
+- Run the tasks-stage gate once task artifacts exist.

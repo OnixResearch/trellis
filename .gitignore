@@ -20,3 +20,5 @@ data/
 target-test/
 *.long-type-*.txt
 /.agent
+
+.pi/
