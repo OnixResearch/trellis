@@ -1203,6 +1203,34 @@ Under the memory-consistency relation `memory_up_to_date <==>
 !dirty_owner_exists`, reads MUST use memory only when memory is current;
 otherwise some cache MUST be the read source.
 
+## Store Buffer Forwarding
+
+r[store-buffer.youngest-match]
+When more than one buffered store can satisfy a load, forwarding MUST
+select the youngest matching store.
+
+r[store-buffer.full-coverage]
+A load MUST forward from a buffered store only when that store fully
+covers the load byte range.
+
+r[store-buffer.cache-fallback]
+When no buffered store matches a load, the load MUST use the cache path
+instead of forwarding.
+
+r[store-buffer.drain-ordering]
+Buffered stores MUST drain in FIFO order: the oldest store commits first,
+and draining one store MUST preserve the relative order of the remaining
+stores.
+
+r[store-buffer.fence]
+A store fence MUST leave the buffer empty before any post-fence store is
+enqueued.
+
+r[store-buffer.capacity]
+When the store buffer is full, enqueue MUST reject the new store rather
+than silently dropping it. When the buffer is not full, enqueue MUST grow
+the buffer by exactly one entry.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]

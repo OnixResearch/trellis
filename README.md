@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**7082 Verus proofs · 3743 tests · 1518 requirements · 327 modules · 19 trusted boundaries**
+**8179 Verus proofs · 4071 tests · 1686 requirements · 365 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -194,6 +194,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `cas_loop` | CAS retry loop modeling: ABA detection via pack/unpack, retry bounds |
 | `bounded_mpmc` | bounded MPMC ring buffer: head/tail, lap-based empty/full, occupancy |
 | `memory_order` | memory ordering lattice: Relaxed ⊏ Acquire/Release ⊏ AcqRel ⊏ SeqCst |
+| `store_buffer` | fixed-capacity store queue with youngest-match forwarding, FIFO drain, and fence-empty semantics |
 | `semaphore` | counting semaphore: acquire/release permits, capacity bounds |
 | `two_phase_lock` | two-phase locking: growing/shrinking phase discipline |
 | `lease_mutex` | lease-based distributed mutual exclusion with fencing tokens |
@@ -438,7 +439,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (6572 proofs)
+./scripts/verus.sh         # verus only (8179 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```

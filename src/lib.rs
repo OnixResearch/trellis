@@ -214,6 +214,8 @@
 //! - `request_forward` — client request forwarding: follower-to-leader proxy with pending tracking
 //! - `result` — verified Result combinators
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
+//! - `store_buffer` — fixed-capacity store queue with youngest-match forwarding, FIFO drain, and
+//!   fence-empty semantics
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
 //! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode refinement
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
@@ -577,6 +579,7 @@ pub mod request_forward;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
+pub mod store_buffer;
 pub mod rwlock;
 pub mod per_core_rwlock;
 pub mod scope;
