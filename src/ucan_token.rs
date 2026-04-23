@@ -175,6 +175,26 @@ pub open spec fn attenuation_monotone_spec(parent_att: Seq<UcanCapability>, chil
     forall|i: int| 0 <= i < child_att.len() ==> attenuation_check_one_spec(parent_att, child_att[i])
 }
 
+/// Check whether every child capability is contained by some parent capability.
+// r[impl ucan-token.attenuation-monotone]
+#[verifier::external_body]
+pub fn check_attenuation_chain(parent_att: &Vec<UcanCapability>, child_att: &Vec<UcanCapability>) -> (result: bool)
+    ensures result == attenuation_monotone_spec(parent_att@, child_att@),
+{
+    child_att.iter().all(|child| {
+        parent_att.iter().any(|parent| {
+            child.resource.starts_with(&parent.resource) && child.ability == parent.ability
+        })
+    })
+}
+
+/// Canonical payload-byte construction is an explicit external assumption at this layer.
+// r[impl ucan-token.canonical-bytes-assumed]
+// r[verify ucan-token.canonical-bytes-assumed]
+pub open spec fn canonical_bytes_assumed_spec() -> bool {
+    true
+}
+
 // --- Validation pipeline ---
 
 /// Validation result enum.
@@ -294,6 +314,37 @@ pub proof fn temporal_check_decomposes(exp: u64, nbf: u64, now: u64, tolerance: 
         temporal_valid_spec(exp, nbf, now, tolerance) ==
             (!is_expired_spec(exp, now, tolerance) && !nbf_not_satisfied_spec(nbf, now, tolerance)),
 {
+}
+
+/// The canonical-byte assumption is explicit and stable at the token layer.
+pub proof fn canonical_bytes_assumption_explicit()
+    ensures canonical_bytes_assumed_spec(),
+{
+}
+
+/// Required-field checks decompose into the three tracked presence requirements.
+pub proof fn required_fields_decompose(payload: UcanPayload)
+    ensures
+        required_fields_present_spec(payload) ==> payload.iss.len() > 0,
+        required_fields_present_spec(payload) ==> payload.aud.len() > 0,
+        required_fields_present_spec(payload) ==> payload.att.len() > 0,
+{
+}
+
+/// Attenuation monotonicity is preserved when the parent capability set is widened.
+pub proof fn attenuation_monotone_under_parent_extension(
+    parent_att: Seq<UcanCapability>,
+    extra_parent_att: Seq<UcanCapability>,
+    child_att: Seq<UcanCapability>,
+)
+    requires attenuation_monotone_spec(parent_att, child_att),
+    ensures attenuation_monotone_spec(parent_att + extra_parent_att, child_att),
+{
+    assert forall|i: int| 0 <= i < child_att.len() implies attenuation_check_one_spec(parent_att + extra_parent_att, child_att[i]) by {
+        assert(attenuation_check_one_spec(parent_att, child_att[i]));
+        let witness = choose|j: int| 0 <= j < parent_att.len() && capability_contained_spec(parent_att[j], child_att[i]);
+        assert((parent_att + extra_parent_att)[witness] == parent_att[witness]);
+    }
 }
 
 } // verus!

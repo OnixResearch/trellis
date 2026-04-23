@@ -497,9 +497,9 @@ fn sort_selections(selections: &mut [Selection]) {
 fn compare_paths(left: &NodePath, right: &NodePath) -> Ordering {
     let shared_len = left.len().min(right.len());
     for index in 0..shared_len {
-        match left[index].cmp(&right[index]) {
-            Ordering::Equal => continue,
-            non_equal => return non_equal,
+        let ordering = left[index].cmp(&right[index]);
+        if ordering != Ordering::Equal {
+            return ordering;
         }
     }
     left.len().cmp(&right.len())

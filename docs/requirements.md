@@ -7692,6 +7692,12 @@ A validated UCAN MUST have a non-empty audience DID.
 r[ucan-token.attenuations-present]
 A validated UCAN MUST have at least one capability in att.
 
+r[ucan-token.canonical-bytes-assumed]
+Canonical payload-byte construction is outside the scope of token-envelope
+validation. The token layer MUST consume a caller-supplied signature-valid
+result rather than prove canonical payload-byte derivation from the payload
+struct.
+
 ## UCAN Ability
 
 r[ucan-ability.subsumption-reflexive]
