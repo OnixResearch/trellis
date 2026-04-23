@@ -7764,8 +7764,8 @@ r[ucan-cid.cid-version]
 Constructed CIDs MUST always have version 1.
 
 r[ucan-cid.cid-round-trip]
-Encoding a CID as a multibase string and decoding MUST recover the
-original CID.
+Encoding a CID's canonical byte sequence as a multibase string and
+decoding MUST recover the original CID bytes.
 
 r[ucan-cid.cid-injectivity]
 If two CIDs have the same byte representation, their version and codec

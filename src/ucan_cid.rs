@@ -191,6 +191,34 @@ pub proof fn multihash_digest_length_matches(code: u64, digest: Seq<u8>)
 {
 }
 
+/// Multihash round-trips through its byte encoding.
+// r[verify ucan-cid.multihash-round-trip]
+pub proof fn multihash_round_trip(mh: MultihashSpec)
+    requires mh.digest.len() <= u64::MAX,
+    ensures multihash_decode_spec(multihash_bytes_spec(mh)) == Some((mh, multihash_bytes_spec(mh).len())),
+{
+    let digest_len = mh.digest.len() as u64;
+    let bytes = multihash_bytes_spec(mh);
+    let code_bytes = varint_encode_spec(mh.code);
+    let len_bytes = varint_encode_spec(digest_len);
+    let rest_after_code = len_bytes + mh.digest;
+    varint_decode_prefix_free(mh.code, rest_after_code);
+    assert(bytes =~= code_bytes + rest_after_code);
+    assert(varint_decode_spec(bytes) == Some((mh.code, code_bytes.len())));
+
+    let rest1 = bytes.subrange(code_bytes.len() as int, bytes.len() as int);
+    assert(rest1 =~= rest_after_code);
+    varint_decode_prefix_free(digest_len, mh.digest);
+    assert(varint_decode_spec(rest1) == Some((digest_len, len_bytes.len())));
+
+    let rest2 = rest1.subrange(len_bytes.len() as int, rest1.len() as int);
+    assert(rest2 =~= mh.digest);
+    assert(rest2.len() == mh.digest.len());
+    assert(digest_len as nat == mh.digest.len());
+    assert(code_bytes.len() + len_bytes.len() + digest_len as nat == bytes.len());
+    assert(rest2.subrange(0, digest_len as int) =~= mh.digest);
+}
+
 // --- CID ---
 
 /// CID binary bytes: version varint + codec varint + multihash bytes.
@@ -224,12 +252,14 @@ pub proof fn cid_deterministic(codec: u64, mh: MultihashSpec)
 {
 }
 
-/// CID injectivity: equal bytes imply same version.
+/// CID injectivity: equal bytes imply same version and codec.
 // r[impl ucan-cid.cid-injectivity]
 // r[verify ucan-cid.cid-injectivity]
-pub proof fn cid_bytes_injective_version(a: CidSpec, b: CidSpec)
+pub proof fn cid_bytes_injective_header(a: CidSpec, b: CidSpec)
     requires cid_bytes_spec(a) =~= cid_bytes_spec(b),
-    ensures a.version == b.version,
+    ensures
+        a.version == b.version,
+        a.codec == b.codec,
 {
     let a_bytes = cid_bytes_spec(a);
     let b_bytes = cid_bytes_spec(b);
@@ -246,6 +276,19 @@ pub proof fn cid_bytes_injective_version(a: CidSpec, b: CidSpec)
     assert(varint_decode_spec(a_bytes) == Some((a.version as u64, va.len())));
     assert(varint_decode_spec(b_bytes) == Some((b.version as u64, vb.len())));
     assert(a.version as u64 == b.version as u64);
+    assert(va =~= vb);
+
+    let rest = a_bytes.subrange(va.len() as int, a_bytes.len() as int);
+    assert(rest =~= a_rest);
+    assert(rest =~= b_rest);
+
+    let a_mh_bytes = multihash_bytes_spec(a.multihash);
+    let b_mh_bytes = multihash_bytes_spec(b.multihash);
+    varint_decode_prefix_free(a.codec, a_mh_bytes);
+    varint_decode_prefix_free(b.codec, b_mh_bytes);
+    assert(varint_decode_spec(rest) == Some((a.codec, varint_encode_spec(a.codec).len())));
+    assert(varint_decode_spec(rest) == Some((b.codec, varint_encode_spec(b.codec).len())));
+    assert(a.codec == b.codec);
 }
 
 /// Varint rejects empty input.
@@ -268,11 +311,18 @@ pub uninterp spec fn cid_decode_spec(encoded: Seq<u8>) -> Option<Seq<u8>>;
 
 /// Axiom: CID multibase encoding round-trips.
 // r[impl ucan-cid.cid-round-trip]
-// r[verify ucan-cid.cid-round-trip]
 #[verifier::external_body]
 pub proof fn axiom_cid_encode_round_trip(cid_bytes: Seq<u8>, base: u8)
     ensures cid_decode_spec(cid_encode_spec(cid_bytes, base)) == Some(cid_bytes),
 {
+}
+
+/// CID bytes round-trip through multibase encode/decode.
+// r[verify ucan-cid.cid-round-trip]
+pub proof fn cid_bytes_round_trip(cid: CidSpec, base: u8)
+    ensures cid_decode_spec(cid_encode_spec(cid_bytes_spec(cid), base)) == Some(cid_bytes_spec(cid)),
+{
+    axiom_cid_encode_round_trip(cid_bytes_spec(cid), base);
 }
 
 // --- Hash (external body for SHA-256) ---
