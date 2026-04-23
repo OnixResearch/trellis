@@ -1203,6 +1203,41 @@ Under the memory-consistency relation `memory_up_to_date <==>
 !dirty_owner_exists`, reads MUST use memory only when memory is current;
 otherwise some cache MUST be the read source.
 
+## Cache Hierarchy
+
+Cache hierarchy levels are modeled as canonical finite sets of line tags.
+Exec code may represent a level as a deduplicated sequence, but the
+requirements below are about line presence and absence.
+
+r[hierarchy.inclusive-invariant]
+Under the inclusive policy, every line present in L1 MUST also be present
+in L2 after every modeled operation.
+
+r[hierarchy.back-invalidation]
+Under the inclusive policy, evicting a line from L2 MUST also invalidate
+that line from L1 so the inclusive invariant is preserved.
+
+r[hierarchy.exclusive-invariant]
+Under the exclusive policy, no line may be present in both L1 and L2 at
+the same time.
+
+r[hierarchy.exclusive-swap]
+Under the exclusive policy, promoting a line from L2 to L1 MUST remove it
+from L2 in the same abstract step.
+
+r[hierarchy.non-inclusive]
+Under the non-inclusive policy, the hierarchy MUST impose no subset or
+disjointness constraint between L1 and L2.
+
+r[hierarchy.capacity]
+For canonical levels, the inclusive effective capacity MUST equal |L2|,
+and the exclusive effective capacity MUST equal |L1| + |L2|.
+
+r[hierarchy.snoop-scope]
+Under the inclusive policy, an L2 miss MUST imply an L1 miss for the same
+line. Under the exclusive policy, checking L2 alone MUST NOT be assumed
+sufficient.
+
 ## Store Buffer Forwarding
 
 r[store-buffer.youngest-match]

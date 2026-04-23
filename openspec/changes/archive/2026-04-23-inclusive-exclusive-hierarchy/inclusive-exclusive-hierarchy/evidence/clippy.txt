@@ -1,0 +1,3 @@
+$ cargo clippy --all-targets -- -D warnings
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 18.05s

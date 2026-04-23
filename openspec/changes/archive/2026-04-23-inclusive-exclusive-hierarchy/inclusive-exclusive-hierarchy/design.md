@@ -28,22 +28,29 @@ non-inclusive) and proves their invariants are inductive.
 
 ### 1. Level Model
 
-**Choice:** Each level is a `Set<u64>` of line addresses (tags). L1 and
-L2 are sets. The policy determines the invariant between them.
+**Choice:** Each level is modeled semantically as a finite set of line
+addresses, but the exec surface uses canonical deduplicated `Vec<u64>`
+sequences plus set-style membership predicates (`contains_line_spec`).
+The policy determines the invariant between the levels.
 
 **Rationale:** For hierarchy invariant proofs, we only need to know which
-lines are present, not their data or coherence state. A set of addresses
-is the minimal model. Data correctness follows from "if it's in L1, it's
-valid" which is the cache management layer's job.
+lines are present, not their data or coherence state. A deduplicated
+sequence is a Verus-friendly exec encoding of a finite set while keeping
+the proof surface set-like. Data correctness follows from "if it's in
+L1, it's valid" which is the cache management layer's job.
 
 ### 2. Operations
 
 **Choice:** Five operations, each parameterized by policy:
 - `l1_fill(line, l1, l2, policy) -> (l1', l2')` — install a line in L1
-- `l1_evict(line, l1, l2, policy) -> (l1', l2')` — remove a line from L1
-- `l2_fill(line, l1, l2, policy) -> (l1', l2')` — install a line in L2
+- `l1_evict(line, l1, l2, policy) -> (l1', l2')` — remove a line from L1; under exclusive policy this is the victim-to-L2 demotion surface
+- `l2_fill(line, l1, l2, policy) -> (l1', l2')` — install a line in L2; under exclusive policy we deliberately model a swap-for-generality surface, so a line already present in L1 is removed there when filled into L2
 - `l2_evict(line, l1, l2, policy) -> (l1', l2')` — remove a line from L2
 - `l2_to_l1_promote(line, l1, l2, policy) -> (l1', l2')` — move from L2 to L1
+
+Every operation preserves canonical deduplicated levels by construction:
+`append_unique` never adds a second copy of a line and `remove_line`
+only deletes matching entries.
 
 **Rationale:** Each operation must maintain the policy's invariant. Making
 the policy a parameter lets us prove all three variants with a single
@@ -67,8 +74,7 @@ forgetting the back-invalidation breaks the invariant.
 **Choice:** `exclusive_invariant(l1, l2) = l1.disjoint(l2)`. Prove:
 - `l1_fill`: adds to L1, removes from L2 (swap semantics)
 - `l2_fill`: adds to L2, removes from L1 (swap semantics)
-- `l1_evict`: may move line to L2 (victim goes to L2 in exclusive
-  hierarchies)
+- `l1_evict`: demotes a present line from L1 into L2 (victim-cache semantics)
 - `l2_evict`: plain removal, L1 unaffected
 
 **Rationale:** Exclusive caches maximize aggregate capacity. Every fill
@@ -80,7 +86,8 @@ the line is in both levels.
 
 **Choice:** Under inclusive: `effective_capacity = |l2|` (L1 is a subset,
 adds no unique lines). Under exclusive: `effective_capacity = |l1| + |l2|`
-(no overlap). Prove these from the invariants.
+(no overlap). These counts are exact for canonical deduplicated levels and
+are proved from the invariants.
 
 **Rationale:** This is why architects choose one policy over the other.
 The proof is a direct consequence of the subset/disjointness invariant.
@@ -89,7 +96,8 @@ The proof is a direct consequence of the subset/disjointness invariant.
 
 **Choice:** Under inclusive: `snoop_l2_only(l1, l2, line) -> bool` —
 if the line is not in L2, it's not in L1 either (by inclusion). Under
-exclusive: must check both levels.
+exclusive: must check both levels. Under non-inclusive: snoop answers are
+the union of both levels because neither subset nor exclusion holds.
 
 **Rationale:** Inclusive L3 caches are popular because snooping only the
 L3 is sufficient, reducing snoop traffic. The proof is a one-line
@@ -108,3 +116,14 @@ the same line). That's the cache management + coherence layer's job.
 **[Atomic swap assumption]** → The exclusive swap is modeled as atomic.
 Real hardware may have a transient state where the line is in neither
 level (in the fill buffer). The model doesn't capture that window.
+
+## Verification Strategy
+
+- Prove per-operation preservation lemmas for inclusive and exclusive
+  invariants over set-style membership predicates.
+- Use `Vec<u64>` exec helpers only as a canonical finite-set encoding;
+  proofs reason about membership, not ordering.
+- Prove capacity and snoop-scope facts as consequence lemmas from the
+  preserved invariants.
+- Use unit tests for policy-specific happy/sad paths and proptests for
+  invariant preservation across random operation sequences.

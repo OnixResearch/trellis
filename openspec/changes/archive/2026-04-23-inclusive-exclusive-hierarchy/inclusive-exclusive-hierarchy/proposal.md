@@ -35,9 +35,10 @@ works for inclusive caches silently breaks for exclusive ones.
   - **Non-inclusive freedom**: In a non-inclusive hierarchy, a line may
     or may not be in L2 when it's in L1. No inclusion or exclusion
     constraint. Proves that any subset relationship is valid.
-  - **Capacity accounting**: Under inclusive policy, the effective capacity
-    is L2's capacity (L1 is a subset). Under exclusive policy, the
-    effective capacity is L1 + L2. Proves the capacity formulas.
+  - **Capacity accounting**: For canonical levels, the effective occupied
+    capacity under inclusive policy is |L2| (L1 is a subset). Under
+    exclusive policy, the effective occupied capacity is |L1| + |L2|.
+    Proves the count formulas.
   - **Coherence snoop scope**: Under inclusive policy, snooping L2 is
     sufficient (if L2 misses, L1 must miss too). Under exclusive policy,
     both levels must be snooped. Proves the snoop scope is correct.
@@ -56,9 +57,10 @@ works for inclusive caches silently breaks for exclusive ones.
 
 ## Impact
 
-- **Files**: One new `src/cache_hierarchy.rs`, module declaration in `lib.rs`
+- **Files**: One new `src/cache_hierarchy.rs`, module declaration in `lib.rs`,
+  and synced active/canonical cache-hierarchy specs
 - **APIs**: `HierarchyPolicy` enum (Inclusive/Exclusive/NonInclusive),
-  `l1_fill`, `l1_evict`, `l2_evict_inclusive`, `l2_to_l1_exclusive`,
+  `l1_fill`, `l1_evict`, `l2_fill`, `l2_evict`, `l2_to_l1_promote`,
   `check_inclusive_invariant`, `check_exclusive_invariant`,
   `effective_capacity`, `snoop_scope`
 - **Dependencies**: Composable with `block_cache.rs`, `eviction.rs`, and

@@ -183,10 +183,8 @@ pub fn processor_transition(state: u8, is_write: bool, others_have_copy: bool) -
     if is_write {
         match state {
             STATE_INVALID => (STATE_MODIFIED, BUS_READ_X),
-            STATE_SHARED => (STATE_MODIFIED, BUS_UPGRADE),
-            STATE_EXCLUSIVE => (STATE_MODIFIED, BUS_NONE),
-            STATE_MODIFIED => (STATE_MODIFIED, BUS_NONE),
-            STATE_OWNED => (STATE_MODIFIED, BUS_UPGRADE),
+            STATE_SHARED | STATE_OWNED => (STATE_MODIFIED, BUS_UPGRADE),
+            STATE_EXCLUSIVE | STATE_MODIFIED => (STATE_MODIFIED, BUS_NONE),
             _ => (STATE_INVALID, BUS_NONE),
         }
     } else {
@@ -336,6 +334,7 @@ pub open spec fn invalidate_others_spec(caches: Seq<u8>, writer: int) -> Seq<u8>
 }
 
 // r[impl moesi.single-writer]
+// r[impl moesi.owned-entry]
 pub open spec fn full_read_spec(caches: Seq<u8>, requester: int) -> Seq<u8>
     recommends 0 <= requester < caches.len()
 {
@@ -354,6 +353,7 @@ pub open spec fn full_write_spec(caches: Seq<u8>, writer: int) -> Seq<u8>
 }
 
 // r[depends moesi.mesi-refinement]
+// r[impl moesi.mesi-refinement]
 pub open spec fn moesi_to_mesi_spec(state: u8) -> u8 {
     if state == STATE_OWNED { crate::mesi::STATE_SHARED } else { state }
 }

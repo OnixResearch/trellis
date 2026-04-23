@@ -156,6 +156,8 @@
 //! - `markov` — Markov chain prediction: transition counting, confidence thresholds
 //! - `memory_order` — memory ordering lattice: Relaxed/Acquire/Release/AcqRel/SeqCst, fence
 //!   composition, load/store validity
+//! - `cache_hierarchy` — inclusive/exclusive/non-inclusive L1/L2 invariants, back-invalidation,
+//!   capacity accounting, and snoop scope
 //! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping,
 //!   system invariant preservation
 //! - `moesi` — MOESI cache coherence protocol: Owned-state entry on remote read, dirty-owner
@@ -217,7 +219,8 @@
 //! - `store_buffer` — fixed-capacity store queue with youngest-match forwarding, FIFO drain, and
 //!   fence-empty semantics
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
-//! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode refinement
+//! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode
+//!   refinement
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
@@ -239,7 +242,8 @@
 //! - `sel4_asid` — finite ASID pool ownership: allocate, release, reuse, exhaustion
 //! - `sel4_cap_rights` — seL4 rights-mask attenuation, masking laws, and operation gates
 //! - `sel4_cdt` — capability derivation ancestry, subtree revoke, and leaf recycle
-//! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot resolution
+//! - `sel4_cspace` — guarded CSpace traversal with explicit depth accounting and exact slot
+//!   resolution
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
 //! - `sel4_invocation` — abstract typed invocation decode over explicit capability contexts
@@ -247,9 +251,12 @@
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
-//! - `sel4_tcb` — TCB state legality, blocking-object identity, and legal wake/restart/deactivate transitions
-//! - `sel4_ready_queue` — per-priority ready queues, runnable/queued consistency, and highest-priority selection
-//! - `sel4_untyped` — aligned contained child layouts plus revoke/reset reclaim of an untyped source
+//! - `sel4_tcb` — TCB state legality, blocking-object identity, and legal wake/restart/deactivate
+//!   transitions
+//! - `sel4_ready_queue` — per-priority ready queues, runnable/queued consistency, and
+//!   highest-priority selection
+//! - `sel4_untyped` — aligned contained child layouts plus revoke/reset reclaim of an untyped
+//!   source
 //! - `sel4_vspace` — aligned non-overlapping mappings, exact unmap, and rights restriction
 //! - `semaphore` — counting semaphore: acquire/release, capacity bounds, conservation, binary mutex
 //! - `seqlock` — sequence lock protocol: even/odd counter, valid read detection, writer versioning
@@ -294,16 +301,18 @@
 //! - `web_of_trust_attestation` — exact attestation payload bytes, signature binding, and
 //!   active-window checks over issuer, subject, role, validity window, and sequence metadata
 //! - `web_of_trust_chain` — simple active trust-edge chains over attestation-index witnesses
-//! - `web_of_trust_principal` — canonical principal IDs as full 32-byte BLAKE3 digests with full-byte equality
-//! - `web_of_trust_resolution` — rooted depth-bounded trust resolution with the empty-chain root base case
+//! - `web_of_trust_principal` — canonical principal IDs as full 32-byte BLAKE3 digests with
+//!   full-byte equality
+//! - `web_of_trust_resolution` — rooted depth-bounded trust resolution with the empty-chain root
+//!   base case
 //! - `web_of_trust_policy` — threshold acceptance over distinct rooted-trusted introducers with
 //!   explicit `k = 0` / `d = 0` rejection and repeated-final-hop filtering
 //! - `ucan_ability` — string-based ability hierarchy with subsumption, glob matching, namespace
 //!   isolation, and containment monotonicity
-//! - `ucan_caveat` — composable attenuation constraints with conjunction satisfaction,
-//!   containment monotonicity, intersection soundness/minimality, and delegation-only-adds
-//! - `ucan_cid` — CIDv1 construction with determinism, version correctness, byte injectivity,
-//!   and multihash round-trip
+//! - `ucan_caveat` — composable attenuation constraints with conjunction satisfaction, containment
+//!   monotonicity, intersection soundness/minimality, and delegation-only-adds
+//! - `ucan_cid` — CIDv1 construction with determinism, version correctness, byte injectivity, and
+//!   multihash round-trip
 //! - `ucan_did` — did:key encode/decode with verified round-trip, injectivity, codec preservation,
 //!   and varint framing
 //! - `ucan_signature` — Ed25519 sign/verify primitives with verified round-trip, key-binding,
@@ -379,6 +388,7 @@ pub mod block_cache;
 pub mod bounded_mpmc;
 pub mod bounded_peers;
 pub mod bounds;
+pub mod cache_hierarchy;
 pub mod cache_partition;
 pub mod calendar;
 pub mod cas;
@@ -391,11 +401,11 @@ pub mod chaoscontrol_frontier;
 pub mod chaoscontrol_input_tree;
 pub mod chaoscontrol_oracle;
 pub mod chaoscontrol_scheduler;
+pub mod check_quorum;
 pub mod choreography_global;
 pub mod choreography_local;
 pub mod choreography_projection;
 pub mod choreography_step;
-pub mod check_quorum;
 pub mod chunk;
 pub mod circuit_breaker;
 pub mod client_routing;
@@ -413,10 +423,10 @@ pub mod conversion;
 pub mod cost_tracker;
 pub mod cow;
 pub mod crdt;
-pub mod cryptoshedding;
 pub mod cron_field;
 pub mod cron_match;
 pub mod cron_next;
+pub mod cryptoshedding;
 pub mod ct_select;
 pub mod cycle_detect;
 pub mod dead_code_elimination;
@@ -445,11 +455,11 @@ pub mod eviction;
 pub mod eviction_score;
 pub mod expiration;
 pub mod fair_share;
+pub mod false_sharing;
 pub mod fast_backtrack;
 pub mod fee;
 pub mod fencing;
 pub mod fetch_add;
-pub mod false_sharing;
 pub mod follower_commit;
 pub mod follower_read;
 pub mod follower_redirect;
@@ -549,6 +559,7 @@ pub mod partition;
 pub mod pattern;
 pub mod paxos;
 pub mod peer_spec;
+pub mod per_core_rwlock;
 pub mod permission;
 pub mod persistent_state;
 pub mod pointwise;
@@ -579,9 +590,7 @@ pub mod request_forward;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
-pub mod store_buffer;
 pub mod rwlock;
-pub mod per_core_rwlock;
 pub mod scope;
 pub mod segregated_free;
 pub mod sel4_asid;
@@ -590,13 +599,13 @@ pub mod sel4_cdt;
 pub mod sel4_cspace;
 pub mod sel4_endpoint;
 pub mod sel4_fault_ipc;
-pub mod sel4_invocation;
 pub mod sel4_invariants;
-pub mod sel4_notification;
-pub mod sel4_reply;
+pub mod sel4_invocation;
 pub mod sel4_irq;
-pub mod sel4_tcb;
+pub mod sel4_notification;
 pub mod sel4_ready_queue;
+pub mod sel4_reply;
+pub mod sel4_tcb;
 pub mod sel4_untyped;
 pub mod sel4_vspace;
 pub mod semaphore;
@@ -628,6 +637,7 @@ pub mod spin_backoff;
 pub mod split_coalesce;
 pub mod ssa_construction;
 pub mod state_machine_safety;
+pub mod store_buffer;
 pub mod subsumption;
 pub mod surelock_deadlock;
 pub mod surelock_id;
@@ -652,23 +662,15 @@ pub mod txn_isolation;
 pub mod type_lattice;
 pub mod type_unification;
 pub mod typed_state;
-pub mod vector_clock;
-pub mod view_change;
-pub mod vote_tally;
-pub mod voter_set;
-pub mod wal_recovery;
-pub mod wal_segment;
-pub mod watermark;
-pub mod weighted_round_robin;
 pub mod ucan_ability;
 /// Verified UCAN capability merge from multiple delegation paths.
 pub mod ucan_capability_merge;
 pub mod ucan_caveat;
 /// Verified UCAN proof chain walk and delegation chain validation.
 pub mod ucan_chain;
+pub mod ucan_cid;
 /// Verified UCAN delegation depth budget.
 pub mod ucan_delegation_depth;
-pub mod ucan_cid;
 pub mod ucan_did;
 /// Verified UCAN invocation and receipt model.
 pub mod ucan_invocation;
@@ -680,12 +682,20 @@ pub mod ucan_signature;
 /// Verified UCAN time-bounded delegation composition.
 pub mod ucan_temporal;
 pub mod ucan_token;
+pub mod vector_clock;
+pub mod view_change;
+pub mod vote_tally;
+pub mod voter_set;
+pub mod wal_recovery;
+pub mod wal_segment;
+pub mod watermark;
 pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;
+pub mod web_of_trust_policy;
 pub mod web_of_trust_principal;
 pub mod web_of_trust_resolution;
-pub mod web_of_trust_policy;
 pub mod web_of_trust_revocation;
+pub mod weighted_round_robin;
 pub mod witness;
 pub mod work_stealing;
 pub mod write_buffer;
