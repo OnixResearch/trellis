@@ -518,6 +518,13 @@ mod tests {
     }
 
     #[test]
+    fn test_varint_decode_truncated_continuation() {
+        const CONTINUATION_ONLY_BYTE: u8 = 0x80;
+        let truncated = vec![CONTINUATION_ONLY_BYTE];
+        assert!(varint_decode(&truncated).is_none());
+    }
+
+    #[test]
     fn test_did_key_encode_ed25519() {
         let pk = vec![1u8; 32];
         let did = encode_did_key(&pk, CODEC_ED25519);

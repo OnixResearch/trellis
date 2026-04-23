@@ -7639,8 +7639,11 @@ An Ed25519 public key derived from a secret key MUST be exactly 32 bytes.
 ## UCAN DID
 
 r[ucan-did.round-trip]
-Encoding a public key as a did:key and decoding the result MUST recover
-the original key and codec.
+Encoding key bytes as a did:key MUST use the canonical byte layout
+`did:key:z ++ base58btc(varint(codec) ++ key_bytes)`. The public encode
+result MUST preserve the exact key bytes, codec, and encoded bytes, and
+spec-level decode of those encoded bytes MUST recover the original key
+bytes and codec.
 
 r[ucan-did.injective]
 Distinct public keys encoded with the same codec MUST produce distinct
