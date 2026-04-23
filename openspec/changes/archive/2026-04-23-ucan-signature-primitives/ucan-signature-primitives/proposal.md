@@ -14,8 +14,9 @@ signatures round-trip, and no modification of the message or key
 produces a valid signature. The interesting proof surface is not the
 cryptographic hardness (that stays trusted/external_body) but the
 structural properties: deterministic signing, verification
-round-trip, key-message binding, and correct integration with
-the token validation pipeline.
+round-trip, key-message binding, and fixed-width key/signature outputs
+at the primitive byte boundary consumed by later UCAN token-validation
+changes.
 
 ## What Changes
 
@@ -23,26 +24,38 @@ A new module `src/ucan_signature.rs` providing:
 
 **Data model:**
 - `PublicKey` — 32-byte Ed25519 public key
-- `SecretKey` — 64-byte Ed25519 secret key (or 32-byte seed)
+- `SecretKey` — 32-byte Ed25519 seed
 - `Signature` — 64-byte Ed25519 signature
 
 **Exec functions (external_body for crypto):**
 - `sign(secret_key, message) -> Signature`
 - `verify(public_key, message, signature) -> bool`
-- `keypair_generate() -> (SecretKey, PublicKey)`
 - `public_from_secret(secret_key) -> PublicKey`
 
 **Verified properties:**
 - Round-trip: `verify(pk, msg, sign(sk, msg)) == true` when `pk = public_from_secret(sk)`
 - Key binding: `verify(pk1, msg, sign(sk, msg)) == false` when `pk1 != public_from_secret(sk)`
 - Message binding: `verify(pk, msg2, sign(sk, msg1)) == false` when `msg1 != msg2` (modeled)
-- Determinism: `sign(sk, msg) == sign(sk, msg)` — same inputs, same output
+- Determinism: repeated executions of `sign(sk, msg)` for the same `sk` and `msg` yield identical signature bytes
 - Signature length: output is always exactly 64 bytes
+- Public-key length: `public_from_secret(sk)` is always 32 bytes for valid 32-byte seed inputs
 
 The crypto operations themselves stay `#[verifier::external_body]` —
 we are not verifying Ed25519 internals. The proof surface is the
-contract between sign and verify: that they form a consistent
-pair with no false positives or false negatives for honest keys.
+narrow primitive contract encoded by this change: honest-key round-trip,
+wrong-key rejection, wrong-message rejection under the matched derived
+public key, deterministic repeated signing, and fixed-width key/signature
+outputs.
+
+This change stops at the signature primitive boundary. Token-envelope
+or token-validation callers consume `sign`, `verify`, and
+`public_from_secret` over already-serialized payload bytes; wiring those
+primitives into higher-level UCAN validation remains the responsibility
+of the envelope and validation changes. Valid inputs are in-scope only
+for well-formed fixed-width values: 32-byte seed secret keys, 32-byte
+public keys, and 64-byte signatures. Reject/parse behavior for malformed
+or non-canonical external byte strings remains out of scope for this
+change.
 
 ## Capabilities
 
@@ -51,11 +64,20 @@ pair with no false positives or false negatives for honest keys.
 - `ucan-signature.key-binding`: wrong public key rejects
 - `ucan-signature.message-binding`: wrong message rejects
 - `ucan-signature.deterministic`: same inputs produce same signature
-- `ucan-signature.length`: signatures are 64 bytes
+- `ucan-signature.signature-length`: signatures are 64 bytes
+- `ucan-signature.public-key-length`: derived public keys are 32 bytes
 
 ## Impact
 
 - **Files**: `src/ucan_signature.rs` (new)
-- **APIs**: ~6 pub fns (sign, verify, keypair_generate, public_from_secret, plus spec helpers)
+- **APIs**: ~5 pub fns (sign, verify, public_from_secret, plus spec helpers)
 - **Dependencies**: ed25519-dalek or equivalent behind `#[cfg(not(verus_keep_ghost))]`
-- **Testing**: Property tests for round-trip and rejection; Verus proofs for structural contracts
+- **Testing**: Runtime tests cover round-trip, wrong-key rejection, wrong-message rejection, determinism, signature length, and derived public-key length; Verus proof functions cover the same structural contracts
+
+## Acceptance Evidence
+
+Archive readiness for this change requires fresh `openspec_gate`
+results for proposal/design/tasks plus fresh validation transcripts for
+`CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet --lib ucan_signature`
+and `./scripts/verus.sh src/lib.rs`, captured alongside the archive
+closeout evidence.

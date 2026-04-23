@@ -10,23 +10,22 @@ cannot canonically identify principals, and chain validation cannot
 match issuer-to-audience across delegation hops.
 
 The encode/decode logic is small but fiddly: multicodec varint
-prefix (0xed01 for Ed25519), multibase encoding (base58btc with
-'z' prefix), and round-trip correctness. A bug here means tokens
-that should chain don't, or worse, two different keys appear to
-be the same identity.
+prefixing of the Ed25519 codec value `0xed` as bytes `[0xed, 0x01]`,
+multibase encoding (base58btc with 'z' prefix), and round-trip
+correctness. A bug here means tokens that should chain don't, or worse,
+two different keys appear to be the same identity.
 
 ## What Changes
 
 A new module `src/ucan_did.rs` providing:
 
 **Data model:**
-- `Did` — a parsed DID with method and method-specific identifier
-- `DidKey` — specifically a `did:key` with the decoded public key bytes and codec
+- `DidKey` — a validated `did:key` value carrying the encoded bytes plus decoded public key bytes and codec for the supported codec set in this change
 
 **Encode/decode:**
-- `encode_did_key(public_key, codec) -> Did` — multicodec prefix + base58btc + `did:key:z` prefix
-- `decode_did_key(did_string) -> Option<(PublicKey, Codec)>` — parse and extract
-- `multicodec_prefix(codec) -> Seq<u8>` — varint encoding for Ed25519 (0xed01), P-256 (0x1200), etc.
+- `encode_did_key(public_key, codec) -> DidKey` — multicodec prefix + base58btc + `did:key:z` prefix
+- `decode_did_key(did_string) -> Option<(PublicKey, Codec)>` — parse and extract raw decoded parts from an externally supplied did:key string
+- `multicodec_prefix(codec) -> Seq<u8>` — varint encoding for codec values such as Ed25519 (`0xed` encoded as `[0xed, 0x01]`)
 - `base58btc_encode(bytes) -> Seq<u8>` / `base58btc_decode(chars) -> Option<Seq<u8>>`
 
 **Verified properties:**
@@ -38,8 +37,16 @@ A new module `src/ucan_did.rs` providing:
 
 Base58btc encode/decode stays `#[verifier::external_body]` (arithmetic-
 heavy division loop). The proof surface is the composition: multicodec
-framing is correct, base58 round-trips, and the `did:key:` prefix is
-always present.
+framing is correct, base58 round-trips, the `did:key:` prefix is
+always present, and decode rejects malformed inputs at the byte/string
+boundary for this narrowed `did:key` surface.
+
+## Non-Goals
+
+- Supporting DID methods other than `did:key`
+- Full generic DID parsing, normalization, or DID document resolution
+- Unsupported codec families beyond the codec values explicitly modeled by this change
+- Higher-level UCAN proof-chain integration beyond returning validated `did:key` data
 
 ## Capabilities
 
@@ -48,7 +55,7 @@ always present.
 - `ucan-did.injective`: distinct keys produce distinct DIDs
 - `ucan-did.prefix-valid`: output always starts with `did:key:z`
 - `ucan-did.codec-preserved`: codec survives round-trip
-- `ucan-did.multicodec-round-trip`: varint prefix encodes/decodes cleanly
+- `ucan-did.varint-round-trip`: codec values encode/decode cleanly through varint framing
 
 ## Impact
 

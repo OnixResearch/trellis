@@ -1,30 +1,25 @@
-## Phase 1: Varint and Multicodec
+## Phase 1: Reconcile landed scope and codec framing
 
-- [ ] Define `varint_encode_spec` and `varint_decode_spec` as recursive spec functions
-- [ ] Implement `varint_encode` and `varint_decode` exec functions (fully internalized)
-- [ ] Prove varint round-trip: `varint_decode(varint_encode(n)) == Some((n, len))`
-- [ ] Prove varint rejects empty input
+- [x] Sync `proposal.md`, `design.md`, `tasks.md`, and `specs/ucan-did/spec.md` to the landed `src/ucan_did.rs` scope by removing the stale generic `Did` commitment and keeping `DidKey` as the validated public DID carrier
+- [x] Reconcile multicodec wording so artifacts consistently distinguish codec value `0xed` from its varint bytes `[0xed, 0x01]`
+- [x] Ensure every requirement and scenario in `specs/ucan-did/spec.md` has an `r[...]` ID line
 
-## Phase 2: DID Encoding
+## Phase 2: Requirement coverage against landed module
 
-- [ ] Define `Did` and `DidKey` newtypes
-- [ ] Define `encode_did_key_spec` and `decode_did_key_spec`
-- [ ] Implement `base58btc_encode` and `base58btc_decode` as `#[verifier::external_body]` with round-trip postcondition
-- [ ] Implement `encode_did_key` and `decode_did_key` exec functions
-- [ ] Add `r[ucan-did.*]` requirements to `docs/requirements.md`
+- [x] Confirm the landed module covers varint round-trip, empty-input rejection, DID round-trip, injectivity, prefix validity, codec preservation, and base58 round-trip
+- [x] Add explicit closeout coverage for truncated non-empty varint rejection and wrong-prefix / malformed-payload DID rejection in the change artifacts
+- [x] Decide how `base58btc` invalid-character rejection is represented in the landed boundary: explicit runtime test, explicit trusted external-body assumption, or both
+- [x] Ensure the `DidKey` validated-newtype boundary is described and traced to the parser/constructor behavior that the landed module actually provides
 
-## Phase 3: Proofs
+## Phase 3: Baseline and fresh validation evidence
 
-- [ ] Prove DID round-trip: `decode_did_key(encode_did_key(pk, codec)) == Some((pk, codec))`
-- [ ] Prove injectivity: `pk1 != pk2 ==> encode_did_key(pk1, c) != encode_did_key(pk2, c)`
-- [ ] Prove prefix validity: encoded DID starts with `"did:key:z"`
-- [ ] Prove codec preservation through round-trip
+- [x] Run a focused baseline test before artifact edits: `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet --lib ucan_did`
+- [x] Re-run fresh focused runtime validation after artifact sync, including varint round-trip, empty-input rejection, did:key prefix validity, base58 round-trip, and distinct-key DID separation
+- [ ] Run fresh `openspec_gate` tool checks for `proposal`, `design`, and `tasks`, and explicitly audit `specs/ucan-did/spec.md` against the findings
+- [x] Capture fresh proof-oriented validation evidence for the landed module, including `./scripts/verus.sh src/lib.rs` and the focused `ucan_did` runtime transcript
 
-## Phase 4: Tests and Validation
+## Phase 4: Archive
 
-- [ ] Property tests: random 32-byte keys round-trip through did:key
-- [ ] Property tests: varint round-trip with random u64 values
-- [ ] Property tests: distinct random keys produce distinct DIDs
-- [ ] Add `r[impl]` and `r[verify]` Tracey tags
-- [ ] Run `./scripts/verify.sh` green
-- [ ] Run `tracey query uncovered` — 0 uncovered
+- [ ] Capture fresh archive evidence for the validated landed scope, including gate results, proof/runtime transcripts, archive move result, and post-archive active-change recount output
+- [ ] Move the synced change under `openspec/changes/archive/<date>-ucan-did-model/`
+- [ ] Recheck active change count after archive so the autoresearch metric reflects the closeout
