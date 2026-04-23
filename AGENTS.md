@@ -121,6 +121,7 @@
 - The recent Tracey drift was cleared with metadata-only fixes: add `r[verify]` tags for untested rules, and add `r[impl]` tags to spec-level implementations when a requirement has no separate exec fn (for example `query_cost::index_scan_cost_spec` and `snapshot_isolation::si_allows_commit_spec`).
 - The temporary `src/mesi.rs` (6) and `src/page.rs` (1) trusted boundaries from the 2026-04-08 remediation are now closed; stale notes or inventories that still count MESI/page `external_body` sites are wrong.
 - `src/mesi.rs:check_system_invariant` verifies best as a direct prefix-scan with prefix invariants, not by post-hoc count summaries.
+- For one-line cache-protocol extensions like `src/moesi.rs`, direct pointwise `Seq::new(...)` transforms for "snoop every cache" / "invalidate every non-writer" were much easier to verify than recursive scan specs because index-level result facts fall out immediately and refinement proofs can stay pointwise.
 - `src/mesi.rs:invalidate_others_spec` closed cleanly with small recursive lemmas for length preservation, unchanged indices below `from`, writer preservation, and target-index invalidation.
 - Keep MESI exec paths iterative. A recursive exec helper over cache entries verifies, but it is a runtime regression because recursion depth grows with `caches.len()` and can blow the Rust stack.
 - `src/page.rs:radix_index_bounded` closed with a tiny bit-vector helper over `(value >> offset) & ((1 << width) - 1)` plus an explicit arithmetic proof that the computed offset is `< 64`.

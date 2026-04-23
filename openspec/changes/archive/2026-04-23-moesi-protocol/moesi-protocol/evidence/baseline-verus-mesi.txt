@@ -1,0 +1,271 @@
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:100:9
+    |
+100 |     &&& forall|i: int| 0 <= i < caches.len() ==> is_valid_state_spec(caches[i])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:100:70
+    |
+100 |     &&& forall|i: int| 0 <= i < caches.len() ==> is_valid_state_spec(caches[i])
+    |                                                                      ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:228:13
+    |
+228 |             assert forall|k: int| 0 <= k < i as int
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:229:45
+    |
+229 |                 implies is_valid_state_spec(caches@[k]) by {
+    |                                             ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:133:13
+    |
+133 |             forall|k: int| 0 <= k < i ==> is_valid_state_spec(caches@[k]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:133:63
+    |
+133 |             forall|k: int| 0 <= k < i ==> is_valid_state_spec(caches@[k]),
+    |                                                               ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:312:9
+    |
+312 |         assert forall|k: int| 0 <= k < caches@.len()
+    |         ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:313:41
+    |
+313 |             implies is_valid_state_spec(caches@[k]) by {
+    |                                         ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:486:9
+    |
+486 | /         forall|i: int| 0 <= i < old(caches)@.len()
+487 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:487:37
+    |
+487 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:491:9
+    |
+491 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:491:71
+    |
+491 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |                                                                       ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:513:17
+    |
+513 |                 assert forall|j: int| 0 <= j < caches@.len()
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:514:49
+    |
+514 |                     implies is_valid_state_spec(caches@[j]) by {
+    |                                                 ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:502:13
+    |
+502 | /             forall|j: int| 0 <= j < caches@.len()
+503 | |                 ==> is_valid_state_spec(caches@[j]),
+    | |___________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:503:41
+    |
+503 |                 ==> is_valid_state_spec(caches@[j]),
+    |                                         ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:582:9
+    |
+582 | /         forall|i: int| 0 <= i < old(caches)@.len()
+583 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:583:37
+    |
+583 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:587:9
+    |
+587 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:587:71
+    |
+587 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |                                                                       ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:609:17
+    |
+609 |                 assert forall|j: int| 0 <= j < caches@.len()
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:610:49
+    |
+610 |                     implies is_valid_state_spec(caches@[j]) by {
+    |                                                 ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:598:13
+    |
+598 | /             forall|j: int| 0 <= j < caches@.len()
+599 | |                 ==> is_valid_state_spec(caches@[j]),
+    | |___________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:599:41
+    |
+599 |                 ==> is_valid_state_spec(caches@[j]),
+    |                                         ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:698:9
+    |
+698 | /         forall|i: int| 0 <= i < old(caches)@.len()
+699 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:699:37
+    |
+699 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:716:9
+    |
+716 | /         forall|i: int| 0 <= i < old(caches)@.len()
+717 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:717:37
+    |
+717 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:988:9
+    |
+988 | /         forall|i: int| 0 <= i < caches.len()
+989 | |             ==> is_valid_state_spec(caches[i]),
+    | |______________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:989:37
+    |
+989 |             ==> is_valid_state_spec(caches[i]),
+    |                                     ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:992:9
+    |
+992 | /         forall|j: int| 0 <= j < caches.len() ==> (
+993 | |             (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+994 | |             && (j != writer && j >= from
+995 | |                 ==> invalidate_others_spec(caches, writer, from)[j] == STATE_INVALID)
+996 | |         ),
+    | |_________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:993:81
+    |
+993 |             (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+    |                                                                                 ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/mesi.rs:1000:5
+     |
+1000 |     assert forall|j: int| 0 <= j < caches.len() && j == writer
+     |     ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/mesi.rs:1001:68
+     |
+1001 |         implies invalidate_others_spec(caches, writer, from)[j] == caches[j] by {
+     |                                                                    ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/mesi.rs:1008:5
+     |
+1008 |     assert forall|j: int| 0 <= j < caches.len() implies (
+     |     ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/mesi.rs:1009:77
+     |
+1009 |         (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+     |                                                                             ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/mesi.rs:1028:9
+     |
+1028 | /         forall|i: int| 0 <= i < caches.len()
+1029 | |             ==> is_valid_state_spec(caches[i]),
+     | |______________________________________________^
+
+note:   trigger 1 of 1:
+    --> src/mesi.rs:1029:37
+     |
+1029 |             ==> is_valid_state_spec(caches[i]),
+     |                                     ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+    --> src/mesi.rs:1065:5
+     |
+1065 |     assert forall|i: int| 0 <= i < result.len()
+     |     ^^^^^^
+
+note:   trigger 1 of 1:
+    --> src/mesi.rs:1066:37
+     |
+1066 |         implies is_valid_state_spec(result[i]) by {
+     |                                     ^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+    --> src/mesi.rs:1065:5
+     |
+1065 |     assert forall|i: int| 0 <= i < result.len()
+     |     ^^^^^^
+
+verification results:: 52 verified, 0 errors

@@ -158,6 +158,8 @@
 //!   composition, load/store validity
 //! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping,
 //!   system invariant preservation
+//! - `moesi` — MOESI cache coherence protocol: Owned-state entry on remote read, dirty-owner
+//!   exclusivity, dirty-data sourcing, eviction writeback, and MESI refinement outside Owned paths
 //! - `merkle` — Merkle proof verification with hash axiom
 //! - `monotonic` — advancement predicates for terms, commit indices
 //! - `mpsc_bounds` — MPSC channel bounds: occupancy, capacity, send/receive, close/drain
@@ -512,6 +514,7 @@ pub mod match_index;
 pub mod memory_order;
 pub mod merkle;
 pub mod mesi;
+pub mod moesi;
 pub mod monotonic;
 pub mod mpsc_bounds;
 pub mod mvcc;

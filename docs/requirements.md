@@ -1172,6 +1172,37 @@ r[write-policy.read-equivalence]
 A read hit MUST return the cached data regardless of whether the line uses
 write-back or write-through policy.
 
+## MOESI Coherence
+
+r[moesi.single-writer]
+At most one cache MAY hold a line in a dirty-owner state (`Modified` or
+`Owned`) at a time.
+
+r[moesi.owned-entry]
+A remote read against a `Modified` owner MUST move that owner to
+`Owned` while the requester receives a shared copy.
+
+r[moesi.owned-supply]
+When any cache holds a line in `Owned`, reads MUST source dirty data from
+some cache rather than from memory.
+
+r[moesi.writeback]
+Evicting an `Owned` line MUST write back to memory before the owner is
+lost. Evicting a `Shared` line MUST NOT require a writeback.
+
+r[moesi.transitions]
+Every valid processor event and snoop bus action MUST produce a valid
+next state and a valid bus action/result.
+
+r[moesi.mesi-refinement]
+For transitions that stay within the `M/E/S/I` subset, MOESI MUST agree
+with the existing MESI transition model after mapping `Owned -> Shared`.
+
+r[moesi.no-stale-reads]
+Under the memory-consistency relation `memory_up_to_date <==>
+!dirty_owner_exists`, reads MUST use memory only when memory is current;
+otherwise some cache MUST be the read source.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]
