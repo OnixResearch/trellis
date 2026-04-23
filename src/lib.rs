@@ -470,6 +470,7 @@ pub mod hypervisor_memslot;
 pub mod hypervisor_vcpu;
 pub mod index_select;
 pub mod install_snapshot;
+pub mod instruction_selection;
 pub mod integer;
 pub mod interval;
 pub mod job_cancel;
