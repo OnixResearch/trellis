@@ -1,0 +1,22 @@
+# Tasks Review Packet
+
+## Phase 0: Audit and change-spec hygiene
+- Audit and overlap disposition are captured in `evidence/R1-audit.md`.
+- Gate reruns and archive-only-branch review are captured in `evidence/R2-gates.md` and `evidence/R5-archive-only.md`.
+
+## Phase 1: Alignment core
+- `src/alignment.rs` landed the alignment helpers required by Phase 1.
+- Proof/test coverage is summarized in `evidence/V1-alignment-validation.md`.
+
+## Phase 2: Interval, region, and partition combinators
+- `src/interval.rs`, `src/region.rs`, and `src/partition.rs` landed the Phase 2 helpers.
+- Proof/test coverage is summarized in `evidence/V2-interval-validation.md`, `evidence/V3-region-validation.md`, and `evidence/V4-partition-validation.md`.
+
+## Phase 3: Rect combinators
+- `src/tiling.rs` landed the rectangle helpers for intersections, translation, adjacency, area, and bounding boxes.
+- Proof/test coverage is summarized in `evidence/V5-rect-validation.md` and `evidence/V6-bbox-validation.md`.
+
+## Phase 4: Spec sync and validation
+- Sync is captured in `evidence/R3-sync.md` and final gate reruns are captured in `evidence/R4-post-sync-gates.md`.
+- Repo validation is summarized in `evidence/V7-repo-validation.md`.
+- Archive state is summarized in `evidence/R6-archive.md` and indexed in `evidence/review-index.md`.

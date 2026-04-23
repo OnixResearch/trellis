@@ -1,0 +1,21 @@
+# Validation Review Packet
+
+## Targeted module validation
+- `cargo test --quiet sel4_fault_ipc` → `evidence/cargo-test-sel4-fault-ipc.txt` (`7 passed; 0 failed`)
+- `./scripts/verus.sh src/sel4_fault_ipc.rs` → `evidence/verus-sel4-fault-ipc.txt`
+
+## Repo validation
+- `cargo-clean-blake3.txt` documents the doctest-artifact cleanup used by the harness
+- `cargo test --quiet` → `evidence/cargo-test.txt`
+- `cargo clippy --all-targets -- -D warnings` → `evidence/clippy.txt`
+- `./scripts/verus.sh src/lib.rs` → `evidence/verus.txt`
+- `./scripts/check-ensures.sh` → `evidence/check-ensures.txt`
+- `./scripts/verify.sh` → `evidence/verify.txt`
+- `tracey query uncovered` → `evidence/tracey-uncovered.txt`
+- `tracey query untested` → `evidence/tracey-untested.txt`
+
+## Result summary
+- Targeted cargo tests: pass
+- Targeted Verus transcript is present
+- Repo cargo/clippy/full-lib-Verus/check-ensures/verify transcripts are present
+- Tracey transcripts are present for uncovered and untested queries

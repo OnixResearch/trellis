@@ -1,0 +1,21 @@
+# Validation Review Packet
+
+## Targeted module validation
+- `cargo test --quiet sel4_reply` → `evidence/cargo-test-sel4-reply.txt` (`7 passed; 0 failed`)
+- `./scripts/verus.sh src/sel4_reply.rs` → `evidence/verus-sel4-reply.txt` (`9 verified, 0 errors`)
+
+## Repo validation
+- `cargo-clean-arrayref.txt` and `cargo-clean-blake3.txt` document the doctest-artifact cleanup used by the harness
+- `cargo test --quiet` → `evidence/cargo-test.txt`
+- `cargo clippy --all-targets -- -D warnings` → `evidence/clippy.txt`
+- `./scripts/verus.sh src/lib.rs` → `evidence/verus.txt`
+- `./scripts/check-ensures.sh` → `evidence/check-ensures.txt`
+- `./scripts/verify.sh` → `evidence/verify.txt`
+- `tracey query uncovered` → `evidence/tracey-uncovered.txt`
+- `tracey query untested` → `evidence/tracey-untested.txt`
+
+## Result summary
+- Targeted cargo tests: pass
+- Targeted Verus: pass
+- Repo cargo/clippy/full-lib-Verus/check-ensures/verify transcripts are present
+- Tracey transcripts are present for uncovered and untested queries

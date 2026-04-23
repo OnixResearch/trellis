@@ -1,0 +1,20 @@
+# Validation Review Packet
+
+## Phase validation summaries
+- `V1-matching-failure.md` — leaf/add/mul matching, mismatch, missing-tile, and overflow validation
+- `V2-dp-determinism.md` — brute-force oracle, recurrence, and deterministic tie-break validation
+- `V3-soundness-completeness.md` — selected-value and recursive-cover validation
+
+## Targeted and repo validation
+- `V4-repo-validation.md` records:
+  - targeted Verus: `16 verified, 0 errors`
+  - targeted cargo tests: `7 passed; 0 failed`
+  - repo cargo test: `4145 passed; 0 failed` for the main crate, plus `13` `repo-index` tests
+  - cargo clippy: success under `-D warnings`
+  - full-lib Verus: `8499 verified, 0 errors`
+  - check-ensures: success
+  - Tracey: `0 uncovered`, `0 untested` out of `1715` rules
+  - verify.sh: `=== ALL CHECKS PASSED ===`
+
+## Archive status
+- `R5-archive.md` records the archive move and the canonical final review surface.

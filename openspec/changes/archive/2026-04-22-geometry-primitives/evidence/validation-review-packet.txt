@@ -1,0 +1,21 @@
+# Validation Review Packet
+
+## Phase validation summaries
+- `V1-alignment-validation.md` — alignment helper proofs/tests
+- `V2-interval-validation.md` — interval combinator proofs/tests
+- `V3-region-validation.md` — region combinator proofs/tests
+- `V4-partition-validation.md` — partition proofs/tests
+- `V5-rect-validation.md` — rect combinator proofs/tests
+- `V6-bbox-validation.md` — bounding-box proofs/tests
+
+## Repo validation summary
+- `V7-repo-validation.md` records fresh landed-tree validation:
+  - cargo test: `4075 passed`, `13` doc tests passed
+  - cargo clippy: success under `-D warnings`
+  - full-lib Verus: `8259 verified, 0 errors`
+  - check-ensures: success
+  - Tracey: `0 uncovered`, `0 untested` out of `1675` rules
+  - verify.sh: `=== ALL CHECKS PASSED ===`
+
+## Archive status
+- `R6-archive.md` records the archive move and canonical spec locations.
