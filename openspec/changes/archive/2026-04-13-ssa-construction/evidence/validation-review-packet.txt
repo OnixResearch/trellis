@@ -1,0 +1,23 @@
+# Validation Review Packet
+
+## Repo validation transcripts
+- `cargo-test.txt` — full `cargo test`
+- `cargo-clippy.txt` — full `cargo clippy --all-targets -- -D warnings`
+- `verus-lib.txt` — `./scripts/verus.sh src/lib.rs`
+- `check-ensures.txt` — `./scripts/check-ensures.sh`
+- `verify.txt` — `./scripts/verify.sh`
+- `tracey-uncovered.txt` — `tracey query uncovered`
+- `tracey-untested.txt` — `tracey query untested`
+
+## Result summary
+- `verification-summary.txt` records:
+  - cargo test: `3517 passed; 0 failed`
+  - cargo clippy: success
+  - full-lib Verus: `6450 verified, 0 errors`
+  - check-ensures: success
+  - Tracey: `0 uncovered`, `0 untested` out of `1406` rules
+  - verify.sh: `=== ALL CHECKS PASSED ===`
+
+## Archive status
+- `archive-state.txt` records archived active-change absence.
+- `clean-tree-claim.md` and `post-66cef5d-git-status.txt` scope the preserved clean-tree evidence.

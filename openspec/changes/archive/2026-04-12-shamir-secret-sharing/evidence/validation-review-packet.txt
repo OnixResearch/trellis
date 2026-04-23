@@ -1,0 +1,21 @@
+# Validation Review Packet
+
+## Targeted and thematic evidence
+- `shamir-field-evidence.txt` — field arithmetic proof/test evidence
+- `shamir-lagrange-evidence.txt` — interpolation/reconstruction proof/test evidence
+
+## Repo validation summary
+- `verification-summary.txt` records:
+  - cargo test: `3365 passed; 0 failed`
+  - cargo clippy: success
+  - full-lib Verus: `5912 verified, 0 errors`
+  - verify.sh: `=== ALL CHECKS PASSED ===`
+  - Tracey: `0 uncovered`, `0 untested` out of `1318` rules
+  - check-ensures: success
+  - check-coverage: all public functions annotated
+
+## Raw transcripts
+- `cargo-test.txt`, `cargo-clippy.txt`, `verus.txt`, `verify.txt`, `tracey-uncovered.txt`, `tracey-untested.txt`, `check-ensures.txt`, and `check-coverage.txt` are indexed in `evidence/review-index.md`.
+
+## Archive status
+- `archive-state.txt` records `active-absent`.

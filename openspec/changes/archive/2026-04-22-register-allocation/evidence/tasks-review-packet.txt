@@ -1,0 +1,18 @@
+# Tasks Review Packet
+
+## Phase 1: Interference graph
+- `src/register_allocation.rs` landed the interference-graph builder and overlap model.
+
+## Phase 2: Allocation validity and completeness
+- Coloring checks, greedy allocation, and all-spill fallback landed in `src/register_allocation.rs`.
+
+## Phase 3: Spill rewriting
+- Spill rewrite actions and exact `spill_variable` behavior landed in `src/register_allocation.rs`.
+
+## Phase 4: Coalescing and Briggs
+- Coalescing and Briggs-style safety checks landed in `src/register_allocation.rs`.
+
+## Phase 5: Sync and validation
+- Targeted validation is summarized in `evidence/V1-targeted.md`.
+- Repo validation is summarized in `evidence/V4-repo-validation.md` and raw transcript files indexed in `evidence/review-index.md`.
+- Archive state is summarized in `evidence/R5-archive.md`.

@@ -1,0 +1,18 @@
+# Tasks Review Packet
+
+## Phase 0: Audit and change-spec hygiene
+- Audit and overlap disposition are captured in `evidence/R1-audit.md`.
+- Gate reruns are captured in `evidence/R2-gates.md` and `evidence/R4-post-sync-gates.md`.
+
+## Phase 1: Interpretable matching core
+- `src/instruction_selection.rs` landed the `Leaf` / `Add` / `Mul` tile-matching and failure-reporting surface.
+- Phase 1 validation is summarized in `evidence/V1-matching-failure.md`.
+
+## Phase 2: Dynamic-programming selection
+- Recursive candidate formation, optimal-cost selection, and deterministic tie-break behavior landed in `src/instruction_selection.rs`.
+- Phase 2 validation is summarized in `evidence/V2-dp-determinism.md`.
+
+## Phase 3: Soundness, sync, and archive
+- Soundness/completeness validation is summarized in `evidence/V3-soundness-completeness.md`.
+- Sync is captured in `evidence/R3-sync.md` and combined targeted + repo validation is summarized in `evidence/V4-repo-validation.md`.
+- Archive state is summarized in `evidence/R5-archive.md` and indexed in `evidence/review-index.md`.
