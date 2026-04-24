@@ -1,0 +1,5 @@
+OpenSpec tasks gate (wasm-primitives)
+
+Strategy: cross-family
+
+Tasks unchanged. Phases 1–3 complete, nine Phase 4 validation/archive tasks remain. All checks pass. Proceed with Phase 4 execution.

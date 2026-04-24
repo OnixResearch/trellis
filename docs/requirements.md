@@ -6930,6 +6930,30 @@ The greedy allocator MUST process variables in increasing variable-index order,
 choose the lowest available register in `0 .. k-1`, and spill only when every
 register in that range conflicts with an interfering earlier variable.
 
+## WebAssembly MVP Primitives
+
+r[wasm-value.types]
+Core Wasm values MUST carry exact value-type information. A value tagged `i32`,
+`i64`, `f32`, or `f64` MUST be accepted only when that exact type is required.
+
+r[wasm-stack.discipline]
+The modeled `i32.add` instruction MUST consume exactly two `i32` operands from
+the operand-stack suffix and MUST produce exactly one `i32` result.
+
+r[wasm-locals.access]
+`local.get`, `local.set`, and `local.tee` MUST access only in-bounds local
+indices and MUST preserve the declared type of each local slot.
+
+r[wasm-memory.bounds]
+A memory load or store MUST succeed only when every addressed byte lies within
+linear-memory bounds. Out-of-bounds access MUST fail without modifying memory.
+
+r[wasm-memory.grow]
+`memory.grow` MUST increase linear memory only in whole 64KiB pages. On
+success, old memory contents MUST remain unchanged as a prefix of the grown
+memory and the appended bytes MUST be zero. On failure, memory MUST remain
+unchanged.
+
 ## Loop Detection
 
 r[loop.back-edge]

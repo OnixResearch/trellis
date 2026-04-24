@@ -1,0 +1,8 @@
+$ ./autoresearch.sh
+METRIC active_changes=0
+
+Autoresearch harness result:
+- benchmark metric: active_changes=0
+- benchmark status: passed
+- autoresearch.checks.sh: passed
+- focused interpretation: the last active OpenSpec change (`wasm-primitives`) is archived, and the full repo validation rail remained green on the archived tree.

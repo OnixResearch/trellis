@@ -87,6 +87,8 @@
 //!   deterministic spill fallback
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
 //!   safe-reuse checks over live ranges
+//! - `wasm_primitives` — exact Wasm value tags, `i32.add` stack discipline, typed local access,
+//!   and linear-memory bounds/grow semantics
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
 //! - `debruijn` — de Bruijn shifting, substitution, and beta reduction with scope preservation
@@ -705,6 +707,7 @@ pub mod vote_tally;
 pub mod voter_set;
 pub mod wal_recovery;
 pub mod wal_segment;
+pub mod wasm_primitives;
 pub mod watermark;
 pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;

@@ -1,0 +1,5 @@
+r[wasm-value.types]: FOUND
+r[wasm-stack.discipline]: FOUND
+r[wasm-locals.access]: FOUND
+r[wasm-memory.bounds]: FOUND
+r[wasm-memory.grow]: FOUND

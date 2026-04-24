@@ -1,0 +1,5 @@
+$ git status --short
+
+This archive lands in the same keep commit that records `active_changes=0`.
+`post-commit-status.raw` is intentionally empty: for that archive commit, the expected
+`git status --short` output is empty.
