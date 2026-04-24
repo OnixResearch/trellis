@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8217 Verus proofs · 4083 tests · 1693 requirements · 366 modules · 19 trusted boundaries**
+**8277 Verus proofs · 4106 tests · 1683 requirements · 368 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -196,6 +196,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `memory_order` | memory ordering lattice: Relaxed ⊏ Acquire/Release ⊏ AcqRel ⊏ SeqCst |
 | `cache_hierarchy` | inclusive/exclusive/non-inclusive L1/L2 invariants, back-invalidation, capacity, and snoop scope |
 | `store_buffer` | fixed-capacity store queue with youngest-match forwarding, FIFO drain, and fence-empty semantics |
+| `tlb_shootdown` | page-local TLB shootdown: initiator self-invalidation, monotone acknowledgments, completion freshness, disjoint-page isolation, and range coverage |
 | `semaphore` | counting semaphore: acquire/release permits, capacity bounds |
 | `two_phase_lock` | two-phase locking: growing/shrinking phase discipline |
 | `lease_mutex` | lease-based distributed mutual exclusion with fencing tokens |
@@ -433,7 +434,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 3545 tests (unit + property)
+cargo test                 # 4106 tests (unit + property + doc)
 cargo clippy --all-targets -- -D warnings
 ```
 
@@ -441,7 +442,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8217 proofs)
+./scripts/verus.sh         # verus only (8277 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -449,9 +450,9 @@ cargo clippy --all-targets -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 303 module declarations
+src/lib.rs              ← crate root, 368 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1421 tracey requirements
+docs/requirements.md    ← 1683 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

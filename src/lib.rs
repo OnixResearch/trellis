@@ -219,6 +219,8 @@
 //! - `ring_buffer` — verified FIFO queue with power-of-two capacity
 //! - `store_buffer` — fixed-capacity store queue with youngest-match forwarding, FIFO drain, and
 //!   fence-empty semantics
+//! - `tlb_shootdown` — page-local TLB shootdown: initiator self-invalidation, pending-ack
+//!   completion guard, stale-entry freshness, page isolation, and range lifting
 //! - `rwlock` — read-write lock modes, mutual exclusion, reader/writer tokens
 //! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode
 //!   refinement
@@ -652,6 +654,7 @@ pub mod ticket_lock;
 pub mod tier;
 pub mod tiered_rate_limit;
 pub mod tiling;
+pub mod tlb_shootdown;
 pub mod token_timestamp;
 pub mod topo_sort;
 pub mod trace_relation;

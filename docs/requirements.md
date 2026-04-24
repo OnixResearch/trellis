@@ -7413,6 +7413,35 @@ r[sel4-vspace.rights]
 Effective mapping rights MUST be no greater than the rights carried by the
 capability used to install the mapping.
 
+## TLB Shootdown
+
+r[tlb-shootdown.freshness]
+After a single-page shootdown completes, every targeted core MUST have the
+stale cached translation removed for the target page.
+
+r[tlb-shootdown.termination]
+Under the responsiveness assumption, acknowledgments MUST make monotone
+progress toward completion and completion MUST hold exactly when all
+required acknowledgments have been recorded.
+
+r[tlb-shootdown.initiator-safety]
+The shootdown protocol MUST report completion only after every required
+acknowledgment has been recorded, so callers may use completion as the guard
+for later effects outside this module.
+
+r[tlb-shootdown.self-invalidation]
+The initiating core MUST invalidate its own cached translation for the target
+page before waiting on other cores.
+
+r[tlb-shootdown.isolation]
+Handling a shootdown for one target page MUST NOT modify cached translations
+for any different page.
+
+r[tlb-shootdown.range]
+Range invalidation MUST apply the single-page invalidation rule to every page
+in `[start, end)`, preserve pages outside the range, be identity on empty
+ranges, and match the single-page rule on singleton ranges.
+
 ## seL4 Invocation Decode
 
 r[sel4-invocation.decode-soundness]

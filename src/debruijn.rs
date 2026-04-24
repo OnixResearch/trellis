@@ -527,7 +527,14 @@ mod tests {
     }
 
     fn arb_well_scoped_term(depth: u64, fuel: u32) -> BoxedStrategy<Term> {
-        let max_var = if depth == 0 { 0 } else { (depth - 1) as u32 };
+        let max_var = if depth == 0 {
+            0
+        } else {
+            match u32::try_from(depth - 1) {
+                Ok(value) => value,
+                Err(_) => u32::MAX,
+            }
+        };
         let leaf = if depth == 0 {
             Just(Term::Var(0)).boxed()
         } else {
