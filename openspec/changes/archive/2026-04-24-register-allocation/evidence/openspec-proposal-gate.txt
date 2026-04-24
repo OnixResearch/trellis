@@ -1,0 +1,8 @@
+OpenSpec proposal gate (register-allocation)
+
+VERDICT: PASS
+
+Highlights:
+- Proposal/spec scope accepted as a narrow allocation-core landing.
+- Non-goals explicitly defer spill rewriting, coalescing, calling conventions, and optimality.
+- Follow-up note: keep the verification bar explicit in the final archive artifacts.

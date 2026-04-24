@@ -1,0 +1,420 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet register_allocation
+
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+sccache: error: Cannot open/write log file '/home/brittonr/.cache/sccache/error.log'
+sccache: error: Timed out waiting for server startup. Maybe the remote service is unreachable?
+Run with SCCACHE_LOG=debug SCCACHE_NO_DAEMON=1 to get more information
+sccache-rustc-wrapper: cache transport unavailable, falling back to rustc
+
+running 10 tests
+..........
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 4129 filtered out; finished in 0.01s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+

@@ -83,6 +83,8 @@
 //!   exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
 //!   projection
+//! - `register_allocation` — live-range overlap graphs, conflict-free register assignment, and
+//!   deterministic spill fallback
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
 //!   safe-reuse checks over live ranges
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
@@ -596,6 +598,7 @@ pub mod reachability;
 pub mod read_index;
 pub mod ref_count;
 pub mod region;
+pub mod register_allocation;
 pub mod replication_mode;
 pub mod replication_pipeline;
 pub mod request_forward;

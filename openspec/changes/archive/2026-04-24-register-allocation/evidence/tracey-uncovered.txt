@@ -1,0 +1,8 @@
+$ tracey query uncovered --prefix regalloc
+
+verified-logic/rust: 0 uncovered out of 1703 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+

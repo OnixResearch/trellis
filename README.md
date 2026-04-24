@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8367 Verus proofs · 4129 tests · 1722 requirements · 371 modules · 19 trusted boundaries**
+**8395 Verus proofs · 4139 tests · 1726 requirements · 372 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -310,6 +310,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 | Module | What it verifies |
 |---|---|
+| `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
 
 ### Scheduling primitives

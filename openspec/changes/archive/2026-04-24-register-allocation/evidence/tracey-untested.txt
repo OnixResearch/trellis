@@ -1,0 +1,9 @@
+
+$ tracey query untested --prefix regalloc
+
+verified-logic/rust: 0 untested (impl but no verify) out of 1703 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+

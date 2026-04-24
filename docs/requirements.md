@@ -6908,6 +6908,28 @@ A block with no CFG successors MUST have empty live-out. Return values, if any,
 MUST be modeled as local uses of the exit block rather than as post-exit
 liveness.
 
+## Register Allocation
+
+r[regalloc.interference]
+The register-allocation core MUST build a symmetric interference graph with no
+self-loops where two variables interfere exactly when their caller-supplied live
+ranges overlap at some program point.
+
+r[regalloc.coloring]
+Any accepted allocation MUST assign distinct physical registers to interfering
+variables, and every register assignment MUST use a register ID strictly less
+than `k`.
+
+r[regalloc.completeness]
+Every variable MUST receive exactly one allocation outcome: either a physical
+register or a spill slot. In this core model, spilled variables MUST use spill
+slot `variable_index`.
+
+r[regalloc.spill-fallback]
+The greedy allocator MUST process variables in increasing variable-index order,
+choose the lowest available register in `0 .. k-1`, and spill only when every
+register in that range conflicts with an interfering earlier variable.
+
 ## Loop Detection
 
 r[loop.back-edge]
