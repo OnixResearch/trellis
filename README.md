@@ -395,6 +395,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `choreography_local` | finite local choreography syntax, branch lookup, and merge |
 | `choreography_projection` | projectability checks and endpoint projection |
 | `choreography_step` | one-step global/local reduction and shared-prefix alignment |
+| `debruijn` | de Bruijn shifting, substitution, beta reduction, and scope preservation |
 | `acid` | atomicity, consistency, isolation, durability over state vectors |
 
 ### Cross-module properties

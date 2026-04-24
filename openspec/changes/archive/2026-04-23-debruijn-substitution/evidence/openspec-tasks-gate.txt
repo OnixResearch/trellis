@@ -1,0 +1,40 @@
+OpenSpec tasks gate (debruijn-substitution)
+
+Strategy: cross-family
+
+## Design Review: `debruijn-substitution`
+
+### Verdict: **Approve**
+
+The design is clean, concrete, and fully covers the proposal and spec.
+
+### Coverage check
+
+Every proposal capability maps to a specific design element:
+
+- **Term model** → Decision 1 (SpecTerm/Term split, term_view)
+- **Overflow** → Decision 2 (Option returns, u32 boundary)
+- **Substitution semantics** → Decision 3 (standard capture-avoiding, not the misleading identity form)
+- **Beta reduction** → Decision 4 (scope safety only, no evaluator)
+- **All 7 `r[debruijn.*]` requirements** → covered by Goals list
+
+### Decisions
+
+All four decisions are well-motivated and appropriate for this repo:
+
+1. **Ghost/exec split** — matches the established pattern (`shamir_field`, `nix_base32`, etc.). No issues.
+2. **Option overflow** — honest and testable. The design correctly avoids hiding overflow behind preconditions.
+3. **Standard substitution** — directly addresses the napkin correction about identity-substitution wording. The design explicitly calls out "not a misleading 'substitute a variable for itself everywhere' slogan."
+4. **Scope-only beta theorem** — right scope cut. Confluence/normalization are listed as non-goals.
+
+### Risks
+
+All three risks are acknowledged with clear rationale. No unresolved choices requiring human input.
+
+### Napkin check
+
+- Identity-substitution correction: fully addressed in Decision 3.
+- "Run gate early" pattern: satisfied by this review sequence.
+- No anti-patterns triggered (no `cargo fmt --all`, no overpromised runtime decode surface).
+
+No issues. Ready for implementation.

@@ -85,6 +85,7 @@
 //!   projection
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
+//! - `debruijn` — de Bruijn shifting, substitution, and beta reduction with scope preservation
 //! - `constant_folding` — constant-propagation lattice, exact fold semantics, and per-instruction
 //!   transfer over the shared raw IR
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi
@@ -431,6 +432,7 @@ pub mod ct_select;
 pub mod cycle_detect;
 pub mod dead_code_elimination;
 pub mod deadline_queue;
+pub mod debruijn;
 pub mod delegation;
 pub mod distributed_lock;
 pub mod dominator_tree;

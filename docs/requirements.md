@@ -2471,6 +2471,40 @@ Obvious structural clashes MUST fail. In particular, distinct concrete
 constructors MUST not unify, and an application MUST not unify with a
 concrete constructor.
 
+## De Bruijn Substitution
+
+r[debruijn.well-scoped]
+A de Bruijn term MUST be well scoped at depth d if and only if every
+variable index appearing in the term is strictly smaller than d at the
+point where it is interpreted. Entering an abstraction MUST increase the
+available depth by one.
+
+r[debruijn.shift-zero]
+Shifting by zero MUST be the identity for every cutoff and term.
+
+r[debruijn.shift-compose]
+Shifting by m and then by n at the same cutoff MUST equal a single shift
+by m + n at that cutoff.
+
+r[debruijn.shift-preserves-scope]
+If a term is well scoped at depth d and the shift cutoff is at most d,
+then shifting by k MUST produce a term that is well scoped at depth
+d + k.
+
+r[debruijn.identity-substitution]
+Lifting a term by one at cutoff c and then substituting the matching
+variable c back in MUST recover the original term.
+
+r[debruijn.subst-preserves-scope]
+If a body is well scoped at depth d + 1 and the replacement term is well
+scoped at depth d, then substituting the replacement for variable 0 MUST
+produce a term that is well scoped at depth d.
+
+r[debruijn.beta-scope]
+Beta reduction of a well-scoped redex `App(Abs(body), arg)` MUST produce
+an output term that is well scoped at the original outer depth. Non-redex
+terms MUST not beta-reduce.
+
 ## Cross-Module Properties (Wave 1)
 
 r[properties.signal-add-is-set-bit]
