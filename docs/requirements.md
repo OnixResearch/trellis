@@ -7937,10 +7937,27 @@ for encoding.
 
 r[ucan-did.varint-round-trip]
 Encoding a value as a LEB128 varint and decoding MUST recover the
-original value.
+original value and consumed encoded length. Decoding an encoded varint
+followed by trailing bytes MUST consume only the encoded varint prefix.
+
+r[ucan-did.varint-bounded-u64]
+DID varint decoding MUST use bounded u64 LEB128 semantics: a terminating
+byte within the u64 byte budget returns a representable value and consumed
+length; empty, continuation-only, overlong, and overflowing inputs return
+None; non-minimal representable encodings remain accepted.
 
 r[ucan-did.varint-rejects-empty]
-Decoding a varint from an empty byte sequence MUST return None.
+Decoding a varint from an empty byte sequence or truncated continuation
+sequence MUST return None.
+
+r[verification-gaps.close-ucan-did-varint-decode]
+The UCAN DID `varint_decode` implementation MUST be verified directly and
+MUST NOT use `external_body`, `assume(...)`, `assume_specification[...]`,
+`@verified-logic:no-ensures`, or `@verified-logic:exempt` replacement trust.
+
+r[verification-gaps.inventory-after-ucan-did-varint]
+The proof-gap inventory and README counts MUST remove the closed UCAN DID
+`varint_decode` boundary and publish source-derived non-double-counted totals.
 
 r[ucan-did.base58btc-round-trip]
 Encoding bytes as base58btc and decoding MUST recover the original bytes.

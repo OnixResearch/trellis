@@ -12,14 +12,14 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 
 ## Current Status
 
-As of `2026-04-15`, fresh reruns on the current tree show:
+As of `2026-04-24`, fresh reruns on the current tree show:
 
-- `cargo clippy --all-targets -- -D warnings` passes
-- `cargo test` passes (`3705 passed`)
-- `./scripts/verus.sh src/lib.rs` passes (`6940 verified, 0 errors`)
-- `tracey query uncovered` returns `0 uncovered out of 1491 rules`
-- `tracey query untested` returns `0 untested out of 1491 rules`
-- `./scripts/verify.sh` passes on this tree; direct Tracey query outputs remain archived as the coverage source of truth
+- `cargo test --quiet` passes (`4157 passed` plus `13` doc tests)
+- `./scripts/verus.sh src/lib.rs` passes (`8454 verified, 0 errors`)
+- `./scripts/check-ensures.sh` passes (`1636` public `verus!` functions checked, `1` exempted)
+- `tracey query uncovered` returns `0 uncovered out of 1711 rules`
+- `tracey query untested` returns `0 untested out of 1711 rules`
+- `tracey query status` can still require an immediate rerun after daemon auto-start; direct successful Tracey query outputs remain archived as the coverage source of truth
 
 These green direct checks do **not** mean the trust surface is empty. The
 following inventory is the current audited boundary.
@@ -28,7 +28,7 @@ following inventory is the current audited boundary.
 
 ### `#[verifier::external_body]`
 
-`33` external_body items remain across `14` files.
+`32` external_body items remain across `14` files.
 
 Each trusted site is listed individually below so the inventory matches the
 actual tree and not just per-file totals.
@@ -52,7 +52,6 @@ actual tree and not just per-file totals.
 | `src/snapshot_integrity.rs:63 dual_hash` | Permanent | Exec wrapper is trusted because its `ensures` targets uninterpreted `dual_hash_spec`. | `src/snapshot_integrity.rs` unit tests + proptest exercise round-trip and tamper detection. |
 | `src/ucan_ability.rs:107 ability_subsumes` | Closeable | Runtime-only ability subsumption has no Verus postcondition; proofs currently target `ability_subsumes_spec`. | `ucan_ability` tests and proof lemmas cover wildcard, reflexive, and monotone containment behavior. |
 | `src/ucan_cid.rs:314 axiom_cid_encode_round_trip` | Permanent | Multibase CID encode/decode is modeled as an uninterpreted external codec relation. | `ucan_cid` tests cover CID constants; proof lemmas cover CID byte construction and round-trip use of the axiom. |
-| `src/ucan_did.rs:177 varint_decode` | Closeable | Runtime varint decoder is bridged to `varint_decode_spec` instead of proved internally. | `ucan_did` tests cover varint round-trip and truncated-continuation rejection. |
 | `src/ucan_did.rs:269 axiom_base58btc_round_trip` | Permanent | Base58btc round-trip is an external codec-model axiom. | `ucan_did` tests cover DID encoding and base58btc round-trip behavior. |
 | `src/ucan_did.rs:277 axiom_base58btc_injective` | Permanent | Base58btc injectivity is an external codec-model axiom. | `ucan_did` tests cover distinct DID/key encodings and proof lemmas consume the axiom. |
 | `src/ucan_did.rs:286 base58btc_encode` | Permanent | Runtime base58btc encoder is trusted against the uninterpreted base58btc spec. | `ucan_did` tests cover DID encoding and base58btc round-trip behavior. |
@@ -72,7 +71,7 @@ actual tree and not just per-file totals.
 Summary:
 
 - Permanent external-body items: `29`
-- Closeable external-body items: `4`
+- Closeable external-body items: `3`
 
 ### `assume_specification[...]` exec bridges
 
@@ -119,7 +118,7 @@ Summary:
 - Permanent runtime-only public API exemptions: `0`
 - Closeable runtime-only public API exemptions: `8`
 
-Overall live inventory: `44` trusted/weakened/runtime-only proof boundaries = `29` permanent + `15` closeable.
+Overall live inventory: `43` trusted/weakened/runtime-only proof boundaries = `29` permanent + `14` closeable.
 
 ### `assume(...)` soundness oracles
 

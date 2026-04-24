@@ -106,20 +106,56 @@ for encoding.
 
 ### Multicodec
 
+#### Requirement: Varint Decode Uses Bounded U64 Semantics
+`r[ucan-did.varint-bounded-u64]`
+
+DID varint decoding MUST use bounded u64 LEB128 semantics. It MUST use named
+limits for group width, continuation bit, payload mask, u64 width, max byte
+budget, and max shift. It MUST return `Some((value, consumed))` only when a
+terminating byte appears within the u64 byte budget and the value is
+representable as `u64`; any `Some` result MUST have `1 <= consumed <= input.len()`.
+It MUST reject empty, continuation-only, overlong, and overflowing input.
+Non-minimal encodings that terminate within the budget and remain representable
+MUST be accepted.
+
+##### Scenario: Ed25519 codec 0xed
+`r[ucan-did.varint-bounded-u64.scenario-ed25519]`
+
+- GIVEN byte sequence `[0xed, 0x01]`
+- WHEN decoding it as a varint
+- THEN decoding returns `(0xed, 2)`
+
+##### Scenario: Non-minimal representable input is accepted
+`r[ucan-did.varint-bounded-u64.scenario-non-minimal]`
+
+- GIVEN a non-minimal byte sequence that terminates within the u64 byte budget
+  and represents a `u64` value
+- WHEN decoding it as a varint
+- THEN decoding returns `Some((value, consumed))`
+
+##### Scenario: Overlong or overflowing input rejects
+`r[ucan-did.varint-bounded-u64.scenario-overflow]`
+
+- GIVEN input with no terminating byte before the u64 byte budget is exhausted,
+  or a final payload that would overflow `u64`
+- WHEN decoding it as a varint
+- THEN the result is `None`
+
 #### Requirement: Multicodec Varint Round-Trip
 `r[ucan-did.varint-round-trip]`
 
 Encoding a codec as a varint and then decoding MUST recover the original
-codec value and consumed length.
+codec value and consumed length. Decoding an encoded varint followed by trailing
+bytes MUST consume only the encoded varint prefix.
 
 `varint_decode(varint_encode(code)) == Some((code, varint_encode(code).len()))`
 
-##### Scenario: Ed25519 codec 0xed
-`r[ucan-did.varint-round-trip.scenario-ed25519]`
+##### Scenario: Trailing bytes are not consumed
+`r[ucan-did.varint-round-trip.scenario-trailing-suffix]`
 
-- GIVEN codec value `0xed`
-- WHEN encoding it as a varint
-- THEN decoding returns `(0xed, 2)`
+- GIVEN `varint_encode(code) ++ suffix`
+- WHEN decoding it as a varint
+- THEN decoding returns `(code, varint_encode(code).len())`
 
 #### Requirement: Varint Decode Rejects Empty Or Truncated Input
 `r[ucan-did.varint-rejects-empty]`
@@ -137,7 +173,8 @@ sequence MUST return `None`.
 ##### Scenario: Truncated continuation rejects
 `r[ucan-did.varint-rejects-empty.scenario-truncated]`
 
-- GIVEN a non-empty byte sequence ending in a continuation byte
+- GIVEN a non-empty byte sequence ending in a continuation byte before any
+  terminating byte
 - WHEN decoding as a varint
 - THEN the result is `None`
 

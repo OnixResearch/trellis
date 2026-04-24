@@ -23,9 +23,10 @@ close SSA bridges, or Verus-ize instruction selection.
 ### 1. Decode core is a pure bounded state machine
 
 **Choice:** Introduce named constants inside the `verus!` block and a small
-proof/exec core for bounded u64 LEB128 decode. Use names for the byte budget,
-group bit width, continuation bit, payload mask, and maximum final shift instead
-of raw numeric literals in verified code.
+proof/exec core for bounded u64 LEB128 decode. The verified code carries
+`VARINT_GROUP_BITS`, `VARINT_BASE`, `VARINT_CONTINUATION_BIT`,
+`VARINT_PAYLOAD_MASK`, `U64_BIT_WIDTH`, `MAX_U64_VARINT_BYTES`, and
+`MAX_U64_VARINT_SHIFT` as named values instead of raw numeric literals.
 
 **Rationale:** A state-machine helper exposes the exact obligations that are
 currently hidden by `external_body`: consumed length, accumulator bounds, shift
@@ -38,10 +39,13 @@ wrapper:
   without Verus treating them as external Rust items
 - `varint_decode_bounded_spec(bytes)` or equivalent open wrapper used by the
   public `varint_decode_spec`
-- a recursive/prefix helper that carries `index`, `shift`, `acc`, and remaining
-  budget
-- small lemmas for empty rejection, truncated rejection, overlong rejection,
-  final-byte overflow rejection, non-minimal representable acceptance, and
+- a recursive/fuel helper that carries the current offset and remaining byte
+  budget, then composes tail results with checked u64 multiplication/addition
+- small lemmas for empty rejection, single-continuation truncation
+  (`varint_decode_rejects_single_continuation`), continuation-only overlong
+  rejection (`varint_decode_rejects_overlong_continuations`), final-payload
+  overflow rejection (`varint_decode_rejects_overflowing_final_payload`),
+  non-minimal zero acceptance (`varint_decode_accepts_nonminimal_zero`), and
   encode-prefix round-trip
 - `varint_decode(bytes: &Vec<u8>)` as the imperative shell with the existing
   public signature and an `ensures` contract tied to `varint_decode_spec`
@@ -102,6 +106,30 @@ anchor.
 | `ucan-did.varint-rejects-empty` | `varint_decode_rejects_empty`, truncated continuation lemma/test |
 | `verification-gaps.close-ucan-did-varint-decode` | source audit proving no external body or replacement trust on decoder path |
 | `verification-gaps.inventory-after-ucan-did-varint` | count audit plus README/canonical spec inventory updates |
+
+## Validation and evidence matrix
+
+Phase 0 baseline evidence MUST be captured before implementation evidence is
+claimed:
+
+| Artifact | Command / source |
+|---|---|
+| `evidence/baseline-verus-ucan-did.txt` | `./scripts/verus.sh src/ucan_did.rs` |
+| `evidence/baseline-cargo-test-ucan-did.txt` | `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet ucan_did` |
+| `evidence/baseline-proof-gap-counts.txt` | source audits for `external_body`, `assume_specification[...]`, `@verified-logic:no-ensures`, instruction-selection exemptions, and `rg -n 'assume\\s*\\(' src/ucan_did.rs`; the artifact records the expected baseline total `44` and is reconciled against the final `44 -> 43` delta |
+
+Final validation evidence MUST include:
+
+| Artifact | Command / source |
+|---|---|
+| `evidence/final-verus-ucan-did.txt` | `./scripts/verus.sh src/ucan_did.rs` |
+| `evidence/final-verus-lib.txt` | `./scripts/verus.sh src/lib.rs` |
+| `evidence/final-cargo-test-ucan-did.txt` | `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet ucan_did` |
+| `evidence/final-check-ensures.txt` | `./scripts/check-ensures.sh` |
+| `evidence/final-tracey.txt` | `tracey query status`, then `tracey query uncovered`, then `tracey query untested` |
+| `evidence/final-proof-gap-counts.txt` | source-derived count audit reconciled with README and canonical spec totals |
+| `evidence/final-decoder-trust-audit.txt` | scoped decoder-path audit for absence of replacement trust, including `rg -n 'fn varint_decode|varint_decode_spec|varint_decode_fuel|checked_(mul|add)_u64|varint_decode_rejects|varint_decode_accepts' src/ucan_did.rs` and `rg -n 'external_body|assume\\s*\\(|assume_specification\\[|@verified-logic:no-ensures|@verified-logic:exempt' src/ucan_did.rs` |
+| `evidence/final-openspec-gates.txt` | `openspec_gate proposal`, `design`, and `tasks` for this change |
 
 ## Risks / Trade-offs
 

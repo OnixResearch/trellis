@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8425 Verus proofs · 4152 tests · 1731 requirements · 373 modules · 44 trusted/proof-gap boundaries**
+**8454 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -452,7 +452,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8425 proofs)
+./scripts/verus.sh         # verus only (8454 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -462,7 +462,7 @@ cargo clippy --all-targets -- -D warnings
 ```
 src/lib.rs              ← crate root, 373 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1731 tracey requirements
+docs/requirements.md    ← 1734 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
@@ -478,7 +478,7 @@ Most modules follow the same pattern (tracked exceptions are listed in
 
 ## Trusted and proof-gap items
 
-`33` items are marked `#[verifier::external_body]` across `14` files.
+`32` items are marked `#[verifier::external_body]` across `14` files.
 In addition, `src/ssa_construction.rs` currently carries `3`
 `assume_specification[...]` bridges from thin verified wrappers to plain-Rust
 runtime helpers, and `src/instruction_selection.rs` carries `8` closeable
@@ -502,8 +502,8 @@ runtime-only public API exemptions.
   `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
   digest and signature checks stay behind trusted runtime/model boundaries.
 
-**15 closeable** — `4` closeable `external_body` items (`ucan_ability.rs`,
-`ucan_did.rs`, `ucan_principal_link.rs`, `ucan_token.rs`), `3`
+**14 closeable** — `3` closeable `external_body` items (`ucan_ability.rs`,
+`ucan_principal_link.rs`, `ucan_token.rs`), `3`
 `assume_specification[...]` exec bridges in `src/ssa_construction.rs`, and `8`
 runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
 exempted from `r[impl]` coverage until the module is converted to Verus.

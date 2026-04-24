@@ -1,0 +1,2 @@
+$ ./scripts/verus.sh src/ucan_did.rs
+verification results:: 49 verified, 0 errors

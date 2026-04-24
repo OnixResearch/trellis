@@ -12,11 +12,15 @@ the audited proof-gap inventory without touching cryptographic base58btc trust.
 ## What Changes
 
 - Replace the trusted `varint_decode` wrapper with verified bounded u64 LEB128
-  decoder primitives in `src/ucan_did.rs`.
+  decoder primitives in `src/ucan_did.rs`, with verifier-visible constants
+  declared inside the `verus!` block.
 - Make the spec/exec validity boundary explicit: decode consumes at most the
   named u64 varint byte budget, rejects empty/truncated/overlong/overflowing
   inputs, and returns a consumed length within the input.
 - Preserve existing `varint_encode` round-trip and multicodec prefix proofs.
+- Add explicit proof artifacts for single-continuation truncation,
+  non-minimal zero acceptance, continuation-only overlong rejection, and
+  final-payload overflow rejection.
 - Remove the `#[verifier::external_body]` site from `ucan_did::varint_decode`
   without adding `assume(...)`, `assume_specification[...]`, or a replacement
   trusted bridge.
@@ -63,7 +67,8 @@ the audited proof-gap inventory without touching cryptographic base58btc trust.
     from `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet ucan_did`
     captured as a Phase 0 implementation task, because the selected ROI report
     identified this as missing context
-  - `openspec/changes/close-ucan-did-varint-decode/evidence/counts.md`
+  - `openspec/changes/close-ucan-did-varint-decode/evidence/baseline-proof-gap-counts.txt`
+    and `openspec/changes/close-ucan-did-varint-decode/evidence/final-proof-gap-counts.txt`
     with exact source/count audits showing the proof-gap total falls from `44`
     to `43`; commands include `rg -n '^[[:space:]]*#\\[verifier::external_body\\]' src`,
     `rg -n 'assume_specification\\[' src`, `rg -n '@verified-logic:no-ensures' src`,
