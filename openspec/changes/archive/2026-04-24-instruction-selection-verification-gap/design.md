@@ -65,8 +65,10 @@ rg -n '@verified-logic:exempt runtime-only instruction-selection surface' src/in
 with a counted `external_body` site. The current co-located case is reported in
 evidence but not double-counted.
 
-Update `README.md` and `openspec/specs/verification-gaps/spec.md` to the derived
-published total. Capture the derivation in
+Update `openspec/specs/verification-gaps/spec.md` to the derived published
+total. Update `README.md` only if the derived headline total differs from the
+currently published one; otherwise `counts.md` must prove the existing README
+total is still correct. Capture the derivation in
 `openspec/changes/instruction-selection-verification-gap/evidence/counts.md`.
 
 ### 3. Validation evidence
@@ -75,15 +77,18 @@ Capture these files:
 
 - `evidence/source-audit.txt`: inline Python parses `src/instruction_selection.rs`,
   uses the same `10`-line lookback as `scripts/check-coverage.sh`, verifies the
-  exact 8-function exemption set, verifies nonempty rationale text after
-  `@verified-logic:exempt`, and rejects local `r[impl ...]` markers.
+  exact 8-function exemption set, verifies the exact marker string
+  `@verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps`,
+  and rejects local `r[impl ...]` markers.
 - `evidence/inventory-audit.txt`: inline Python checks the canonical inventory
   has exactly the 8 required `Closeable runtime-only` rows for
   `src/instruction_selection.rs`, no duplicates/extras in that classification,
   and all required row fields.
 - `evidence/count-audit.txt`: inline Python derives counts from the commands
-  above, parses `evidence/counts.md`, and checks published totals in
-  `README.md` and `openspec/specs/verification-gaps/spec.md`.
+  above, parses `evidence/counts.md`, verifies that overlapping category sites
+  are listed and marked non-additive, verifies the raw-category-to-headline-total
+  formula, and checks published totals in `README.md` and
+  `openspec/specs/verification-gaps/spec.md`.
 - `evidence/check-coverage.txt`: `./scripts/check-coverage.sh` output with the
   success marker.
 - `evidence/verify.txt`: `./scripts/verify.sh` output with
@@ -94,6 +99,9 @@ Capture these files:
   lines for any of the 8 named functions.
 - `evidence/cargo-test-instruction-selection.txt`:
   `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet instruction_selection`.
+- `evidence/pre-gates.md` and `evidence/final-gates.md`: captured
+  `openspec_gate proposal/design/tasks instruction-selection-verification-gap`
+  results before implementation and before archive.
 
 ## Risks / Trade-offs
 

@@ -22,9 +22,11 @@ The exact runtime-only exemption set for this change is:
 ### Requirement: Runtime-Only Public APIs Are Explicitly Exempted
 
 r[verification-gaps.runtime-only-exemptions]
-Public functions that intentionally remain outside the verified `r[impl]`
-surface MUST use `@verified-logic:exempt` with a local rationale instead of
-misleading `r[impl ...]` annotations.
+For this change, the 8 named `src/instruction_selection.rs` public functions
+that intentionally remain outside the verified `r[impl]` surface MUST use the
+exact local marker
+`@verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps`
+instead of misleading `r[impl ...]` annotations.
 
 #### Scenario: Instruction-selection helpers are exempted honestly
 
@@ -32,7 +34,8 @@ misleading `r[impl ...]` annotations.
   `tiling_cost`, `tile_matches`, `optimal_tiling`, `check_coverage`, and
   `check_soundness` in `src/instruction_selection.rs`
 - WHEN their coverage annotations are audited
-- THEN each function carries a local `@verified-logic:exempt` reason
+- THEN each function carries the exact local marker
+  `@verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps`
 - AND none of those functions uses a fake `r[impl ...]` marker to satisfy the gate
 
 ### Requirement: Runtime-Only Exemptions Are Inventoried
@@ -43,7 +46,11 @@ The repo-wide verification-gap inventory at
 exemptions with file path, classification, rationale, and supporting test
 coverage. While refreshing the inventory, it MUST also reconcile stale
 source-derived `external_body`, `assume_specification[...]`, or
-`@verified-logic:no-ensures` totals discovered by the count evidence.
+`@verified-logic:no-ensures` totals discovered by the count evidence. Published
+headline totals MUST count each physical proof boundary once; overlapping
+classifications such as `@verified-logic:no-ensures` on an already counted
+`external_body` site MUST be enumerated in `counts.md`, reported separately, and
+not double-counted.
 
 #### Scenario: Instruction-selection exemptions appear in the inventory
 
@@ -66,8 +73,15 @@ source-derived `external_body`, `assume_specification[...]`, or
 - AND the totals also reflect any stale source-derived `external_body`,
   `assume_specification[...]`, or `@verified-logic:no-ensures` drift found by
   the count evidence
+- AND overlapping classifications on the same physical proof boundary are not
+  double-counted in the headline total
 - AND `openspec/changes/instruction-selection-verification-gap/evidence/counts.md`
-  captures the exact before/after count derivation in all cases
+  captures the exact before/after count derivation in all cases using:
+  `rg -n '^[[:space:]]*#\\[verifier::external_body\\]' src`,
+  `rg -n 'assume_specification\\[' src`, `rg -n '@verified-logic:no-ensures' src`,
+  and `rg -n '@verified-logic:exempt runtime-only instruction-selection surface' src/instruction_selection.rs`
+- AND that evidence enumerates any overlapping category sites and shows the
+  formula that maps raw category counts to the non-double-counted headline total
 - AND if `README.md` is not edited, that evidence shows the published total
   remains correct without that edit
 
