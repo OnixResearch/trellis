@@ -44,8 +44,6 @@ pub const CODEC_ED25519: u64 = 0xed;
 /// did:key method prefix bytes: "did:key:z"
 pub const DID_KEY_PREFIX_LEN: usize = 9;
 
-/// Number of payload bits per LEB128 varint byte.
-pub const VARINT_GROUP_BITS: u64 = 7;
 /// LEB128 numeric base for one payload group.
 pub const VARINT_BASE: u64 = 128;
 /// Continuation bit mask for a LEB128 byte.
@@ -56,12 +54,8 @@ pub const VARINT_PAYLOAD_MASK: u8 = 127;
 pub const VARINT_MAX_CONTINUATION_BYTE: u8 = 255;
 /// Final payload that overflows at the last u64 varint byte.
 pub const VARINT_OVERFLOW_FINAL_PAYLOAD: u8 = 2;
-/// Width of the decoded integer type.
-pub const U64_BIT_WIDTH: u64 = 64;
 /// Maximum number of LEB128 bytes needed for any u64.
 pub const MAX_U64_VARINT_BYTES: usize = 10;
-/// Final legal shift for a u64 LEB128 byte.
-pub const MAX_U64_VARINT_SHIFT: u64 = 63;
 
 /// Parsed did:key with decoded public key bytes and codec.
 pub struct DidKey {

@@ -74,6 +74,8 @@ the audited proof-gap inventory without touching cryptographic base58btc trust.
     `rg -n 'assume_specification\\[' src`, `rg -n '@verified-logic:no-ensures' src`,
     `rg -n '@verified-logic:exempt runtime-only instruction-selection surface' src/instruction_selection.rs`,
     and `rg -n 'assume\\s*\\(' src/ucan_did.rs`
+  - canonical `openspec/specs/ucan-did/spec.md` checked against the
+    change-local checked-mul/add bounded-varint semantics before archive
   - `openspec_gate proposal/design/tasks close-ucan-did-varint-decode`
 
 ## Out of Scope

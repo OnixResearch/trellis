@@ -10,8 +10,8 @@ $ rg -n '@verified-logic:exempt runtime-only instruction-selection surface' src/
 instruction_selection_exempt_count=8
 non_double_counted_total=43 (32 external_body + 3 assume_specification + 8 instruction-selection exemptions; no-ensures is co-located with external_body)
 permanent_closeable_split=29/14
-$ rg '^\*\*8454 Verus proofs.*43 trusted/proof-gap boundaries\*\*' README.md
-**8454 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
+$ rg '^\*\*8451 Verus proofs.*43 trusted/proof-gap boundaries\*\*' README.md
+**8451 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
 $ rg 'Overall live inventory: `43`' openspec/specs/verification-gaps/spec.md
 Overall live inventory: `43` trusted/weakened/runtime-only proof boundaries = `29` permanent + `14` closeable.
 $ rg '`32` external_body items remain across `14` files' openspec/specs/verification-gaps/spec.md

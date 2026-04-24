@@ -6,7 +6,7 @@
 
 ## Phase 1: Verified varint decode primitives
 
-- [x] Add named u64 LEB128 decode constants inside the `verus!` block, including `U64_BIT_WIDTH`, byte budget, group bit width, continuation bit, payload mask, and maximum final shift [covers=ucan-did.varint-bounded-u64]
+- [x] Add named u64 LEB128 decode constants inside the `verus!` block, including `VARINT_BASE`, byte budget, continuation bit, and payload mask [covers=ucan-did.varint-bounded-u64]
 - [x] Refactor `varint_decode_spec` through bounded decoder primitives that reject empty, truncated, overlong, and overflowing inputs [covers=ucan-did.varint-bounded-u64,ucan-did.varint-rejects-empty]
 - [x] Prove round-trip preservation lemmas for `varint_round_trip`, `varint_decode_prefix_free`, and multicodec round-trip consumers [covers=ucan-did.varint-round-trip]
 - [x] Prove empty and truncated-continuation rejection lemmas, including `varint_decode_rejects_empty` and `varint_decode_rejects_single_continuation` [covers=ucan-did.varint-rejects-empty]
@@ -18,7 +18,7 @@
 
 - [x] Update `docs/requirements.md` with any new or clarified `ucan-did.varint-*` and `verification-gaps.*` requirement IDs needed for Tracey coverage [covers=ucan-did.varint-bounded-u64,ucan-did.varint-round-trip,ucan-did.varint-rejects-empty,verification-gaps.close-ucan-did-varint-decode,verification-gaps.inventory-after-ucan-did-varint]
 - [x] Add or update Tracey source/proof/test annotations for `ucan-did.varint-bounded-u64`, `ucan-did.varint-round-trip`, `ucan-did.varint-rejects-empty`, `verification-gaps.close-ucan-did-varint-decode`, and `verification-gaps.inventory-after-ucan-did-varint` [covers=ucan-did.varint-bounded-u64,ucan-did.varint-round-trip,ucan-did.varint-rejects-empty,verification-gaps.close-ucan-did-varint-decode,verification-gaps.inventory-after-ucan-did-varint]
-- [x] Sync the UCAN DID bounded-varint semantics into `openspec/specs/ucan-did/spec.md` [covers=ucan-did.varint-bounded-u64,ucan-did.varint-round-trip,ucan-did.varint-rejects-empty]
+- [x] Sync the UCAN DID checked-mul/add bounded-varint semantics into canonical `openspec/specs/ucan-did/spec.md` before archive and capture `evidence/final-semantic-reconciliation.txt` proving canonical spec, change-local spec, and `src/ucan_did.rs` agree [covers=ucan-did.varint-bounded-u64,ucan-did.varint-round-trip,ucan-did.varint-rejects-empty]
 - [x] Update `openspec/specs/verification-gaps/spec.md` to remove the `ucan_did::varint_decode` closeable row and refresh source-derived counts [covers=verification-gaps.close-ucan-did-varint-decode,verification-gaps.inventory-after-ucan-did-varint]
 - [x] Update `README.md` proof-gap headline/count prose to match the refreshed non-double-counted total [covers=verification-gaps.inventory-after-ucan-did-varint]
 - [x] Capture count-audit evidence in `evidence/final-proof-gap-counts.txt` proving README, canonical verification-gap spec, and source-derived counts agree [covers=verification-gaps.inventory-after-ucan-did-varint]

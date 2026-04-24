@@ -11,10 +11,10 @@ running 13 tests
 test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 55.50s
 
 $ ./scripts/verus.sh src/lib.rs
-verification results:: 8454 verified, 0 errors
+verification results:: 8451 verified, 0 errors
 
 $ rg '^pub mod ' src/lib.rs | wc -l
 373
 
-$ rg '^\*\*8454 Verus proofs.*4157 tests.*1734 requirements.*373 modules.*43 trusted/proof-gap boundaries\*\*' README.md
-**8454 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
+$ rg '^\*\*8451 Verus proofs.*4157 tests.*1734 requirements.*373 modules.*43 trusted/proof-gap boundaries\*\*' README.md
+**8451 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**

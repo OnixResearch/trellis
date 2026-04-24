@@ -1,5 +1,5 @@
 $ tracey query status
-note: first status attempt auto-started the daemon and returned `Error: Cancelled`; immediate rerun below succeeded.
+note: first status attempt auto-started the daemon and returned `Error: Cancelled`; immediate rerun below succeeded. Coverage queries were run sequentially after status.
 
 This project tracks requirements for "verified-logic". The requirements are defined in docs/*.md and are referenced in code using r[...] annotations (for example, r[verified-logic.some-requirement]).
 The implementation being checked: rust.

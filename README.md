@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8454 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
+**8451 Verus proofs · 4157 tests · 1734 requirements · 373 modules · 43 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -452,7 +452,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8454 proofs)
+./scripts/verus.sh         # verus only (8451 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```

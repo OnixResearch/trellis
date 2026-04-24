@@ -15,7 +15,7 @@ fully verified `exec fn ensures result == spec(...)` pattern.
 As of `2026-04-24`, fresh reruns on the current tree show:
 
 - `cargo test --quiet` passes (`4157 passed` plus `13` doc tests)
-- `./scripts/verus.sh src/lib.rs` passes (`8454 verified, 0 errors`)
+- `./scripts/verus.sh src/lib.rs` passes (`8451 verified, 0 errors`)
 - `./scripts/check-ensures.sh` passes (`1636` public `verus!` functions checked, `1` exempted)
 - `tracey query uncovered` returns `0 uncovered out of 1711 rules`
 - `tracey query untested` returns `0 untested out of 1711 rules`

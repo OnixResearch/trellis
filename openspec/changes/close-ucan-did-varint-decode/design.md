@@ -3,12 +3,13 @@
 `src/ucan_did.rs` already proves the high-level varint encode/decode round-trip
 at the spec level, but the executable decoder is trusted through
 `#[verifier::external_body]` and a plain Rust helper. That bridge hides the
-hardest malformed-input cases: bounded u64 byte budget, shift width, arithmetic
-overflow, and truncated continuations.
+hardest malformed-input cases: bounded u64 byte budget, arithmetic overflow,
+and truncated continuations.
 
 The current behavior rejects empty input, truncated continuation input, and
 runtime overflows. The canonical spec should make that bounded-u64 validity
-boundary explicit so the exec proof and requirement text agree.
+boundary explicit so the checked-arithmetic exec proof and requirement text
+agree.
 
 ## Goals / Non-Goals
 
@@ -23,14 +24,14 @@ close SSA bridges, or Verus-ize instruction selection.
 ### 1. Decode core is a pure bounded state machine
 
 **Choice:** Introduce named constants inside the `verus!` block and a small
-proof/exec core for bounded u64 LEB128 decode. The verified code carries
-`VARINT_GROUP_BITS`, `VARINT_BASE`, `VARINT_CONTINUATION_BIT`,
-`VARINT_PAYLOAD_MASK`, `U64_BIT_WIDTH`, `MAX_U64_VARINT_BYTES`, and
-`MAX_U64_VARINT_SHIFT` as named values instead of raw numeric literals.
+proof/exec core for bounded u64 LEB128 decode. The verified decoder path carries
+`VARINT_BASE`, `VARINT_CONTINUATION_BIT`, `VARINT_PAYLOAD_MASK`, and
+`MAX_U64_VARINT_BYTES` as named values instead of raw numeric literals.
+`MAX_U64_VARINT_BYTES` is the u64 LEB128 budget of `10` payload groups.
 
 **Rationale:** A state-machine helper exposes the exact obligations that are
-currently hidden by `external_body`: consumed length, accumulator bounds, shift
-bounds, continuation handling, and overflow rejection.
+currently hidden by `external_body`: consumed length, accumulator bounds,
+continuation handling, and checked-arithmetic overflow rejection.
 
 **Implementation:** Factor decoder logic into pure spec helpers and a thin exec
 wrapper:
@@ -40,7 +41,8 @@ wrapper:
 - `varint_decode_bounded_spec(bytes)` or equivalent open wrapper used by the
   public `varint_decode_spec`
 - a recursive/fuel helper that carries the current offset and remaining byte
-  budget, then composes tail results with checked u64 multiplication/addition
+  budget, then composes tail results with checked u64 multiplication by
+  `VARINT_BASE` and checked u64 addition of the current payload
 - small lemmas for empty rejection, single-continuation truncation
   (`varint_decode_rejects_single_continuation`), continuation-only overlong
   rejection (`varint_decode_rejects_overlong_continuations`), final-payload
@@ -83,10 +85,13 @@ rg -n '@verified-logic:exempt runtime-only instruction-selection surface' src/in
 rg -n 'assume\s*\(' src/ucan_did.rs
 ```
 
-Then update `docs/requirements.md`, `README.md`, and
+Then update `docs/requirements.md`, `README.md`,
+`openspec/specs/ucan-did/spec.md`, and
 `openspec/specs/verification-gaps/spec.md` to the same requirement/count story.
-The `assume\s*\(` audit is scoped to `src/ucan_did.rs` and must show no new
-local decoder-helper trust replacement.
+The canonical `openspec/specs/ucan-did/spec.md` must carry the same checked
+`VARINT_BASE * tail_value + payload` bounded-varint semantics as the
+change-local UCAN DID spec before archive. The `assume\s*\(` audit is scoped to
+`src/ucan_did.rs` and must show no new local decoder-helper trust replacement.
 
 ### 4. Tracey mapping is explicit
 
@@ -129,6 +134,7 @@ Final validation evidence MUST include:
 | `evidence/final-tracey.txt` | `tracey query status`, then `tracey query uncovered`, then `tracey query untested` |
 | `evidence/final-proof-gap-counts.txt` | source-derived count audit reconciled with README and canonical spec totals |
 | `evidence/final-decoder-trust-audit.txt` | scoped decoder-path audit for absence of replacement trust, including `rg -n 'fn varint_decode|varint_decode_spec|varint_decode_fuel|checked_(mul|add)_u64|varint_decode_rejects|varint_decode_accepts' src/ucan_did.rs` and `rg -n 'external_body|assume\\s*\\(|assume_specification\\[|@verified-logic:no-ensures|@verified-logic:exempt' src/ucan_did.rs` |
+| `evidence/final-semantic-reconciliation.txt` | deterministic pre-archive audit proving `openspec/specs/ucan-did/spec.md`, the change-local UCAN DID spec, and `src/ucan_did.rs` all carry the checked `VARINT_BASE * tail_value + payload` bounded-varint semantics; command: for each spec file, run separate `rg -n 'VARINT_BASE \\* tail_value' <file>`, `rg -n 'checked u64 operations' <file>`, `rg -n 'first `MAX_U64_VARINT_BYTES` bytes' <file>`, and `rg -n 'explicit proof artifacts' <file>` checks, then run source checks `rg -n 'checked_mul_u64_spec\\(rest_value, VARINT_BASE\\)' src/ucan_did.rs`, `rg -n 'checked_add_u64_spec\\(low, scaled_rest\\)' src/ucan_did.rs`, `rg -n 'checked_mul_u64\\(rest_value, VARINT_BASE\\)' src/ucan_did.rs`, and `rg -n 'checked_add_u64\\(low, scaled_rest\\)' src/ucan_did.rs` |
 | `evidence/final-openspec-gates.txt` | `openspec_gate proposal`, `design`, and `tasks` for this change |
 
 ## Risks / Trade-offs

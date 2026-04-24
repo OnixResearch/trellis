@@ -1,14 +1,14 @@
 $ openspec_gate proposal close-ucan-did-varint-decode
 VERDICT: PASS
 Findings: None.
-Notes: proposal covers motivation, scope, API impact, non-goals, verification expectations, constants inside `verus!`, sequential Tracey, and 44 -> 43 source-derived proof-gap delta.
+Notes: proposal covers checked multiply/add bounded-varint path, canonical UCAN DID spec reconciliation before archive, sequential Tracey, and 44 -> 43 source-derived proof-gap delta.
 
 $ openspec_gate design close-ucan-did-varint-decode
 VERDICT: PASS
 Findings: None.
-Notes: design covers bounded u64 LEB128 semantics, malformed-input proof artifacts, no replacement trust, source-derived count audits, README/spec reconciliation, and final evidence matrix.
+Notes: design covers checked `VARINT_BASE * tail_value + payload` semantics, canonical/change-local/source semantic reconciliation, malformed-input proof artifacts, no replacement trust, source-derived count audits, README/spec reconciliation, and final evidence matrix.
 
 $ openspec_gate tasks close-ucan-did-varint-decode
-VERDICT: PASS
-Findings: None.
-Notes: tasks summary reports 23 done, 0 in progress, 0 todo across Phases 0-3; tasks trace to proposal/design/spec requirements and validation evidence.
+VERDICT: WARN
+Findings: archive readiness cannot be independently confirmed from the gate packet alone because canonical files, source, and evidence contents are not supplied to that reviewer packet.
+Notes: task list is complete: 23 done, 0 in progress, 0 todo. Tasks trace to proposal/design/spec requirements, including `evidence/final-semantic-reconciliation.txt`.

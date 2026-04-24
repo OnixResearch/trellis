@@ -12,22 +12,27 @@ primitives. Base58btc remains a separate trusted codec model.
 
 r[ucan-did.varint-bounded-u64]
 `varint_decode_spec` and `varint_decode` MUST model the same bounded u64
-LEB128 decoder. The decoder MUST use named limits for the u64 byte budget,
-shift width, continuation bit, and payload mask. The concrete formulas are:
-`VARINT_GROUP_BITS = 7`, `VARINT_CONTINUATION_BIT = 1 << VARINT_GROUP_BITS`,
-`VARINT_PAYLOAD_MASK = VARINT_CONTINUATION_BIT - 1`, `U64_BIT_WIDTH = 64`,
-`MAX_U64_VARINT_BYTES = (U64_BIT_WIDTH + VARINT_GROUP_BITS - 1) /
-VARINT_GROUP_BITS`, `MAX_U64_VARINT_SHIFT = VARINT_GROUP_BITS *
-(MAX_U64_VARINT_BYTES - 1)`, and `max_payload_for_shift(shift) = u64::MAX >>
-shift`. It MUST return `Some((value, consumed))` only when a terminating byte is
-found within `MAX_U64_VARINT_BYTES` and the accumulated value is representable as
-`u64`. Any `Some` result MUST satisfy `1 <= consumed <= input.len()` and
+LEB128 decoder. The decoder MUST keep the numeric limits named inside the
+`verus!` block instead of raw call-site literals: `VARINT_BASE`,
+`VARINT_CONTINUATION_BIT`, `VARINT_PAYLOAD_MASK`, and
+`MAX_U64_VARINT_BYTES`. The maximum byte budget MUST be the u64 LEB128 budget
+of ten payload groups. Continuation-byte decoding MUST use the tail recurrence
+`value = payload(first_byte) + VARINT_BASE * tail_value`, where `tail_value` is
+the decoded value of the remaining bytes; the multiplication and addition MUST
+be checked u64 operations. It MUST return `Some((value, consumed))` only when a
+terminating byte is found within `MAX_U64_VARINT_BYTES` and the accumulated
+value is representable as `u64`. Any `Some` result MUST satisfy
+`1 <= consumed <= input.len()` and
 `consumed <= MAX_U64_VARINT_BYTES`. It MUST return `None` for empty input,
-continuation-only input, overlong encodings, and any terminating byte whose
-payload exceeds `max_payload_for_shift(current_shift)`. For this change,
-"overlong" means "no terminating byte appears before
-`MAX_U64_VARINT_BYTES` is exhausted"; non-minimal encodings that terminate
-within the budget and remain representable are accepted.
+continuation-only input, overlong encodings, and any input whose accumulated
+value would overflow `u64`. For this change, "overlong" means no terminating
+byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A representable
+terminating byte at byte `MAX_U64_VARINT_BYTES` is accepted; an overflowing
+payload at that byte rejects. Non-minimal encodings that terminate within the
+budget and remain representable are accepted. The
+implementation MUST include explicit proof artifacts for single-continuation
+truncation, non-minimal zero acceptance, continuation-only overlong rejection,
+and final-payload overflow rejection.
 
 #### Scenario: Terminating byte returns value and consumed length
 

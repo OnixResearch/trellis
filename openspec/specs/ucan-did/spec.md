@@ -109,14 +109,26 @@ for encoding.
 #### Requirement: Varint Decode Uses Bounded U64 Semantics
 `r[ucan-did.varint-bounded-u64]`
 
-DID varint decoding MUST use bounded u64 LEB128 semantics. It MUST use named
-limits for group width, continuation bit, payload mask, u64 width, max byte
-budget, and max shift. It MUST return `Some((value, consumed))` only when a
-terminating byte appears within the u64 byte budget and the value is
-representable as `u64`; any `Some` result MUST have `1 <= consumed <= input.len()`.
-It MUST reject empty, continuation-only, overlong, and overflowing input.
-Non-minimal encodings that terminate within the budget and remain representable
-MUST be accepted.
+DID varint decoding MUST use bounded u64 LEB128 semantics. It MUST keep the
+numeric limits named inside the `verus!` block instead of raw call-site
+literals: `VARINT_BASE`, `VARINT_CONTINUATION_BIT`, `VARINT_PAYLOAD_MASK`, and
+`MAX_U64_VARINT_BYTES`. The maximum byte budget MUST be the u64 LEB128 budget
+of ten payload groups. Continuation-byte decoding MUST use the tail recurrence
+`value = payload(first_byte) + VARINT_BASE * tail_value`, where `tail_value` is
+the decoded value of the remaining bytes; the multiplication and addition MUST
+be checked u64 operations. It MUST return `Some((value, consumed))` only when a
+terminating byte appears within the u64 byte budget and the accumulated value is
+representable as `u64`. Any `Some` result MUST have
+`1 <= consumed <= input.len()` and
+`consumed <= MAX_U64_VARINT_BYTES`. It MUST reject empty, continuation-only,
+overlong, and overflowing input. For this requirement, "overlong" means no
+terminating byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A
+representable terminating byte at byte `MAX_U64_VARINT_BYTES` is accepted; an
+overflowing payload at that byte rejects. Non-minimal encodings that terminate
+within the budget and remain representable MUST be accepted. The implementation MUST
+include explicit proof artifacts for single-continuation truncation,
+non-minimal zero acceptance, continuation-only overlong rejection, and
+final-payload overflow rejection.
 
 ##### Scenario: Ed25519 codec 0xed
 `r[ucan-did.varint-bounded-u64.scenario-ed25519]`
