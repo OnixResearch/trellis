@@ -1,1 +1,5 @@
-- Split future Wasm follow-ons into separate small changes: one for control labels plus return/branch arity, one for unreachable-stack validation judgments, and one for tables plus `call_indirect` signature safety. The narrowed MVP archive shows that value tags, locals, and linear memory fit the repo's current proof style, while the deferred pieces want their own independent review/evidence paths.
+- Current `active_changes` objective is saturated at `0`; no remaining honest ideas can improve this metric.
+- Deferred Wasm follow-ons remain valid future feature ideas, but they are stale for this loop because they would require opening new changes and would not lower `active_changes`:
+  - control labels plus return/branch arity
+  - unreachable-stack validation judgments
+  - tables plus `call_indirect` signature safety
