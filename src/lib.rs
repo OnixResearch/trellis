@@ -83,8 +83,8 @@
 //!   exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
 //!   projection
-//! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and
-//!   explicit safe-reuse checks over live ranges
+//! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
+//!   safe-reuse checks over live ranges
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
 //! - `debruijn` — de Bruijn shifting, substitution, and beta reduction with scope preservation
@@ -161,6 +161,8 @@
 //!   composition, load/store validity
 //! - `cache_hierarchy` — inclusive/exclusive/non-inclusive L1/L2 invariants, back-invalidation,
 //!   capacity accounting, and snoop scope
+//! - `cache_prefetch` — architecturally invisible prefetch hints with MESI-compatible cache
+//!   transitions and explicit dirty-victim writeback
 //! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping,
 //!   system invariant preservation
 //! - `moesi` — MOESI cache coherence protocol: Owned-state entry on remote read, dirty-owner
@@ -395,6 +397,7 @@ pub mod bounded_peers;
 pub mod bounds;
 pub mod cache_hierarchy;
 pub mod cache_partition;
+pub mod cache_prefetch;
 pub mod calendar;
 pub mod cas;
 pub mod cas_loop;

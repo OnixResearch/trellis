@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8305 Verus proofs · 4116 tests · 1687 requirements · 369 modules · 19 trusted boundaries**
+**8332 Verus proofs · 4116 tests · 1716 requirements · 370 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -195,6 +195,7 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `bounded_mpmc` | bounded MPMC ring buffer: head/tail, lap-based empty/full, occupancy |
 | `memory_order` | memory ordering lattice: Relaxed ⊏ Acquire/Release ⊏ AcqRel ⊏ SeqCst |
 | `cache_hierarchy` | inclusive/exclusive/non-inclusive L1/L2 invariants, back-invalidation, capacity, and snoop scope |
+| `cache_prefetch` | architecturally invisible prefetch hints with MESI-compatible cache effects and dirty-victim writeback |
 | `store_buffer` | fixed-capacity store queue with youngest-match forwarding, FIFO drain, and fence-empty semantics |
 | `tlb_shootdown` | page-local TLB shootdown: initiator self-invalidation, monotone acknowledgments, completion freshness, disjoint-page isolation, and range coverage |
 | `semaphore` | counting semaphore: acquire/release permits, capacity bounds |
@@ -448,7 +449,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8305 proofs)
+./scripts/verus.sh         # verus only (8332 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -456,9 +457,9 @@ cargo clippy --all-targets -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 369 module declarations
+src/lib.rs              ← crate root, 370 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1687 tracey requirements
+docs/requirements.md    ← 1716 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

@@ -1266,6 +1266,33 @@ When the store buffer is full, enqueue MUST reject the new store rather
 than silently dropping it. When the buffer is not full, enqueue MUST grow
 the buffer by exactly one entry.
 
+## Cache Prefetch
+
+r[cache-prefetch.no-fault]
+Prefetching an invalid or inaccessible address MUST be a no-op for the
+modeled cache state and MUST NOT modify architectural state.
+
+r[cache-prefetch.invisible]
+Prefetch operations MUST leave registers, memory contents, and the program
+counter unchanged. Prefetch only affects modeled cache state.
+
+r[cache-prefetch.cache-effect]
+A valid prefetch-for-read MUST leave the requester in a valid MESI state
+matching a demand read miss, and a valid prefetch-for-write MUST leave the
+requester in Exclusive while invalidating other modeled holders.
+
+r[cache-prefetch.coherence]
+A valid prefetch-for-read MUST issue BusRead and a valid prefetch-for-write
+MUST issue BusReadX. Invalid-address prefetches MUST issue no bus action.
+
+r[cache-prefetch.drop-safe]
+Dropping a modeled prefetch step MUST leave both architectural state and
+cache state unchanged.
+
+r[cache-prefetch.eviction-safe]
+Replacing a prefetched line MUST write back a dirty victim to memory before
+installation. Replacing a clean victim MUST leave memory unchanged.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]
