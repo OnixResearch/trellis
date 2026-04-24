@@ -181,6 +181,7 @@ fn clone_window(bytes: &[u8], start: usize, width: usize) -> (result: Vec<u8>)
     cloned
 }
 
+#[allow(clippy::needless_match)]
 fn page_byte_len(pages: usize) -> (result: Option<usize>)
     ensures
         result.is_some() <==> pages_fit_in_usize_spec(pages as int),
@@ -212,6 +213,7 @@ pub fn value_type(value: WasmValue) -> (result: WasmValueType)
 }
 
 // r[impl wasm-value.types]
+#[allow(clippy::match_like_matches_macro)]
 pub fn value_has_type(value: WasmValue, ty: WasmValueType) -> (result: bool)
     ensures result == value_has_type_spec(value, ty)
 {

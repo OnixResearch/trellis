@@ -522,6 +522,7 @@ fn exclusive_owner_cache_matches(caches: &[u8], owner: usize) -> (result: bool)
 }
 
 // r[impl directory.consistency]
+#[allow(clippy::collapsible_match, clippy::single_match)]
 pub fn valid_directory_entry(entry: &DirectoryEntry, cache_count: usize) -> (result: bool)
     ensures result == valid_directory_entry_spec(*entry, cache_count),
 {
@@ -662,6 +663,7 @@ pub fn process_read_request(
 // r[impl directory.serialization]
 // r[impl directory.serialization.scenario-same-line-write-order]
 // r[impl directory.serialization.scenario-different-lines-independent]
+#[allow(clippy::vec_init_then_push)]
 pub fn process_write_request(
     entry: &DirectoryEntry,
     caches: &[u8],
@@ -1036,7 +1038,9 @@ mod tests {
                     }
                 }
                 prop_assert!(check_consistency(&entry, &caches));
-                let modified_count = caches.iter().filter(|state| **state == mesi::STATE_MODIFIED).count();
+                let modified_count = caches
+                    .iter()
+                    .fold(0usize, |count, state| count + usize::from(*state == mesi::STATE_MODIFIED));
                 prop_assert!(modified_count <= 1usize);
             }
         }

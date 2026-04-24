@@ -472,6 +472,7 @@ pub fn empty_frame(stack_alignment: u32) -> (result: Option<FrameLayout>)
 // r[impl stack-frame.alignment]
 // r[impl stack-frame.frame-size]
 // r[impl stack-frame.growth]
+#[allow(clippy::manual_let_else, clippy::question_mark)]
 pub fn assign_slot(layout: &FrameLayout, size: u32, alignment: u32, kind: SlotKind) -> (result: Option<(StackSlot, FrameLayout)>)
     ensures
         result.is_some() ==> {
