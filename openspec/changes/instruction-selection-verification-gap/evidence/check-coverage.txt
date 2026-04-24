@@ -1,0 +1,3 @@
+
+Checked 1661 pub fn declarations, 10 exempted
+✓ all pub fns have r[impl] annotations

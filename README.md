@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8425 Verus proofs · 4152 tests · 1731 requirements · 373 modules · 19 trusted boundaries**
+**8425 Verus proofs · 4152 tests · 1731 requirements · 373 modules · 44 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -476,34 +476,47 @@ Most modules follow the same pattern (tracked exceptions are listed in
 3. `proof fn` — properties of the spec with `r[verify]` annotation
 4. `#[cfg(test)]` — unit tests and proptest property tests
 
-## Trusted items
+## Trusted and proof-gap items
 
-`16` items are marked `#[verifier::external_body]` across `6` files.
+`33` items are marked `#[verifier::external_body]` across `14` files.
 In addition, `src/ssa_construction.rs` currently carries `3`
 `assume_specification[...]` bridges from thin verified wrappers to plain-Rust
-runtime helpers.
+runtime helpers, and `src/instruction_selection.rs` carries `8` closeable
+runtime-only public API exemptions.
 
-**16 permanent** (architectural trust boundaries):
+**29 permanent** (architectural trust boundaries):
 
-- **6 cryptographic axioms / exec bridges** (`chain.rs`, `snapshot_integrity.rs`) —
-  BLAKE3-style hashing is modeled with uninterpreted specs plus trusted exec wrappers.
+- **6 legacy cryptographic hash axioms / exec bridges** (`chain.rs`,
+  `snapshot_integrity.rs`) — BLAKE3-style hashing is modeled with
+  uninterpreted specs plus trusted exec wrappers.
 - **4 version comparison bridges** (`nix_version.rs`) — the recursive `cv_fuel`
   reasoning still exceeds solver budget.
-- **2 nix store-path hash bridges** (`nix_store_path.rs`) — external hash/model bridge.
-- **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local lemmas are
-  only sound under the global Raft leader-chain invariant.
-- **1 web-of-trust principal bridge** (`web_of_trust_principal.rs`) — principal digest bytes stay behind a trusted exec/model boundary.
+- **2 nix store-path hash bridges** (`nix_store_path.rs`) — external SHA-256
+  hash/model bridge.
+- **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local
+  lemmas are only sound under the global Raft leader-chain invariant.
+- **11 UCAN codec/signature bridges** (`ucan_cid.rs`, `ucan_did.rs`,
+  `ucan_signature.rs`) — multibase/base58btc and Ed25519 behavior is modeled
+  behind external codec/crypto contracts.
+- **3 web-of-trust crypto bridges** (`web_of_trust_principal.rs`,
+  `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
+  digest and signature checks stay behind trusted runtime/model boundaries.
 
-**3 closeable** (`src/ssa_construction.rs`) — `assume_specification[...]`
-exec bridges for phi placement, SSA construction, and dominance/use
-checking. Def-site collection, IDF computation, SSA-property checking, and
-phi elimination are internalized now; runtime tests and manual oracles
-still cover the stronger remaining semantic claims.
+**15 closeable** — `4` closeable `external_body` items (`ucan_ability.rs`,
+`ucan_did.rs`, `ucan_principal_link.rs`, `ucan_token.rs`), `3`
+`assume_specification[...]` exec bridges in `src/ssa_construction.rs`, and `8`
+runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
+exempted from `r[impl]` coverage until the module is converted to Verus.
+Def-site collection, IDF computation, SSA-property checking, and phi elimination
+are internalized now; runtime tests and manual oracles still cover the stronger
+remaining SSA semantic claims.
 
 In addition to `external_body`, the current audit also tracks:
 
 - `3` `assume_specification[...]` exec bridges
+- `8` runtime-only `@verified-logic:exempt` public API proof gaps
+- `1` `@verified-logic:no-ensures` marker already counted under `external_body`
 - `0` `assume(...)` soundness oracles
-- `0` `@verified-logic:no-ensures` / placeholder-spec surfaces
+- `0` placeholder-spec surfaces
 
-All trusted items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.
+All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.
