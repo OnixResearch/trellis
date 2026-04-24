@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8277 Verus proofs · 4106 tests · 1683 requirements · 368 modules · 19 trusted boundaries**
+**8305 Verus proofs · 4116 tests · 1687 requirements · 369 modules · 19 trusted boundaries**
 
 ## How it works
 
@@ -304,6 +304,12 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 
+### Compiler backend
+
+| Module | What it verifies |
+|---|---|
+| `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
+
 ### Scheduling primitives
 
 | Module | What it verifies |
@@ -442,7 +448,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8277 proofs)
+./scripts/verus.sh         # verus only (8305 proofs)
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -450,9 +456,9 @@ cargo clippy --all-targets -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 368 module declarations
+src/lib.rs              ← crate root, 369 module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1683 tracey requirements
+docs/requirements.md    ← 1687 tracey requirements
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement

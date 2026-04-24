@@ -7007,6 +7007,28 @@ valid block path that starts at block `0` and does not later revisit block `0`,
 every fixed-point `Const(c)` classification at block entry or block exit MUST
 match the concrete value `c`, and `Bottom` MUST remain conservative.
 
+## Stack Frame Layout
+
+r[stack-frame.non-overlap]
+Stack slot layouts MUST keep simultaneously-live locals or spills in disjoint
+half-open byte ranges. Two locals or spills whose live ranges do not overlap MAY
+reuse the same byte range.
+
+r[stack-frame.alignment]
+Every stack slot MUST start at an offset divisible by its declared alignment,
+and every valid frame MUST keep the final frame size divisible by the stack
+alignment.
+
+r[stack-frame.frame-size]
+The frame size MUST equal the stack-aligned rounding of the maximum slot end in
+the layout. Invalid or misaligned slot inputs MUST be rejected instead of being
+silently rounded.
+
+r[stack-frame.growth]
+Every slot end MUST lie within the computed frame boundary, and append-only slot
+assignment MUST place each new slot at or after the current maximum slot
+extent.
+
 ## Hypervisor Memslots
 
 r[hypervisor-memslot.disjoint]

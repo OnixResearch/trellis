@@ -83,6 +83,8 @@
 //!   exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
 //!   projection
+//! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and
+//!   explicit safe-reuse checks over live ranges
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
 //! - `debruijn` — de Bruijn shifting, substitution, and beta reduction with scope preservation
@@ -640,6 +642,7 @@ pub mod snapshot_transfer;
 pub mod spin_backoff;
 pub mod split_coalesce;
 pub mod ssa_construction;
+pub mod stack_frame_layout;
 pub mod state_machine_safety;
 pub mod store_buffer;
 pub mod subsumption;

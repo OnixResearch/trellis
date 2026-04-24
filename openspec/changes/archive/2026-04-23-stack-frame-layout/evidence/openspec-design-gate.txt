@@ -1,0 +1,44 @@
+OpenSpec design gate (stack-frame-layout)
+
+Strategy: cross-family
+
+## Design Gate Review: `stack-frame-layout`
+
+### 1. Does the design cover the proposal and delta specs concretely?
+
+**Yes.** Every capability and spec requirement maps to a concrete design decision:
+
+- `non-overlap` → Decision 4 (explicit reuse surface) + Decision 2 (append-only never reuses)
+- `alignment` → Decision 3 (positive `u32`, not power-of-two) + Decision 1 (slot model carries alignment)
+- `frame-size` → Decision 5 (exact rounding, `None` on invalid input)
+- `growth` → Decision 2 (append at max extent)
+
+The data model in Decision 1 covers all the types referenced by the spec scenarios.
+
+### 2. Are key decisions, trade-offs, risks, and verification strategy explicit?
+
+**Yes.** The design resolves the open items from proposal review cleanly:
+
+- Power-of-two question → Decision 3: arbitrary positive, justified
+- assign_slot vs reuse boundary → Decision 2: assign_slot never reuses, reuse is separate
+- Validation surface → Decision 6: four concrete evidence commands
+
+Risks are honest and well-scoped.
+
+### 3. Napkin anti-patterns
+
+No conflicts. The `free_list.rs` recursive-helper pattern is acknowledged in Risks ("recursive helper style"). The targeted test command in Decision 6 matches the napkin baseline-check pattern.
+
+### 4. Unresolved choices requiring human input
+
+**None that block tasks.** One minor observation:
+
+- Decision 4 says reuse is safe "exactly when the byte ranges are the same and the live ranges do not overlap." The "same byte range" constraint is stricter than the spec's non-overlap scenario, which only requires "disjoint byte ranges" for simultaneously-live slots. The design's `can_reuse_slot` is a sufficient condition for safe reuse (same bytes + disjoint lives), while `check_non_overlap` handles the general case (overlapping lives → disjoint bytes). This is a reasonable two-tier design, not a gap — but tasks should make clear which API proves which spec scenario.
+
+### 5. Napkin promotion
+
+No pattern needs promotion.
+
+### Verdict
+
+**Pass.** Design is concrete, covers all spec requirements, resolves prior open items, and has no unresolved choices blocking tasks.
