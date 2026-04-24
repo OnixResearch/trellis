@@ -1,0 +1,4 @@
+$ comm -3 \
+    <(rg '^r\\[directory\\.[^.]+\\]$' docs/requirements.md | sort -u) \
+    <(rg '^`r\\[directory\\.[^.]+\\]`$' openspec/changes/directory-coherence/specs/directory-coherence/spec.md | tr -d '`' | sort -u)
+(no output)

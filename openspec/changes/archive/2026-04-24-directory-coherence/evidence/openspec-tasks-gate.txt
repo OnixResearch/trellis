@@ -1,0 +1,14 @@
+OpenSpec tasks gate (directory-coherence)
+
+Strategy: cross-family
+
+VERDICT: PASS
+
+Key findings:
+- Low-severity reminder that `r[impl]` coverage is a distinct repo gate even though the Tracey scan task covers most of it.
+- Low-severity reminder to make the archive evidence bundle explicit.
+
+Stage check summary:
+- Proposal capabilities, design decisions, requirements, and task list are aligned.
+- 16 of 18 tasks were complete at review time; the remaining tasks were gate capture and archive.
+- Ready to proceed: yes.

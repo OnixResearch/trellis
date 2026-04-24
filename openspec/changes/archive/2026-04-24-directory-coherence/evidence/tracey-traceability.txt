@@ -1,0 +1,21 @@
+$ traceability scan for directory-coherence
+r[directory.consistency.scenario-read-exclusive-to-shared] impl=1 verify=1
+r[directory.consistency.scenario-read-uncached-exclusive] impl=1 verify=1
+r[directory.consistency.scenario-stale-record-rejected] impl=1 verify=1
+r[directory.consistency] impl=7 verify=6
+r[directory.eviction-notify.scenario-modified-owner-writeback] impl=1 verify=1
+r[directory.eviction-notify.scenario-shared-eviction-clears-bit] impl=1 verify=1
+r[directory.eviction-notify] impl=3 verify=2
+r[directory.invalidation.scenario-exclusive-owner-invalidated] impl=1 verify=1
+r[directory.invalidation.scenario-shared-readers-invalidated] impl=1 verify=1
+r[directory.invalidation] impl=3 verify=2
+r[directory.mesi-embedding.scenario-exclusive-owner-compatible] impl=1 verify=1
+r[directory.mesi-embedding.scenario-valid-mapping] impl=1 verify=1
+r[directory.mesi-embedding] impl=3 verify=2
+r[directory.serialization.scenario-different-lines-independent] impl=1 verify=1
+r[directory.serialization.scenario-same-line-write-order] impl=1 verify=1
+r[directory.serialization] impl=3 verify=1
+r[directory.single-writer.scenario-one-modified-owner] impl=1 verify=1
+r[directory.single-writer] impl=3 verify=3
+
+ALL_IDS_HAVE_IMPL_AND_VERIFY

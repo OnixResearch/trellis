@@ -1293,6 +1293,33 @@ r[cache-prefetch.eviction-safe]
 Replacing a prefetched line MUST write back a dirty victim to memory before
 installation. Replacing a clean victim MUST leave memory unchanged.
 
+## Directory Coherence
+
+r[directory.consistency]
+The directory's owner and sharer bit-vector MUST agree with the actual MESI
+state held by each modeled cache at all times.
+
+r[directory.invalidation]
+Granting a write request MUST emit targeted invalidations to every other cache
+that currently holds the line, and the post-ack state MUST leave those caches
+invalid.
+
+r[directory.single-writer]
+A completed write grant MUST leave exactly one modeled cache with the line in
+Modified and every other cache Invalid.
+
+r[directory.eviction-notify]
+Evicting a tracked line MUST clear the corresponding owner or sharer record. A
+Modified owner eviction MUST request writeback before the line becomes uncached.
+
+r[directory.serialization]
+Same-line write requests MUST be serialized by applying them one at a time in a
+total order. Requests to different lines MUST remain independent.
+
+r[directory.mesi-embedding]
+The directory-implied per-cache state MUST always be a valid MESI state, and a
+consistent exclusive owner MUST hold the line in either Exclusive or Modified.
+
 ## Hash Bucket
 
 r[hash-bucket.assign]

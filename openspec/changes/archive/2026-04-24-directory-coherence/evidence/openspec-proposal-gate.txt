@@ -1,0 +1,16 @@
+OpenSpec proposal gate (directory-coherence)
+
+Strategy: cross-family
+
+VERDICT: PASS
+
+Key findings:
+- Verification expectations are implicit rather than spelled out in the proposal body.
+- `directory.serialization.scenario-different-lines-independent` is vacuous in a single-line model unless interpreted as two independent `DirectoryEntry` values.
+- `directory.consistency` says "at all times" even though the model is step-based; reviewer suggested tightening wording to post-operation snapshots.
+
+Stage check summary:
+- Proposal/spec are internally consistent.
+- Six proposal capabilities map cleanly to six top-level requirements.
+- All requirements have `r[...]` IDs plus GIVEN/WHEN/THEN scenarios.
+- Ready to proceed: yes.

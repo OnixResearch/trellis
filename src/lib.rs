@@ -161,6 +161,8 @@
 //!   composition, load/store validity
 //! - `cache_hierarchy` — inclusive/exclusive/non-inclusive L1/L2 invariants, back-invalidation,
 //!   capacity accounting, and snoop scope
+//! - `directory_coherence` — single-line directory protocol with shared-bit vectors, targeted
+//!   invalidations, exclusive-owner grants, eviction notifications, and MESI-compatible embedding
 //! - `cache_prefetch` — architecturally invisible prefetch hints with MESI-compatible cache
 //!   transitions and explicit dirty-victim writeback
 //! - `mesi` — MESI cache coherence protocol: M/E/S/I states, processor read/write, bus snooping,
@@ -441,6 +443,7 @@ pub mod dead_code_elimination;
 pub mod deadline_queue;
 pub mod debruijn;
 pub mod delegation;
+pub mod directory_coherence;
 pub mod distributed_lock;
 pub mod dominator_tree;
 pub mod double_entry;
