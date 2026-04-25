@@ -1,0 +1,132 @@
+$ openspec_gate proposal close-ucan-did-varint-decode
+OpenSpec proposal gate (close-ucan-did-varint-decode)
+
+Strategy: same-family
+
+VERDICT: WARN
+
+## Findings
+- [medium] [class=incoherent] [scope=review] [route=human] [promoted=no] Proposal gate does not validate the requested archive step
+  - Evidence: Gate Scope says `Stage: proposal`; Last User Prompt says “Regenerate final evidence cleanly, then archive `close-ucan-did-varint-decode`”; supplied artifacts include `proposal.md` and delta specs only, not final evidence, completed `tasks.md`, archive output, or gate logs.
+
+- [low] [class=omission] [scope=tasks] [route=prompt] [promoted=no] Archive-readiness checklist is outside supplied evidence
+  - Evidence: Proposal Testing / Validation requires `tracey query status`, then `tracey query uncovered`, `tracey query untested`, and `openspec_gate proposal/design/tasks close-ucan-did-varint-decode`; Last User Prompt asks to replace `final-tracey.txt`, capture `final-openspec-gates.txt`, archive, and commit. None of those final evidence files or task completion state are supplied for this proposal-stage review.
+
+## Stage Check
+- The proposal states the motivation, implementation scope, non-goals, API impact, and verification expectations.
+- The delta specs encode the proposal’s stated capabilities:
+  - `r[ucan-did.varint-bounded-u64]` specifies bounded u64 LEB128 semantics, checked tail recurrence, byte budget, overflow/overlong behavior, and required proof artifacts.
+  - `r[ucan-did.varint-round-trip]` preserves encode/decode round-trip.
+  - `r[ucan-did.varint-rejects-empty]` covers empty and truncated input rejection.
+  - `r[verification-gaps.close-ucan-did-varint-decode]` requires removal of the trusted `varint_decode` boundary without replacement trust.
+  - `r[verification-gaps.inventory-after-ucan-did-varint]` requires source-derived proof-gap inventory updates and Tracey coverage.
+- Napkin guidance is reflected in the proposal/specs:
+  - Tail recurrence wording is used instead of shift/max-payload formulas.
+  - Verus constants are required inside the `verus!` block.
+  - Tracey ordering starts with `status`.
+  - DID runtime decode API expansion is explicitly out of scope.
+- Proposal stage is ready to proceed.
+- The archive action requested by the Last User Prompt is not validated by this proposal-stage evidence.
+
+## Next Actions
+- If continuing at proposal stage: proceed.
+- If archiving: provide completed `tasks.md`, final Tracey evidence, final OpenSpec gate evidence, and archive diff/output for an archive-stage review.
+
+## Promotion Hints
+- repeated 49x [class=omission] [scope=tasks] [route=prompt]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec tasks gate/template to block repeated omission findings. Example trigger: Tasks do not cover all files and APIs promised in the proposal.
+  sources: openspec-gate=49
+- repeated 3x [class=incoherent] [scope=review] [route=human]
+  suggestion: Promote into explicit human/oracle escalation checkpoint or decision note.
+  task: Add explicit oracle/human checkpoint for repeated incoherent findings in review. Example trigger: The change appears both active and archived; that bookkeeping conflict should be resolved before more task-stage progress.
+  sources: openspec-gate=2, done-review=1
+
+$ openspec_gate design close-ucan-did-varint-decode
+OpenSpec design gate (close-ucan-did-varint-decode)
+
+Strategy: same-family
+
+VERDICT: WARN
+
+## Findings
+- [warn] [class=incoherent] [scope=review] [route=prompt] [promoted=no] Gate stage does not match requested archive step
+  - Evidence: Gate Scope says `Stage: design`; Last User Prompt asks to “Regenerate final evidence cleanly, then archive `close-ucan-did-varint-decode`.” Supplied artifacts include `proposal.md`, `design.md`, and delta specs, but no `tasks.md`, evidence files, archive output, or commit state for archive-readiness review.
+
+## Stage Check
+- The design concretely covers the proposal’s main implementation boundary:
+  - `design.md` Decision 1 specifies verified bounded u64 LEB128 decoder primitives, constants inside `verus!`, checked `VARINT_BASE * tail_value + payload` recurrence, bounded byte budget, and proof artifacts.
+  - This aligns with `proposal.md` “What Changes” and the delta requirement `r[ucan-did.varint-bounded-u64]`.
+- The design preserves existing proof consumers:
+  - `design.md` Decision 2 keeps `varint_decode_spec`, `varint_round_trip`, and `varint_decode_prefix_free`.
+  - This aligns with delta requirement `r[ucan-did.varint-round-trip]`.
+- The design covers proof-gap inventory and Tracey requirements:
+  - `design.md` Decision 3 requires source-derived audits and updates to `docs/requirements.md`, `README.md`, `openspec/specs/ucan-did/spec.md`, and `openspec/specs/verification-gaps/spec.md`.
+  - `design.md` Decision 4 maps the new or clarified requirement IDs to anchors.
+  - This aligns with `r[verification-gaps.close-ucan-did-varint-decode]` and `r[verification-gaps.inventory-after-ucan-did-varint]`.
+- Verification strategy is explicit:
+  - `design.md` lists baseline evidence, final verifier/test/check-ensures/Tracey/count/trust-audit/semantic-reconciliation/OpenSpec-gate artifacts.
+  - Tracey ordering matches the Last User Prompt: `status`, then `uncovered`, then `untested`.
+  - OpenSpec gate capture matches the Last User Prompt: proposal, design, and tasks gate outputs.
+- Known napkin guidance is respected at the design level:
+  - The design keeps DID decode spec-only and does not add a public DID runtime decode API.
+  - The design keeps bounded-varint wording aligned with checked tail recurrence rather than shift/max-payload formulas.
+  - The design requires constants inside `verus!`.
+- Missing for the requested archive step:
+  - This design-stage review cannot validate that final evidence was regenerated, tasks are complete, OpenSpec gates passed, the change was archived, or an archive commit exists. Those artifacts were not supplied.
+
+Design stage itself is ready to proceed. Archive-readiness is not established by this gate.
+
+## Next Actions
+- If the next action is still archive, run a tasks/final-evidence/archive gate with `tasks.md`, evidence files, archive output, and git status/commit evidence supplied.
+- Do not treat this design-stage WARN as approval that archive evidence is clean.
+
+## Promotion Hints
+- repeated 2x [class=incoherent] [scope=review] [route=prompt]
+  suggestion: Repeated soft finding: tighten prompt guidance now, then promote into a spec rule or deterministic check if repeats continue.
+  task: Tighten reviewer/prompt guidance for repeated incoherent findings, then promote to a spec rule or deterministic check if it persists. Example trigger: The “canonical spec synced” claim is not supported by the supplied diff for the reviewed completion.
+  sources: done-review=1, openspec-gate=1
+
+$ openspec_gate tasks close-ucan-did-varint-decode
+OpenSpec tasks gate (close-ucan-did-varint-decode)
+
+Strategy: same-family
+
+VERDICT: WARN
+
+## Findings
+- [medium] [class=incoherent] [scope=tasks] [route=prompt] [promoted=no] Checked validation tasks do not by themselves satisfy the current archive request
+  - Evidence: Last User Prompt says to “Rerun Tracey as successful `status` first, then `uncovered`, then `untested`; replace `final-tracey.txt`” and “Capture full proposal/design/tasks gate outputs into `final-openspec-gates.txt`”; `tasks.md` Phase 3 already marks those same evidence tasks `[x]`.
+
+- [medium] [class=omission] [scope=review] [route=deterministic-check] [promoted=no] Final evidence contents were not supplied, so this gate cannot attest that Tracey and OpenSpec gates are clean
+  - Evidence: `tasks.md` references `evidence/final-tracey.txt` and `evidence/final-openspec-gates.txt`, but the supplied package includes only proposal/design/tasks/spec text, not the contents of those evidence files.
+
+## Stage Check
+- Tasks trace to the proposal/design/spec work:
+  - Phase 0 covers baseline verifier, runtime test, and proof-gap count evidence required by `design.md`.
+  - Phase 1 covers verified bounded u64 varint decode work required by `ucan-did.varint-bounded-u64`, `ucan-did.varint-round-trip`, and `ucan-did.varint-rejects-empty`.
+  - Phase 2 covers requirements, Tracey annotations, canonical spec sync, verification-gap inventory, README count sync, semantic reconciliation, and decoder trust audit.
+  - Phase 3 covers final Verus, cargo test, ensures, Tracey, and OpenSpec gate evidence.
+- Tasks are ordered sensibly: baseline before implementation, implementation before spec/inventory sync, sync before final validation.
+- Relevant napkin guidance is reflected:
+  - All Phase 1–3 boxes are marked complete before tasks gate.
+  - Tracey task requires `status` first, then `uncovered`, then `untested`.
+  - Semantics are aligned to checked `VARINT_BASE * tail_value + payload` recurrence.
+  - No task expands DID runtime decode API.
+- Missing for archive readiness: the clean regenerated `final-tracey.txt` and full `final-openspec-gates.txt` outputs are not supplied here, and the current prompt explicitly requires regenerating them.
+- Stage is ready to proceed with evidence regeneration. It is not ready to archive solely from the checked boxes in `tasks.md`.
+
+## Next Actions
+- Rerun `tracey query status`, then `tracey query uncovered`, then `tracey query untested`; replace `openspec/changes/close-ucan-did-varint-decode/evidence/final-tracey.txt`.
+- Rerun `openspec_gate proposal close-ucan-did-varint-decode`, `openspec_gate design close-ucan-did-varint-decode`, and `openspec_gate tasks close-ucan-did-varint-decode`; capture full output in `evidence/final-openspec-gates.txt`.
+- If those outputs are clean, archive `close-ucan-did-varint-decode` and commit the archive.
+
+## Promotion Hints
+- repeated 6x [class=incoherent] [scope=tasks] [route=prompt]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec tasks gate/template to block repeated incoherent findings. Example trigger: Proptest scope in Phase 5 does not match the proposal’s stated boundary.
+  sources: openspec-gate=6
+- repeated 2x [class=omission] [scope=review] [route=deterministic-check]
+  suggestion: Promote into deterministic rail: test, lint, TigerStyle audit, compile-time check, or proof obligation.
+  task: Add deterministic rail for repeated omission findings in review: test, lint, TigerStyle audit, compile-time check, or proof. Example trigger: Proof-gap recount is specified conceptually but not as exact audit commands.
+  sources: openspec-gate=2

@@ -2,207 +2,102 @@
 
 ## Purpose
 
-Defines the byte-oriented `did:key` framing model used by UCAN token
-issuer and audience fields. Covers multicodec varint prefixing,
-base58btc multibase payload encoding, and the `did:key:z` prefix.
-This change models generic framing for any `u64` codec value and any
-opaque key-byte sequence, with Ed25519 (`0xed`) and 32-byte public keys
-as the canonical UCAN example exercised by tests.
-
-## Definitions
-
-- **did:key**: A DID method whose method-specific identifier is a
-  multibase-encoded multicodec-prefixed byte sequence.
-- **Codec**: A numeric multicodec value serialized as a varint/LEB128
-  byte sequence.
-- **Key bytes**: The opaque byte payload carried after the multicodec
-  varint prefix.
-- **DidKey**: The encode-side carrier returned by `encode_did_key`,
-  storing the exact key bytes, codec, and encoded `did:key` bytes.
-- **Validity boundary**: This module preserves arbitrary codec values and
-  arbitrary key bytes through did:key framing. It does not enforce
-  codec-registry membership or codec-specific key lengths.
-- **Trusted proof helper**: The proof of `r[ucan-did.injective]` relies on
-  a trusted base58btc injectivity helper in addition to the user-facing
-  round-trip requirement `r[ucan-did.base58btc-round-trip]`.
+This change hardens the `did:key` multicodec varint layer by replacing the
+trusted runtime decoder bridge with verified bounded u64 LEB128 decode
+primitives. Base58btc remains a separate trusted codec model.
 
 ## Requirements
 
-### DID Round-Trip
+### Requirement: Varint Decode Uses Bounded U64 Semantics
 
-#### Requirement: Encode-Decode Round-Trip
-`r[ucan-did.round-trip]`
-
-Encoding key bytes as a `did:key` MUST use the canonical byte layout
-`did:key:z ++ base58btc_encode(varint_encode(codec) ++ pk)`. The public
-`DidKey` carrier returned by `encode_did_key` MUST preserve the exact
-input key bytes and codec, and its `encoded` bytes MUST equal that
-canonical encoding. Spec-level decode of those canonical bytes MUST
-recover the original key bytes and codec.
-
-`encode_did_key_spec(pk, codec) == did_key_prefix_spec() ++ base58btc_encode_spec(varint_encode_spec(codec) ++ pk)`
-
-`decode_did_key_spec(encode_did_key_spec(pk, codec)) == Some((pk, codec))`
-
-##### Scenario: Ed25519 key round-trips
-`r[ucan-did.round-trip.scenario-ed25519]`
-
-- GIVEN a 32-byte Ed25519 public key `pk`
-- WHEN encoding it as `did:key` with codec `0xed`
-- THEN spec-level decode returns `(pk, 0xed)`
-
-##### Scenario: Encode carrier preserves inputs and bytes
-`r[ucan-did.round-trip.scenario-carrier]`
-
-- GIVEN any key bytes `pk` and any codec value `codec`
-- WHEN `encode_did_key(pk, codec)` produces a `DidKey`
-- THEN `DidKey.public_key_bytes == pk`, `DidKey.codec == codec`, and `DidKey.encoded == encode_did_key_spec(pk, codec)`
-
-### DID Injectivity
-
-#### Requirement: Distinct Keys Produce Distinct DIDs
-`r[ucan-did.injective]`
-
-If two key-byte payloads are different, their `did:key` encodings MUST
-differ for the same codec.
-
-`pk1 != pk2 ==> encode_did_key_spec(pk1, codec) != encode_did_key_spec(pk2, codec)`
-
-##### Scenario: Two different Ed25519 keys
-`r[ucan-did.injective.scenario-distinct-keys]`
-
-- GIVEN `pk1 != pk2`, both 32-byte Ed25519 public keys
-- WHEN encoding both as `did:key` with codec `0xed`
-- THEN the encoded byte strings differ
-
-### DID Format
-
-#### Requirement: DID Prefix Is Valid
-`r[ucan-did.prefix-valid]`
-
-An encoded `did:key` MUST always start with the byte string `did:key:z`.
-
-##### Scenario: Any encoded key has the prefix
-`r[ucan-did.prefix-valid.scenario-any-key]`
-
-- GIVEN any key bytes and any codec value
-- WHEN encoding as `did:key`
-- THEN the result starts with `did:key:z`
-
-#### Requirement: Codec Is Preserved
-`r[ucan-did.codec-preserved]`
-
-The codec recovered from spec-level decoding MUST match the codec used
-for encoding.
-
-`decode_did_key_spec(encode_did_key_spec(pk, codec)) == Some((_, codec))`
-
-##### Scenario: Ed25519 codec survives round-trip
-`r[ucan-did.codec-preserved.scenario-ed25519]`
-
-- GIVEN a 32-byte Ed25519 public key `pk`
-- WHEN encoding it as `did:key` with codec `0xed`
-- THEN spec-level decode recovers codec `0xed`
-
-### Multicodec
-
-#### Requirement: Varint Decode Uses Bounded U64 Semantics
-`r[ucan-did.varint-bounded-u64]`
-
-DID varint decoding MUST use bounded u64 LEB128 semantics. It MUST keep the
-numeric limits named inside the `verus!` block instead of raw call-site
-literals: `VARINT_BASE`, `VARINT_CONTINUATION_BIT`, `VARINT_PAYLOAD_MASK`, and
+r[ucan-did.varint-bounded-u64]
+`varint_decode_spec` and `varint_decode` MUST model the same bounded u64
+LEB128 decoder. The decoder MUST keep the numeric limits named inside the
+`verus!` block instead of raw call-site literals: `VARINT_BASE`,
+`VARINT_CONTINUATION_BIT`, `VARINT_PAYLOAD_MASK`, and
 `MAX_U64_VARINT_BYTES`. The maximum byte budget MUST be the u64 LEB128 budget
 of ten payload groups. Continuation-byte decoding MUST use the tail recurrence
 `value = payload(first_byte) + VARINT_BASE * tail_value`, where `tail_value` is
 the decoded value of the remaining bytes; the multiplication and addition MUST
 be checked u64 operations. It MUST return `Some((value, consumed))` only when a
-terminating byte appears within the u64 byte budget and the accumulated value is
-representable as `u64`. Any `Some` result MUST have
+terminating byte is found within `MAX_U64_VARINT_BYTES` and the accumulated
+value is representable as `u64`. Any `Some` result MUST satisfy
 `1 <= consumed <= input.len()` and
-`consumed <= MAX_U64_VARINT_BYTES`. It MUST reject empty, continuation-only,
-overlong, and overflowing input. For this requirement, "overlong" means no
-terminating byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A
-representable terminating byte at byte `MAX_U64_VARINT_BYTES` is accepted; an
-overflowing payload at that byte rejects. Non-minimal encodings that terminate
-within the budget and remain representable MUST be accepted. The implementation MUST
-include explicit proof artifacts for single-continuation truncation,
-non-minimal zero acceptance, continuation-only overlong rejection, and
-final-payload overflow rejection.
+`consumed <= MAX_U64_VARINT_BYTES`. It MUST return `None` for empty input,
+continuation-only input, overlong encodings, and any input whose accumulated
+value would overflow `u64`. For this change, "overlong" means no terminating
+byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A representable
+terminating byte at byte `MAX_U64_VARINT_BYTES` is accepted; an overflowing
+payload at that byte rejects. Non-minimal encodings that terminate within the
+budget and remain representable are accepted. The
+implementation MUST include explicit proof artifacts for single-continuation
+truncation, non-minimal zero acceptance, continuation-only overlong rejection,
+and final-payload overflow rejection.
 
-##### Scenario: Ed25519 codec 0xed
-`r[ucan-did.varint-bounded-u64.scenario-ed25519]`
+#### Scenario: Terminating byte returns value and consumed length
 
-- GIVEN byte sequence `[0xed, 0x01]`
+- GIVEN a byte sequence whose first byte has no continuation bit
 - WHEN decoding it as a varint
-- THEN decoding returns `(0xed, 2)`
+- THEN the result is `Some((first_byte, 1))`
 
-##### Scenario: Non-minimal representable input is accepted
-`r[ucan-did.varint-bounded-u64.scenario-non-minimal]`
+#### Scenario: Ed25519 codec decodes from two bytes
 
-- GIVEN a non-minimal byte sequence that terminates within the u64 byte budget
-  and represents a `u64` value
+- GIVEN the byte sequence `[0xed, 0x01]`
 - WHEN decoding it as a varint
-- THEN decoding returns `Some((value, consumed))`
+- THEN the result is `Some((0xed, 2))`
 
-##### Scenario: Overlong or overflowing input rejects
-`r[ucan-did.varint-bounded-u64.scenario-overflow]`
+#### Scenario: Trailing bytes are not consumed
 
-- GIVEN input with no terminating byte before the u64 byte budget is exhausted,
-  or a final payload that would overflow `u64`
+- GIVEN `varint_encode_spec(code) ++ suffix`
+- WHEN decoding it as a varint
+- THEN the result is `Some((code, varint_encode_spec(code).len()))`
+
+#### Scenario: Overlong or overflowing input rejects
+
+- GIVEN a byte sequence with no terminating byte before the named u64 varint
+  byte budget is exhausted, or whose final payload exceeds the remaining u64
+  bits
 - WHEN decoding it as a varint
 - THEN the result is `None`
 
-#### Requirement: Multicodec Varint Round-Trip
-`r[ucan-did.varint-round-trip]`
+#### Scenario: Non-minimal representable input is accepted
 
-Encoding a codec as a varint and then decoding MUST recover the original
-codec value and consumed length. Decoding an encoded varint followed by trailing
-bytes MUST consume only the encoded varint prefix.
+- GIVEN a non-minimal byte sequence that terminates within the named u64 varint
+  byte budget and represents a `u64` value
+- WHEN decoding it as a varint
+- THEN the result is `Some((value, consumed))` with consumed bounded by the input
+  length and the named u64 varint byte budget
+
+### Requirement: Multicodec Varint Round-Trip Remains Verified
+
+r[ucan-did.varint-round-trip]
+Encoding any `u64` value as LEB128 and then decoding it with the bounded decoder
+MUST recover the original value and the encoded length.
 
 `varint_decode(varint_encode(code)) == Some((code, varint_encode(code).len()))`
 
-##### Scenario: Trailing bytes are not consumed
-`r[ucan-did.varint-round-trip.scenario-trailing-suffix]`
+#### Scenario: Any encoded u64 round-trips
 
-- GIVEN `varint_encode(code) ++ suffix`
-- WHEN decoding it as a varint
-- THEN decoding returns `(code, varint_encode(code).len())`
+- GIVEN any `u64` codec value
+- WHEN it is encoded with `varint_encode` and decoded with `varint_decode`
+- THEN the decoded value equals the original codec and the consumed length equals
+  the encoded length
 
-#### Requirement: Varint Decode Rejects Empty Or Truncated Input
-`r[ucan-did.varint-rejects-empty]`
+### Requirement: Varint Decode Rejects Empty Or Truncated Input
 
-Decoding a varint from an empty byte sequence or a truncated continuation
-sequence MUST return `None`.
+r[ucan-did.varint-rejects-empty]
+Decoding a varint from an empty byte sequence or from a sequence that ends
+before a terminating byte MUST return `None`.
 
-##### Scenario: Empty varint input rejects
-`r[ucan-did.varint-rejects-empty.scenario-empty]`
+#### Scenario: Empty varint input rejects
 
 - GIVEN an empty byte sequence
 - WHEN decoding as a varint
 - THEN the result is `None`
 
-##### Scenario: Truncated continuation rejects
-`r[ucan-did.varint-rejects-empty.scenario-truncated]`
+#### Scenario: Truncated continuation rejects
 
 - GIVEN a non-empty byte sequence ending in a continuation byte before any
   terminating byte
 - WHEN decoding as a varint
 - THEN the result is `None`
-
-### Base58btc
-
-#### Requirement: Base58btc Round-Trip
-`r[ucan-did.base58btc-round-trip]`
-
-Encoding bytes as base58btc and then decoding MUST recover the original
-bytes.
-
-`base58btc_decode(base58btc_encode(bytes)) == Some(bytes)`
-
-##### Scenario: Multicodec-prefixed Ed25519 payload round-trips
-`r[ucan-did.base58btc-round-trip.scenario-ed25519-payload]`
-
-- GIVEN the bytes `[0xed, 0x01] ++ pk` for a 32-byte Ed25519 public key `pk`
-- WHEN encoding and then decoding with base58btc
-- THEN the original bytes are recovered
