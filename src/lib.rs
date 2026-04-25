@@ -429,6 +429,7 @@ pub mod collections;
 pub mod commit_advance;
 pub mod commit_notify;
 pub mod compaction_fence;
+pub mod composite_outcome;
 pub mod config_change;
 pub mod constant_folding;
 pub mod constant_time_eq;

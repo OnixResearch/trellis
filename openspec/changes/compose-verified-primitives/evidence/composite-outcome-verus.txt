@@ -1,0 +1,2 @@
+$ ./scripts/verus.sh src/composite_outcome.rs
+verification results:: 6 verified, 0 errors

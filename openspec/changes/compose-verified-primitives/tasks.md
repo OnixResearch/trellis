@@ -1,0 +1,88 @@
+## Coverage Index
+
+| Requirement ID | Module task |
+|---|---|
+| `composite-primitives.durable-job-executor` | `durable_job_executor` |
+| `composite-primitives.fenced-distributed-lock` | `fenced_distributed_lock` |
+| `composite-primitives.linearizable-read-gate` | `linearizable_read_gate` |
+| `composite-primitives.safe-snapshot-replication` | `safe_snapshot_replication` |
+| `composite-primitives.crash-safe-page-cache` | `crash_safe_page_cache` |
+| `composite-primitives.verified-lsm-ingest` | `verified_lsm_ingest` |
+| `composite-primitives.serializable-txn-guard` | `serializable_txn_guard` |
+| `composite-primitives.web-of-trust-ucan-authorizer` | `web_of_trust_ucan_authorizer` |
+| `composite-primitives.policy-decision-engine` | `policy_decision_engine` |
+| `composite-primitives.blocking-bounded-channel` | `blocking_bounded_channel` |
+| `composite-primitives.safe-reclamation-domain` | `safe_reclamation_domain` |
+| `composite-primitives.cache-coherent-memory-region` | `cache_coherent_memory_region` |
+| `composite-primitives.verified-compiler-pipeline` | `verified_compiler_pipeline` |
+| `composite-primitives.backend-frame-allocator` | `backend_frame_allocator` |
+| `composite-primitives.dependency-scheduler` | `dependency_scheduler` |
+| `composite-primitives.raft-membership-manager` | `raft_membership_manager` |
+| `composite-primitives.exactly-once-ledger-transfer` | `exactly_once_ledger_transfer` |
+| `composite-primitives.sel4-invocation-step` | `sel4_invocation_step` |
+| `composite-primitives.nix-eval-closure-policy` | `nix_eval_closure_policy` |
+| `composite-primitives.chaoscontrol-exploration-core` | `chaoscontrol_exploration_core` |
+
+Every module task below includes the same completion criteria:
+
+- define `<module>_accepted_spec(...)`, `<module>_reject_preserves_spec(...)`, and `<module>_refines_sources(...)`
+- document the module validity boundary: constructor/checker rejection vs. explicit `requires` precondition
+- include at least one cross-module relation inside `<module>_accepted_spec(...)`, tying two or more source modules to the same token, index, resource, object, trace, graph, closure item, or state transition
+- add a module-local exec-to-spec binding table and outcome-alias mapping to the common `Accept` / `Reject` / `Wait` model
+- document whether `<module>_reject_preserves_spec(...)` proves mutable-state preservation or uses an explicit read-only exemption
+- update the Source Symbol Classification table before using any new non-`_spec` source reference
+- add `docs/requirements.md` entry, `r[impl]` tags for public functions, and `r[verify]` tags for proof/test evidence
+- add at least one positive and one negative runtime test for public exec surfaces
+- run focused tests for the module and keep `./scripts/verus.sh src/lib.rs` ready for the final full run
+
+## Phase 1: Shared scaffold
+
+- [x] Add `src/composite_outcome.rs` with common proof-facing `Accept`, `Reject`, and `Wait` outcome tags plus mapping helpers used by composition modules. ✅ 7m (started: 2026-05-01T22:03:45Z → completed: 2026-05-01T22:10:45Z; evidence: `openspec/changes/compose-verified-primitives/evidence/composite-outcome-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/composite-outcome-verus.txt`)
+- [ ] Add `docs/requirements.md` entries for every requirement ID in the Coverage Index.
+- [ ] Add `src/lib.rs` exports only as each module lands; no unverified public facade functions.
+- [ ] Add README section/table placeholder for composite primitives and defer count updates until validation.
+
+## Phase 2: Highest-ROI composites
+
+- [ ] Implement and prove `durable_job_executor`; cover fresh-token resume and duplicate/expired rejection. `[covers=composite-primitives.durable-job-executor]`
+- [ ] Implement and prove `fenced_distributed_lock`; cover current-holder grant and stale-holder rejection. `[covers=composite-primitives.fenced-distributed-lock]`
+- [ ] Implement and prove `linearizable_read_gate`; cover quorum-confirmed read and lost-authority rejection. `[covers=composite-primitives.linearizable-read-gate]`
+- [ ] Implement and prove `safe_snapshot_replication`; cover complete install and corrupt/unsafe rejection. `[covers=composite-primitives.safe-snapshot-replication]`
+- [ ] Implement and prove `exactly_once_ledger_transfer`; cover fresh post-once transfer and replay rejection. `[covers=composite-primitives.exactly-once-ledger-transfer]`
+
+## Phase 3: Storage, transactions, authorization, and channels
+
+- [ ] Implement and prove `crash_safe_page_cache`; cover valid-prefix replay, invalid-suffix prefix recovery, and invalid-checkpoint rejection. `[covers=composite-primitives.crash-safe-page-cache]`
+- [ ] Implement and prove `verified_lsm_ingest`; cover safe flush and unsafe-target preservation. `[covers=composite-primitives.verified-lsm-ingest]`
+- [ ] Implement and prove `serializable_txn_guard`; cover conflict-free commit and conflict/cycle/2PL rejection. `[covers=composite-primitives.serializable-txn-guard]`
+- [ ] Implement and prove `web_of_trust_ucan_authorizer`; keep DID/CID decode spec-only and cover rooted-threshold allow plus revoked/under-threshold deny. `[covers=composite-primitives.web-of-trust-ucan-authorizer]`
+- [ ] Implement and prove `policy_decision_engine`; cover contained delegation allow and scope/trust deny. `[covers=composite-primitives.policy-decision-engine]`
+- [ ] Implement and prove `blocking_bounded_channel`; include `blocking_bounded_channel_wait_valid_spec`, enqueue success, nonblocking-full rejection, and blocking wait/backoff validity. `[covers=composite-primitives.blocking-bounded-channel]`
+
+## Phase 4: Concurrency, coherence, compiler, scheduler, and Raft
+
+- [ ] Implement and prove `safe_reclamation_domain`; cover reclaimable object and protected-object retain. `[covers=composite-primitives.safe-reclamation-domain]`
+- [ ] Implement and prove `cache_coherent_memory_region`; cover unique writer and prefetch/store-buffer non-violation. `[covers=composite-primitives.cache-coherent-memory-region]`
+- [ ] Implement and prove `verified_compiler_pipeline`; include `verified_compiler_pipeline_ssa_preserves_observable_trace` and `verified_compiler_pipeline_constfold_preserves_observable_trace`, plus supported-slice preservation and invalid-analysis rejection tests. `[covers=composite-primitives.verified-compiler-pipeline]`
+- [ ] Implement and prove `backend_frame_allocator`; keep scope to local/spill slots and cover safe reuse plus overlap rejection. `[covers=composite-primitives.backend-frame-allocator]`
+- [ ] Implement and prove `dependency_scheduler`; cover ready acyclic scheduling and blocked/cyclic/full rejection. `[covers=composite-primitives.dependency-scheduler]`
+- [ ] Implement and prove `raft_membership_manager`; cover learner promotion and unsafe transfer/promotion rejection. `[covers=composite-primitives.raft-membership-manager]`
+
+## Phase 5: Kernel, package/config, and exploration
+
+- [ ] Implement and prove `sel4_invocation_step` for exactly `CopyCap`, `MapPage`, `EndpointSend`, and `BlockSenderOnEndpoint`; cover in-scope invocation and invalid/out-of-scope rejection. `[covers=composite-primitives.sel4-invocation-step]`
+- [ ] Implement and prove `nix_eval_closure_policy`; cover valid merged closure admission and invalid merge/missing dependency rejection. `[covers=composite-primitives.nix-eval-closure-policy]`
+- [ ] Implement and prove `chaoscontrol_exploration_core`; cover deterministic covered step and oracle-violation reject reason without mutation. `[covers=composite-primitives.chaoscontrol-exploration-core]`
+
+## Phase 6: Spec sync, validation, and archive
+
+- [ ] Sync completed requirement text to `openspec/specs/composite-primitives/spec.md`; force-add if repo ignore rules hide the new spec.
+- [ ] Update README module table and proof/test/requirement counts from live commands.
+- [ ] Run focused module tests for all twenty modules and capture positive/negative evidence.
+- [ ] Run `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet` and capture full-tree evidence.
+- [ ] Run `./scripts/verus.sh src/lib.rs` and capture full-library proof evidence.
+- [ ] Run `./scripts/check-ensures.sh` and capture evidence that public facades have useful ensures.
+- [ ] Run `tracey query uncovered` and `tracey query untested` sequentially and capture repo-wide zero uncovered / zero untested evidence.
+- [ ] Split archive evidence into a reviewable layout: `evidence/review-index.md`, per-module proof/test packets, validation transcripts, and final task/scope mapping.
+- [ ] Run `openspec_gate` for proposal, design, and tasks after implementation artifacts are synced.
+- [ ] Archive only after all tasks above are complete and all gate findings are resolved.
