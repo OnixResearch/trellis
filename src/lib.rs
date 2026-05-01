@@ -580,6 +580,7 @@ pub mod page;
 pub mod page_checksum;
 pub mod partition;
 pub mod pattern;
+pub mod policy_decision_engine;
 pub mod paxos;
 pub mod peer_spec;
 pub mod per_core_rwlock;
