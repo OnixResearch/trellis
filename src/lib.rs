@@ -543,6 +543,7 @@ pub mod log_conflict;
 pub mod log_invariant_inductive;
 pub mod loop_detection;
 pub mod lsm_level;
+pub mod verified_lsm_ingest;
 pub mod markov;
 pub mod match_index;
 pub mod memory_order;

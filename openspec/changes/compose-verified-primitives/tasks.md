@@ -53,7 +53,7 @@ Every module task below includes the same completion criteria:
 ## Phase 3: Storage, transactions, authorization, and channels
 
 - [x] Implement and prove `crash_safe_page_cache`; cover valid-prefix replay, invalid-suffix prefix recovery, and invalid-checkpoint rejection. ✅ 11m (started: 2026-05-01T22:42:06Z → completed: 2026-05-01T22:53:28Z; evidence: `openspec/changes/compose-verified-primitives/evidence/crash-safe-page-cache-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/crash-safe-page-cache-verus-lib.txt`) `[covers=composite-primitives.crash-safe-page-cache]`
-- [ ] Implement and prove `verified_lsm_ingest`; cover safe flush and unsafe-target preservation. `[covers=composite-primitives.verified-lsm-ingest]`
+- [x] Implement and prove `verified_lsm_ingest`; cover safe flush and unsafe-target preservation. ✅ 5m (started: 2026-05-01T22:54:09Z → completed: 2026-05-01T22:59:17Z; evidence: `openspec/changes/compose-verified-primitives/evidence/verified-lsm-ingest-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/verified-lsm-ingest-verus-lib.txt`) `[covers=composite-primitives.verified-lsm-ingest]`
 - [ ] Implement and prove `serializable_txn_guard`; cover conflict-free commit and conflict/cycle/2PL rejection. `[covers=composite-primitives.serializable-txn-guard]`
 - [ ] Implement and prove `web_of_trust_ucan_authorizer`; keep DID/CID decode spec-only and cover rooted-threshold allow plus revoked/under-threshold deny. `[covers=composite-primitives.web-of-trust-ucan-authorizer]`
 - [ ] Implement and prove `policy_decision_engine`; cover contained delegation allow and scope/trust deny. `[covers=composite-primitives.policy-decision-engine]`
