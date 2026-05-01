@@ -39,6 +39,37 @@ proof fn abs_diff_symmetric(a: u64, b: u64)
 
 ## Modules
 
+### Composite primitives (OpenSpec in progress)
+
+The `compose-verified-primitives` OpenSpec change is landing twenty thin
+composition facades. This table is intentionally a placeholder until each module
+has its public facade, paired spec predicates, proof bridge, and positive /
+negative runtime evidence; headline counts above stay tied to live validation
+commands until final archive.
+
+| Planned module | Composition purpose | Status |
+|---|---|---|
+| `durable_job_executor` | durable, idempotent, retry-aware job execution | planned |
+| `fenced_distributed_lock` | stale-holder-safe lease writes with fencing tokens | planned |
+| `linearizable_read_gate` | Raft read-index / lease-read admission | planned |
+| `safe_snapshot_replication` | complete, integrity-checked snapshot installation | planned |
+| `crash_safe_page_cache` | WAL-backed dirty-page recovery | planned |
+| `verified_lsm_ingest` | flush and compaction-safe LSM ingest | planned |
+| `serializable_txn_guard` | MVCC / dependency / 2PL commit admission | planned |
+| `web_of_trust_ucan_authorizer` | UCAN authorization plus rooted web-of-trust policy | planned |
+| `policy_decision_engine` | delegation, containment, scope, pattern, and trust allow/deny | planned |
+| `blocking_bounded_channel` | bounded queue capacity plus futex/backoff waiting | planned |
+| `safe_reclamation_domain` | RCU, epoch, hazard-pointer, and ref-count reclamation | planned |
+| `cache_coherent_memory_region` | coherence, prefetch, store-buffer, and write-policy invariants | planned |
+| `verified_compiler_pipeline` | raw-IR analysis and optimization preservation | planned |
+| `backend_frame_allocator` | register/spill stack allocation conflict freedom | planned |
+| `dependency_scheduler` | DAG-safe, fair, capacity-bounded job scheduling | planned |
+| `raft_membership_manager` | safe config changes, learner promotion, leadership transfer | planned |
+| `exactly_once_ledger_transfer` | replay-safe balanced transfer posting | planned |
+| `sel4_invocation_step` | bounded seL4 invocation transitions preserving invariants | planned |
+| `nix_eval_closure_policy` | Nix/Nickel merge plus reachable closure admission | planned |
+| `chaoscontrol_exploration_core` | deterministic, oracle-checked exploration steps | planned |
+
 ### Core arithmetic and data structures
 
 | Module | What it verifies |
