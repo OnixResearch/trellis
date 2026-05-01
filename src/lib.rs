@@ -477,6 +477,7 @@ pub mod false_sharing;
 pub mod fast_backtrack;
 pub mod fee;
 pub mod fencing;
+pub mod fenced_distributed_lock;
 pub mod fetch_add;
 pub mod follower_commit;
 pub mod follower_read;

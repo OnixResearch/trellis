@@ -45,7 +45,7 @@ Every module task below includes the same completion criteria:
 ## Phase 2: Highest-ROI composites
 
 - [x] Implement and prove `durable_job_executor`; cover fresh-token resume and duplicate/expired rejection. ✅ 4m (started: 2026-05-01T22:09:33Z → completed: 2026-05-01T22:13:37Z; evidence: `openspec/changes/compose-verified-primitives/evidence/durable-job-executor-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/durable-job-executor-verus-lib.txt`) `[covers=composite-primitives.durable-job-executor]`
-- [ ] Implement and prove `fenced_distributed_lock`; cover current-holder grant and stale-holder rejection. `[covers=composite-primitives.fenced-distributed-lock]`
+- [x] Implement and prove `fenced_distributed_lock`; cover current-holder grant and stale-holder rejection. ✅ 6m (started: 2026-05-01T22:13:37Z → completed: 2026-05-01T22:19:18Z; evidence: `openspec/changes/compose-verified-primitives/evidence/fenced-distributed-lock-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/fenced-distributed-lock-verus-lib.txt`) `[covers=composite-primitives.fenced-distributed-lock]`
 - [ ] Implement and prove `linearizable_read_gate`; cover quorum-confirmed read and lost-authority rejection. `[covers=composite-primitives.linearizable-read-gate]`
 - [ ] Implement and prove `safe_snapshot_replication`; cover complete install and corrupt/unsafe rejection. `[covers=composite-primitives.safe-snapshot-replication]`
 - [ ] Implement and prove `exactly_once_ledger_transfer`; cover fresh post-once transfer and replay rejection. `[covers=composite-primitives.exactly-once-ledger-transfer]`
