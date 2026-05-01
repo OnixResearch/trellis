@@ -722,6 +722,7 @@ pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;
 pub mod web_of_trust_policy;
 pub mod web_of_trust_principal;
+pub mod web_of_trust_ucan_authorizer;
 pub mod web_of_trust_resolution;
 pub mod web_of_trust_revocation;
 pub mod weighted_round_robin;
