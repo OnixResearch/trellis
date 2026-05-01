@@ -455,6 +455,7 @@ pub mod double_entry;
 pub mod drain;
 pub mod drain_protocol;
 pub mod durable_history;
+pub mod durable_job_executor;
 pub mod durable_replay;
 pub mod durable_resume;
 pub mod durable_terminal;
