@@ -399,6 +399,7 @@ pub mod alloc_token;
 pub mod arena;
 pub mod block_cache;
 pub mod bounded_mpmc;
+pub mod blocking_bounded_channel;
 pub mod bounded_peers;
 pub mod bounds;
 pub mod cache_hierarchy;
