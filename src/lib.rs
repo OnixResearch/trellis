@@ -638,6 +638,7 @@ pub mod seq_set;
 pub mod seqlock;
 pub mod sequence;
 pub mod sequential;
+pub mod serializable_txn_guard;
 pub mod serialize_inj;
 pub mod session_tree;
 pub mod set_associative_lookup;
