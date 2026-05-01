@@ -529,6 +529,7 @@ pub mod learner_readiness;
 pub mod lease;
 pub mod lease_mutex;
 pub mod lease_read;
+pub mod linearizable_read_gate;
 pub mod ledger;
 pub mod left_right;
 pub mod linearizability;
