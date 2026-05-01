@@ -654,6 +654,7 @@ pub mod snapshot_compaction;
 pub mod snapshot_integrity;
 pub mod snapshot_isolation;
 pub mod snapshot_transfer;
+pub mod safe_snapshot_replication;
 pub mod spin_backoff;
 pub mod split_coalesce;
 pub mod ssa_construction;
