@@ -405,6 +405,7 @@ pub mod cache_hierarchy;
 pub mod cache_partition;
 pub mod cache_prefetch;
 pub mod calendar;
+pub mod crash_safe_page_cache;
 pub mod cas;
 pub mod cas_loop;
 pub mod chain;
