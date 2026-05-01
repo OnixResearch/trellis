@@ -608,6 +608,7 @@ pub mod rcu;
 pub mod reachability;
 pub mod read_index;
 pub mod ref_count;
+pub mod safe_reclamation_domain;
 pub mod region;
 pub mod register_allocation;
 pub mod replication_mode;

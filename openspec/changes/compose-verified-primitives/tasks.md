@@ -61,7 +61,7 @@ Every module task below includes the same completion criteria:
 
 ## Phase 4: Concurrency, coherence, compiler, scheduler, and Raft
 
-- [ ] Implement and prove `safe_reclamation_domain`; cover reclaimable object and protected-object retain. `[covers=composite-primitives.safe-reclamation-domain]`
+- [x] Implement and prove `safe_reclamation_domain`; cover reclaimable object and protected-object retain. ✅ 6m (started: 2026-05-02T00:25:03Z → completed: 2026-05-02T00:31:53Z; evidence: `openspec/changes/compose-verified-primitives/evidence/safe-reclamation-domain-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/safe-reclamation-domain-verus-lib.txt`) `[covers=composite-primitives.safe-reclamation-domain]`
 - [ ] Implement and prove `cache_coherent_memory_region`; cover unique writer and prefetch/store-buffer non-violation. `[covers=composite-primitives.cache-coherent-memory-region]`
 - [ ] Implement and prove `verified_compiler_pipeline`; include `verified_compiler_pipeline_ssa_preserves_observable_trace` and `verified_compiler_pipeline_constfold_preserves_observable_trace`, plus supported-slice preservation and invalid-analysis rejection tests. `[covers=composite-primitives.verified-compiler-pipeline]`
 - [ ] Implement and prove `backend_frame_allocator`; keep scope to local/spill slots and cover safe reuse plus overlap rejection. `[covers=composite-primitives.backend-frame-allocator]`
