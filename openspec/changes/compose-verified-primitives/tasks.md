@@ -38,7 +38,7 @@ Every module task below includes the same completion criteria:
 ## Phase 1: Shared scaffold
 
 - [x] Add `src/composite_outcome.rs` with common proof-facing `Accept`, `Reject`, and `Wait` outcome tags plus mapping helpers used by composition modules. ✅ 7m (started: 2026-05-01T22:03:45Z → completed: 2026-05-01T22:10:45Z; evidence: `openspec/changes/compose-verified-primitives/evidence/composite-outcome-cargo-test.txt`, `openspec/changes/compose-verified-primitives/evidence/composite-outcome-verus.txt`)
-- [ ] Add `docs/requirements.md` entries for every requirement ID in the Coverage Index.
+- [x] Add `docs/requirements.md` entries for every requirement ID in the Coverage Index. ✅ 1m (started: 2026-05-01T22:05:56Z → completed: 2026-05-01T22:06:56Z; evidence: `openspec/changes/compose-verified-primitives/evidence/requirements-doc-uncovered-expected.txt`, `openspec/changes/compose-verified-primitives/evidence/requirements-doc-openspec-verify.json`)
 - [ ] Add `src/lib.rs` exports only as each module lands; no unverified public facade functions.
 - [ ] Add README section/table placeholder for composite primitives and defer count updates until validation.
 

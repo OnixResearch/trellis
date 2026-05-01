@@ -8195,3 +8195,88 @@ contains every capability authorized by either set.
 r[ucan-capability-merge.authorization]
 A capability is authorized by a set if some entry in the set
 contains it.
+
+## Composite Primitives
+
+r[composite-primitives.durable-job-executor]
+The system MUST provide a durable job executor primitive for idempotent,
+resume-aware, retry-budgeted job admission.
+
+r[composite-primitives.fenced-distributed-lock]
+The system MUST provide a fenced distributed lock primitive for stale-holder-
+safe protected writes.
+
+r[composite-primitives.linearizable-read-gate]
+The system MUST provide a Raft read gate primitive for one-step linearizable
+read admission.
+
+r[composite-primitives.safe-snapshot-replication]
+The system MUST provide a snapshot replication primitive for complete,
+integrity-checked, compaction-safe installation.
+
+r[composite-primitives.crash-safe-page-cache]
+The system MUST provide a crash-safe page-cache primitive for WAL-backed dirty
+page recovery.
+
+r[composite-primitives.verified-lsm-ingest]
+The system MUST provide an LSM ingest primitive for flush and compaction-safe
+run admission.
+
+r[composite-primitives.serializable-txn-guard]
+The system MUST provide a transaction guard for commit admission from
+isolation, dependency, and lock-discipline facts.
+
+r[composite-primitives.web-of-trust-ucan-authorizer]
+The system MUST provide a UCAN authorizer that combines token validity,
+attenuation, caveats, DID/CID byte models, and rooted web-of-trust policy.
+
+r[composite-primitives.policy-decision-engine]
+The system MUST provide a policy decision engine for one allow/deny result
+from capability and trust primitives.
+
+r[composite-primitives.blocking-bounded-channel]
+The system MUST provide a blocking bounded channel primitive that combines
+queue capacity with wait/wake and backoff state.
+
+r[composite-primitives.safe-reclamation-domain]
+The system MUST provide a safe reclamation domain from RCU, epoch, hazard, and
+reference-count protections.
+
+r[composite-primitives.cache-coherent-memory-region]
+The system MUST provide a cache-coherent memory-region primitive combining
+cache protocol, directory, store-buffer, prefetch, and write-policy facts.
+
+r[composite-primitives.verified-compiler-pipeline]
+The system MUST provide a bounded compiler-pipeline primitive for the existing
+raw IR model.
+
+r[composite-primitives.backend-frame-allocator]
+The system MUST provide a backend frame allocator for the existing live-range,
+register, and local/spill stack-slot model.
+
+r[composite-primitives.dependency-scheduler]
+The system MUST provide a dependency scheduler that admits only ready,
+capacity-safe work from graph and scheduling facts.
+
+r[composite-primitives.raft-membership-manager]
+The system MUST provide a Raft membership manager for safe configuration
+changes, learner promotion, and leadership transfer.
+
+r[composite-primitives.exactly-once-ledger-transfer]
+The system MUST provide an exactly-once ledger transfer primitive for replay-
+safe money movement.
+
+r[composite-primitives.sel4-invocation-step]
+The system MUST provide a seL4 invocation-step primitive that preserves kernel
+invariants across a bounded modeled capability invocation slice: `CopyCap`,
+`MapPage`, `EndpointSend`, and `BlockSenderOnEndpoint`. IRQ, notification,
+ASID, untyped, reply, receive, scheduling, and deletion/revocation invocations
+are out of scope for this composite.
+
+r[composite-primitives.nix-eval-closure-policy]
+The system MUST provide a Nix/Nickel closure-policy primitive for merged
+config and reachable package closure admission.
+
+r[composite-primitives.chaoscontrol-exploration-core]
+The system MUST provide a ChaosControl exploration core for deterministic,
+coverage-accounted, oracle-checked exploration steps.

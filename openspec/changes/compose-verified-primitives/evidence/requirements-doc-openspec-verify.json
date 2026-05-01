@@ -1,0 +1,253 @@
+$ python ~/.hermes/skills/agentkit-port/openspec/scripts/openspec_helper.py verify compose-verified-primitives --json
+{
+  "compose-verified-primitives": [
+    {
+      "severity": "warning",
+      "message": "tasks incomplete: {'done': 1, 'todo': 33, 'in_progress': 0}"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:88 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:99 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:105 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:111 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:122 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:128 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:134 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:145 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:151 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:157 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:168 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:174 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:180 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:191 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:197 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:203 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:209 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:220 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:226 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:232 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:243 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:249 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:255 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:266 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:272 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:278 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:289 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:295 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:301 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:312 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:318 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:324 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:335 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:341 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:347 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:358 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:364 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:370 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:382 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:388 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:394 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:405 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:411 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:417 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:428 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:434 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:440 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:451 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:457 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:463 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:474 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:480 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:486 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:500 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:506 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:512 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:523 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:529 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:535 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:546 heading missing r[...] id"
+    },
+    {
+      "severity": "warning",
+      "message": "specs/composite-primitives/spec.md:552 heading missing r[...] id"
+    }
+  ]
+}

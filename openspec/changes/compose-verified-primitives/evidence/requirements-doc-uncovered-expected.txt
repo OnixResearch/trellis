@@ -1,0 +1,29 @@
+$ tracey query uncovered
+verified-logic/rust: 20 uncovered out of 1731 rules
+
+## Composite Primitives
+  - composite-primitives.backend-frame-allocator
+  - composite-primitives.blocking-bounded-channel
+  - composite-primitives.cache-coherent-memory-region
+  - composite-primitives.chaoscontrol-exploration-core
+  - composite-primitives.crash-safe-page-cache
+  - composite-primitives.dependency-scheduler
+  - composite-primitives.durable-job-executor
+  - composite-primitives.exactly-once-ledger-transfer
+  - composite-primitives.fenced-distributed-lock
+  - composite-primitives.linearizable-read-gate
+  - composite-primitives.nix-eval-closure-policy
+  - composite-primitives.policy-decision-engine
+  - composite-primitives.raft-membership-manager
+  - composite-primitives.safe-reclamation-domain
+  - composite-primitives.safe-snapshot-replication
+  - composite-primitives.sel4-invocation-step
+  - composite-primitives.serializable-txn-guard
+  - composite-primitives.verified-compiler-pipeline
+  - composite-primitives.verified-lsm-ingest
+  - composite-primitives.web-of-trust-ucan-authorizer
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
