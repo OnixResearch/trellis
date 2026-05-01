@@ -531,6 +531,7 @@ pub mod lease_mutex;
 pub mod lease_read;
 pub mod linearizable_read_gate;
 pub mod ledger;
+pub mod exactly_once_ledger_transfer;
 pub mod left_right;
 pub mod linearizability;
 pub mod liveness_analysis;
