@@ -402,6 +402,7 @@ pub mod bounded_mpmc;
 pub mod blocking_bounded_channel;
 pub mod bounded_peers;
 pub mod bounds;
+pub mod cache_coherent_memory_region;
 pub mod cache_hierarchy;
 pub mod cache_partition;
 pub mod cache_prefetch;
