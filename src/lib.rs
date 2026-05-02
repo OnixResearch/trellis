@@ -449,6 +449,7 @@ pub mod cryptoshedding;
 pub mod ct_select;
 pub mod cycle_detect;
 pub mod dead_code_elimination;
+pub mod dependency_scheduler;
 pub mod deadline_queue;
 pub mod debruijn;
 pub mod delegation;
