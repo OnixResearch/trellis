@@ -49,10 +49,10 @@ The repo-wide verification-gap inventory MUST remove the closeable row for
 `src/ucan_did.rs::varint_decode` and update all source-derived published totals.
 With the UCAN attenuation-chain checker, ability-subsumption checker,
 principal-link DID extraction bridge, SSA runtime-helper wrappers, and the
-instruction-selection `tiling_cost` projection surface also internalized, the
-current expected inventory is `36` total
+instruction-selection `tiling_cost` projection plus `subtree_eval` evaluation
+surfaces also internalized, the current expected inventory is `35` total
 trusted/weakened/runtime-only boundaries: `29` `#[verifier::external_body]`
-sites, `0` `assume_specification[...]` bridges, and `7`
+sites, `0` `assume_specification[...]` bridges, and `6`
 instruction-selection runtime-only exemptions. No
 `@verified-logic:no-ensures` markers remain.
 

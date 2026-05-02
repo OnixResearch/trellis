@@ -117,7 +117,7 @@ fn is_valid_tile_pattern_child(pattern: &TilePattern) -> bool {
     }
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.subtree-eval]
 pub fn subtree_eval(node: &ExprNode) -> Option<u64> {
     match node.op {
         Op::Const => {
@@ -759,6 +759,7 @@ mod tests {
         assert_eq!(optimal_tiling(&node, &[tile]), Err(SelectionError::InvalidTilePattern { tile_index: 0 }));
     }
 
+    // r[verify instruction-selection.subtree-eval]
     #[test]
     fn overflowing_tree_is_malformed_for_modeled_surface() {
         let node = add_node(const_node(u64::MAX), const_node(CONST_VALUE_A));
@@ -773,6 +774,7 @@ mod tests {
         assert_eq!(tile_matches(&tile, &node, &[]).unwrap(), None);
     }
 
+    // r[verify instruction-selection.subtree-eval]
     #[test]
     fn subtree_eval_matches_reference_arithmetic() {
         let add_tree = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));

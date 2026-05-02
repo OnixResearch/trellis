@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8545 Verus proofs · 4218 tests · 1732 requirements · 373 modules · 36 trusted/proof-gap boundaries**
+**8545 Verus proofs · 4218 tests · 1733 requirements · 373 modules · 35 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -531,9 +531,10 @@ public API exemptions.
   `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
   digest and signature checks stay behind trusted runtime/model boundaries.
 
-**7 closeable** — runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
+**6 closeable** — runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
 exempted from `r[impl]` coverage until the module is converted to Verus. `tiling_cost`
-now has direct Tracey implementation and test coverage for its projection contract.
+and `subtree_eval` now have direct Tracey implementation and test coverage for
+their projection/evaluation contracts.
 Def-site collection, IDF computation, SSA-property checking, and phi elimination
 are internalized now; runtime tests and manual oracles still cover the stronger
 remaining SSA semantic claims.
@@ -541,7 +542,7 @@ remaining SSA semantic claims.
 In addition to `external_body`, the current audit also tracks:
 
 - `0` `assume_specification[...]` exec bridges
-- `7` runtime-only `@verified-logic:exempt` public API proof gaps
+- `6` runtime-only `@verified-logic:exempt` public API proof gaps
 - `0` `@verified-logic:no-ensures` markers
 - `0` `assume(...)` soundness oracles
 - `0` placeholder-spec surfaces

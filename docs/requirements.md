@@ -5093,9 +5093,9 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-36 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
+35 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
-7 instruction-selection runtime-only public API exemptions. No
+6 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
 ### Permanent trust boundaries (29 items)
@@ -5112,10 +5112,10 @@ point of the model, not a proof target.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-### Closeable proof-gap boundaries (7 items)
-The closeable set is 7 instruction-selection runtime-only public API exemptions.
-`tiling_cost` now has direct implementation and verification-test coverage for
-the selected-tiling cost projection contract.
+### Closeable proof-gap boundaries (6 items)
+The closeable set is 6 instruction-selection runtime-only public API exemptions.
+`tiling_cost` and `subtree_eval` now have direct implementation and
+verification-test coverage for their projection/evaluation contracts.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
@@ -7096,6 +7096,12 @@ match the concrete value `c`, and `Bottom` MUST remain conservative.
 r[instruction-selection.tiling-cost]
 For a well-formed expression tree, `tiling_cost` MUST project the selected
 `Tiling`'s `total_cost` without recomputing or mutating the tiling.
+
+r[instruction-selection.subtree-eval]
+`subtree_eval` MUST evaluate the modeled expression tree with checked `u64`
+arithmetic: constants project their literal value, addition and multiplication
+combine recursively evaluated operands, and malformed arity/value shapes or
+arithmetic overflow return `None`.
 
 ## Stack Frame Layout
 
