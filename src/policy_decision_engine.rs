@@ -238,15 +238,18 @@ pub fn policy_decision_engine(
     if !crate::delegation::chain_valid(chain) {
         return PolicyDecisionEngineOutcome::Deny;
     }
-    if !crate::containment::contains(
-        cap_variant, cap_scope, cap_mode,
-        child_variant, child_scope, child_mode,
-    ) {
+    if !crate::containment::contains(cap_variant, cap_scope, cap_mode, child_variant, child_scope, child_mode) {
         return PolicyDecisionEngineOutcome::Deny;
     }
     if !crate::containment::contains_compound(
-        cap_variant, cap_mount, cap_prefix, cap_mode,
-        child_variant, child_mount, child_prefix, child_mode,
+        cap_variant,
+        cap_mount,
+        cap_prefix,
+        cap_mode,
+        child_variant,
+        child_mount,
+        child_prefix,
+        child_mode,
     ) {
         return PolicyDecisionEngineOutcome::Deny;
     }
@@ -256,15 +259,18 @@ pub fn policy_decision_engine(
     if !crate::scope::compound_covers(child_mount, child_prefix, op_mount, op_path) {
         return PolicyDecisionEngineOutcome::Deny;
     }
-    if !crate::authorize::authorizes(
-        child_variant, child_scope, child_mode,
-        op_variant, op_target, op_mode,
-    ) {
+    if !crate::authorize::authorizes(child_variant, child_scope, child_mode, op_variant, op_target, op_mode) {
         return PolicyDecisionEngineOutcome::Deny;
     }
     if !crate::authorize::authorizes_compound(
-        child_variant, child_mount, child_prefix, child_mode,
-        op_variant, op_mount, op_path, op_mode,
+        child_variant,
+        child_mount,
+        child_prefix,
+        child_mode,
+        op_variant,
+        op_mount,
+        op_path,
+        op_mode,
     ) {
         return PolicyDecisionEngineOutcome::Deny;
     }
@@ -291,8 +297,18 @@ mod tests {
 
     fn valid_chain() -> Vec<ChainLevel> {
         vec![
-            ChainLevel { depth: 0, has_delegate: true, variant: 4, mode: 3 },
-            ChainLevel { depth: 1, has_delegate: false, variant: 0, mode: 0 },
+            ChainLevel {
+                depth: 0,
+                has_delegate: true,
+                variant: 4,
+                mode: 3,
+            },
+            ChainLevel {
+                depth: 1,
+                has_delegate: false,
+                variant: 0,
+                mode: 0,
+            },
         ]
     }
 

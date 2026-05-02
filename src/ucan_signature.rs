@@ -13,7 +13,8 @@ use vstd::prelude::*;
 
 #[cfg(not(verus_keep_ghost))]
 fn sign_runtime(secret_key: &[u8], message: &[u8]) -> Vec<u8> {
-    use ed25519_dalek::{Signer, SigningKey};
+    use ed25519_dalek::Signer;
+    use ed25519_dalek::SigningKey;
     let sk_bytes: [u8; 32] = secret_key.try_into().expect("secret key must be 32 bytes");
     let signing_key = SigningKey::from_bytes(&sk_bytes);
     let sig = signing_key.sign(message);
@@ -27,7 +28,9 @@ fn sign_runtime(_secret_key: &[u8], _message: &[u8]) -> Vec<u8> {
 
 #[cfg(not(verus_keep_ghost))]
 fn verify_runtime(public_key: &[u8], message: &[u8], signature: &[u8]) -> bool {
-    use ed25519_dalek::{Signature, VerifyingKey, Verifier};
+    use ed25519_dalek::Signature;
+    use ed25519_dalek::Verifier;
+    use ed25519_dalek::VerifyingKey;
     let pk_bytes: [u8; 32] = match public_key.try_into() {
         Ok(b) => b,
         Err(_) => return false,
@@ -280,7 +283,9 @@ mod tests {
         let signing_key = SigningKey::from_bytes(&sk_seed);
         let pk_bytes = signing_key.verifying_key().to_bytes().to_vec();
 
-        let sk = SecretKey { bytes: sk_seed.to_vec() };
+        let sk = SecretKey {
+            bytes: sk_seed.to_vec(),
+        };
         let pk = PublicKey { bytes: pk_bytes };
         let message = vec![1u8, 2, 3, 4, 5];
 

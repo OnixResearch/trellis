@@ -210,7 +210,7 @@ fn endpoint_has_sender(endpoint: &crate::sel4_endpoint::Endpoint, sender: usize)
 }
 
 fn endpoint_has_receiver(endpoint: &crate::sel4_endpoint::Endpoint, receiver: usize) -> bool {
-    endpoint.receivers.iter().any(|queued| *queued == receiver)
+    endpoint.receivers.contains(&receiver)
 }
 
 fn endpoint_can_enqueue_sender_runtime(endpoint: &crate::sel4_endpoint::Endpoint, sender: usize) -> bool {

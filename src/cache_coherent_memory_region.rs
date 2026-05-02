@@ -166,8 +166,7 @@ fn memory_consistent_runtime(caches: &[u8], memory_up_to_date: bool) -> bool {
 }
 
 fn flushable_runtime(lines: &[crate::write_policy::CacheLine], memory: &[u64]) -> bool {
-    lines.len() == memory.len()
-        && lines.iter().zip(memory.iter()).all(|(line, mem)| line.dirty || line.data == *mem)
+    lines.len() == memory.len() && lines.iter().zip(memory.iter()).all(|(line, mem)| line.dirty || line.data == *mem)
 }
 
 // r[impl composite-primitives.cache-coherent-memory-region]
@@ -245,21 +244,41 @@ pub fn cache_coherent_memory_region(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::directory_coherence::{DirectoryEntry, DIR_EXCLUSIVE};
+    use crate::directory_coherence::DIR_EXCLUSIVE;
+    use crate::directory_coherence::DirectoryEntry;
     use crate::store_buffer::StoreEntry;
-    use crate::write_policy::{CacheLine, WritePolicy};
+    use crate::write_policy::CacheLine;
+    use crate::write_policy::WritePolicy;
 
     #[test]
     fn exclusive_writer_remains_unique() {
-        let directory = DirectoryEntry { owner: Some(0), sharers: vec![false, false], state: DIR_EXCLUSIVE };
-        let line = CacheLine { data: 7, dirty: false, policy: WritePolicy::WriteBack };
+        let directory = DirectoryEntry {
+            owner: Some(0),
+            sharers: vec![false, false],
+            state: DIR_EXCLUSIVE,
+        };
+        let line = CacheLine {
+            data: 7,
+            dirty: false,
+            policy: WritePolicy::WriteBack,
+        };
         assert_eq!(
             cache_coherent_memory_region(
                 &[2, 0],
                 &[3, 0],
                 &directory,
-                &[StoreEntry { addr: 16, size: 4, data: 9, seq: 1 }],
-                StoreEntry { addr: 16, size: 4, data: 9, seq: 2 },
+                &[StoreEntry {
+                    addr: 16,
+                    size: 4,
+                    data: 9,
+                    seq: 1
+                }],
+                StoreEntry {
+                    addr: 16,
+                    size: 4,
+                    data: 9,
+                    seq: 2
+                },
                 18,
                 2,
                 0,
@@ -278,15 +297,28 @@ mod tests {
 
     #[test]
     fn second_dirty_owner_rejected() {
-        let directory = DirectoryEntry { owner: Some(0), sharers: vec![false, false], state: DIR_EXCLUSIVE };
-        let line = CacheLine { data: 7, dirty: false, policy: WritePolicy::WriteBack };
+        let directory = DirectoryEntry {
+            owner: Some(0),
+            sharers: vec![false, false],
+            state: DIR_EXCLUSIVE,
+        };
+        let line = CacheLine {
+            data: 7,
+            dirty: false,
+            policy: WritePolicy::WriteBack,
+        };
         assert_eq!(
             cache_coherent_memory_region(
                 &[2, 0],
                 &[3, 4],
                 &directory,
                 &[],
-                StoreEntry { addr: 16, size: 4, data: 9, seq: 2 },
+                StoreEntry {
+                    addr: 16,
+                    size: 4,
+                    data: 9,
+                    seq: 2
+                },
                 16,
                 4,
                 0,
@@ -305,15 +337,28 @@ mod tests {
 
     #[test]
     fn prefetch_or_forwarding_shape_violation_rejected() {
-        let directory = DirectoryEntry { owner: Some(0), sharers: vec![false, false], state: DIR_EXCLUSIVE };
-        let line = CacheLine { data: 7, dirty: false, policy: WritePolicy::WriteBack };
+        let directory = DirectoryEntry {
+            owner: Some(0),
+            sharers: vec![false, false],
+            state: DIR_EXCLUSIVE,
+        };
+        let line = CacheLine {
+            data: 7,
+            dirty: false,
+            policy: WritePolicy::WriteBack,
+        };
         assert_eq!(
             cache_coherent_memory_region(
                 &[2, 0],
                 &[3, 0],
                 &directory,
                 &[],
-                StoreEntry { addr: 20, size: 1, data: 9, seq: 2 },
+                StoreEntry {
+                    addr: 20,
+                    size: 1,
+                    data: 9,
+                    seq: 2
+                },
                 16,
                 4,
                 0,
@@ -332,15 +377,28 @@ mod tests {
 
     #[test]
     fn invalid_shapes_reject_before_coherence_claim() {
-        let directory = DirectoryEntry { owner: Some(0), sharers: vec![false], state: DIR_EXCLUSIVE };
-        let line = CacheLine { data: 7, dirty: false, policy: WritePolicy::WriteThrough };
+        let directory = DirectoryEntry {
+            owner: Some(0),
+            sharers: vec![false],
+            state: DIR_EXCLUSIVE,
+        };
+        let line = CacheLine {
+            data: 7,
+            dirty: false,
+            policy: WritePolicy::WriteThrough,
+        };
         assert_eq!(
             cache_coherent_memory_region(
                 &[2, 0],
                 &[3, 0],
                 &directory,
                 &[],
-                StoreEntry { addr: 16, size: 4, data: 9, seq: 2 },
+                StoreEntry {
+                    addr: 16,
+                    size: 4,
+                    data: 9,
+                    seq: 2
+                },
                 16,
                 4,
                 0,

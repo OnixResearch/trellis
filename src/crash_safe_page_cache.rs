@@ -174,7 +174,10 @@ pub fn crash_safe_page_cache(
     if prefix_end < checkpoint_lsn {
         return CrashSafePageCacheOutcome::Rejected;
     }
-    if prefix_end as usize > wal.len() || prefix_end as usize > seq_nums.len() {
+    let Ok(prefix_end_usize) = usize::try_from(prefix_end) else {
+        return CrashSafePageCacheOutcome::Rejected;
+    };
+    if prefix_end_usize > wal.len() || prefix_end_usize > seq_nums.len() {
         return CrashSafePageCacheOutcome::Rejected;
     }
     if !crash_safe_page_cache_flushable(write_lines, memory) {
@@ -237,9 +240,12 @@ pub proof fn crash_safe_page_cache_invalid_checkpoint_rejected(checkpoint_lsn: u
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::block_cache::{SLOT_CLEAN, SLOT_DIRTY};
-    use crate::page_checksum::{checksum, pack};
-    use crate::write_policy::{CacheLine, WritePolicy};
+    use crate::block_cache::SLOT_CLEAN;
+    use crate::block_cache::SLOT_DIRTY;
+    use crate::page_checksum::checksum;
+    use crate::page_checksum::pack;
+    use crate::write_policy::CacheLine;
+    use crate::write_policy::WritePolicy;
 
     fn checksum_for(data: &[u8]) -> u16 {
         let (a, b) = checksum(data);
@@ -255,15 +261,24 @@ mod tests {
         let checksum = checksum_for(&page);
         let slots = [SLOT_DIRTY, SLOT_CLEAN];
         let lines = [
-            CacheLine { data: 10, dirty: true, policy: WritePolicy::WriteBack },
-            CacheLine { data: 0, dirty: false, policy: WritePolicy::WriteBack },
+            CacheLine {
+                data: 10,
+                dirty: true,
+                policy: WritePolicy::WriteBack,
+            },
+            CacheLine {
+                data: 0,
+                dirty: false,
+                policy: WritePolicy::WriteBack,
+            },
         ];
         let memory = [0u64, 0u64];
 
-        match crash_safe_page_cache(
-            &state, &wal, &seq_nums, 0, 2, 2, 2, &page, checksum, &slots, &lines, &memory, 0,
-        ) {
-            CrashSafePageCacheOutcome::Recovered { replay_start, replay_end } => {
+        match crash_safe_page_cache(&state, &wal, &seq_nums, 0, 2, 2, 2, &page, checksum, &slots, &lines, &memory, 0) {
+            CrashSafePageCacheOutcome::Recovered {
+                replay_start,
+                replay_end,
+            } => {
                 assert_eq!(replay_start, 0);
                 assert_eq!(replay_end, 2);
             }
@@ -279,12 +294,14 @@ mod tests {
         let page = [9u8, 9];
         let checksum = checksum_for(&page);
         let slots = [SLOT_DIRTY];
-        let lines = [CacheLine { data: 10, dirty: true, policy: WritePolicy::WriteBack }];
+        let lines = [CacheLine {
+            data: 10,
+            dirty: true,
+            policy: WritePolicy::WriteBack,
+        }];
         let memory = [0u64];
 
-        match crash_safe_page_cache(
-            &state, &wal, &seq_nums, 0, 2, 2, 2, &page, checksum, &slots, &lines, &memory, 0,
-        ) {
+        match crash_safe_page_cache(&state, &wal, &seq_nums, 0, 2, 2, 2, &page, checksum, &slots, &lines, &memory, 0) {
             CrashSafePageCacheOutcome::Recovered { replay_end, .. } => assert_eq!(replay_end, 2),
             _ => panic!("valid prefix before invalid suffix should recover"),
         }
@@ -298,12 +315,14 @@ mod tests {
         let page = [1u8];
         let checksum = checksum_for(&page);
         let slots = [SLOT_DIRTY];
-        let lines = [CacheLine { data: 10, dirty: true, policy: WritePolicy::WriteBack }];
+        let lines = [CacheLine {
+            data: 10,
+            dirty: true,
+            policy: WritePolicy::WriteBack,
+        }];
         let memory = [0u64];
 
-        match crash_safe_page_cache(
-            &state, &wal, &seq_nums, 2, 1, 1, 1, &page, checksum, &slots, &lines, &memory, 0,
-        ) {
+        match crash_safe_page_cache(&state, &wal, &seq_nums, 2, 1, 1, 1, &page, checksum, &slots, &lines, &memory, 0) {
             CrashSafePageCacheOutcome::Rejected => {}
             _ => panic!("invalid checkpoint must reject"),
         }

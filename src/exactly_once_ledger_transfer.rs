@@ -331,14 +331,20 @@ pub proof fn exactly_once_ledger_transfer_replay_rejected(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::durable_history::{DurableEvent, EVENT_EFFECT_DONE, EVENT_WORK};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_EFFECT_DONE;
+    use crate::durable_history::EVENT_WORK;
     use crate::journal::JournalEntry;
 
     #[test]
     fn fresh_transfer_posts_once() {
         let accounts = [100u64, 20u64];
         let consumed: [u64; 0] = [];
-        let events = [DurableEvent { seq_num: 0, kind: EVENT_WORK, effect_id: 7 }];
+        let events = [DurableEvent {
+            seq_num: 0,
+            kind: EVENT_WORK,
+            effect_id: 7,
+        }];
         let empty_sender: [JournalEntry; 0] = [];
         let empty_receiver: [JournalEntry; 0] = [];
 
@@ -360,7 +366,10 @@ mod tests {
             20,
             1,
         ) {
-            ExactlyOnceLedgerTransferOutcome::Posted { sender_balance, receiver_balance } => {
+            ExactlyOnceLedgerTransferOutcome::Posted {
+                sender_balance,
+                receiver_balance,
+            } => {
                 assert_eq!(sender_balance, 70);
                 assert_eq!(receiver_balance, 50);
                 assert_eq!(accounts[0] + accounts[1], sender_balance + receiver_balance);
@@ -373,7 +382,11 @@ mod tests {
     fn replayed_transfer_does_not_double_post() {
         let accounts = [100u64, 20u64];
         let consumed = [7u64];
-        let events = [DurableEvent { seq_num: 0, kind: EVENT_EFFECT_DONE, effect_id: 7 }];
+        let events = [DurableEvent {
+            seq_num: 0,
+            kind: EVENT_EFFECT_DONE,
+            effect_id: 7,
+        }];
         let empty_sender: [JournalEntry; 0] = [];
         let empty_receiver: [JournalEntry; 0] = [];
 

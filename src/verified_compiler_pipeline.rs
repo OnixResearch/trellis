@@ -201,10 +201,14 @@ pub fn verified_compiler_pipeline(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::constant_folding::{ConstLat, ConstPropSets};
-    use crate::control_flow_graph::{BasicBlock, InstrKind};
+    use crate::constant_folding::ConstLat;
+    use crate::constant_folding::ConstPropSets;
+    use crate::control_flow_graph::BasicBlock;
+    use crate::control_flow_graph::InstrKind;
     use crate::liveness_analysis::LiveSets;
-    use crate::ssa_construction::{RawBlock, RawInstr, RawProgram};
+    use crate::ssa_construction::RawBlock;
+    use crate::ssa_construction::RawInstr;
+    use crate::ssa_construction::RawProgram;
 
     fn valid_inputs() -> (
         Vec<InstrKind>,
@@ -224,13 +228,20 @@ mod tests {
         let dom = vec![vec![true]];
         let program = RawProgram {
             blocks: vec![RawBlock {
-                instrs: vec![RawInstr { def: None, uses: vec![], opcode: crate::dead_code_elimination::OPCODE_RETURN }],
+                instrs: vec![RawInstr {
+                    def: None,
+                    uses: vec![],
+                    opcode: crate::dead_code_elimination::OPCODE_RETURN,
+                }],
             }],
             edges: vec![],
         };
         let live_uses = vec![vec![false]];
         let live_defs = vec![vec![false]];
-        let live = LiveSets { live_in: vec![vec![false]], live_out: vec![vec![false]] };
+        let live = LiveSets {
+            live_in: vec![vec![false]],
+            live_out: vec![vec![false]],
+        };
         let const_sets = ConstPropSets {
             in_env: vec![vec![ConstLat::Const(0)]],
             out_env: vec![vec![ConstLat::Const(0)]],
@@ -241,11 +252,21 @@ mod tests {
 
     #[test]
     fn supported_slice_preserves_observable_trace_boundary() {
-        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, const_env) = valid_inputs();
+        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, const_env) =
+            valid_inputs();
         assert_eq!(
             verified_compiler_pipeline(
-                &cfg_instrs, &cfg_blocks, &cfg_edges, &dom, &program, &live_uses, &live_defs, &live,
-                &const_sets, &const_env, 1,
+                &cfg_instrs,
+                &cfg_blocks,
+                &cfg_edges,
+                &dom,
+                &program,
+                &live_uses,
+                &live_defs,
+                &live,
+                &const_sets,
+                &const_env,
+                1,
             ),
             VerifiedCompilerPipelineOutcome::Accepted,
         );
@@ -253,12 +274,22 @@ mod tests {
 
     #[test]
     fn invalid_cfg_target_rejected() {
-        let (mut cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, const_env) = valid_inputs();
+        let (mut cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, const_env) =
+            valid_inputs();
         cfg_instrs[0] = InstrKind::Branch { target: 0 };
         assert_eq!(
             verified_compiler_pipeline(
-                &cfg_instrs, &cfg_blocks, &cfg_edges, &dom, &program, &live_uses, &live_defs, &live,
-                &const_sets, &const_env, 1,
+                &cfg_instrs,
+                &cfg_blocks,
+                &cfg_edges,
+                &dom,
+                &program,
+                &live_uses,
+                &live_defs,
+                &live,
+                &const_sets,
+                &const_env,
+                1,
             ),
             VerifiedCompilerPipelineOutcome::Rejected,
         );
@@ -266,12 +297,22 @@ mod tests {
 
     #[test]
     fn invalid_analysis_shape_rejected() {
-        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, mut live, const_sets, const_env) = valid_inputs();
+        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, mut live, const_sets, const_env) =
+            valid_inputs();
         live.live_out.push(vec![false]);
         assert_eq!(
             verified_compiler_pipeline(
-                &cfg_instrs, &cfg_blocks, &cfg_edges, &dom, &program, &live_uses, &live_defs, &live,
-                &const_sets, &const_env, 1,
+                &cfg_instrs,
+                &cfg_blocks,
+                &cfg_edges,
+                &dom,
+                &program,
+                &live_uses,
+                &live_defs,
+                &live,
+                &const_sets,
+                &const_env,
+                1,
             ),
             VerifiedCompilerPipelineOutcome::Rejected,
         );
@@ -279,12 +320,22 @@ mod tests {
 
     #[test]
     fn top_constprop_boundary_rejected() {
-        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, mut const_env) = valid_inputs();
+        let (cfg_instrs, cfg_blocks, cfg_edges, dom, program, live_uses, live_defs, live, const_sets, mut const_env) =
+            valid_inputs();
         const_env[0] = ConstLat::Top;
         assert_eq!(
             verified_compiler_pipeline(
-                &cfg_instrs, &cfg_blocks, &cfg_edges, &dom, &program, &live_uses, &live_defs, &live,
-                &const_sets, &const_env, 1,
+                &cfg_instrs,
+                &cfg_blocks,
+                &cfg_edges,
+                &dom,
+                &program,
+                &live_uses,
+                &live_defs,
+                &live,
+                &const_sets,
+                &const_env,
+                1,
             ),
             VerifiedCompilerPipelineOutcome::Rejected,
         );

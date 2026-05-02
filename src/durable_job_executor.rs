@@ -273,34 +273,28 @@ pub proof fn durable_job_executor_reject_is_read_only(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::durable_history::{DurableEvent, EVENT_WORK};
+    use crate::durable_history::DurableEvent;
+    use crate::durable_history::EVENT_WORK;
     use crate::job_state::READY;
 
     fn work(seq_num: usize) -> DurableEvent {
-        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }
+        DurableEvent {
+            seq_num,
+            kind: EVENT_WORK,
+            effect_id: 0,
+        }
     }
 
     // r[verify composite-primitives.durable-job-executor]
     #[test]
     fn accepts_fresh_token_with_valid_resume_point() {
         let events = vec![work(0), work(1)];
-        let decision = durable_job_executor(
-            READY,
-            42,
-            &[],
-            &events,
-            1,
-            99,
-            1,
-            3,
-            100,
-            1_000,
-            0,
-            10,
-            2_000,
-        );
+        let decision = durable_job_executor(READY, 42, &[], &events, 1, 99, 1, 3, 100, 1_000, 0, 10, 2_000);
         match decision {
-            DurableJobExecutorDecision::Execute { resume_step, append_token } => {
+            DurableJobExecutorDecision::Execute {
+                resume_step,
+                append_token,
+            } => {
                 assert_eq!(resume_step, 2);
                 assert!(append_token);
             }
@@ -312,14 +306,10 @@ mod tests {
     #[test]
     fn rejects_duplicate_or_expired_without_append() {
         let events = vec![work(0), work(1)];
-        let duplicate = durable_job_executor(
-            READY, 42, &[42], &events, 1, 99, 1, 3, 100, 1_000, 0, 10, 2_000,
-        );
+        let duplicate = durable_job_executor(READY, 42, &[42], &events, 1, 99, 1, 3, 100, 1_000, 0, 10, 2_000);
         assert!(matches!(duplicate, DurableJobExecutorDecision::RejectDuplicate));
 
-        let expired = durable_job_executor(
-            READY, 43, &[], &events, 1, 99, 1, 3, 100, 2_000, 0, 10, 2_000,
-        );
+        let expired = durable_job_executor(READY, 43, &[], &events, 1, 99, 1, 3, 100, 2_000, 0, 10, 2_000);
         assert!(matches!(expired, DurableJobExecutorDecision::RejectTimedOut));
     }
 }

@@ -206,7 +206,9 @@ mod tests {
                 timestamp: 100,
             },
             ran_by: b"did:key:alice".to_vec(),
-            result: InvocationResult::Ok { output: b"data".to_vec() },
+            result: InvocationResult::Ok {
+                output: b"data".to_vec(),
+            },
             receipt_timestamp: 105,
         };
         assert!(check_receipt_valid(&r));
@@ -223,7 +225,9 @@ mod tests {
                 timestamp: 100,
             },
             ran_by: b"did:key:bob".to_vec(),
-            result: InvocationResult::Ok { output: b"data".to_vec() },
+            result: InvocationResult::Ok {
+                output: b"data".to_vec(),
+            },
             receipt_timestamp: 105,
         };
         assert!(!check_receipt_valid(&r));
@@ -240,7 +244,9 @@ mod tests {
                 timestamp: 200,
             },
             ran_by: b"did:key:alice".to_vec(),
-            result: InvocationResult::Err { error: b"fail".to_vec() },
+            result: InvocationResult::Err {
+                error: b"fail".to_vec(),
+            },
             receipt_timestamp: 100,
         };
         assert!(!check_receipt_valid(&r));
@@ -257,7 +263,9 @@ mod tests {
                 timestamp: 100,
             },
             ran_by: b"did:key:alice".to_vec(),
-            result: InvocationResult::Err { error: b"not found".to_vec() },
+            result: InvocationResult::Err {
+                error: b"not found".to_vec(),
+            },
             receipt_timestamp: 100,
         };
         assert!(check_receipt_valid(&r));

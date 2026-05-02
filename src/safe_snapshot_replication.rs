@@ -210,22 +210,11 @@ mod tests {
     #[test]
     fn installs_complete_verified_snapshot() {
         let integrity = good_integrity();
-        let decision = safe_snapshot_replication(
-            5,
-            10,
-            80,
-            20,
-            100,
-            &integrity,
-            10,
-            10,
-            12,
-            7,
-        );
-        assert!(matches!(
-            decision,
-            SafeSnapshotReplicationDecision::Install { snapshot_index: 10, commit_index: 10 }
-        ));
+        let decision = safe_snapshot_replication(5, 10, 80, 20, 100, &integrity, 10, 10, 12, 7);
+        assert!(matches!(decision, SafeSnapshotReplicationDecision::Install {
+            snapshot_index: 10,
+            commit_index: 10
+        }));
     }
 
     // r[verify composite-primitives.safe-snapshot-replication]
@@ -233,35 +222,10 @@ mod tests {
     fn rejects_corrupt_and_unsafe_snapshot() {
         let mut corrupt = good_integrity();
         corrupt.combined_hash = corrupt.combined_hash.wrapping_add(1);
-        let corrupt_decision = safe_snapshot_replication(
-            5,
-            10,
-            80,
-            20,
-            100,
-            &corrupt,
-            10,
-            10,
-            12,
-            7,
-        );
+        let corrupt_decision = safe_snapshot_replication(5, 10, 80, 20, 100, &corrupt, 10, 10, 12, 7);
         assert!(matches!(corrupt_decision, SafeSnapshotReplicationDecision::RejectCorrupt));
 
-        let unsafe_compaction = safe_snapshot_replication(
-            5,
-            10,
-            80,
-            20,
-            100,
-            &good_integrity(),
-            13,
-            10,
-            12,
-            7,
-        );
-        assert!(matches!(
-            unsafe_compaction,
-            SafeSnapshotReplicationDecision::RejectUnsafeCompaction
-        ));
+        let unsafe_compaction = safe_snapshot_replication(5, 10, 80, 20, 100, &good_integrity(), 13, 10, 12, 7);
+        assert!(matches!(unsafe_compaction, SafeSnapshotReplicationDecision::RejectUnsafeCompaction));
     }
 }

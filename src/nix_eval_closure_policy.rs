@@ -13,8 +13,8 @@ use std::collections::HashSet;
 
 use vstd::prelude::*;
 
-use crate::nix_closure::ClosureItem;
 use crate::nickel_record_merge::ExecField;
+use crate::nix_closure::ClosureItem;
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub enum NixEvalClosurePolicyOutcome {
@@ -378,23 +378,31 @@ pub fn nix_eval_closure_policy(
         || !sorted_record_runtime(right_record)
         || !disjoint_record_keys_runtime(left_record, right_record)
     {
-        return NixEvalClosurePolicyOutcome::Rejected { attrs: base_attrs.clone() };
+        return NixEvalClosurePolicyOutcome::Rejected {
+            attrs: base_attrs.clone(),
+        };
     }
 
     let merged_attrs = crate::nix_attrset::merge(base_attrs, overlay_attrs);
     if !sorted_attrs_runtime(&merged_attrs) {
-        return NixEvalClosurePolicyOutcome::Rejected { attrs: base_attrs.clone() };
+        return NixEvalClosurePolicyOutcome::Rejected {
+            attrs: base_attrs.clone(),
+        };
     }
 
     let dependencies = crate::nix_list::concat_lists(dependency_batches);
     if required_closure_keys.len() > dependencies.len()
         || required_closure_keys.iter().any(|key| !dependencies.contains(key))
     {
-        return NixEvalClosurePolicyOutcome::Rejected { attrs: base_attrs.clone() };
+        return NixEvalClosurePolicyOutcome::Rejected {
+            attrs: base_attrs.clone(),
+        };
     }
 
     if crate::nix_version::compare_versions(version, minimum_version) < 0 {
-        return NixEvalClosurePolicyOutcome::Rejected { attrs: base_attrs.clone() };
+        return NixEvalClosurePolicyOutcome::Rejected {
+            attrs: base_attrs.clone(),
+        };
     }
 
     let trimmed_name = crate::nix_string::substring(raw_name, substring_start, substring_len);
@@ -405,7 +413,9 @@ pub fn nix_eval_closure_policy(
         || required_closure_keys.iter().any(|key| !contains_key_runtime(&closure, *key))
         || merged_attrs.iter().any(|(_, value)| !contains_key_runtime(&closure, *value))
     {
-        return NixEvalClosurePolicyOutcome::Rejected { attrs: base_attrs.clone() };
+        return NixEvalClosurePolicyOutcome::Rejected {
+            attrs: base_attrs.clone(),
+        };
     }
 
     let _merged_record = crate::nickel_record_merge::record_merge(left_record, right_record);
@@ -427,7 +437,11 @@ mod tests {
     }
 
     fn field(key: &[u8], value: u64) -> ExecField {
-        ExecField { key: key.to_vec(), value, priority: MergePriority::Neutral }
+        ExecField {
+            key: key.to_vec(),
+            value,
+            priority: MergePriority::Neutral,
+        }
     }
 
     // r[verify composite-primitives.nix-eval-closure-policy]
@@ -461,12 +475,16 @@ mod tests {
         );
 
         match outcome {
-            NixEvalClosurePolicyOutcome::Accepted { merged_attrs, closure, normalized_name } => {
+            NixEvalClosurePolicyOutcome::Accepted {
+                merged_attrs,
+                closure,
+                normalized_name,
+            } => {
                 assert_eq!(merged_attrs.len(), 2);
                 assert!(closure.iter().any(|i| i.key == 3));
                 assert_eq!(normalized_name, b"drv-name".to_vec());
             }
-            other => panic!("expected accepted outcome, got {other:?}"),
+            other @ NixEvalClosurePolicyOutcome::Rejected { .. } => panic!("expected accepted outcome, got {other:?}"),
         }
     }
 

@@ -249,7 +249,11 @@ mod tests {
     use super::*;
 
     fn held_lock(holder: u64, expiry: u64, fence_token: u64) -> LockState {
-        LockState { holder, expiry, fence_token }
+        LockState {
+            holder,
+            expiry,
+            fence_token,
+        }
     }
 
     // r[verify composite-primitives.fenced-distributed-lock]

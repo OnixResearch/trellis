@@ -9,8 +9,15 @@ use vstd::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum BlockingBoundedChannelOutcome {
-    Enqueued { new_tail: u64, new_occupancy: u64 },
-    WouldBlock { futex_state: u32, backoff_step: u64, should_park: bool },
+    Enqueued {
+        new_tail: u64,
+        new_occupancy: u64,
+    },
+    WouldBlock {
+        futex_state: u32,
+        backoff_step: u64,
+        should_park: bool,
+    },
     Rejected,
 }
 
@@ -263,10 +270,12 @@ mod tests {
     fn available_slot_sends_without_parking() {
         assert_eq!(
             blocking_bounded_channel_send(
-                0, 1, 1, 4, false, true, WAITING, 0, 6, 10,
-                ACQUIRE, RELEASE, RELAXED, RELAXED,
+                0, 1, 1, 4, false, true, WAITING, 0, 6, 10, ACQUIRE, RELEASE, RELAXED, RELAXED,
             ),
-            BlockingBoundedChannelOutcome::Enqueued { new_tail: 2, new_occupancy: 2 },
+            BlockingBoundedChannelOutcome::Enqueued {
+                new_tail: 2,
+                new_occupancy: 2
+            },
         );
     }
 
@@ -274,8 +283,7 @@ mod tests {
     fn full_nonblocking_rejects_without_mutation() {
         assert_eq!(
             blocking_bounded_channel_send(
-                0, 4, 4, 4, false, false, WAITING, 3, 6, 10,
-                ACQUIRE, RELEASE, RELAXED, RELAXED,
+                0, 4, 4, 4, false, false, WAITING, 3, 6, 10, ACQUIRE, RELEASE, RELAXED, RELAXED,
             ),
             BlockingBoundedChannelOutcome::Rejected,
         );
@@ -284,10 +292,7 @@ mod tests {
     #[test]
     fn full_blocking_enters_valid_wait_backoff() {
         assert_eq!(
-            blocking_bounded_channel_send(
-                0, 4, 4, 4, false, true, 0, 9, 6, 10,
-                ACQUIRE, RELEASE, RELAXED, RELAXED,
-            ),
+            blocking_bounded_channel_send(0, 4, 4, 4, false, true, 0, 9, 6, 10, ACQUIRE, RELEASE, RELAXED, RELAXED,),
             BlockingBoundedChannelOutcome::WouldBlock {
                 futex_state: WAITING,
                 backoff_step: 10,
@@ -300,8 +305,7 @@ mod tests {
     fn invalid_memory_order_rejects() {
         assert_eq!(
             blocking_bounded_channel_send(
-                0, 1, 1, 4, false, true, WAITING, 0, 6, 10,
-                RELEASE, RELEASE, ACQUIRE, RELAXED,
+                0, 1, 1, 4, false, true, WAITING, 0, 6, 10, RELEASE, RELEASE, ACQUIRE, RELAXED,
             ),
             BlockingBoundedChannelOutcome::Rejected,
         );

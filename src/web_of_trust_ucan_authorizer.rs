@@ -167,8 +167,7 @@ pub fn web_of_trust_ucan_authorizer(
     threshold: usize,
     depth: usize,
     trust_time: u64,
-) -> WebOfTrustUcanAuthorization
-{
+) -> WebOfTrustUcanAuthorization {
     if crate::ucan_token::validate_envelope(payload, sig_valid, now, tolerance).is_err() {
         return WebOfTrustUcanAuthorization::Denied;
     }
@@ -205,11 +204,19 @@ pub fn web_of_trust_ucan_authorizer(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::ucan_caveat::{Caveat, CaveatContext};
-    use crate::ucan_token::{UcanCapability, UcanPayload};
-    use crate::web_of_trust_attestation::{attestation_payload_bytes, attestation_signature_bytes_runtime, Attestation, TRUST_ROLE_TAG};
+    use crate::ucan_caveat::Caveat;
+    use crate::ucan_caveat::CaveatContext;
+    use crate::ucan_token::UcanCapability;
+    use crate::ucan_token::UcanPayload;
+    use crate::web_of_trust_attestation::Attestation;
+    use crate::web_of_trust_attestation::TRUST_ROLE_TAG;
+    use crate::web_of_trust_attestation::attestation_payload_bytes;
+    use crate::web_of_trust_attestation::attestation_signature_bytes_runtime;
     use crate::web_of_trust_principal::principal_id_from_bytes;
-    use crate::web_of_trust_revocation::{revocation_payload_bytes, revocation_signature_bytes_runtime, Revocation, FAMILY_TARGET_KIND_TAG};
+    use crate::web_of_trust_revocation::FAMILY_TARGET_KIND_TAG;
+    use crate::web_of_trust_revocation::Revocation;
+    use crate::web_of_trust_revocation::revocation_payload_bytes;
+    use crate::web_of_trust_revocation::revocation_signature_bytes_runtime;
 
     fn signed_attestation(
         issuer_key_bytes: Vec<u8>,
@@ -233,10 +240,7 @@ mod tests {
             signature: Vec::new(),
         };
         let payload = attestation_payload_bytes(&unsigned).unwrap();
-        let signature = attestation_signature_bytes_runtime(
-            unsigned.issuer_key_bytes.as_slice(),
-            payload.as_slice(),
-        );
+        let signature = attestation_signature_bytes_runtime(unsigned.issuer_key_bytes.as_slice(), payload.as_slice());
         Attestation { signature, ..unsigned }
     }
 
@@ -260,10 +264,7 @@ mod tests {
             signature: Vec::new(),
         };
         let payload = revocation_payload_bytes(&unsigned).unwrap();
-        let signature = revocation_signature_bytes_runtime(
-            unsigned.issuer_key_bytes.as_slice(),
-            payload.as_slice(),
-        );
+        let signature = revocation_signature_bytes_runtime(unsigned.issuer_key_bytes.as_slice(), payload.as_slice());
         Revocation { signature, ..unsigned }
     }
 
@@ -271,7 +272,10 @@ mod tests {
         UcanPayload {
             iss: b"did:key:zissuer".to_vec(),
             aud: b"did:key:zaudience".to_vec(),
-            att: vec![UcanCapability { resource: b"store://docs".to_vec(), ability: b"crud/read".to_vec() }],
+            att: vec![UcanCapability {
+                resource: b"store://docs".to_vec(),
+                ability: b"crud/read".to_vec(),
+            }],
             prf: vec![b"bafy-proof".to_vec()],
             exp: 100,
             nbf: 0,
@@ -286,7 +290,10 @@ mod tests {
         let roots = vec![principal_id_from_bytes(&root_key)];
         let subject = principal_id_from_bytes(&subject_key);
         let caveats = vec![Caveat::TimeBound { not_after: 50 }];
-        let ctx = CaveatContext { now: 5, count_in_window: 0 };
+        let ctx = CaveatContext {
+            now: 5,
+            count_in_window: 0,
+        };
 
         let outcome = web_of_trust_ucan_authorizer(
             &valid_payload(),
@@ -318,10 +325,16 @@ mod tests {
         let att_a_again = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
         let att_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
         let rev = signed_family_revocation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 5);
-        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
+        let roots = vec![
+            principal_id_from_bytes(&root_a_key),
+            principal_id_from_bytes(&root_b_key),
+        ];
         let subject = principal_id_from_bytes(&subject_key);
         let caveats = vec![Caveat::TimeBound { not_after: 50 }];
-        let ctx = CaveatContext { now: 5, count_in_window: 0 };
+        let ctx = CaveatContext {
+            now: 5,
+            count_in_window: 0,
+        };
 
         let revoked = web_of_trust_ucan_authorizer(
             &valid_payload(),

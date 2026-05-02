@@ -504,10 +504,8 @@ mod tests {
     const MAX_PROP_STORE_BYTES: usize = 8usize;
 
     fn sample_frame() -> LocalFrame {
-        new_local_frame(
-            vec![WasmValueType::I32, WasmValueType::F64],
-            vec![WasmValue::I32(7u32), WasmValue::F64(9u64)],
-        ).expect("sample frame should be well typed")
+        new_local_frame(vec![WasmValueType::I32, WasmValueType::F64], vec![WasmValue::I32(7u32), WasmValue::F64(9u64)])
+            .expect("sample frame should be well typed")
     }
 
     // r[verify wasm-value.types]

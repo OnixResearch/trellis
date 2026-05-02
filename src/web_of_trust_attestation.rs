@@ -6,16 +6,18 @@
 
 #![allow(clippy::ptr_arg)]
 
+use vstd::prelude::*;
+
 use crate::serialize_inj::encode_u64;
 #[cfg(verus_keep_ghost)]
 use crate::serialize_inj::encode_u64_spec;
 use crate::web_of_trust_principal::PrincipalId;
 #[cfg(verus_keep_ghost)]
 use crate::web_of_trust_principal::principal_id_bytes_spec;
-use crate::web_of_trust_revocation::{revocation_effective_at, Revocation};
+use crate::web_of_trust_revocation::Revocation;
+use crate::web_of_trust_revocation::revocation_effective_at;
 #[cfg(verus_keep_ghost)]
 use crate::web_of_trust_revocation::revocation_effective_at_spec;
-use vstd::prelude::*;
 
 #[cfg(verus_keep_ghost)]
 pub(crate) fn attestation_signature_bytes_runtime(_issuer_key_bytes: &[u8], _payload_bytes: &[u8]) -> Vec<u8> {
@@ -640,7 +642,9 @@ mod tests {
 
     use super::*;
     use crate::web_of_trust_principal::principal_id_from_bytes;
-    use crate::web_of_trust_revocation::{revocation_payload_bytes, Revocation, FAMILY_TARGET_KIND_TAG};
+    use crate::web_of_trust_revocation::FAMILY_TARGET_KIND_TAG;
+    use crate::web_of_trust_revocation::Revocation;
+    use crate::web_of_trust_revocation::revocation_payload_bytes;
 
     fn signed_attestation(
         issuer_key_bytes: Vec<u8>,
@@ -664,24 +668,14 @@ mod tests {
             signature: Vec::new(),
         };
         let payload = attestation_payload_bytes(&unsigned).unwrap();
-        let signature = attestation_signature_bytes_runtime(
-            unsigned.issuer_key_bytes.as_slice(),
-            payload.as_slice(),
-        );
+        let signature = attestation_signature_bytes_runtime(unsigned.issuer_key_bytes.as_slice(), payload.as_slice());
         Attestation { signature, ..unsigned }
     }
 
     // r[verify web-of-trust.attestation-signature]
     #[test]
     fn test_exact_payload_verifies() {
-        let att = signed_attestation(
-            vec![0x10, 0x20, 0x30],
-            vec![0x40, 0x50, 0x60],
-            TRUST_ROLE_TAG,
-            7,
-            19,
-            23,
-        );
+        let att = signed_attestation(vec![0x10, 0x20, 0x30], vec![0x40, 0x50, 0x60], TRUST_ROLE_TAG, 7, 19, 23);
         let payload = attestation_payload_bytes(&att).unwrap();
         assert_eq!(payload[11], 0x40);
         assert!(attestation_signature_valid(&att));
@@ -690,14 +684,7 @@ mod tests {
     // r[verify web-of-trust.attestation-signature]
     #[test]
     fn test_tampered_subject_invalidates_signature() {
-        let att = signed_attestation(
-            vec![0x01, 0x02, 0x03],
-            vec![0x04, 0x05, 0x06],
-            TRUST_ROLE_TAG,
-            11,
-            29,
-            31,
-        );
+        let att = signed_attestation(vec![0x01, 0x02, 0x03], vec![0x04, 0x05, 0x06], TRUST_ROLE_TAG, 11, 29, 31);
         let tampered_subject = vec![0x04, 0x05, 0x99];
         let tampered = Attestation {
             issuer_key_bytes: att.issuer_key_bytes.clone(),

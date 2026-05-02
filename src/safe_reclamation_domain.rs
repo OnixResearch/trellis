@@ -161,9 +161,7 @@ pub fn safe_reclamation_domain(
     {
         return SafeReclamationDomainOutcome::Retain;
     }
-    if !crate::ref_count::should_deallocate(strong_count)
-        || crate::ref_count::can_upgrade_weak(strong_count)
-    {
+    if !crate::ref_count::should_deallocate(strong_count) || crate::ref_count::can_upgrade_weak(strong_count) {
         return SafeReclamationDomainOutcome::Retain;
     }
     let total = crate::ref_count::total_refs(strong_count, weak_count);
@@ -272,19 +270,7 @@ mod tests {
             SafeReclamationDomainOutcome::Retain,
         );
         assert_eq!(
-            safe_reclamation_domain(
-                4,
-                5,
-                &vec![4, 5],
-                3,
-                2,
-                &vec![2],
-                &vec![false, false],
-                42,
-                &vec![u64::MAX],
-                0,
-                0,
-            ),
+            safe_reclamation_domain(4, 5, &vec![4, 5], 3, 2, &vec![2], &vec![false, false], 42, &vec![u64::MAX], 0, 0,),
             SafeReclamationDomainOutcome::Invalid,
         );
     }

@@ -220,9 +220,7 @@ pub fn serializable_txn_guard(
         }
     }
 
-    if crate::txn_dependency::has_self_dep(dep_edges)
-        || crate::txn_dependency::has_two_cycle(dep_edges)
-    {
+    if crate::txn_dependency::has_self_dep(dep_edges) || crate::txn_dependency::has_two_cycle(dep_edges) {
         return SerializableTxnGuardOutcome::Rejected;
     }
 
@@ -235,9 +233,7 @@ pub fn serializable_txn_guard(
     if crate::two_phase_lock::would_violate(lock_phase, next_lock_op) {
         return SerializableTxnGuardOutcome::Rejected;
     }
-    if !(crate::two_phase_lock::can_acquire(lock_phase)
-        || crate::two_phase_lock::is_complete(held_locks, lock_phase))
-    {
+    if !(crate::two_phase_lock::can_acquire(lock_phase) || crate::two_phase_lock::is_complete(held_locks, lock_phase)) {
         return SerializableTxnGuardOutcome::Rejected;
     }
 

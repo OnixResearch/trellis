@@ -9,8 +9,15 @@ use vstd::prelude::*;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum VerifiedLsmIngestOutcome {
-    Accepted { active_size: u64, immutable_size: u64, run_size: u64 },
-    Rejected { active_size: u64, immutable_size: u64 },
+    Accepted {
+        active_size: u64,
+        immutable_size: u64,
+        run_size: u64,
+    },
+    Rejected {
+        active_size: u64,
+        immutable_size: u64,
+    },
 }
 
 verus! {
@@ -167,28 +174,47 @@ pub fn verified_lsm_ingest(
     expected_checksum: u16,
 ) -> VerifiedLsmIngestOutcome {
     if !crate::write_buffer::should_flush(active_size, threshold) {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
     if !crate::lsm_level::is_valid_size_ratio(size_ratio) || base_size == 0 {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
     if current_level_size > u64::MAX - active_size {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
     let run_size = current_level_size + active_size;
     let target_size = crate::lsm_level::level_target_size(target_level, base_size, size_ratio);
     if crate::lsm_level::needs_compaction(run_size, target_size) {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
     if !crate::compaction_fence::is_safe_to_compact(compact_index, min_next_index) {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
     if !crate::page_checksum::is_valid_checksum(block_bytes, expected_checksum) {
-        return VerifiedLsmIngestOutcome::Rejected { active_size, immutable_size };
+        return VerifiedLsmIngestOutcome::Rejected {
+            active_size,
+            immutable_size,
+        };
     }
 
     let (swapped_active, swapped_immutable) = crate::write_buffer::swap(active_size, immutable_size);
-    let (completed_active, completed_immutable) = crate::write_buffer::flush_complete(swapped_active, swapped_immutable);
+    let (completed_active, completed_immutable) =
+        crate::write_buffer::flush_complete(swapped_active, swapped_immutable);
     VerifiedLsmIngestOutcome::Accepted {
         active_size: completed_active,
         immutable_size: completed_immutable,
@@ -211,7 +237,11 @@ mod tests {
         let block = [1u8, 2, 3, 4];
         let checksum = checksum_for(&block);
         let outcome = verified_lsm_ingest(64, 0, 64, 1, 128, 4, 128, 10, 20, &block, checksum);
-        assert_eq!(outcome, VerifiedLsmIngestOutcome::Accepted { active_size: 0, immutable_size: 0, run_size: 64 });
+        assert_eq!(outcome, VerifiedLsmIngestOutcome::Accepted {
+            active_size: 0,
+            immutable_size: 0,
+            run_size: 64
+        });
     }
 
     #[test]
@@ -219,7 +249,10 @@ mod tests {
         let block = [1u8, 2, 3, 4];
         let checksum = checksum_for(&block);
         let outcome = verified_lsm_ingest(64, 7, 64, 0, 64, 4, 64, 10, 20, &block, checksum);
-        assert_eq!(outcome, VerifiedLsmIngestOutcome::Rejected { active_size: 64, immutable_size: 7 });
+        assert_eq!(outcome, VerifiedLsmIngestOutcome::Rejected {
+            active_size: 64,
+            immutable_size: 7
+        });
     }
 
     #[test]
@@ -227,6 +260,9 @@ mod tests {
         let block = [9u8, 9];
         let checksum = checksum_for(&block);
         let outcome = verified_lsm_ingest(64, 11, 64, 1, 128, 4, 128, 20, 20, &block, checksum);
-        assert_eq!(outcome, VerifiedLsmIngestOutcome::Rejected { active_size: 64, immutable_size: 11 });
+        assert_eq!(outcome, VerifiedLsmIngestOutcome::Rejected {
+            active_size: 64,
+            immutable_size: 11
+        });
     }
 }

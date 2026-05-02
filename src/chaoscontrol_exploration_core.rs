@@ -4,16 +4,22 @@
 //! primitives into one deterministic exploration step.  Rejected oracle records
 //! return an explicit reason and preserve both core and branch state.
 
-use crate::chaoscontrol_coverage::{
-    count_new_edges, merge_coverage, new_coverage_bitmap, record_code_hit, CODE_REGION_END,
-};
-use crate::chaoscontrol_oracle::{
-    compute_verdict, valid_oracle_record, OracleRecord, Verdict,
-};
-use crate::chaoscontrol_scheduler::{
-    advance_randomized, advance_round_robin, new_scheduler_state, SchedulerState, SchedulingStrategy,
-};
 use vstd::prelude::*;
+
+use crate::chaoscontrol_coverage::CODE_REGION_END;
+use crate::chaoscontrol_coverage::count_new_edges;
+use crate::chaoscontrol_coverage::merge_coverage;
+use crate::chaoscontrol_coverage::new_coverage_bitmap;
+use crate::chaoscontrol_coverage::record_code_hit;
+use crate::chaoscontrol_oracle::OracleRecord;
+use crate::chaoscontrol_oracle::Verdict;
+use crate::chaoscontrol_oracle::compute_verdict;
+use crate::chaoscontrol_oracle::valid_oracle_record;
+use crate::chaoscontrol_scheduler::SchedulerState;
+use crate::chaoscontrol_scheduler::SchedulingStrategy;
+use crate::chaoscontrol_scheduler::advance_randomized;
+use crate::chaoscontrol_scheduler::advance_round_robin;
+use crate::chaoscontrol_scheduler::new_scheduler_state;
 
 verus! {
 
@@ -243,7 +249,8 @@ pub proof fn oracle_reject_preserves_without_mutation(
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::chaoscontrol_oracle::{new_boolean_always_record, new_unreachable_record};
+    use crate::chaoscontrol_oracle::new_boolean_always_record;
+    use crate::chaoscontrol_oracle::new_unreachable_record;
 
     #[test]
     fn deterministic_covered_step_is_accepted_and_accounted() {
@@ -257,7 +264,11 @@ mod tests {
         assert_eq!(core.global_coverage[7], 1);
         assert_eq!(core.accepted_steps, 1);
         assert_eq!(core.rejected_steps, 0);
-        assert!(matches!(outcome, ExplorationStepResult::Accepted { new_edges: 1, active: 1, .. }));
+        assert!(matches!(outcome, ExplorationStepResult::Accepted {
+            new_edges: 1,
+            active: 1,
+            ..
+        }));
     }
 
     #[test]
@@ -273,7 +284,9 @@ mod tests {
 
         let outcome = exploration_step(&mut core, &mut branch, &record, 7, 0);
 
-        assert_eq!(outcome, ExplorationStepResult::Rejected { reason: ExplorationRejectReason::OracleViolation });
+        assert_eq!(outcome, ExplorationStepResult::Rejected {
+            reason: ExplorationRejectReason::OracleViolation
+        });
         assert_eq!(branch, before_branch);
         assert_eq!(core.global_coverage, before_global);
         assert_eq!(core.scheduler.active, before_active);
