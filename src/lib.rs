@@ -187,6 +187,7 @@
 //! - `noop_commit` — no-op entry for committing prior-term entries after election
 //! - `node_classify` — node classification: voter/learner, leader/follower, batch with bounds
 //! - `nix_closure` — Nix generic closure with fuel-based termination
+//! - `nix_eval_closure_policy` — composite Nix evaluation closure admission policy
 //! - `node_lifecycle` — node status FSM: Starting/Online/Degraded/Offline
 //! - `nix_list` — Nix list builtins: elem, head, tail, `gen_list`, concat
 //! - `nix_string` — Nix string operations: length, substring, replace
@@ -570,6 +571,7 @@ pub mod nix_attrset;
 pub mod nix_base32;
 pub mod nix_closure;
 pub mod nix_drv_serialize;
+pub mod nix_eval_closure_policy;
 pub mod nix_fingerprint;
 pub mod nix_hash_truncate;
 pub mod nix_list;
