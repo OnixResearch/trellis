@@ -363,6 +363,7 @@ pub mod authorize;
 pub mod backoff;
 pub mod balance;
 pub mod ballot;
+pub mod backend_frame_allocator;
 pub mod barrier;
 pub mod batch;
 pub mod beam_link;
