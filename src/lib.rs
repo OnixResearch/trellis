@@ -413,6 +413,7 @@ pub mod cas;
 pub mod cas_loop;
 pub mod chain;
 pub mod chaoscontrol_coverage;
+pub mod chaoscontrol_exploration_core;
 pub mod chaoscontrol_fault_schedule;
 pub mod chaoscontrol_fault_state;
 pub mod chaoscontrol_frontier;
