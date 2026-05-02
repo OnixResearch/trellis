@@ -137,14 +137,12 @@ pub open spec fn nix_eval_closure_policy_reject_preserves_spec(
     read_only_exempt_keys: Seq<Seq<u8>>,
 ) -> bool {
     &&& before_attrs.len() == after_attrs.len()
-    &&& forall|i: int| 0 <= i < before_attrs.len() ==> ({
-        let before = before_attrs[i];
-        let after = after_attrs[i];
-        before == after || (
-            before.0 == after.0
-            && nix_eval_closure_policy_contains_read_only_key_spec(read_only_exempt_keys, before.0)
+    &&& forall|i: int| 0 <= i < before_attrs.len() ==> (
+        #[trigger] after_attrs[i] == before_attrs[i] || (
+            before_attrs[i].0 == after_attrs[i].0
+            && nix_eval_closure_policy_contains_read_only_key_spec(read_only_exempt_keys, before_attrs[i].0)
         )
-    })
+    )
 }
 
 // r[impl composite-primitives.nix-eval-closure-policy]

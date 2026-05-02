@@ -180,12 +180,22 @@ pub fn exploration_step(
     }
 
     let verdict = compute_verdict(record);
-    if verdict != Verdict::Passed {
-        core.rejected_steps = core.rejected_steps + 1;
-        return ExplorationStepResult::Rejected { reason: ExplorationRejectReason::OracleViolation };
+    assert(verdict == crate::chaoscontrol_oracle::verdict_spec(*record));
+    match verdict {
+        Verdict::Passed => {}
+        Verdict::Failed => {
+            core.rejected_steps = core.rejected_steps + 1;
+            return ExplorationStepResult::Rejected { reason: ExplorationRejectReason::OracleViolation };
+        }
     }
+    assert(crate::chaoscontrol_oracle::verdict_spec(*record) == Verdict::Passed);
+    assert(crate::chaoscontrol_oracle::valid_oracle_record_spec(*record));
 
     record_code_hit(branch_coverage, coverage_index);
+    assert(branch_coverage@[coverage_index as int] == old(branch_coverage)@[coverage_index as int].saturating_add(1));
+    assert forall|i: int| 0 <= i < old(branch_coverage)@.len() && i != coverage_index as int implies branch_coverage@[i] == old(branch_coverage)@[i] by {
+        assert(0 <= i < crate::chaoscontrol_coverage::MAP_SIZE as int && i != coverage_index as int);
+    }
     let new_edges = count_new_edges(branch_coverage, &core.global_coverage);
     merge_coverage(&mut core.global_coverage, branch_coverage);
 
@@ -202,6 +212,10 @@ pub fn exploration_step(
     }
 
     core.accepted_steps = core.accepted_steps + 1;
+    assert(oracle_accepts_spec(*record));
+    assert(branch_coverage@[coverage_index as int] == old(branch_coverage)@[coverage_index as int].saturating_add(1));
+    assert forall|i: int| 0 <= i < old(branch_coverage)@.len() && i != coverage_index as int implies branch_coverage@[i] == old(branch_coverage)@[i] by {
+    }
     ExplorationStepResult::Accepted {
         new_edges,
         active: core.scheduler.active,
