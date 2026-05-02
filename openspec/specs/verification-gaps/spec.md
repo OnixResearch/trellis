@@ -47,8 +47,8 @@ attribute and MUST NOT replace it with `assume(...)`,
 r[verification-gaps.inventory-after-ucan-did-varint]
 The repo-wide verification-gap inventory MUST remove the closeable row for
 `src/ucan_did.rs::varint_decode` and update all source-derived published totals.
-With no unrelated concurrent proof-gap changes, the expected inventory after
-this change is `43` total trusted/weakened/runtime-only boundaries: `32`
+With the UCAN attenuation-chain checker also internalized, the current expected
+inventory is `42` total trusted/weakened/runtime-only boundaries: `31`
 `#[verifier::external_body]` sites, `3` `assume_specification[...]` bridges,
 `8` instruction-selection runtime-only exemptions, and the single
 `@verified-logic:no-ensures` marker reported as co-located with an already

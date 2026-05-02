@@ -5093,45 +5093,31 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-53 items use `#[verifier::external_body]`.
+42 total trusted/weakened/runtime-only proof-gap boundaries remain: 31
+`#[verifier::external_body]` sites, 3 `assume_specification[...]` bridges, and
+8 instruction-selection runtime-only public API exemptions. The single
+`@verified-logic:no-ensures` marker is co-located with an already-counted
+external body and is not double-counted.
 
-### Permanent trust boundaries (15 items)
+### Permanent trust boundaries (29 items)
 These remain by design or because the current abstraction boundary is the
 point of the model, not a proof target.
 
-#### Cryptographic axioms / exec bridges (6 items)
-Cryptographic primitives with closed/uninterpreted spec functions.
-These model idealized hash functions (determinism, collision resistance)
-and runtime crypto implementations. No proof is possible without opening
-the hash function, which would defeat the abstraction.
+- 6 legacy cryptographic hash axioms / exec bridges in `chain.rs` and
+  `snapshot_integrity.rs`.
+- 4 version-comparison bridges in `nix_version.rs`.
+- 2 nix store-path hash bridges in `nix_store_path.rs`.
+- 3 log matching inductive bridges in `log_invariant_inductive.rs`.
+- 11 UCAN codec/signature bridges in `ucan_cid.rs`, `ucan_did.rs`, and
+  `ucan_signature.rs`.
+- 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
+  `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-- `chain::hash_deterministic` — hash_spec determinism axiom
-- `chain::hash_collision_free` — hash_spec collision-free axiom
-- `chain::compute_entry_hash` — runtime hash (blake3 in production)
-- `snapshot_integrity::dual_hash_deterministic` — dual_hash_spec determinism
-- `snapshot_integrity::dual_hash_collision_resistant` — dual_hash_spec collision resistance
-- `snapshot_integrity::dual_hash` — runtime dual hash
-
-#### Z3 rlimit / complexity limits (7 items)
-Proofs where Z3 cannot handle the spec complexity within reasonable rlimit.
-Proof bodies are structurally correct; proptest covers runtime correctness.
-
-- `nix_version::cv_fuel_antisymmetric` — 8+ nested let+if/else levels
-- `nix_version::cv_fuel_reflexive` — same deep spec
-- `nix_version::cv_fuel_range` — same deep spec
-- `nix_version::compare_versions` — exec-spec connection through deep cv_fuel
-- `log_invariant_inductive::leader_append_preserves_lmp` — quantifier through Seq::push
-- `log_invariant_inductive::leader_append_preserves_lmp_right` — symmetric
-- `log_invariant_inductive::leader_invariant_preserves_lmp` — system-level, multi-log
-
-#### Hash-model bridge (2 items)
-- `nix_store_path::sha256_deterministic` — uninterpreted SHA-256 determinism axiom
-- `nix_store_path::sha256_collision_resistant` — uninterpreted SHA-256 collision-resistance axiom
-
-### Closeable trust boundaries (38 items)
-All remaining closeable trusted sites are in the Shamir secret-sharing stack:
-`shamir_field`, `shamir_poly`, `shamir_lagrange`, `shamir_split`,
-`shamir_reconstruct`, and `shamir_threshold`.
+### Closeable proof-gap boundaries (13 items)
+The closeable set is 2 remaining closeable `external_body` items
+(`ucan_ability.rs`, `ucan_principal_link.rs`), 3 SSA
+`assume_specification[...]` bridges, and 8 instruction-selection runtime-only
+public API exemptions.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
