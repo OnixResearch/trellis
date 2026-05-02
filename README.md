@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8545 Verus proofs · 4218 tests · 1733 requirements · 373 modules · 35 trusted/proof-gap boundaries**
+**8545 Verus proofs · 4219 tests · 1734 requirements · 373 modules · 34 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -510,7 +510,7 @@ Most modules follow the same pattern (tracked exceptions are listed in
 ## Trusted and proof-gap items
 
 `29` items are marked `#[verifier::external_body]` across `11` files.
-In addition, `src/instruction_selection.rs` carries `8` closeable runtime-only
+In addition, `src/instruction_selection.rs` carries `5` closeable runtime-only
 public API exemptions.
 
 **29 permanent** (architectural trust boundaries):
@@ -531,10 +531,10 @@ public API exemptions.
   `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
   digest and signature checks stay behind trusted runtime/model boundaries.
 
-**6 closeable** — runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
+**5 closeable** — runtime-only public APIs in `src/instruction_selection.rs` that are explicitly
 exempted from `r[impl]` coverage until the module is converted to Verus. `tiling_cost`
-and `subtree_eval` now have direct Tracey implementation and test coverage for
-their projection/evaluation contracts.
+`subtree_eval`, and `is_valid_tile_pattern` now have direct Tracey implementation
+and test coverage for their projection/evaluation/validity contracts.
 Def-site collection, IDF computation, SSA-property checking, and phi elimination
 are internalized now; runtime tests and manual oracles still cover the stronger
 remaining SSA semantic claims.
@@ -542,7 +542,7 @@ remaining SSA semantic claims.
 In addition to `external_body`, the current audit also tracks:
 
 - `0` `assume_specification[...]` exec bridges
-- `6` runtime-only `@verified-logic:exempt` public API proof gaps
+- `5` runtime-only `@verified-logic:exempt` public API proof gaps
 - `0` `@verified-logic:no-ensures` markers
 - `0` `assume(...)` soundness oracles
 - `0` placeholder-spec surfaces

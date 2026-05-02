@@ -5093,9 +5093,9 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-35 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
+34 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
-6 instruction-selection runtime-only public API exemptions. No
+5 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
 ### Permanent trust boundaries (29 items)
@@ -5112,10 +5112,11 @@ point of the model, not a proof target.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-### Closeable proof-gap boundaries (6 items)
-The closeable set is 6 instruction-selection runtime-only public API exemptions.
-`tiling_cost` and `subtree_eval` now have direct implementation and
-verification-test coverage for their projection/evaluation contracts.
+### Closeable proof-gap boundaries (5 items)
+The closeable set is 5 instruction-selection runtime-only public API exemptions.
+`tiling_cost`, `subtree_eval`, and `is_valid_tile_pattern` now have direct
+implementation and verification-test coverage for their projection, evaluation,
+and validity contracts.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
@@ -7102,6 +7103,13 @@ r[instruction-selection.subtree-eval]
 arithmetic: constants project their literal value, addition and multiplication
 combine recursively evaluated operands, and malformed arity/value shapes or
 arithmetic overflow return `None`.
+
+r[instruction-selection.valid-tile-pattern]
+`is_valid_tile_pattern` MUST reject a root wildcard tile, MUST accept wildcard
+children as uncovered subtrees, and MUST recursively require every specific tile
+node to satisfy the operator/literal/arity boundary: constants have no children
+and a literal, while addition and multiplication have exactly two children and
+no literal.
 
 ## Stack Frame Layout
 

@@ -88,7 +88,7 @@ pub fn is_well_formed_tree(node: &ExprNode) -> bool {
     shape_ok && subtree_eval(node).is_some() && node.children.iter().all(is_well_formed_tree)
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.valid-tile-pattern]
 pub fn is_valid_tile_pattern(pattern: &TilePattern) -> bool {
     match pattern {
         TilePattern::Any => false,
@@ -746,6 +746,7 @@ mod tests {
         assert_eq!(tiling_cost(&node, &tiling).unwrap(), tiling.total_cost);
     }
 
+    // r[verify instruction-selection.valid-tile-pattern]
     #[test]
     fn invalid_root_any_tile_is_rejected() {
         let node = const_node(CONST_VALUE_A);
@@ -755,8 +756,31 @@ mod tests {
             tie_break_rank: FIRST_RANK,
             semantics: TileSemantics::ConstValue(CONST_VALUE_A),
         };
+        assert!(!is_valid_tile_pattern(&tile.pattern));
         assert_eq!(tile_matches(&tile, &node, &[]), Err(SelectionError::InvalidTilePattern { tile_index: 0 }));
         assert_eq!(optimal_tiling(&node, &[tile]), Err(SelectionError::InvalidTilePattern { tile_index: 0 }));
+    }
+
+    // r[verify instruction-selection.valid-tile-pattern]
+    #[test]
+    fn tile_pattern_validity_checks_root_shape_and_recursive_children() {
+        assert!(is_valid_tile_pattern(&exact_const_tile(CONST_VALUE_A, LOW_COST, FIRST_RANK).pattern));
+        assert!(is_valid_tile_pattern(&add_tile(LOW_COST, FIRST_RANK).pattern));
+        assert!(is_valid_tile_pattern(&fused_add_mul_tile(LOW_COST, FIRST_RANK).pattern));
+
+        let const_with_child = TilePattern::Specific {
+            op: Op::Const,
+            const_value: Some(CONST_VALUE_A),
+            children: vec![TilePattern::Any],
+        };
+        let add_with_literal = TilePattern::Specific {
+            op: Op::Add,
+            const_value: Some(CONST_VALUE_A),
+            children: vec![TilePattern::Any, TilePattern::Any],
+        };
+
+        assert!(!is_valid_tile_pattern(&const_with_child));
+        assert!(!is_valid_tile_pattern(&add_with_literal));
     }
 
     // r[verify instruction-selection.subtree-eval]
