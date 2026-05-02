@@ -8241,6 +8241,12 @@ contains it.
 
 ## Composite Primitives
 
+r[composite-outcome.tags]
+Composite outcome helpers MUST expose exactly the shared `Accept`, `Reject`, and
+`Wait` tags for composite facades: each constructor helper returns its matching
+disjoint tag, `composite_outcome_valid_spec` covers all three tags, and
+`composite_outcome_code` maps them stably to codes `1`, `2`, and `3`.
+
 r[composite-primitives.durable-job-executor]
 The system MUST provide a durable job executor primitive for idempotent,
 resume-aware, retry-budgeted job admission.
