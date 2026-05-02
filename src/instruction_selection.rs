@@ -145,7 +145,7 @@ pub fn subtree_eval(node: &ExprNode) -> Option<u64> {
     }
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.tiling-cost]
 pub fn tiling_cost(tree: &ExprNode, tiling: &Tiling) -> Result<u32, SelectionError> {
     if !is_well_formed_tree(tree) {
         return Err(SelectionError::MalformedTree);
@@ -733,6 +733,7 @@ mod tests {
         assert!(check_soundness(&node, &tiles, &tiling).unwrap());
     }
 
+    // r[verify instruction-selection.tiling-cost]
     #[test]
     fn tiling_cost_projects_total_cost() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));

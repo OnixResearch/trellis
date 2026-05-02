@@ -5093,9 +5093,9 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-37 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
+36 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
-8 instruction-selection runtime-only public API exemptions. No
+7 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
 ### Permanent trust boundaries (29 items)
@@ -5112,8 +5112,10 @@ point of the model, not a proof target.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-### Closeable proof-gap boundaries (8 items)
-The closeable set is 8 instruction-selection runtime-only public API exemptions.
+### Closeable proof-gap boundaries (7 items)
+The closeable set is 7 instruction-selection runtime-only public API exemptions.
+`tiling_cost` now has direct implementation and verification-test coverage for
+the selected-tiling cost projection contract.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
@@ -7088,6 +7090,12 @@ value, while `Top` is reserved for analysis-internal unreached rows. Along any
 valid block path that starts at block `0` and does not later revisit block `0`,
 every fixed-point `Const(c)` classification at block entry or block exit MUST
 match the concrete value `c`, and `Bottom` MUST remain conservative.
+
+## Instruction Selection
+
+r[instruction-selection.tiling-cost]
+For a well-formed expression tree, `tiling_cost` MUST project the selected
+`Tiling`'s `total_cost` without recomputing or mutating the tiling.
 
 ## Stack Frame Layout
 
