@@ -5093,7 +5093,7 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-41 total trusted/weakened/runtime-only proof-gap boundaries remain: 30
+40 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
 `#[verifier::external_body]` sites, 3 `assume_specification[...]` bridges, and
 8 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
@@ -5112,11 +5112,9 @@ point of the model, not a proof target.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-### Closeable proof-gap boundaries (12 items)
-The closeable set is 1 remaining closeable `external_body` item
-(`ucan_principal_link.rs`), 3 SSA
-`assume_specification[...]` bridges, and 8 instruction-selection runtime-only
-public API exemptions.
+### Closeable proof-gap boundaries (11 items)
+The closeable set is 3 SSA `assume_specification[...]` bridges and 8
+instruction-selection runtime-only public API exemptions.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
