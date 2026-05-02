@@ -6219,6 +6219,14 @@ bitmap_is_allocated(map, slot) MUST return true iff the slot is allocated.
 r[alloc-bitmap.generation]
 bitmap_generation(gens, slot) MUST return the current generation for slot.
 
+r[alloc-bitmap.clone-bool-slice]
+clone_bool_slice(src) MUST return a vector with exactly the same boolean
+sequence as the source slice.
+
+r[alloc-bitmap.clone-u32-slice]
+clone_u32_slice(src) MUST return a vector with exactly the same u32 sequence as
+the source slice.
+
 r[alloc-bitmap.utilization]
 bitmap_utilization(map) MUST return (used, total) where used + free == total.
 
