@@ -5093,9 +5093,9 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-34 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
+29 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
-5 instruction-selection runtime-only public API exemptions. No
+0 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
 ### Permanent trust boundaries (29 items)
@@ -5112,11 +5112,11 @@ point of the model, not a proof target.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 
-### Closeable proof-gap boundaries (5 items)
-The closeable set is 5 instruction-selection runtime-only public API exemptions.
-`tiling_cost`, `subtree_eval`, and `is_valid_tile_pattern` now have direct
-implementation and verification-test coverage for their projection, evaluation,
-and validity contracts.
+### Closeable proof-gap boundaries (0 items)
+The former instruction-selection runtime-only public API exemptions now have
+direct implementation and verification-test coverage for their well-formedness,
+matching, tiling, coverage, soundness, projection, evaluation, and validity
+contracts.
 
 These are tracked individually in `openspec/specs/verification-gaps/spec.md`.
 
@@ -7094,6 +7094,13 @@ match the concrete value `c`, and `Bottom` MUST remain conservative.
 
 ## Instruction Selection
 
+r[instruction-selection.well-formed-tree]
+`is_well_formed_tree` MUST accept only expression trees whose node shapes match
+the modeled operator contract and whose recursive `subtree_eval` succeeds:
+constants have no children and a literal value, additions and multiplications
+have exactly two children and no node literal, every child is well formed, and
+checked arithmetic overflow makes the tree malformed for this surface.
+
 r[instruction-selection.tiling-cost]
 For a well-formed expression tree, `tiling_cost` MUST project the selected
 `Tiling`'s `total_cost` without recomputing or mutating the tiling.
@@ -7110,6 +7117,30 @@ children as uncovered subtrees, and MUST recursively require every specific tile
 node to satisfy the operator/literal/arity boundary: constants have no children
 and a literal, while addition and multiplication have exactly two children and
 no literal.
+
+r[instruction-selection.tile-matches]
+`tile_matches` MUST reject malformed trees and invalid tile patterns before
+matching. For valid inputs it MUST return `None` when the root operator,
+literal, or arity does not match; otherwise it MUST return uncovered roots in
+preorder, using wildcard child patterns as uncovered subtree roots and recursing
+through specific child patterns.
+
+r[instruction-selection.optimal-tiling]
+`optimal_tiling` MUST reject malformed trees and invalid tile lists, report the
+lexicographically-first uncovered root when no complete tiling exists, and for
+complete tilings choose the lowest total cost with deterministic tie-breaking by
+tile rank and then tile index.
+
+r[instruction-selection.coverage-check]
+`check_coverage` MUST recompute each selection's covered paths, reject stale or
+tampered selection coverage, reject duplicate coverage, and return true exactly
+when the selected coverage is a sorted complete cover of the tree's node paths.
+
+r[instruction-selection.soundness-check]
+`check_soundness` MUST reject malformed trees and invalid tile lists, evaluate
+the selected tiles according to their semantics with checked arithmetic, and
+return true only when the selected tiling's value equals `subtree_eval` for the
+whole tree.
 
 ## Stack Frame Layout
 

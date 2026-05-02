@@ -79,7 +79,7 @@ const CONST_ARITY: usize = 0;
 const BINARY_ARITY: usize = 2;
 const ROOT_PATH_LEN: usize = 0;
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.well-formed-tree]
 pub fn is_well_formed_tree(node: &ExprNode) -> bool {
     let shape_ok = match node.op {
         Op::Const => node.children.len() == CONST_ARITY && node.value.is_some(),
@@ -153,7 +153,7 @@ pub fn tiling_cost(tree: &ExprNode, tiling: &Tiling) -> Result<u32, SelectionErr
     Ok(tiling.total_cost)
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.tile-matches]
 pub fn tile_matches(
     tile: &Tile,
     node: &ExprNode,
@@ -199,7 +199,7 @@ fn match_pattern(pattern: &TilePattern, node: &ExprNode, root_path: &[usize]) ->
     }
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.optimal-tiling]
 pub fn optimal_tiling(node: &ExprNode, tiles: &[Tile]) -> Result<Tiling, SelectionError> {
     if !is_well_formed_tree(node) {
         return Err(SelectionError::MalformedTree);
@@ -209,7 +209,7 @@ pub fn optimal_tiling(node: &ExprNode, tiles: &[Tile]) -> Result<Tiling, Selecti
     Ok(best.tiling)
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.coverage-check]
 pub fn check_coverage(tree: &ExprNode, tiling: &Tiling) -> Result<bool, SelectionError> {
     if !is_well_formed_tree(tree) {
         return Err(SelectionError::MalformedTree);
@@ -238,7 +238,7 @@ pub fn check_coverage(tree: &ExprNode, tiling: &Tiling) -> Result<bool, Selectio
     Ok(covered == all_paths)
 }
 
-// @verified-logic:exempt runtime-only instruction-selection surface; tracked in verification-gaps
+// r[impl instruction-selection.soundness-check]
 pub fn check_soundness(tree: &ExprNode, tiles: &[Tile], tiling: &Tiling) -> Result<bool, SelectionError> {
     if !is_well_formed_tree(tree) {
         return Err(SelectionError::MalformedTree);
@@ -617,6 +617,7 @@ mod tests {
         }
     }
 
+    // r[verify instruction-selection.tile-matches]
     #[test]
     fn pattern_match_single_node_tile() {
         let tile = exact_const_tile(CONST_VALUE_A, LOW_COST, FIRST_RANK);
@@ -625,6 +626,7 @@ mod tests {
         assert_eq!(matched, Some(Vec::new()));
     }
 
+    // r[verify instruction-selection.tile-matches]
     #[test]
     fn pattern_match_deep_tile_returns_preorder_uncovered_roots() {
         let tile = fused_add_mul_tile(LOW_COST, FIRST_RANK);
@@ -633,6 +635,7 @@ mod tests {
         assert_eq!(matched, vec![vec![0, 0], vec![0, 1], vec![1]]);
     }
 
+    // r[verify instruction-selection.tile-matches]
     #[test]
     fn pattern_mismatch_wrong_opcode_returns_none() {
         let tile = add_tile(LOW_COST, FIRST_RANK);
@@ -640,6 +643,8 @@ mod tests {
         assert_eq!(tile_matches(&tile, &node, &[]).unwrap(), None);
     }
 
+    // r[verify instruction-selection.well-formed-tree]
+    // r[verify instruction-selection.tile-matches]
     #[test]
     fn pattern_mismatch_wrong_arity_returns_none() {
         let tile = add_tile(LOW_COST, FIRST_RANK);
@@ -648,9 +653,11 @@ mod tests {
             children: vec![const_node(CONST_VALUE_A)],
             value: None,
         };
+        assert!(!is_well_formed_tree(&node));
         assert_eq!(tile_matches(&tile, &node, &[]), Err(SelectionError::MalformedTree));
     }
 
+    // r[verify instruction-selection.optimal-tiling]
     #[test]
     fn missing_tile_failure_on_root_reports_empty_path() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
@@ -658,6 +665,7 @@ mod tests {
         assert_eq!(optimal_tiling(&node, &tiles), Err(SelectionError::NoMatchingTile { root_path: vec![] }));
     }
 
+    // r[verify instruction-selection.optimal-tiling]
     #[test]
     fn missing_tile_failure_reports_first_unmatched_root() {
         let node = add_node(mul_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B)), const_node(CONST_VALUE_C));
@@ -668,6 +676,7 @@ mod tests {
         assert_eq!(optimal_tiling(&node, &tiles), Err(SelectionError::NoMatchingTile { root_path: vec![0] }));
     }
 
+    // r[verify instruction-selection.optimal-tiling]
     #[test]
     fn dp_prefers_lower_total_cost() {
         let node = add_node(mul_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B)), const_node(CONST_VALUE_C));
@@ -684,6 +693,7 @@ mod tests {
         assert_eq!(tiling.selections[0].tile_index, 5);
     }
 
+    // r[verify instruction-selection.optimal-tiling]
     #[test]
     fn deterministic_tie_break_uses_rank_then_index() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
@@ -697,6 +707,7 @@ mod tests {
         assert_eq!(tiling.selections[0].tile_index, 3);
     }
 
+    // r[verify instruction-selection.optimal-tiling]
     #[test]
     fn repeated_runs_produce_identical_tiling() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
@@ -710,6 +721,7 @@ mod tests {
         assert_eq!(first, second);
     }
 
+    // r[verify instruction-selection.coverage-check]
     #[test]
     fn check_coverage_accepts_complete_base_tiles() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
@@ -722,6 +734,7 @@ mod tests {
         assert!(check_coverage(&node, &tiling).unwrap());
     }
 
+    // r[verify instruction-selection.soundness-check]
     #[test]
     fn check_soundness_accepts_small_tree() {
         let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_A));
@@ -783,14 +796,45 @@ mod tests {
         assert!(!is_valid_tile_pattern(&add_with_literal));
     }
 
+    // r[verify instruction-selection.well-formed-tree]
     // r[verify instruction-selection.subtree-eval]
     #[test]
     fn overflowing_tree_is_malformed_for_modeled_surface() {
         let node = add_node(const_node(u64::MAX), const_node(CONST_VALUE_A));
         assert_eq!(subtree_eval(&node), None);
+        assert!(!is_well_formed_tree(&node));
         assert_eq!(optimal_tiling(&node, &[]), Err(SelectionError::MalformedTree));
     }
 
+    // r[verify instruction-selection.coverage-check]
+    #[test]
+    fn check_coverage_rejects_tampered_covered_paths() {
+        let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
+        let tiles = vec![
+            exact_const_tile(CONST_VALUE_A, LOW_COST, FIRST_RANK),
+            exact_const_tile(CONST_VALUE_B, LOW_COST, SECOND_RANK),
+            add_tile(LOW_COST, FIRST_RANK),
+        ];
+        let mut tiling = optimal_tiling(&node, &tiles).unwrap();
+        tiling.selections[0].covered_paths = vec![vec![1]];
+        assert!(!check_coverage(&node, &tiling).unwrap());
+    }
+
+    // r[verify instruction-selection.soundness-check]
+    #[test]
+    fn check_soundness_rejects_tampered_selection_semantics() {
+        let node = add_node(const_node(CONST_VALUE_A), const_node(CONST_VALUE_B));
+        let mut tiles = vec![
+            exact_const_tile(CONST_VALUE_A, LOW_COST, FIRST_RANK),
+            exact_const_tile(CONST_VALUE_B, LOW_COST, SECOND_RANK),
+            add_tile(LOW_COST, FIRST_RANK),
+        ];
+        let tiling = optimal_tiling(&node, &tiles).unwrap();
+        tiles[2].semantics = TileSemantics::Mul;
+        assert_eq!(check_soundness(&node, &tiles, &tiling), Err(SelectionError::NoMatchingTile { root_path: vec![] }));
+    }
+
+    // r[verify instruction-selection.tile-matches]
     #[test]
     fn const_literal_mismatch_returns_none() {
         let tile = exact_const_tile(CONST_VALUE_A, LOW_COST, FIRST_RANK);
