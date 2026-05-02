@@ -48,10 +48,11 @@ r[verification-gaps.inventory-after-ucan-did-varint]
 The repo-wide verification-gap inventory MUST remove the closeable row for
 `src/ucan_did.rs::varint_decode` and update all source-derived published totals.
 With the UCAN attenuation-chain checker, ability-subsumption checker, and
-principal-link DID extraction bridge also internalized, the current expected
-inventory is `40` total trusted/weakened/runtime-only boundaries: `29`
-`#[verifier::external_body]` sites, `3` `assume_specification[...]` bridges,
-and `8` instruction-selection runtime-only exemptions. No
+principal-link DID extraction bridge, and SSA runtime-helper wrappers also
+internalized, the current expected inventory is `37` total
+trusted/weakened/runtime-only boundaries: `29` `#[verifier::external_body]`
+sites, `0` `assume_specification[...]` bridges, and `8`
+instruction-selection runtime-only exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
 #### Scenario: Counts are derived from source
