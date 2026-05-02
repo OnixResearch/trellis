@@ -605,6 +605,7 @@ pub mod query_cost;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;
+pub mod raft_membership_manager;
 pub mod raft_step;
 pub mod raft_timing;
 pub mod rate_limit;
