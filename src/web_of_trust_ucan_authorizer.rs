@@ -89,7 +89,7 @@ pub open spec fn web_of_trust_ucan_authorizer_spec(
     )
 }
 
-// r[impl composite-primitives.web-of-trust-ucan-authorizer]
+// r[verify composite-primitives.web-of-trust-ucan-authorizer]
 pub proof fn web_of_trust_ucan_authorizer_refines_sources(
     payload: crate::ucan_token::UcanPayload,
     sig_valid: bool,
@@ -147,7 +147,7 @@ pub proof fn web_of_trust_ucan_authorizer_refines_sources(
 {
 }
 
-}
+} // verus!
 
 // r[impl composite-primitives.web-of-trust-ucan-authorizer]
 pub fn web_of_trust_ucan_authorizer(

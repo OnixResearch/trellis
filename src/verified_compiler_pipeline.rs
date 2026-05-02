@@ -47,7 +47,7 @@ pub open spec fn verified_compiler_pipeline_spec(
         0 <= b < live.live_out@.len() ==> live.live_out@[b]@.len() == env.len()
 }
 
-// r[impl composite-primitives.verified-compiler-pipeline]
+// r[verify composite-primitives.verified-compiler-pipeline]
 pub proof fn verified_compiler_pipeline_ssa_preserves_observable_trace(
     program: crate::ssa_construction::RawProgram,
     env: Seq<u64>,
@@ -57,7 +57,7 @@ pub proof fn verified_compiler_pipeline_ssa_preserves_observable_trace(
 {
 }
 
-// r[impl composite-primitives.verified-compiler-pipeline]
+// r[verify composite-primitives.verified-compiler-pipeline]
 pub proof fn verified_compiler_pipeline_constfold_preserves_observable_trace(
     program: crate::ssa_construction::RawProgram,
     env: Seq<u64>,
@@ -67,7 +67,7 @@ pub proof fn verified_compiler_pipeline_constfold_preserves_observable_trace(
 {
 }
 
-// r[impl composite-primitives.verified-compiler-pipeline]
+// r[verify composite-primitives.verified-compiler-pipeline]
 pub proof fn verified_compiler_pipeline_refines_sources(
     cfg_instrs: Seq<crate::control_flow_graph::InstrKind>,
     cfg_blocks: Seq<crate::control_flow_graph::BasicBlock>,
@@ -92,7 +92,7 @@ pub proof fn verified_compiler_pipeline_refines_sources(
     crate::dead_code_elimination::dce_preserves_observable_trace(program, live, env);
 }
 
-// r[impl composite-primitives.verified-compiler-pipeline]
+// r[verify composite-primitives.verified-compiler-pipeline]
 pub proof fn verified_compiler_pipeline_rejects_invalid_analysis(
     cfg_instrs: Seq<crate::control_flow_graph::InstrKind>,
     cfg_blocks: Seq<crate::control_flow_graph::BasicBlock>,

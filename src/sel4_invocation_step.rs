@@ -224,6 +224,7 @@ fn sender_is_running(state: &KernelState, sender: usize) -> bool {
 /// r[impl sel4-invocation-step.accepted]
 /// r[impl sel4-invocation-step.reject]
 /// r[impl sel4-invocation-step.refines-sources]
+/// r[impl composite-primitives.sel4-invocation-step]
 /// Composite facade over the currently available source APIs:
 /// `sel4_cdt::copy_cap`, `sel4_vspace::VSpace::map`,
 /// `sel4_invariants::step_endpoint_send_rendezvous`, and
@@ -337,6 +338,7 @@ mod tests {
         }
     }
 
+    // r[verify composite-primitives.sel4-invocation-step]
     #[test]
     fn test_copy_cap_accepted() {
         let mut state = state_with(vec![new_tcb(0, 0)], vec![Endpoint {

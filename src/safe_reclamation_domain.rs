@@ -47,7 +47,7 @@ pub open spec fn safe_reclamation_domain_spec(
     && crate::ref_count::total_refs_spec(strong_count, weak_count) == weak_count
 }
 
-// r[impl composite-primitives.safe-reclamation-domain]
+// r[verify composite-primitives.safe-reclamation-domain]
 pub proof fn safe_reclamation_domain_refines_sources(
     retire_counter: u64,
     current_counter: u64,
@@ -95,7 +95,7 @@ pub proof fn safe_reclamation_domain_refines_sources(
 {
 }
 
-// r[impl composite-primitives.safe-reclamation-domain]
+// r[verify composite-primitives.safe-reclamation-domain]
 pub proof fn safe_reclamation_domain_rejects_protection(
     retire_counter: u64,
     current_counter: u64,

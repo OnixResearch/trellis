@@ -78,7 +78,7 @@ pub open spec fn verified_lsm_ingest_spec(
     )
 }
 
-// r[impl composite-primitives.verified-lsm-ingest]
+// r[verify composite-primitives.verified-lsm-ingest]
 pub proof fn verified_lsm_ingest_refines_sources(
     active_size: u64,
     immutable_size: u64,
@@ -114,7 +114,7 @@ pub proof fn verified_lsm_ingest_refines_sources(
 {
 }
 
-// r[impl composite-primitives.verified-lsm-ingest]
+// r[verify composite-primitives.verified-lsm-ingest]
 pub proof fn verified_lsm_ingest_reject_preserves_buffer(
     active_size: u64,
     immutable_size: u64,

@@ -105,7 +105,7 @@ pub open spec fn dependency_scheduler_outcome_alias_spec(accepted: bool) -> crat
     }
 }
 
-// r[impl composite-primitives.dependency-scheduler]
+// r[verify composite-primitives.dependency-scheduler]
 pub proof fn dependency_scheduler_refines_sources(
     deps: Seq<u64>,
     completed: Seq<u64>,

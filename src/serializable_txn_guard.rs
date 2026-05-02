@@ -42,7 +42,7 @@ pub open spec fn serializable_txn_guard_spec(
         || crate::two_phase_lock::is_complete_spec(held_locks, lock_phase))
 }
 
-// r[impl composite-primitives.serializable-txn-guard]
+// r[verify composite-primitives.serializable-txn-guard]
 pub proof fn serializable_txn_guard_refines_sources(
     begin_ts: u64,
     end_ts: u64,
@@ -152,7 +152,7 @@ pub proof fn serializable_txn_guard_refines_sources(
 {
 }
 
-// r[impl composite-primitives.serializable-txn-guard]
+// r[verify composite-primitives.serializable-txn-guard]
 pub proof fn serializable_txn_guard_rejects_risks(
     begin_ts: u64,
     end_ts: u64,

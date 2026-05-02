@@ -71,7 +71,7 @@ pub open spec fn policy_decision_engine_spec(
     )
 }
 
-// r[impl composite-primitives.policy-decision-engine]
+// r[verify composite-primitives.policy-decision-engine]
 pub proof fn policy_decision_engine_refines_sources(
     chain: Seq<crate::delegation::ChainLevel>,
     cap_variant: u8,
@@ -160,7 +160,7 @@ pub proof fn policy_decision_engine_refines_sources(
 {
 }
 
-// r[impl composite-primitives.policy-decision-engine]
+// r[verify composite-primitives.policy-decision-engine]
 pub proof fn policy_decision_engine_rejects_mismatches(
     chain: Seq<crate::delegation::ChainLevel>,
     cap_variant: u8,

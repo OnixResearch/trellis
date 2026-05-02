@@ -46,7 +46,7 @@ pub open spec fn backend_frame_allocator_spec(
     &&& crate::stack_frame_layout::non_overlap_spec(live_slots)
 }
 
-// r[impl composite-primitives.backend-frame-allocator]
+// r[verify composite-primitives.backend-frame-allocator]
 pub proof fn backend_frame_allocator_refines_sources(
     edges: Seq<(usize, usize)>,
     uses: Seq<Vec<bool>>,
@@ -90,7 +90,7 @@ pub open spec fn stack_slot_reuse_allowed_spec(
     crate::stack_frame_layout::can_reuse_slot_spec(existing, candidate)
 }
 
-// r[impl composite-primitives.backend-frame-allocator]
+// r[verify composite-primitives.backend-frame-allocator]
 pub proof fn backend_frame_allocator_reuse_refines_sources(
     existing: crate::stack_frame_layout::LiveSlot,
     candidate: crate::stack_frame_layout::LiveSlot,
@@ -113,7 +113,7 @@ pub open spec fn invalid_overlap_slot_reuse_spec(
     &&& crate::stack_frame_layout::live_ranges_overlap_spec(existing.live, candidate.live)
 }
 
-// r[impl composite-primitives.backend-frame-allocator]
+// r[verify composite-primitives.backend-frame-allocator]
 pub proof fn backend_frame_allocator_overlap_rejection_refines_sources(
     existing: crate::stack_frame_layout::LiveSlot,
     candidate: crate::stack_frame_layout::LiveSlot,

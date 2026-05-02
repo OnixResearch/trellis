@@ -58,7 +58,7 @@ pub open spec fn cache_coherent_memory_region_spec(
         ==> crate::write_policy::write_through_store_mem_spec(policy_line, new_data, mem_addr, memory)[mem_addr] == new_data)
 }
 
-// r[impl composite-primitives.cache-coherent-memory-region]
+// r[verify composite-primitives.cache-coherent-memory-region]
 pub proof fn cache_coherent_memory_region_refines_sources(
     mesi_caches: Seq<u8>,
     moesi_caches: Seq<u8>,
@@ -101,7 +101,7 @@ pub proof fn cache_coherent_memory_region_refines_sources(
 {
 }
 
-// r[impl composite-primitives.cache-coherent-memory-region]
+// r[verify composite-primitives.cache-coherent-memory-region]
 pub proof fn cache_coherent_memory_region_rejects_invalid_inputs(
     mesi_caches: Seq<u8>,
     moesi_caches: Seq<u8>,

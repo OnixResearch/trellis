@@ -98,7 +98,7 @@ pub open spec fn blocking_bounded_channel_blocking_wait_spec(
     && crate::memory_order::at_least_as_strong_spec(store_order, required_store_order)
 }
 
-// r[impl composite-primitives.blocking-bounded-channel]
+// r[verify composite-primitives.blocking-bounded-channel]
 pub proof fn blocking_bounded_channel_refines_sources(
     head: u64,
     tail: u64,
@@ -143,7 +143,7 @@ pub proof fn blocking_bounded_channel_refines_sources(
 {
 }
 
-// r[impl composite-primitives.blocking-bounded-channel]
+// r[verify composite-primitives.blocking-bounded-channel]
 pub proof fn blocking_bounded_channel_wait_refines_sources(
     head: u64,
     tail: u64,
@@ -178,7 +178,7 @@ pub proof fn blocking_bounded_channel_wait_refines_sources(
 {
 }
 
-// r[impl composite-primitives.blocking-bounded-channel]
+// r[verify composite-primitives.blocking-bounded-channel]
 pub proof fn blocking_bounded_channel_rejects_nonblocking_full(
     head: u64,
     tail: u64,
