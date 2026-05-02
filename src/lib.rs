@@ -636,6 +636,7 @@ pub mod sel4_endpoint;
 pub mod sel4_fault_ipc;
 pub mod sel4_invariants;
 pub mod sel4_invocation;
+pub mod sel4_invocation_step;
 pub mod sel4_irq;
 pub mod sel4_notification;
 pub mod sel4_ready_queue;
