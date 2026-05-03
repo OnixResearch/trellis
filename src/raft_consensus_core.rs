@@ -16,6 +16,7 @@ use crate::election_safety_proof::*;
 use crate::epoch::*;
 use crate::ghost_history::*;
 use crate::log::*;
+use crate::quorum::*;
 
 verus! {
 
@@ -288,6 +289,122 @@ pub proof fn follower_update_preserves_matching_prefix(
             assert(raft_follower_log_update_spec(follower_log, prev_log_index, entries)[i] == follower_log[i]);
         }
 }
+
+// r[depends domain-primitives.raft-consensus.commit]
+/// Spec: quorum commit metadata admits an index only when enough replicas match it.
+pub open spec fn raft_quorum_commit_admit_spec(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+) -> bool
+    recommends cluster_size > 0
+{
+    is_quorum_spec(match_count, cluster_size)
+        && commit_index <= candidate_index
+        && candidate_index <= last_log_index
+}
+
+// r[depends domain-primitives.raft-consensus.commit]
+/// Spec: admitted quorum commit advances to the candidate index and otherwise stays unchanged.
+pub open spec fn raft_commit_index_update_spec(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+) -> u64
+    recommends cluster_size > 0
+{
+    if raft_quorum_commit_admit_spec(match_count, cluster_size, commit_index, candidate_index, last_log_index) {
+        candidate_index
+    } else {
+        commit_index
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.commit]
+/// Return whether a finite candidate commit index has quorum support and local-log bounds.
+pub fn raft_quorum_commit_admit(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+) -> (result: bool)
+    requires cluster_size > 0
+    ensures result == raft_quorum_commit_admit_spec(
+        match_count,
+        cluster_size,
+        commit_index,
+        candidate_index,
+        last_log_index,
+    )
+{
+    is_quorum(match_count, cluster_size) && commit_index <= candidate_index && candidate_index <= last_log_index
+}
+
+// r[impl domain-primitives.raft-consensus.commit]
+/// Return the finite commit index after applying quorum-commit admission.
+pub fn raft_commit_index_update(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+) -> (result: u64)
+    requires cluster_size > 0
+    ensures
+        result == raft_commit_index_update_spec(
+            match_count,
+            cluster_size,
+            commit_index,
+            candidate_index,
+            last_log_index,
+        ),
+        result >= commit_index,
+        result <= last_log_index || commit_index > last_log_index,
+{
+    if raft_quorum_commit_admit(match_count, cluster_size, commit_index, candidate_index, last_log_index) {
+        candidate_index
+    } else {
+        commit_index
+    }
+}
+
+// r[verify domain-primitives.raft-consensus.commit]
+/// Admitted quorum commits are monotone and bounded by the local log.
+pub proof fn admitted_quorum_commit_is_ordered(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+)
+    requires
+        cluster_size > 0,
+        raft_quorum_commit_admit_spec(match_count, cluster_size, commit_index, candidate_index, last_log_index),
+    ensures
+        commit_index <= candidate_index,
+        candidate_index <= last_log_index,
+        is_quorum_spec(match_count, cluster_size),
+{}
+
+// r[verify domain-primitives.raft-consensus.commit]
+/// Rejected quorum commits leave the commit index unchanged.
+pub proof fn rejected_quorum_commit_stays_put(
+    match_count: u64,
+    cluster_size: u64,
+    commit_index: u64,
+    candidate_index: u64,
+    last_log_index: u64,
+)
+    requires
+        cluster_size > 0,
+        !raft_quorum_commit_admit_spec(match_count, cluster_size, commit_index, candidate_index, last_log_index),
+    ensures raft_commit_index_update_spec(match_count, cluster_size, commit_index, candidate_index, last_log_index) == commit_index
+{}
 
 // r[depends domain-primitives.raft-consensus.term]
 /// Spec: processing an observed term never decreases the current term.
@@ -908,5 +1025,21 @@ mod tests {
         assert!(!raft_log_matching_at(&leader_log, &matching, 3));
         assert!(!raft_log_matching_at(&leader_log, &divergent, 3));
         assert!(!raft_log_matching_at(&leader_log, &matching, 0));
+    }
+
+    // r[verify domain-primitives.raft-consensus.commit]
+    #[test]
+    fn quorum_commit_admission_is_monotone_and_bounded() {
+        assert!(raft_quorum_commit_admit(3, 5, 2, 4, 6));
+        assert_eq!(raft_commit_index_update(3, 5, 2, 4, 6), 4);
+
+        assert!(!raft_quorum_commit_admit(2, 5, 2, 4, 6));
+        assert_eq!(raft_commit_index_update(2, 5, 2, 4, 6), 2);
+
+        assert!(!raft_quorum_commit_admit(3, 5, 4, 3, 6));
+        assert_eq!(raft_commit_index_update(3, 5, 4, 3, 6), 4);
+
+        assert!(!raft_quorum_commit_admit(3, 5, 2, 7, 6));
+        assert_eq!(raft_commit_index_update(3, 5, 2, 7, 6), 2);
     }
 }

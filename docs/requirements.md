@@ -1713,6 +1713,12 @@ implies equal terms for every prior index in the finite prefix. Follower
 log-update predicates admitted at a previous-log index MUST preserve that
 matching prefix before any appended entries.
 
+r[domain-primitives.raft-consensus.commit]
+Raft commit-index primitives MUST admit a candidate commit index only when a
+finite quorum of replicas has matched that index, the candidate does not move
+backwards from the current commit index, and the candidate is inside the local
+log. Rejected quorum commits MUST leave the commit index unchanged.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
