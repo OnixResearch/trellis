@@ -4,12 +4,12 @@
 runtime primitives, but it lacks a durable taxonomy for reusable data-structure,
 graph, time-series, probability/statistics, signal-processing, storage-index,
 text/string, parsing/format, scheduling/calendar, resource-accounting,
-control-system, scientific, and perception-heavy primitive families. Data
-structures, graphs, time series, probability/statistics, signal processing,
-storage/indexing, text/string, parsing/format, scheduling/calendar,
-resource accounting, control systems, GIS, machine-learning, physics, and
-machine-vision work should be specified and implemented in focused OpenSpec
-changes rather than one large multi-domain implementation batch.
+constraint-solver, control-system, scientific, and perception-heavy primitive
+families. Data structures, graphs, time series, probability/statistics, signal
+processing, storage/indexing, text/string, parsing/format, scheduling/calendar,
+resource accounting, constraint solving, control systems, GIS, machine-learning,
+physics, and machine-vision work should be specified and implemented in focused
+OpenSpec changes rather than one large multi-domain implementation batch.
 
 This change is the umbrella baseline. It defines the shared domain-primitive
 contract, family boundaries, split policy, and validation expectations. Focused
@@ -17,7 +17,7 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing sixteen primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing seventeen primitive
   families:
   - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
     transforms, prefix sums, and quantized thresholds.
@@ -45,6 +45,9 @@ child changes add concrete module requirements and implementation tasks.
     deterministic admission envelopes.
   - `resource_*`: budgets, counters, quotas, leases, usage windows,
     reservations, overage metadata, and deterministic admission envelopes.
+  - `constraint_*`: finite variables, domains, relations, assignments,
+    consistency checks, propagation envelopes, witnesses, and deterministic
+    admission metadata.
   - `control_*`: bounded setpoints, error envelopes, actuator saturation,
     deadbands, hysteresis, rate limits, and safety envelopes.
   - `gis_*`: geospatial coordinates, grids, tiles, and topology-safe geometry
@@ -61,8 +64,9 @@ child changes add concrete module requirements and implementation tasks.
   numeric foundations, finite data structures, graph primitives, time-series
   primitives, probability/statistics primitives, signal-processing primitives,
   storage/index primitives, text/string primitives, parsing/format primitives,
-  scheduling/calendar primitives, resource-accounting primitives, control-system
-  primitives, GIS, ML, physics, and machine vision.
+  scheduling/calendar primitives, resource-accounting primitives,
+  constraint-solver primitives, control-system primitives, GIS, ML, physics, and
+  machine vision.
 
 ## Capabilities
 
@@ -94,6 +98,8 @@ child changes add concrete module requirements and implementation tasks.
   scheduling/calendar taxonomy and required child-change scope.
 - `domain-primitives.resource-accounting-family`: reusable finite
   resource-accounting taxonomy and required child-change scope.
+- `domain-primitives.constraint-solver-family`: reusable finite
+  constraint-solver taxonomy and required child-change scope.
 - `domain-primitives.control-system-family`: reusable bounded control-system
   taxonomy and required child-change scope.
 - `domain-primitives.gis-family`: GIS primitive family taxonomy and required
@@ -110,8 +116,9 @@ child changes add concrete module requirements and implementation tasks.
 - **Files**: umbrella OpenSpec artifacts now; concrete child changes later add
   `src/ds_*`, `src/graph_*`, `src/timeseries_*`, `src/stats_*`,
   `src/signal_*`, `src/storage_*`, `src/text_*`, `src/parse_*`,
-  `src/format_*`, `src/schedule_*`, `src/resource_*`, `src/control_*`,
-  `src/gis_*`, `src/ml_*`, `src/physics_*`, `src/vision_*`, `src/lib.rs`,
+  `src/format_*`, `src/schedule_*`, `src/resource_*`, `src/constraint_*`,
+  `src/control_*`, `src/gis_*`, `src/ml_*`, `src/physics_*`, `src/vision_*`,
+  `src/lib.rs`,
   `docs/requirements.md`, tests, README entries, and evidence.
 - **APIs**: no runtime APIs are added by this umbrella change. Child changes add
   public primitives only when proofs/tests land.

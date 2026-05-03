@@ -15,6 +15,7 @@
 | `domain-primitives.parsing-format-family` | finite parsing/format family taxonomy |
 | `domain-primitives.scheduling-calendar-family` | finite scheduling/calendar family taxonomy |
 | `domain-primitives.resource-accounting-family` | finite resource-accounting family taxonomy |
+| `domain-primitives.constraint-solver-family` | finite constraint-solver family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -39,6 +40,7 @@
 - [x] Create focused `add-parsing-format-primitives` OpenSpec before implementing grammar-symbol/token-stream/span/AST-shape/version/serializer/deserializer/roundtrip primitives. `[covers=domain-primitives.parsing-format-family]`
 - [x] Create focused `add-scheduling-calendar-primitives` OpenSpec before implementing calendar-field/bucket/interval/recurrence/deadline/conflict/resource/admission primitives. `[covers=domain-primitives.scheduling-calendar-family]`
 - [x] Create focused `add-resource-accounting-primitives` OpenSpec before implementing budget/counter/quota/lease/usage-window/reservation/overage/admission primitives. `[covers=domain-primitives.resource-accounting-family]`
+- [x] Create focused `add-constraint-solver-primitives` OpenSpec before implementing variable/domain/relation/assignment/consistency/propagation/witness/admission primitives. `[covers=domain-primitives.constraint-solver-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`

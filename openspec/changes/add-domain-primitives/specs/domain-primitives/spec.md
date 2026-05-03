@@ -6,10 +6,10 @@ Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
-scheduling/calendar handling, finite resource-accounting, bounded control
-systems, GIS, machine learning, physics, and machine vision. Concrete module
-requirements MUST live in focused child OpenSpec changes so each proof/evidence
-slice remains reviewable.
+scheduling/calendar handling, finite resource-accounting, finite constraint
+solving, bounded control systems, GIS, machine learning, physics, and machine
+vision. Concrete module requirements MUST live in focused child OpenSpec changes
+so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -171,6 +171,17 @@ and deterministic resource-admission envelopes.
 - GIVEN a reusable finite resource-accounting primitive such as budget envelope, usage counter, quota envelope, lease envelope, usage window, reservation envelope, overage classifier, or admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused resource-accounting child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Constraint Solver Family Taxonomy [r[domain-primitives.constraint-solver-family]]
+The system MUST treat constraint solving as reusable exact finite primitives for
+variables, domains, relations, assignments, local consistency, propagation
+envelopes, witness metadata, and deterministic admission results.
+
+#### Scenario: Constraint-solver child change owns reusable finite constraint modules [r[domain-primitives.constraint-solver-family.scenario.constraint-solver-child-change-owns-reusable-finite-constraint-modules]]
+
+- GIVEN a reusable finite constraint-solver primitive such as variable envelope, domain predicate, relation envelope, assignment shape, consistency predicate, propagation envelope, witness metadata, or admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused constraint-solver child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
