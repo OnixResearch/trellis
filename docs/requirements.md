@@ -1655,9 +1655,12 @@ observing any term-bearing input. Observing a lower or equal term MUST keep the
 current term unchanged; observing a higher term MUST advance to that term.
 
 r[domain-primitives.raft-consensus.message]
-Raft stale-message predicates MUST classify a term-bearing message as stale if
-and only if the message term is lower than the receiver current term. Stale term
-classification MUST NOT require network delivery, timing, or transport claims.
+Raft message primitives MUST define finite term-bearing envelopes for the modeled
+Raft input classes and reject invalid envelope kinds or node-universe bounds.
+Stale-message predicates MUST classify a term-bearing message as stale if and
+only if the message term is lower than the receiver current term. Stale term
+classification and envelope admission MUST NOT require network delivery, timing,
+or transport claims.
 
 r[domain-primitives.raft-consensus.vote]
 Raft vote-grant primitives MUST enforce one vote per term and MUST admit a
@@ -1751,6 +1754,14 @@ configuration metadata MUST keep old/new voter counts identical, and joint
 consensus quorum admission MUST require both old-configuration and
 new-configuration majorities without claiming dynamic reconfiguration liveness,
 service discovery, persistence, or rollout behavior.
+
+r[domain-primitives.raft-consensus.trace]
+Raft transition-trace primitives MUST model finite adjacent steps whose input is
+a valid finite Raft message envelope. Non-stale admitted steps MUST advance the
+receiver term according to the monotone observed-term rule, while stale rejected
+steps MUST preserve the receiver term and carry no unsafe mutation. Trace
+admission MUST NOT claim network ordering, delivery, fairness, storage,
+availability, or runtime scheduling behavior.
 
 ## Vector Clock
 

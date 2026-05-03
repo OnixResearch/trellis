@@ -41,7 +41,7 @@
 - [x] Prove leader completeness and state-machine safety from the committed-log model.
 - [x] Implement and verify snapshot metadata, snapshot installation admission, and prefix-compaction preservation.
 - [x] Implement and verify configuration/membership epoch and joint-consensus quorum metadata.
-- [ ] Implement and verify finite message envelopes, stale-message rejection, and transition-trace admission.
+- [x] Implement and verify finite message envelopes, stale-message rejection, and transition-trace admission.
 - [ ] Compose the Raft invariant bundle and prove preservation for every admitted transition kind.
 - [ ] Add focused positive, negative, and mutation tests for each Raft primitive and invariant.
 - [ ] Run focused Verus, Tracey uncovered/untested, strict OpenSpec validation, and final repo validation.

@@ -85,6 +85,45 @@ pub struct RaftMembershipConfig {
     pub max_node_id: u64,
 }
 
+/// Finite Raft message envelope kind constants.
+pub const RAFT_MESSAGE_REQUEST_VOTE: u64 = 1;
+pub const RAFT_MESSAGE_REQUEST_VOTE_RESPONSE: u64 = 2;
+pub const RAFT_MESSAGE_APPEND_ENTRIES: u64 = 3;
+pub const RAFT_MESSAGE_APPEND_ENTRIES_RESPONSE: u64 = 4;
+pub const RAFT_MESSAGE_INSTALL_SNAPSHOT: u64 = 5;
+pub const RAFT_MESSAGE_LOCAL_TIMEOUT: u64 = 6;
+pub const RAFT_MESSAGE_CLIENT_PROPOSAL: u64 = 7;
+
+/// Finite term-bearing Raft message/input envelope; transport delivery/order is out of scope.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftMessageEnvelope {
+    /// One of the RAFT_MESSAGE_* finite kind constants.
+    pub kind: u64,
+    /// Term attached to this modeled input.
+    pub term: u64,
+    /// One-based source node, or client/local actor id in this finite model.
+    pub source: u64,
+    /// One-based destination node.
+    pub target: u64,
+    /// Finite log/snapshot index metadata used by message-specific predicates.
+    pub index: u64,
+    /// Finite command or response identifier; no application semantics are claimed.
+    pub payload: u64,
+}
+
+/// Finite adjacent Raft trace step envelope.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftTransitionTraceStep {
+    /// Receiver term before evaluating the envelope.
+    pub before_term: u64,
+    /// Receiver term after evaluating the envelope.
+    pub after_term: u64,
+    /// Finite input envelope for this trace step.
+    pub message: RaftMessageEnvelope,
+    /// Whether this modeled transition was admitted rather than rejected.
+    pub admitted: bool,
+}
+
 /// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftAppendConflictMetadata {
@@ -836,6 +875,138 @@ pub open spec fn stale_term_message_spec(current_term: u64, observed_term: u64) 
     observed_term < current_term
 }
 
+// r[depends domain-primitives.raft-consensus.message]
+/// Spec: finite Raft message envelope kind is one of the modeled input classes.
+pub open spec fn raft_message_kind_valid_spec(kind: u64) -> bool {
+    RAFT_MESSAGE_REQUEST_VOTE <= kind && kind <= RAFT_MESSAGE_CLIENT_PROPOSAL
+}
+
+// r[depends domain-primitives.raft-consensus.message]
+/// Spec: finite Raft message envelopes are bounded to a modeled one-based node universe.
+pub open spec fn raft_message_envelope_valid_spec(message: RaftMessageEnvelope, max_node_id: u64) -> bool {
+    max_node_id > 0
+        && raft_message_kind_valid_spec(message.kind)
+        && 1 <= message.source && message.source <= max_node_id
+        && 1 <= message.target && message.target <= max_node_id
+}
+
+// r[depends domain-primitives.raft-consensus.message]
+/// Spec: message admission rejects stale finite envelopes before any unsafe mutation.
+pub open spec fn raft_message_envelope_admit_spec(
+    current_term: u64,
+    message: RaftMessageEnvelope,
+    max_node_id: u64,
+) -> bool {
+    raft_message_envelope_valid_spec(message, max_node_id)
+        && !stale_term_message_spec(current_term, message.term)
+}
+
+// r[depends domain-primitives.raft-consensus.trace]
+/// Spec: a finite trace step is either an admitted term transition or a stale rejection with no term mutation.
+pub open spec fn raft_transition_trace_step_admit_spec(
+    step: RaftTransitionTraceStep,
+    max_node_id: u64,
+) -> bool {
+    raft_message_envelope_valid_spec(step.message, max_node_id)
+        && if stale_term_message_spec(step.before_term, step.message.term) {
+            !step.admitted && step.after_term == step.before_term
+        } else {
+            step.admitted && step.after_term == observed_term_update_spec(step.before_term, step.message.term)
+        }
+}
+
+// r[impl domain-primitives.raft-consensus.message]
+/// Return whether a finite message kind is one of the modeled Raft input classes.
+pub fn raft_message_kind_valid(kind: u64) -> (result: bool)
+    ensures result == raft_message_kind_valid_spec(kind)
+{
+    RAFT_MESSAGE_REQUEST_VOTE <= kind && kind <= RAFT_MESSAGE_CLIENT_PROPOSAL
+}
+
+// r[impl domain-primitives.raft-consensus.message]
+/// Return whether a finite message envelope is bounded to the modeled node universe.
+pub fn raft_message_envelope_valid(message: &RaftMessageEnvelope, max_node_id: u64) -> (result: bool)
+    ensures result == raft_message_envelope_valid_spec(*message, max_node_id)
+{
+    max_node_id > 0
+        && raft_message_kind_valid(message.kind)
+        && 1 <= message.source && message.source <= max_node_id
+        && 1 <= message.target && message.target <= max_node_id
+}
+
+// r[impl domain-primitives.raft-consensus.message]
+/// Return whether a finite message envelope is admitted for the receiver term.
+pub fn raft_message_envelope_admit(
+    current_term: u64,
+    message: &RaftMessageEnvelope,
+    max_node_id: u64,
+) -> (result: bool)
+    ensures result == raft_message_envelope_admit_spec(current_term, *message, max_node_id)
+{
+    raft_message_envelope_valid(message, max_node_id)
+        && !stale_term_message(current_term, message.term)
+}
+
+// r[impl domain-primitives.raft-consensus.trace]
+/// Return whether a finite trace step is an admitted transition or a safe stale rejection.
+pub fn raft_transition_trace_step_admit(
+    step: &RaftTransitionTraceStep,
+    max_node_id: u64,
+) -> (result: bool)
+    ensures result == raft_transition_trace_step_admit_spec(*step, max_node_id)
+{
+    if !raft_message_envelope_valid(&step.message, max_node_id) {
+        return false;
+    }
+    if stale_term_message(step.before_term, step.message.term) {
+        !step.admitted && step.after_term == step.before_term
+    } else {
+        step.admitted && step.after_term == observed_term_update(step.before_term, step.message.term)
+    }
+}
+
+// r[verify domain-primitives.raft-consensus.message]
+/// Admitted finite message envelopes are valid and not stale for the receiver term.
+pub proof fn admitted_message_envelope_is_valid_and_fresh(
+    current_term: u64,
+    message: RaftMessageEnvelope,
+    max_node_id: u64,
+)
+    requires raft_message_envelope_admit_spec(current_term, message, max_node_id)
+    ensures
+        raft_message_envelope_valid_spec(message, max_node_id),
+        current_term <= message.term,
+{}
+
+// r[verify domain-primitives.raft-consensus.trace]
+/// Stale rejected trace steps leave the receiver term unchanged.
+pub proof fn stale_rejected_trace_step_has_no_term_mutation(
+    step: RaftTransitionTraceStep,
+    max_node_id: u64,
+)
+    requires
+        raft_transition_trace_step_admit_spec(step, max_node_id),
+        stale_term_message_spec(step.before_term, step.message.term),
+    ensures
+        !step.admitted,
+        step.after_term == step.before_term,
+{}
+
+// r[verify domain-primitives.raft-consensus.trace]
+/// Admitted non-stale trace steps update the receiver term by the monotone observed-term rule.
+pub proof fn admitted_trace_step_follows_observed_term_update(
+    step: RaftTransitionTraceStep,
+    max_node_id: u64,
+)
+    requires
+        raft_transition_trace_step_admit_spec(step, max_node_id),
+        step.admitted,
+    ensures
+        !stale_term_message_spec(step.before_term, step.message.term),
+        step.after_term == observed_term_update_spec(step.before_term, step.message.term),
+        step.after_term >= step.before_term,
+{}
+
 // r[impl domain-primitives.raft-consensus.term]
 /// Return the successor current term after observing a term-bearing Raft input.
 pub fn observed_term_update(current_term: u64, observed_term: u64) -> (result: u64)
@@ -1483,6 +1654,58 @@ mod tests {
         assert!(raft_state_machine_safety_at(&a, &same, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &divergent, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &same, 1, 2, 1));
+    }
+
+    // r[verify domain-primitives.raft-consensus.message]
+    #[test]
+    fn message_envelope_admission_rejects_stale_or_invalid_inputs() {
+        let msg = RaftMessageEnvelope {
+            kind: RAFT_MESSAGE_APPEND_ENTRIES,
+            term: 5,
+            source: 1,
+            target: 2,
+            index: 7,
+            payload: 9,
+        };
+        assert!(raft_message_envelope_valid(&msg, 3));
+        assert!(raft_message_envelope_admit(4, &msg, 3));
+        assert!(!raft_message_envelope_admit(6, &msg, 3));
+
+        let invalid_kind = RaftMessageEnvelope { kind: 99, ..msg };
+        assert!(!raft_message_envelope_valid(&invalid_kind, 3));
+        let invalid_target = RaftMessageEnvelope { target: 4, ..msg };
+        assert!(!raft_message_envelope_valid(&invalid_target, 3));
+    }
+
+    // r[verify domain-primitives.raft-consensus.trace]
+    #[test]
+    fn transition_trace_admits_fresh_steps_and_safe_stale_rejections() {
+        let msg = RaftMessageEnvelope {
+            kind: RAFT_MESSAGE_REQUEST_VOTE,
+            term: 8,
+            source: 1,
+            target: 2,
+            index: 0,
+            payload: 1,
+        };
+        let admitted = RaftTransitionTraceStep {
+            before_term: 7,
+            after_term: 8,
+            message: msg,
+            admitted: true,
+        };
+        assert!(raft_transition_trace_step_admit(&admitted, 3));
+
+        let stale = RaftTransitionTraceStep {
+            before_term: 9,
+            after_term: 9,
+            message: msg,
+            admitted: false,
+        };
+        assert!(raft_transition_trace_step_admit(&stale, 3));
+
+        let mutating_stale = RaftTransitionTraceStep { after_term: 8, ..stale };
+        assert!(!raft_transition_trace_step_admit(&mutating_stale, 3));
     }
 
     // r[verify domain-primitives.raft-consensus.membership]
