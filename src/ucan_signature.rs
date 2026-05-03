@@ -111,21 +111,94 @@ pub open spec fn public_from_secret_spec(secret_key: Seq<u8>) -> Seq<u8> {
 pub uninterp spec fn verify_spec(public_key: Seq<u8>, message: Seq<u8>, signature: Seq<u8>) -> bool;
 
 /// Well-formed secret key: exactly 32 bytes.
+// r[impl ucan-signature.secret-key-length]
+// r[impl ucan-signature.round-trip]
+pub open spec fn secret_key_bytes_valid_spec(bytes: Seq<u8>) -> bool {
+    bytes.len() == SECRET_KEY_LEN
+}
+
+/// Well-formed secret key: exactly 32 bytes.
+// r[impl ucan-signature.secret-key-length]
 // r[impl ucan-signature.round-trip]
 pub open spec fn secret_key_valid_spec(sk: SecretKey) -> bool {
-    sk.bytes.len() == SECRET_KEY_LEN
+    secret_key_bytes_valid_spec(sk.bytes@)
+}
+
+/// Well-formed public-key bytes: exactly 32 bytes.
+// r[impl ucan-signature.public-key-length]
+pub open spec fn public_key_bytes_valid_spec(bytes: Seq<u8>) -> bool {
+    bytes.len() == PUBLIC_KEY_LEN
 }
 
 /// Well-formed public key: exactly 32 bytes.
 // r[impl ucan-signature.public-key-length]
 pub open spec fn public_key_valid_spec(pk: PublicKey) -> bool {
-    pk.bytes.len() == PUBLIC_KEY_LEN
+    public_key_bytes_valid_spec(pk.bytes@)
+}
+
+/// Well-formed signature bytes: exactly 64 bytes.
+// r[impl ucan-signature.signature-length]
+pub open spec fn signature_bytes_valid_spec(bytes: Seq<u8>) -> bool {
+    bytes.len() == SIGNATURE_LEN
 }
 
 /// Well-formed signature: exactly 64 bytes.
 // r[impl ucan-signature.signature-length]
 pub open spec fn signature_valid_spec(sig: Ed25519Signature) -> bool {
-    sig.bytes.len() == SIGNATURE_LEN
+    signature_bytes_valid_spec(sig.bytes@)
+}
+
+// --- Checked structural constructors ---
+
+/// Build a secret key only from exactly 32 bytes.
+// r[impl ucan-signature.secret-key-length]
+// r[verify ucan-signature.secret-key-length]
+pub fn secret_key_from_bytes(bytes: &Vec<u8>) -> (result: Option<SecretKey>)
+    ensures
+        match result {
+            Some(sk) => sk.bytes@ == bytes@ && secret_key_valid_spec(sk),
+            None => !secret_key_bytes_valid_spec(bytes@),
+        },
+{
+    if bytes.len() == SECRET_KEY_LEN {
+        Some(SecretKey { bytes: bytes.clone() })
+    } else {
+        None
+    }
+}
+
+/// Build a public key only from exactly 32 bytes.
+// r[impl ucan-signature.public-key-length]
+// r[verify ucan-signature.public-key-length]
+pub fn public_key_from_bytes(bytes: &Vec<u8>) -> (result: Option<PublicKey>)
+    ensures
+        match result {
+            Some(pk) => pk.bytes@ == bytes@ && public_key_valid_spec(pk),
+            None => !public_key_bytes_valid_spec(bytes@),
+        },
+{
+    if bytes.len() == PUBLIC_KEY_LEN {
+        Some(PublicKey { bytes: bytes.clone() })
+    } else {
+        None
+    }
+}
+
+/// Build a signature only from exactly 64 bytes.
+// r[impl ucan-signature.signature-length]
+// r[verify ucan-signature.signature-length]
+pub fn signature_from_bytes(bytes: &Vec<u8>) -> (result: Option<Ed25519Signature>)
+    ensures
+        match result {
+            Some(sig) => sig.bytes@ == bytes@ && signature_valid_spec(sig),
+            None => !signature_bytes_valid_spec(bytes@),
+        },
+{
+    if bytes.len() == SIGNATURE_LEN {
+        Some(Ed25519Signature { bytes: bytes.clone() })
+    } else {
+        None
+    }
 }
 
 // --- Axioms modeling Ed25519 contracts ---

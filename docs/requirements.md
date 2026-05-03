@@ -7954,6 +7954,9 @@ r[ucan-signature.deterministic]
 Signing the same message with the same key MUST produce the same
 signature.
 
+r[ucan-signature.secret-key-length]
+An Ed25519 secret key accepted by checked constructors MUST be exactly 32 bytes.
+
 r[ucan-signature.signature-length]
 An Ed25519 signature MUST always be exactly 64 bytes.
 
