@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-finite data validation, finite identifier/namespace handling, finite filesystem-path handling, bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, finite identifier/namespace handling, finite filesystem-path handling, finite network-protocol handling, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -293,6 +293,18 @@ path join/split envelopes, and deterministic path admission.
 - GIVEN a reusable finite filesystem-path primitive such as path segment envelope, path form envelope, normalization decision, root/scope containment predicate, traversal rejection metadata, extension/type metadata, join/split envelope, or path admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused filesystem-path child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Network Protocol Family Taxonomy [r[domain-primitives.network-protocol-family]]
+The system MUST treat network protocol handling as reusable exact finite
+primitives for endpoint/address metadata, packet/frame envelopes, header fields,
+state-free parser admission, message sequencing metadata, checksum-shape
+metadata, payload bounds, and deterministic protocol admission.
+
+#### Scenario: Network-protocol child change owns reusable finite protocol modules [r[domain-primitives.network-protocol-family.scenario.network-protocol-child-change-owns-reusable-finite-protocol-modules]]
+
+- GIVEN a reusable finite network-protocol primitive such as endpoint/address metadata, packet/frame envelope, header-field metadata, state-free parser admission, sequencing metadata, checksum-shape metadata, payload-bound metadata, or protocol admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused network-protocol child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
