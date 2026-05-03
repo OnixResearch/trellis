@@ -10,10 +10,12 @@
 
 use vstd::prelude::*;
 
+use crate::append_entries_check::*;
 use crate::ballot::*;
 use crate::election_safety_proof::*;
 use crate::epoch::*;
 use crate::ghost_history::*;
+use crate::log::*;
 
 verus! {
 
@@ -21,6 +23,17 @@ verus! {
 pub struct RaftTermState {
     /// The node's current term.
     pub current_term: u64,
+}
+
+/// Explicit finite Raft log-entry envelope for the domain primitive model.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftIndexedLogEntry {
+    /// One-based Raft log index.
+    pub index: u64,
+    /// Election term that produced the entry.
+    pub term: u64,
+    /// Finite command identifier; this model does not claim client/application semantics.
+    pub command: u64,
 }
 
 // r[depends domain-primitives.raft-consensus.term]
@@ -70,6 +83,263 @@ pub proof fn stale_observed_term_keeps_current(current_term: u64, observed_term:
     ensures
         stale_term_message_spec(current_term, observed_term),
         observed_term_update_spec(current_term, observed_term) == current_term,
+{}
+
+// r[depends domain-primitives.raft-consensus.log-entry]
+/// Spec: an indexed Raft log entry is inside the declared finite bounds.
+pub open spec fn raft_log_entry_in_bounds_spec(
+    entry: RaftIndexedLogEntry,
+    max_index: u64,
+    max_term: u64,
+) -> bool {
+    1 <= entry.index && entry.index <= max_index && entry.term <= max_term
+}
+
+// r[depends domain-primitives.raft-consensus.log-prefix]
+/// Spec: an indexed Raft log has no gaps exactly when entry indexes are 1-based and contiguous.
+pub open spec fn raft_log_no_gap_spec(log: Seq<RaftIndexedLogEntry>) -> bool {
+    log.len() <= u64::MAX as int
+        && forall|i: int| #![trigger log[i]]
+            0 <= i < log.len() ==> log[i].index == (i + 1) as u64
+}
+
+// r[depends domain-primitives.raft-consensus.log-prefix]
+/// Spec: `prefix` is an exact entry prefix of `log`.
+pub open spec fn raft_log_prefix_spec(
+    prefix: Seq<RaftIndexedLogEntry>,
+    log: Seq<RaftIndexedLogEntry>,
+) -> bool {
+    prefix.len() <= log.len()
+        && forall|i: int| #![trigger log[i]]
+            0 <= i < prefix.len() ==> log[i] == prefix[i]
+}
+
+// r[depends domain-primitives.raft-consensus.log-prefix]
+/// Spec: appending a single entry to the finite indexed log.
+pub open spec fn raft_log_append_spec(
+    log: Seq<RaftIndexedLogEntry>,
+    entry: RaftIndexedLogEntry,
+) -> Seq<RaftIndexedLogEntry> {
+    log.push(entry)
+}
+
+// r[impl domain-primitives.raft-consensus.log-entry]
+/// Return whether an explicit Raft log-entry envelope is inside finite bounds.
+pub fn raft_log_entry_in_bounds(
+    entry: &RaftIndexedLogEntry,
+    max_index: u64,
+    max_term: u64,
+) -> (result: bool)
+    ensures result == raft_log_entry_in_bounds_spec(*entry, max_index, max_term)
+{
+    1 <= entry.index && entry.index <= max_index && entry.term <= max_term
+}
+
+// r[impl domain-primitives.raft-consensus.log-prefix]
+/// Return whether indexed entries form the contiguous one-based Raft log range `1..=len`.
+pub fn raft_log_no_gap(log: &[RaftIndexedLogEntry]) -> (result: bool)
+    requires log@.len() <= u64::MAX as int
+    ensures result == raft_log_no_gap_spec(log@)
+{
+    let mut i: usize = 0;
+    while i < log.len()
+        invariant
+            0 <= i <= log@.len(),
+            log@.len() <= u64::MAX as int,
+            forall|j: int| #![trigger log@[j]]
+                0 <= j < i as int ==> log@[j].index == (j + 1) as u64,
+        decreases log@.len() - i
+    {
+        if log[i].index != i as u64 + 1 {
+            assert(0 <= i as int);
+            assert((i as int) < log@.len());
+            assert(log@[i as int].index != (i as int + 1) as u64);
+            assert(!raft_log_no_gap_spec(log@));
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+// r[impl domain-primitives.raft-consensus.log-prefix]
+/// Return whether `prefix` is an exact entry prefix of `log`.
+pub fn raft_log_prefix(
+    prefix: &[RaftIndexedLogEntry],
+    log: &[RaftIndexedLogEntry],
+) -> (result: bool)
+    ensures result == raft_log_prefix_spec(prefix@, log@)
+{
+    if prefix.len() > log.len() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < prefix.len()
+        invariant
+            0 <= i <= prefix@.len(),
+            prefix@.len() <= log@.len(),
+            forall|j: int| #![trigger log@[j]]
+                0 <= j < i as int ==> log@[j] == prefix@[j],
+        decreases prefix@.len() - i
+    {
+        if log[i].index != prefix[i].index
+            || log[i].term != prefix[i].term
+            || log[i].command != prefix[i].command
+        {
+            assert(0 <= i as int);
+            assert((i as int) < prefix@.len());
+            assert(log@[i as int] != prefix@[i as int]);
+            assert(!raft_log_prefix_spec(prefix@, log@));
+            return false;
+        }
+        i = i + 1;
+    }
+    true
+}
+
+// r[impl domain-primitives.raft-consensus.log-prefix]
+/// Append a contiguous entry to an explicit indexed Raft log.
+pub fn raft_log_append(
+    log: &mut Vec<RaftIndexedLogEntry>,
+    entry: RaftIndexedLogEntry,
+)
+    requires
+        old(log)@.len() < u64::MAX as int,
+        entry.index == old(log)@.len() as u64 + 1,
+    ensures
+        log@ == raft_log_append_spec(old(log)@, entry),
+        log@.len() == old(log)@.len() + 1,
+        log@[old(log)@.len() as int] == entry,
+        forall|i: int| 0 <= i < old(log)@.len() ==> log@[i] == old(log)@[i],
+        raft_log_no_gap_spec(old(log)@) ==> raft_log_no_gap_spec(log@),
+{
+    log.push(entry);
+}
+
+// r[verify domain-primitives.raft-consensus.log-entry]
+/// A valid entry always has a nonzero one-based index.
+pub proof fn admitted_log_entry_has_nonzero_index(
+    entry: RaftIndexedLogEntry,
+    max_index: u64,
+    max_term: u64,
+)
+    requires raft_log_entry_in_bounds_spec(entry, max_index, max_term)
+    ensures entry.index > 0
+{}
+
+// r[verify domain-primitives.raft-consensus.log-prefix]
+/// Empty indexed logs are gap-free.
+pub proof fn empty_raft_log_has_no_gaps()
+    ensures raft_log_no_gap_spec(Seq::<RaftIndexedLogEntry>::empty())
+{}
+
+// r[verify domain-primitives.raft-consensus.log-prefix]
+/// Contiguous append preserves the no-gap predicate.
+pub proof fn contiguous_append_preserves_no_gap(log: Seq<RaftIndexedLogEntry>, entry: RaftIndexedLogEntry)
+    requires
+        log.len() < u64::MAX as int,
+        raft_log_no_gap_spec(log),
+        entry.index == log.len() as u64 + 1,
+    ensures raft_log_no_gap_spec(raft_log_append_spec(log, entry))
+{}
+
+// r[verify domain-primitives.raft-consensus.log-prefix]
+/// A prefix of a no-gap log is also no-gap.
+pub proof fn prefix_of_no_gap_is_no_gap(
+    prefix: Seq<RaftIndexedLogEntry>,
+    log: Seq<RaftIndexedLogEntry>,
+)
+    requires
+        raft_log_no_gap_spec(log),
+        raft_log_prefix_spec(prefix, log),
+    ensures raft_log_no_gap_spec(prefix)
+{
+    assert(prefix.len() <= log.len());
+    assert(log.len() <= u64::MAX as int);
+    assert(prefix.len() <= u64::MAX as int);
+    assert forall|i: int| #![trigger prefix[i]]
+        0 <= i < prefix.len() implies prefix[i].index == (i + 1) as u64 by {
+            assert(log[i] == prefix[i]);
+            assert(log[i].index == (i + 1) as u64);
+        }
+}
+
+// r[depends domain-primitives.raft-consensus.append-entries]
+/// Spec: this finite AppendEntries admission slice combines non-stale term and prev-log check.
+pub open spec fn raft_append_entries_admit_spec(
+    current_term: u64,
+    leader_term: u64,
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    prev_log_term: u64,
+) -> bool {
+    !stale_term_message_spec(current_term, leader_term)
+        && check_append_entries_spec(follower_log, prev_log_index, prev_log_term)
+}
+
+// r[impl domain-primitives.raft-consensus.append-entries]
+/// Return whether this finite AppendEntries request is admitted by term and prev-log checks.
+pub fn raft_append_entries_admit(
+    current_term: u64,
+    leader_term: u64,
+    follower_log: &[LogEntry],
+    prev_log_index: u64,
+    prev_log_term: u64,
+) -> (result: bool)
+    requires prev_log_index as int <= usize::MAX as int
+    ensures result == raft_append_entries_admit_spec(
+        current_term,
+        leader_term,
+        follower_log@,
+        prev_log_index,
+        prev_log_term,
+    )
+{
+    if stale_term_message(current_term, leader_term) {
+        false
+    } else {
+        check_append_entries(follower_log, prev_log_index, prev_log_term)
+    }
+}
+
+// r[verify domain-primitives.raft-consensus.append-entries]
+/// Stale AppendEntries requests are rejected before any prev-log admission can accept them.
+pub proof fn stale_append_entries_rejected(
+    current_term: u64,
+    leader_term: u64,
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    prev_log_term: u64,
+)
+    requires leader_term < current_term
+    ensures !raft_append_entries_admit_spec(
+        current_term,
+        leader_term,
+        follower_log,
+        prev_log_index,
+        prev_log_term,
+    )
+{}
+
+// r[verify domain-primitives.raft-consensus.append-entries]
+/// Previous-log mismatch rejects AppendEntries in the non-stale term case.
+pub proof fn append_entries_prev_log_mismatch_rejected(
+    current_term: u64,
+    leader_term: u64,
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    prev_log_term: u64,
+)
+    requires
+        leader_term >= current_term,
+        !check_append_entries_spec(follower_log, prev_log_index, prev_log_term),
+    ensures !raft_append_entries_admit_spec(
+        current_term,
+        leader_term,
+        follower_log,
+        prev_log_index,
+        prev_log_term,
+    )
 {}
 
 // r[depends domain-primitives.raft-consensus.vote]
@@ -204,9 +474,18 @@ mod tests {
     use super::*;
     use crate::ballot::VoteState;
     use crate::epoch::Epoch;
+    use crate::log::LogEntry;
 
     fn epoch(term: u64, index: u64) -> Epoch {
         Epoch { term, index }
+    }
+
+    fn indexed(index: u64, term: u64, command: u64) -> RaftIndexedLogEntry {
+        RaftIndexedLogEntry { index, term, command }
+    }
+
+    fn log_entry(term: u64, value: u64) -> LogEntry {
+        LogEntry { term, value }
     }
 
     // r[verify domain-primitives.raft-consensus.term]
@@ -252,5 +531,43 @@ mod tests {
             voted_for: 0,
         };
         assert!(!request_vote_admit(&fresh, 12, 1, &epoch(1, 3), &epoch(2, 0)));
+    }
+
+    // r[verify domain-primitives.raft-consensus.log-entry]
+    #[test]
+    fn log_entry_bounds_reject_zero_and_out_of_range() {
+        assert!(raft_log_entry_in_bounds(&indexed(1, 2, 99), 10, 5));
+        assert!(!raft_log_entry_in_bounds(&indexed(0, 2, 99), 10, 5));
+        assert!(!raft_log_entry_in_bounds(&indexed(11, 2, 99), 10, 5));
+        assert!(!raft_log_entry_in_bounds(&indexed(1, 6, 99), 10, 5));
+    }
+
+    // r[verify domain-primitives.raft-consensus.log-prefix]
+    #[test]
+    fn no_gap_rejects_skipped_index() {
+        let contiguous = vec![indexed(1, 1, 10), indexed(2, 1, 20), indexed(3, 2, 30)];
+        let gap = vec![indexed(1, 1, 10), indexed(3, 2, 30)];
+        assert!(raft_log_no_gap(&contiguous));
+        assert!(!raft_log_no_gap(&gap));
+    }
+
+    // r[verify domain-primitives.raft-consensus.log-prefix]
+    #[test]
+    fn prefix_and_append_preserve_contiguous_log() {
+        let mut log = vec![indexed(1, 1, 10), indexed(2, 1, 20)];
+        let prefix = vec![indexed(1, 1, 10)];
+        assert!(raft_log_prefix(&prefix, &log));
+        raft_log_append(&mut log, indexed(3, 2, 30));
+        assert!(raft_log_no_gap(&log));
+        assert!(raft_log_prefix(&prefix, &log));
+    }
+
+    // r[verify domain-primitives.raft-consensus.append-entries]
+    #[test]
+    fn append_entries_admission_checks_term_and_prev_log() {
+        let follower_log = vec![log_entry(1, 10), log_entry(2, 20)];
+        assert!(raft_append_entries_admit(2, 2, &follower_log, 2, 2));
+        assert!(!raft_append_entries_admit(3, 2, &follower_log, 2, 2));
+        assert!(!raft_append_entries_admit(2, 2, &follower_log, 2, 9));
     }
 }

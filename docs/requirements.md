@@ -1673,6 +1673,25 @@ r[domain-primitives.raft-consensus.election-safety]
 Raft election-safety proofs MUST show that finite vote histories satisfying
 single-vote-per-term and quorum intersection admit at most one leader for a term.
 
+r[domain-primitives.raft-consensus.log-entry]
+Raft log-entry primitives MUST admit only explicit finite one-based indexes,
+bounded terms, and finite command identifiers. Entry admission MUST reject index
+zero, indexes outside the declared bound, and terms above the declared bound
+without claiming client I/O or application command semantics.
+
+r[domain-primitives.raft-consensus.log-prefix]
+Raft log-prefix primitives MUST define contiguous no-gap logs, exact prefix
+relations, and contiguous append preservation over finite indexed entries.
+A gap in the one-based index sequence MUST be rejected, and appending the next
+contiguous index MUST preserve the no-gap predicate.
+
+r[domain-primitives.raft-consensus.append-entries]
+Raft AppendEntries admission primitives MUST compose stale-term rejection with
+the previous-log index/term consistency check. A stale leader term or a previous
+log mismatch MUST reject the request without claiming network delivery,
+storage durability, or follower mutation semantics beyond this finite admission
+slice.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
