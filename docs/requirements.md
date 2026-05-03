@@ -7315,6 +7315,12 @@ principal's canonical public-key bytes. The same canonical bytes MUST always
 produce the same identifier, and equality checks MUST use all 32 digest
 bytes rather than a truncated prefix.
 
+r[web-of-trust.principal-digest-admission]
+Raw principal identifier digest bytes MUST be admitted as a `PrincipalId` only
+when they are exactly 32 bytes long. Shorter or longer byte vectors MUST be
+rejected before any principal-ID equality or chain logic treats them as
+well-formed identifiers.
+
 r[web-of-trust.attestation-signature]
 An attestation signature MUST authenticate the issuer's canonical public-key
 bytes, the subject's canonical public-key bytes, trust role, validity window,
