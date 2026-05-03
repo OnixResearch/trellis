@@ -38,11 +38,12 @@ enough to prove, test, validate, capture evidence, and archive independently.
 `add-serialization-codec-primitives`,
 `add-configuration-feature-flag-primitives`, `add-data-validation-primitives`,
 `add-identifier-namespace-primitives`, `add-filesystem-path-primitives`,
-`add-network-protocol-primitives`, `add-control-system-primitives`,
+`add-network-protocol-primitives`, `add-table-relational-primitives`,
+`add-geometry-foundation-primitives`, `add-control-system-primitives`,
 `add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
 `add-vision-primitives` own concrete requirements and implementation evidence.
 
-**Rationale:** It prevents one 27+ module OpenSpec from becoming too large to
+**Rationale:** It prevents one 29+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
 
 **Alternative:** Keep all concrete modules in one change. Rejected because final
@@ -96,6 +97,8 @@ data-validation primitives in `add-data-validation-primitives`, reusable finite
 identifier/namespace primitives in `add-identifier-namespace-primitives`,
 reusable finite filesystem-path primitives in `add-filesystem-path-primitives`,
 reusable finite network-protocol primitives in `add-network-protocol-primitives`,
+reusable finite table/relational primitives in `add-table-relational-primitives`,
+reusable finite geometry foundations in `add-geometry-foundation-primitives`,
 reusable bounded control-system primitives in `add-control-system-primitives`, and
 family-specific primitives in their own child changes.
 

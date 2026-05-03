@@ -7,16 +7,18 @@ text/string, parsing/format, scheduling/calendar, resource-accounting,
 constraint-solver, discrete-optimization, access-control-policy,
 observability-metrics, state-machine-workflow, serialization-codec,
 configuration-feature-flag, data-validation, identifier-namespace,
-filesystem-path, network-protocol, control-system, scientific, and
-perception-heavy primitive families. Data structures, graphs, time series,
-probability/statistics, signal processing, storage/indexing, text/string,
-parsing/format, scheduling/calendar, resource accounting, constraint solving,
-discrete optimization, access-control policy, observability/metrics,
-state-machine/workflow, serialization/codec handling, configuration/feature-flag
-handling, data validation, identifier/namespace handling, filesystem path
-handling, network protocol handling, control systems, GIS, machine-learning,
-physics, and machine-vision work should be specified and implemented in focused
-OpenSpec changes rather than one large multi-domain implementation batch.
+filesystem-path, network-protocol, table-relational, geometry-foundation,
+control-system, scientific, and perception-heavy primitive families. Data
+structures, graphs, time series, probability/statistics, signal processing,
+storage/indexing, text/string, parsing/format, scheduling/calendar, resource
+accounting, constraint solving, discrete optimization, access-control policy,
+observability/metrics, state-machine/workflow, serialization/codec handling,
+configuration/feature-flag handling, data validation, identifier/namespace
+handling, filesystem path handling, network protocol handling,
+table/relational handling, geometry foundations, control systems, GIS,
+machine-learning, physics, and machine-vision work should be specified and
+implemented in focused OpenSpec changes rather than one large multi-domain
+implementation batch.
 
 This change is the umbrella baseline. It defines the shared domain-primitive
 contract, family boundaries, split policy, and validation expectations. Focused
@@ -24,7 +26,7 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing twenty-seven primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing twenty-nine primitive
   families:
   - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
     transforms, prefix sums, and quantized thresholds.
@@ -88,6 +90,13 @@ child changes add concrete module requirements and implementation tasks.
     packet/frame envelopes, header fields, state-free parser admission,
     message sequencing metadata, checksum-shape metadata, payload bounds, and
     deterministic protocol admission.
+  - `table_*` / `relation_*` / `row_*`: finite tables, columns, rows, keys,
+    projections, filters, joins, grouping metadata, and deterministic relational
+    admission.
+  - `geom_*` / `geometry_*` / `bounds_*`: finite points/vectors,
+    axis-aligned bounds, orientation metadata, containment/intersection
+    predicates, transform envelopes, grid cells, and deterministic geometry
+    admission.
   - `control_*`: bounded setpoints, error envelopes, actuator saturation,
     deadbands, hysteresis, rate limits, and safety envelopes.
   - `gis_*`: geospatial coordinates, grids, tiles, and topology-safe geometry
@@ -110,7 +119,8 @@ child changes add concrete module requirements and implementation tasks.
   state-machine/workflow primitives, serialization/codec primitives,
   configuration/feature-flag primitives, data-validation primitives,
   identifier/namespace primitives, filesystem-path primitives, network-protocol
-  primitives, control-system primitives, GIS, ML, physics, and machine vision.
+  primitives, table/relational primitives, geometry-foundation primitives,
+  control-system primitives, GIS, ML, physics, and machine vision.
 
 ## Capabilities
 
@@ -164,6 +174,10 @@ child changes add concrete module requirements and implementation tasks.
   taxonomy and required child-change scope.
 - `domain-primitives.network-protocol-family`: reusable finite network-protocol
   taxonomy and required child-change scope.
+- `domain-primitives.table-relational-family`: reusable finite table/relational
+  taxonomy and required child-change scope.
+- `domain-primitives.geometry-foundation-family`: reusable finite geometry
+  foundation taxonomy and required child-change scope.
 - `domain-primitives.control-system-family`: reusable bounded control-system
   taxonomy and required child-change scope.
 - `domain-primitives.gis-family`: GIS primitive family taxonomy and required
@@ -186,7 +200,8 @@ child changes add concrete module requirements and implementation tasks.
   `src/config_*`, `src/feature_flag_*`, `src/rollout_*`, `src/schema_*`,
   `src/validate_*`, `src/id_*`, `src/namespace_*`, `src/path_*`,
   `src/fs_path_*`, `src/net_*`, `src/protocol_*`, `src/packet_*`,
-  `src/control_*`,
+  `src/table_*`, `src/relation_*`, `src/row_*`, `src/geom_*`,
+  `src/geometry_*`, `src/bounds_*`, `src/control_*`,
   `src/gis_*`, `src/ml_*`, `src/physics_*`, `src/vision_*`,
   `src/lib.rs`,
   `docs/requirements.md`, tests, README entries, and evidence.

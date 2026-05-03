@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-finite data validation, finite identifier/namespace handling, finite filesystem-path handling, finite network-protocol handling, bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, finite identifier/namespace handling, finite filesystem-path handling, finite network-protocol handling, finite table/relational handling, finite geometry foundations, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -305,6 +305,29 @@ metadata, payload bounds, and deterministic protocol admission.
 - GIVEN a reusable finite network-protocol primitive such as endpoint/address metadata, packet/frame envelope, header-field metadata, state-free parser admission, sequencing metadata, checksum-shape metadata, payload-bound metadata, or protocol admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused network-protocol child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Table Relational Family Taxonomy [r[domain-primitives.table-relational-family]]
+The system MUST treat table/relational handling as reusable exact finite
+primitives for table/schema metadata, columns, rows, keys, projections, filters,
+joins, grouping metadata, and deterministic relational admission.
+
+#### Scenario: Table-relational child change owns reusable finite relational modules [r[domain-primitives.table-relational-family.scenario.table-relational-child-change-owns-reusable-finite-relational-modules]]
+
+- GIVEN a reusable finite table/relational primitive such as table/schema metadata, column metadata, row shape, key metadata, projection/filter shape, join metadata, grouping metadata, or relational admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused table/relational child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Geometry Foundation Family Taxonomy [r[domain-primitives.geometry-foundation-family]]
+The system MUST treat geometry foundations as reusable exact finite primitives
+for point/vector envelopes, axis-aligned bounds, orientation metadata,
+containment/intersection predicates, finite transform envelopes, grid-cell
+metadata, and deterministic geometry admission.
+
+#### Scenario: Geometry-foundation child change owns reusable finite geometry modules [r[domain-primitives.geometry-foundation-family.scenario.geometry-foundation-child-change-owns-reusable-finite-geometry-modules]]
+
+- GIVEN a reusable finite geometry-foundation primitive such as point/vector envelope, axis-aligned bounds, orientation metadata, containment predicate, intersection metadata, transform envelope, grid-cell metadata, or geometry admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused geometry-foundation child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for

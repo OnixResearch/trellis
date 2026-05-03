@@ -26,6 +26,8 @@
 | `domain-primitives.identifier-namespace-family` | finite identifier/namespace family taxonomy |
 | `domain-primitives.filesystem-path-family` | finite filesystem-path family taxonomy |
 | `domain-primitives.network-protocol-family` | finite network-protocol family taxonomy |
+| `domain-primitives.table-relational-family` | finite table/relational family taxonomy |
+| `domain-primitives.geometry-foundation-family` | finite geometry-foundation family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -61,6 +63,8 @@
 - [x] Create focused `add-identifier-namespace-primitives` OpenSpec before implementing identifier/namespace/uniqueness/alias/canonicalization/collision/lookup/registration primitives. `[covers=domain-primitives.identifier-namespace-family]`
 - [x] Create focused `add-filesystem-path-primitives` OpenSpec before implementing segment/form/normalization/containment/traversal/extension/join-split/admission primitives. `[covers=domain-primitives.filesystem-path-family]`
 - [x] Create focused `add-network-protocol-primitives` OpenSpec before implementing endpoint/packet/header/parser/sequence/checksum-shape/payload/admission primitives. `[covers=domain-primitives.network-protocol-family]`
+- [x] Create focused `add-table-relational-primitives` OpenSpec before implementing table/column/row/key/projection/filter/join/grouping/admission primitives. `[covers=domain-primitives.table-relational-family]`
+- [x] Create focused `add-geometry-foundation-primitives` OpenSpec before implementing point/vector/bounds/orientation/containment/intersection/transform/grid/admission primitives. `[covers=domain-primitives.geometry-foundation-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`
