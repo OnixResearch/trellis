@@ -5,9 +5,9 @@
 Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
-bounded control systems, GIS, machine learning, physics, and machine vision. Concrete module requirements MUST
-live in focused child OpenSpec changes so each proof/evidence slice remains
-reviewable.
+finite text/string handling, bounded control systems, GIS, machine learning,
+physics, and machine vision. Concrete module requirements MUST live in focused
+child OpenSpec changes so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -122,6 +122,18 @@ result admission, compaction envelopes, and versioned slots.
 - GIVEN a reusable finite storage/index primitive such as page range, record slot table, key range, cursor bounds, segment map, lookup result, compaction envelope, or versioned slot
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused storage-index child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Text String Family Taxonomy [r[domain-primitives.text-string-family]]
+The system MUST treat text/string handling as reusable exact finite primitives
+for byte strings, UTF-8 boundary ranges, token spans, prefix/suffix predicates,
+substring spans, edit-distance envelopes, normalization envelopes, and delimiter
+split/join shape metadata.
+
+#### Scenario: Text-string child change owns reusable finite text modules [r[domain-primitives.text-string-family.scenario.text-string-child-change-owns-reusable-finite-text-modules]]
+
+- GIVEN a reusable finite text/string primitive such as finite byte string, UTF-8 boundary range, token span, prefix/suffix predicate, substring span, edit-distance envelope, normalization envelope, or delimiter split/join shape
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused text-string child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
