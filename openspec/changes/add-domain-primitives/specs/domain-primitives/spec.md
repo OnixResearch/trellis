@@ -3,9 +3,9 @@
 ## Purpose
 
 Defines the shared policy for first-class verified primitives in numeric
-foundations, finite data structures, GIS, machine learning, physics, and machine
-vision. Concrete module requirements MUST live in focused child OpenSpec changes
-so each proof/evidence slice remains reviewable.
+foundations, finite data structures, finite graphs, GIS, machine learning,
+physics, and machine vision. Concrete module requirements MUST live in focused
+child OpenSpec changes so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -64,6 +64,17 @@ queues, and union-find connectivity.
 - GIVEN a reusable finite data-structure primitive such as bounded array, finite map, FIFO queue, ring buffer, priority queue, or union-find
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused data-structure child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Graph Family Taxonomy [r[domain-primitives.graph-family]]
+The system MUST treat graphs as reusable exact finite primitives for adjacency,
+reachability, topological ordering, component partitions, shortest-path
+envelopes, and traversal frontier/cut invariants.
+
+#### Scenario: Graph child change owns reusable finite graph modules [r[domain-primitives.graph-family.scenario.graph-child-change-owns-reusable-finite-graph-modules]]
+
+- GIVEN a reusable finite graph primitive such as adjacency, reachability, topological order, component partition, shortest-path envelope, or frontier/cut invariant
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused graph child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: GIS Family Taxonomy [r[domain-primitives.gis-family]]
 The system MUST treat GIS primitives as bounded spatial-coordinate, grid/tile,
