@@ -1719,6 +1719,18 @@ finite quorum of replicas has matched that index, the candidate does not move
 backwards from the current commit index, and the candidate is inside the local
 log. Rejected quorum commits MUST leave the commit index unchanged.
 
+r[domain-primitives.raft-consensus.leader-completeness]
+Raft leader-completeness primitives MUST admit a later leader log only when the
+finite committed entry at the modeled position is still present with the same
+index, term, and command identifier. A later leader missing that committed entry
+MUST be rejected by the finite predicate.
+
+r[domain-primitives.raft-consensus.state-machine-safety]
+Raft state-machine safety primitives MUST admit shared applied-prefix positions
+only when both finite logs have applied that position and the command identifiers
+at that position are equal. Divergent applied commands at the same position MUST
+be rejected.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]

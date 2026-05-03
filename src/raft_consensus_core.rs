@@ -406,6 +406,105 @@ pub proof fn rejected_quorum_commit_stays_put(
     ensures raft_commit_index_update_spec(match_count, cluster_size, commit_index, candidate_index, last_log_index) == commit_index
 {}
 
+// r[depends domain-primitives.raft-consensus.leader-completeness]
+/// Spec: a later leader preserves the committed entry at the same finite log position.
+pub open spec fn raft_leader_contains_committed_entry_spec(
+    committed_log: Seq<RaftIndexedLogEntry>,
+    leader_log: Seq<RaftIndexedLogEntry>,
+    committed_pos: int,
+) -> bool {
+    0 <= committed_pos
+        && committed_pos < committed_log.len()
+        && committed_pos < leader_log.len()
+        && leader_log[committed_pos].index == committed_log[committed_pos].index
+        && leader_log[committed_pos].term == committed_log[committed_pos].term
+        && leader_log[committed_pos].command == committed_log[committed_pos].command
+}
+
+// r[impl domain-primitives.raft-consensus.leader-completeness]
+/// Return whether a later leader log contains the finite committed entry at `committed_pos`.
+pub fn raft_leader_contains_committed_entry(
+    committed_log: &[RaftIndexedLogEntry],
+    leader_log: &[RaftIndexedLogEntry],
+    committed_pos: usize,
+) -> (result: bool)
+    ensures result == raft_leader_contains_committed_entry_spec(
+        committed_log@,
+        leader_log@,
+        committed_pos as int,
+    )
+{
+    committed_pos < committed_log.len()
+        && committed_pos < leader_log.len()
+        && leader_log[committed_pos].index == committed_log[committed_pos].index
+        && leader_log[committed_pos].term == committed_log[committed_pos].term
+        && leader_log[committed_pos].command == committed_log[committed_pos].command
+}
+
+// r[verify domain-primitives.raft-consensus.leader-completeness]
+/// Leader-completeness admission exposes same index, term, and command for the committed position.
+pub proof fn admitted_leader_completeness_preserves_entry(
+    committed_log: Seq<RaftIndexedLogEntry>,
+    leader_log: Seq<RaftIndexedLogEntry>,
+    committed_pos: int,
+)
+    requires raft_leader_contains_committed_entry_spec(committed_log, leader_log, committed_pos)
+    ensures
+        leader_log[committed_pos].index == committed_log[committed_pos].index,
+        leader_log[committed_pos].term == committed_log[committed_pos].term,
+        leader_log[committed_pos].command == committed_log[committed_pos].command,
+{}
+
+// r[depends domain-primitives.raft-consensus.state-machine-safety]
+/// Spec: applied prefixes agree on the command at a shared applied position.
+pub open spec fn raft_state_machine_safety_at_spec(
+    a: Seq<RaftIndexedLogEntry>,
+    b: Seq<RaftIndexedLogEntry>,
+    applied_a: int,
+    applied_b: int,
+    pos: int,
+) -> bool {
+    0 <= pos
+        && pos < applied_a
+        && pos < applied_b
+        && pos < a.len()
+        && pos < b.len()
+        && a[pos].command == b[pos].command
+}
+
+// r[impl domain-primitives.raft-consensus.state-machine-safety]
+/// Return whether two finite applied prefixes agree on a command at `pos`.
+pub fn raft_state_machine_safety_at(
+    a: &[RaftIndexedLogEntry],
+    b: &[RaftIndexedLogEntry],
+    applied_a: usize,
+    applied_b: usize,
+    pos: usize,
+) -> (result: bool)
+    ensures result == raft_state_machine_safety_at_spec(
+        a@,
+        b@,
+        applied_a as int,
+        applied_b as int,
+        pos as int,
+    )
+{
+    pos < applied_a && pos < applied_b && pos < a.len() && pos < b.len() && a[pos].command == b[pos].command
+}
+
+// r[verify domain-primitives.raft-consensus.state-machine-safety]
+/// Admitted state-machine safety gives equal command identifiers at the shared applied position.
+pub proof fn admitted_state_machine_safety_commands_equal(
+    a: Seq<RaftIndexedLogEntry>,
+    b: Seq<RaftIndexedLogEntry>,
+    applied_a: int,
+    applied_b: int,
+    pos: int,
+)
+    requires raft_state_machine_safety_at_spec(a, b, applied_a, applied_b, pos)
+    ensures a[pos].command == b[pos].command
+{}
+
 // r[depends domain-primitives.raft-consensus.term]
 /// Spec: processing an observed term never decreases the current term.
 pub open spec fn observed_term_update_spec(current_term: u64, observed_term: u64) -> u64 {
@@ -1041,5 +1140,29 @@ mod tests {
 
         assert!(!raft_quorum_commit_admit(3, 5, 2, 7, 6));
         assert_eq!(raft_commit_index_update(3, 5, 2, 7, 6), 2);
+    }
+
+    // r[verify domain-primitives.raft-consensus.leader-completeness]
+    #[test]
+    fn leader_completeness_requires_committed_entry_presence() {
+        let committed = vec![indexed(1, 1, 10), indexed(2, 2, 20), indexed(3, 2, 30)];
+        let complete_leader = vec![indexed(1, 1, 10), indexed(2, 2, 20), indexed(3, 3, 99)];
+        let missing = vec![indexed(1, 1, 10), indexed(2, 3, 21), indexed(3, 3, 99)];
+
+        assert!(raft_leader_contains_committed_entry(&committed, &complete_leader, 1));
+        assert!(!raft_leader_contains_committed_entry(&committed, &missing, 1));
+        assert!(!raft_leader_contains_committed_entry(&committed, &complete_leader, 4));
+    }
+
+    // r[verify domain-primitives.raft-consensus.state-machine-safety]
+    #[test]
+    fn state_machine_safety_rejects_divergent_applied_commands() {
+        let a = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let same = vec![indexed(1, 1, 10), indexed(2, 3, 20)];
+        let divergent = vec![indexed(1, 1, 10), indexed(2, 3, 21)];
+
+        assert!(raft_state_machine_safety_at(&a, &same, 2, 2, 1));
+        assert!(!raft_state_machine_safety_at(&a, &divergent, 2, 2, 1));
+        assert!(!raft_state_machine_safety_at(&a, &same, 1, 2, 1));
     }
 }
