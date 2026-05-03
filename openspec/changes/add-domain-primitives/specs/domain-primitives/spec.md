@@ -2,9 +2,10 @@
 
 ## Purpose
 
-Defines the shared policy for first-class verified primitives in GIS, machine
-learning, physics, and machine vision. Concrete module requirements MUST live in
-focused child OpenSpec changes so each proof/evidence slice remains reviewable.
+Defines the shared policy for first-class verified primitives in numeric
+foundations, GIS, machine learning, physics, and machine vision. Concrete module
+requirements MUST live in focused child OpenSpec changes so each proof/evidence
+slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -40,6 +41,18 @@ OpenSpec changes by family or by reusable foundation slice.
 - GIVEN a child change introduces a reusable foundation primitive such as intervals or grid indexing
 - WHEN later families need the same primitive
 - THEN they reference the existing requirement instead of duplicating a family-specific version
+
+### Requirement: Numeric Foundation Family Taxonomy [r[domain-primitives.numeric-foundation-family]]
+The system MUST treat numeric foundations as reusable exact discrete primitives
+for fixed-point scale metadata, checked arithmetic envelopes, safe ratios,
+monotone sequences, histogram buckets, affine transforms, prefix sums, and
+quantized thresholds.
+
+#### Scenario: Numeric foundation child change owns reusable numeric modules [r[domain-primitives.numeric-foundation-family.scenario.numeric-foundation-child-change-owns-reusable-numeric-modules]]
+
+- GIVEN a reusable exact numeric primitive such as fixed-point scale, safe ratio, monotone sequence, histogram counter, affine transform, prefix sum, or quantized threshold
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused numeric-foundation child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: GIS Family Taxonomy [r[domain-primitives.gis-family]]
 The system MUST treat GIS primitives as bounded spatial-coordinate, grid/tile,

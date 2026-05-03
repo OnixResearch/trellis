@@ -4,6 +4,7 @@
 |---|---|
 | `domain-primitives.shared-contract` | common validity, evidence, and proof rules |
 | `domain-primitives.family-split-policy` | focused child OpenSpec policy |
+| `domain-primitives.numeric-foundation-family` | numeric foundation family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
 | `domain-primitives.physics-family` | physics family taxonomy |
@@ -16,6 +17,7 @@
 
 ## Phase 2: Follow-up child changes
 
+- [x] Create focused `add-numeric-foundation-primitives` OpenSpec before implementing fixed-point/arithmetic/sequence/bucket/transform primitives. `[covers=domain-primitives.numeric-foundation-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`
 - [x] Create focused `add-vision-primitives` OpenSpec before implementing image/ROI/window/detection primitives. `[covers=domain-primitives.vision-family]`

@@ -12,8 +12,10 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing four primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing five primitive
   families:
+  - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
+    transforms, prefix sums, and quantized thresholds.
   - `gis_*`: geospatial coordinates, grids, tiles, and topology-safe geometry
     relations.
   - `ml_*`: tensor/feature/result/metric admission primitives.
@@ -36,6 +38,8 @@ child changes add concrete module requirements and implementation tasks.
   rules for domain primitives.
 - `domain-primitives.family-split-policy`: implementation work is split by
   family to keep proof/evidence slices reviewable.
+- `domain-primitives.numeric-foundation-family`: reusable exact numeric
+  foundation taxonomy and required child-change scope.
 - `domain-primitives.gis-family`: GIS primitive family taxonomy and required
   child-change scope.
 - `domain-primitives.ml-family`: ML primitive family taxonomy and required
