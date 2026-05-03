@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-finite data validation, bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, finite identifier/namespace handling, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -269,6 +269,18 @@ decisions, and deterministic validation admission.
 - GIVEN a reusable finite data-validation primitive such as schema predicate envelope, field-presence metadata, enum constraint, range constraint, cross-field predicate, error accumulation envelope, normalization decision, or validation admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused data-validation child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Identifier Namespace Family Taxonomy [r[domain-primitives.identifier-namespace-family]]
+The system MUST treat identifier/namespace handling as reusable exact finite
+primitives for identifiers, namespace scopes, scoped uniqueness, alias maps,
+canonicalization decisions, collision metadata, deterministic lookup, and
+registration admission.
+
+#### Scenario: Identifier-namespace child change owns reusable finite namespace modules [r[domain-primitives.identifier-namespace-family.scenario.identifier-namespace-child-change-owns-reusable-finite-namespace-modules]]
+
+- GIVEN a reusable finite identifier/namespace primitive such as identifier envelope, namespace scope, scoped uniqueness predicate, alias map, canonicalization decision, collision metadata, lookup result, or registration admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused identifier/namespace child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
