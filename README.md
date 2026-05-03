@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8549 Verus proofs · 4221 tests · 1742 requirements · 373 modules · 25 trusted/proof-gap boundaries**
+**8552 Verus proofs · 4221 tests · 1742 requirements · 373 modules · 22 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -509,18 +509,19 @@ Most modules follow the same pattern (tracked exceptions are listed in
 
 ## Trusted and proof-gap items
 
-`25` items are marked `#[verifier::external_body]` across `10` files. The
+`22` items are marked `#[verifier::external_body]` across `10` files. The
 previous `src/instruction_selection.rs` runtime-only public API exemptions now
 have direct Tracey implementation and test coverage.
 
-**25 permanent** (architectural trust boundaries):
+**22 permanent** (architectural trust boundaries):
 
 - **4 legacy cryptographic hash axioms / exec bridges** (`chain.rs`,
   `snapshot_integrity.rs`) — BLAKE3-style hashing is modeled with
   uninterpreted specs plus trusted collision-resistance/runtime wrappers;
   equal-input determinism now follows directly from pure spec equality.
-- **4 version comparison bridges** (`nix_version.rs`) — the recursive `cv_fuel`
-  reasoning still exceeds solver budget.
+- **1 version comparison bridge** (`nix_version.rs`) — the recursive `cv_fuel`
+  proof lemmas are now internalized, while the exec/spec connection still
+  exceeds solver budget.
 - **3 log matching inductive bridges** (`log_invariant_inductive.rs`) — local
   lemmas are only sound under the global Raft leader-chain invariant.
 - **11 UCAN codec/signature bridges** (`ucan_cid.rs`, `ucan_did.rs`,
