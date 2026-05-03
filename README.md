@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8576 Verus proofs · 4225 tests · 1744 requirements · 373 modules · 16 trusted/proof-gap boundaries**
+**8579 Verus proofs · 4227 tests · 1745 requirements · 373 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -529,7 +529,8 @@ have direct Tracey implementation and test coverage.
   and public DID decode now composes verified prefix, base58, varint, and
   key-suffix primitives around the remaining base58btc contract. Base58btc
   decode also performs verified alphabet screening before the trusted codec
-  core.
+  core. UCAN signature byte-level entrypoints now reject malformed key/signature
+  lengths through verified constructors before invoking trusted Ed25519 crypto.
 - **1 web-of-trust crypto bridge** (`web_of_trust_principal.rs`) — principal
   digest derivation stays behind a trusted runtime/model boundary; attestation
   and revocation signature-input construction and comparison are now verified

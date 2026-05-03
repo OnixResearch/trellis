@@ -276,6 +276,68 @@ pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)
     PublicKey { bytes: public_from_secret_runtime(&sk.bytes) }
 }
 
+/// Checked byte-level signing entrypoint: reject malformed secret-key bytes before trusted crypto.
+// r[impl ucan-signature.checked-byte-inputs]
+// r[impl ucan-signature.signature-length]
+pub fn sign_checked(secret_key_bytes: &Vec<u8>, message: &Vec<u8>) -> (result: Option<Ed25519Signature>)
+    ensures
+        match result {
+            Some(sig) => secret_key_bytes_valid_spec(secret_key_bytes@)
+                && sig.bytes@ == sign_spec(secret_key_bytes@, message@)
+                && signature_valid_spec(sig),
+            None => !secret_key_bytes_valid_spec(secret_key_bytes@),
+        },
+{
+    match secret_key_from_bytes(secret_key_bytes) {
+        Some(sk) => Some(sign(&sk, message)),
+        None => None,
+    }
+}
+
+/// Checked byte-level verification entrypoint: reject malformed public-key or signature bytes before trusted crypto.
+// r[impl ucan-signature.checked-byte-inputs]
+// r[impl ucan-signature.key-binding]
+// r[impl ucan-signature.message-binding]
+#[allow(clippy::question_mark)]
+pub fn verify_checked(public_key_bytes: &Vec<u8>, message: &Vec<u8>, signature_bytes: &Vec<u8>) -> (result: Option<bool>)
+    ensures
+        match result {
+            Some(ok) => public_key_bytes_valid_spec(public_key_bytes@)
+                && signature_bytes_valid_spec(signature_bytes@)
+                && ok == verify_spec(public_key_bytes@, message@, signature_bytes@),
+            None => !public_key_bytes_valid_spec(public_key_bytes@)
+                || !signature_bytes_valid_spec(signature_bytes@),
+        },
+{
+    let pk = match public_key_from_bytes(public_key_bytes) {
+        Some(pk) => pk,
+        None => return None,
+    };
+    let sig = match signature_from_bytes(signature_bytes) {
+        Some(sig) => sig,
+        None => return None,
+    };
+    Some(verify(&pk, message, &sig))
+}
+
+/// Checked byte-level public-key derivation: reject malformed secret-key bytes before trusted crypto.
+// r[impl ucan-signature.checked-byte-inputs]
+// r[impl ucan-signature.public-key-length]
+pub fn public_from_secret_checked(secret_key_bytes: &Vec<u8>) -> (result: Option<PublicKey>)
+    ensures
+        match result {
+            Some(pk) => secret_key_bytes_valid_spec(secret_key_bytes@)
+                && pk.bytes@ == public_from_secret_spec(secret_key_bytes@)
+                && public_key_valid_spec(pk),
+            None => !secret_key_bytes_valid_spec(secret_key_bytes@),
+        },
+{
+    match secret_key_from_bytes(secret_key_bytes) {
+        Some(sk) => Some(public_from_secret(&sk)),
+        None => None,
+    }
+}
+
 // --- Derived proofs ---
 
 /// Sign-then-verify round-trip for well-formed keys.
@@ -404,5 +466,26 @@ mod tests {
         let sk = SecretKey { bytes: vec![55u8; 32] };
         let pk = public_from_secret(&sk);
         assert_eq!(pk.bytes.len(), 32);
+    }
+
+    // r[verify ucan-signature.checked-byte-inputs]
+    #[test]
+    fn test_checked_byte_entrypoints_accept_valid_inputs() {
+        let sk_bytes = vec![55u8; SECRET_KEY_LEN];
+        let pk = public_from_secret_checked(&sk_bytes).expect("valid secret key derives public key");
+        let message = vec![1u8, 3, 5, 7];
+        let sig = sign_checked(&sk_bytes, &message).expect("valid secret key signs");
+        assert_eq!(sig.bytes.len(), SIGNATURE_LEN);
+        assert_eq!(verify_checked(&pk.bytes, &message, &sig.bytes), Some(true));
+    }
+
+    // r[verify ucan-signature.checked-byte-inputs]
+    #[test]
+    fn test_checked_byte_entrypoints_reject_bad_lengths() {
+        let message = vec![1u8, 2, 3];
+        assert!(sign_checked(&vec![0u8; SECRET_KEY_LEN - 1], &message).is_none());
+        assert!(public_from_secret_checked(&vec![0u8; SECRET_KEY_LEN + 1]).is_none());
+        assert!(verify_checked(&vec![0u8; PUBLIC_KEY_LEN - 1], &message, &vec![0u8; SIGNATURE_LEN]).is_none());
+        assert!(verify_checked(&vec![0u8; PUBLIC_KEY_LEN], &message, &vec![0u8; SIGNATURE_LEN - 1]).is_none());
     }
 }

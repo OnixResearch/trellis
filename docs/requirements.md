@@ -7966,6 +7966,12 @@ An Ed25519 signature MUST always be exactly 64 bytes.
 r[ucan-signature.public-key-length]
 An Ed25519 public key derived from a secret key MUST be exactly 32 bytes.
 
+r[ucan-signature.checked-byte-inputs]
+Byte-level UCAN signature entrypoints MUST reject malformed key or signature
+lengths before invoking trusted Ed25519 crypto. Valid byte inputs MUST be
+converted through checked constructors before signing, verification, or
+public-key derivation.
+
 ## UCAN DID
 
 r[ucan-did.round-trip]
