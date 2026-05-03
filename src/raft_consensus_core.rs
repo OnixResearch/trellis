@@ -94,6 +94,13 @@ pub const RAFT_MESSAGE_INSTALL_SNAPSHOT: u64 = 5;
 pub const RAFT_MESSAGE_LOCAL_TIMEOUT: u64 = 6;
 pub const RAFT_MESSAGE_CLIENT_PROPOSAL: u64 = 7;
 
+/// Deterministic Raft admission success/failure codes.
+pub const RAFT_ADMISSION_OK: u64 = 0;
+pub const RAFT_ADMISSION_BEFORE_INVARIANT_FAILED: u64 = 1;
+pub const RAFT_ADMISSION_MESSAGE_FAILED: u64 = 2;
+pub const RAFT_ADMISSION_TRACE_FAILED: u64 = 3;
+pub const RAFT_ADMISSION_AFTER_INVARIANT_FAILED: u64 = 4;
+
 /// Finite term-bearing Raft message/input envelope; transport delivery/order is out of scope.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftMessageEnvelope {
@@ -139,6 +146,15 @@ pub struct RaftInvariantBundleMetadata {
     pub membership: RaftMembershipConfig,
     /// Modeled one-based node-universe bound for local metadata.
     pub max_node_id: u64,
+}
+
+/// Deterministic Raft admission result with stable first-failing-check metadata.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftAdmissionResult {
+    /// Whether the finite transition candidate is admitted.
+    pub admitted: bool,
+    /// Stable RAFT_ADMISSION_* code for success or the first rejected finite check.
+    pub failing_check: u64,
 }
 
 /// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
@@ -1054,6 +1070,46 @@ pub open spec fn raft_invariant_preservation_admit_spec(
         && raft_invariant_bundle_valid_spec(after, after_log)
 }
 
+// r[depends domain-primitives.raft-consensus.admission]
+/// Spec: stable admission result codes are drawn from the finite Raft admission-code set.
+pub open spec fn raft_admission_code_valid_spec(code: u64) -> bool {
+    code <= RAFT_ADMISSION_AFTER_INVARIANT_FAILED
+}
+
+// r[depends domain-primitives.raft-consensus.admission]
+/// Spec: deterministic Raft admission checks finite invariants, envelope, trace, and post-invariant in order.
+pub open spec fn raft_transition_admission_result_spec(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+) -> RaftAdmissionResult {
+    if !raft_invariant_bundle_valid_spec(before, before_log) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_BEFORE_INVARIANT_FAILED }
+    } else if !raft_message_envelope_admit_spec(before.current_term, step.message, before.max_node_id) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_MESSAGE_FAILED }
+    } else if !raft_transition_trace_step_admit_spec(step, before.max_node_id) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_TRACE_FAILED }
+    } else if !raft_invariant_bundle_valid_spec(after, after_log) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_AFTER_INVARIANT_FAILED }
+    } else {
+        RaftAdmissionResult { admitted: true, failing_check: RAFT_ADMISSION_OK }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.admission]
+/// Spec: deterministic admission is true exactly for the stable OK result.
+pub open spec fn raft_transition_admitted_spec(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+) -> bool {
+    raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted
+}
+
 // r[impl domain-primitives.raft-consensus.invariant-bundle]
 /// Return whether the finite Raft invariant bundle holds for local metadata and log.
 pub fn raft_invariant_bundle_valid(
@@ -1090,6 +1146,167 @@ pub fn raft_invariant_preservation_admit(
     raft_invariant_bundle_valid(before, before_log)
         && raft_invariant_bundle_valid(after, after_log)
 }
+
+// r[impl domain-primitives.raft-consensus.admission]
+/// Return whether a deterministic Raft admission code is in the modeled finite code set.
+pub fn raft_admission_code_valid(code: u64) -> (result: bool)
+    ensures result == raft_admission_code_valid_spec(code)
+{
+    code <= RAFT_ADMISSION_AFTER_INVARIANT_FAILED
+}
+
+// r[impl domain-primitives.raft-consensus.admission]
+/// Return deterministic admission metadata for a finite Raft transition candidate.
+pub fn raft_transition_admission_result(
+    before: &RaftInvariantBundleMetadata,
+    after: &RaftInvariantBundleMetadata,
+    before_log: &[RaftIndexedLogEntry],
+    after_log: &[RaftIndexedLogEntry],
+    step: &RaftTransitionTraceStep,
+) -> (result: RaftAdmissionResult)
+    requires
+        before_log@.len() <= u64::MAX as int,
+        after_log@.len() <= u64::MAX as int,
+    ensures
+        result == raft_transition_admission_result_spec(*before, *after, before_log@, after_log@, *step),
+        raft_admission_code_valid_spec(result.failing_check),
+        result.admitted ==> result.failing_check == RAFT_ADMISSION_OK,
+        !result.admitted ==> result.failing_check != RAFT_ADMISSION_OK,
+{
+    if !raft_invariant_bundle_valid(before, before_log) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_BEFORE_INVARIANT_FAILED }
+    } else if !raft_message_envelope_admit(before.current_term, &step.message, before.max_node_id) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_MESSAGE_FAILED }
+    } else if !raft_transition_trace_step_admit(step, before.max_node_id) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_TRACE_FAILED }
+    } else if !raft_invariant_bundle_valid(after, after_log) {
+        RaftAdmissionResult { admitted: false, failing_check: RAFT_ADMISSION_AFTER_INVARIANT_FAILED }
+    } else {
+        RaftAdmissionResult { admitted: true, failing_check: RAFT_ADMISSION_OK }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.admission]
+/// Return whether a finite transition candidate is admitted by the deterministic API.
+pub fn raft_transition_admitted(
+    before: &RaftInvariantBundleMetadata,
+    after: &RaftInvariantBundleMetadata,
+    before_log: &[RaftIndexedLogEntry],
+    after_log: &[RaftIndexedLogEntry],
+    step: &RaftTransitionTraceStep,
+) -> (result: bool)
+    requires
+        before_log@.len() <= u64::MAX as int,
+        after_log@.len() <= u64::MAX as int,
+    ensures result == raft_transition_admitted_spec(*before, *after, before_log@, after_log@, *step)
+{
+    raft_transition_admission_result(before, after, before_log, after_log, step).admitted
+}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// Deterministic Raft admission results always carry a finite stable admission code.
+pub proof fn transition_admission_result_code_is_valid(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    ensures raft_admission_code_valid_spec(
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check,
+    )
+{}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// Admitted deterministic transitions expose all modeled finite admission checks.
+pub proof fn admitted_transition_result_exposes_checks(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted
+    ensures
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check == RAFT_ADMISSION_OK,
+        raft_invariant_bundle_valid_spec(before, before_log),
+        raft_message_envelope_admit_spec(before.current_term, step.message, before.max_node_id),
+        raft_transition_trace_step_admit_spec(step, before.max_node_id),
+        raft_invariant_bundle_valid_spec(after, after_log),
+{}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// A failed pre-invariant check returns the stable pre-invariant rejection code.
+pub proof fn admission_rejects_invalid_before_bundle(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires !raft_invariant_bundle_valid_spec(before, before_log)
+    ensures
+        !raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted,
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check
+            == RAFT_ADMISSION_BEFORE_INVARIANT_FAILED,
+{}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// Failed message admission returns the stable message rejection code after a valid pre-bundle.
+pub proof fn admission_rejects_invalid_message(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, before_log),
+        !raft_message_envelope_admit_spec(before.current_term, step.message, before.max_node_id),
+    ensures
+        !raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted,
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check
+            == RAFT_ADMISSION_MESSAGE_FAILED,
+{}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// Failed trace admission returns the stable trace rejection code after prechecks pass.
+pub proof fn admission_rejects_invalid_trace(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, before_log),
+        raft_message_envelope_admit_spec(before.current_term, step.message, before.max_node_id),
+        !raft_transition_trace_step_admit_spec(step, before.max_node_id),
+    ensures
+        !raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted,
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check
+            == RAFT_ADMISSION_TRACE_FAILED,
+{}
+
+// r[verify domain-primitives.raft-consensus.admission]
+/// Failed post-invariant admission returns the stable post-invariant rejection code after prechecks pass.
+pub proof fn admission_rejects_invalid_after_bundle(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, before_log),
+        raft_message_envelope_admit_spec(before.current_term, step.message, before.max_node_id),
+        raft_transition_trace_step_admit_spec(step, before.max_node_id),
+        !raft_invariant_bundle_valid_spec(after, after_log),
+    ensures
+        !raft_transition_admission_result_spec(before, after, before_log, after_log, step).admitted,
+        raft_transition_admission_result_spec(before, after, before_log, after_log, step).failing_check
+            == RAFT_ADMISSION_AFTER_INVARIANT_FAILED,
+{}
 
 // r[verify domain-primitives.raft-consensus.invariant-bundle]
 /// Admitted invariant-preservation candidates expose a valid post-transition bundle.
@@ -2100,5 +2317,76 @@ mod tests {
             ..before
         };
         assert!(!raft_invariant_preservation_admit(&before, &invalid_after, &log, &log));
+    }
+
+    // r[verify domain-primitives.raft-consensus.admission]
+    #[test]
+    fn deterministic_transition_admission_reports_first_failure() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let before = invariant_bundle(2, 2);
+        let after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 3,
+                voted_for: 0,
+            },
+            ..before
+        };
+        let message = RaftMessageEnvelope {
+            kind: RAFT_MESSAGE_APPEND_ENTRIES,
+            term: 3,
+            source: 1,
+            target: 2,
+            index: 2,
+            payload: 20,
+        };
+        let step = RaftTransitionTraceStep {
+            before_term: 2,
+            after_term: 3,
+            message,
+            admitted: true,
+        };
+
+        let ok = raft_transition_admission_result(&before, &after, &log, &log, &step);
+        assert!(ok.admitted);
+        assert_eq!(ok.failing_check, RAFT_ADMISSION_OK);
+        assert!(raft_transition_admitted(&before, &after, &log, &log, &step));
+
+        let bad_before = RaftInvariantBundleMetadata {
+            current_term: 2,
+            persistent: RaftPersistentMetadata {
+                current_term: 1,
+                voted_for: 0,
+            },
+            ..before
+        };
+        let pre = raft_transition_admission_result(&bad_before, &after, &log, &log, &step);
+        assert!(!pre.admitted);
+        assert_eq!(pre.failing_check, RAFT_ADMISSION_BEFORE_INVARIANT_FAILED);
+
+        let bad_message = RaftTransitionTraceStep {
+            message: RaftMessageEnvelope { target: 9, ..message },
+            ..step
+        };
+        let msg = raft_transition_admission_result(&before, &after, &log, &log, &bad_message);
+        assert!(!msg.admitted);
+        assert_eq!(msg.failing_check, RAFT_ADMISSION_MESSAGE_FAILED);
+
+        let bad_trace = RaftTransitionTraceStep { after_term: 2, ..step };
+        let trace = raft_transition_admission_result(&before, &after, &log, &log, &bad_trace);
+        assert!(!trace.admitted);
+        assert_eq!(trace.failing_check, RAFT_ADMISSION_TRACE_FAILED);
+
+        let bad_after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 2,
+                voted_for: 0,
+            },
+            ..before
+        };
+        let post = raft_transition_admission_result(&before, &bad_after, &log, &log, &step);
+        assert!(!post.admitted);
+        assert_eq!(post.failing_check, RAFT_ADMISSION_AFTER_INVARIANT_FAILED);
     }
 }

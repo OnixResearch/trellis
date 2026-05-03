@@ -1774,6 +1774,14 @@ observed-term, commit-advance, membership-epoch, InstallSnapshot, and
 transition-trace slices without claiming runtime networking, storage durability,
 timing, liveness, availability, or production implementation correctness.
 
+r[domain-primitives.raft-consensus.admission]
+Raft deterministic-admission primitives MUST combine finite before-invariant,
+message-envelope, transition-trace, and after-invariant checks in a stable order.
+Admission results MUST expose a finite success/failure code, accepted candidates
+MUST report the stable OK code, and rejected candidates MUST report the first
+failing modeled finite check without claiming runtime network, clock, storage,
+availability, or production implementation behavior.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]

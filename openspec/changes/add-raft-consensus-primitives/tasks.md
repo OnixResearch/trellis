@@ -43,6 +43,7 @@
 - [x] Implement and verify configuration/membership epoch and joint-consensus quorum metadata.
 - [x] Implement and verify finite message envelopes, stale-message rejection, and transition-trace admission.
 - [x] Compose the Raft invariant bundle and prove preservation for every admitted transition kind.
+- [x] Implement and verify deterministic Raft admission/rejection API with stable failure metadata.
 - [ ] Add focused positive, negative, and mutation tests for each Raft primitive and invariant.
 - [ ] Run focused Verus, Tracey uncovered/untested, strict OpenSpec validation, and final repo validation.
 - [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.
