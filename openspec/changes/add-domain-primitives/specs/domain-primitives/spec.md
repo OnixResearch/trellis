@@ -5,8 +5,9 @@
 Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
-finite text/string handling, finite parsing/format handling, bounded control
-systems, GIS, machine learning, physics, and machine vision. Concrete module
+finite text/string handling, finite parsing/format handling, finite
+scheduling/calendar handling, bounded control systems, GIS, machine learning,
+physics, and machine vision. Concrete module
 requirements MUST live in focused
 child OpenSpec changes so each proof/evidence slice remains reviewable.
 
@@ -147,6 +148,18 @@ checks, and bounded canonical round-trip envelopes.
 - GIVEN a reusable finite parsing/format primitive such as grammar symbol admission, token stream shape, source span predicate, AST shape envelope, parse error envelope, format version admission, serializer shape, deserializer shape, or bounded round-trip envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused parsing-format child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Scheduling and Calendar Family Taxonomy [r[domain-primitives.scheduling-calendar-family]]
+The system MUST treat scheduling/calendar handling as reusable exact finite
+primitives for calendar fields, time buckets, schedule intervals, recurrence
+windows, deadline ordering, conflict predicates, resource slots, and
+deterministic schedule admission envelopes.
+
+#### Scenario: Scheduling-calendar child change owns reusable finite schedule modules [r[domain-primitives.scheduling-calendar-family.scenario.scheduling-calendar-child-change-owns-reusable-finite-schedule-modules]]
+
+- GIVEN a reusable finite scheduling/calendar primitive such as calendar field admission, time bucket metadata, schedule interval predicate, recurrence window, deadline order, conflict predicate, resource slot, or schedule admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused scheduling-calendar child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for

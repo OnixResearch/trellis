@@ -30,7 +30,8 @@ enough to prove, test, validate, capture evidence, and archive independently.
 `add-graph-primitives`, `add-timeseries-primitives`,
 `add-probability-statistics-primitives`, `add-signal-processing-primitives`,
 `add-storage-index-primitives`, `add-text-string-primitives`,
-`add-parsing-format-primitives`, `add-control-system-primitives`,
+`add-parsing-format-primitives`, `add-scheduling-calendar-primitives`,
+`add-control-system-primitives`,
 `add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
 `add-vision-primitives` own concrete requirements and implementation evidence.
 
@@ -71,9 +72,10 @@ in `add-probability-statistics-primitives`, reusable finite signal-processing
 primitives in `add-signal-processing-primitives`, reusable finite storage/index
 primitives in `add-storage-index-primitives`, reusable finite text/string
 primitives in `add-text-string-primitives`, reusable finite parsing/format
-primitives in `add-parsing-format-primitives`, reusable bounded control-system
-primitives in `add-control-system-primitives`, and family-specific primitives in
-their own child changes.
+primitives in `add-parsing-format-primitives`, reusable finite
+scheduling/calendar primitives in `add-scheduling-calendar-primitives`,
+reusable bounded control-system primitives in `add-control-system-primitives`,
+and family-specific primitives in their own child changes.
 
 **Tracey drift** → Child changes must add `docs/requirements.md`, `r[impl]`,
 `r[depends]`, and `r[verify]` tags in the same slice as implementation.
