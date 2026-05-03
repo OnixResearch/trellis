@@ -36,11 +36,12 @@ enough to prove, test, validate, capture evidence, and archive independently.
 `add-observability-metrics-primitives`,
 `add-state-machine-workflow-primitives`,
 `add-serialization-codec-primitives`,
-`add-configuration-feature-flag-primitives`, `add-control-system-primitives`,
+`add-configuration-feature-flag-primitives`, `add-data-validation-primitives`,
+`add-control-system-primitives`,
 `add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
 `add-vision-primitives` own concrete requirements and implementation evidence.
 
-**Rationale:** It prevents one 23+ module OpenSpec from becoming too large to
+**Rationale:** It prevents one 24+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
 
 **Alternative:** Keep all concrete modules in one change. Rejected because final
@@ -89,7 +90,8 @@ primitives in `add-observability-metrics-primitives`, reusable finite
 state-machine/workflow primitives in `add-state-machine-workflow-primitives`,
 reusable finite serialization/codec primitives in
 `add-serialization-codec-primitives`, reusable finite configuration/feature-flag
-primitives in `add-configuration-feature-flag-primitives`, reusable bounded
+primitives in `add-configuration-feature-flag-primitives`, reusable finite
+data-validation primitives in `add-data-validation-primitives`, reusable bounded
 control-system primitives in `add-control-system-primitives`, and
 family-specific primitives in their own child changes.
 

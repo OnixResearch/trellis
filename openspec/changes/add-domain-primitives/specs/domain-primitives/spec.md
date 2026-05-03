@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -257,6 +257,18 @@ deterministic config admission.
 - GIVEN a reusable finite configuration/feature-flag primitive such as config-key envelope, typed-value envelope, default metadata, override precedence, feature gate, rollout bucket, validation decision, or config admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused configuration/feature-flag child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Data Validation Family Taxonomy [r[domain-primitives.data-validation-family]]
+The system MUST treat data validation as reusable exact finite primitives for
+schema predicates, required/optional field metadata, enum constraints, range
+constraints, cross-field predicates, error accumulation, normalization
+decisions, and deterministic validation admission.
+
+#### Scenario: Data-validation child change owns reusable finite validation modules [r[domain-primitives.data-validation-family.scenario.data-validation-child-change-owns-reusable-finite-validation-modules]]
+
+- GIVEN a reusable finite data-validation primitive such as schema predicate envelope, field-presence metadata, enum constraint, range constraint, cross-field predicate, error accumulation envelope, normalization decision, or validation admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused data-validation child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
