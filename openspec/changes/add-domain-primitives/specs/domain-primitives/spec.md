@@ -3,9 +3,9 @@
 ## Purpose
 
 Defines the shared policy for first-class verified primitives in numeric
-foundations, GIS, machine learning, physics, and machine vision. Concrete module
-requirements MUST live in focused child OpenSpec changes so each proof/evidence
-slice remains reviewable.
+foundations, finite data structures, GIS, machine learning, physics, and machine
+vision. Concrete module requirements MUST live in focused child OpenSpec changes
+so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -53,6 +53,17 @@ quantized thresholds.
 - GIVEN a reusable exact numeric primitive such as fixed-point scale, safe ratio, monotone sequence, histogram counter, affine transform, prefix sum, or quantized threshold
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused numeric-foundation child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Data Structure Family Taxonomy [r[domain-primitives.data-structure-family]]
+The system MUST treat data structures as reusable exact finite primitives for
+bounded arrays, finite key/value maps, FIFO queues, ring buffers, priority
+queues, and union-find connectivity.
+
+#### Scenario: Data-structure child change owns reusable finite container modules [r[domain-primitives.data-structure-family.scenario.data-structure-child-change-owns-reusable-finite-container-modules]]
+
+- GIVEN a reusable finite data-structure primitive such as bounded array, finite map, FIFO queue, ring buffer, priority queue, or union-find
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused data-structure child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: GIS Family Taxonomy [r[domain-primitives.gis-family]]
 The system MUST treat GIS primitives as bounded spatial-coordinate, grid/tile,
