@@ -9,8 +9,9 @@ finite text/string handling, finite parsing/format handling, finite
 scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
-serialization/codec handling, bounded control systems, GIS, machine learning,
-physics, and machine vision. Concrete module requirements MUST live in focused
+serialization/codec handling, finite configuration/feature-flag handling,
+bounded control systems, GIS, machine learning, physics, and machine vision.
+Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
 
@@ -244,6 +245,18 @@ predicates, and bounded round-trip envelopes.
 - GIVEN a reusable finite serialization/codec primitive such as byte-buffer envelope, framed-record envelope, length-prefix envelope, schema/version admission, checksum-shape metadata, encoder shape predicate, decoder shape predicate, or bounded round-trip envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused serialization/codec child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Configuration Feature Flag Family Taxonomy [r[domain-primitives.configuration-feature-flag-family]]
+The system MUST treat configuration/feature-flag handling as reusable exact
+finite primitives for config keys, typed value envelopes, defaults, override
+precedence, feature gates, rollout buckets, validation decisions, and
+deterministic config admission.
+
+#### Scenario: Configuration-feature-flag child change owns reusable finite config modules [r[domain-primitives.configuration-feature-flag-family.scenario.configuration-feature-flag-child-change-owns-reusable-finite-config-modules]]
+
+- GIVEN a reusable finite configuration/feature-flag primitive such as config-key envelope, typed-value envelope, default metadata, override precedence, feature gate, rollout bucket, validation decision, or config admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused configuration/feature-flag child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
