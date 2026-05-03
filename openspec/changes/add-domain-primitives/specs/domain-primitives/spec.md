@@ -8,8 +8,10 @@ probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
 scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
-observability/metrics, finite state-machine/workflow, bounded control systems, GIS, machine learning, physics, and machine vision. Concrete
-module requirements MUST live in focused child OpenSpec changes so each
+observability/metrics, finite state-machine/workflow, finite
+serialization/codec handling, bounded control systems, GIS, machine learning,
+physics, and machine vision. Concrete module requirements MUST live in focused
+child OpenSpec changes so each
 proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
@@ -230,6 +232,18 @@ deterministic transition admission results.
 - GIVEN a reusable finite state-machine/workflow primitive such as state-set envelope, transition relation, event envelope, guard predicate, workflow step, dependency envelope, reachability path, terminal predicate, trace envelope, or transition admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused state-machine/workflow child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Serialization Codec Family Taxonomy [r[domain-primitives.serialization-codec-family]]
+The system MUST treat serialization/codec handling as reusable exact finite
+primitives for byte buffers, framed records, length-prefix envelopes,
+schema/version admission, checksum-shape metadata, encoder/decoder shape
+predicates, and bounded round-trip envelopes.
+
+#### Scenario: Serialization-codec child change owns reusable finite byte modules [r[domain-primitives.serialization-codec-family.scenario.serialization-codec-child-change-owns-reusable-finite-byte-modules]]
+
+- GIVEN a reusable finite serialization/codec primitive such as byte-buffer envelope, framed-record envelope, length-prefix envelope, schema/version admission, checksum-shape metadata, encoder shape predicate, decoder shape predicate, or bounded round-trip envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused serialization/codec child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for

@@ -20,6 +20,7 @@
 | `domain-primitives.access-control-policy-family` | finite access-control policy family taxonomy |
 | `domain-primitives.observability-metrics-family` | finite observability/metrics family taxonomy |
 | `domain-primitives.state-machine-workflow-family` | finite state-machine/workflow family taxonomy |
+| `domain-primitives.serialization-codec-family` | finite serialization/codec family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -49,6 +50,7 @@
 - [x] Create focused `add-access-control-policy-primitives` OpenSpec before implementing principal/resource/action/rule/grant-denial/conflict/delegation/authorization primitives. `[covers=domain-primitives.access-control-policy-family]`
 - [x] Create focused `add-observability-metrics-primitives` OpenSpec before implementing metric-id/label/counter/gauge/histogram/window/aggregation/alert/admission primitives. `[covers=domain-primitives.observability-metrics-family]`
 - [x] Create focused `add-state-machine-workflow-primitives` OpenSpec before implementing state/transition/event/guard/step/dependency/reachability/terminal/trace/admission primitives. `[covers=domain-primitives.state-machine-workflow-family]`
+- [x] Create focused `add-serialization-codec-primitives` OpenSpec before implementing byte-buffer/frame/length-prefix/schema-version/checksum-shape/encoder/decoder/roundtrip primitives. `[covers=domain-primitives.serialization-codec-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`
