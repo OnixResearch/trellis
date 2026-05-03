@@ -30,9 +30,9 @@ enough to prove, test, validate, capture evidence, and archive independently.
 `add-graph-primitives`, `add-timeseries-primitives`,
 `add-probability-statistics-primitives`, `add-signal-processing-primitives`,
 `add-storage-index-primitives`, `add-text-string-primitives`,
-`add-control-system-primitives`, `add-gis-primitives`, `add-ml-primitives`,
-`add-physics-primitives`, and `add-vision-primitives` own concrete requirements
-and implementation evidence.
+`add-parsing-format-primitives`, `add-control-system-primitives`,
+`add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
+`add-vision-primitives` own concrete requirements and implementation evidence.
 
 **Rationale:** It prevents one 16+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
@@ -70,7 +70,8 @@ family/policy IDs; child changes define concrete module IDs.
 in `add-probability-statistics-primitives`, reusable finite signal-processing
 primitives in `add-signal-processing-primitives`, reusable finite storage/index
 primitives in `add-storage-index-primitives`, reusable finite text/string
-primitives in `add-text-string-primitives`, reusable bounded control-system
+primitives in `add-text-string-primitives`, reusable finite parsing/format
+primitives in `add-parsing-format-primitives`, reusable bounded control-system
 primitives in `add-control-system-primitives`, and family-specific primitives in
 their own child changes.
 

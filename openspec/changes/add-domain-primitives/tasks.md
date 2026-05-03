@@ -12,6 +12,7 @@
 | `domain-primitives.signal-processing-family` | finite signal-processing family taxonomy |
 | `domain-primitives.storage-index-family` | finite storage/index family taxonomy |
 | `domain-primitives.text-string-family` | finite text/string family taxonomy |
+| `domain-primitives.parsing-format-family` | finite parsing/format family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -33,6 +34,7 @@
 - [x] Create focused `add-signal-processing-primitives` OpenSpec before implementing sample/filter/convolution/resampling/peak/spectral primitives. `[covers=domain-primitives.signal-processing-family]`
 - [x] Create focused `add-storage-index-primitives` OpenSpec before implementing page/slot/key-range/cursor/segment/lookup/compaction/version primitives. `[covers=domain-primitives.storage-index-family]`
 - [x] Create focused `add-text-string-primitives` OpenSpec before implementing byte-string/UTF-8/span/prefix/substring/edit/normalization/delimiter primitives. `[covers=domain-primitives.text-string-family]`
+- [x] Create focused `add-parsing-format-primitives` OpenSpec before implementing grammar-symbol/token-stream/span/AST-shape/version/serializer/deserializer/roundtrip primitives. `[covers=domain-primitives.parsing-format-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`

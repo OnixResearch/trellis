@@ -5,8 +5,9 @@
 Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
-finite text/string handling, bounded control systems, GIS, machine learning,
-physics, and machine vision. Concrete module requirements MUST live in focused
+finite text/string handling, finite parsing/format handling, bounded control
+systems, GIS, machine learning, physics, and machine vision. Concrete module
+requirements MUST live in focused
 child OpenSpec changes so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
@@ -134,6 +135,18 @@ split/join shape metadata.
 - GIVEN a reusable finite text/string primitive such as finite byte string, UTF-8 boundary range, token span, prefix/suffix predicate, substring span, edit-distance envelope, normalization envelope, or delimiter split/join shape
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused text-string child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Parsing and Format Family Taxonomy [r[domain-primitives.parsing-format-family]]
+The system MUST treat parsing/format handling as reusable exact finite
+primitives for grammar symbols, token streams, parse spans, AST shape envelopes,
+parse error metadata, format-version admission, serializer/deserializer shape
+checks, and bounded canonical round-trip envelopes.
+
+#### Scenario: Parsing-format child change owns reusable finite parse/format modules [r[domain-primitives.parsing-format-family.scenario.parsing-format-child-change-owns-reusable-finite-parse-format-modules]]
+
+- GIVEN a reusable finite parsing/format primitive such as grammar symbol admission, token stream shape, source span predicate, AST shape envelope, parse error envelope, format version admission, serializer shape, deserializer shape, or bounded round-trip envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused parsing-format child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
