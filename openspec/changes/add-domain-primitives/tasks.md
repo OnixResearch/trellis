@@ -18,6 +18,7 @@
 | `domain-primitives.constraint-solver-family` | finite constraint-solver family taxonomy |
 | `domain-primitives.discrete-optimization-family` | finite discrete-optimization family taxonomy |
 | `domain-primitives.access-control-policy-family` | finite access-control policy family taxonomy |
+| `domain-primitives.observability-metrics-family` | finite observability/metrics family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -45,6 +46,7 @@
 - [x] Create focused `add-constraint-solver-primitives` OpenSpec before implementing variable/domain/relation/assignment/consistency/propagation/witness/admission primitives. `[covers=domain-primitives.constraint-solver-family]`
 - [x] Create focused `add-discrete-optimization-primitives` OpenSpec before implementing objective/feasible-set/ranking/dominance/bound/witness/frontier/admission primitives. `[covers=domain-primitives.discrete-optimization-family]`
 - [x] Create focused `add-access-control-policy-primitives` OpenSpec before implementing principal/resource/action/rule/grant-denial/conflict/delegation/authorization primitives. `[covers=domain-primitives.access-control-policy-family]`
+- [x] Create focused `add-observability-metrics-primitives` OpenSpec before implementing metric-id/label/counter/gauge/histogram/window/aggregation/alert/admission primitives. `[covers=domain-primitives.observability-metrics-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`

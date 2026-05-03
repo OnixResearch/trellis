@@ -7,8 +7,8 @@ foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
 scheduling/calendar handling, finite resource-accounting, finite constraint
-solving, finite discrete optimization, finite access-control policy, bounded
-control systems, GIS, machine learning, physics, and machine vision. Concrete
+solving, finite discrete optimization, finite access-control policy, finite
+observability/metrics, bounded control systems, GIS, machine learning, physics, and machine vision. Concrete
 module requirements MUST live in focused child OpenSpec changes so each
 proof/evidence slice remains reviewable.
 
@@ -206,6 +206,18 @@ admission results.
 - GIVEN a reusable finite access-control policy primitive such as principal envelope, resource envelope, action envelope, rule envelope, grant/denial decision, conflict-resolution envelope, delegation envelope, or authorization admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused access-control policy child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Observability Metrics Family Taxonomy [r[domain-primitives.observability-metrics-family]]
+The system MUST treat observability/metrics as reusable exact finite primitives
+for metric identities, label sets, counters, gauges, histogram buckets, sample
+windows, aggregation envelopes, alert predicates, and deterministic metric
+admission results.
+
+#### Scenario: Observability-metrics child change owns reusable finite metric modules [r[domain-primitives.observability-metrics-family.scenario.observability-metrics-child-change-owns-reusable-finite-metric-modules]]
+
+- GIVEN a reusable finite observability/metrics primitive such as metric identity envelope, label-set envelope, counter envelope, gauge envelope, histogram bucket metadata, sample-window envelope, aggregation envelope, alert predicate, or metric admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused observability/metrics child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for

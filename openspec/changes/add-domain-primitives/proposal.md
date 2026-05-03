@@ -5,11 +5,13 @@ runtime primitives, but it lacks a durable taxonomy for reusable data-structure,
 graph, time-series, probability/statistics, signal-processing, storage-index,
 text/string, parsing/format, scheduling/calendar, resource-accounting,
 constraint-solver, discrete-optimization, access-control-policy,
-control-system, scientific, and perception-heavy primitive families. Data
+observability-metrics, control-system, scientific, and perception-heavy
+primitive families. Data
 structures, graphs, time series, probability/statistics, signal processing,
 storage/indexing, text/string, parsing/format, scheduling/calendar, resource
 accounting, constraint solving, discrete optimization, access-control policy,
-control systems, GIS, machine-learning, physics, and machine-vision work should
+observability/metrics, control systems, GIS, machine-learning, physics, and
+machine-vision work should
 be specified and implemented in focused OpenSpec changes rather than one large
 multi-domain implementation batch.
 
@@ -19,7 +21,7 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing nineteen primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing twenty primitive
   families:
   - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
     transforms, prefix sums, and quantized thresholds.
@@ -56,6 +58,9 @@ child changes add concrete module requirements and implementation tasks.
   - `policy_*`: finite principals, resources, actions, policy rules,
     grants/denials, conflict resolution, delegation envelopes, and deterministic
     authorization admission metadata.
+  - `metric_*`: finite metric identities, label sets, counters, gauges,
+    histogram buckets, sample windows, aggregation envelopes, alert predicates,
+    and deterministic metric admission metadata.
   - `control_*`: bounded setpoints, error envelopes, actuator saturation,
     deadbands, hysteresis, rate limits, and safety envelopes.
   - `gis_*`: geospatial coordinates, grids, tiles, and topology-safe geometry
@@ -74,8 +79,8 @@ child changes add concrete module requirements and implementation tasks.
   storage/index primitives, text/string primitives, parsing/format primitives,
   scheduling/calendar primitives, resource-accounting primitives,
   constraint-solver primitives, discrete-optimization primitives,
-  access-control policy primitives, control-system primitives, GIS, ML, physics,
-  and machine vision.
+  access-control policy primitives, observability/metrics primitives,
+  control-system primitives, GIS, ML, physics, and machine vision.
 
 ## Capabilities
 
@@ -113,6 +118,8 @@ child changes add concrete module requirements and implementation tasks.
   discrete-optimization taxonomy and required child-change scope.
 - `domain-primitives.access-control-policy-family`: reusable finite
   access-control policy taxonomy and required child-change scope.
+- `domain-primitives.observability-metrics-family`: reusable finite
+  observability/metrics taxonomy and required child-change scope.
 - `domain-primitives.control-system-family`: reusable bounded control-system
   taxonomy and required child-change scope.
 - `domain-primitives.gis-family`: GIS primitive family taxonomy and required
@@ -130,8 +137,8 @@ child changes add concrete module requirements and implementation tasks.
   `src/ds_*`, `src/graph_*`, `src/timeseries_*`, `src/stats_*`,
   `src/signal_*`, `src/storage_*`, `src/text_*`, `src/parse_*`,
   `src/format_*`, `src/schedule_*`, `src/resource_*`, `src/constraint_*`,
-  `src/opt_*`, `src/policy_*`, `src/control_*`, `src/gis_*`, `src/ml_*`,
-  `src/physics_*`, `src/vision_*`,
+  `src/opt_*`, `src/policy_*`, `src/metric_*`, `src/control_*`,
+  `src/gis_*`, `src/ml_*`, `src/physics_*`, `src/vision_*`,
   `src/lib.rs`,
   `docs/requirements.md`, tests, README entries, and evidence.
 - **APIs**: no runtime APIs are added by this umbrella change. Child changes add
