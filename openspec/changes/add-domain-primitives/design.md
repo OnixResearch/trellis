@@ -28,9 +28,10 @@ enough to prove, test, validate, capture evidence, and archive independently.
 **Choice:** `add-domain-primitives` defines common contract and family taxonomy;
 `add-numeric-foundation-primitives`, `add-data-structure-primitives`,
 `add-graph-primitives`, `add-timeseries-primitives`,
-`add-probability-statistics-primitives`, `add-control-system-primitives`,
-`add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
-`add-vision-primitives` own concrete requirements and implementation evidence.
+`add-probability-statistics-primitives`, `add-signal-processing-primitives`,
+`add-control-system-primitives`, `add-gis-primitives`, `add-ml-primitives`,
+`add-physics-primitives`, and `add-vision-primitives` own concrete requirements
+and implementation evidence.
 
 **Rationale:** It prevents one 16+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
@@ -65,9 +66,10 @@ family/policy IDs; child changes define concrete module IDs.
 `add-data-structure-primitives`, reusable finite graphs in
 `add-graph-primitives`, reusable finite time-series primitives in
 `add-timeseries-primitives`, reusable finite probability/statistics primitives
-in `add-probability-statistics-primitives`, reusable bounded control-system
-primitives in `add-control-system-primitives`, and family-specific primitives in
-their own child changes.
+in `add-probability-statistics-primitives`, reusable finite signal-processing
+primitives in `add-signal-processing-primitives`, reusable bounded
+control-system primitives in `add-control-system-primitives`, and
+family-specific primitives in their own child changes.
 
 **Tracey drift** → Child changes must add `docs/requirements.md`, `r[impl]`,
 `r[depends]`, and `r[verify]` tags in the same slice as implementation.

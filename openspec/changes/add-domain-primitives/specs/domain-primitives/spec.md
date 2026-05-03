@@ -4,9 +4,10 @@
 
 Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
-probability/statistics, bounded control systems, GIS, machine learning, physics,
-and machine vision. Concrete module requirements MUST live in focused child
-OpenSpec changes so each proof/evidence slice remains reviewable.
+probability/statistics, finite signal processing, bounded control systems, GIS,
+machine learning, physics, and machine vision. Concrete module requirements MUST
+live in focused child OpenSpec changes so each proof/evidence slice remains
+reviewable.
 
 ## ADDED Requirements
 
@@ -99,6 +100,17 @@ metadata.
 - GIVEN a reusable finite probability/statistics primitive such as count table, frequency table, discrete distribution, CDF/quantile envelope, bounded moment, deterministic sampler, or interval metadata
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused probability/statistics child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Signal Processing Family Taxonomy [r[domain-primitives.signal-processing-family]]
+The system MUST treat signal processing as reusable exact finite primitives for
+sample sequences, FIR filter envelopes, convolution windows, decimation and
+interpolation admission, peak candidates, and spectral-bin metadata.
+
+#### Scenario: Signal-processing child change owns reusable finite signal modules [r[domain-primitives.signal-processing-family.scenario.signal-processing-child-change-owns-reusable-finite-signal-modules]]
+
+- GIVEN a reusable finite signal-processing primitive such as sample sequence, FIR filter envelope, convolution window, decimation admission, interpolation admission, peak candidate, or spectral-bin metadata
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused signal-processing child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
