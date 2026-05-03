@@ -6,10 +6,10 @@ Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
-scheduling/calendar handling, bounded control systems, GIS, machine learning,
-physics, and machine vision. Concrete module
-requirements MUST live in focused
-child OpenSpec changes so each proof/evidence slice remains reviewable.
+scheduling/calendar handling, finite resource-accounting, bounded control
+systems, GIS, machine learning, physics, and machine vision. Concrete module
+requirements MUST live in focused child OpenSpec changes so each proof/evidence
+slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -160,6 +160,17 @@ deterministic schedule admission envelopes.
 - GIVEN a reusable finite scheduling/calendar primitive such as calendar field admission, time bucket metadata, schedule interval predicate, recurrence window, deadline order, conflict predicate, resource slot, or schedule admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused scheduling-calendar child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Resource Accounting Family Taxonomy [r[domain-primitives.resource-accounting-family]]
+The system MUST treat resource accounting as reusable exact finite primitives for
+budgets, counters, quotas, leases, usage windows, reservations, overage metadata,
+and deterministic resource-admission envelopes.
+
+#### Scenario: Resource-accounting child change owns reusable finite accounting modules [r[domain-primitives.resource-accounting-family.scenario.resource-accounting-child-change-owns-reusable-finite-accounting-modules]]
+
+- GIVEN a reusable finite resource-accounting primitive such as budget envelope, usage counter, quota envelope, lease envelope, usage window, reservation envelope, overage classifier, or admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused resource-accounting child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
