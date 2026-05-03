@@ -7,9 +7,9 @@ foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
 scheduling/calendar handling, finite resource-accounting, finite constraint
-solving, bounded control systems, GIS, machine learning, physics, and machine
-vision. Concrete module requirements MUST live in focused child OpenSpec changes
-so each proof/evidence slice remains reviewable.
+solving, finite discrete optimization, bounded control systems, GIS, machine
+learning, physics, and machine vision. Concrete module requirements MUST live in
+focused child OpenSpec changes so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -182,6 +182,17 @@ envelopes, witness metadata, and deterministic admission results.
 - GIVEN a reusable finite constraint-solver primitive such as variable envelope, domain predicate, relation envelope, assignment shape, consistency predicate, propagation envelope, witness metadata, or admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused constraint-solver child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Discrete Optimization Family Taxonomy [r[domain-primitives.discrete-optimization-family]]
+The system MUST treat discrete optimization as reusable exact finite primitives
+for objectives, feasible sets, candidate rankings, dominance predicates, bound
+metadata, optimum/frontier witnesses, and deterministic admission results.
+
+#### Scenario: Discrete-optimization child change owns reusable finite optimization modules [r[domain-primitives.discrete-optimization-family.scenario.discrete-optimization-child-change-owns-reusable-finite-optimization-modules]]
+
+- GIVEN a reusable finite discrete-optimization primitive such as objective envelope, feasible-set predicate, ranking envelope, dominance predicate, bound metadata, optimum witness, frontier envelope, or admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused discrete-optimization child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
