@@ -2,9 +2,10 @@
 
 `verified-logic` has strong infrastructure, storage, distributed-systems, and
 runtime primitives, but it lacks a durable taxonomy for reusable data-structure,
-graph, time-series, probability/statistics, signal-processing, control-system,
-scientific, and perception-heavy primitive families. Data structures, graphs,
-time series, probability/statistics, signal processing, control systems, GIS,
+graph, time-series, probability/statistics, signal-processing, storage-index,
+control-system, scientific, and perception-heavy primitive families. Data
+structures, graphs, time series, probability/statistics, signal processing,
+storage/indexing, control systems, GIS,
 machine-learning, physics, and machine-vision work should be specified and
 implemented in focused OpenSpec changes rather than one large multi-domain
 implementation batch.
@@ -15,7 +16,7 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing eleven primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing twelve primitive
   families:
   - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
     transforms, prefix sums, and quantized thresholds.
@@ -30,6 +31,8 @@ child changes add concrete module requirements and implementation tasks.
   - `signal_*`: finite sample sequences, FIR filter envelopes, convolution
     support windows, resampling admission, peak candidates, and spectral-bin
     metadata.
+  - `storage_*`: finite pages, record slots, key ranges, cursors, segment maps,
+    lookup results, compaction envelopes, and versioned slots.
   - `control_*`: bounded setpoints, error envelopes, actuator saturation,
     deadbands, hysteresis, rate limits, and safety envelopes.
   - `gis_*`: geospatial coordinates, grids, tiles, and topology-safe geometry
@@ -45,7 +48,8 @@ child changes add concrete module requirements and implementation tasks.
 - Split implementation into focused OpenSpecs. Current child changes cover
   numeric foundations, finite data structures, graph primitives, time-series
   primitives, probability/statistics primitives, signal-processing primitives,
-  control-system primitives, GIS, ML, physics, and machine vision.
+  storage/index primitives, control-system primitives, GIS, ML, physics, and
+  machine vision.
 
 ## Capabilities
 
@@ -67,6 +71,8 @@ child changes add concrete module requirements and implementation tasks.
   probability/statistics taxonomy and required child-change scope.
 - `domain-primitives.signal-processing-family`: reusable finite
   signal-processing taxonomy and required child-change scope.
+- `domain-primitives.storage-index-family`: reusable finite storage/index
+  taxonomy and required child-change scope.
 - `domain-primitives.control-system-family`: reusable bounded control-system
   taxonomy and required child-change scope.
 - `domain-primitives.gis-family`: GIS primitive family taxonomy and required
@@ -82,9 +88,9 @@ child changes add concrete module requirements and implementation tasks.
 
 - **Files**: umbrella OpenSpec artifacts now; concrete child changes later add
   `src/ds_*`, `src/graph_*`, `src/timeseries_*`, `src/stats_*`,
-  `src/signal_*`, `src/control_*`, `src/gis_*`, `src/ml_*`, `src/physics_*`,
-  `src/vision_*`, `src/lib.rs`, `docs/requirements.md`, tests, README entries,
-  and evidence.
+  `src/signal_*`, `src/storage_*`, `src/control_*`, `src/gis_*`, `src/ml_*`,
+  `src/physics_*`, `src/vision_*`, `src/lib.rs`, `docs/requirements.md`, tests,
+  README entries, and evidence.
 - **APIs**: no runtime APIs are added by this umbrella change. Child changes add
   public primitives only when proofs/tests land.
 - **Dependencies**: no new runtime dependencies.

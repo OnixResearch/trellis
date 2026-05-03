@@ -4,8 +4,8 @@
 
 Defines the shared policy for first-class verified primitives in numeric
 foundations, finite data structures, finite graphs, finite time series, finite
-probability/statistics, finite signal processing, bounded control systems, GIS,
-machine learning, physics, and machine vision. Concrete module requirements MUST
+probability/statistics, finite signal processing, finite storage/indexing,
+bounded control systems, GIS, machine learning, physics, and machine vision. Concrete module requirements MUST
 live in focused child OpenSpec changes so each proof/evidence slice remains
 reviewable.
 
@@ -111,6 +111,17 @@ interpolation admission, peak candidates, and spectral-bin metadata.
 - GIVEN a reusable finite signal-processing primitive such as sample sequence, FIR filter envelope, convolution window, decimation admission, interpolation admission, peak candidate, or spectral-bin metadata
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused signal-processing child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Storage Index Family Taxonomy [r[domain-primitives.storage-index-family]]
+The system MUST treat storage/indexing as reusable exact finite primitives for
+page ranges, record slot tables, key ranges, cursor bounds, segment maps, lookup
+result admission, compaction envelopes, and versioned slots.
+
+#### Scenario: Storage-index child change owns reusable finite storage modules [r[domain-primitives.storage-index-family.scenario.storage-index-child-change-owns-reusable-finite-storage-modules]]
+
+- GIVEN a reusable finite storage/index primitive such as page range, record slot table, key range, cursor bounds, segment map, lookup result, compaction envelope, or versioned slot
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused storage-index child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
