@@ -5093,19 +5093,19 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-29 total trusted/weakened/runtime-only proof-gap boundaries remain: 29
+25 total trusted/weakened/runtime-only proof-gap boundaries remain: 25
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
 0 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
-### Permanent trust boundaries (29 items)
+### Permanent trust boundaries (25 items)
 These remain by design or because the current abstraction boundary is the
 point of the model, not a proof target.
 
-- 6 legacy cryptographic hash axioms / exec bridges in `chain.rs` and
-  `snapshot_integrity.rs`.
+- 4 legacy cryptographic hash axioms / exec bridges in `chain.rs` and
+  `snapshot_integrity.rs`; equal-input determinism now follows directly from
+  pure spec equality.
 - 4 version-comparison bridges in `nix_version.rs`.
-- 2 nix store-path hash bridges in `nix_store_path.rs`.
 - 3 log matching inductive bridges in `log_invariant_inductive.rs`.
 - 11 UCAN codec/signature bridges in `ucan_cid.rs`, `ucan_did.rs`, and
   `ucan_signature.rs`.
