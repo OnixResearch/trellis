@@ -33,11 +33,12 @@ enough to prove, test, validate, capture evidence, and archive independently.
 `add-parsing-format-primitives`, `add-scheduling-calendar-primitives`,
 `add-resource-accounting-primitives`, `add-constraint-solver-primitives`,
 `add-discrete-optimization-primitives`, `add-access-control-policy-primitives`,
-`add-observability-metrics-primitives`, `add-control-system-primitives`,
+`add-observability-metrics-primitives`,
+`add-state-machine-workflow-primitives`, `add-control-system-primitives`,
 `add-gis-primitives`, `add-ml-primitives`, `add-physics-primitives`, and
 `add-vision-primitives` own concrete requirements and implementation evidence.
 
-**Rationale:** It prevents one 20+ module OpenSpec from becoming too large to
+**Rationale:** It prevents one 21+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
 
 **Alternative:** Keep all concrete modules in one change. Rejected because final
@@ -82,8 +83,9 @@ primitives in `add-constraint-solver-primitives`, reusable finite
 discrete-optimization primitives in `add-discrete-optimization-primitives`,
 reusable finite access-control policy primitives in
 `add-access-control-policy-primitives`, reusable finite observability/metrics
-primitives in `add-observability-metrics-primitives`, reusable bounded
-control-system primitives in `add-control-system-primitives`, and
+primitives in `add-observability-metrics-primitives`, reusable finite
+state-machine/workflow primitives in `add-state-machine-workflow-primitives`,
+reusable bounded control-system primitives in `add-control-system-primitives`, and
 family-specific primitives in their own child changes.
 
 **Tracey drift** → Child changes must add `docs/requirements.md`, `r[impl]`,
