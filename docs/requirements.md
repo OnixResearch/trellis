@@ -1707,6 +1707,12 @@ preserve the retained previous-log prefix before appending finite entries
 without claiming network delivery, storage durability, or follower mutation
 semantics beyond this finite admission/update slice.
 
+r[domain-primitives.raft-consensus.log-matching]
+Raft log-matching primitives MUST show that agreement at a one-based log index
+implies equal terms for every prior index in the finite prefix. Follower
+log-update predicates admitted at a previous-log index MUST preserve that
+matching prefix before any appended entries.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]

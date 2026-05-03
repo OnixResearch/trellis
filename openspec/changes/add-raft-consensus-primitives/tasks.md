@@ -36,7 +36,7 @@
 - [x] Implement and verify vote-grant and RequestVote admission predicates.
 - [x] Prove election safety over finite vote histories and quorum intersections.
 - [x] Implement and verify AppendEntries admission, conflict metadata, and follower log-update predicates.
-- [ ] Prove log matching and prefix preservation across admitted transitions.
+- [x] Prove log matching and prefix preservation across admitted transitions.
 - [ ] Implement and verify commit-index and quorum commit predicates.
 - [ ] Prove leader completeness and state-machine safety from the committed-log model.
 - [ ] Implement and verify snapshot metadata, snapshot installation admission, and prefix-compaction preservation.

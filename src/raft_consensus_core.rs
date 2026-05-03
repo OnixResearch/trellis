@@ -234,6 +234,61 @@ pub proof fn follower_update_length_matches_prefix_plus_entries(
         == prev_log_index as int + entries.len()
 {}
 
+// r[depends domain-primitives.raft-consensus.log-matching]
+/// Spec: Raft log matching at a one-based index requires equal terms there and matching prior terms.
+pub open spec fn raft_log_matching_at_spec(a: Seq<LogEntry>, b: Seq<LogEntry>, index: u64) -> bool {
+    index > 0
+        && index as int <= a.len()
+        && index as int <= b.len()
+        && a[(index - 1) as int].term == b[(index - 1) as int].term
+        && logs_match_prefix_spec(a, b, index as int)
+}
+
+// r[impl domain-primitives.raft-consensus.log-matching]
+/// Return whether two finite Raft logs match through the given one-based index.
+pub fn raft_log_matching_at(a: &[LogEntry], b: &[LogEntry], index: usize) -> (result: bool)
+    ensures result == raft_log_matching_at_spec(a@, b@, index as u64)
+{
+    if index == 0 || index > a.len() || index > b.len() {
+        return false;
+    }
+    if a[index - 1].term != b[index - 1].term {
+        return false;
+    }
+    logs_match_prefix(a, b, index)
+}
+
+// r[verify domain-primitives.raft-consensus.log-matching]
+/// Log matching at an index implies all prior terms match as a prefix.
+pub proof fn log_matching_implies_prefix_match(a: Seq<LogEntry>, b: Seq<LogEntry>, index: u64)
+    requires raft_log_matching_at_spec(a, b, index)
+    ensures logs_match_prefix_spec(a, b, index as int)
+{}
+
+// r[verify domain-primitives.raft-consensus.log-matching]
+/// Follower updates preserve the admitted matching prefix before appended entries.
+pub proof fn follower_update_preserves_matching_prefix(
+    leader_log: Seq<LogEntry>,
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    entries: Seq<LogEntry>,
+)
+    requires
+        prev_log_index as int <= follower_log.len(),
+        logs_match_prefix_spec(leader_log, follower_log, prev_log_index as int),
+    ensures logs_match_prefix_spec(
+        leader_log,
+        raft_follower_log_update_spec(follower_log, prev_log_index, entries),
+        prev_log_index as int,
+    )
+{
+    assert forall|i: int| 0 <= i < prev_log_index as int implies
+        leader_log[i].term == raft_follower_log_update_spec(follower_log, prev_log_index, entries)[i].term by {
+            assert(leader_log[i].term == follower_log[i].term);
+            assert(raft_follower_log_update_spec(follower_log, prev_log_index, entries)[i] == follower_log[i]);
+        }
+}
+
 // r[depends domain-primitives.raft-consensus.term]
 /// Spec: processing an observed term never decreases the current term.
 pub open spec fn observed_term_update_spec(current_term: u64, observed_term: u64) -> u64 {
@@ -840,5 +895,18 @@ mod tests {
             follower_log_len: 3,
         };
         assert!(!raft_append_conflict_metadata_valid(&out_of_bounds));
+    }
+
+    // r[verify domain-primitives.raft-consensus.log-matching]
+    #[test]
+    fn log_matching_requires_equal_prefix_terms() {
+        let leader_log = vec![log_entry(1, 10), log_entry(2, 20), log_entry(3, 30)];
+        let matching = vec![log_entry(1, 90), log_entry(2, 80), log_entry(4, 70)];
+        let divergent = vec![log_entry(1, 90), log_entry(5, 80), log_entry(3, 70)];
+
+        assert!(raft_log_matching_at(&leader_log, &matching, 2));
+        assert!(!raft_log_matching_at(&leader_log, &matching, 3));
+        assert!(!raft_log_matching_at(&leader_log, &divergent, 3));
+        assert!(!raft_log_matching_at(&leader_log, &matching, 0));
     }
 }
