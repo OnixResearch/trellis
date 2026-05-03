@@ -1701,9 +1701,11 @@ performance, or application side effects.
 r[domain-primitives.raft-consensus.append-entries]
 Raft AppendEntries admission primitives MUST compose stale-term rejection with
 the previous-log index/term consistency check. A stale leader term or a previous
-log mismatch MUST reject the request without claiming network delivery,
-storage durability, or follower mutation semantics beyond this finite admission
-slice.
+log mismatch MUST reject the request. Conflict metadata MUST be bounded by the
+finite follower-log length, and admitted follower log-update predicates MUST
+preserve the retained previous-log prefix before appending finite entries
+without claiming network delivery, storage durability, or follower mutation
+semantics beyond this finite admission/update slice.
 
 ## Vector Clock
 

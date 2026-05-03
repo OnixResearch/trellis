@@ -35,7 +35,7 @@
 - [x] Implement and verify persistent-state and volatile-state metadata predicates without durability claims.
 - [x] Implement and verify vote-grant and RequestVote admission predicates.
 - [x] Prove election safety over finite vote histories and quorum intersections.
-- [ ] Implement and verify AppendEntries admission, conflict metadata, and follower log-update predicates.
+- [x] Implement and verify AppendEntries admission, conflict metadata, and follower log-update predicates.
 - [ ] Prove log matching and prefix preservation across admitted transitions.
 - [ ] Implement and verify commit-index and quorum commit predicates.
 - [ ] Prove leader completeness and state-machine safety from the committed-log model.

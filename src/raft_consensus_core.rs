@@ -56,6 +56,17 @@ pub struct RaftVolatileMetadata {
     pub last_log_index: u64,
 }
 
+/// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftAppendConflictMetadata {
+    /// One-based index of the conflicting follower entry, or zero when absent.
+    pub conflict_index: u64,
+    /// Term at the conflict index, or zero when no concrete conflicting entry is identified.
+    pub conflict_term: u64,
+    /// One-based follower log length metadata, used to bound conflict indexes.
+    pub follower_log_len: u64,
+}
+
 // r[depends domain-primitives.raft-consensus.persistent-state]
 /// Spec: finite persisted metadata is bounded to the modeled node universe.
 pub open spec fn raft_persistent_metadata_valid_spec(meta: RaftPersistentMetadata, max_node: u64) -> bool {
@@ -156,6 +167,71 @@ pub proof fn admitted_commit_advance_is_ordered(meta: RaftVolatileMetadata, new_
         meta.commit_index <= new_commit,
         new_commit <= meta.last_log_index,
         meta.last_applied <= new_commit,
+{}
+
+// r[depends domain-primitives.raft-consensus.append-entries]
+/// Spec: AppendEntries conflict metadata is bounded by the finite follower-log length.
+pub open spec fn raft_append_conflict_metadata_valid_spec(meta: RaftAppendConflictMetadata) -> bool {
+    meta.conflict_index <= meta.follower_log_len
+        && (meta.conflict_index == 0 ==> meta.conflict_term == 0)
+}
+
+// r[depends domain-primitives.raft-consensus.append-entries]
+/// Spec: a finite follower log update truncates after the admitted previous-log prefix and appends entries.
+pub open spec fn raft_follower_log_update_spec(
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    entries: Seq<LogEntry>,
+) -> Seq<LogEntry>
+    recommends prev_log_index as int <= follower_log.len()
+{
+    follower_log.subrange(0, prev_log_index as int) + entries
+}
+
+// r[impl domain-primitives.raft-consensus.append-entries]
+/// Return whether finite AppendEntries conflict metadata is internally bounded.
+pub fn raft_append_conflict_metadata_valid(meta: &RaftAppendConflictMetadata) -> (result: bool)
+    ensures result == raft_append_conflict_metadata_valid_spec(*meta)
+{
+    meta.conflict_index <= meta.follower_log_len
+        && (meta.conflict_index != 0 || meta.conflict_term == 0)
+}
+
+// r[verify domain-primitives.raft-consensus.append-entries]
+/// Concrete conflict indexes are always inside the follower log metadata.
+pub proof fn concrete_append_conflict_is_bounded(meta: RaftAppendConflictMetadata)
+    requires
+        raft_append_conflict_metadata_valid_spec(meta),
+        meta.conflict_index > 0,
+    ensures
+        meta.conflict_index <= meta.follower_log_len,
+        meta.conflict_term == meta.conflict_term,
+{}
+
+// r[verify domain-primitives.raft-consensus.append-entries]
+/// An admitted follower update preserves every entry before the previous-log index.
+pub proof fn follower_update_preserves_admitted_prefix(
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    entries: Seq<LogEntry>,
+    i: int,
+)
+    requires
+        prev_log_index as int <= follower_log.len(),
+        0 <= i < prev_log_index as int,
+    ensures raft_follower_log_update_spec(follower_log, prev_log_index, entries)[i] == follower_log[i]
+{}
+
+// r[verify domain-primitives.raft-consensus.append-entries]
+/// A follower update length is the retained prefix plus the appended entry count.
+pub proof fn follower_update_length_matches_prefix_plus_entries(
+    follower_log: Seq<LogEntry>,
+    prev_log_index: u64,
+    entries: Seq<LogEntry>,
+)
+    requires prev_log_index as int <= follower_log.len()
+    ensures raft_follower_log_update_spec(follower_log, prev_log_index, entries).len()
+        == prev_log_index as int + entries.len()
 {}
 
 // r[depends domain-primitives.raft-consensus.term]
@@ -732,5 +808,37 @@ mod tests {
         assert!(raft_append_entries_admit(2, 2, &follower_log, 2, 2));
         assert!(!raft_append_entries_admit(3, 2, &follower_log, 2, 2));
         assert!(!raft_append_entries_admit(2, 2, &follower_log, 2, 9));
+    }
+
+    // r[verify domain-primitives.raft-consensus.append-entries]
+    #[test]
+    fn append_entries_conflict_metadata_is_bounded() {
+        let bounded = RaftAppendConflictMetadata {
+            conflict_index: 2,
+            conflict_term: 5,
+            follower_log_len: 3,
+        };
+        assert!(raft_append_conflict_metadata_valid(&bounded));
+
+        let absent = RaftAppendConflictMetadata {
+            conflict_index: 0,
+            conflict_term: 0,
+            follower_log_len: 3,
+        };
+        assert!(raft_append_conflict_metadata_valid(&absent));
+
+        let bad_absent = RaftAppendConflictMetadata {
+            conflict_index: 0,
+            conflict_term: 5,
+            follower_log_len: 3,
+        };
+        assert!(!raft_append_conflict_metadata_valid(&bad_absent));
+
+        let out_of_bounds = RaftAppendConflictMetadata {
+            conflict_index: 4,
+            conflict_term: 5,
+            follower_log_len: 3,
+        };
+        assert!(!raft_append_conflict_metadata_valid(&out_of_bounds));
     }
 }
