@@ -57,6 +57,19 @@ pub struct RaftVolatileMetadata {
     pub last_log_index: u64,
 }
 
+/// Finite snapshot metadata; transfer, persistence, and application snapshot semantics are out of scope.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftSnapshotMetadata {
+    /// One-based last included log index; zero represents an empty snapshot boundary.
+    pub last_included_index: usize,
+    /// Term at the last included log index; zero when the boundary index is zero.
+    pub last_included_term: u64,
+    /// Finite configuration epoch attached to the snapshot metadata.
+    pub config_epoch: u64,
+    /// Finite state-machine summary identifier without claiming application semantics.
+    pub state_machine_summary: u64,
+}
+
 /// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftAppendConflictMetadata {
@@ -67,6 +80,146 @@ pub struct RaftAppendConflictMetadata {
     /// One-based follower log length metadata, used to bound conflict indexes.
     pub follower_log_len: u64,
 }
+
+// r[depends domain-primitives.raft-consensus.snapshot]
+/// Spec: finite snapshot metadata has a coherent empty/non-empty boundary.
+pub open spec fn raft_snapshot_metadata_valid_spec(snapshot: RaftSnapshotMetadata) -> bool {
+    snapshot.last_included_index == 0 ==> snapshot.last_included_term == 0
+}
+
+// r[depends domain-primitives.raft-consensus.snapshot]
+/// Spec: snapshot boundary matches the compacted log prefix boundary.
+pub open spec fn raft_snapshot_matches_prefix_spec(
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+) -> bool {
+    raft_snapshot_metadata_valid_spec(snapshot)
+        && if snapshot.last_included_index == 0 {
+            snapshot.last_included_term == 0
+        } else {
+            snapshot.last_included_index as int <= log.len()
+                && log[snapshot.last_included_index as int - 1].index == snapshot.last_included_index as u64
+                && log[snapshot.last_included_index as int - 1].term == snapshot.last_included_term
+        }
+}
+
+// r[depends domain-primitives.raft-consensus.snapshot]
+/// Spec: prefix compaction drops the included prefix and retains the suffix after the snapshot boundary.
+pub open spec fn raft_snapshot_compact_log_spec(
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+) -> Seq<RaftIndexedLogEntry>
+    recommends snapshot.last_included_index as int <= log.len()
+{
+    log.subrange(snapshot.last_included_index as int, log.len() as int)
+}
+
+// r[depends domain-primitives.raft-consensus.install-snapshot]
+/// Spec: InstallSnapshot admission accepts only non-stale term and newer, prefix-compatible snapshots.
+pub open spec fn raft_install_snapshot_admit_spec(
+    current_term: u64,
+    leader_term: u64,
+    current_snapshot_index: usize,
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+) -> bool {
+    current_term <= leader_term
+        && current_snapshot_index < snapshot.last_included_index
+        && raft_snapshot_matches_prefix_spec(log, snapshot)
+}
+
+// r[impl domain-primitives.raft-consensus.snapshot]
+/// Return whether finite snapshot metadata has a coherent empty/non-empty boundary.
+pub fn raft_snapshot_metadata_valid(snapshot: &RaftSnapshotMetadata) -> (result: bool)
+    ensures result == raft_snapshot_metadata_valid_spec(*snapshot)
+{
+    snapshot.last_included_index != 0 || snapshot.last_included_term == 0
+}
+
+// r[impl domain-primitives.raft-consensus.snapshot]
+/// Return whether a snapshot boundary matches the finite log prefix boundary.
+pub fn raft_snapshot_matches_prefix(
+    log: &[RaftIndexedLogEntry],
+    snapshot: &RaftSnapshotMetadata,
+) -> (result: bool)
+    ensures result == raft_snapshot_matches_prefix_spec(log@, *snapshot)
+{
+    if !raft_snapshot_metadata_valid(snapshot) {
+        return false;
+    }
+    if snapshot.last_included_index == 0 {
+        return snapshot.last_included_term == 0;
+    }
+    if snapshot.last_included_index > log.len() {
+        return false;
+    }
+    let boundary = snapshot.last_included_index - 1;
+    log[boundary].index == snapshot.last_included_index as u64
+        && log[boundary].term == snapshot.last_included_term
+}
+
+// r[impl domain-primitives.raft-consensus.install-snapshot]
+/// Return whether finite InstallSnapshot metadata is term-valid, newer, and prefix-compatible.
+pub fn raft_install_snapshot_admit(
+    current_term: u64,
+    leader_term: u64,
+    current_snapshot_index: usize,
+    log: &[RaftIndexedLogEntry],
+    snapshot: &RaftSnapshotMetadata,
+) -> (result: bool)
+    ensures result == raft_install_snapshot_admit_spec(
+        current_term,
+        leader_term,
+        current_snapshot_index,
+        log@,
+        *snapshot,
+    )
+{
+    current_term <= leader_term
+        && current_snapshot_index < snapshot.last_included_index
+        && raft_snapshot_matches_prefix(log, snapshot)
+}
+
+// r[verify domain-primitives.raft-consensus.snapshot]
+/// Matched non-empty snapshots identify an in-bounds log boundary with the same term.
+pub proof fn matched_snapshot_boundary_is_in_bounds(
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+)
+    requires
+        raft_snapshot_matches_prefix_spec(log, snapshot),
+        snapshot.last_included_index > 0,
+    ensures
+        snapshot.last_included_index as int <= log.len(),
+        log[snapshot.last_included_index as int - 1].term == snapshot.last_included_term,
+{}
+
+// r[verify domain-primitives.raft-consensus.snapshot]
+/// Prefix compaction preserves the suffix length after the snapshot boundary.
+pub proof fn snapshot_compaction_suffix_length(
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+)
+    requires snapshot.last_included_index as int <= log.len()
+    ensures raft_snapshot_compact_log_spec(log, snapshot).len()
+        == log.len() - snapshot.last_included_index as int
+{}
+
+// r[verify domain-primitives.raft-consensus.install-snapshot]
+/// Admitted InstallSnapshot requests are non-stale and strictly newer than the current boundary.
+pub proof fn admitted_install_snapshot_is_newer(
+    current_term: u64,
+    leader_term: u64,
+    current_snapshot_index: usize,
+    log: Seq<RaftIndexedLogEntry>,
+    snapshot: RaftSnapshotMetadata,
+)
+    requires raft_install_snapshot_admit_spec(current_term, leader_term, current_snapshot_index, log, snapshot)
+    ensures
+        current_term <= leader_term,
+        current_snapshot_index < snapshot.last_included_index,
+        raft_snapshot_matches_prefix_spec(log, snapshot),
+{}
 
 // r[depends domain-primitives.raft-consensus.persistent-state]
 /// Spec: finite persisted metadata is bounded to the modeled node universe.
@@ -1164,5 +1317,32 @@ mod tests {
         assert!(raft_state_machine_safety_at(&a, &same, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &divergent, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &same, 1, 2, 1));
+    }
+
+    // r[verify domain-primitives.raft-consensus.snapshot]
+    // r[verify domain-primitives.raft-consensus.install-snapshot]
+    #[test]
+    fn snapshot_admission_requires_newer_matching_boundary() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20), indexed(3, 2, 30)];
+        let snapshot = RaftSnapshotMetadata {
+            last_included_index: 2,
+            last_included_term: 2,
+            config_epoch: 7,
+            state_machine_summary: 99,
+        };
+        assert!(raft_snapshot_metadata_valid(&snapshot));
+        assert!(raft_snapshot_matches_prefix(&log, &snapshot));
+        assert!(raft_install_snapshot_admit(3, 3, 1, &log, &snapshot));
+        assert!(!raft_install_snapshot_admit(4, 3, 1, &log, &snapshot));
+        assert!(!raft_install_snapshot_admit(3, 3, 2, &log, &snapshot));
+
+        let mismatch = RaftSnapshotMetadata {
+            last_included_index: 2,
+            last_included_term: 9,
+            config_epoch: 7,
+            state_machine_summary: 99,
+        };
+        assert!(!raft_snapshot_matches_prefix(&log, &mismatch));
+        assert!(!raft_install_snapshot_admit(3, 3, 1, &log, &mismatch));
     }
 }

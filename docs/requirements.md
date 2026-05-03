@@ -1731,6 +1731,18 @@ only when both finite logs have applied that position and the command identifier
 at that position are equal. Divergent applied commands at the same position MUST
 be rejected.
 
+r[domain-primitives.raft-consensus.snapshot]
+Raft snapshot primitives MUST model finite snapshot metadata with a coherent
+empty/non-empty boundary, match non-empty snapshot boundaries against the
+compacted log prefix term, and preserve the suffix after prefix compaction
+without claiming transfer, disk durability, or application snapshot correctness.
+
+r[domain-primitives.raft-consensus.install-snapshot]
+Raft InstallSnapshot admission primitives MUST accept only non-stale leader
+terms, strictly newer snapshot boundaries, and prefix-compatible snapshot
+metadata. Stale or boundary-mismatched snapshots MUST be rejected by the finite
+predicate.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
