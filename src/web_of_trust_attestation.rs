@@ -25,6 +25,7 @@ pub(crate) fn attestation_signature_bytes_runtime(_issuer_key_bytes: &[u8], _pay
 }
 
 #[cfg(not(verus_keep_ghost))]
+#[allow(dead_code)]
 pub(crate) fn attestation_signature_bytes_runtime(issuer_key_bytes: &[u8], payload_bytes: &[u8]) -> Vec<u8> {
     let mut out = Vec::new();
     out.push(0xa1);
@@ -235,6 +236,28 @@ fn append_vec(dst: &mut Vec<u8>, src: &Vec<u8>)
     }
 }
 
+fn bytes_equal(a: &Vec<u8>, b: &Vec<u8>) -> (result: bool)
+    ensures result == (a@ =~= b@)
+{
+    if a.len() != b.len() {
+        false
+    } else {
+        let mut i: usize = 0;
+        let mut eq = true;
+        while i < a.len()
+            invariant
+                i <= a.len(),
+                a.len() == b.len(),
+                eq == (forall|j: int| 0 <= j < i as int ==> a@[j] == b@[j]),
+            decreases a.len() - i,
+        {
+            eq = eq && a[i] == b[i];
+            i += 1;
+        }
+        eq
+    }
+}
+
 #[allow(clippy::checked_conversions)]
 fn length_fits_u32(len: usize) -> (result: bool)
     ensures result == length_fits_u32_spec(len as nat)
@@ -303,10 +326,33 @@ pub fn attestation_payload_bytes(att: &Attestation) -> (result: Option<Vec<u8>>)
     Some(result)
 }
 
+#[allow(clippy::question_mark)]
+fn attestation_signature_input_bytes(
+    issuer_key_bytes: &Vec<u8>,
+    payload_bytes: &Vec<u8>,
+) -> (result: Option<Vec<u8>>)
+    ensures match result {
+        Some(v) => attestation_signature_input_spec(issuer_key_bytes@, payload_bytes@) == Some(v@),
+        None => attestation_signature_input_spec(issuer_key_bytes@, payload_bytes@).is_none(),
+    }
+{
+    let issuer_enc = canonical_byte_string(issuer_key_bytes);
+    if issuer_enc.is_none() {
+        return None;
+    }
+
+    let mut result = vec![ATTESTATION_SIGNATURE_DOMAIN_TAG];
+    proof {
+        assert(result@ =~= seq![ATTESTATION_SIGNATURE_DOMAIN_TAG]);
+    }
+    let issuer_bytes = issuer_enc.unwrap();
+    append_vec(&mut result, &issuer_bytes);
+    append_vec(&mut result, payload_bytes);
+    Some(result)
+}
+
 // r[impl web-of-trust.attestation-signature]
-/// Trusted runtime bridge for exact attestation-signature verification.
-/// @verified-logic:permanent-axiom — runtime crypto boundary
-#[verifier::external_body]
+/// Exact attestation-signature verification over the canonical signature input.
 fn attestation_signature_verify_bridge(
     issuer_key_bytes: &Vec<u8>,
     payload_bytes: &Vec<u8>,
@@ -314,8 +360,10 @@ fn attestation_signature_verify_bridge(
 ) -> (result: bool)
     ensures result == attestation_signature_valid_bytes_spec(issuer_key_bytes@, payload_bytes@, signature@)
 {
-    let expected = attestation_signature_bytes_runtime(issuer_key_bytes.as_slice(), payload_bytes.as_slice());
-    expected == *signature
+    match attestation_signature_input_bytes(issuer_key_bytes, payload_bytes) {
+        Some(expected) => bytes_equal(&expected, signature),
+        None => false,
+    }
 }
 
 // r[impl web-of-trust.attestation-signature]

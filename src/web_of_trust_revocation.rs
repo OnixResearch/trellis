@@ -36,6 +36,7 @@ pub(crate) fn revocation_signature_bytes_runtime(_issuer_key_bytes: &[u8], _payl
 }
 
 #[cfg(not(verus_keep_ghost))]
+#[allow(dead_code)]
 pub(crate) fn revocation_signature_bytes_runtime(issuer_key_bytes: &[u8], payload_bytes: &[u8]) -> Vec<u8> {
     let mut out = Vec::new();
     out.push(0xa2);
@@ -379,10 +380,33 @@ pub fn revocation_payload_bytes(rev: &Revocation) -> (result: Option<Vec<u8>>)
     Some(result)
 }
 
+#[allow(clippy::question_mark)]
+fn revocation_signature_input_bytes(
+    issuer_key_bytes: &Vec<u8>,
+    payload_bytes: &Vec<u8>,
+) -> (result: Option<Vec<u8>>)
+    ensures match result {
+        Some(v) => revocation_signature_input_spec(issuer_key_bytes@, payload_bytes@) == Some(v@),
+        None => revocation_signature_input_spec(issuer_key_bytes@, payload_bytes@).is_none(),
+    }
+{
+    let issuer_enc = canonical_byte_string(issuer_key_bytes);
+    if issuer_enc.is_none() {
+        return None;
+    }
+
+    let mut result = vec![REVOCATION_SIGNATURE_DOMAIN_TAG];
+    proof {
+        assert(result@ =~= seq![REVOCATION_SIGNATURE_DOMAIN_TAG]);
+    }
+    let issuer_bytes = issuer_enc.unwrap();
+    append_vec(&mut result, &issuer_bytes);
+    append_vec(&mut result, payload_bytes);
+    Some(result)
+}
+
 // r[impl web-of-trust.revocation]
-/// Trusted runtime bridge for exact revocation-signature verification.
-/// @verified-logic:permanent-axiom — runtime crypto boundary
-#[verifier::external_body]
+/// Exact revocation-signature verification over the canonical signature input.
 fn revocation_signature_verify_bridge(
     issuer_key_bytes: &Vec<u8>,
     payload_bytes: &Vec<u8>,
@@ -390,8 +414,10 @@ fn revocation_signature_verify_bridge(
 ) -> (result: bool)
     ensures result == revocation_signature_valid_bytes_spec(issuer_key_bytes@, payload_bytes@, signature@)
 {
-    let expected = revocation_signature_bytes_runtime(issuer_key_bytes.as_slice(), payload_bytes.as_slice());
-    expected == *signature
+    match revocation_signature_input_bytes(issuer_key_bytes, payload_bytes) {
+        Some(expected) => bytes_equal(&expected, signature),
+        None => false,
+    }
 }
 
 // r[impl web-of-trust.revocation]

@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8558 Verus proofs · 4221 tests · 1743 requirements · 373 modules · 18 trusted/proof-gap boundaries**
+**8564 Verus proofs · 4221 tests · 1743 requirements · 373 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -509,11 +509,11 @@ Most modules follow the same pattern (tracked exceptions are listed in
 
 ## Trusted and proof-gap items
 
-`18` items are marked `#[verifier::external_body]` across `8` files. The
+`16` items are marked `#[verifier::external_body]` across `6` files. The
 previous `src/instruction_selection.rs` runtime-only public API exemptions now
 have direct Tracey implementation and test coverage.
 
-**18 permanent** (architectural trust boundaries):
+**16 permanent** (architectural trust boundaries):
 
 - **4 legacy cryptographic hash axioms / exec bridges** (`chain.rs`,
   `snapshot_integrity.rs`) — BLAKE3-style hashing is modeled with
@@ -526,9 +526,10 @@ have direct Tracey implementation and test coverage.
   base58btc and Ed25519 behavior is modeled behind external codec/crypto
   contracts; `ucan_cid.rs` now composes its CID multibase round-trip model from
   the shared DID base58btc contract instead of carrying a separate CID axiom.
-- **3 web-of-trust crypto bridges** (`web_of_trust_principal.rs`,
-  `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
-  digest and signature checks stay behind trusted runtime/model boundaries.
+- **1 web-of-trust crypto bridge** (`web_of_trust_principal.rs`) — principal
+  digest derivation stays behind a trusted runtime/model boundary; attestation
+  and revocation signature-input construction and comparison are now verified
+  from canonical bytes.
 
 **0 closeable** — the former runtime-only public APIs in
 `src/instruction_selection.rs` now have direct Tracey implementation and test
