@@ -36,6 +36,128 @@ pub struct RaftIndexedLogEntry {
     pub command: u64,
 }
 
+/// Finite persistent-state envelope; durability/fsync is intentionally out of scope.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftPersistentMetadata {
+    /// Persisted current term.
+    pub current_term: u64,
+    /// Persisted voted-for node; zero means no vote recorded in this finite model.
+    pub voted_for: u64,
+}
+
+/// Finite volatile-state envelope for commit/applied/log indexes.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftVolatileMetadata {
+    /// Highest committed one-based log index known to the node.
+    pub commit_index: u64,
+    /// Highest one-based log index applied to the local state-machine model.
+    pub last_applied: u64,
+    /// Highest one-based log index present in the local log metadata.
+    pub last_log_index: u64,
+}
+
+// r[depends domain-primitives.raft-consensus.persistent-state]
+/// Spec: finite persisted metadata is bounded to the modeled node universe.
+pub open spec fn raft_persistent_metadata_valid_spec(meta: RaftPersistentMetadata, max_node: u64) -> bool {
+    meta.voted_for <= max_node
+}
+
+// r[depends domain-primitives.raft-consensus.persistent-state]
+/// Spec: observing a higher term updates the persisted term and clears the recorded vote.
+pub open spec fn raft_persistent_observe_term_spec(
+    meta: RaftPersistentMetadata,
+    observed_term: u64,
+) -> RaftPersistentMetadata {
+    if observed_term > meta.current_term {
+        RaftPersistentMetadata { current_term: observed_term, voted_for: 0 }
+    } else {
+        meta
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.volatile-state]
+/// Spec: finite volatile metadata keeps applied, committed, and log indexes ordered.
+pub open spec fn raft_volatile_metadata_valid_spec(meta: RaftVolatileMetadata) -> bool {
+    meta.last_applied <= meta.commit_index && meta.commit_index <= meta.last_log_index
+}
+
+// r[depends domain-primitives.raft-consensus.volatile-state]
+/// Spec: a commit-index advance is admitted only within the local log and never backwards.
+pub open spec fn raft_commit_advance_admit_spec(meta: RaftVolatileMetadata, new_commit: u64) -> bool {
+    raft_volatile_metadata_valid_spec(meta)
+        && meta.commit_index <= new_commit
+        && new_commit <= meta.last_log_index
+}
+
+// r[impl domain-primitives.raft-consensus.persistent-state]
+/// Return whether finite persisted Raft metadata is inside the modeled node bound.
+pub fn raft_persistent_metadata_valid(meta: &RaftPersistentMetadata, max_node: u64) -> (result: bool)
+    ensures result == raft_persistent_metadata_valid_spec(*meta, max_node)
+{
+    meta.voted_for <= max_node
+}
+
+// r[impl domain-primitives.raft-consensus.persistent-state]
+/// Update finite persisted metadata for an observed term, clearing votes only on term advance.
+pub fn raft_persistent_observe_term(
+    meta: &RaftPersistentMetadata,
+    observed_term: u64,
+) -> (result: RaftPersistentMetadata)
+    ensures
+        result == raft_persistent_observe_term_spec(*meta, observed_term),
+        result.current_term >= meta.current_term,
+        observed_term > meta.current_term ==> result.voted_for == 0,
+{
+    if observed_term > meta.current_term {
+        RaftPersistentMetadata { current_term: observed_term, voted_for: 0 }
+    } else {
+        *meta
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.volatile-state]
+/// Return whether finite volatile Raft metadata has ordered applied/commit/log indexes.
+pub fn raft_volatile_metadata_valid(meta: &RaftVolatileMetadata) -> (result: bool)
+    ensures result == raft_volatile_metadata_valid_spec(*meta)
+{
+    meta.last_applied <= meta.commit_index && meta.commit_index <= meta.last_log_index
+}
+
+// r[impl domain-primitives.raft-consensus.volatile-state]
+/// Return whether a finite commit-index advance is inside the local log and monotone.
+pub fn raft_commit_advance_admit(meta: &RaftVolatileMetadata, new_commit: u64) -> (result: bool)
+    ensures result == raft_commit_advance_admit_spec(*meta, new_commit)
+{
+    raft_volatile_metadata_valid(meta) && meta.commit_index <= new_commit && new_commit <= meta.last_log_index
+}
+
+// r[verify domain-primitives.raft-consensus.persistent-state]
+/// Observing a higher term keeps persisted terms monotone and clears the prior vote.
+pub proof fn persistent_observe_higher_term_clears_vote(meta: RaftPersistentMetadata, observed_term: u64)
+    requires observed_term > meta.current_term
+    ensures
+        raft_persistent_observe_term_spec(meta, observed_term).current_term == observed_term,
+        raft_persistent_observe_term_spec(meta, observed_term).voted_for == 0,
+        raft_persistent_observe_term_spec(meta, observed_term).current_term >= meta.current_term,
+{}
+
+// r[verify domain-primitives.raft-consensus.persistent-state]
+/// Observing a non-higher term leaves persisted metadata unchanged.
+pub proof fn persistent_observe_non_higher_term_unchanged(meta: RaftPersistentMetadata, observed_term: u64)
+    requires observed_term <= meta.current_term
+    ensures raft_persistent_observe_term_spec(meta, observed_term) == meta
+{}
+
+// r[verify domain-primitives.raft-consensus.volatile-state]
+/// Admitted commit advances never move commit index backwards and never exceed the local log.
+pub proof fn admitted_commit_advance_is_ordered(meta: RaftVolatileMetadata, new_commit: u64)
+    requires raft_commit_advance_admit_spec(meta, new_commit)
+    ensures
+        meta.commit_index <= new_commit,
+        new_commit <= meta.last_log_index,
+        meta.last_applied <= new_commit,
+{}
+
 // r[depends domain-primitives.raft-consensus.term]
 /// Spec: processing an observed term never decreases the current term.
 pub open spec fn observed_term_update_spec(current_term: u64, observed_term: u64) -> u64 {
@@ -502,6 +624,47 @@ mod tests {
         assert!(stale_term_message(5, 4));
         assert!(!stale_term_message(5, 5));
         assert!(!stale_term_message(5, 6));
+    }
+
+    // r[verify domain-primitives.raft-consensus.persistent-state]
+    #[test]
+    fn persistent_metadata_observed_term_clears_vote_only_on_advance() {
+        let meta = RaftPersistentMetadata {
+            current_term: 3,
+            voted_for: 9,
+        };
+        assert!(raft_persistent_metadata_valid(&meta, 10));
+        assert!(!raft_persistent_metadata_valid(&meta, 8));
+
+        let unchanged = raft_persistent_observe_term(&meta, 3);
+        assert_eq!(unchanged.current_term, 3);
+        assert_eq!(unchanged.voted_for, 9);
+
+        let advanced = raft_persistent_observe_term(&meta, 4);
+        assert_eq!(advanced.current_term, 4);
+        assert_eq!(advanced.voted_for, 0);
+    }
+
+    // r[verify domain-primitives.raft-consensus.volatile-state]
+    #[test]
+    fn volatile_metadata_orders_commit_and_log_indexes() {
+        let meta = RaftVolatileMetadata {
+            last_applied: 2,
+            commit_index: 4,
+            last_log_index: 6,
+        };
+        assert!(raft_volatile_metadata_valid(&meta));
+        assert!(raft_commit_advance_admit(&meta, 4));
+        assert!(raft_commit_advance_admit(&meta, 6));
+        assert!(!raft_commit_advance_admit(&meta, 3));
+        assert!(!raft_commit_advance_admit(&meta, 7));
+
+        let invalid = RaftVolatileMetadata {
+            last_applied: 5,
+            commit_index: 4,
+            last_log_index: 6,
+        };
+        assert!(!raft_volatile_metadata_valid(&invalid));
     }
 
     // r[verify domain-primitives.raft-consensus.election-safety]

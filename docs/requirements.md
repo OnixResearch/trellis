@@ -1685,6 +1685,19 @@ relations, and contiguous append preservation over finite indexed entries.
 A gap in the one-based index sequence MUST be rejected, and appending the next
 contiguous index MUST preserve the no-gap predicate.
 
+r[domain-primitives.raft-consensus.persistent-state]
+Raft persistent-state metadata primitives MUST model only finite persisted term
+and vote metadata. Observing a higher term MUST advance the persisted current
+term and clear the recorded vote; observing a non-higher term MUST leave the
+metadata unchanged. These primitives MUST NOT claim fsync, crash recovery, or
+storage durability behavior.
+
+r[domain-primitives.raft-consensus.volatile-state]
+Raft volatile-state metadata primitives MUST keep applied, committed, and local
+log indexes ordered. Commit-index advance admission MUST reject backwards
+movement and indexes beyond the local log without claiming durability,
+performance, or application side effects.
+
 r[domain-primitives.raft-consensus.append-entries]
 Raft AppendEntries admission primitives MUST compose stale-term rejection with
 the previous-log index/term consistency check. A stale leader term or a previous

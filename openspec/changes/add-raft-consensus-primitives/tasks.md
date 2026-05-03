@@ -32,7 +32,7 @@
 - [x] Add docs/requirements entries and Tracey IDs for the implemented finite term/vote/election-safety model slice.
 - [x] Implement and verify term-ordering and current-term update primitives.
 - [x] Implement and verify log-entry, log-prefix, append, truncation, and no-gap predicates.
-- [ ] Implement and verify persistent-state and volatile-state metadata predicates without durability claims.
+- [x] Implement and verify persistent-state and volatile-state metadata predicates without durability claims.
 - [x] Implement and verify vote-grant and RequestVote admission predicates.
 - [x] Prove election safety over finite vote histories and quorum intersections.
 - [ ] Implement and verify AppendEntries admission, conflict metadata, and follower log-update predicates.
