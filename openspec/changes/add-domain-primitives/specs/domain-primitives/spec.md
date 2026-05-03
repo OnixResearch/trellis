@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-finite data validation, finite identifier/namespace handling, bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, finite identifier/namespace handling, finite filesystem-path handling, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -281,6 +281,18 @@ registration admission.
 - GIVEN a reusable finite identifier/namespace primitive such as identifier envelope, namespace scope, scoped uniqueness predicate, alias map, canonicalization decision, collision metadata, lookup result, or registration admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused identifier/namespace child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Filesystem Path Family Taxonomy [r[domain-primitives.filesystem-path-family]]
+The system MUST treat filesystem path handling as reusable exact finite
+primitives for path segments, path form metadata, normalization decisions,
+root/scope containment, relative traversal rejection, extension/type metadata,
+path join/split envelopes, and deterministic path admission.
+
+#### Scenario: Filesystem-path child change owns reusable finite path modules [r[domain-primitives.filesystem-path-family.scenario.filesystem-path-child-change-owns-reusable-finite-path-modules]]
+
+- GIVEN a reusable finite filesystem-path primitive such as path segment envelope, path form envelope, normalization decision, root/scope containment predicate, traversal rejection metadata, extension/type metadata, join/split envelope, or path admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused filesystem-path child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for

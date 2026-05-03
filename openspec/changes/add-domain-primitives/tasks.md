@@ -24,6 +24,7 @@
 | `domain-primitives.configuration-feature-flag-family` | finite configuration/feature-flag family taxonomy |
 | `domain-primitives.data-validation-family` | finite data-validation family taxonomy |
 | `domain-primitives.identifier-namespace-family` | finite identifier/namespace family taxonomy |
+| `domain-primitives.filesystem-path-family` | finite filesystem-path family taxonomy |
 | `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
@@ -57,6 +58,7 @@
 - [x] Create focused `add-configuration-feature-flag-primitives` OpenSpec before implementing config-key/typed-value/default/override/gate/rollout/validation/admission primitives. `[covers=domain-primitives.configuration-feature-flag-family]`
 - [x] Create focused `add-data-validation-primitives` OpenSpec before implementing schema-predicate/field-presence/enum/range/cross-field/error/normalization/admission primitives. `[covers=domain-primitives.data-validation-family]`
 - [x] Create focused `add-identifier-namespace-primitives` OpenSpec before implementing identifier/namespace/uniqueness/alias/canonicalization/collision/lookup/registration primitives. `[covers=domain-primitives.identifier-namespace-family]`
+- [x] Create focused `add-filesystem-path-primitives` OpenSpec before implementing segment/form/normalization/containment/traversal/extension/join-split/admission primitives. `[covers=domain-primitives.filesystem-path-family]`
 - [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`
