@@ -3,10 +3,10 @@
 ## Purpose
 
 Defines the shared policy for first-class verified primitives in numeric
-foundations, finite data structures, finite graphs, finite time series, GIS,
-machine learning, physics, and machine vision. Concrete module requirements MUST
-live in focused child OpenSpec changes so each proof/evidence slice remains
-reviewable.
+foundations, finite data structures, finite graphs, finite time series, bounded
+control systems, GIS, machine learning, physics, and machine vision. Concrete
+module requirements MUST live in focused child OpenSpec changes so each
+proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -87,6 +87,17 @@ resampling envelopes, rolling aggregates, and gap detection.
 - GIVEN a reusable finite time-series primitive such as timestamp index, sample series, window selector, resample envelope, rolling aggregate, or gap detector
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused time-series child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
+The system MUST treat control systems as reusable exact bounded primitives for
+setpoints, error signals, actuator saturation, deadbands, hysteresis, rate
+limits, and safety-envelope guards.
+
+#### Scenario: Control-system child change owns reusable bounded control modules [r[domain-primitives.control-system-family.scenario.control-system-child-change-owns-reusable-bounded-control-modules]]
+
+- GIVEN a reusable bounded control primitive such as setpoint, error signal, actuator saturation, deadband, hysteresis, rate limit, or safety envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused control-system child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: GIS Family Taxonomy [r[domain-primitives.gis-family]]
 The system MUST treat GIS primitives as bounded spatial-coordinate, grid/tile,

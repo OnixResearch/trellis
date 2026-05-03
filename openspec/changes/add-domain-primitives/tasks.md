@@ -8,6 +8,7 @@
 | `domain-primitives.data-structure-family` | finite data-structure family taxonomy |
 | `domain-primitives.graph-family` | finite graph family taxonomy |
 | `domain-primitives.timeseries-family` | finite time-series family taxonomy |
+| `domain-primitives.control-system-family` | bounded control-system family taxonomy |
 | `domain-primitives.gis-family` | GIS family taxonomy |
 | `domain-primitives.ml-family` | ML family taxonomy |
 | `domain-primitives.physics-family` | physics family taxonomy |
@@ -24,6 +25,7 @@
 - [x] Create focused `add-data-structure-primitives` OpenSpec before implementing bounded-array/map/queue/ring-buffer/priority-queue/union-find primitives. `[covers=domain-primitives.data-structure-family]`
 - [x] Create focused `add-graph-primitives` OpenSpec before implementing adjacency/reachability/topological-order/component/shortest-path/frontier primitives. `[covers=domain-primitives.graph-family]`
 - [x] Create focused `add-timeseries-primitives` OpenSpec before implementing timestamp/sample/window/resample/rolling-aggregate/gap primitives. `[covers=domain-primitives.timeseries-family]`
+- [x] Create focused `add-control-system-primitives` OpenSpec before implementing setpoint/error/saturation/deadband/hysteresis/rate-limit/safety-envelope primitives. `[covers=domain-primitives.control-system-family]`
 - [x] Create focused `add-ml-primitives` OpenSpec before implementing ML tensor/feature/result/metric primitives. `[covers=domain-primitives.ml-family]`
 - [x] Create focused `add-physics-primitives` OpenSpec before implementing unit/integrator/collision/energy primitives. `[covers=domain-primitives.physics-family]`
 - [x] Create focused `add-vision-primitives` OpenSpec before implementing image/ROI/window/detection primitives. `[covers=domain-primitives.vision-family]`
