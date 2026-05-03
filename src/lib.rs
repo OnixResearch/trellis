@@ -216,6 +216,8 @@
 //! - `quota` — resource quota enforcement: remaining capacity, admission, consume/release,
 //!   utilization
 //! - `quorum` — majority threshold, quorum predicate, intersection theorem
+//! - `raft_consensus_core` — finite Raft term, stale-message, vote, RequestVote, and
+//!   election-safety primitives for the domain-primitives OpenSpec
 //! - `raft_step` — Raft step decomposition for modular invariant proofs
 //! - `raft_timing` — Raft timeout configuration validators with fail-fast composition
 //! - `rate_limit` — integer token bucket rate limiting
@@ -606,6 +608,7 @@ pub mod query_cost;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;
+pub mod raft_consensus_core;
 pub mod raft_membership_manager;
 pub mod raft_step;
 pub mod raft_timing;

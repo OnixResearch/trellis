@@ -29,12 +29,12 @@
 
 ## Phase 2: Future implementation
 
-- [ ] Add docs/requirements entries and Tracey IDs for the finite Raft universe and validity model.
-- [ ] Implement and verify node-state, term-ordering, and current-term update primitives.
+- [x] Add docs/requirements entries and Tracey IDs for the implemented finite term/vote/election-safety model slice.
+- [x] Implement and verify term-ordering and current-term update primitives.
 - [ ] Implement and verify log-entry, log-prefix, append, truncation, and no-gap predicates.
 - [ ] Implement and verify persistent-state and volatile-state metadata predicates without durability claims.
-- [ ] Implement and verify vote-grant and RequestVote admission predicates.
-- [ ] Prove election safety over finite vote histories and quorum intersections.
+- [x] Implement and verify vote-grant and RequestVote admission predicates.
+- [x] Prove election safety over finite vote histories and quorum intersections.
 - [ ] Implement and verify AppendEntries admission, conflict metadata, and follower log-update predicates.
 - [ ] Prove log matching and prefix preservation across admitted transitions.
 - [ ] Implement and verify commit-index and quorum commit predicates.

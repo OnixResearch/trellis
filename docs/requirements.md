@@ -1647,6 +1647,32 @@ grant_vote MUST return a VoteState with voted_term set to candidate_term and vot
 r[ballot.has-won-election]
 has_won_election MUST return true if and only if votes_received constitutes a quorum of cluster_size (delegates to quorum::is_quorum).
 
+## Raft Consensus Domain Primitives
+
+r[domain-primitives.raft-consensus.term]
+Raft term update primitives MUST keep the receiver current term monotone when
+observing any term-bearing input. Observing a lower or equal term MUST keep the
+current term unchanged; observing a higher term MUST advance to that term.
+
+r[domain-primitives.raft-consensus.message]
+Raft stale-message predicates MUST classify a term-bearing message as stale if
+and only if the message term is lower than the receiver current term. Stale term
+classification MUST NOT require network delivery, timing, or transport claims.
+
+r[domain-primitives.raft-consensus.vote]
+Raft vote-grant primitives MUST enforce one vote per term and MUST admit a
+candidate only when the candidate term is compatible with the recorded vote state
+and the candidate log epoch is at least as up to date as the voter log epoch.
+
+r[domain-primitives.raft-consensus.request-vote]
+RequestVote admission MUST compose stale-term rejection with the deterministic
+vote-grant predicate. A candidate with a stale log or a distinct same-term prior
+vote MUST be rejected.
+
+r[domain-primitives.raft-consensus.election-safety]
+Raft election-safety proofs MUST show that finite vote histories satisfying
+single-vote-per-term and quorum intersection admit at most one leader for a term.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
