@@ -124,6 +124,23 @@ pub struct RaftTransitionTraceStep {
     pub admitted: bool,
 }
 
+/// Copyable metadata bundle for finite Raft invariant composition.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftInvariantBundleMetadata {
+    /// Local current term used by transition admission.
+    pub current_term: u64,
+    /// Finite persisted term/vote metadata.
+    pub persistent: RaftPersistentMetadata,
+    /// Finite volatile applied/commit/log-index metadata.
+    pub volatile: RaftVolatileMetadata,
+    /// Finite snapshot boundary metadata.
+    pub snapshot: RaftSnapshotMetadata,
+    /// Finite membership/quorum configuration metadata.
+    pub membership: RaftMembershipConfig,
+    /// Modeled one-based node-universe bound for local metadata.
+    pub max_node_id: u64,
+}
+
 /// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftAppendConflictMetadata {
@@ -1007,6 +1024,236 @@ pub proof fn admitted_trace_step_follows_observed_term_update(
         step.after_term >= step.before_term,
 {}
 
+// r[depends domain-primitives.raft-consensus.invariant-bundle]
+/// Spec: finite Raft invariant bundle composes local model validity predicates.
+pub open spec fn raft_invariant_bundle_valid_spec(
+    bundle: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+) -> bool {
+    bundle.max_node_id > 0
+        && bundle.current_term == bundle.persistent.current_term
+        && raft_persistent_metadata_valid_spec(bundle.persistent, bundle.max_node_id)
+        && raft_volatile_metadata_valid_spec(bundle.volatile)
+        && log.len() <= u64::MAX as int
+        && bundle.volatile.last_log_index == log.len() as u64
+        && raft_log_no_gap_spec(log)
+        && raft_snapshot_metadata_valid_spec(bundle.snapshot)
+        && raft_membership_config_valid_spec(bundle.membership)
+        && bundle.membership.max_node_id <= bundle.max_node_id
+}
+
+// r[depends domain-primitives.raft-consensus.invariant-bundle]
+/// Spec: an admitted invariant-preservation candidate has valid before and after bundles.
+pub open spec fn raft_invariant_preservation_admit_spec(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+) -> bool {
+    raft_invariant_bundle_valid_spec(before, before_log)
+        && raft_invariant_bundle_valid_spec(after, after_log)
+}
+
+// r[impl domain-primitives.raft-consensus.invariant-bundle]
+/// Return whether the finite Raft invariant bundle holds for local metadata and log.
+pub fn raft_invariant_bundle_valid(
+    bundle: &RaftInvariantBundleMetadata,
+    log: &[RaftIndexedLogEntry],
+) -> (result: bool)
+    requires log@.len() <= u64::MAX as int
+    ensures result == raft_invariant_bundle_valid_spec(*bundle, log@)
+{
+    bundle.max_node_id > 0
+        && bundle.current_term == bundle.persistent.current_term
+        && raft_persistent_metadata_valid(&bundle.persistent, bundle.max_node_id)
+        && raft_volatile_metadata_valid(&bundle.volatile)
+        && bundle.volatile.last_log_index == log.len() as u64
+        && raft_log_no_gap(log)
+        && raft_snapshot_metadata_valid(&bundle.snapshot)
+        && raft_membership_config_valid(&bundle.membership)
+        && bundle.membership.max_node_id <= bundle.max_node_id
+}
+
+// r[impl domain-primitives.raft-consensus.invariant-bundle]
+/// Return whether a finite transition candidate preserves the invariant bundle.
+pub fn raft_invariant_preservation_admit(
+    before: &RaftInvariantBundleMetadata,
+    after: &RaftInvariantBundleMetadata,
+    before_log: &[RaftIndexedLogEntry],
+    after_log: &[RaftIndexedLogEntry],
+) -> (result: bool)
+    requires
+        before_log@.len() <= u64::MAX as int,
+        after_log@.len() <= u64::MAX as int,
+    ensures result == raft_invariant_preservation_admit_spec(*before, *after, before_log@, after_log@)
+{
+    raft_invariant_bundle_valid(before, before_log)
+        && raft_invariant_bundle_valid(after, after_log)
+}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// Admitted invariant-preservation candidates expose a valid post-transition bundle.
+pub proof fn admitted_invariant_preservation_has_after_bundle(
+    before: RaftInvariantBundleMetadata,
+    after: RaftInvariantBundleMetadata,
+    before_log: Seq<RaftIndexedLogEntry>,
+    after_log: Seq<RaftIndexedLogEntry>,
+)
+    requires raft_invariant_preservation_admit_spec(before, after, before_log, after_log)
+    ensures raft_invariant_bundle_valid_spec(after, after_log)
+{}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// No-mutation admissions such as rejected stale inputs or read-only checks preserve the bundle unchanged.
+pub proof fn no_mutation_transition_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+)
+    requires raft_invariant_bundle_valid_spec(before, log)
+    ensures raft_invariant_bundle_valid_spec(before, log)
+{}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// Observed-term transitions preserve the bundle when persisted metadata follows the same rule.
+pub proof fn observed_term_transition_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+    observed_term: u64,
+)
+    requires raft_invariant_bundle_valid_spec(before, log)
+    ensures raft_invariant_bundle_valid_spec(
+        RaftInvariantBundleMetadata {
+            current_term: observed_term_update_spec(before.current_term, observed_term),
+            persistent: raft_persistent_observe_term_spec(before.persistent, observed_term),
+            volatile: before.volatile,
+            snapshot: before.snapshot,
+            membership: before.membership,
+            max_node_id: before.max_node_id,
+        },
+        log,
+    )
+{
+    if observed_term > before.persistent.current_term {
+        assert(raft_persistent_observe_term_spec(before.persistent, observed_term).voted_for == 0);
+        assert(raft_persistent_metadata_valid_spec(raft_persistent_observe_term_spec(before.persistent, observed_term), before.max_node_id));
+    } else {
+        assert(raft_persistent_observe_term_spec(before.persistent, observed_term) == before.persistent);
+    }
+}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// Commit-index advancement preserves the bundle when the volatile commit rule admits the new index.
+pub proof fn commit_advance_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+    new_commit: u64,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, log),
+        raft_commit_advance_admit_spec(before.volatile, new_commit),
+    ensures raft_invariant_bundle_valid_spec(
+        RaftInvariantBundleMetadata {
+            current_term: before.current_term,
+            persistent: before.persistent,
+            volatile: RaftVolatileMetadata {
+                commit_index: new_commit,
+                last_applied: before.volatile.last_applied,
+                last_log_index: before.volatile.last_log_index,
+            },
+            snapshot: before.snapshot,
+            membership: before.membership,
+            max_node_id: before.max_node_id,
+        },
+        log,
+    )
+{
+    admitted_commit_advance_is_ordered(before.volatile, new_commit);
+}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// Membership epoch changes preserve the bundle when new membership remains inside the modeled universe.
+pub proof fn membership_epoch_transition_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+    new_membership: RaftMembershipConfig,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, log),
+        raft_membership_epoch_advance_admit_spec(before.membership, new_membership),
+        new_membership.max_node_id <= before.max_node_id,
+    ensures raft_invariant_bundle_valid_spec(
+        RaftInvariantBundleMetadata {
+            current_term: before.current_term,
+            persistent: before.persistent,
+            volatile: before.volatile,
+            snapshot: before.snapshot,
+            membership: new_membership,
+            max_node_id: before.max_node_id,
+        },
+        log,
+    )
+{}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// InstallSnapshot transitions preserve the bundle for admitted prefix-compatible snapshot metadata.
+pub proof fn install_snapshot_transition_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+    leader_term: u64,
+    snapshot: RaftSnapshotMetadata,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, log),
+        raft_install_snapshot_admit_spec(before.current_term, leader_term, before.snapshot.last_included_index, log, snapshot),
+    ensures raft_invariant_bundle_valid_spec(
+        RaftInvariantBundleMetadata {
+            current_term: observed_term_update_spec(before.current_term, leader_term),
+            persistent: raft_persistent_observe_term_spec(before.persistent, leader_term),
+            volatile: before.volatile,
+            snapshot: snapshot,
+            membership: before.membership,
+            max_node_id: before.max_node_id,
+        },
+        log,
+    )
+{
+    admitted_install_snapshot_is_newer(before.current_term, leader_term, before.snapshot.last_included_index, log, snapshot);
+    observed_term_transition_preserves_invariant_bundle(before, log, leader_term);
+}
+
+// r[verify domain-primitives.raft-consensus.invariant-bundle]
+/// Message trace transitions preserve the bundle when the term update mirrors the admitted trace step.
+pub proof fn transition_trace_step_preserves_invariant_bundle(
+    before: RaftInvariantBundleMetadata,
+    log: Seq<RaftIndexedLogEntry>,
+    step: RaftTransitionTraceStep,
+)
+    requires
+        raft_invariant_bundle_valid_spec(before, log),
+        step.before_term == before.current_term,
+        raft_transition_trace_step_admit_spec(step, before.max_node_id),
+    ensures raft_invariant_bundle_valid_spec(
+        RaftInvariantBundleMetadata {
+            current_term: step.after_term,
+            persistent: raft_persistent_observe_term_spec(before.persistent, step.message.term),
+            volatile: before.volatile,
+            snapshot: before.snapshot,
+            membership: before.membership,
+            max_node_id: before.max_node_id,
+        },
+        log,
+    )
+{
+    if stale_term_message_spec(step.before_term, step.message.term) {
+        stale_rejected_trace_step_has_no_term_mutation(step, before.max_node_id);
+        assert(step.message.term < before.persistent.current_term);
+        assert(raft_persistent_observe_term_spec(before.persistent, step.message.term) == before.persistent);
+    } else {
+        assert(step.after_term == observed_term_update_spec(before.current_term, step.message.term));
+        observed_term_transition_preserves_invariant_bundle(before, log, step.message.term);
+    }
+}
+
 // r[impl domain-primitives.raft-consensus.term]
 /// Return the successor current term after observing a term-bearing Raft input.
 pub fn observed_term_update(current_term: u64, observed_term: u64) -> (result: u64)
@@ -1784,5 +2031,74 @@ mod tests {
         };
         assert!(!raft_snapshot_matches_prefix(&log, &mismatch));
         assert!(!raft_install_snapshot_admit(3, 3, 1, &log, &mismatch));
+    }
+
+    fn invariant_bundle(term: u64, log_len: u64) -> RaftInvariantBundleMetadata {
+        RaftInvariantBundleMetadata {
+            current_term: term,
+            persistent: RaftPersistentMetadata {
+                current_term: term,
+                voted_for: 1,
+            },
+            volatile: RaftVolatileMetadata {
+                last_applied: 0,
+                commit_index: 0,
+                last_log_index: log_len,
+            },
+            snapshot: RaftSnapshotMetadata {
+                last_included_index: 0,
+                last_included_term: 0,
+                config_epoch: 1,
+                state_machine_summary: 0,
+            },
+            membership: RaftMembershipConfig {
+                epoch: 1,
+                old_voter_count: 3,
+                new_voter_count: 3,
+                is_joint: false,
+                max_node_id: 3,
+            },
+            max_node_id: 3,
+        }
+    }
+
+    // r[verify domain-primitives.raft-consensus.invariant-bundle]
+    #[test]
+    fn invariant_bundle_composes_metadata_and_log_checks() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let bundle = invariant_bundle(2, 2);
+        assert!(raft_invariant_bundle_valid(&bundle, &log));
+
+        let bad_log_len = invariant_bundle(2, 3);
+        assert!(!raft_invariant_bundle_valid(&bad_log_len, &log));
+
+        let bad_gap = vec![indexed(1, 1, 10), indexed(3, 2, 20)];
+        assert!(!raft_invariant_bundle_valid(&bundle, &bad_gap));
+    }
+
+    // r[verify domain-primitives.raft-consensus.invariant-bundle]
+    #[test]
+    fn invariant_preservation_requires_valid_after_bundle() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let before = invariant_bundle(2, 2);
+        let after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 3,
+                voted_for: 0,
+            },
+            ..before
+        };
+        assert!(raft_invariant_preservation_admit(&before, &after, &log, &log));
+
+        let invalid_after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 2,
+                voted_for: 0,
+            },
+            ..before
+        };
+        assert!(!raft_invariant_preservation_admit(&before, &invalid_after, &log, &log));
     }
 }

@@ -1763,6 +1763,17 @@ steps MUST preserve the receiver term and carry no unsafe mutation. Trace
 admission MUST NOT claim network ordering, delivery, fairness, storage,
 availability, or runtime scheduling behavior.
 
+r[domain-primitives.raft-consensus.invariant-bundle]
+Raft invariant-bundle primitives MUST compose finite local model validity from
+term/persistent metadata consistency, volatile applied/commit/log bounds,
+contiguous no-gap indexed logs, coherent snapshot metadata, and bounded
+membership metadata. Invariant-preservation admission MUST expose a valid
+post-transition bundle, no-mutation admissions MUST preserve the bundle
+unchanged, and focused proof lemmas MUST show preservation for modeled
+observed-term, commit-advance, membership-epoch, InstallSnapshot, and
+transition-trace slices without claiming runtime networking, storage durability,
+timing, liveness, availability, or production implementation correctness.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
