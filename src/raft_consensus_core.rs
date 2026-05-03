@@ -70,6 +70,21 @@ pub struct RaftSnapshotMetadata {
     pub state_machine_summary: u64,
 }
 
+/// Finite Raft membership/configuration metadata for exact quorum admission.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftMembershipConfig {
+    /// Monotone finite configuration epoch.
+    pub epoch: u64,
+    /// Number of voters in the old/current configuration.
+    pub old_voter_count: u64,
+    /// Number of voters in the new configuration; equals old voters for non-joint configs.
+    pub new_voter_count: u64,
+    /// Whether this configuration is in Raft joint-consensus mode.
+    pub is_joint: bool,
+    /// Upper bound for modeled one-based node identifiers / voter cardinalities.
+    pub max_node_id: u64,
+}
+
 /// Finite AppendEntries conflict metadata; zero index/term means no concrete conflicting entry.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftAppendConflictMetadata {
@@ -79,6 +94,157 @@ pub struct RaftAppendConflictMetadata {
     pub conflict_term: u64,
     /// One-based follower log length metadata, used to bound conflict indexes.
     pub follower_log_len: u64,
+}
+
+// r[depends domain-primitives.raft-consensus.membership]
+/// Spec: finite membership metadata is bounded to a modeled one-based node universe.
+pub open spec fn raft_membership_config_valid_spec(config: RaftMembershipConfig) -> bool {
+    config.max_node_id > 0
+        && config.old_voter_count > 0
+        && config.old_voter_count <= config.max_node_id
+        && config.new_voter_count > 0
+        && config.new_voter_count <= config.max_node_id
+        && (!config.is_joint ==> config.new_voter_count == config.old_voter_count)
+}
+
+// r[depends domain-primitives.raft-consensus.membership]
+/// Spec: configuration epochs never move backwards, and same-epoch changes must be identical.
+pub open spec fn raft_membership_epoch_advance_admit_spec(
+    old_config: RaftMembershipConfig,
+    new_config: RaftMembershipConfig,
+) -> bool {
+    raft_membership_config_valid_spec(old_config)
+        && raft_membership_config_valid_spec(new_config)
+        && old_config.epoch <= new_config.epoch
+        && (old_config.epoch == new_config.epoch ==> (
+            old_config.old_voter_count == new_config.old_voter_count
+                && old_config.new_voter_count == new_config.new_voter_count
+                && old_config.is_joint == new_config.is_joint
+                && old_config.max_node_id == new_config.max_node_id
+        ))
+}
+
+// r[depends domain-primitives.raft-consensus.membership]
+/// Spec: joint consensus admits only proposals with quorum in both old and new configurations.
+pub open spec fn raft_joint_quorum_admit_spec(
+    config: RaftMembershipConfig,
+    old_ack_count: u64,
+    new_ack_count: u64,
+) -> bool {
+    raft_membership_config_valid_spec(config)
+        && if config.is_joint {
+            is_quorum_spec(old_ack_count, config.old_voter_count)
+                && is_quorum_spec(new_ack_count, config.new_voter_count)
+        } else {
+            is_quorum_spec(old_ack_count, config.old_voter_count)
+        }
+}
+
+// r[impl domain-primitives.raft-consensus.membership]
+/// Return whether finite membership metadata is bounded to the modeled node universe.
+pub fn raft_membership_config_valid(config: &RaftMembershipConfig) -> (result: bool)
+    ensures result == raft_membership_config_valid_spec(*config)
+{
+    config.max_node_id > 0
+        && config.old_voter_count > 0
+        && config.old_voter_count <= config.max_node_id
+        && config.new_voter_count > 0
+        && config.new_voter_count <= config.max_node_id
+        && (config.is_joint || config.new_voter_count == config.old_voter_count)
+}
+
+// r[impl domain-primitives.raft-consensus.membership]
+/// Return whether a membership epoch transition is monotone and stable at equal epochs.
+pub fn raft_membership_epoch_advance_admit(
+    old_config: &RaftMembershipConfig,
+    new_config: &RaftMembershipConfig,
+) -> (result: bool)
+    ensures result == raft_membership_epoch_advance_admit_spec(*old_config, *new_config)
+{
+    raft_membership_config_valid(old_config)
+        && raft_membership_config_valid(new_config)
+        && old_config.epoch <= new_config.epoch
+        && (old_config.epoch != new_config.epoch
+            || (old_config.old_voter_count == new_config.old_voter_count
+                && old_config.new_voter_count == new_config.new_voter_count
+                && old_config.is_joint == new_config.is_joint
+                && old_config.max_node_id == new_config.max_node_id))
+}
+
+// r[impl domain-primitives.raft-consensus.membership]
+/// Return whether finite quorum metadata admits a normal or joint-consensus proposal.
+pub fn raft_joint_quorum_admit(
+    config: &RaftMembershipConfig,
+    old_ack_count: u64,
+    new_ack_count: u64,
+) -> (result: bool)
+    ensures result == raft_joint_quorum_admit_spec(*config, old_ack_count, new_ack_count)
+{
+    if !raft_membership_config_valid(config) {
+        return false;
+    }
+    if config.is_joint {
+        is_quorum(old_ack_count, config.old_voter_count)
+            && is_quorum(new_ack_count, config.new_voter_count)
+    } else {
+        is_quorum(old_ack_count, config.old_voter_count)
+    }
+}
+
+// r[verify domain-primitives.raft-consensus.membership]
+/// Valid finite membership metadata has non-empty old and new voter sets bounded by the universe.
+pub proof fn valid_membership_has_bounded_nonempty_voters(config: RaftMembershipConfig)
+    requires raft_membership_config_valid_spec(config)
+    ensures
+        0 < config.old_voter_count <= config.max_node_id,
+        0 < config.new_voter_count <= config.max_node_id,
+{}
+
+// r[verify domain-primitives.raft-consensus.membership]
+/// Admitted membership epoch changes never move the configuration epoch backwards.
+pub proof fn admitted_membership_epoch_is_monotone(
+    old_config: RaftMembershipConfig,
+    new_config: RaftMembershipConfig,
+)
+    requires raft_membership_epoch_advance_admit_spec(old_config, new_config)
+    ensures old_config.epoch <= new_config.epoch
+{}
+
+// r[verify domain-primitives.raft-consensus.membership]
+/// Admitted joint-consensus quorums have quorum support in both old and new configurations.
+pub proof fn admitted_joint_quorum_has_both_majorities(
+    config: RaftMembershipConfig,
+    old_ack_count: u64,
+    new_ack_count: u64,
+)
+    requires
+        raft_joint_quorum_admit_spec(config, old_ack_count, new_ack_count),
+        config.is_joint,
+    ensures
+        is_quorum_spec(old_ack_count, config.old_voter_count),
+        is_quorum_spec(new_ack_count, config.new_voter_count),
+{}
+
+// r[verify domain-primitives.raft-consensus.membership]
+/// Any two admitted joint-consensus quorums intersect in both old and new configurations by quorum arithmetic.
+pub proof fn admitted_joint_quorums_intersect(
+    config: RaftMembershipConfig,
+    old_ack_a: u64,
+    new_ack_a: u64,
+    old_ack_b: u64,
+    new_ack_b: u64,
+)
+    requires
+        raft_membership_config_valid_spec(config),
+        config.is_joint,
+        raft_joint_quorum_admit_spec(config, old_ack_a, new_ack_a),
+        raft_joint_quorum_admit_spec(config, old_ack_b, new_ack_b),
+    ensures
+        old_ack_a as int + old_ack_b as int > config.old_voter_count as int,
+        new_ack_a as int + new_ack_b as int > config.new_voter_count as int,
+{
+    prove_quorum_intersection(old_ack_a, old_ack_b, config.old_voter_count);
+    prove_quorum_intersection(new_ack_a, new_ack_b, config.new_voter_count);
 }
 
 // r[depends domain-primitives.raft-consensus.snapshot]
@@ -1317,6 +1483,57 @@ mod tests {
         assert!(raft_state_machine_safety_at(&a, &same, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &divergent, 2, 2, 1));
         assert!(!raft_state_machine_safety_at(&a, &same, 1, 2, 1));
+    }
+
+    // r[verify domain-primitives.raft-consensus.membership]
+    #[test]
+    fn membership_joint_quorum_requires_old_and_new_majorities() {
+        let joint = RaftMembershipConfig {
+            epoch: 8,
+            old_voter_count: 3,
+            new_voter_count: 5,
+            is_joint: true,
+            max_node_id: 5,
+        };
+        assert!(raft_membership_config_valid(&joint));
+        assert!(raft_joint_quorum_admit(&joint, 2, 3));
+        assert!(!raft_joint_quorum_admit(&joint, 1, 3));
+        assert!(!raft_joint_quorum_admit(&joint, 2, 2));
+
+        let stable = RaftMembershipConfig {
+            epoch: 9,
+            old_voter_count: 5,
+            new_voter_count: 5,
+            is_joint: false,
+            max_node_id: 5,
+        };
+        assert!(raft_membership_epoch_advance_admit(&joint, &stable));
+        assert!(raft_joint_quorum_admit(&stable, 3, 0));
+        assert!(!raft_joint_quorum_admit(&stable, 2, 5));
+    }
+
+    // r[verify domain-primitives.raft-consensus.membership]
+    #[test]
+    fn membership_epoch_admission_rejects_regression_and_invalid_stable_shape() {
+        let stable = RaftMembershipConfig {
+            epoch: 4,
+            old_voter_count: 3,
+            new_voter_count: 3,
+            is_joint: false,
+            max_node_id: 3,
+        };
+        let regressed = RaftMembershipConfig { epoch: 3, ..stable };
+        assert!(!raft_membership_epoch_advance_admit(&stable, &regressed));
+
+        let invalid_stable = RaftMembershipConfig {
+            epoch: 4,
+            old_voter_count: 3,
+            new_voter_count: 5,
+            is_joint: false,
+            max_node_id: 5,
+        };
+        assert!(!raft_membership_config_valid(&invalid_stable));
+        assert!(!raft_membership_epoch_advance_admit(&stable, &invalid_stable));
     }
 
     // r[verify domain-primitives.raft-consensus.snapshot]

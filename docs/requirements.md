@@ -1743,6 +1743,15 @@ terms, strictly newer snapshot boundaries, and prefix-compatible snapshot
 metadata. Stale or boundary-mismatched snapshots MUST be rejected by the finite
 predicate.
 
+r[domain-primitives.raft-consensus.membership]
+Raft membership primitives MUST model finite configuration epochs, old/new voter
+cardinalities, and joint-consensus quorum metadata bounded to a modeled node
+universe. Membership epoch admission MUST reject regressions, non-joint
+configuration metadata MUST keep old/new voter counts identical, and joint
+consensus quorum admission MUST require both old-configuration and
+new-configuration majorities without claiming dynamic reconfiguration liveness,
+service discovery, persistence, or rollout behavior.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]
