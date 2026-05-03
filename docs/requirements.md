@@ -5093,12 +5093,12 @@ Every set of obligations is a valid settlement of itself (reflexivity).
 
 ## Verification Gap Inventory
 
-19 total trusted/weakened/runtime-only proof-gap boundaries remain: 19
+18 total trusted/weakened/runtime-only proof-gap boundaries remain: 18
 `#[verifier::external_body]` sites, 0 `assume_specification[...]` bridges, and
 0 instruction-selection runtime-only public API exemptions. No
 `@verified-logic:no-ensures` markers remain.
 
-### Permanent trust boundaries (19 items)
+### Permanent trust boundaries (18 items)
 These remain by design or because the current abstraction boundary is the
 point of the model, not a proof target.
 
@@ -5108,8 +5108,9 @@ point of the model, not a proof target.
 - 1 version-comparison bridge in `nix_version.rs`; the recursive `cv_fuel`
   proof lemmas are now internalized, leaving only the exec/spec connection
   trusted.
-- 11 UCAN codec/signature bridges in `ucan_cid.rs`, `ucan_did.rs`, and
-  `ucan_signature.rs`.
+- 10 UCAN codec/signature bridges in `ucan_did.rs` and `ucan_signature.rs`;
+  `ucan_cid.rs` now reuses the shared DID base58btc contract for CID multibase
+  round-trip instead of carrying a separate CID axiom.
 - 3 web-of-trust crypto bridges in `web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, and `web_of_trust_revocation.rs`.
 

@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8555 Verus proofs · 4221 tests · 1742 requirements · 373 modules · 19 trusted/proof-gap boundaries**
+**8555 Verus proofs · 4221 tests · 1742 requirements · 373 modules · 18 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -509,11 +509,11 @@ Most modules follow the same pattern (tracked exceptions are listed in
 
 ## Trusted and proof-gap items
 
-`19` items are marked `#[verifier::external_body]` across `9` files. The
+`18` items are marked `#[verifier::external_body]` across `8` files. The
 previous `src/instruction_selection.rs` runtime-only public API exemptions now
 have direct Tracey implementation and test coverage.
 
-**19 permanent** (architectural trust boundaries):
+**18 permanent** (architectural trust boundaries):
 
 - **4 legacy cryptographic hash axioms / exec bridges** (`chain.rs`,
   `snapshot_integrity.rs`) — BLAKE3-style hashing is modeled with
@@ -522,9 +522,10 @@ have direct Tracey implementation and test coverage.
 - **1 version comparison bridge** (`nix_version.rs`) — the recursive `cv_fuel`
   proof lemmas are now internalized, while the exec/spec connection still
   exceeds solver budget.
-- **11 UCAN codec/signature bridges** (`ucan_cid.rs`, `ucan_did.rs`,
-  `ucan_signature.rs`) — multibase/base58btc and Ed25519 behavior is modeled
-  behind external codec/crypto contracts.
+- **10 UCAN codec/signature bridges** (`ucan_did.rs`, `ucan_signature.rs`) —
+  base58btc and Ed25519 behavior is modeled behind external codec/crypto
+  contracts; `ucan_cid.rs` now composes its CID multibase round-trip model from
+  the shared DID base58btc contract instead of carrying a separate CID axiom.
 - **3 web-of-trust crypto bridges** (`web_of_trust_principal.rs`,
   `web_of_trust_attestation.rs`, `web_of_trust_revocation.rs`) — principal
   digest and signature checks stay behind trusted runtime/model boundaries.
