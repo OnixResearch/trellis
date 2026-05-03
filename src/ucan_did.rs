@@ -586,9 +586,36 @@ pub uninterp spec fn base58btc_encode_byte_spec(bytes: Seq<u8>, idx: int) -> u8;
 // r[impl ucan-did.round-trip]
 pub uninterp spec fn base58btc_encode_spec(bytes: Seq<u8>) -> Seq<u8>;
 
+/// One-byte Bitcoin/base58 alphabet membership.
+// r[impl ucan-did.base58btc-alphabet]
+pub open spec fn base58btc_byte_valid_spec(byte: u8) -> bool {
+    (0x31u8 <= byte <= 0x39u8) // 1-9
+        || (0x41u8 <= byte <= 0x48u8) // A-H
+        || (0x4au8 <= byte <= 0x4eu8) // J-N, excludes I
+        || (0x50u8 <= byte <= 0x5au8) // P-Z, excludes O
+        || (0x61u8 <= byte <= 0x6bu8) // a-k
+        || (0x6du8 <= byte <= 0x7au8) // m-z, excludes l
+}
+
+/// Base58btc alphabet validity for an encoded byte sequence.
+// r[impl ucan-did.base58btc-alphabet]
+pub open spec fn base58btc_chars_valid_spec(encoded: Seq<u8>) -> bool {
+    forall|i: int| 0 <= i < encoded.len() ==> base58btc_byte_valid_spec(encoded[i])
+}
+
+/// Trusted base58btc decode core, reached only after verified alphabet screening.
+pub uninterp spec fn base58btc_decode_core_spec(encoded: Seq<u8>) -> Option<Seq<u8>>;
+
 /// Base58btc decode model.
 // r[impl ucan-did.round-trip]
-pub uninterp spec fn base58btc_decode_spec(encoded: Seq<u8>) -> Option<Seq<u8>>;
+// r[impl ucan-did.base58btc-alphabet]
+pub open spec fn base58btc_decode_spec(encoded: Seq<u8>) -> Option<Seq<u8>> {
+    if base58btc_chars_valid_spec(encoded) {
+        base58btc_decode_core_spec(encoded)
+    } else {
+        None
+    }
+}
 
 /// Axiom: base58btc round-trips.
 // r[impl ucan-did.base58btc-round-trip]
@@ -752,6 +779,46 @@ pub proof fn did_key_codec_preserved(public_key: Seq<u8>, codec: u64)
 }
 
 // --- Exec functions ---
+
+fn base58btc_byte_valid(byte: u8) -> (result: bool)
+    ensures result == base58btc_byte_valid_spec(byte)
+{
+    (0x31u8 <= byte && byte <= 0x39u8)
+        || (0x41u8 <= byte && byte <= 0x48u8)
+        || (0x4au8 <= byte && byte <= 0x4eu8)
+        || (0x50u8 <= byte && byte <= 0x5au8)
+        || (0x61u8 <= byte && byte <= 0x6bu8)
+        || (0x6du8 <= byte && byte <= 0x7au8)
+}
+
+fn base58btc_chars_valid(encoded: &Vec<u8>) -> (result: bool)
+    ensures result == base58btc_chars_valid_spec(encoded@)
+{
+    let mut i: usize = 0;
+    let mut valid = true;
+    while i < encoded.len()
+        invariant
+            i <= encoded.len(),
+            valid == (forall|j: int| 0 <= j < i as int ==> base58btc_byte_valid_spec(encoded@[j])),
+        decreases encoded.len() - i,
+    {
+        valid = valid && base58btc_byte_valid(encoded[i]);
+        i = i + 1;
+    }
+    proof {
+        if valid {
+            assert forall|j: int| 0 <= j < encoded@.len() implies base58btc_byte_valid_spec(encoded@[j]) by {
+                assert(j < i as int);
+            }
+        }
+        if base58btc_chars_valid_spec(encoded@) {
+            assert forall|j: int| 0 <= j < i as int implies base58btc_byte_valid_spec(encoded@[j]) by {
+                assert(j < encoded@.len());
+            }
+        }
+    }
+    valid
+}
 
 fn did_key_prefix_bytes() -> (result: Vec<u8>)
     ensures result@ == did_key_prefix_spec()
@@ -925,6 +992,15 @@ pub fn decode_did_key(encoded: &Vec<u8>) -> (result: Option<DidKey>)
         assert(prefix@ == did_key_prefix_spec());
         assert(b58_part@ == encoded@.subrange(did_key_prefix_spec().len() as int, encoded@.len() as int));
     }
+    if !base58btc_chars_valid(&b58_part) {
+        proof {
+            assert(!base58btc_chars_valid_spec(b58_part@));
+            assert(base58btc_decode_spec(b58_part@).is_none());
+            assert(decode_did_key_spec(encoded@).is_none());
+        }
+        return None;
+    }
+
     let decoded = match base58btc_decode(&b58_part) {
         Some(v) => v,
         None => {
@@ -1085,6 +1161,24 @@ mod tests {
     fn test_did_key_decode_rejects_bad_prefix() {
         let mut encoded = encode_did_key(&vec![9u8; ED25519_PUBLIC_KEY_LEN], CODEC_ED25519).encoded;
         encoded[0] ^= 0xff;
+        assert!(decode_did_key(&encoded).is_none());
+    }
+
+    // r[verify ucan-did.base58btc-alphabet]
+    #[test]
+    fn test_base58btc_alphabet_validator_rejects_forbidden_chars() {
+        assert!(base58btc_chars_valid(&b"123456789ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz".to_vec()));
+        for forbidden in [b'0', b'O', b'I', b'l', b'+'] {
+            assert!(!base58btc_chars_valid(&vec![forbidden]));
+        }
+    }
+
+    // r[verify ucan-did.base58btc-alphabet]
+    #[test]
+    fn test_did_key_decode_rejects_invalid_base58_char() {
+        let mut encoded = b"did:key:0".to_vec();
+        assert!(decode_did_key(&encoded).is_none());
+        encoded = b"did:key:z0".to_vec();
         assert!(decode_did_key(&encoded).is_none());
     }
 

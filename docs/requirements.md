@@ -8013,6 +8013,11 @@ The proof-gap inventory and README counts MUST remove the closed UCAN DID
 r[ucan-did.base58btc-round-trip]
 Encoding bytes as base58btc and decoding MUST recover the original bytes.
 
+r[ucan-did.base58btc-alphabet]
+Base58btc decode MUST reject encoded byte sequences containing bytes outside
+the Bitcoin/base58 alphabet before reaching the trusted codec core. The checked
+alphabet excludes `0`, `O`, `I`, `l`, and non-alphanumeric separator bytes.
+
 ## UCAN Token
 
 r[ucan-token.temporal-validity]
