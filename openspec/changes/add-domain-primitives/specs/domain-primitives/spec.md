@@ -3,10 +3,10 @@
 ## Purpose
 
 Defines the shared policy for first-class verified primitives in numeric
-foundations, finite data structures, finite graphs, finite time series, bounded
-control systems, GIS, machine learning, physics, and machine vision. Concrete
-module requirements MUST live in focused child OpenSpec changes so each
-proof/evidence slice remains reviewable.
+foundations, finite data structures, finite graphs, finite time series, finite
+probability/statistics, bounded control systems, GIS, machine learning, physics,
+and machine vision. Concrete module requirements MUST live in focused child
+OpenSpec changes so each proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -87,6 +87,18 @@ resampling envelopes, rolling aggregates, and gap detection.
 - GIVEN a reusable finite time-series primitive such as timestamp index, sample series, window selector, resample envelope, rolling aggregate, or gap detector
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused time-series child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Probability and Statistics Family Taxonomy [r[domain-primitives.probability-statistics-family]]
+The system MUST treat probability/statistics as reusable exact finite primitives
+for count tables, frequency tables, discrete distributions, CDF/quantile
+envelopes, bounded moments, deterministic sampling admission, and interval
+metadata.
+
+#### Scenario: Probability-statistics child change owns reusable finite statistics modules [r[domain-primitives.probability-statistics-family.scenario.probability-statistics-child-change-owns-reusable-finite-statistics-modules]]
+
+- GIVEN a reusable finite probability/statistics primitive such as count table, frequency table, discrete distribution, CDF/quantile envelope, bounded moment, deterministic sampler, or interval metadata
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused probability/statistics child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
