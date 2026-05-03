@@ -753,6 +753,104 @@ pub proof fn did_key_codec_preserved(public_key: Seq<u8>, codec: u64)
 
 // --- Exec functions ---
 
+fn did_key_prefix_bytes() -> (result: Vec<u8>)
+    ensures result@ == did_key_prefix_spec()
+{
+    let mut result = Vec::new();
+    result.push(0x64u8); // d
+    result.push(0x69u8); // i
+    result.push(0x64u8); // d
+    result.push(0x3au8); // :
+    result.push(0x6bu8); // k
+    result.push(0x65u8); // e
+    result.push(0x79u8); // y
+    result.push(0x3au8); // :
+    result.push(0x7au8); // z
+    proof {
+        assert(result@ =~= did_key_prefix_spec());
+    }
+    result
+}
+
+fn bytes_subrange_from(bytes: &Vec<u8>, start: usize) -> (result: Vec<u8>)
+    requires start <= bytes@.len()
+    ensures result@ == bytes@.subrange(start as int, bytes@.len() as int)
+{
+    let mut result = Vec::new();
+    let ghost suffix = bytes@.subrange(start as int, bytes@.len() as int);
+    let mut i = start;
+    while i < bytes.len()
+        invariant
+            start <= i <= bytes.len(),
+            suffix == bytes@.subrange(start as int, bytes@.len() as int),
+            suffix.len() == bytes.len() - start,
+            result@ == suffix.subrange(0, (i - start) as int),
+        decreases bytes.len() - i,
+    {
+        proof {
+            let k = (i - start) as int;
+            assert(k >= 0);
+            assert(i - start < bytes.len() - start) by(nonlinear_arith)
+                requires start <= i, i < bytes.len();
+            assert(k < suffix.len()) by(nonlinear_arith)
+                requires k == (i - start) as int, i - start < bytes.len() - start, suffix.len() == bytes.len() - start;
+            assert(start as int + k == i as int) by(nonlinear_arith)
+                requires start <= i, k == (i - start) as int;
+            assert(suffix[k] == bytes@[i as int]);
+        }
+        result.push(bytes[i]);
+        i = i + 1;
+        proof {
+            assert(result@ =~= suffix.subrange(0, (i - start) as int));
+        }
+    }
+    proof {
+        assert((bytes.len() - start) as int == suffix.len());
+        assert(result@ =~= suffix);
+    }
+    result
+}
+
+fn did_key_has_prefix(bytes: &Vec<u8>) -> (result: bool)
+    ensures result == (bytes@.len() >= did_key_prefix_spec().len()
+        && bytes@.subrange(0, did_key_prefix_spec().len() as int) == did_key_prefix_spec())
+{
+    let prefix = did_key_prefix_bytes();
+    if bytes.len() < prefix.len() {
+        return false;
+    }
+    let mut i: usize = 0;
+    let mut matched = true;
+    while i < prefix.len()
+        invariant
+            prefix@ == did_key_prefix_spec(),
+            prefix.len() == did_key_prefix_spec().len(),
+            bytes.len() >= prefix.len(),
+            i <= prefix.len(),
+            matched == (forall|j: int| 0 <= j < i as int ==> bytes@[j] == prefix@[j]),
+        decreases prefix.len() - i,
+    {
+        matched = matched && bytes[i] == prefix[i];
+        i = i + 1;
+    }
+    proof {
+        if matched {
+            assert forall|j: int| 0 <= j < did_key_prefix_spec().len() implies bytes@.subrange(0, did_key_prefix_spec().len() as int)[j] == did_key_prefix_spec()[j] by {
+                assert(bytes@[j] == prefix@[j]);
+                assert(prefix@[j] == did_key_prefix_spec()[j]);
+            }
+            assert(bytes@.subrange(0, did_key_prefix_spec().len() as int) =~= did_key_prefix_spec());
+        }
+        if bytes@.subrange(0, did_key_prefix_spec().len() as int) == did_key_prefix_spec() {
+            assert forall|j: int| 0 <= j < prefix.len() as int implies bytes@[j] == prefix@[j] by {
+                assert(bytes@.subrange(0, did_key_prefix_spec().len() as int)[j] == bytes@[j]);
+                assert(prefix@[j] == did_key_prefix_spec()[j]);
+            }
+        }
+    }
+    matched
+}
+
 /// Encode a public key and codec as a did:key byte string.
 // r[impl ucan-did.round-trip]
 // r[impl ucan-did.prefix-valid]
@@ -804,6 +902,64 @@ pub fn encode_did_key(public_key: &Vec<u8>, codec: u64) -> (result: DidKey)
         codec,
         encoded,
     }
+}
+
+/// Decode a did:key byte string into its public-key bytes and codec.
+// r[impl ucan-did.round-trip]
+// r[impl ucan-did.codec-preserved]
+pub fn decode_did_key(encoded: &Vec<u8>) -> (result: Option<DidKey>)
+    ensures
+        match result {
+            Some(did) => decode_did_key_spec(encoded@) == Some((did.public_key_bytes@, did.codec))
+                && did.encoded@ == encoded@,
+            None => decode_did_key_spec(encoded@).is_none(),
+        },
+{
+    if !did_key_has_prefix(encoded) {
+        return None;
+    }
+
+    let prefix = did_key_prefix_bytes();
+    let b58_part = bytes_subrange_from(encoded, prefix.len());
+    proof {
+        assert(prefix@ == did_key_prefix_spec());
+        assert(b58_part@ == encoded@.subrange(did_key_prefix_spec().len() as int, encoded@.len() as int));
+    }
+    let decoded = match base58btc_decode(&b58_part) {
+        Some(v) => v,
+        None => {
+            proof {
+                assert(base58btc_decode_spec(b58_part@).is_none());
+                assert(decode_did_key_spec(encoded@).is_none());
+            }
+            return None;
+        },
+    };
+
+    let parsed = match varint_decode(&decoded) {
+        Some(v) => v,
+        None => {
+            proof {
+                assert(varint_decode_spec(decoded@).is_none());
+                assert(multicodec_parse_spec(decoded@).is_none());
+                assert(decode_did_key_spec(encoded@).is_none());
+            }
+            return None;
+        },
+    };
+    let (codec, prefix_len) = parsed;
+    let public_key_bytes = bytes_subrange_from(&decoded, prefix_len);
+    proof {
+        assert(varint_decode_spec(decoded@) == Some((codec, prefix_len as nat)));
+        assert(multicodec_parse_spec(decoded@) == Some((codec, public_key_bytes@)));
+        assert(decode_did_key_spec(encoded@) == Some((public_key_bytes@, codec)));
+    }
+
+    Some(DidKey {
+        public_key_bytes,
+        codec,
+        encoded: encoded.clone(),
+    })
 }
 
 } // verus!
@@ -910,6 +1066,26 @@ mod tests {
         assert_eq!(&did.encoded[..DID_KEY_PREFIX_LEN], prefix);
         assert_eq!(did.public_key_bytes, pk);
         assert_eq!(did.codec, CODEC_ED25519);
+    }
+
+    // r[verify ucan-did.round-trip]
+    // r[verify ucan-did.codec-preserved]
+    #[test]
+    fn test_did_key_decode_round_trip() {
+        let pk = vec![7u8; ED25519_PUBLIC_KEY_LEN];
+        let did = encode_did_key(&pk, CODEC_ED25519);
+        let decoded = decode_did_key(&did.encoded).expect("encoded DID should decode");
+        assert_eq!(decoded.public_key_bytes, pk);
+        assert_eq!(decoded.codec, CODEC_ED25519);
+        assert_eq!(decoded.encoded, did.encoded);
+    }
+
+    // r[verify ucan-did.prefix-valid]
+    #[test]
+    fn test_did_key_decode_rejects_bad_prefix() {
+        let mut encoded = encode_did_key(&vec![9u8; ED25519_PUBLIC_KEY_LEN], CODEC_ED25519).encoded;
+        encoded[0] ^= 0xff;
+        assert!(decode_did_key(&encoded).is_none());
     }
 
     #[test]

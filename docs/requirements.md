@@ -5110,7 +5110,9 @@ point of the model, not a proof target.
   trusted.
 - 10 UCAN codec/signature bridges in `ucan_did.rs` and `ucan_signature.rs`;
   `ucan_cid.rs` now reuses the shared DID base58btc contract for CID multibase
-  round-trip instead of carrying a separate CID axiom.
+  round-trip instead of carrying a separate CID axiom, and public DID decode now
+  composes verified prefix, base58, varint, and key-suffix primitives around the
+  remaining base58btc contract.
 - 1 web-of-trust crypto bridge in `web_of_trust_principal.rs`; attestation and
   revocation signature-input construction and comparison are now verified from
   canonical bytes.
@@ -7970,7 +7972,7 @@ r[ucan-did.round-trip]
 Encoding key bytes as a did:key MUST use the canonical byte layout
 `did:key:z ++ base58btc(varint(codec) ++ key_bytes)`. The public encode
 result MUST preserve the exact key bytes, codec, and encoded bytes, and
-spec-level decode of those encoded bytes MUST recover the original key
+public/spec-level decode of those encoded bytes MUST recover the original key
 bytes and codec.
 
 r[ucan-did.injective]
