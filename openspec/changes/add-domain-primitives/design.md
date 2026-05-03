@@ -27,9 +27,9 @@ enough to prove, test, validate, capture evidence, and archive independently.
 
 **Choice:** `add-domain-primitives` defines common contract and family taxonomy;
 `add-numeric-foundation-primitives`, `add-data-structure-primitives`,
-`add-graph-primitives`, `add-gis-primitives`, `add-ml-primitives`,
-`add-physics-primitives`, and `add-vision-primitives` own concrete requirements
-and implementation evidence.
+`add-graph-primitives`, `add-timeseries-primitives`, `add-gis-primitives`,
+`add-ml-primitives`, `add-physics-primitives`, and `add-vision-primitives` own
+concrete requirements and implementation evidence.
 
 **Rationale:** It prevents one 16+ module OpenSpec from becoming too large to
 review or archive while keeping a single place for shared rules.
@@ -62,7 +62,8 @@ family/policy IDs; child changes define concrete module IDs.
 **Over-broad first child** → Keep reusable numeric foundations in
 `add-numeric-foundation-primitives`, reusable finite data structures in
 `add-data-structure-primitives`, reusable finite graphs in
-`add-graph-primitives`, and family-specific primitives in their own child
+`add-graph-primitives`, reusable finite time-series primitives in
+`add-timeseries-primitives`, and family-specific primitives in their own child
 changes.
 
 **Tracey drift** → Child changes must add `docs/requirements.md`, `r[impl]`,

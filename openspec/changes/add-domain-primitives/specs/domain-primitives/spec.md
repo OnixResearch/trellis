@@ -3,9 +3,10 @@
 ## Purpose
 
 Defines the shared policy for first-class verified primitives in numeric
-foundations, finite data structures, finite graphs, GIS, machine learning,
-physics, and machine vision. Concrete module requirements MUST live in focused
-child OpenSpec changes so each proof/evidence slice remains reviewable.
+foundations, finite data structures, finite graphs, finite time series, GIS,
+machine learning, physics, and machine vision. Concrete module requirements MUST
+live in focused child OpenSpec changes so each proof/evidence slice remains
+reviewable.
 
 ## ADDED Requirements
 
@@ -75,6 +76,17 @@ envelopes, and traversal frontier/cut invariants.
 - GIVEN a reusable finite graph primitive such as adjacency, reachability, topological order, component partition, shortest-path envelope, or frontier/cut invariant
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused graph child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Time-Series Family Taxonomy [r[domain-primitives.timeseries-family]]
+The system MUST treat time series as reusable exact finite primitives for
+monotone timestamp indexes, aligned sample series, bounded windows, deterministic
+resampling envelopes, rolling aggregates, and gap detection.
+
+#### Scenario: Time-series child change owns reusable finite time-series modules [r[domain-primitives.timeseries-family.scenario.timeseries-child-change-owns-reusable-finite-timeseries-modules]]
+
+- GIVEN a reusable finite time-series primitive such as timestamp index, sample series, window selector, resample envelope, rolling aggregate, or gap detector
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused time-series child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: GIS Family Taxonomy [r[domain-primitives.gis-family]]
 The system MUST treat GIS primitives as bounded spatial-coordinate, grid/tile,
