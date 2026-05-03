@@ -7,15 +7,17 @@ text/string, parsing/format, scheduling/calendar, resource-accounting,
 constraint-solver, discrete-optimization, access-control-policy,
 observability-metrics, state-machine-workflow, serialization-codec,
 configuration-feature-flag, data-validation, identifier-namespace,
-filesystem-path, network-protocol, table-relational, geometry-foundation,
-control-system, scientific, and perception-heavy primitive families. Data
+filesystem-path, network-protocol, raft-consensus, table-relational,
+geometry-foundation, control-system, scientific, and perception-heavy primitive
+families. Data
 structures, graphs, time series, probability/statistics, signal processing,
 storage/indexing, text/string, parsing/format, scheduling/calendar, resource
 accounting, constraint solving, discrete optimization, access-control policy,
 observability/metrics, state-machine/workflow, serialization/codec handling,
 configuration/feature-flag handling, data validation, identifier/namespace
-handling, filesystem path handling, network protocol handling,
-table/relational handling, geometry foundations, control systems, GIS,
+handling, filesystem path handling, network protocol handling, formally
+verified Raft consensus, table/relational handling, geometry foundations,
+control systems, GIS,
 machine-learning, physics, and machine-vision work should be specified and
 implemented in focused OpenSpec changes rather than one large multi-domain
 implementation batch.
@@ -26,7 +28,7 @@ child changes add concrete module requirements and implementation tasks.
 
 ## What Changes
 
-- Add a `domain-primitives` umbrella OpenSpec domain describing twenty-nine primitive
+- Add a `domain-primitives` umbrella OpenSpec domain describing thirty primitive
   families:
   - `numeric_*`: fixed-point, checked arithmetic, ratios, sequences, buckets,
     transforms, prefix sums, and quantized thresholds.
@@ -90,6 +92,9 @@ child changes add concrete module requirements and implementation tasks.
     packet/frame envelopes, header fields, state-free parser admission,
     message sequencing metadata, checksum-shape metadata, payload bounds, and
     deterministic protocol admission.
+  - `raft_*` / `consensus_*`: finite Raft nodes, terms, logs, votes,
+    AppendEntries/RequestVote envelopes, quorums, commit indexes, snapshots,
+    membership epochs, finite traces, and safety invariants.
   - `table_*` / `relation_*` / `row_*`: finite tables, columns, rows, keys,
     projections, filters, joins, grouping metadata, and deterministic relational
     admission.
@@ -119,8 +124,9 @@ child changes add concrete module requirements and implementation tasks.
   state-machine/workflow primitives, serialization/codec primitives,
   configuration/feature-flag primitives, data-validation primitives,
   identifier/namespace primitives, filesystem-path primitives, network-protocol
-  primitives, table/relational primitives, geometry-foundation primitives,
-  control-system primitives, GIS, ML, physics, and machine vision.
+  primitives, Raft consensus primitives, table/relational primitives,
+  geometry-foundation primitives, control-system primitives, GIS, ML, physics,
+  and machine vision.
 
 ## Capabilities
 
@@ -199,7 +205,8 @@ child changes add concrete module requirements and implementation tasks.
   `src/workflow_*`, `src/codec_*`, `src/serialize_*`, `src/deserialize_*`,
   `src/config_*`, `src/feature_flag_*`, `src/rollout_*`, `src/schema_*`,
   `src/validate_*`, `src/id_*`, `src/namespace_*`, `src/path_*`,
-  `src/fs_path_*`, `src/net_*`, `src/protocol_*`, `src/packet_*`,
+  `src/fs_path_*`, `src/net_*`, `src/protocol_*`, `src/packet_*`, `src/raft_*`,
+  `src/consensus_*`,
   `src/table_*`, `src/relation_*`, `src/row_*`, `src/geom_*`,
   `src/geometry_*`, `src/bounds_*`, `src/control_*`,
   `src/gis_*`, `src/ml_*`, `src/physics_*`, `src/vision_*`,

@@ -10,7 +10,7 @@ scheduling/calendar handling, finite resource-accounting, finite constraint
 solving, finite discrete optimization, finite access-control policy, finite
 observability/metrics, finite state-machine/workflow, finite
 serialization/codec handling, finite configuration/feature-flag handling,
-finite data validation, finite identifier/namespace handling, finite filesystem-path handling, finite network-protocol handling, finite table/relational handling, finite geometry foundations, bounded control systems, GIS, machine learning, physics, and machine vision.
+finite data validation, finite identifier/namespace handling, finite filesystem-path handling, finite network-protocol handling, finite formally verified Raft consensus, finite table/relational handling, finite geometry foundations, bounded control systems, GIS, machine learning, physics, and machine vision.
 Concrete module requirements MUST live in focused
 child OpenSpec changes so each
 proof/evidence slice remains reviewable.
@@ -305,6 +305,20 @@ metadata, payload bounds, and deterministic protocol admission.
 - GIVEN a reusable finite network-protocol primitive such as endpoint/address metadata, packet/frame envelope, header-field metadata, state-free parser admission, sequencing metadata, checksum-shape metadata, payload-bound metadata, or protocol admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused network-protocol child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Raft Consensus Family Taxonomy [r[domain-primitives.raft-consensus-family]]
+The system MUST treat formally verified Raft consensus as reusable exact finite
+primitives for node/state envelopes, monotone terms, log-entry and log-prefix
+predicates, vote and RequestVote admission, AppendEntries admission, quorum and
+commit metadata, election safety, log matching, leader completeness,
+state-machine safety, snapshot metadata, membership epochs, finite transition
+traces, invariant bundles, and deterministic Raft admission.
+
+#### Scenario: Raft consensus child change owns finite protocol-safety modules [r[domain-primitives.raft-consensus-family.scenario.raft-consensus-child-change-owns-finite-protocol-safety-modules]]
+
+- GIVEN a reusable formally verified Raft primitive such as node-state envelope, term predicate, log-prefix predicate, vote admission, RequestVote admission, AppendEntries admission, quorum/commit predicate, snapshot metadata, membership epoch, transition trace, or safety invariant
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused Raft consensus child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Table Relational Family Taxonomy [r[domain-primitives.table-relational-family]]
 The system MUST treat table/relational handling as reusable exact finite
