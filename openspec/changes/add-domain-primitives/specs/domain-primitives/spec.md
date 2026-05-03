@@ -7,9 +7,10 @@ foundations, finite data structures, finite graphs, finite time series, finite
 probability/statistics, finite signal processing, finite storage/indexing,
 finite text/string handling, finite parsing/format handling, finite
 scheduling/calendar handling, finite resource-accounting, finite constraint
-solving, finite discrete optimization, bounded control systems, GIS, machine
-learning, physics, and machine vision. Concrete module requirements MUST live in
-focused child OpenSpec changes so each proof/evidence slice remains reviewable.
+solving, finite discrete optimization, finite access-control policy, bounded
+control systems, GIS, machine learning, physics, and machine vision. Concrete
+module requirements MUST live in focused child OpenSpec changes so each
+proof/evidence slice remains reviewable.
 
 ## ADDED Requirements
 
@@ -193,6 +194,18 @@ metadata, optimum/frontier witnesses, and deterministic admission results.
 - GIVEN a reusable finite discrete-optimization primitive such as objective envelope, feasible-set predicate, ranking envelope, dominance predicate, bound metadata, optimum witness, frontier envelope, or admission envelope
 - WHEN its requirement and implementation tasks are authored
 - THEN they belong to a focused discrete-optimization child change unless another existing child already owns that exact requirement ID
+
+### Requirement: Access-Control Policy Family Taxonomy [r[domain-primitives.access-control-policy-family]]
+The system MUST treat access-control policy as reusable exact finite primitives
+for principals, resources, actions, policy rules, grant/denial decisions,
+conflict resolution, delegation envelopes, and deterministic authorization
+admission results.
+
+#### Scenario: Access-control policy child change owns reusable finite policy modules [r[domain-primitives.access-control-policy-family.scenario.access-control-policy-child-change-owns-reusable-finite-policy-modules]]
+
+- GIVEN a reusable finite access-control policy primitive such as principal envelope, resource envelope, action envelope, rule envelope, grant/denial decision, conflict-resolution envelope, delegation envelope, or authorization admission envelope
+- WHEN its requirement and implementation tasks are authored
+- THEN they belong to a focused access-control policy child change unless another existing child already owns that exact requirement ID
 
 ### Requirement: Control-System Family Taxonomy [r[domain-primitives.control-system-family]]
 The system MUST treat control systems as reusable exact bounded primitives for
