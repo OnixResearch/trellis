@@ -6,9 +6,8 @@ Future authorization, capability, workflow, resource, and orchestration models
 need exact finite principal/resource/action/rule/grant/denial/conflict/delegation
 primitives without claiming cryptographic strength or whole-system security.
 
-This change adds a spec-only OpenSpec for finite access-control policy
-primitives. It leaves implementation, Tracey coverage, tests, Verus proofs,
-evidence, and archive work for later focused slices.
+This change implements a focused exact finite access-control policy primitive
+family with Tracey coverage, tests, Verus proofs, evidence, and archive work.
 
 ## What Changes
 
@@ -47,17 +46,13 @@ evidence, and archive work for later focused slices.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/policy_*`, `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: OpenSpec artifacts plus `src/policy_*`, `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
+- **APIs**: adds focused `src/policy_*` exact finite admission/checker APIs.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: validate this OpenSpec strictly now. Future implementation slices
-  must run focused cargo tests, `./scripts/verus.sh src/lib.rs`, Tracey
-  uncovered/untested checks, and final repo validation before archive.
+- **Testing**: focused cargo tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested checks, and final repo validation before archive.
 
 ## Out of Scope
 
-- implementing policy modules in this slice
 - cryptographic authentication, signature verification, or key-control claims
 - whole-system security, information-flow, side-channel, compliance, or external
   policy-engine correctness claims

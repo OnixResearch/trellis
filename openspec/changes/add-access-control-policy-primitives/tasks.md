@@ -17,17 +17,17 @@
 
 ## Phase 2: Future implementation slices
 
-- [ ] Implement finite principal admission metadata. `[covers=domain-primitives.access-control-policy.principal]`
-- [ ] Implement finite resource admission metadata. `[covers=domain-primitives.access-control-policy.resource]`
-- [ ] Implement finite action admission metadata. `[covers=domain-primitives.access-control-policy.action]`
-- [ ] Implement scoped policy-rule envelopes. `[covers=domain-primitives.access-control-policy.rule]`
-- [ ] Implement deterministic grant/denial decision metadata. `[covers=domain-primitives.access-control-policy.grant-denial]`
-- [ ] Implement conflict-resolution envelopes for overlapping rules. `[covers=domain-primitives.access-control-policy.conflict]`
-- [ ] Implement bounded delegation envelopes. `[covers=domain-primitives.access-control-policy.delegation]`
-- [ ] Implement deterministic authorization admission/rejection envelopes. `[covers=domain-primitives.access-control-policy.authorization]`
+- [x] Implement finite principal admission metadata. `[covers=domain-primitives.access-control-policy.principal]`
+- [x] Implement finite resource admission metadata. `[covers=domain-primitives.access-control-policy.resource]`
+- [x] Implement finite action admission metadata. `[covers=domain-primitives.access-control-policy.action]`
+- [x] Implement scoped policy-rule envelopes. `[covers=domain-primitives.access-control-policy.rule]`
+- [x] Implement deterministic grant/denial decision metadata. `[covers=domain-primitives.access-control-policy.grant-denial]`
+- [x] Implement conflict-resolution envelopes for overlapping rules. `[covers=domain-primitives.access-control-policy.conflict]`
+- [x] Implement bounded delegation envelopes. `[covers=domain-primitives.access-control-policy.delegation]`
+- [x] Implement deterministic authorization admission/rejection envelopes. `[covers=domain-primitives.access-control-policy.authorization]`
 
 ## Phase 3: Future verification and archive
 
-- [ ] Add `docs/requirements.md` anchors and Tracey `r[impl]`/`r[depends]`/`r[verify]` coverage for implemented primitives.
-- [ ] Run focused cargo tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested queries, and final repo validation.
-- [ ] Sync delta specs and archive after all implementation/evidence tasks are complete.
+- [x] Add `docs/requirements.md` anchors and Tracey `r[impl]`/`r[depends]`/`r[verify]` coverage for implemented primitives.
+- [x] Run focused cargo tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested queries, and final repo validation.
+- [x] Sync delta specs and archive after all implementation/evidence tasks are complete.

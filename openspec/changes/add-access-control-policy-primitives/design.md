@@ -13,7 +13,7 @@ claiming cryptographic or whole-system security.
 - model principals, resources, actions, and rules as finite admitted sets
 - keep authorization decisions deterministic and explainable by matched metadata
 - bound delegation by explicit finite scope and depth metadata
-- leave implementation and evidence tasks open for later proof slices
+- provide implementation and evidence for the focused finite policy slice
 
 **Non-Goals:**
 
@@ -69,7 +69,7 @@ this change owns policy authorization decisions over admitted resources/actions.
 **Overlap with crypto/capabilities** → Crypto modules own signatures/keys; this
 change owns structural policy/delegation metadata and deterministic decisions.
 
-**Tracey drift** → Future implementation slices must add `docs/requirements.md`,
+**Tracey drift** → This implementation slice adds `docs/requirements.md`,
 `r[impl]`, `r[depends]`, and `r[verify]` tags with the code and evidence.
 
 ## Validation Plan
@@ -77,4 +77,4 @@ change owns structural policy/delegation metadata and deterministic decisions.
 - `openspec validate add-access-control-policy-primitives --strict --json`
 - strict validation for every active primitive-family OpenSpec
 - helper verification for expected incomplete implementation tasks
-- future focused cargo/Verus/Tracey checks before archive
+- focused cargo/Verus/Tracey checks before archive
