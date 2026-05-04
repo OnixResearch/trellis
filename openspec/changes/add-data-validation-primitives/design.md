@@ -14,11 +14,10 @@ without inheriting external-validator or policy-engine claims.
 - specify enum/range and cross-field predicate envelopes over admitted finite
   inputs
 - specify deterministic error accumulation and normalization decisions
-- specify validation admission/rejection without implementing modules yet
+- implement validation admission/rejection over exact finite metadata
 
 **Non-Goals:**
 
-- implementing validation APIs in this spec-only change
 - proving external schema-language conformance or validator-library correctness
 - proving business-rule completeness, security, privacy, or UI behavior
 - claiming automatic repair or lossy coercion correctness
@@ -72,6 +71,5 @@ finite predicate envelopes and leave external schema conformance out of scope.
 
 - `openspec validate add-data-validation-primitives --strict --json`
 - strict validation for every active primitive-family OpenSpec
-- helper verification is expected to warn about future implementation tasks
-- future implementation must add `docs/requirements.md`, `r[impl]`,
-  `r[depends]`, `r[verify]`, tests, Verus proof evidence, and Tracey evidence
+- focused tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested
+  checks, strict OpenSpec validation, and final repo validation evidence

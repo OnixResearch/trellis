@@ -11,14 +11,13 @@ completeness.
 
 ## What Changes
 
-- Add a spec-only `add-data-validation-primitives` child OpenSpec under the
-  domain-primitives umbrella.
+- Implement `add-data-validation-primitives` under the domain-primitives
+  umbrella.
 - Define exact finite models for schema predicate envelopes, required/optional
   field metadata, enum constraints, range constraints, cross-field predicates,
   error accumulation, normalization decisions, and deterministic validation
   admission.
-- Leave implementation, Verus proofs, Tracey coverage, and evidence as future
-  tasks.
+- Sync implementation, Verus proofs, Tracey coverage, and evidence for archive.
 
 ## Capabilities
 
@@ -43,17 +42,15 @@ completeness.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/schema_*`, `src/validate_*`, `docs/requirements.md`, tests, and
-  evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: `src/data_validation_*`, `src/lib.rs`,
+  `docs/requirements.md`, canonical specs, tests, and evidence.
+- **APIs**: exact finite data-validation APIs are added.
 - **Dependencies**: no new dependencies.
-- **Testing**: strict OpenSpec validation now; future implementation must run
-  focused tests, Verus, Tracey, and final repo validation.
+- **Testing**: focused tests, Verus, Tracey, strict OpenSpec validation,
+  and final repo validation evidence are recorded.
 
 ## Out of Scope
 
-- implementing data-validation modules now
 - external validator, schema registry, database, web framework, or form-library
   correctness
 - business-rule completeness, semantic domain correctness, or policy approval

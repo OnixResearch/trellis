@@ -9282,3 +9282,39 @@ and admit only outputs within the previous value plus/minus the maximum step.
 r[domain-primitives.control-safety-envelope]
 Control safety-envelope primitives MUST check finite state/input bounds and
 reject envelope violations without claiming real-world physical safety.
+
+## Data Validation Domain Primitives
+
+r[domain-primitives.data-validation.schema-predicate]
+Data-validation schema-predicate primitives MUST admit only declared finite
+predicate identifiers and reject unknown predicates explicitly.
+
+r[domain-primitives.data-validation.field-presence]
+Data-validation field-presence primitives MUST distinguish missing required
+fields, optional absence, present fields, and duplicate fields without mutating
+candidate records.
+
+r[domain-primitives.data-validation.enum-constraint]
+Data-validation enum-constraint primitives MUST admit only values contained in a
+declared finite member set.
+
+r[domain-primitives.data-validation.range-constraint]
+Data-validation range-constraint primitives MUST admit only scalar values inside
+valid inclusive finite bounds.
+
+r[domain-primitives.data-validation.cross-field]
+Data-validation cross-field primitives MUST return satisfied, unsatisfied, or
+inapplicable decisions over finite dependency metadata.
+
+r[domain-primitives.data-validation.error-accumulation]
+Data-validation error-accumulation primitives MUST preserve deterministic finite
+error ordering and capacity metadata.
+
+r[domain-primitives.data-validation.normalization-decision]
+Data-validation normalization primitives MUST record unchanged, transformed, or
+rejected decisions without claiming semantic repair correctness.
+
+r[domain-primitives.data-validation.admission]
+Data-validation admission primitives MUST compose finite schema, field, enum,
+range, cross-field, error, and normalization metadata into deterministic
+admission or rejection.

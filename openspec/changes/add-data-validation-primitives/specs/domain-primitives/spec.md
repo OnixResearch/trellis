@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite data-validation primitives.
+Defines implemented requirements for reusable finite data-validation primitives.
 These primitives MUST use exact finite schema predicate envelopes,
 required/optional field metadata, enum constraints, range constraints,
 cross-field predicate envelopes, deterministic error accumulation,
