@@ -6,10 +6,9 @@ finite data-structure primitives. Arrays, maps, queues, ring buffers, heaps, and
 union-find structures recur across those families and should have one focused
 OpenSpec rather than being re-specified inside each domain change.
 
-This change adds a spec-only data-structure primitive package. It keeps the
-models exact and finite, focuses on admission, index/key safety, ordering, and
-mutation/no-mutation guarantees, and defers implementation until a later proof
-slice.
+This change implements a focused data-structure primitive package. It keeps the
+models exact and finite, focuses on admission, index/key safety, deterministic
+ordering, and mutation/no-mutation guarantees.
 
 ## What Changes
 
@@ -24,7 +23,7 @@ slice.
 - Require public exec surfaces to reject invalid caller input or return explicit
   empty/error decisions; proof-only helpers may use explicit `requires` after
   validity is established.
-- Keep implementation, evidence, and canonical spec sync as future tasks.
+- Sync implementation evidence and canonical requirement text in this slice.
 
 ## Capabilities
 
@@ -41,18 +40,16 @@ slice.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
+- **Files**: OpenSpec artifacts plus
   `src/ds_bounded_array.rs`, `src/ds_key_value_map.rs`, `src/ds_fifo_queue.rs`,
   `src/ds_ring_buffer.rs`, `src/ds_priority_queue.rs`, `src/ds_union_find.rs`,
   `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **APIs**: adds focused `src/ds_*` exact finite admission/checker APIs.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: this change validates with OpenSpec now; implementation tasks must
-  later run focused tests, Verus, Tracey, and repo validation.
+- **Testing**: focused cargo tests, Verus, Tracey, OpenSpec validation, and repo validation.
 
 ## Out of Scope
 
-- implementing the modules in this change
 - probabilistic, concurrent, lock-free, persistent, or external-storage data
   structures
 - asymptotic-complexity or hardware-performance claims

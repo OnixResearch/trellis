@@ -18,7 +18,6 @@ heap, or union-find requirements.
 
 **Non-Goals:**
 
-- implement modules in this spec-only pass
 - verify amortized complexity, allocation behavior, or cache behavior
 - model probabilistic/hash-quality claims for maps
 - add cross-domain facades before the primitive modules exist
@@ -62,9 +61,7 @@ useful; complexity claims need a separate cost model.
 rename existing code only after matching these requirement IDs and validity
 boundaries.
 
-**Too many modules for one child** → This OpenSpec remains spec-only now; later
-implementation can land one primitive per commit while keeping this focused
-family as the owning change.
+**Too many modules for one child** → This OpenSpec owns a cohesive exact finite implementation slice; later broader collection variants can land in separate changes.
 
 **Map/hash ambiguity** → The first map primitive is finite-key semantics only;
 hashing, collision resistance, and randomized hash builders are out of scope.
@@ -73,5 +70,4 @@ hashing, collision resistance, and randomized hash builders are out of scope.
 
 - `openspec validate add-data-structure-primitives --strict --json`
 - umbrella validation after taxonomy updates
-- future implementation evidence: focused tests, `./scripts/verus.sh src/lib.rs`,
-  Tracey uncovered/untested checks, and final repo validation before archive
+- focused tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested checks, and final repo validation before archive
