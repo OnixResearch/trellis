@@ -8357,7 +8357,10 @@ A CID is revoked if and only if it appears in the revocation set.
 
 r[ucan-revocation.chain-integration]
 A chain is revocation-free if no proof CID in the chain is in the
-revocation set.
+revocation set. Public structural revocation admission MUST compose finite
+structural chain validity with caller-provided proof-CID lookup, reject CID/entry
+length mismatches, reject any revoked proof CID, and avoid claims about
+revocation-list freshness or external registry correctness.
 
 r[ucan-revocation.monotonicity]
 Adding entries to the revocation set MUST NOT un-revoke a previously
