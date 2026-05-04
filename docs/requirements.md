@@ -8433,8 +8433,9 @@ The union of two capability sets is their concatenation, and it
 contains every capability authorized by either set.
 
 r[ucan-capability-merge.authorization]
-A capability is authorized by a set if some entry in the set
-contains it.
+A capability is authorized by a set if some entry in the set contains it, and
+public authorization checking MUST accept capabilities contained by either side
+of a merged set while rejecting resource or ability escalation.
 
 ## Composite Primitives
 
