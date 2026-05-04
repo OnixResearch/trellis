@@ -19,7 +19,6 @@ inside each domain change.
 
 **Non-Goals:**
 
-- implement modules in this spec-only pass
 - prove asymptotic complexity, allocation behavior, or hardware/cache behavior
 - model heuristic quality, probabilistic graph properties, or floating-point path
   costs
@@ -73,5 +72,5 @@ non-negative bounded costs unless a later proof establishes full optimality.
 
 - `openspec validate add-graph-primitives --strict --json`
 - umbrella validation after taxonomy updates
-- future implementation evidence: focused tests, `./scripts/verus.sh src/lib.rs`,
+- implementation evidence: focused tests, `./scripts/verus.sh src/lib.rs`,
   Tracey uncovered/untested checks, and final repo validation before archive

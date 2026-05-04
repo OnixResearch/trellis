@@ -6,7 +6,7 @@ topological ordering, component partitions, shortest-path envelopes, and bounded
 cut/frontier reasoning. These are common across dependency graphs, workflow
 schedulers, GIS routing/topology, ML computation graphs, and resource graphs.
 
-This change adds a focused spec-only graph primitive package. It uses exact
+This change adds a focused implemented graph primitive package. It uses exact
 finite graph models first and avoids probabilistic, continuous, heuristic, or
 algorithmic-optimality claims that would require separate cost/model specs.
 
@@ -36,19 +36,17 @@ algorithmic-optimality claims that would require separate cost/model specs.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
+- **Files**: OpenSpec artifacts and implementation add
   `src/graph_adjacency.rs`, `src/graph_reachability.rs`,
   `src/graph_topological_order.rs`, `src/graph_component_partition.rs`,
   `src/graph_shortest_path_envelope.rs`, `src/graph_frontier_cut.rs`,
   `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **APIs**: exact finite runtime admission APIs are added for the listed graph envelopes.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: this change validates with OpenSpec now; implementation tasks must
-  later run focused tests, Verus, Tracey, and repo validation.
+- **Testing**: this change validates with OpenSpec now; implementation evidence runs focused tests, Verus, Tracey, strict OpenSpec validation, and repo validation.
 
 ## Out of Scope
 
-- implementing graph modules in this change
 - negative-weight shortest paths, floating-point weights, heuristic search
   optimality, randomized graph algorithms, or complexity guarantees
 - external graph libraries or large graph engines

@@ -15,19 +15,19 @@
 
 ## Phase 2: Core finite graph primitives
 
-- [ ] Implement and prove `graph_adjacency`; cover node-count validity, endpoint admission, adjacency lookup, and malformed-edge rejection. `[covers=domain-primitives.graph-adjacency]`
-- [ ] Implement and prove `graph_reachability`; cover path witness validity, reachability extension, unreachable rejection/empty result, and bounded search admission. `[covers=domain-primitives.graph-reachability]`
-- [ ] Implement and prove `graph_topological_order`; cover DAG admission, edge-forward ordering, duplicate/missing-node rejection, and cycle rejection. `[covers=domain-primitives.graph-topological-order]`
+- [x] Implement and prove `graph_adjacency`; cover node-count validity, endpoint admission, adjacency lookup, and malformed-edge rejection. `[covers=domain-primitives.graph-adjacency]`
+- [x] Implement and prove `graph_reachability`; cover path witness validity, reachability extension, unreachable rejection/empty result, and bounded search admission. `[covers=domain-primitives.graph-reachability]`
+- [x] Implement and prove `graph_topological_order`; cover DAG admission, edge-forward ordering, duplicate/missing-node rejection, and cycle rejection. `[covers=domain-primitives.graph-topological-order]`
 
 ## Phase 3: Partition, cost, and traversal primitives
 
-- [ ] Implement and prove `graph_component_partition`; cover undirected connectivity grouping, partition disjointness, coverage, and invalid-edge rejection. `[covers=domain-primitives.graph-component-partition]`
-- [ ] Implement and prove `graph_shortest_path_envelope`; cover non-negative bounded weights, path-cost accumulation, candidate-cost comparison, and overflow/malformed-weight rejection. `[covers=domain-primitives.graph-shortest-path-envelope]`
-- [ ] Implement and prove `graph_frontier_cut`; cover visited/frontier disjointness, cut preservation, expansion admission, and no-mutation-on-invalid-frontier. `[covers=domain-primitives.graph-frontier-cut]`
+- [x] Implement and prove `graph_component_partition`; cover undirected connectivity grouping, partition disjointness, coverage, and invalid-edge rejection. `[covers=domain-primitives.graph-component-partition]`
+- [x] Implement and prove `graph_shortest_path_envelope`; cover non-negative bounded weights, path-cost accumulation, candidate-cost comparison, and overflow/malformed-weight rejection. `[covers=domain-primitives.graph-shortest-path-envelope]`
+- [x] Implement and prove `graph_frontier_cut`; cover visited/frontier disjointness, cut preservation, expansion admission, and no-mutation-on-invalid-frontier. `[covers=domain-primitives.graph-frontier-cut]`
 
 ## Phase 4: Validation and archive
 
-- [ ] Sync completed requirement text to `docs/requirements.md` and canonical `openspec/specs/domain-primitives/spec.md`.
-- [ ] Run focused cargo/Verus/Tracey evidence for implemented modules.
-- [ ] Run OpenSpec gates after implementation evidence is synced.
-- [ ] Archive only after implementation and validation tasks complete.
+- [x] Sync completed requirement text to `docs/requirements.md` and canonical `openspec/specs/domain-primitives/spec.md`.
+- [x] Run focused cargo/Verus/Tracey evidence for implemented modules.
+- [x] Run OpenSpec gates after implementation evidence is synced.
+- [x] Archive only after implementation and validation tasks complete.
