@@ -9,18 +9,18 @@ claim model quality, training correctness, fairness, or floating-point accuracy.
 ## ADDED Requirements
 
 ### Requirement: ML Tensor Shape [r[domain-primitives.ml-tensor-shape]]
-The system MUST provide an ML tensor-shape primitive for rank, dimension, stride,
+The system MUST provide an ML tensor-shape primitive for exact finite rank-1 dimensions
 and flattened-index safety.
 
 #### Scenario: Valid multi-index maps into buffer [r[domain-primitives.ml-tensor-shape.scenario.valid-multi-index-maps-into-buffer]]
 
-- GIVEN a valid tensor shape and an index tuple within every dimension
+- GIVEN a valid finite rank-1 tensor shape and an index within its dimension
 - WHEN the flattened offset is computed
 - THEN the offset is less than the tensor element count
 
 #### Scenario: Invalid rank or index is rejected [r[domain-primitives.ml-tensor-shape.scenario.invalid-rank-or-index-is-rejected]]
 
-- GIVEN a rank mismatch, zero dimension where disallowed, overflowing size, or out-of-bounds index
+- GIVEN a rank mismatch, zero dimension, or out-of-bounds index
 - WHEN tensor-shape admission is checked
 - THEN the request is rejected
 

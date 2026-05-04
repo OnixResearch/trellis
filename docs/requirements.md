@@ -8560,3 +8560,41 @@ GIS tile-index primitives MUST admit only zoom/x/y addresses inside the finite q
 
 r[domain-primitives.gis-linestring-topology]
 GIS linestring-topology primitives MUST admit only finite discrete non-degenerate segment chains in the first-suite model, reject duplicate consecutive points, and conservatively reject explicitly unsupported self-intersection patterns without claiming full computational-geometry robustness.
+
+## ML Domain Primitives
+
+### ML Tensor Shape
+r[domain-primitives.ml-tensor-shape]
+Tensor-shape primitives MUST admit only finite rank-1 shapes with non-zero dimensions and MUST map accepted indexes to flattened offsets inside the element count. They MUST reject rank mismatches, zero dimensions, and out-of-bounds indexes.
+
+### ML Label Encoding
+r[domain-primitives.ml-label-encoding]
+Label-encoding primitives MUST admit declared dense class labels, map each declared label to a stable class index, decode that index back to the same label, and reject labels outside the declared class count.
+
+### ML Dataset Split
+r[domain-primitives.ml-dataset-split]
+Dataset-split primitives MUST admit only split sizes whose train/validation/test sum fits within the bounded dataset size, and MUST classify dataset indexes into deterministic non-overlapping split ranges.
+
+### ML Batch Iterator
+r[domain-primitives.ml-batch-iterator]
+Batch-iterator primitives MUST admit only positive batch sizes whose requested batch starts inside the dataset, and MUST return non-empty contiguous ranges bounded by the dataset size.
+
+### ML Feature Normalization
+r[domain-primitives.ml-feature-normalization]
+Feature-normalization primitives MUST reject missing values and invalid or zero-width feature ranges, and accepted normalized endpoint outputs MUST stay inside the declared target interval.
+
+### ML Top K
+r[domain-primitives.ml-top-k]
+Top-k primitives MUST reject zero or out-of-range `k` requests and MUST return deterministic bounded score ordering with stable tie-breaking for the finite supported score vector.
+
+### ML Inference Envelope
+r[domain-primitives.ml-inference-envelope]
+Inference-envelope primitives MUST admit only classification or regression outputs that fit declared metadata bounds, including declared class counts, bounded confidence scores, and regression envelopes.
+
+### ML Confusion Matrix
+r[domain-primitives.ml-confusion-matrix]
+Confusion-matrix primitives MUST update only bounded prediction-count cells and MUST reject numeric precision or recall availability when the corresponding denominator is zero.
+
+### ML Non-Claims
+r[domain-primitives.ml-non-claims]
+ML primitives MUST NOT claim model quality, training correctness, fairness, probabilistic guarantees, floating-point accuracy, stochastic convergence, or production inference correctness.

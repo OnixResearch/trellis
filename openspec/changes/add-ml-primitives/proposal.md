@@ -9,7 +9,7 @@ without claiming model quality or training correctness.
 ## What Changes
 
 - Add a focused ML primitive OpenSpec covering:
-  - `ml_tensor_shape`: rank, dimensions, strides, and flattened-index safety.
+  - `ml_tensor_shape`: exact finite rank-1 dimensions and flattened-index safety.
   - `ml_label_encoding`: declared vocabulary/class-index admission.
   - `ml_dataset_split`: deterministic disjoint train/validation/test partitions.
   - `ml_batch_iterator`: bounded contiguous batch windows over datasets.
@@ -17,7 +17,7 @@ without claiming model quality or training correctness.
   - `ml_top_k`: deterministic bounded top-k/argmax selection.
   - `ml_inference_envelope`: bounded classification/regression result admission.
   - `ml_confusion_matrix`: bounded counts and denominator-safe metrics.
-- Keep the change spec-only for now; implementation tasks remain unchecked.
+- Implement exact finite ML admission/checker primitives with tests, Verus proofs, Tracey coverage, and OpenSpec archive evidence.
 
 ## Capabilities
 
@@ -34,10 +34,10 @@ without claiming model quality or training correctness.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; later implementation adds `src/ml_*`, `src/lib.rs`, `docs/requirements.md`, tests, README entries, and evidence.
-- **APIs**: no runtime APIs in this spec-only slice.
+- **Files**: OpenSpec artifacts, `src/ml_*`, `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
+- **APIs**: exact finite ML checker/admission APIs under `src/ml_*`.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: OpenSpec validation now; implementation changes later capture cargo, Verus, and Tracey evidence.
+- **Testing**: cargo tests, Verus, Tracey coverage, and OpenSpec validation.
 
 ## Out of Scope
 
