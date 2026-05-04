@@ -74,5 +74,5 @@
 
 ## Phase 3: Umbrella sync and archive
 
-- [ ] After child split specs exist, sync this umbrella policy into canonical `openspec/specs/domain-primitives/spec.md` without duplicating child module requirements.
-- [ ] Run final OpenSpec validation for umbrella and child changes before archive.
+- [x] After child split specs exist, sync this umbrella policy into canonical `openspec/specs/domain-primitives/spec.md` without duplicating child module requirements.
+- [x] Run final OpenSpec validation for umbrella and child changes before archive.
