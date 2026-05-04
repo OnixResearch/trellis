@@ -17,14 +17,14 @@
 
 ## Phase 2: Future implementation
 
-- [ ] Add docs/requirements entries and Tracey IDs for finite endpoint/address metadata.
-- [ ] Implement and verify packet/frame envelope admission primitives.
-- [ ] Implement and verify finite header-field admission metadata.
-- [ ] Implement and verify state-free parser admission envelopes.
-- [ ] Implement and verify finite message sequencing metadata.
-- [ ] Implement and verify checksum-shape metadata envelopes.
-- [ ] Implement and verify payload length/type bound metadata.
-- [ ] Implement deterministic protocol admission/rejection composition.
-- [ ] Add focused positive and negative tests for each network-protocol primitive.
-- [ ] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
-- [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.
+- [x] Add docs/requirements entries and Tracey IDs for finite endpoint/address metadata.
+- [x] Implement and verify packet/frame envelope admission primitives.
+- [x] Implement and verify finite header-field admission metadata.
+- [x] Implement and verify state-free parser admission envelopes.
+- [x] Implement and verify finite message sequencing metadata.
+- [x] Implement and verify checksum-shape metadata envelopes.
+- [x] Implement and verify payload length/type bound metadata.
+- [x] Implement deterministic protocol admission/rejection composition.
+- [x] Add focused positive and negative tests for each network-protocol primitive.
+- [x] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
+- [x] Capture reviewable evidence and archive the change after all implementation tasks complete.
