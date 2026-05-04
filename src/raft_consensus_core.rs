@@ -85,6 +85,75 @@ pub struct RaftMembershipConfig {
     pub max_node_id: u64,
 }
 
+
+/// Finite OpenRaft-inspired log pointer metadata without storage durability claims.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftOperationalLogPointers {
+    /// Last purged log index, inclusive.
+    pub purged: u64,
+    /// Last snapshot-included log index, inclusive.
+    pub snapshot: u64,
+    /// Last state-machine-applied log index, inclusive.
+    pub applied: u64,
+    /// Last committed log index, inclusive.
+    pub committed: u64,
+    /// Last flushed/persisted log index metadata, inclusive.
+    pub flushed: u64,
+    /// Last submitted-to-storage log index metadata, inclusive.
+    pub submitted: u64,
+    /// Last accepted-from-leader log index metadata, inclusive.
+    pub accepted: u64,
+}
+
+/// Finite three-stage I/O progress metadata.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftIoProgressMetadata {
+    /// Last flushed finite I/O sequence number.
+    pub flushed: u64,
+    /// Last submitted finite I/O sequence number.
+    pub submitted: u64,
+    /// Last accepted finite I/O sequence number.
+    pub accepted: u64,
+}
+
+/// Finite vote/log I/O ordering metadata; no fsync or crash-recovery claim is made.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftVoteLogIoMetadata {
+    /// Highest term whose vote/term metadata has been persisted in this finite model.
+    pub persisted_term: u64,
+    /// Term of the log write being admitted.
+    pub log_term: u64,
+}
+
+/// Finite committed/effective membership metadata inspired by OpenRaft.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftEffectiveMembershipMetadata {
+    /// Last committed configuration epoch.
+    pub committed_epoch: u64,
+    /// Currently effective configuration epoch, which may be uncommitted.
+    pub effective_epoch: u64,
+}
+
+/// Finite replication-session metadata for isolating stale progress updates.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftReplicationSessionMetadata {
+    /// Leader term that owns the replication session.
+    pub leader_term: u64,
+    /// One-based leader node identifier.
+    pub leader_node: u64,
+    /// Log index of the membership entry governing this session; zero means initial config.
+    pub membership_log_index: u64,
+}
+
+/// Finite read-linearizer metadata; no network quorum or clock lease claim is made.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftReadLinearizerMetadata {
+    /// Log index required before a modeled read may observe state.
+    pub read_log_index: u64,
+    /// Local last-applied log index.
+    pub last_applied_index: u64,
+}
+
 /// Finite Raft message envelope kind constants.
 pub const RAFT_MESSAGE_REQUEST_VOTE: u64 = 1;
 pub const RAFT_MESSAGE_REQUEST_VOTE_RESPONSE: u64 = 2;
@@ -167,6 +236,272 @@ pub struct RaftAppendConflictMetadata {
     /// One-based follower log length metadata, used to bound conflict indexes.
     pub follower_log_len: u64,
 }
+
+
+// r[depends domain-primitives.raft-consensus.openraft-log-pointers]
+/// Spec: OpenRaft-inspired log pointers are ordered in the finite safety lattice.
+pub open spec fn raft_operational_log_pointers_valid_spec(ptrs: RaftOperationalLogPointers) -> bool {
+    ptrs.purged <= ptrs.snapshot
+        && ptrs.snapshot <= ptrs.applied
+        && ptrs.applied <= ptrs.committed
+        && ptrs.committed <= ptrs.submitted
+        && ptrs.flushed <= ptrs.submitted
+        && ptrs.submitted <= ptrs.accepted
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-io-progress]
+/// Spec: finite I/O progress cursors are monotone by stage.
+pub open spec fn raft_io_progress_valid_spec(progress: RaftIoProgressMetadata) -> bool {
+    progress.flushed <= progress.submitted && progress.submitted <= progress.accepted
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-io-progress]
+/// Spec: an I/O progress update is admitted only if each cursor stays monotone and valid.
+pub open spec fn raft_io_progress_advance_admit_spec(
+    old_progress: RaftIoProgressMetadata,
+    new_progress: RaftIoProgressMetadata,
+) -> bool {
+    raft_io_progress_valid_spec(old_progress)
+        && raft_io_progress_valid_spec(new_progress)
+        && old_progress.flushed <= new_progress.flushed
+        && old_progress.submitted <= new_progress.submitted
+        && old_progress.accepted <= new_progress.accepted
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-vote-log-io]
+/// Spec: finite log I/O is admitted only after term/vote metadata for that log term is ordered first.
+pub open spec fn raft_vote_log_io_ordered_spec(meta: RaftVoteLogIoMetadata) -> bool {
+    meta.log_term <= meta.persisted_term
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-effective-membership]
+/// Spec: effective membership may be newer than the last committed membership but not older.
+pub open spec fn raft_effective_membership_valid_spec(meta: RaftEffectiveMembershipMetadata) -> bool {
+    meta.committed_epoch <= meta.effective_epoch
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-effective-membership]
+/// Spec: conflicting uncommitted effective membership rolls back to the committed epoch.
+pub open spec fn raft_effective_membership_rollback_spec(
+    meta: RaftEffectiveMembershipMetadata,
+) -> RaftEffectiveMembershipMetadata {
+    RaftEffectiveMembershipMetadata {
+        committed_epoch: meta.committed_epoch,
+        effective_epoch: meta.committed_epoch,
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-replication-session]
+/// Spec: replication sessions match exactly on leader identity and membership log index.
+pub open spec fn raft_replication_session_matches_spec(
+    current: RaftReplicationSessionMetadata,
+    update: RaftReplicationSessionMetadata,
+) -> bool {
+    current.leader_term == update.leader_term
+        && current.leader_node == update.leader_node
+        && current.membership_log_index == update.membership_log_index
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-replication-session]
+/// Spec: stale replication progress is admitted only for the current session and monotone match index.
+pub open spec fn raft_replication_progress_update_admit_spec(
+    current: RaftReplicationSessionMetadata,
+    update_session: RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+) -> bool {
+    raft_replication_session_matches_spec(current, update_session)
+        && old_matched_index <= new_matched_index
+        && new_matched_index <= leader_last_log_index
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Spec: finite read-linearizer readiness holds once local apply has caught up to the read log index.
+pub open spec fn raft_read_linearizer_ready_spec(meta: RaftReadLinearizerMetadata) -> bool {
+    meta.read_log_index <= meta.last_applied_index
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-log-pointers]
+/// Return whether OpenRaft-inspired finite log pointers satisfy their ordering lattice.
+pub fn raft_operational_log_pointers_valid(ptrs: &RaftOperationalLogPointers) -> (result: bool)
+    ensures result == raft_operational_log_pointers_valid_spec(*ptrs)
+{
+    ptrs.purged <= ptrs.snapshot
+        && ptrs.snapshot <= ptrs.applied
+        && ptrs.applied <= ptrs.committed
+        && ptrs.committed <= ptrs.submitted
+        && ptrs.flushed <= ptrs.submitted
+        && ptrs.submitted <= ptrs.accepted
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-io-progress]
+/// Return whether finite I/O progress cursors are stage-ordered.
+pub fn raft_io_progress_valid(progress: &RaftIoProgressMetadata) -> (result: bool)
+    ensures result == raft_io_progress_valid_spec(*progress)
+{
+    progress.flushed <= progress.submitted && progress.submitted <= progress.accepted
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-io-progress]
+/// Return whether an I/O progress update is valid and cursor-monotone.
+pub fn raft_io_progress_advance_admit(
+    old_progress: &RaftIoProgressMetadata,
+    new_progress: &RaftIoProgressMetadata,
+) -> (result: bool)
+    ensures result == raft_io_progress_advance_admit_spec(*old_progress, *new_progress)
+{
+    raft_io_progress_valid(old_progress)
+        && raft_io_progress_valid(new_progress)
+        && old_progress.flushed <= new_progress.flushed
+        && old_progress.submitted <= new_progress.submitted
+        && old_progress.accepted <= new_progress.accepted
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-vote-log-io]
+/// Return whether finite vote/term metadata is ordered before the modeled log write.
+pub fn raft_vote_log_io_ordered(meta: &RaftVoteLogIoMetadata) -> (result: bool)
+    ensures result == raft_vote_log_io_ordered_spec(*meta)
+{
+    meta.log_term <= meta.persisted_term
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-effective-membership]
+/// Return whether committed/effective membership epochs are ordered.
+pub fn raft_effective_membership_valid(meta: &RaftEffectiveMembershipMetadata) -> (result: bool)
+    ensures result == raft_effective_membership_valid_spec(*meta)
+{
+    meta.committed_epoch <= meta.effective_epoch
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-effective-membership]
+/// Roll back a conflicting uncommitted effective membership to the committed epoch.
+pub fn raft_effective_membership_rollback(
+    meta: &RaftEffectiveMembershipMetadata,
+) -> (result: RaftEffectiveMembershipMetadata)
+    ensures
+        result == raft_effective_membership_rollback_spec(*meta),
+        result.effective_epoch == meta.committed_epoch,
+        result.committed_epoch == meta.committed_epoch,
+{
+    RaftEffectiveMembershipMetadata {
+        committed_epoch: meta.committed_epoch,
+        effective_epoch: meta.committed_epoch,
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-replication-session]
+/// Return whether a replication progress update belongs to the current finite session.
+pub fn raft_replication_session_matches(
+    current: &RaftReplicationSessionMetadata,
+    update: &RaftReplicationSessionMetadata,
+) -> (result: bool)
+    ensures result == raft_replication_session_matches_spec(*current, *update)
+{
+    current.leader_term == update.leader_term
+        && current.leader_node == update.leader_node
+        && current.membership_log_index == update.membership_log_index
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-replication-session]
+/// Return whether finite replication progress is current-session, monotone, and leader-log-bounded.
+pub fn raft_replication_progress_update_admit(
+    current: &RaftReplicationSessionMetadata,
+    update_session: &RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+) -> (result: bool)
+    ensures result == raft_replication_progress_update_admit_spec(
+        *current,
+        *update_session,
+        old_matched_index,
+        new_matched_index,
+        leader_last_log_index,
+    )
+{
+    raft_replication_session_matches(current, update_session)
+        && old_matched_index <= new_matched_index
+        && new_matched_index <= leader_last_log_index
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Return whether local apply progress has caught up to the finite read-linearizer index.
+pub fn raft_read_linearizer_ready(meta: &RaftReadLinearizerMetadata) -> (result: bool)
+    ensures result == raft_read_linearizer_ready_spec(*meta)
+{
+    meta.read_log_index <= meta.last_applied_index
+}
+
+// r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+/// Valid OpenRaft-inspired log pointers expose the core state-machine/commit ordering.
+pub proof fn valid_log_pointers_order_applied_and_committed(ptrs: RaftOperationalLogPointers)
+    requires raft_operational_log_pointers_valid_spec(ptrs)
+    ensures
+        ptrs.purged <= ptrs.snapshot,
+        ptrs.snapshot <= ptrs.applied,
+        ptrs.applied <= ptrs.committed,
+        ptrs.committed <= ptrs.submitted,
+        ptrs.flushed <= ptrs.accepted,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-io-progress]
+/// Admitted I/O progress updates never move any cursor backwards.
+pub proof fn admitted_io_progress_update_is_monotone(
+    old_progress: RaftIoProgressMetadata,
+    new_progress: RaftIoProgressMetadata,
+)
+    requires raft_io_progress_advance_admit_spec(old_progress, new_progress)
+    ensures
+        old_progress.flushed <= new_progress.flushed,
+        old_progress.submitted <= new_progress.submitted,
+        old_progress.accepted <= new_progress.accepted,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-vote-log-io]
+/// Admitted finite log I/O has persisted term metadata at least as new as the log term.
+pub proof fn admitted_log_io_has_prior_term_metadata(meta: RaftVoteLogIoMetadata)
+    requires raft_vote_log_io_ordered_spec(meta)
+    ensures meta.log_term <= meta.persisted_term
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-effective-membership]
+/// Effective-membership rollback restores effective membership to the committed epoch.
+pub proof fn membership_rollback_restores_committed_epoch(meta: RaftEffectiveMembershipMetadata)
+    ensures
+        raft_effective_membership_rollback_spec(meta).committed_epoch == meta.committed_epoch,
+        raft_effective_membership_rollback_spec(meta).effective_epoch == meta.committed_epoch,
+        raft_effective_membership_valid_spec(raft_effective_membership_rollback_spec(meta)),
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-replication-session]
+/// Admitted replication progress updates are current-session and bounded by the leader log.
+pub proof fn admitted_replication_progress_is_current_and_bounded(
+    current: RaftReplicationSessionMetadata,
+    update_session: RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+)
+    requires raft_replication_progress_update_admit_spec(
+        current,
+        update_session,
+        old_matched_index,
+        new_matched_index,
+        leader_last_log_index,
+    )
+    ensures
+        raft_replication_session_matches_spec(current, update_session),
+        old_matched_index <= new_matched_index,
+        new_matched_index <= leader_last_log_index,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Ready finite read-linearizers expose that local apply has caught up to the read index.
+pub proof fn ready_read_linearizer_has_applied_read_index(meta: RaftReadLinearizerMetadata)
+    requires raft_read_linearizer_ready_spec(meta)
+    ensures meta.read_log_index <= meta.last_applied_index
+{}
 
 // r[depends domain-primitives.raft-consensus.membership]
 /// Spec: finite membership metadata is bounded to a modeled one-based node universe.
@@ -2388,6 +2723,136 @@ mod tests {
         let post = raft_transition_admission_result(&before, &bad_after, &log, &log, &step);
         assert!(!post.admitted);
         assert_eq!(post.failing_check, RAFT_ADMISSION_AFTER_INVARIANT_FAILED);
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+    #[test]
+    fn openraft_log_pointer_lattice_accepts_ordered_and_rejects_regressions() {
+        let valid = RaftOperationalLogPointers {
+            purged: 1,
+            snapshot: 2,
+            applied: 3,
+            committed: 4,
+            flushed: 3,
+            submitted: 5,
+            accepted: 6,
+        };
+        assert!(raft_operational_log_pointers_valid(&valid));
+
+        let applied_after_commit = RaftOperationalLogPointers {
+            applied: 5,
+            committed: 4,
+            ..valid
+        };
+        assert!(!raft_operational_log_pointers_valid(&applied_after_commit));
+
+        let accepted_before_submitted = RaftOperationalLogPointers { accepted: 4, ..valid };
+        assert!(!raft_operational_log_pointers_valid(&accepted_before_submitted));
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-io-progress]
+    // r[verify domain-primitives.raft-consensus.openraft-vote-log-io]
+    #[test]
+    fn openraft_io_progress_and_vote_log_order_reject_reordering() {
+        let old_progress = RaftIoProgressMetadata {
+            flushed: 2,
+            submitted: 4,
+            accepted: 6,
+        };
+        let advanced = RaftIoProgressMetadata {
+            flushed: 3,
+            submitted: 5,
+            accepted: 7,
+        };
+        assert!(raft_io_progress_valid(&old_progress));
+        assert!(raft_io_progress_advance_admit(&old_progress, &advanced));
+
+        let reordered_flush = RaftIoProgressMetadata {
+            flushed: 6,
+            submitted: 5,
+            accepted: 7,
+        };
+        assert!(!raft_io_progress_valid(&reordered_flush));
+
+        let backwards = RaftIoProgressMetadata {
+            flushed: 1,
+            submitted: 5,
+            accepted: 7,
+        };
+        assert!(!raft_io_progress_advance_admit(&old_progress, &backwards));
+
+        assert!(raft_vote_log_io_ordered(&RaftVoteLogIoMetadata {
+            persisted_term: 5,
+            log_term: 5,
+        }));
+        assert!(raft_vote_log_io_ordered(&RaftVoteLogIoMetadata {
+            persisted_term: 6,
+            log_term: 5,
+        }));
+        assert!(!raft_vote_log_io_ordered(&RaftVoteLogIoMetadata {
+            persisted_term: 4,
+            log_term: 5,
+        }));
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-effective-membership]
+    // r[verify domain-primitives.raft-consensus.openraft-replication-session]
+    #[test]
+    fn effective_membership_and_replication_session_reject_stale_mutations() {
+        let membership = RaftEffectiveMembershipMetadata {
+            committed_epoch: 4,
+            effective_epoch: 6,
+        };
+        assert!(raft_effective_membership_valid(&membership));
+        let rolled_back = raft_effective_membership_rollback(&membership);
+        assert_eq!(rolled_back.committed_epoch, 4);
+        assert_eq!(rolled_back.effective_epoch, 4);
+        assert!(raft_effective_membership_valid(&rolled_back));
+
+        let invalid = RaftEffectiveMembershipMetadata {
+            committed_epoch: 7,
+            effective_epoch: 6,
+        };
+        assert!(!raft_effective_membership_valid(&invalid));
+
+        let session = RaftReplicationSessionMetadata {
+            leader_term: 8,
+            leader_node: 1,
+            membership_log_index: 10,
+        };
+        assert!(raft_replication_progress_update_admit(&session, &session, 3, 5, 9));
+        assert!(!raft_replication_progress_update_admit(&session, &session, 6, 5, 9));
+        assert!(!raft_replication_progress_update_admit(&session, &session, 3, 10, 9));
+
+        let stale_leader = RaftReplicationSessionMetadata {
+            leader_term: 7,
+            ..session
+        };
+        assert!(!raft_replication_session_matches(&session, &stale_leader));
+        assert!(!raft_replication_progress_update_admit(&session, &stale_leader, 3, 5, 9));
+
+        let stale_membership = RaftReplicationSessionMetadata {
+            membership_log_index: 9,
+            ..session
+        };
+        assert!(!raft_replication_progress_update_admit(&session, &stale_membership, 3, 5, 9));
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-read-linearizer]
+    #[test]
+    fn read_linearizer_ready_only_after_apply_catches_up() {
+        assert!(raft_read_linearizer_ready(&RaftReadLinearizerMetadata {
+            read_log_index: 5,
+            last_applied_index: 5,
+        }));
+        assert!(raft_read_linearizer_ready(&RaftReadLinearizerMetadata {
+            read_log_index: 5,
+            last_applied_index: 7,
+        }));
+        assert!(!raft_read_linearizer_ready(&RaftReadLinearizerMetadata {
+            read_log_index: 5,
+            last_applied_index: 4,
+        }));
     }
 
     // r[verify domain-primitives.raft-consensus.message]

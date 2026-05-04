@@ -45,5 +45,6 @@
 - [x] Compose the Raft invariant bundle and prove preservation for every admitted transition kind.
 - [x] Implement and verify deterministic Raft admission/rejection API with stable failure metadata.
 - [x] Add focused positive, negative, and mutation tests for each Raft primitive and invariant.
+- [x] Implement and verify OpenRaft-inspired finite operational-safety metadata primitives.
 - [x] Run focused Verus, Tracey uncovered/untested, strict OpenSpec validation, and final repo validation.
 - [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.

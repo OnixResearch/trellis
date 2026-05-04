@@ -1782,6 +1782,41 @@ MUST report the stable OK code, and rejected candidates MUST report the first
 failing modeled finite check without claiming runtime network, clock, storage,
 availability, or production implementation behavior.
 
+r[domain-primitives.raft-consensus.openraft-log-pointers]
+OpenRaft-inspired log-pointer primitives MUST model finite pointer ordering for
+purged, snapshot, applied, committed, flushed, submitted, and accepted indexes.
+The pointer lattice MUST reject regressions where applied exceeds committed,
+committed exceeds submitted, flushed exceeds submitted, or submitted exceeds
+accepted, without claiming disk durability or storage implementation behavior.
+
+r[domain-primitives.raft-consensus.openraft-io-progress]
+OpenRaft-inspired I/O progress primitives MUST model finite flushed, submitted,
+and accepted cursors. Progress metadata MUST satisfy flushed <= submitted <=
+accepted, and admitted progress updates MUST move every cursor monotonically.
+
+r[domain-primitives.raft-consensus.openraft-vote-log-io]
+OpenRaft-inspired vote/log I/O ordering primitives MUST admit a finite log write
+only when term/vote metadata for that log term has already been ordered first.
+These predicates MUST NOT claim fsync, crash recovery, or storage durability.
+
+r[domain-primitives.raft-consensus.openraft-effective-membership]
+OpenRaft-inspired effective-membership primitives MUST model a committed epoch
+and an effective epoch where committed <= effective. A conflicting uncommitted
+effective membership rollback MUST restore the effective epoch to the committed
+epoch.
+
+r[domain-primitives.raft-consensus.openraft-replication-session]
+OpenRaft-inspired replication-session primitives MUST isolate finite replication
+progress by leader term, leader node, and governing membership log index. Stale
+session updates, backwards matched-index movement, and matched indexes beyond the
+leader log MUST be rejected.
+
+r[domain-primitives.raft-consensus.openraft-read-linearizer]
+OpenRaft-inspired read-linearizer primitives MUST model only finite readiness:
+a read is ready exactly when local last-applied index has caught up to the read
+log index. These predicates MUST NOT claim quorum RPC behavior, lease timing,
+clock drift bounds, network delivery, or end-to-end application linearizability.
+
 ## Vector Clock
 
 r[vector-clock.happens-before]

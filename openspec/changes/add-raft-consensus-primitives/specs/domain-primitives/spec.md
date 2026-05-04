@@ -290,3 +290,72 @@ quorum, log, snapshot, membership, and invariant checks.
 - GIVEN a Raft state or transition candidate failing one or more declared finite checks
 - WHEN deterministic Raft admission is evaluated
 - THEN the result rejects the candidate with stable failure metadata and does not claim runtime network, clock, storage, or availability behavior
+
+### Requirement: OpenRaft Log Pointer Lattice [r[domain-primitives.raft-consensus.openraft-log-pointers]]
+The system MUST define finite OpenRaft-inspired log pointer metadata for purged,
+snapshot, applied, committed, flushed, submitted, and accepted indexes, and MUST
+reject pointer regressions that violate the ordered pointer lattice without
+claiming disk durability or storage implementation behavior.
+
+#### Scenario: Pointer regression is rejected [r[domain-primitives.raft-consensus.openraft-log-pointers.scenario.pointer-regression-rejected]]
+
+- GIVEN finite log pointers where applied exceeds committed or submitted exceeds accepted
+- WHEN log-pointer admission is evaluated
+- THEN the metadata is rejected with pointer-order failure evidence
+
+### Requirement: OpenRaft I/O Progress [r[domain-primitives.raft-consensus.openraft-io-progress]]
+The system MUST define finite flushed, submitted, and accepted I/O progress
+cursors, require flushed <= submitted <= accepted, and admit progress updates only
+when every cursor moves monotonically.
+
+#### Scenario: Backwards I/O cursor update is rejected [r[domain-primitives.raft-consensus.openraft-io-progress.scenario.backwards-cursor-rejected]]
+
+- GIVEN a finite I/O progress update that moves any cursor backwards
+- WHEN progress-update admission is evaluated
+- THEN the update is rejected without claiming storage completion behavior
+
+### Requirement: OpenRaft Vote/Log I/O Ordering [r[domain-primitives.raft-consensus.openraft-vote-log-io]]
+The system MUST define finite vote/log I/O ordering predicates that admit a log
+write only when term/vote metadata for that log term has already been ordered
+first. The predicate MUST NOT claim fsync, crash recovery, or storage durability.
+
+#### Scenario: Log write before term metadata is rejected [r[domain-primitives.raft-consensus.openraft-vote-log-io.scenario.log-before-term-rejected]]
+
+- GIVEN a finite log write whose term is newer than the persisted term metadata
+- WHEN vote/log I/O admission is evaluated
+- THEN the write is rejected with ordering-failure evidence
+
+### Requirement: OpenRaft Effective Membership Rollback [r[domain-primitives.raft-consensus.openraft-effective-membership]]
+The system MUST define finite committed/effective membership metadata where the
+committed epoch is not newer than the effective epoch, and MUST define rollback
+of conflicting uncommitted effective membership to the committed epoch.
+
+#### Scenario: Conflicting effective membership rolls back [r[domain-primitives.raft-consensus.openraft-effective-membership.scenario.rollback-to-committed]]
+
+- GIVEN a committed membership epoch and a newer uncommitted effective epoch
+- WHEN conflicting-log rollback is evaluated
+- THEN the effective epoch is restored to the committed epoch
+
+### Requirement: OpenRaft Replication Session Isolation [r[domain-primitives.raft-consensus.openraft-replication-session]]
+The system MUST define finite replication-session identity from leader term,
+leader node, and governing membership log index. Progress updates MUST be
+admitted only for the current session, with monotone matched index bounded by the
+leader log.
+
+#### Scenario: Stale replication progress is rejected [r[domain-primitives.raft-consensus.openraft-replication-session.scenario.stale-progress-rejected]]
+
+- GIVEN delayed replication progress from an old leader or old membership log session
+- WHEN progress-update admission is evaluated
+- THEN the update is rejected and cannot mutate the current session progress
+
+### Requirement: OpenRaft Read Linearizer Readiness [r[domain-primitives.raft-consensus.openraft-read-linearizer]]
+The system MUST define finite read-linearizer readiness as local last-applied
+index catching up to the read log index. The predicate MUST NOT claim quorum RPC,
+lease timing, clock-drift, network delivery, or end-to-end application
+linearizability behavior.
+
+#### Scenario: Read before apply catch-up is rejected [r[domain-primitives.raft-consensus.openraft-read-linearizer.scenario.apply-catchup-required]]
+
+- GIVEN a read log index greater than the local last-applied index
+- WHEN read-linearizer readiness is evaluated
+- THEN the read is not ready under the finite predicate
