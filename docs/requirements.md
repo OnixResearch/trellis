@@ -8540,3 +8540,23 @@ config and reachable package closure admission.
 r[composite-primitives.chaoscontrol-exploration-core]
 The system MUST provide a ChaosControl exploration core for deterministic,
 coverage-accounted, oracle-checked exploration steps.
+
+## GIS Domain Primitives
+
+r[domain-primitives.bounded-interval]
+Bounded interval primitives MUST admit only normalized closed integer intervals, MUST reject inverted intervals at public constructors, MUST report containment and overlap consistently with endpoints, and MUST clamp accepted values into the accepted interval.
+
+r[domain-primitives.rect-grid-index]
+Rectangular grid indexing primitives MUST admit only non-zero finite dimensions and in-range coordinates. Accepted coordinates MUST flatten deterministically using row-major `y * width + x` arithmetic; this finite primitive does not claim a verified inverse/unflatten surface for arbitrary offsets.
+
+r[domain-primitives.gis-coordinate-envelope]
+GIS coordinate-envelope primitives MUST compose bounded interval admission for exact scaled integer coordinates. Public constructors MUST reject out-of-range latitude/longitude or projected components without claiming projection, geodesic, or floating-point accuracy.
+
+r[domain-primitives.gis-bounding-box]
+GIS bounding-box primitives MUST compose interval facts for normalized rectangular envelopes. Public constructors MUST reject inverted boxes, and accepted containment/intersection predicates MUST remain consistent with normalized axis bounds.
+
+r[domain-primitives.gis-tile-index]
+GIS tile-index primitives MUST admit only zoom/x/y addresses inside the finite quadtree range. Accepted parent computations MUST remain in range and preserve the discrete parent/child refinement relation without claiming map-provider semantics.
+
+r[domain-primitives.gis-linestring-topology]
+GIS linestring-topology primitives MUST admit only finite discrete non-degenerate segment chains in the first-suite model, reject duplicate consecutive points, and conservatively reject explicitly unsupported self-intersection patterns without claiming full computational-geometry robustness.

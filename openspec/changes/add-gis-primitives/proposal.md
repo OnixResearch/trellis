@@ -16,7 +16,7 @@ layouts all need interval and grid-index safety.
   - `bounded_interval`: normalized interval admission, containment, overlap, and
     clamp/range preservation.
   - `rect_grid_index`: bounded 2D rectangular grid coordinates and safe
-    flatten/unflatten relationships.
+    row-major flatten relationships for accepted coordinates.
 - Add GIS primitives:
   - `gis_coordinate_envelope`: checked scaled coordinate wrappers.
   - `gis_bounding_box`: normalized rectangular spatial envelopes.

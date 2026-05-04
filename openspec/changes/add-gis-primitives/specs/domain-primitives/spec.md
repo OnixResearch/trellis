@@ -41,15 +41,15 @@ The system MUST provide a reusable rectangular grid-index primitive for bounded
 - **Validity boundary:** public constructors MUST reject zero dimensions where
   unsupported, dimensions whose area overflows, and coordinates outside
   `0 <= x < width` or `0 <= y < height`.
-- **Exported safety:** accepted coordinates MUST flatten to an offset less than
-  `width * height`; valid offsets MUST unflatten to accepted coordinates and
-  flatten back to the same offset.
+- **Exported safety:** accepted coordinates MUST flatten to a deterministic
+  row-major offset derived from `y * width + x`. The checked public surface does
+  not claim a verified inverse/unflatten API for arbitrary offsets.
 
-#### Scenario: Valid coordinate flattens inside grid [r[domain-primitives.rect-grid-index.scenario.valid-coordinate-flattens-inside-grid]]
+#### Scenario: Valid coordinate flattens deterministically [r[domain-primitives.rect-grid-index.scenario.valid-coordinate-flattens-deterministically]]
 
 - GIVEN a valid grid and coordinate inside width and height bounds
 - WHEN the flattened offset is computed
-- THEN the offset is less than the grid area
+- THEN the offset equals `y * width + x`
 
 #### Scenario: Out-of-range coordinate is rejected [r[domain-primitives.rect-grid-index.scenario.out-of-range-coordinate-is-rejected]]
 

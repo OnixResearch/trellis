@@ -393,7 +393,7 @@ pub fn check_attenuation_narrows_at(
         assert forall|i: int| #![trigger child_att@[i]] 0 <= i < j implies
             child_att_has_parent_entries_spec(parent_att@, child_att@[i]) by {
             assert(child_att@[i] == child_att@[i]);
-        }
+        };
     }
     assert forall|i: int| #![trigger child_att@[i]] 0 <= i < child_att@.len() implies
         child_att_has_parent_entries_spec(parent_att@, child_att@[i]) by {
