@@ -12,11 +12,10 @@ orientation, transform, grid-cell, and admission envelopes.
 - specify exact finite point/vector and axis-aligned bounds metadata
 - specify deterministic orientation, containment, intersection, transform, and
   grid-cell admission envelopes
-- avoid implementation and broad computational-geometry claims for now
+- implement exact finite predicates while avoiding broad computational-geometry claims
 
 **Non-Goals:**
 
-- implementing runtime APIs in this spec-only change
 - proving floating-point robustness, polygon/mesh topology completeness,
   geodesic accuracy, rendering, collision physics, or external library behavior
 - proving performance, spatial-index correctness, or continuous geometry facts
@@ -51,8 +50,12 @@ curves, floating-point robustness, and external geometry libraries.
 
 ## Validation Plan
 
+- `cargo fmt`
+- `cargo test --quiet geom_`
+- `./scripts/verus.sh src/lib.rs`
+- `tracey query uncovered --prefix domain-primitives.geometry-foundation`
+- `tracey query untested --prefix domain-primitives.geometry-foundation`
 - `openspec validate add-geometry-foundation-primitives --strict --json`
-- strict validation for every active primitive-family OpenSpec
-- helper verification is expected to warn about future implementation tasks
-- future implementation must add `docs/requirements.md`, `r[impl]`,
-  `r[depends]`, `r[verify]`, tests, Verus proof evidence, and Tracey evidence
+- `openspec validate domain-primitives --strict --json`
+- `git diff --check`
+- `./scripts/verify.sh`

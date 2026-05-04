@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite geometry-foundation
+Defines implemented requirements for reusable finite geometry-foundation
 primitives. These primitives MUST use exact finite point/vector envelopes,
 axis-aligned bounds and extent metadata, orientation/ordering metadata,
 containment predicate envelopes, intersection/touch metadata, finite transform

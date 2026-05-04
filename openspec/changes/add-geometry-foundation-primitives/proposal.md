@@ -9,13 +9,9 @@ geodesic correctness, rendering behavior, or physics-engine behavior.
 
 ## What Changes
 
-- Add a spec-only `add-geometry-foundation-primitives` child OpenSpec under the
-  domain-primitives umbrella.
-- Define exact finite models for points/vectors, axis-aligned bounds, extents,
-  orientation metadata, containment/intersection predicates, transform envelopes,
-  and deterministic geometry admission.
-- Leave implementation, Verus proofs, Tracey coverage, and evidence as future
-  tasks.
+- Add implemented exact finite `add-geometry-foundation-primitives` modules under the domain-primitives umbrella.
+- Define and verify exact finite models for points/vectors, axis-aligned bounds, extents, orientation metadata, containment/intersection predicates, transform envelopes, grid cells, and deterministic geometry admission.
+- Capture focused tests, Verus proofs, Tracey coverage, strict OpenSpec validation, and full repository verification evidence.
 
 ## Capabilities
 
@@ -40,17 +36,13 @@ geodesic correctness, rendering behavior, or physics-engine behavior.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/geom_*`, `src/geometry_*`, `src/bounds_*`, `docs/requirements.md`, tests,
-  and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: Adds `src/geom_*` modules, `docs/requirements.md`, canonical OpenSpec sync, tests, and evidence.
+- **APIs**: Adds small exact finite Rust/Verus helper predicates only; no external geometry libraries are called.
 - **Dependencies**: no new dependencies.
-- **Testing**: strict OpenSpec validation now; future implementation must run
-  focused tests, Verus, Tracey, and final repo validation.
+- **Testing**: focused Rust tests, Verus, Tracey, strict OpenSpec validation, and full repo validation.
 
 ## Out of Scope
 
-- implementing geometry modules now
 - floating-point robustness, arbitrary polygon topology, computational-geometry
   completeness, curve/spline geometry, mesh correctness, geodesic accuracy,
   rendering, collision physics, solver quality, or external geometry library
