@@ -14,12 +14,10 @@ filesystem or security claims.
 - specify deterministic normalization decisions without claiming OS
   canonicalization
 - specify finite root/scope containment and relative traversal rejection
-- specify extension/type metadata, join/split envelopes, and path admission
-  without implementation yet
+- implement and verify extension/type metadata, join/split envelopes, and path admission as exact finite primitives
 
 **Non-Goals:**
 
-- implementing runtime APIs in this spec-only change
 - proving OS filesystem behavior, symlink resolution, permissions, durability,
   security, or sandbox enforcement
 - proving URI/URL semantics, remote object store behavior, or external standard
@@ -70,8 +68,12 @@ symlink, mount, case-folding, or canonicalization behavior.
 
 ## Validation Plan
 
+- `cargo fmt`
+- `cargo test --quiet fs_path_`
+- `./scripts/verus.sh src/lib.rs`
+- `tracey query uncovered --prefix domain-primitives.filesystem-path`
+- `tracey query untested --prefix domain-primitives.filesystem-path`
 - `openspec validate add-filesystem-path-primitives --strict --json`
-- strict validation for every active primitive-family OpenSpec
-- helper verification is expected to warn about future implementation tasks
-- future implementation must add `docs/requirements.md`, `r[impl]`,
-  `r[depends]`, `r[verify]`, tests, Verus proof evidence, and Tracey evidence
+- `openspec validate domain-primitives --strict --json`
+- `git diff --check`
+- `./scripts/verify.sh`

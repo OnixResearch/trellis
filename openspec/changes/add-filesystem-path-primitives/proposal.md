@@ -10,14 +10,9 @@ symlink, permission, durability, or security behavior.
 
 ## What Changes
 
-- Add a spec-only `add-filesystem-path-primitives` child OpenSpec under the
-  domain-primitives umbrella.
-- Define exact finite models for path segments, path form metadata,
-  normalization decisions, root/scope containment, relative traversal rejection,
-  extension/type metadata, path join/split envelopes, and deterministic path
-  admission.
-- Leave implementation, Verus proofs, Tracey coverage, and evidence as future
-  tasks.
+- Add implemented exact finite filesystem-path primitives under the domain-primitives umbrella.
+- Define and verify finite models for path segments, path form metadata, normalization decisions, root/scope containment, relative traversal rejection, extension/type metadata, path join/split envelopes, and deterministic path admission.
+- Capture focused tests, Verus proofs, Tracey coverage, strict OpenSpec validation, and full repository verification evidence.
 
 ## Capabilities
 
@@ -41,16 +36,13 @@ symlink, permission, durability, or security behavior.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/path_*`, `src/fs_path_*`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: Adds `src/fs_path_*` modules, domain-primitives requirements, canonical OpenSpec sync, tests, and evidence.
+- **APIs**: Adds small exact finite Rust/Verus helper predicates only; no host filesystem APIs are called.
 - **Dependencies**: no new dependencies.
-- **Testing**: strict OpenSpec validation now; future implementation must run
-  focused tests, Verus, Tracey, and final repo validation.
+- **Testing**: focused Rust tests, Verus, Tracey, strict OpenSpec validation, and full repo validation.
 
 ## Out of Scope
 
-- implementing path modules now
 - OS filesystem semantics, realpath/canonicalize behavior, symlink resolution,
   mount points, case-folding filesystems, permissions, ACLs, durability, or
   storage behavior

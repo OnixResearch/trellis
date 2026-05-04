@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite filesystem-path primitives.
+Defines implemented requirements for reusable finite filesystem-path primitives.
 These primitives MUST use exact finite path-segment envelopes, path form
 metadata, normalization decisions, root/scope containment predicates, relative
 traversal rejection metadata, extension/type metadata, path join/split envelopes,

@@ -17,14 +17,14 @@
 
 ## Phase 2: Future implementation
 
-- [ ] Add docs/requirements entries and Tracey IDs for finite path-segment envelopes.
-- [ ] Implement and verify path form admission primitives.
-- [ ] Implement and verify finite normalization decision envelopes.
-- [ ] Implement and verify root/scope containment predicates.
-- [ ] Implement and verify relative traversal rejection metadata.
-- [ ] Implement and verify extension/type metadata envelopes.
-- [ ] Implement and verify deterministic path join/split shape envelopes.
-- [ ] Implement deterministic path admission/rejection composition.
-- [ ] Add focused positive and negative tests for each filesystem-path primitive.
-- [ ] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
-- [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.
+- [x] Add docs/requirements entries and Tracey IDs for finite path-segment envelopes. `[covers=domain-primitives.filesystem-path.segment]`
+- [x] Implement and verify path form admission primitives. `[covers=domain-primitives.filesystem-path.form]`
+- [x] Implement and verify finite normalization decision envelopes. `[covers=domain-primitives.filesystem-path.normalization]`
+- [x] Implement and verify root/scope containment predicates. `[covers=domain-primitives.filesystem-path.containment]`
+- [x] Implement and verify relative traversal rejection metadata. `[covers=domain-primitives.filesystem-path.traversal]`
+- [x] Implement and verify extension/type metadata envelopes. `[covers=domain-primitives.filesystem-path.extension-type]`
+- [x] Implement and verify deterministic path join/split shape envelopes. `[covers=domain-primitives.filesystem-path.join-split]`
+- [x] Implement deterministic path admission/rejection composition. `[covers=domain-primitives.filesystem-path.admission]`
+- [x] Add focused positive and negative tests for each filesystem-path primitive.
+- [x] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
+- [x] Capture reviewable evidence and archive the change after all implementation tasks complete.
