@@ -8409,7 +8409,12 @@ r[ucan-invocation.authorization-check]
 An authorized invocation's resource MUST be a refinement of the leaf capability's
 resource (prefix match) with matching ability, and the public authorization
 checker MUST reject mismatched audiences, non-prefixed resources, or mismatched
-abilities.
+abilities. Public chain-backed request admission MUST additionally bind the
+invocation authorization CID to the resolved proof-chain leaf CID, compose
+structural chain validity, proof-CID revocation admission, leaf-capability index
+bounds, and invocation authorization without claiming cryptographic signature
+verification, DID resolution, revocation freshness, or external registry
+correctness.
 
 ## UCAN Principal Linking
 

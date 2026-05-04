@@ -9,6 +9,10 @@
 
 use vstd::prelude::*;
 
+use crate::ucan_chain::ChainEntry;
+use crate::ucan_revocation::RevocationSet;
+use crate::ucan_revocation::check_chain_structural_valid_not_revoked;
+
 verus! {
 
 /// An invocation: executing a capability.
@@ -86,6 +90,36 @@ pub open spec fn invocation_authorized_spec(
     && resource.len() >= leaf_resource.len()
     && resource.subrange(0, leaf_resource.len() as int) =~= leaf_resource
     && ability =~= leaf_ability
+}
+
+/// Complete structural request admission from a resolved chain and revocation set.
+// r[impl ucan-invocation.authorization-check]
+pub open spec fn invocation_chain_authorized_spec(
+    revset: Seq<Seq<u8>>,
+    chain: Seq<ChainEntry>,
+    chain_cids: Seq<Vec<u8>>,
+    invocation: Invocation,
+    leaf_cap_idx: usize,
+    now: u64,
+    tolerance: u64,
+) -> bool {
+    crate::ucan_revocation::chain_structural_revocation_valid_spec(
+        revset,
+        chain,
+        chain_cids,
+        now,
+        tolerance,
+    )
+    && invocation.auth_cid@ =~= chain_cids[chain.len() - 1]@
+    && 0 <= leaf_cap_idx < chain[chain.len() - 1].att.len()
+    && invocation_authorized_spec(
+        invocation.invoker@,
+        chain[chain.len() - 1].aud@,
+        invocation.resource@,
+        invocation.ability@,
+        chain[chain.len() - 1].att[leaf_cap_idx as int].0@,
+        chain[chain.len() - 1].att[leaf_cap_idx as int].1@,
+    )
 }
 
 // --- Exec ---
@@ -188,6 +222,54 @@ pub fn check_invocation_authorized(
         return false;
     }
     true
+}
+
+/// Check structural request admission from resolved proof-chain entries.
+///
+/// This composes structural chain validity, proof-CID revocation admission, and
+/// leaf-capability invocation authorization. It consumes caller-provided proof
+/// CIDs and signature-valid flags; it does not verify cryptographic signatures,
+/// DID resolution, revocation freshness, or external registry correctness.
+// r[impl ucan-invocation.authorization-check]
+pub fn check_invocation_chain_authorized(
+    revset: &RevocationSet,
+    chain: &Vec<ChainEntry>,
+    chain_cids: &Vec<Vec<u8>>,
+    invocation: &Invocation,
+    leaf_cap_idx: usize,
+    now: u64,
+    tolerance: u64,
+) -> (result: bool)
+    ensures result == invocation_chain_authorized_spec(
+        crate::ucan_revocation::revset_view(revset),
+        chain@,
+        chain_cids@,
+        *invocation,
+        leaf_cap_idx,
+        now,
+        tolerance,
+    ),
+{
+    if !check_chain_structural_valid_not_revoked(revset, chain, chain_cids, now, tolerance) {
+        return false;
+    }
+    assert(chain.len() > 0);
+    let leaf_idx = chain.len() - 1;
+    let auth_cid_ok = check_invoker_matches(&invocation.auth_cid, &chain_cids[leaf_idx]);
+    if !auth_cid_ok {
+        return false;
+    }
+    if leaf_cap_idx >= chain[leaf_idx].att.len() {
+        return false;
+    }
+    check_invocation_authorized(
+        &invocation.invoker,
+        &chain[leaf_idx].aud,
+        &invocation.resource,
+        &invocation.ability,
+        &chain[leaf_idx].att[leaf_cap_idx].0,
+        &chain[leaf_idx].att[leaf_cap_idx].1,
+    )
 }
 
 // --- Proofs ---
@@ -372,5 +454,84 @@ mod tests {
             receipt_timestamp: 100,
         };
         assert!(check_receipt_valid(&r));
+    }
+
+    fn chain_entry(iss: &[u8], aud: &[u8], resource: &[u8], ability: &[u8]) -> ChainEntry {
+        ChainEntry {
+            iss: iss.to_vec(),
+            aud: aud.to_vec(),
+            att: vec![(resource.to_vec(), ability.to_vec())],
+            exp: 200,
+            nbf: 0,
+            sig_valid: true,
+        }
+    }
+
+    fn invocation(invoker: &[u8], resource: &[u8], ability: &[u8]) -> Invocation {
+        invocation_with_auth_cid(b"leaf-cid", invoker, resource, ability)
+    }
+
+    fn invocation_with_auth_cid(auth_cid: &[u8], invoker: &[u8], resource: &[u8], ability: &[u8]) -> Invocation {
+        Invocation {
+            auth_cid: auth_cid.to_vec(),
+            invoker: invoker.to_vec(),
+            resource: resource.to_vec(),
+            ability: ability.to_vec(),
+            timestamp: 100,
+        }
+    }
+
+    #[test]
+    fn test_invocation_chain_authorized_accepts_valid_not_revoked_request() {
+        let revset = RevocationSet { entries: vec![] };
+        let chain = vec![
+            chain_entry(b"root", b"alice", b"store://", b"read"),
+            chain_entry(b"alice", b"bob", b"store://bucket", b"read"),
+        ];
+        let cids = vec![b"root-cid".to_vec(), b"leaf-cid".to_vec()];
+        let inv = invocation(b"bob", b"store://bucket/photo", b"read");
+        assert!(check_invocation_chain_authorized(&revset, &chain, &cids, &inv, 0, 100, 0));
+    }
+
+    #[test]
+    fn test_invocation_chain_authorized_rejects_revoked_or_invalid_chain() {
+        let chain = vec![
+            chain_entry(b"root", b"alice", b"store://", b"read"),
+            chain_entry(b"alice", b"bob", b"store://bucket", b"read"),
+        ];
+        let cids = vec![b"root-cid".to_vec(), b"leaf-cid".to_vec()];
+        let inv = invocation(b"bob", b"store://bucket/photo", b"read");
+        let revoked = RevocationSet {
+            entries: vec![b"leaf-cid".to_vec()],
+        };
+        assert!(!check_invocation_chain_authorized(&revoked, &chain, &cids, &inv, 0, 100, 0));
+
+        let invalid_chain = vec![
+            chain_entry(b"root", b"alice", b"store://", b"read"),
+            chain_entry(b"mallory", b"bob", b"store://bucket", b"read"),
+        ];
+        let clear = RevocationSet { entries: vec![] };
+        assert!(!check_invocation_chain_authorized(&clear, &invalid_chain, &cids, &inv, 0, 100, 0));
+    }
+
+    #[test]
+    fn test_invocation_chain_authorized_rejects_invocation_escalation_or_bad_cap_index() {
+        let revset = RevocationSet { entries: vec![] };
+        let chain = vec![
+            chain_entry(b"root", b"alice", b"store://", b"read"),
+            chain_entry(b"alice", b"bob", b"store://bucket", b"read"),
+        ];
+        let cids = vec![b"root-cid".to_vec(), b"leaf-cid".to_vec()];
+        let wrong_resource = invocation(b"bob", b"other://bucket", b"read");
+        assert!(!check_invocation_chain_authorized(&revset, &chain, &cids, &wrong_resource, 0, 100, 0));
+
+        let wrong_ability = invocation(b"bob", b"store://bucket/photo", b"write");
+        assert!(!check_invocation_chain_authorized(&revset, &chain, &cids, &wrong_ability, 0, 100, 0));
+
+        let ok = invocation(b"bob", b"store://bucket/photo", b"read");
+        assert!(!check_invocation_chain_authorized(&revset, &chain, &cids, &ok, 1, 100, 0));
+
+        let wrong_auth_cid = invocation_with_auth_cid(b"other-cid", b"bob", b"store://bucket/photo", b"read");
+        assert!(!check_invocation_chain_authorized(&revset, &chain, &cids, &wrong_auth_cid, 0, 100, 0,));
     }
 }
