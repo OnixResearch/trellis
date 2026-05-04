@@ -1,9 +1,9 @@
 //! Verified UCAN proof chain walk.
 //!
-//! Walks prf CID references, verifies each hop's signature, checks
-//! iss[child] == aud[parent], confirms attenuation narrows at every
-//! step, and proves chain-level soundness: a valid chain only grants
-//! capabilities the root token authorized.
+//! Walks resolved proof-chain entries, consumes caller-provided signature-valid
+//! flags, checks iss[child] == aud[parent], confirms attenuation narrows at
+//! every step, and proves chain-level soundness: a structurally valid chain only
+//! grants capabilities the root token authorized.
 
 #![allow(clippy::ptr_arg)]
 
@@ -23,7 +23,7 @@ pub struct ChainEntry {
     pub exp: u64,
     /// Not-before timestamp.
     pub nbf: u64,
-    /// Signature was verified against issuer's public key.
+    /// Caller-provided indication that the signature was verified externally.
     pub sig_valid: bool,
 }
 
@@ -36,7 +36,7 @@ pub open spec fn chain_linked_spec(chain: Seq<ChainEntry>) -> bool {
         chain[i].aud@ =~= chain[i + 1].iss@
 }
 
-/// Every entry in the chain has a valid signature.
+/// Every entry in the chain carries a caller-provided valid-signature flag.
 // r[impl ucan-chain.signature-check]
 pub open spec fn chain_signatures_valid_spec(chain: Seq<ChainEntry>) -> bool {
     forall|i: int| 0 <= i < chain.len() ==> chain[i].sig_valid
@@ -124,6 +124,20 @@ pub open spec fn chain_valid_spec(chain: Seq<ChainEntry>, now: u64, tolerance: u
     && chain_linked_spec(chain)
     && chain_signatures_valid_spec(chain)
     && chain_attenuation_narrows_spec(chain)
+    && chain_temporal_valid_spec(chain, now, tolerance)
+}
+
+/// Exec-facing complete chain validity over Vec-backed attenuation entries.
+// r[impl ucan-chain.chain-validity]
+pub open spec fn chain_structural_valid_entries_spec(
+    chain: Seq<ChainEntry>,
+    now: u64,
+    tolerance: u64,
+) -> bool {
+    chain.len() > 0
+    && chain_linked_spec(chain)
+    && chain_signatures_valid_spec(chain)
+    && chain_attenuation_narrows_entries_spec(chain)
     && chain_temporal_valid_spec(chain, now, tolerance)
 }
 
@@ -414,6 +428,38 @@ pub fn check_chain_attenuation_narrows(chain: &Vec<ChainEntry>) -> (result: bool
     true
 }
 
+/// Check structural validity for a finite UCAN chain.
+///
+/// This composes linked issuer/audience checks, caller-provided signature-valid
+/// booleans, structural attenuation narrowing, and bounded temporal windows. It
+/// does not verify cryptographic signatures, DID resolution, revocation, or clock
+/// correctness.
+// r[impl ucan-chain.chain-validity]
+pub fn check_chain_structural_valid(
+    chain: &Vec<ChainEntry>,
+    now: u64,
+    tolerance: u64,
+) -> (result: bool)
+    ensures result == chain_structural_valid_entries_spec(chain@, now, tolerance),
+{
+    if chain.len() == 0 {
+        return false;
+    }
+    if !check_chain_linked(chain) {
+        return false;
+    }
+    if !check_chain_signatures(chain) {
+        return false;
+    }
+    if !check_chain_attenuation_narrows(chain) {
+        return false;
+    }
+    if !check_chain_temporal(chain, now, tolerance) {
+        return false;
+    }
+    true
+}
+
 // --- Proofs ---
 
 /// Soundness: a valid chain means every leaf capability is contained in root authority.
@@ -609,6 +655,51 @@ mod tests {
         let e2 = make_entry(b"did:key:bob", b"did:key:carol", b"/photos/vacation", b"write", 900, true);
         let chain = vec![e1, e2];
         assert!(!check_chain_attenuation_narrows(&chain));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_accepts_complete_chain() {
+        let e1 = make_entry(b"did:key:alice", b"did:key:bob", b"/photos", b"read", 1000, true);
+        let e2 = make_entry(b"did:key:bob", b"did:key:carol", b"/photos/vacation", b"read", 900, true);
+        let chain = vec![e1, e2];
+        assert!(check_chain_structural_valid(&chain, 500, 0));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_rejects_empty_chain() {
+        let chain = Vec::<ChainEntry>::new();
+        assert!(!check_chain_structural_valid(&chain, 500, 0));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_rejects_broken_link() {
+        let e1 = make_entry(b"did:key:alice", b"did:key:bob", b"/photos", b"read", 1000, true);
+        let e2 = make_entry(b"did:key:mallory", b"did:key:carol", b"/photos/vacation", b"read", 900, true);
+        let chain = vec![e1, e2];
+        assert!(!check_chain_structural_valid(&chain, 500, 0));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_rejects_bad_signature_flag() {
+        let e1 = make_entry(b"did:key:alice", b"did:key:bob", b"/photos", b"read", 1000, true);
+        let e2 = make_entry(b"did:key:bob", b"did:key:carol", b"/photos/vacation", b"read", 900, false);
+        let chain = vec![e1, e2];
+        assert!(!check_chain_structural_valid(&chain, 500, 0));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_rejects_attenuation_escalation() {
+        let e1 = make_entry(b"did:key:alice", b"did:key:bob", b"/photos", b"read", 1000, true);
+        let e2 = make_entry(b"did:key:bob", b"did:key:carol", b"/photos/vacation", b"write", 900, true);
+        let chain = vec![e1, e2];
+        assert!(!check_chain_structural_valid(&chain, 500, 0));
+    }
+
+    #[test]
+    fn test_chain_structural_valid_rejects_expired_entry() {
+        let e = make_entry(b"did:key:alice", b"did:key:bob", b"/photos", b"read", 100, true);
+        let chain = vec![e];
+        assert!(!check_chain_structural_valid(&chain, 500, 0));
     }
 
     #[test]

@@ -8326,7 +8326,9 @@ Each hop in a delegation chain MUST have the child's issuer equal to the
 parent's audience DID.
 
 r[ucan-chain.signature-check]
-Every token in the chain MUST have a valid signature.
+Every token in the chain MUST carry a caller-provided valid-signature flag; the
+structural chain checker MUST consume that flag without claiming to verify
+cryptographic signature bytes or issuer keys.
 
 r[ucan-chain.attenuation-narrowing]
 Each delegation hop MUST narrow or preserve attenuations: every child capability
@@ -8338,9 +8340,11 @@ Every token in the chain MUST be temporally valid at the time of
 evaluation.
 
 r[ucan-chain.chain-validity]
-A chain is valid only when it is non-empty, linked, all signatures
-are valid, attenuation narrows at every hop, and all entries are
-temporally valid.
+A structural chain-validity checker MUST accept only non-empty chains whose hops
+are linked, whose caller-provided signature-valid flags are all true, whose
+attenuations narrow at every hop, and whose entries are temporally valid. This
+structural checker MUST NOT claim to verify cryptographic signatures, DID
+resolution, revocation, or external clock correctness.
 
 r[ucan-chain.root-authority]
 The root authority of a valid chain is the attenuation set of the
