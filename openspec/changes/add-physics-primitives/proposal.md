@@ -5,7 +5,7 @@ Before implementation, we need OpenSpecs for small exact-model primitives around
 units, vectors, time horizons, bounded integration steps, collision envelopes,
 contact records, and energy/momentum budgets.
 
-This change is spec-only for now. It defines primitive contracts that are useful
+This change implements exact finite physics primitive contracts that are useful
 for later physics engines without claiming continuous-physics accuracy or
 floating-point real-analysis proofs.
 
@@ -20,7 +20,7 @@ floating-point real-analysis proofs.
   - `physics_contact_manifold`
   - `physics_energy_budget`
   - `physics_momentum_budget`
-- Keep implementation and evidence tasks unchecked for later slices.
+- Implement exact finite Rust/Verus primitives with cargo, Verus, Tracey, and OpenSpec evidence.
 
 ## Capabilities
 
@@ -38,9 +38,9 @@ floating-point real-analysis proofs.
 ## Impact
 
 - **Files**: OpenSpec artifacts now; later implementation adds `src/physics_*`, `src/lib.rs`, `docs/requirements.md`, tests, README entries, and evidence.
-- **APIs**: no runtime APIs in this spec-only slice.
+- **APIs**: add `src/physics_*` primitive modules exported from `src/lib.rs`.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: OpenSpec validation now; implementation changes later capture cargo, Verus, and Tracey evidence.
+- **Testing**: focused cargo tests, full Verus/Tracey via `./scripts/verify.sh`, and OpenSpec validation.
 
 ## Out of Scope
 

@@ -42,18 +42,17 @@ aggregate envelope admission over exact discrete vectors.
 - THEN the vector is rejected
 
 ### Requirement: Physics Time Horizon [r[domain-primitives.physics-time-horizon]]
-The system MUST provide a physics time-horizon primitive for bounded step-count
-and time-delta arithmetic.
+The system MUST provide a physics time-horizon primitive for bounded step-count and positive time-delta admission.
 
 #### Scenario: Valid step count stays inside horizon [r[domain-primitives.physics-time-horizon.scenario.valid-step-count-stays-inside-horizon]]
 
-- GIVEN a positive step size and bounded horizon
+- GIVEN a positive step size and bounded step horizon
 - WHEN the step count is computed
-- THEN every admitted step time is inside the horizon
+- THEN every admitted step index is inside the configured finite horizon
 
-#### Scenario: Overflowing horizon arithmetic is rejected [r[domain-primitives.physics-time-horizon.scenario.overflowing-horizon-arithmetic-is-rejected]]
+#### Scenario: Invalid horizon parameters are rejected [r[domain-primitives.physics-time-horizon.scenario.overflowing-horizon-arithmetic-is-rejected]]
 
-- GIVEN time or step inputs whose product or sum overflows
+- GIVEN zero time-delta, zero step count, or a delta larger than the configured horizon
 - WHEN horizon admission is checked
 - THEN the horizon is rejected
 
@@ -63,15 +62,15 @@ state advancement.
 
 #### Scenario: Bounded step advances time [r[domain-primitives.physics-integrator-step.scenario.bounded-step-advances-time]]
 
-- GIVEN a finite modeled state and a valid positive time delta
+- GIVEN a finite modeled state and a valid positive time delta and non-saturated finite timestamp
 - WHEN one integration step is admitted
-- THEN the output time is strictly greater and state fields remain bounded
+- THEN the output timestamp advances by one modeled tick and state fields remain bounded
 
 #### Scenario: Invalid time step is rejected [r[domain-primitives.physics-integrator-step.scenario.invalid-time-step-is-rejected]]
 
-- GIVEN a zero, negative, overlarge, or overflowing time delta
+- GIVEN a zero delta, invalid bounded state, or saturated timestamp
 - WHEN integration is requested
-- THEN the step is rejected and state is unchanged
+- THEN the step is rejected
 
 ### Requirement: Physics Collision Envelope [r[domain-primitives.physics-collision-envelope]]
 The system MUST provide a physics collision-envelope primitive for conservative
@@ -136,3 +135,12 @@ and bounded momentum accounting.
 - GIVEN negative mass or momentum drift outside the configured budget
 - WHEN momentum admission is checked
 - THEN the update is rejected
+
+### Requirement: Physics Non-Claims [r[domain-primitives.physics-non-claims]]
+The system MUST limit physics primitives to exact discrete admission and budget predicates; it MUST NOT claim floating-point accuracy, continuous dynamics correctness, real-number differential-equation proofs, broad solver completeness, simulator fidelity, collision exactness beyond conservative interval candidates, or production physics-engine correctness.
+
+#### Scenario: Continuous and floating-point claims are excluded [r[domain-primitives.physics-non-claims.scenario.continuous-and-floating-point-claims-are-excluded]]
+
+- GIVEN a physics primitive result
+- WHEN the result is interpreted
+- THEN it is only evidence for the exact finite predicate and not for continuous or floating-point simulator correctness
