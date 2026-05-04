@@ -47,4 +47,4 @@
 - [x] Add focused positive, negative, and mutation tests for each Raft primitive and invariant.
 - [x] Implement and verify OpenRaft-inspired finite operational-safety metadata primitives.
 - [x] Run focused Verus, Tracey uncovered/untested, strict OpenSpec validation, and final repo validation.
-- [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.
+- [x] Capture reviewable evidence and archive the change after all implementation tasks complete.
