@@ -9,8 +9,7 @@ cases. These can be specified as exact discrete primitives before implementation
 
 **Goals:** specify exact buffer/layout and geometry/result admission primitives.
 
-**Non-Goals:** implement modules in this pass; prove model accuracy, calibration,
-codec correctness, or real-time video behavior.
+**Non-Goals:** prove model accuracy, calibration, codec correctness, floating-point color science, or real-time video behavior.
 
 ## Decisions
 
@@ -33,4 +32,4 @@ claims.
 ## Validation Plan
 
 - `openspec validate add-vision-primitives --strict --json`
-- later implementation evidence per task: focused cargo tests, Verus, Tracey
+- focused cargo tests, Verus, Tracey, full verification, and OpenSpec validation

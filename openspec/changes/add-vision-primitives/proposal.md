@@ -5,7 +5,7 @@ family. Before implementation, we need OpenSpecs for exact buffer/layout,
 region/window, color/layout transform, pyramid, component-label, and detection
 result contracts.
 
-This change is spec-only for now. It defines primitive requirements that support
+This change now implements exact finite primitive requirements that support
 later vision pipelines without claiming model accuracy, calibration correctness,
 codec correctness, or real-time video behavior.
 
@@ -20,7 +20,7 @@ codec correctness, or real-time video behavior.
   - `vision_image_pyramid`
   - `vision_connected_components`
   - `vision_detection_nms`
-- Keep implementation and evidence tasks unchecked for later slices.
+- Implement exact finite Rust/Verus primitives and capture cargo, Verus, Tracey, and OpenSpec evidence.
 
 ## Capabilities
 
@@ -38,9 +38,9 @@ codec correctness, or real-time video behavior.
 ## Impact
 
 - **Files**: OpenSpec artifacts now; later implementation adds `src/vision_*`, `src/lib.rs`, `docs/requirements.md`, tests, README entries, and evidence.
-- **APIs**: no runtime APIs in this spec-only slice.
+- **APIs**: adds focused `src/vision_*` exact finite admission/checker APIs.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: OpenSpec validation now; implementation changes later capture cargo, Verus, and Tracey evidence.
+- **Testing**: focused cargo tests, Verus, Tracey, full verification, and OpenSpec validation.
 
 ## Out of Scope
 

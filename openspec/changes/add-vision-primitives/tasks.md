@@ -17,18 +17,18 @@
 
 ## Phase 2: Layout and region primitives
 
-- [ ] Implement and prove `vision_image_buffer`; cover width/height/stride/channel layout and out-of-bounds buffer rejection. `[covers=domain-primitives.vision-image-buffer]`
-- [ ] Implement and prove `vision_roi`; cover bounded ROI cropping/mapping and invalid-region rejection. `[covers=domain-primitives.vision-roi]`
-- [ ] Implement and prove `vision_convolution_window`; cover safe kernel window indexing and border-policy rejection/handling. `[covers=domain-primitives.vision-convolution-window]`
+- [x] Implement and prove `vision_image_buffer`; cover width/height/stride/channel layout and out-of-bounds buffer rejection. `[covers=domain-primitives.vision-image-buffer]`
+- [x] Implement and prove `vision_roi`; cover bounded ROI cropping/mapping and invalid-region rejection. `[covers=domain-primitives.vision-roi]`
+- [x] Implement and prove `vision_convolution_window`; cover safe kernel window indexing and border-policy rejection/handling. `[covers=domain-primitives.vision-convolution-window]`
 
 ## Phase 3: Color, pyramid, component, and detection primitives
 
-- [ ] Implement and prove `vision_color_layout`; cover channel-order/layout admission and invalid layout rejection. `[covers=domain-primitives.vision-color-layout]`
-- [ ] Implement and prove `vision_color_transform_envelope`; cover bounded integer color transform outputs and invalid coefficient/range rejection. `[covers=domain-primitives.vision-color-transform-envelope]`
-- [ ] Implement and prove `vision_image_pyramid`; cover monotone level dimensions, valid level mapping, and invalid-scale rejection. `[covers=domain-primitives.vision-image-pyramid]`
-- [ ] Implement and prove `vision_connected_components`; cover bounded component labels and merge/equivalence invariants. `[covers=domain-primitives.vision-connected-components]`
-- [ ] Implement and prove `vision_detection_nms`; cover thresholded score ordering, deterministic tie-breaking, non-overlap suppression, and invalid-box rejection. `[covers=domain-primitives.vision-detection-nms]`
+- [x] Implement and prove `vision_color_layout`; cover channel-order/layout admission and invalid layout rejection. `[covers=domain-primitives.vision-color-layout]`
+- [x] Implement and prove `vision_color_transform_envelope`; cover bounded integer color transform outputs and invalid coefficient/range rejection. `[covers=domain-primitives.vision-color-transform-envelope]`
+- [x] Implement and prove `vision_image_pyramid`; cover monotone level dimensions, valid level mapping, and invalid-scale rejection. `[covers=domain-primitives.vision-image-pyramid]`
+- [x] Implement and prove `vision_connected_components`; cover bounded component labels and merge/equivalence invariants. `[covers=domain-primitives.vision-connected-components]`
+- [x] Implement and prove `vision_detection_nms`; cover thresholded score ordering, deterministic tie-breaking, non-overlap suppression, and invalid-box rejection. `[covers=domain-primitives.vision-detection-nms]`
 
 ## Phase 4: Validation and archive
 
-- [ ] Sync completed requirement text, run cargo/Verus/Tracey evidence, run OpenSpec gates, and archive only after implementation is complete.
+- [x] Sync completed requirement text, run cargo/Verus/Tracey evidence, run OpenSpec gates, and archive only after implementation is complete.

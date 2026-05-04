@@ -5,7 +5,7 @@
 Adds concrete machine-vision primitive requirements over exact image-buffer,
 region, window, color-layout, pyramid, component-label, and detection-result
 models. The requirements MUST NOT claim model accuracy, calibration correctness,
-codec correctness, or real-time video behavior.
+codec correctness, floating-point color science, OCR/segmentation quality, neural-network quality, or real-time video behavior.
 
 ## ADDED Requirements
 
