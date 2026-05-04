@@ -2389,4 +2389,201 @@ mod tests {
         assert!(!post.admitted);
         assert_eq!(post.failing_check, RAFT_ADMISSION_AFTER_INVARIANT_FAILED);
     }
+
+    // r[verify domain-primitives.raft-consensus.message]
+    // r[verify domain-primitives.raft-consensus.admission]
+    #[test]
+    fn finite_kinds_and_admission_codes_cover_positive_negative_boundaries() {
+        for kind in RAFT_MESSAGE_REQUEST_VOTE..=RAFT_MESSAGE_CLIENT_PROPOSAL {
+            assert!(raft_message_kind_valid(kind));
+        }
+        assert!(!raft_message_kind_valid(0));
+        assert!(!raft_message_kind_valid(RAFT_MESSAGE_CLIENT_PROPOSAL + 1));
+
+        for code in RAFT_ADMISSION_OK..=RAFT_ADMISSION_AFTER_INVARIANT_FAILED {
+            assert!(raft_admission_code_valid(code));
+        }
+        assert!(!raft_admission_code_valid(RAFT_ADMISSION_AFTER_INVARIANT_FAILED + 1));
+    }
+
+    // r[verify domain-primitives.raft-consensus.vote]
+    // r[verify domain-primitives.raft-consensus.request-vote]
+    // r[verify domain-primitives.raft-consensus.append-entries]
+    #[test]
+    fn vote_and_append_admission_have_positive_negative_mutation_evidence() {
+        let fresh = VoteState {
+            voted_term: 0,
+            voted_for: 0,
+        };
+        assert!(request_vote_admit(&fresh, 2, 5, &epoch(5, 10), &epoch(5, 9)));
+        assert!(!request_vote_admit(&fresh, 2, 4, &epoch(4, 10), &epoch(5, 9)));
+
+        let already_voted = VoteState {
+            voted_term: 5,
+            voted_for: 2,
+        };
+        assert!(request_vote_admit(&already_voted, 2, 5, &epoch(5, 10), &epoch(5, 9)));
+        assert!(!request_vote_admit(&already_voted, 3, 5, &epoch(5, 10), &epoch(5, 9)));
+
+        let follower_log = vec![log_entry(1, 10), log_entry(2, 20), log_entry(4, 40)];
+        assert!(raft_append_entries_admit(3, 4, &follower_log, 3, 4));
+        assert!(!raft_append_entries_admit(5, 4, &follower_log, 3, 4));
+        assert!(!raft_append_entries_admit(3, 4, &follower_log, 3, 3));
+        assert!(!raft_append_entries_admit(3, 4, &follower_log, 4, 4));
+    }
+
+    // r[verify domain-primitives.raft-consensus.log-entry]
+    // r[verify domain-primitives.raft-consensus.log-prefix]
+    // r[verify domain-primitives.raft-consensus.log-matching]
+    // r[verify domain-primitives.raft-consensus.leader-completeness]
+    // r[verify domain-primitives.raft-consensus.state-machine-safety]
+    #[test]
+    fn log_and_state_safety_mutations_are_rejected() {
+        let base = vec![indexed(1, 1, 10), indexed(2, 2, 20), indexed(3, 2, 30)];
+        let same_prefix = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let mutated_prefix = vec![indexed(1, 1, 10), indexed(2, 9, 20)];
+        assert!(raft_log_prefix(&same_prefix, &base));
+        assert!(!raft_log_prefix(&mutated_prefix, &base));
+
+        let mut appended = same_prefix.clone();
+        raft_log_append(&mut appended, indexed(3, 2, 30));
+        assert_eq!(appended.len(), base.len());
+        assert!(raft_log_no_gap(&appended));
+
+        let leader_log = vec![log_entry(1, 10), log_entry(2, 20), log_entry(3, 30)];
+        let matching_log = vec![log_entry(1, 99), log_entry(2, 98), log_entry(3, 97)];
+        let mutated_log = vec![log_entry(1, 99), log_entry(7, 98), log_entry(3, 97)];
+        assert!(raft_log_matching_at(&leader_log, &matching_log, 3));
+        assert!(!raft_log_matching_at(&leader_log, &mutated_log, 3));
+
+        let mutated_entry = vec![indexed(1, 1, 10), indexed(2, 2, 99), indexed(3, 2, 30)];
+        assert!(raft_leader_contains_committed_entry(&base, &base, 1));
+        assert!(!raft_leader_contains_committed_entry(&base, &mutated_entry, 1));
+        assert!(raft_state_machine_safety_at(&base, &base, 3, 3, 2));
+        assert!(!raft_state_machine_safety_at(&base, &mutated_entry, 3, 3, 1));
+    }
+
+    // r[verify domain-primitives.raft-consensus.snapshot]
+    // r[verify domain-primitives.raft-consensus.install-snapshot]
+    // r[verify domain-primitives.raft-consensus.membership]
+    // r[verify domain-primitives.raft-consensus.invariant-bundle]
+    #[test]
+    fn snapshot_membership_and_invariant_mutations_are_rejected() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20), indexed(3, 3, 30)];
+        let bundle = invariant_bundle(3, 3);
+        assert!(raft_invariant_bundle_valid(&bundle, &log));
+
+        let bad_persistent = RaftInvariantBundleMetadata {
+            persistent: RaftPersistentMetadata {
+                current_term: 2,
+                voted_for: 1,
+            },
+            ..bundle
+        };
+        assert!(!raft_invariant_bundle_valid(&bad_persistent, &log));
+
+        let bad_membership = RaftInvariantBundleMetadata {
+            membership: RaftMembershipConfig {
+                epoch: 1,
+                old_voter_count: 3,
+                new_voter_count: 4,
+                is_joint: false,
+                max_node_id: 4,
+            },
+            max_node_id: 4,
+            ..bundle
+        };
+        assert!(!raft_invariant_bundle_valid(&bad_membership, &log));
+
+        let snapshot = RaftSnapshotMetadata {
+            last_included_index: 3,
+            last_included_term: 3,
+            config_epoch: 1,
+            state_machine_summary: 77,
+        };
+        assert!(raft_snapshot_matches_prefix(&log, &snapshot));
+        assert!(raft_install_snapshot_admit(3, 4, 2, &log, &snapshot));
+
+        let mutated_snapshot = RaftSnapshotMetadata {
+            last_included_term: 2,
+            ..snapshot
+        };
+        assert!(!raft_snapshot_matches_prefix(&log, &mutated_snapshot));
+        assert!(!raft_install_snapshot_admit(3, 4, 2, &log, &mutated_snapshot));
+
+        let joint = RaftMembershipConfig {
+            epoch: 2,
+            old_voter_count: 3,
+            new_voter_count: 5,
+            is_joint: true,
+            max_node_id: 5,
+        };
+        assert!(raft_joint_quorum_admit(&joint, 2, 3));
+        assert!(!raft_joint_quorum_admit(&joint, 2, 2));
+    }
+
+    // r[verify domain-primitives.raft-consensus.trace]
+    // r[verify domain-primitives.raft-consensus.admission]
+    #[test]
+    fn deterministic_admission_keeps_first_failure_under_multiple_mutations() {
+        let log = vec![indexed(1, 1, 10), indexed(2, 2, 20)];
+        let before = invariant_bundle(2, 2);
+        let after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 3,
+                voted_for: 0,
+            },
+            ..before
+        };
+        let message = RaftMessageEnvelope {
+            kind: RAFT_MESSAGE_APPEND_ENTRIES,
+            term: 3,
+            source: 1,
+            target: 2,
+            index: 2,
+            payload: 20,
+        };
+        let step = RaftTransitionTraceStep {
+            before_term: 2,
+            after_term: 3,
+            message,
+            admitted: true,
+        };
+
+        let bad_before = RaftInvariantBundleMetadata {
+            current_term: 2,
+            persistent: RaftPersistentMetadata {
+                current_term: 1,
+                voted_for: 9,
+            },
+            ..before
+        };
+        let bad_step = RaftTransitionTraceStep {
+            after_term: 2,
+            message: RaftMessageEnvelope { target: 9, ..message },
+            ..step
+        };
+        let bad_after = RaftInvariantBundleMetadata {
+            current_term: 3,
+            persistent: RaftPersistentMetadata {
+                current_term: 2,
+                voted_for: 0,
+            },
+            ..before
+        };
+
+        let pre_first = raft_transition_admission_result(&bad_before, &bad_after, &log, &log, &bad_step);
+        assert!(!pre_first.admitted);
+        assert_eq!(pre_first.failing_check, RAFT_ADMISSION_BEFORE_INVARIANT_FAILED);
+
+        let message_first = raft_transition_admission_result(&before, &bad_after, &log, &log, &bad_step);
+        assert!(!message_first.admitted);
+        assert_eq!(message_first.failing_check, RAFT_ADMISSION_MESSAGE_FAILED);
+
+        let bad_trace = RaftTransitionTraceStep { after_term: 2, ..step };
+        let trace_first = raft_transition_admission_result(&before, &bad_after, &log, &log, &bad_trace);
+        assert!(!trace_first.admitted);
+        assert_eq!(trace_first.failing_check, RAFT_ADMISSION_TRACE_FAILED);
+    }
 }
