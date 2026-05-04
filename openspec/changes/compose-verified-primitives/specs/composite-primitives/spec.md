@@ -83,11 +83,10 @@ bounded, futex/backoff state is valid, and memory-order requirements still hold.
 | `composite-primitives.nix-eval-closure-policy` | `nix_eval_closure_policy` | `nix_eval_closure_policy_refines_sources` |
 | `composite-primitives.chaoscontrol-exploration-core` | `chaoscontrol_exploration_core` | `chaoscontrol_exploration_core_refines_sources` |
 
-## Requirements
+## ADDED Requirements
 
-### Requirement: Durable Job Executor
+### Requirement: Durable Job Executor [r[composite-primitives.durable-job-executor]]
 
-r[composite-primitives.durable-job-executor]
 The system MUST provide a durable job executor primitive for idempotent,
 resume-aware, retry-budgeted job admission.
 
@@ -96,21 +95,20 @@ resume-aware, retry-budgeted job admission.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted execution MUST imply valid lifecycle transition, non-duplicate token admission, replay gate approval, non-rewound resume point, retry budget compliance, and not-timed-out status.
 
-#### Scenario: Fresh token with valid resume point is accepted
+#### Scenario: Fresh token with valid resume point is accepted [r[composite-primitives.durable-job-executor.scenario.fresh-token-with-valid-resume-point-is-accepted]]
 
 - GIVEN a valid durable history with a fresh idempotency token and a valid checkpoint
 - WHEN the durable job executor computes the next step
 - THEN the result consumes the token once and resumes from the checkpoint-derived step
 
-#### Scenario: Duplicate or expired work is rejected
+#### Scenario: Duplicate or expired work is rejected [r[composite-primitives.durable-job-executor.scenario.duplicate-or-expired-work-is-rejected]]
 
 - GIVEN a duplicate idempotency token, an exhausted retry budget, or a job timeout
 - WHEN execution admission is requested
 - THEN the request is rejected without appending a new accepted-execution event
 
-### Requirement: Fenced Distributed Lock
+### Requirement: Fenced Distributed Lock [r[composite-primitives.fenced-distributed-lock]]
 
-r[composite-primitives.fenced-distributed-lock]
 The system MUST provide a fenced distributed lock primitive for stale-holder-safe
 protected writes.
 
@@ -119,21 +117,20 @@ protected writes.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted protected writes MUST imply current ownership and a fencing token strictly newer than the accepted fence, so stale holders cannot pass the facade.
 
-#### Scenario: Current lease holder receives usable fence
+#### Scenario: Current lease holder receives usable fence [r[composite-primitives.fenced-distributed-lock.scenario.current-lease-holder-receives-usable-fence]]
 
 - GIVEN a live lock lease owned by a requester and a monotone next fencing token
 - WHEN the requester acquires or renews the fenced lock
 - THEN the returned token is greater than every previously accepted token for the resource
 
-#### Scenario: Stale holder is rejected
+#### Scenario: Stale holder is rejected [r[composite-primitives.fenced-distributed-lock.scenario.stale-holder-is-rejected]]
 
 - GIVEN a holder whose lease expired or whose fencing token is older than the accepted token
 - WHEN the holder attempts a protected write
 - THEN the write decision is rejected as stale
 
-### Requirement: Linearizable Read Gate
+### Requirement: Linearizable Read Gate [r[composite-primitives.linearizable-read-gate]]
 
-r[composite-primitives.linearizable-read-gate]
 The system MUST provide a Raft read gate primitive for one-step linearizable read
 admission.
 
@@ -142,21 +139,20 @@ admission.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted reads MUST imply current leader authority plus quorum-backed read index or valid lease-read conditions at the returned committed index.
 
-#### Scenario: Quorum-confirmed read is safe
+#### Scenario: Quorum-confirmed read is safe [r[composite-primitives.linearizable-read-gate.scenario.quorum-confirmed-read-is-safe]]
 
 - GIVEN a leader term with current authority and a read-index acknowledged by a quorum
 - WHEN the read gate is evaluated
 - THEN the read is accepted as linearizable at the committed index
 
-#### Scenario: Lost authority blocks reads
+#### Scenario: Lost authority blocks reads [r[composite-primitives.linearizable-read-gate.scenario.lost-authority-blocks-reads]]
 
 - GIVEN a higher observed term, failed quorum check, or expired read lease
 - WHEN the read gate is evaluated
 - THEN the read is rejected
 
-### Requirement: Safe Snapshot Replication
+### Requirement: Safe Snapshot Replication [r[composite-primitives.safe-snapshot-replication]]
 
-r[composite-primitives.safe-snapshot-replication]
 The system MUST provide a snapshot replication primitive for complete,
 integrity-checked, compaction-safe installation.
 
@@ -165,21 +161,20 @@ integrity-checked, compaction-safe installation.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** installed snapshots MUST be complete, hash-valid, newer than the local snapshot boundary, and safe for log-prefix compaction.
 
-#### Scenario: Complete verified snapshot installs safely
+#### Scenario: Complete verified snapshot installs safely [r[composite-primitives.safe-snapshot-replication.scenario.complete-verified-snapshot-installs-safely]]
 
 - GIVEN all snapshot chunks arrive in order, match the expected integrity hash, and pass the compaction fence
 - WHEN installation is requested
 - THEN the snapshot is installed and the compacted log prefix is safe to discard
 
-#### Scenario: Corrupt or unsafe snapshot is rejected
+#### Scenario: Corrupt or unsafe snapshot is rejected [r[composite-primitives.safe-snapshot-replication.scenario.corrupt-or-unsafe-snapshot-is-rejected]]
 
 - GIVEN a missing chunk, hash mismatch, stale snapshot index, or unsafe compaction fence
 - WHEN installation is requested
 - THEN installation is rejected and log state is unchanged
 
-### Requirement: Crash-Safe Page Cache
+### Requirement: Crash-Safe Page Cache [r[composite-primitives.crash-safe-page-cache]]
 
-r[composite-primitives.crash-safe-page-cache]
 The system MUST provide a crash-safe page-cache primitive for WAL-backed dirty
 page recovery.
 
@@ -188,27 +183,26 @@ page recovery.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted recovered state MUST equal replay of exactly the maximal valid WAL prefix over checksum-valid pages; invalid suffix effects MUST be ignored. Rejected recovery MUST leave mutable state unchanged.
 
-#### Scenario: Recovery replays valid dirty updates
+#### Scenario: Recovery replays valid dirty updates [r[composite-primitives.crash-safe-page-cache.scenario.recovery-replays-valid-dirty-updates]]
 
 - GIVEN a WAL prefix with contiguous valid entries and cached dirty pages with matching checksums
 - WHEN recovery runs
 - THEN the recovered page state reflects exactly the replayable WAL prefix
 
-#### Scenario: Invalid suffix is ignored during prefix recovery
+#### Scenario: Invalid suffix is ignored during prefix recovery [r[composite-primitives.crash-safe-page-cache.scenario.invalid-suffix-is-ignored-during-prefix-recovery]]
 
 - GIVEN a valid WAL prefix followed by a torn checksum, missing sequence, or invalid truncation point
 - WHEN recovery runs
 - THEN recovery applies only the valid prefix and does not apply the invalid suffix
 
-#### Scenario: Invalid checkpoint rejects without mutation
+#### Scenario: Invalid checkpoint rejects without mutation [r[composite-primitives.crash-safe-page-cache.scenario.invalid-checkpoint-rejects-without-mutation]]
 
 - GIVEN an invalid checkpoint or torn checkpoint page from which no safe prefix can be identified
 - WHEN recovery runs
 - THEN recovery is rejected and mutable page-cache state is unchanged
 
-### Requirement: Verified LSM Ingest
+### Requirement: Verified LSM Ingest [r[composite-primitives.verified-lsm-ingest]]
 
-r[composite-primitives.verified-lsm-ingest]
 The system MUST provide an LSM ingest primitive for flush and compaction-safe run
 admission.
 
@@ -217,21 +211,20 @@ admission.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted ingests MUST produce checksum-valid runs within level budget and rejected ingests MUST preserve buffered writes.
 
-#### Scenario: Flush produces level-safe run
+#### Scenario: Flush produces level-safe run [r[composite-primitives.verified-lsm-ingest.scenario.flush-produces-level-safe-run]]
 
 - GIVEN a write buffer at flush threshold and a target level with available size budget
 - WHEN ingest executes
 - THEN the produced run respects level sizing and has checksum-valid blocks
 
-#### Scenario: Unsafe compaction target is rejected
+#### Scenario: Unsafe compaction target is rejected [r[composite-primitives.verified-lsm-ingest.scenario.unsafe-compaction-target-is-rejected]]
 
 - GIVEN a target level or compaction fence that would violate size or ordering constraints
 - WHEN ingest is requested
 - THEN the ingest is rejected without losing buffered writes
 
-### Requirement: Serializable Transaction Guard
+### Requirement: Serializable Transaction Guard [r[composite-primitives.serializable-txn-guard]]
 
-r[composite-primitives.serializable-txn-guard]
 The system MUST provide a transaction guard for commit admission from isolation,
 dependency, and lock-discipline facts.
 
@@ -240,21 +233,20 @@ dependency, and lock-discipline facts.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted commits MUST be MVCC-visible, SI conflict-free, dependency-cycle-free for the modeled edges, and two-phase-locking compliant.
 
-#### Scenario: Conflict-free transaction commits
+#### Scenario: Conflict-free transaction commits [r[composite-primitives.serializable-txn-guard.scenario.conflict-free-transaction-commits]]
 
 - GIVEN a transaction whose reads are visible, writes do not conflict, dependencies are acyclic, and locks remain in the growing phase until commit
 - WHEN the guard evaluates commit admission
 - THEN commit is accepted
 
-#### Scenario: Serialization risk aborts
+#### Scenario: Serialization risk aborts [r[composite-primitives.serializable-txn-guard.scenario.serialization-risk-aborts]]
 
 - GIVEN a write-write conflict, dependency cycle, or two-phase-locking violation
 - WHEN the guard evaluates commit admission
 - THEN commit is rejected
 
-### Requirement: Web-of-Trust UCAN Authorizer
+### Requirement: Web-of-Trust UCAN Authorizer [r[composite-primitives.web-of-trust-ucan-authorizer]]
 
-r[composite-primitives.web-of-trust-ucan-authorizer]
 The system MUST provide a UCAN authorizer that combines token validity,
 attenuation, caveats, DID/CID byte models, and rooted web-of-trust policy.
 
@@ -263,21 +255,20 @@ attenuation, caveats, DID/CID byte models, and rooted web-of-trust policy.
 - **Facade status:** mixed facade: public exec for existing UCAN, DID decode, and web-of-trust runtime checks; CID decode linkage is spec/proof-only and MUST NOT promise a public runtime CID decode API.
 - **Exported safety:** allowed actions MUST imply valid token envelope, ability containment, satisfied caveats, valid DID/CID spec linkage, rooted non-revoked trust, and threshold acceptance.
 
-#### Scenario: Rooted threshold token authorizes
+#### Scenario: Rooted threshold token authorizes [r[composite-primitives.web-of-trust-ucan-authorizer.scenario.rooted-threshold-token-authorizes]]
 
 - GIVEN a syntactically valid token with allowed ability, satisfied caveats, valid DID/CID linkage, and rooted non-revoked threshold trust
 - WHEN authorization is evaluated
 - THEN the requested action is authorized
 
-#### Scenario: Revoked or under-threshold token is denied
+#### Scenario: Revoked or under-threshold token is denied [r[composite-primitives.web-of-trust-ucan-authorizer.scenario.revoked-or-under-threshold-token-is-denied]]
 
 - GIVEN a valid token whose trust path is revoked or whose rooted threshold is not met
 - WHEN authorization is evaluated
 - THEN the requested action is denied
 
-### Requirement: Policy Decision Engine
+### Requirement: Policy Decision Engine [r[composite-primitives.policy-decision-engine]]
 
-r[composite-primitives.policy-decision-engine]
 The system MUST provide a policy decision engine for one allow/deny result from
 capability and trust primitives.
 
@@ -286,21 +277,20 @@ capability and trust primitives.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** allow decisions MUST imply valid delegation, containment, scope/pattern match, authorization, and sufficient trust level.
 
-#### Scenario: Contained delegation allows scoped action
+#### Scenario: Contained delegation allows scoped action [r[composite-primitives.policy-decision-engine.scenario.contained-delegation-allows-scoped-action]]
 
 - GIVEN a delegation chain whose scopes contain the requested action and whose trust level is sufficient
 - WHEN the policy engine evaluates the request
 - THEN the request is allowed
 
-#### Scenario: Scope or trust mismatch denies
+#### Scenario: Scope or trust mismatch denies [r[composite-primitives.policy-decision-engine.scenario.scope-or-trust-mismatch-denies]]
 
 - GIVEN a delegation with insufficient containment, unmatched pattern, or insufficient trust level
 - WHEN the policy engine evaluates the request
 - THEN the request is denied
 
-### Requirement: Blocking Bounded Channel
+### Requirement: Blocking Bounded Channel [r[composite-primitives.blocking-bounded-channel]]
 
-r[composite-primitives.blocking-bounded-channel]
 The system MUST provide a blocking bounded channel primitive that combines queue
 capacity with wait/wake and backoff state.
 
@@ -309,21 +299,20 @@ capacity with wait/wake and backoff state.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** channel transitions MUST preserve occupancy bounds and keep parking/wake decisions consistent with queue state and memory-order requirements.
 
-#### Scenario: Available slot sends without parking
+#### Scenario: Available slot sends without parking [r[composite-primitives.blocking-bounded-channel.scenario.available-slot-sends-without-parking]]
 
 - GIVEN a bounded channel with free capacity and valid memory-ordering preconditions
 - WHEN a sender attempts to enqueue
 - THEN the message is enqueued and no futex wait is required
 
-#### Scenario: Full channel parks or rejects correctly
+#### Scenario: Full channel parks or rejects correctly [r[composite-primitives.blocking-bounded-channel.scenario.full-channel-parks-or-rejects-correctly]]
 
 - GIVEN a full bounded channel
 - WHEN a sender attempts to enqueue under blocking mode or non-blocking mode
 - THEN blocking mode enters a valid wait/backoff state and non-blocking mode rejects without changing occupancy
 
-### Requirement: Safe Reclamation Domain
+### Requirement: Safe Reclamation Domain [r[composite-primitives.safe-reclamation-domain]]
 
-r[composite-primitives.safe-reclamation-domain]
 The system MUST provide a safe reclamation domain from RCU, epoch, hazard, and
 reference-count protections.
 
@@ -332,21 +321,20 @@ reference-count protections.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** reclaim decisions MUST imply completed grace/epoch safety, no hazard protection, and no strong reference preventing deallocation.
 
-#### Scenario: Unprotected retired object is reclaimable
+#### Scenario: Unprotected retired object is reclaimable [r[composite-primitives.safe-reclamation-domain.scenario.unprotected-retired-object-is-reclaimable]]
 
 - GIVEN an object retired before a completed grace period, with no active hazard pointer and no strong reference
 - WHEN reclamation is scanned
 - THEN the object may be reclaimed
 
-#### Scenario: Protected object is retained
+#### Scenario: Protected object is retained [r[composite-primitives.safe-reclamation-domain.scenario.protected-object-is-retained]]
 
 - GIVEN an active reader epoch, hazard pointer, or strong reference covering an object
 - WHEN reclamation is scanned
 - THEN the object is not reclaimed
 
-### Requirement: Cache-Coherent Memory Region
+### Requirement: Cache-Coherent Memory Region [r[composite-primitives.cache-coherent-memory-region]]
 
-r[composite-primitives.cache-coherent-memory-region]
 The system MUST provide a cache-coherent memory-region primitive combining cache
 protocol, directory, store-buffer, prefetch, and write-policy facts.
 
@@ -355,21 +343,20 @@ protocol, directory, store-buffer, prefetch, and write-policy facts.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted region transitions MUST preserve unique writable ownership, directory/cache consistency, store-buffer forwarding validity, prefetch architectural invisibility, and dirty-line policy invariants.
 
-#### Scenario: Exclusive writer remains unique
+#### Scenario: Exclusive writer remains unique [r[composite-primitives.cache-coherent-memory-region.scenario.exclusive-writer-remains-unique]]
 
 - GIVEN a region with a directory owner and coherent per-cache line states
 - WHEN a write permission grant is evaluated
 - THEN at most one cache owns writable permission for the line
 
-#### Scenario: Prefetch or store forwarding does not violate coherence
+#### Scenario: Prefetch or store forwarding does not violate coherence [r[composite-primitives.cache-coherent-memory-region.scenario.prefetch-or-store-forwarding-does-not-violate-coherence]]
 
 - GIVEN a prefetch hint or store-buffer forwarded read
 - WHEN the memory-region invariant is checked
 - THEN coherence state and architectural read/write equivalence remain valid
 
-### Requirement: Verified Compiler Pipeline
+### Requirement: Verified Compiler Pipeline [r[composite-primitives.verified-compiler-pipeline]]
 
-r[composite-primitives.verified-compiler-pipeline]
 The system MUST provide a bounded compiler-pipeline primitive for the existing raw
 IR model.
 
@@ -379,21 +366,20 @@ IR model.
 - **Additional bridge obligations:** the composite MUST add `verified_compiler_pipeline_ssa_preserves_observable_trace(...)` and `verified_compiler_pipeline_constfold_preserves_observable_trace(...)` before the full pipeline can be accepted; `dce_preserves_observable_trace` remains the named existing DCE theorem.
 - **Exported safety:** accepted optimized output MUST preserve the modeled observable trace using the SSA bridge, constant-folding bridge, and `observable_trace_spec` / `observable_trace_after_dce_spec` for the supported raw-IR slice; it MUST not claim preservation for invalid analyses.
 
-#### Scenario: Optimized program preserves observable behavior
+#### Scenario: Optimized program preserves observable behavior [r[composite-primitives.verified-compiler-pipeline.scenario.optimized-program-preserves-observable-behavior]]
 
 - GIVEN a valid raw program and analyses satisfying their validity boundaries
 - WHEN the pipeline runs SSA construction, constant folding, and dead-code elimination
 - THEN the optimized program preserves the specified observable trace
 
-#### Scenario: Invalid analysis boundary is rejected
+#### Scenario: Invalid analysis boundary is rejected [r[composite-primitives.verified-compiler-pipeline.scenario.invalid-analysis-boundary-is-rejected]]
 
 - GIVEN malformed CFG targets, invalid dominance facts, or liveness shape mismatch
 - WHEN the pipeline is requested
 - THEN the pipeline rejects the input instead of claiming preservation
 
-### Requirement: Backend Frame Allocator
+### Requirement: Backend Frame Allocator [r[composite-primitives.backend-frame-allocator]]
 
-r[composite-primitives.backend-frame-allocator]
 The system MUST provide a backend frame allocator for the existing live-range,
 register, and local/spill stack-slot model.
 
@@ -402,21 +388,20 @@ register, and local/spill stack-slot model.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted allocations MUST assign overlapping live ranges to non-conflicting registers or stack slots and may reuse stack slots only when live ranges do not overlap.
 
-#### Scenario: Non-overlapping ranges reuse a slot
+#### Scenario: Non-overlapping ranges reuse a slot [r[composite-primitives.backend-frame-allocator.scenario.non-overlapping-ranges-reuse-a-slot]]
 
 - GIVEN two spill ranges that do not overlap and share compatible layout constraints
 - WHEN stack slots are assigned
 - THEN the ranges may reuse one slot without conflict
 
-#### Scenario: Overlapping ranges are separated
+#### Scenario: Overlapping ranges are separated [r[composite-primitives.backend-frame-allocator.scenario.overlapping-ranges-are-separated]]
 
 - GIVEN overlapping live ranges assigned to stack or register locations
 - WHEN allocation is validated
 - THEN the ranges are assigned distinct non-conflicting resources or allocation is rejected
 
-### Requirement: Dependency Scheduler
+### Requirement: Dependency Scheduler [r[composite-primitives.dependency-scheduler]]
 
-r[composite-primitives.dependency-scheduler]
 The system MUST provide a dependency scheduler that admits only ready,
 capacity-safe work from graph and scheduling facts.
 
@@ -425,21 +410,20 @@ capacity-safe work from graph and scheduling facts.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** scheduled jobs MUST be dependency-ready, cycle-free under the modeled graph, deadline/fairness eligible, and within slot capacity.
 
-#### Scenario: Ready acyclic job is scheduled within capacity
+#### Scenario: Ready acyclic job is scheduled within capacity [r[composite-primitives.dependency-scheduler.scenario.ready-acyclic-job-is-scheduled-within-capacity]]
 
 - GIVEN an acyclic job graph with all dependencies satisfied for a candidate job and an available slot
 - WHEN scheduling chooses the next job
 - THEN the selected job is ready and capacity remains within bounds
 
-#### Scenario: Cyclic or blocked job is not scheduled
+#### Scenario: Cyclic or blocked job is not scheduled [r[composite-primitives.dependency-scheduler.scenario.cyclic-or-blocked-job-is-not-scheduled]]
 
 - GIVEN a cycle, unsatisfied dependency, missed capacity bound, or unfair selection state
 - WHEN scheduling chooses the next job
 - THEN the blocked job is not selected
 
-### Requirement: Raft Membership Manager
+### Requirement: Raft Membership Manager [r[composite-primitives.raft-membership-manager]]
 
-r[composite-primitives.raft-membership-manager]
 The system MUST provide a Raft membership manager for safe configuration changes,
 learner promotion, and leadership transfer.
 
@@ -448,21 +432,20 @@ learner promotion, and leadership transfer.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted membership changes MUST preserve quorum intersection, valid config-change phase, learner readiness, and leadership-transfer eligibility.
 
-#### Scenario: Learner promotion through joint consensus is safe
+#### Scenario: Learner promotion through joint consensus is safe [r[composite-primitives.raft-membership-manager.scenario.learner-promotion-through-joint-consensus-is-safe]]
 
 - GIVEN a caught-up learner and a valid joint-consensus transition
 - WHEN membership promotion is applied
 - THEN quorum safety and configuration-change invariants hold
 
-#### Scenario: Unsafe transfer or promotion is rejected
+#### Scenario: Unsafe transfer or promotion is rejected [r[composite-primitives.raft-membership-manager.scenario.unsafe-transfer-or-promotion-is-rejected]]
 
 - GIVEN a stale learner, invalid voter set, or leadership transfer target that is not eligible
 - WHEN membership change is requested
 - THEN the change is rejected
 
-### Requirement: Exactly-Once Ledger Transfer
+### Requirement: Exactly-Once Ledger Transfer [r[composite-primitives.exactly-once-ledger-transfer]]
 
-r[composite-primitives.exactly-once-ledger-transfer]
 The system MUST provide an exactly-once ledger transfer primitive for replay-safe
 money movement.
 
@@ -471,21 +454,20 @@ money movement.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted transfers MUST post balanced debit/credit entries once, preserve ledger total, append valid journal evidence, and reject duplicate replay.
 
-#### Scenario: New transfer posts once
+#### Scenario: New transfer posts once [r[composite-primitives.exactly-once-ledger-transfer.scenario.new-transfer-posts-once]]
 
 - GIVEN sufficient funds, a fresh idempotency token, and an appendable journal
 - WHEN the transfer is applied
 - THEN debit and credit entries are balanced and total ledger value is conserved
 
-#### Scenario: Replayed transfer does not double-post
+#### Scenario: Replayed transfer does not double-post [r[composite-primitives.exactly-once-ledger-transfer.scenario.replayed-transfer-does-not-double-post]]
 
 - GIVEN a duplicate idempotency token or replayed durable event
 - WHEN the transfer is applied again
 - THEN no second debit or credit is posted
 
-### Requirement: seL4 Invocation Step
+### Requirement: seL4 Invocation Step [r[composite-primitives.sel4-invocation-step]]
 
-r[composite-primitives.sel4-invocation-step]
 The system MUST provide a seL4 invocation-step primitive that preserves kernel
 invariants across a bounded modeled capability invocation slice: `CopyCap`,
 `MapPage`, `EndpointSend`, and `BlockSenderOnEndpoint`. IRQ, notification,
@@ -497,21 +479,20 @@ are out of scope for this composite.
 - **Facade status:** public exec facade for modeled invocations with paired spec and proof helpers.
 - **Exported safety:** accepted invocation steps MUST mutate only the object allowed by the resolved capability and MUST preserve `kernel_invariant_spec`. Modeled blocked-TCB state transitions are `Accept` kernel-state mutations, not suite-level `Wait` outcomes.
 
-#### Scenario: Valid invocation preserves invariants
+#### Scenario: Valid invocation preserves invariants [r[composite-primitives.sel4-invocation-step.scenario.valid-invocation-preserves-invariants]]
 
 - GIVEN a valid capability lookup, sufficient rights, and one of `CopyCap`, `MapPage`, `EndpointSend`, or `BlockSenderOnEndpoint` matching the object type
 - WHEN the invocation step executes
 - THEN the corresponding kernel object state changes and global invariants are preserved
 
-#### Scenario: Invalid capability blocks mutation
+#### Scenario: Invalid capability blocks mutation [r[composite-primitives.sel4-invocation-step.scenario.invalid-capability-blocks-mutation]]
 
 - GIVEN a missing slot, insufficient rights, invalid derivation, or mismatched invocation type
 - WHEN the invocation step is requested
 - THEN the kernel state is unchanged
 
-### Requirement: Nix Eval Closure Policy
+### Requirement: Nix Eval Closure Policy [r[composite-primitives.nix-eval-closure-policy]]
 
-r[composite-primitives.nix-eval-closure-policy]
 The system MUST provide a Nix/Nickel closure-policy primitive for merged config
 and reachable package closure admission.
 
@@ -520,21 +501,20 @@ and reachable package closure admission.
 - **Facade status:** public exec facade where source modules expose exec operations; closure-policy reachability proof may use spec-only helpers.
 - **Exported safety:** accepted configs MUST include every reachable closure item required by the Nickel-merged Nix package selection.
 
-#### Scenario: Merged config admits reachable package closure
+#### Scenario: Merged config admits reachable package closure [r[composite-primitives.nix-eval-closure-policy.scenario.merged-config-admits-reachable-package-closure]]
 
 - GIVEN a Nickel-merged configuration selecting Nix packages with valid versions and reachable dependencies
 - WHEN closure policy is evaluated
 - THEN every required closure item is included
 
-#### Scenario: Missing dependency or rejected merge blocks closure
+#### Scenario: Missing dependency or rejected merge blocks closure [r[composite-primitives.nix-eval-closure-policy.scenario.missing-dependency-or-rejected-merge-blocks-closure]]
 
 - GIVEN an invalid merge, missing attribute, incompatible version, or unreachable dependency
 - WHEN closure policy is evaluated
 - THEN the policy rejects the result
 
-### Requirement: ChaosControl Exploration Core
+### Requirement: ChaosControl Exploration Core [r[composite-primitives.chaoscontrol-exploration-core]]
 
-r[composite-primitives.chaoscontrol-exploration-core]
 The system MUST provide a ChaosControl exploration core for deterministic,
 coverage-accounted, oracle-checked exploration steps.
 
@@ -543,13 +523,13 @@ coverage-accounted, oracle-checked exploration steps.
 - **Facade status:** public exec facade with paired spec and proof helpers.
 - **Exported safety:** accepted exploration steps MUST be deterministic for the selected state, apply only valid due faults, and update coverage consistently. Oracle failure MUST be returned as a `Reject` reason without mutating exploration state.
 
-#### Scenario: Frontier step is deterministic and covered
+#### Scenario: Frontier step is deterministic and covered [r[composite-primitives.chaoscontrol-exploration-core.scenario.frontier-step-is-deterministic-and-covered]]
 
 - GIVEN a scheduler state, selected frontier node, and enabled fault schedule
 - WHEN exploration advances one step
 - THEN the next state is deterministic and coverage accounting records the explored rule
 
-#### Scenario: Oracle violation stops exploration path
+#### Scenario: Oracle violation stops exploration path [r[composite-primitives.chaoscontrol-exploration-core.scenario.oracle-violation-stops-exploration-path]]
 
 - GIVEN an oracle violation or invalid fault schedule
 - WHEN exploration attempts to continue the path
