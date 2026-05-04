@@ -21,7 +21,6 @@ correctness.
 
 **Non-Goals:**
 
-- implementing modules in this change
 - proving generic SAT/SMT/CSP solver correctness or external solver behavior
 - proving optimality, completeness outside declared finite envelopes, or runtime
   performance
@@ -82,5 +81,4 @@ redefining those families.
 
 - `openspec validate add-constraint-solver-primitives --strict --json`
 - strict validation for all active primitive-family OpenSpecs
-- future implementation: focused cargo tests, Verus checks, Tracey uncovered/
-  untested checks, and final repo validation before archive
+- focused cargo tests, Verus checks, Tracey uncovered/untested checks, and final repo validation before archive

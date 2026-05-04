@@ -7,8 +7,8 @@ partial assignments, consistency checks, propagation envelopes, witness metadata
 and deterministic solve/admission decisions are common proof building blocks for
 configuration, planning, placement, validation, and bounded search.
 
-This change keeps those primitives spec-only for now. It records exact finite
-models that later Verus slices can implement without claiming arbitrary CSP/SMT
+This change implements exact finite
+models with Verus-checked primitives without claiming arbitrary CSP/SMT
 semantics, solver completeness outside declared finite envelopes, optimality,
 performance, heuristic quality, or probabilistic search behavior.
 
@@ -45,17 +45,16 @@ performance, heuristic quality, or probabilistic search behavior.
 
 ## Impact
 
-- **Files**: future implementation may add `src/constraint_*`, `src/lib.rs`,
-  `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: `src/constraint_*`, `src/lib.rs`, `docs/requirements.md`,
+  canonical OpenSpec requirements, tests, and evidence.
+- **APIs**: exact finite constraint-domain, variable, relation, assignment,
+  consistency, propagation, witness, and admission APIs are added.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: current verification is strict OpenSpec validation. Future
-  implementation tasks must add focused unit/property tests, Verus proof checks,
-  Tracey coverage, and final repo validation evidence.
+- **Testing**: focused tests, Verus proof checks, Tracey coverage, strict
+  OpenSpec validation, and final repo validation evidence.
 
 ## Out of Scope
 
-- implementing constraint-solver primitives in this change
 - arbitrary SMT/CSP language semantics, infinite domains, or unbounded search
 - solver completeness outside explicitly declared finite models
 - optimality, performance, heuristic quality, stochastic sampling, or probabilistic

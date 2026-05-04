@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite constraint-solver primitives.
+Defines implemented requirements for reusable finite constraint-solver primitives.
 These primitives MUST use exact finite variables, domains, relation tables,
 assignments, consistency predicates, propagation envelopes, witness metadata, and
 deterministic admission results. They MUST avoid arbitrary SMT/CSP semantics,

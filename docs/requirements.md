@@ -9216,3 +9216,38 @@ r[domain-primitives.configuration-feature-flag.admission]
 Configuration admission envelopes MUST compose key, typed-value, default,
 override, gate, rollout, and validation checks and reject when any required
 finite check rejects.
+
+## Constraint Solver Domain Primitives
+
+r[domain-primitives.constraint-solver.variable]
+Constraint-variable envelopes MUST admit only finite variable identifiers whose
+declared domain identifier exists in the finite domain table.
+
+r[domain-primitives.constraint-solver.domain]
+Constraint-domain predicates MUST model finite value membership, emptiness, and
+subset checks without claiming theory reasoning.
+
+r[domain-primitives.constraint-solver.relation]
+Constraint-relation envelopes MUST admit only finite tuples whose arity matches
+the declared relation scope and relation table metadata.
+
+r[domain-primitives.constraint-solver.assignment]
+Constraint-assignment predicates MUST model partial/total assignment shape,
+variable uniqueness, and value admission against declared finite domains.
+
+r[domain-primitives.constraint-solver.consistency]
+Constraint-consistency predicates MUST deterministically check assigned relation
+scopes against finite relation tuples.
+
+r[domain-primitives.constraint-solver.propagation]
+Constraint-propagation envelopes MUST admit only monotone domain narrowing and
+explicit contradiction metadata.
+
+r[domain-primitives.constraint-solver.witness]
+Constraint-witness metadata MUST distinguish satisfying and contradiction
+witnesses over declared finite models without claiming solver search completeness.
+
+r[domain-primitives.constraint-solver.admission]
+Constraint-admission envelopes MUST compose finite variables, domains, relations,
+assignments, propagation, and witness predicates into deterministic admission or
+rejection metadata.

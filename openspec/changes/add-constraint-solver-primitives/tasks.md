@@ -1,6 +1,6 @@
 ## Coverage Index
 
-| Requirement ID | Future module | Purpose |
+| Requirement ID | Implemented module | Purpose |
 |---|---|---|
 | `domain-primitives.constraint-solver.variable` | `src/constraint_variable.rs` | finite variable identifiers and declared domains |
 | `domain-primitives.constraint-solver.domain` | `src/constraint_domain.rs` | finite value domains and membership predicates |
@@ -15,19 +15,19 @@
 
 - [x] Create constraint-solver primitive OpenSpec with exact finite models and non-goals.
 
-## Phase 2: Future implementation slices
+## Phase 2: Implementation slices
 
-- [ ] Implement `constraint_variable` with finite variable identifiers and declared-domain metadata. `[covers=domain-primitives.constraint-solver.variable]`
-- [ ] Implement `constraint_domain` with finite value-domain membership, emptiness, and subset predicates. `[covers=domain-primitives.constraint-solver.domain]`
-- [ ] Implement `constraint_relation` with finite constraint scope and tuple/relation metadata. `[covers=domain-primitives.constraint-solver.relation]`
-- [ ] Implement `constraint_assignment` with partial/total assignment shape and domain-admission predicates. `[covers=domain-primitives.constraint-solver.assignment]`
-- [ ] Implement `constraint_consistency` with deterministic local consistency predicates. `[covers=domain-primitives.constraint-solver.consistency]`
-- [ ] Implement `constraint_propagation` with monotone domain-narrowing envelopes. `[covers=domain-primitives.constraint-solver.propagation]`
-- [ ] Implement `constraint_witness` with finite satisfiability and contradiction witness metadata. `[covers=domain-primitives.constraint-solver.witness]`
-- [ ] Implement `constraint_admission` with deterministic solve/admission result envelopes. `[covers=domain-primitives.constraint-solver.admission]`
+- [x] Implement `constraint_variable` with finite variable identifiers and declared-domain metadata. `[covers=domain-primitives.constraint-solver.variable]`
+- [x] Implement `constraint_domain` with finite value-domain membership, emptiness, and subset predicates. `[covers=domain-primitives.constraint-solver.domain]`
+- [x] Implement `constraint_relation` with finite constraint scope and tuple/relation metadata. `[covers=domain-primitives.constraint-solver.relation]`
+- [x] Implement `constraint_assignment` with partial/total assignment shape and domain-admission predicates. `[covers=domain-primitives.constraint-solver.assignment]`
+- [x] Implement `constraint_consistency` with deterministic local consistency predicates. `[covers=domain-primitives.constraint-solver.consistency]`
+- [x] Implement `constraint_propagation` with monotone domain-narrowing envelopes. `[covers=domain-primitives.constraint-solver.propagation]`
+- [x] Implement `constraint_witness` with finite satisfiability and contradiction witness metadata. `[covers=domain-primitives.constraint-solver.witness]`
+- [x] Implement `constraint_admission` with deterministic solve/admission result envelopes. `[covers=domain-primitives.constraint-solver.admission]`
 
 ## Phase 3: Evidence and archive
 
-- [ ] Add `docs/requirements.md`, `r[impl]`, `r[depends]`, and `r[verify]` coverage for implemented constraint-solver primitives.
-- [ ] Run focused tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested checks, and final repo validation.
-- [ ] Sync canonical specs and archive after implementation/evidence tasks complete.
+- [x] Add `docs/requirements.md`, `r[impl]`, `r[depends]`, and `r[verify]` coverage for implemented constraint-solver primitives.
+- [x] Run focused tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested checks, and final repo validation.
+- [x] Sync canonical specs and archive after implementation/evidence tasks complete.
