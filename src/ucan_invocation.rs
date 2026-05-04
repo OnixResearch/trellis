@@ -127,6 +127,69 @@ pub fn check_receipt_valid(r: &Receipt) -> (result: bool)
     exec_ok && ts_ok
 }
 
+
+/// Check whether `resource` has `prefix` as a byte prefix.
+// r[impl ucan-invocation.authorization-check]
+pub fn resource_has_prefix(resource: &Vec<u8>, prefix: &Vec<u8>) -> (result: bool)
+    ensures result == (resource@.len() >= prefix@.len()
+        && resource@.subrange(0, prefix@.len() as int) =~= prefix@),
+{
+    if resource.len() < prefix.len() {
+        return false;
+    }
+    let mut i: usize = 0;
+    while i < prefix.len()
+        invariant
+            0 <= i <= prefix.len(),
+            resource.len() >= prefix.len(),
+            forall|k: int| 0 <= k < i ==> resource@[k] == prefix@[k],
+        decreases prefix.len() - i,
+    {
+        if resource[i] != prefix[i] {
+            assert(resource@[i as int] != prefix@[i as int]);
+            assert(!(resource@.subrange(0, prefix@.len() as int) =~= prefix@));
+            return false;
+        }
+        i = i + 1;
+    }
+    assert(resource@.subrange(0, prefix@.len() as int) =~= prefix@);
+    true
+}
+
+/// Check complete invocation authorization against the chain leaf audience and capability.
+// r[impl ucan-invocation.authorization-check]
+pub fn check_invocation_authorized(
+    invoker: &Vec<u8>,
+    leaf_audience: &Vec<u8>,
+    resource: &Vec<u8>,
+    ability: &Vec<u8>,
+    leaf_resource: &Vec<u8>,
+    leaf_ability: &Vec<u8>,
+) -> (result: bool)
+    ensures result == invocation_authorized_spec(
+        invoker@,
+        leaf_audience@,
+        resource@,
+        ability@,
+        leaf_resource@,
+        leaf_ability@,
+    ),
+{
+    let invoker_ok = check_invoker_matches(invoker, leaf_audience);
+    if !invoker_ok {
+        return false;
+    }
+    let resource_ok = resource_has_prefix(resource, leaf_resource);
+    if !resource_ok {
+        return false;
+    }
+    let ability_ok = check_invoker_matches(ability, leaf_ability);
+    if !ability_ok {
+        return false;
+    }
+    true
+}
+
 // --- Proofs ---
 
 /// A valid receipt proves the invoker actually ran the action.
@@ -250,6 +313,46 @@ mod tests {
             receipt_timestamp: 100,
         };
         assert!(!check_receipt_valid(&r));
+    }
+
+    #[test]
+    fn test_invocation_authorized_accepts_resource_refinement() {
+        assert!(check_invocation_authorized(
+            &b"did:key:alice".to_vec(),
+            &b"did:key:alice".to_vec(),
+            &b"/photos/vacation/1".to_vec(),
+            &b"read".to_vec(),
+            &b"/photos".to_vec(),
+            &b"read".to_vec(),
+        ));
+    }
+
+    #[test]
+    fn test_invocation_authorized_rejects_wrong_audience_resource_or_ability() {
+        assert!(!check_invocation_authorized(
+            &b"did:key:bob".to_vec(),
+            &b"did:key:alice".to_vec(),
+            &b"/photos/vacation".to_vec(),
+            &b"read".to_vec(),
+            &b"/photos".to_vec(),
+            &b"read".to_vec(),
+        ));
+        assert!(!check_invocation_authorized(
+            &b"did:key:alice".to_vec(),
+            &b"did:key:alice".to_vec(),
+            &b"/videos".to_vec(),
+            &b"read".to_vec(),
+            &b"/photos".to_vec(),
+            &b"read".to_vec(),
+        ));
+        assert!(!check_invocation_authorized(
+            &b"did:key:alice".to_vec(),
+            &b"did:key:alice".to_vec(),
+            &b"/photos/vacation".to_vec(),
+            &b"write".to_vec(),
+            &b"/photos".to_vec(),
+            &b"read".to_vec(),
+        ));
     }
 
     #[test]

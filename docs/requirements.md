@@ -8398,8 +8398,10 @@ A receipt is valid if the executor matches the invoker and
 timestamps are properly ordered.
 
 r[ucan-invocation.authorization-check]
-An authorized invocation's resource MUST be a refinement of the
-leaf capability's resource (prefix match) with matching ability.
+An authorized invocation's resource MUST be a refinement of the leaf capability's
+resource (prefix match) with matching ability, and the public authorization
+checker MUST reject mismatched audiences, non-prefixed resources, or mismatched
+abilities.
 
 ## UCAN Principal Linking
 
