@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite discrete-optimization
+Defines implemented requirements for reusable finite discrete-optimization
 primitives. These primitives MUST use exact finite candidate sets, objective
 metadata, feasibility predicates, deterministic rankings, dominance predicates,
 bound metadata, optimum/frontier witness envelopes, and deterministic admission

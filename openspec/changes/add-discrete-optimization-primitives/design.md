@@ -13,7 +13,7 @@ that can be composed by later finite planners without claiming solver quality.
 - model optimization inputs as finite candidate universes and exact scores
 - make feasibility, ranking, dominance, bounds, and witnesses deterministic
 - keep validity boundaries explicit for later checked constructors or `requires`
-- leave implementation and evidence tasks open for later proof slices
+- implement exact finite proof slices with reviewable evidence
 
 **Non-Goals:**
 
@@ -77,5 +77,4 @@ quality, convergence, runtime performance, or stochastic exploration quality.
 
 - `openspec validate add-discrete-optimization-primitives --strict --json`
 - strict validation for every active primitive-family OpenSpec
-- helper verification for expected incomplete implementation tasks
-- future focused cargo/Verus/Tracey checks before archive
+- focused cargo/Verus/Tracey checks before archive

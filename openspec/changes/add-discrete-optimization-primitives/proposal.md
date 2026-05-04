@@ -7,9 +7,8 @@ work will need exact objective, feasible-set, candidate-ranking, dominance,
 bound, and optimum-witness envelopes without smuggling in solver performance or
 heuristic-quality claims.
 
-This change adds a spec-only OpenSpec for finite discrete optimization
-primitives. It intentionally leaves implementation, Tracey coverage, tests,
-Verus proofs, evidence, and archive work for later slices.
+This change implements finite discrete optimization primitives with Tracey
+coverage, focused tests, Verus proofs, evidence, and archive-ready metadata.
 
 ## What Changes
 
@@ -50,17 +49,16 @@ Verus proofs, evidence, and archive work for later slices.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add `src/opt_*`,
-  `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: `src/opt_*`, `src/lib.rs`, `docs/requirements.md`,
+  canonical specs, tests, and evidence.
+- **APIs**: exact finite discrete-optimization APIs are added.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: validate this OpenSpec strictly now. Future implementation slices
-  must run focused cargo tests, `./scripts/verus.sh src/lib.rs`, Tracey
-  uncovered/untested checks, and final repo validation before archive.
+- **Testing**: focused cargo tests, `./scripts/verus.sh src/lib.rs`,
+  Tracey uncovered/untested checks, strict OpenSpec validation, and final repo
+  validation evidence are recorded before archive.
 
 ## Out of Scope
 
-- implementing discrete optimization modules in this slice
 - proving external solver correctness or algorithmic completeness beyond a
   declared finite candidate universe
 - optimization performance, heuristic quality, stochastic search quality, or

@@ -9318,3 +9318,38 @@ r[domain-primitives.data-validation.admission]
 Data-validation admission primitives MUST compose finite schema, field, enum,
 range, cross-field, error, and normalization metadata into deterministic
 admission or rejection.
+
+## Discrete Optimization Domain Primitives
+
+r[domain-primitives.discrete-optimization.objective]
+Discrete-optimization objective primitives MUST associate exact finite scores
+only with candidate IDs admitted by the declared finite universe.
+
+r[domain-primitives.discrete-optimization.feasible-set]
+Discrete-optimization feasible-set primitives MUST admit or reject candidate IDs
+against a finite declared candidate envelope.
+
+r[domain-primitives.discrete-optimization.ranking]
+Discrete-optimization ranking primitives MUST compare only admitted candidates
+and use deterministic exact-score ordering metadata.
+
+r[domain-primitives.discrete-optimization.dominance]
+Discrete-optimization dominance primitives MUST name distinct compared
+candidates and require exact no-worse-plus-strictly-better tuple metadata.
+
+r[domain-primitives.discrete-optimization.bound]
+Discrete-optimization bound primitives MUST validate lower/upper objective-bound
+metadata against exact finite scores.
+
+r[domain-primitives.discrete-optimization.witness]
+Discrete-optimization optimum-witness primitives MUST reference an admitted
+candidate and finite-scope bestness metadata only.
+
+r[domain-primitives.discrete-optimization.frontier]
+Discrete-optimization frontier primitives MUST mark only admitted nondominated
+candidates as finite frontier members.
+
+r[domain-primitives.discrete-optimization.admission]
+Discrete-optimization admission primitives MUST compose objective, feasible-set,
+ranking, dominance, bound, witness, and frontier metadata into deterministic
+admission or rejection.
