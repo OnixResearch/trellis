@@ -10,14 +10,13 @@ identity, authentication, or security behavior.
 
 ## What Changes
 
-- Add a spec-only `add-identifier-namespace-primitives` child OpenSpec under the
+- Add a implemented `add-identifier-namespace-primitives` child OpenSpec under the
   domain-primitives umbrella.
 - Define exact finite models for identifier envelopes, namespace scopes, scoped
   uniqueness predicates, alias maps, canonicalization decisions,
   collision/admission metadata, deterministic lookup, and deterministic
   registration admission.
-- Leave implementation, Verus proofs, Tracey coverage, and evidence as future
-  tasks.
+- Include implementation, Verus proofs, Tracey coverage, and evidence for the finite envelope primitives.
 
 ## Capabilities
 
@@ -42,16 +41,13 @@ identity, authentication, or security behavior.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/id_*`, `src/namespace_*`, `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: OpenSpec artifacts and implementation add `src/id_*`, `src/lib.rs`, `docs/requirements.md`, tests, and evidence.
+- **APIs**: exact finite runtime admission APIs are added.
 - **Dependencies**: no new dependencies.
-- **Testing**: strict OpenSpec validation now; future implementation must run
-  focused tests, Verus, Tracey, and final repo validation.
+- **Testing**: strict OpenSpec validation plus focused tests, Verus, Tracey, and final repo validation.
 
 ## Out of Scope
 
-- implementing identifier or namespace modules now
 - distributed identity, global uniqueness across systems, consensus, registry
   durability, service availability, or external directory correctness
 - authentication, authorization, cryptographic ownership, privacy, security, or

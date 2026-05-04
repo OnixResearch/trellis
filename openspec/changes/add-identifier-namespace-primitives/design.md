@@ -14,12 +14,10 @@ identity or security claims.
 - specify exact finite identifier and namespace-scope envelopes
 - specify scoped uniqueness and alias-map predicates over finite registries
 - specify canonicalization and collision decisions as explicit metadata
-- specify deterministic lookup and registration admission/rejection without
-  implementation yet
+- specify deterministic lookup and registration admission/rejection with exact finite implementation
 
 **Non-Goals:**
 
-- implementing runtime APIs in this spec-only change
 - proving global uniqueness, distributed registry behavior, authentication, or
   cryptographic ownership
 - proving external standard conformance for UUID, URI, DNS, filesystem paths, or
@@ -74,5 +72,5 @@ must not claim distributed or universal uniqueness.
 - `openspec validate add-identifier-namespace-primitives --strict --json`
 - strict validation for every active primitive-family OpenSpec
 - helper verification is expected to warn about future implementation tasks
-- future implementation must add `docs/requirements.md`, `r[impl]`,
+- implementation adds `docs/requirements.md`, `r[impl]`,
   `r[depends]`, `r[verify]`, tests, Verus proof evidence, and Tracey evidence
