@@ -20,7 +20,6 @@ that are broadly useful but not yet tied to one concrete family implementation.
 
 **Non-Goals:**
 
-- implementing modules in this pass
 - changing existing GIS foundation requirements
 - proving real-number, floating-point, probabilistic, or performance properties
 
@@ -52,4 +51,4 @@ change valid.
 ## Validation Plan
 
 - `openspec validate add-numeric-foundation-primitives --strict --json`
-- later implementation evidence per task: focused cargo tests, Verus, Tracey
+- focused cargo tests, Verus, Tracey, full verification, and OpenSpec validation

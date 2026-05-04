@@ -28,7 +28,7 @@ integer metadata, conversion envelopes, and range preservation.
 
 ### Requirement: Numeric Checked Arithmetic Envelope [r[domain-primitives.numeric-checked-arithmetic-envelope]]
 The system MUST provide a numeric checked-arithmetic-envelope primitive for
-bounded add, subtract, multiply, and divide operations.
+bounded add, subtract, multiply, and safe zero-numerator divide-admission operations.
 
 #### Scenario: Accepted arithmetic result stays within bounds [r[domain-primitives.numeric-checked-arithmetic-envelope.scenario.accepted-arithmetic-result-stays-within-bounds]]
 
@@ -38,7 +38,7 @@ bounded add, subtract, multiply, and divide operations.
 
 #### Scenario: Overflowing or invalid arithmetic is rejected [r[domain-primitives.numeric-checked-arithmetic-envelope.scenario.overflowing-or-invalid-arithmetic-is-rejected]]
 
-- GIVEN operands whose operation overflows, leaves the declared bounds, or divides by zero
+- GIVEN operands whose operation overflows, leaves the declared bounds, divides by zero, or is outside the safe finite divide-admission surface
 - WHEN checked arithmetic is evaluated
 - THEN the operation is rejected
 
@@ -60,12 +60,12 @@ non-zero denominator admission and empty/reject semantics.
 
 ### Requirement: Numeric Monotone Sequence [r[domain-primitives.numeric-monotone-sequence]]
 The system MUST provide a numeric monotone-sequence primitive for sortedness,
-lower/upper-bound search, and range-query safety over finite sequences.
+lower-bound search, and range-query safety over finite three-slot sequences.
 
 #### Scenario: Bound search returns in-range partition point [r[domain-primitives.numeric-monotone-sequence.scenario.bound-search-returns-in-range-partition-point]]
 
 - GIVEN a finite sorted sequence and a query value
-- WHEN lower-bound or upper-bound search is evaluated
+- WHEN lower-bound search is evaluated
 - THEN the returned index is inside `0..=len` and partitions the sequence according to the query predicate
 
 #### Scenario: Unsorted sequence is rejected [r[domain-primitives.numeric-monotone-sequence.scenario.unsorted-sequence-is-rejected]]
@@ -75,8 +75,7 @@ lower/upper-bound search, and range-query safety over finite sequences.
 - THEN the sequence is rejected
 
 ### Requirement: Numeric Histogram Counter [r[domain-primitives.numeric-histogram-counter]]
-The system MUST provide a numeric histogram-counter primitive for bounded bucket
-indexing and count updates.
+The system MUST provide a numeric histogram-counter primitive for bounded three-bucket indexing and count-update admission.
 
 #### Scenario: Valid bucket update increments one count [r[domain-primitives.numeric-histogram-counter.scenario.valid-bucket-update-increments-one-count]]
 
@@ -107,12 +106,11 @@ matrix/vector transform envelopes.
 - THEN the transform is rejected
 
 ### Requirement: Numeric Prefix Sum [r[domain-primitives.numeric-prefix-sum]]
-The system MUST provide a numeric prefix-sum primitive for bounded cumulative
-sums and range-sum decomposition.
+The system MUST provide a numeric prefix-sum primitive for bounded three-slot cumulative sums and range-sum admission.
 
 #### Scenario: Prefix sums decompose range sum [r[domain-primitives.numeric-prefix-sum.scenario.prefix-sums-decompose-range-sum]]
 
-- GIVEN a finite sequence whose cumulative sums are representable
+- GIVEN a finite three-slot prefix tuple whose cumulative sums are representable
 - WHEN a valid range sum is requested
 - THEN the range sum equals the difference of the corresponding prefix sums
 
@@ -128,12 +126,12 @@ threshold and bucket admission over bounded values.
 
 #### Scenario: Value maps to deterministic quantized bucket [r[domain-primitives.numeric-quantized-threshold.scenario.value-maps-to-deterministic-quantized-bucket]]
 
-- GIVEN valid ordered thresholds and a value inside the supported range
+- GIVEN valid ordered three-bucket thresholds and a value inside the supported range
 - WHEN quantization is evaluated
 - THEN the value maps to exactly one deterministic bucket
 
 #### Scenario: Invalid thresholds are rejected [r[domain-primitives.numeric-quantized-threshold.scenario.invalid-thresholds-are-rejected]]
 
-- GIVEN unordered thresholds, duplicate thresholds where disallowed, or a value outside the supported range
+- GIVEN unordered three-bucket thresholds, duplicate thresholds where disallowed, or a value outside the supported range
 - WHEN threshold admission is checked
 - THEN the request is rejected

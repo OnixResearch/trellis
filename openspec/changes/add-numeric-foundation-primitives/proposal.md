@@ -7,8 +7,8 @@ ratios. We should specify these foundations before implementation so later
 family changes can reference common requirements instead of duplicating local
 versions.
 
-This change is spec-only for now. It adds a focused numeric-foundation OpenSpec
-for exact discrete helpers that are Verus-friendly and reusable across domain
+This change now implements a focused numeric-foundation OpenSpec
+for exact finite/discrete helpers that are Verus-friendly and reusable across domain
 families.
 
 ## What Changes
@@ -28,7 +28,7 @@ families.
   - `numeric-prefix-sum`: bounded cumulative sums and range-sum decomposition.
   - `numeric-quantized-threshold`: deterministic threshold/quantization bucket
     admission.
-- Keep implementation and evidence tasks unchecked for later slices.
+- Implement exact finite Rust/Verus primitives and capture cargo, Verus, Tracey, and OpenSpec evidence.
 
 ## Capabilities
 
@@ -47,10 +47,9 @@ families.
 
 - **Files**: OpenSpec artifacts now; later implementation adds `src/numeric_*`,
   `src/lib.rs`, `docs/requirements.md`, tests, README entries, and evidence.
-- **APIs**: no runtime APIs in this spec-only slice.
+- **APIs**: adds focused `src/numeric_*` exact finite admission/checker APIs.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: OpenSpec validation now; implementation changes later capture
-  focused cargo tests, Verus proof evidence, Tracey coverage, and final gates.
+- **Testing**: focused cargo tests, Verus proof evidence, Tracey coverage, and final gates.
 
 ## Out of Scope
 
