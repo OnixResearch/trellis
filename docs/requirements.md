@@ -9797,3 +9797,62 @@ payload bounds over finite protocol metadata.
 - GIVEN finite protocol metadata and a candidate packet/frame/message
 - WHEN any endpoint, frame, header, parser, sequence, checksum-shape, or payload-bound check rejects
 - THEN the protocol-admission primitive returns an explicit rejection decision before any transport, security, delivery, or external protocol claim is made
+
+
+## Observability Metrics Domain Primitives
+
+Exact finite observability and metrics primitives model only declared metric identity, bounded labels, counter/gauge metadata, histogram metadata, sample windows, aggregation envelopes, alert predicates, and deterministic admission metadata. They do not claim telemetry backend correctness, ingestion/export delivery, scraping protocols, dashboard semantics, distributed tracing, wall-clock accuracy, alert delivery, storage durability, performance, security, or probabilistic anomaly quality.
+
+### Requirement: Metric Id
+
+r[domain-primitives.observability-metrics.metric-id]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `metric id` with executable admission and verified proof metadata.
+
+### Requirement: Labels
+
+r[domain-primitives.observability-metrics.labels]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `labels` with executable admission and verified proof metadata.
+
+### Requirement: Counter
+
+r[domain-primitives.observability-metrics.counter]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `counter` with executable admission and verified proof metadata.
+
+### Requirement: Gauge
+
+r[domain-primitives.observability-metrics.gauge]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `gauge` with executable admission and verified proof metadata.
+
+### Requirement: Histogram
+
+r[domain-primitives.observability-metrics.histogram]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `histogram` with executable admission and verified proof metadata.
+
+### Requirement: Window
+
+r[domain-primitives.observability-metrics.window]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `window` with executable admission and verified proof metadata.
+
+### Requirement: Aggregation
+
+r[domain-primitives.observability-metrics.aggregation]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `aggregation` with executable admission and verified proof metadata.
+
+### Requirement: Alert
+
+r[domain-primitives.observability-metrics.alert]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `alert` with executable admission and verified proof metadata.
+
+### Requirement: Admission
+
+r[domain-primitives.observability-metrics.admission]
+
+The implementation MUST provide an exact finite observability/metrics primitive for `admission` with executable admission and verified proof metadata.
