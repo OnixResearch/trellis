@@ -18,7 +18,6 @@ execution.
 
 **Non-Goals:**
 
-- implementing modules in this change
 - proving external config-store, flag-service, database, filesystem, environment,
   secret-manager, or distributed rollout correctness
 - claiming randomness quality, experiment validity, business-policy completeness,
@@ -79,4 +78,4 @@ statistical quality and experimentation claims require a later focused OpenSpec.
 - `openspec validate add-configuration-feature-flag-primitives --strict --json`
 - strict validation for every active primitive-family OpenSpec
 - helper verification is expected to warn about incomplete future tasks
-- future implementation slices must add Tracey/Verus evidence before archive
+- this implementation slice adds Tracey/Verus evidence before archive

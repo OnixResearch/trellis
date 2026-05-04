@@ -10,13 +10,13 @@ service behavior.
 
 ## What Changes
 
-- Add a spec-only `add-configuration-feature-flag-primitives` child OpenSpec
-  under the domain-primitives umbrella.
+- Implement the `add-configuration-feature-flag-primitives` child OpenSpec
+  under the domain-primitives umbrella with exact finite Rust/Verus modules.
 - Define exact finite models for configuration keys, typed values, default
   metadata, override precedence, feature-gate predicates, rollout buckets,
   validation decisions, and deterministic config admission.
-- Leave implementation, Verus proofs, Tracey coverage, and evidence as future
-  tasks.
+- Add Verus contracts, Tracey coverage, focused tests, and reviewable evidence for
+  the finite primitive family.
 
 ## Capabilities
 
@@ -41,17 +41,17 @@ service behavior.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/config_*`, `src/feature_flag_*`, `src/rollout_*`,
-  `docs/requirements.md`, tests, and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+- **Files**: `src/config_*`, `src/feature_flag_*`, `src/lib.rs`,
+  `docs/requirements.md`, canonical domain-primitives spec, tests, and evidence.
+- **APIs**: exact finite admission/checker APIs are added for config keys, typed
+  values, defaults, override precedence, gates, rollout buckets, validation
+  decisions, and composed admission.
 - **Dependencies**: no new dependencies.
-- **Testing**: strict OpenSpec validation now; future implementation must run
-  focused tests, Verus, Tracey, and final repo validation.
+- **Testing**: focused tests, Verus, Tracey prefix checks, strict OpenSpec
+  validation, and full repo validation.
 
 ## Out of Scope
 
-- implementing configuration or feature-flag modules now
 - runtime config-store, database, filesystem, environment-variable, or secret
   manager correctness
 - distributed rollout consistency, eventual consistency, service availability,

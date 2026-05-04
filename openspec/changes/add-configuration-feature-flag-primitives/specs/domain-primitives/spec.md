@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines spec-only requirements for reusable finite configuration/feature-flag
+Defines implemented requirements for reusable finite configuration/feature-flag
 primitives. These primitives MUST use exact finite config keys, typed value
 envelopes, default metadata, override precedence, feature-gate predicates,
 rollout bucket metadata, validation decisions, and deterministic config

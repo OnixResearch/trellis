@@ -9179,3 +9179,40 @@ delegation shapes.
 - GIVEN authorization metadata with a request principal outside the declared principal envelope
 - WHEN admission is evaluated
 - THEN the metadata is rejected deterministically without claiming cryptographic authentication or whole-system security
+
+## Configuration Feature Flag Domain Primitives
+
+r[domain-primitives.configuration-feature-flag.key]
+Finite config-key envelopes MUST record key identifiers, optional namespaces,
+and deterministic known/unknown-key admission metadata without consulting an
+external store.
+
+r[domain-primitives.configuration-feature-flag.typed-value]
+Typed-value envelopes MUST bind declared type tags to admitted finite value
+shapes and reject type/value mismatches deterministically.
+
+r[domain-primitives.configuration-feature-flag.default]
+Default-value metadata MUST tie each default to a declared finite key envelope
+and compatible typed-value envelope.
+
+r[domain-primitives.configuration-feature-flag.override-precedence]
+Override-precedence envelopes MUST select among finite admitted sources
+deterministically and reject duplicate-source or tied-precedence metadata.
+
+r[domain-primitives.configuration-feature-flag.gate]
+Feature-gate predicate envelopes MUST map admitted keys, subjects, and finite
+metadata to explicit enabled, disabled, or rejected decisions.
+
+r[domain-primitives.configuration-feature-flag.rollout-bucket]
+Rollout-bucket envelopes MUST admit finite subject buckets only when the bucket
+range is declared and in bounds, without claiming randomness quality or
+distributed rollout consistency.
+
+r[domain-primitives.configuration-feature-flag.validation-decision]
+Validation-decision metadata MUST record accepted entries and reason-coded
+rejections over finite admitted configuration metadata without mutating inputs.
+
+r[domain-primitives.configuration-feature-flag.admission]
+Configuration admission envelopes MUST compose key, typed-value, default,
+override, gate, rollout, and validation checks and reject when any required
+finite check rejects.
