@@ -19,7 +19,6 @@ with numeric, time-series, and physics primitives.
 
 **Non-Goals:**
 
-- implement modules in this spec-only pass
 - prove continuous-control stability, convergence, or physical safety
 - model real-time scheduling, hardware actuator behavior, or plant dynamics
 - claim floating-point accuracy, controller tuning quality, or performance
@@ -69,5 +68,5 @@ arithmetic envelopes and reject overflowing deltas instead of wrapping.
 
 - `openspec validate add-control-system-primitives --strict --json`
 - umbrella validation after taxonomy updates
-- future implementation evidence: focused tests, `./scripts/verus.sh src/lib.rs`,
-  Tracey uncovered/untested checks, and final repo validation before archive
+- focused tests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested
+  checks, and final repo validation before archive

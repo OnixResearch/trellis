@@ -6,7 +6,7 @@ safety envelopes. These patterns occur in robotics, physics simulations,
 schedulers, resource governors, sensor loops, and operational automation, but
 they should not be buried inside one domain-specific implementation change.
 
-This change adds a focused spec-only control-system primitive package. It uses
+This change implements a focused control-system primitive package. It uses
 exact discrete state, bounded integer/scaled values, explicit mode transitions,
 and conservative envelopes first. It avoids continuous-control stability,
 floating-point plant modeling, hardware timing, and real-world safety claims.
@@ -24,7 +24,7 @@ floating-point plant modeling, hardware timing, and real-world safety claims.
   - `control_safety_envelope`: state/input envelope guard decisions.
 - Require public exec surfaces to reject invalid bounds, thresholds, rates,
   modes, and overflowing differences, or return explicit empty/error decisions.
-- Keep implementation, evidence, and canonical spec sync as future tasks.
+- Sync implementation, evidence, and canonical specs for archive.
 
 ## Capabilities
 
@@ -40,20 +40,18 @@ floating-point plant modeling, hardware timing, and real-world safety claims.
 
 ## Impact
 
-- **Files**: OpenSpec artifacts now; future implementation may add
-  `src/control_setpoint.rs`, `src/control_error_signal.rs`,
+- **Files**: `src/control_setpoint.rs`, `src/control_error_signal.rs`,
   `src/control_actuator_saturation.rs`, `src/control_deadband.rs`,
   `src/control_hysteresis.rs`, `src/control_rate_limit.rs`,
   `src/control_safety_envelope.rs`, `src/lib.rs`, `docs/requirements.md`, tests,
-  and evidence.
-- **APIs**: no runtime APIs are added by this spec-only change.
+  canonical specs, and evidence.
+- **APIs**: exact finite bounded-control APIs are added.
 - **Dependencies**: no new runtime dependencies.
-- **Testing**: this change validates with OpenSpec now; implementation tasks must
-  later run focused tests, Verus, Tracey, and repo validation.
+- **Testing**: focused tests, Verus, Tracey, strict OpenSpec validation,
+  and repo validation evidence are recorded.
 
 ## Out of Scope
 
-- implementing control modules in this change
 - proving closed-loop stability, convergence, liveness, real-time scheduling,
   physical safety, plant correctness, or floating-point control accuracy
 - PID/controller tuning, adaptive control, stochastic control, or hardware driver

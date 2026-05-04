@@ -9251,3 +9251,34 @@ r[domain-primitives.constraint-solver.admission]
 Constraint-admission envelopes MUST compose finite variables, domains, relations,
 assignments, propagation, and witness predicates into deterministic admission or
 rejection metadata.
+
+## Control-System Domain Primitives
+
+r[domain-primitives.control-setpoint]
+Control setpoint primitives MUST admit bounded target values, deterministic
+setpoint updates, and invalid-bound rejection over exact finite integer values.
+
+r[domain-primitives.control-error-signal]
+Control error-signal primitives MUST derive checked target-minus-measurement
+deltas, reject overflowing subtraction, and require errors inside declared
+envelopes.
+
+r[domain-primitives.control-actuator-saturation]
+Control actuator-saturation primitives MUST clamp commands into valid actuator
+bounds and expose deterministic saturation metadata without overdrive claims.
+
+r[domain-primitives.control-deadband]
+Control deadband primitives MUST use explicit inclusive finite thresholds for
+deterministic no-action/action decisions and malformed-band rejection.
+
+r[domain-primitives.control-hysteresis]
+Control hysteresis primitives MUST use ordered finite thresholds, two-state mode
+transitions, and hold-band state preservation.
+
+r[domain-primitives.control-rate-limit]
+Control rate-limit primitives MUST reject malformed or overflowing step bounds
+and admit only outputs within the previous value plus/minus the maximum step.
+
+r[domain-primitives.control-safety-envelope]
+Control safety-envelope primitives MUST check finite state/input bounds and
+reject envelope violations without claiming real-world physical safety.
