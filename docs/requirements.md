@@ -8329,8 +8329,9 @@ r[ucan-chain.signature-check]
 Every token in the chain MUST have a valid signature.
 
 r[ucan-chain.attenuation-narrowing]
-At each hop, the child's attenuations MUST be contained within the
-parent's attenuations (resource prefix match, ability equality).
+Each delegation hop MUST narrow or preserve attenuations: every child capability
+is contained in some parent capability, and public chain attenuation checking MUST
+reject missing parent capabilities, resource escalation, and ability escalation.
 
 r[ucan-chain.temporal-validity]
 Every token in the chain MUST be temporally valid at the time of
