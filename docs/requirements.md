@@ -8391,8 +8391,17 @@ freshness or backend correctness.
 r[ucan-proof-traversal.transcript-consistency]
 A traversal transcript validity check MUST compose bounded traversal,
 authorization, and revocation-aware denial over finite caller-supplied data, and
-MUST NOT fetch proofs, parse compact tokens, verify signatures, query backends,
-persist state, sign, replay-protect, or read an ambient clock.
+MUST NOT perform token parsing, proof fetching, revocation lookup, clock reads,
+network I/O, filesystem I/O, or cryptographic verification.
+
+r[ucan-proof-traversal.dag-transcript-consistency]
+A DAG traversal transcript validity check MUST compose bounded traversal,
+topologically ordered acyclic parent indices, per-parent issuer/audience and
+temporal proof links, per-child capability attenuation through at least one
+parent, per-parent caveat preservation, leaf authorization, and revocation-aware
+denial over finite caller-supplied data, and MUST NOT perform token parsing,
+proof fetching, revocation lookup, clock reads, network I/O, filesystem I/O, or
+cryptographic verification.
 
 ## UCAN Revocation
 
