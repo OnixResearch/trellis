@@ -8235,6 +8235,29 @@ validation. The token layer MUST consume a caller-supplied signature-valid
 result rather than prove canonical payload-byte derivation from the payload
 struct.
 
+## UCAN Compact
+
+r[ucan-compact.signing-input-framing]
+Canonical compact-token signing input MUST be exactly the encoded header bytes,
+one `.` separator byte, and the encoded payload bytes. This structural helper
+MUST NOT claim to prove base64url, JSON, hashing, or Ed25519 internals.
+
+r[ucan-compact.three-part-framing]
+Canonical compact-token framing MUST be exactly encoded header bytes, one `.`
+separator byte, encoded payload bytes, one `.` separator byte, and encoded
+signature bytes.
+
+r[ucan-compact.parse-signature-boundary]
+A compact-token envelope check MUST accept only when both the caller-supplied
+compact bytes and caller-supplied signing input bytes match the canonical
+framing over the same already-encoded parts. The check MUST remain data-only and
+MUST NOT decode base64url, parse JSON, derive hashes, sign, verify signatures,
+perform I/O, or read clocks.
+
+r[ucan-compact.byte-equality]
+Compact-token structural checks MUST compare finite byte vectors exactly by
+length and byte value without normalization or lossy decoding.
+
 ## UCAN Ability
 
 r[ucan-ability.subsumption-reflexive]
