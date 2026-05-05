@@ -8358,8 +8358,9 @@ same length and equal bytes at every index.
 
 r[ucan-proof-traversal.capability-containment]
 A traversal child capability MUST be contained by a parent capability when the
-child resource has the parent resource as a prefix and the ability bytes are
-equal.
+child resource has the parent resource as a prefix and the parent UCAN ability
+contains the child UCAN ability, including slash-separated full-segment wildcard
+abilities.
 
 r[ucan-proof-traversal.graph-well-formedness]
 A traversal proof edge MUST be well-formed only when the parent audience equals
