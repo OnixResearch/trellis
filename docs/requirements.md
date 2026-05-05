@@ -8350,6 +8350,49 @@ r[ucan-chain.root-authority]
 The root authority of a valid chain is the attenuation set of the
 first (root) entry.
 
+## UCAN Proof Traversal Transcript
+
+r[ucan-proof-traversal.byte-equality]
+Byte equality helpers MUST accept if and only if two byte sequences have the
+same length and equal bytes at every index.
+
+r[ucan-proof-traversal.capability-containment]
+A traversal child capability MUST be contained by a parent capability when the
+child resource has the parent resource as a prefix and the ability bytes are
+equal.
+
+r[ucan-proof-traversal.graph-well-formedness]
+A traversal proof edge MUST be well-formed only when the parent audience equals
+the child issuer, the child temporal window narrows the parent window, child
+capabilities are contained by parent capabilities, and parent caveat identifiers
+are preserved in order at the start of the child caveat list.
+
+r[ucan-proof-traversal.bounded-traversal]
+A finite proof traversal transcript MUST respect caller-supplied maximum depth,
+proof count, and input-byte budgets, MUST have one visited reference per entry,
+and MUST reject duplicate visited references.
+
+r[ucan-proof-traversal.effective-delegation-folding]
+Effective delegation folding over a traversal transcript MUST require every
+adjacent proof edge to be well-formed and MUST reject resource, ability,
+temporal, or caveat-preservation escalation at any hop.
+
+r[ucan-proof-traversal.chain-authorization]
+A traversal transcript MUST authorize a request only when the folded chain is
+valid, every entry is valid at the caller-supplied evaluation time plus tolerance,
+and the leaf capability set authorizes the requested resource and ability.
+
+r[ucan-proof-traversal.revocation-aware-chain]
+A revocation-aware traversal transcript MUST reject if any caller-supplied entry
+revocation fact is true. The primitive MUST NOT claim revocation registry
+freshness or backend correctness.
+
+r[ucan-proof-traversal.transcript-consistency]
+A traversal transcript validity check MUST compose bounded traversal,
+authorization, and revocation-aware denial over finite caller-supplied data, and
+MUST NOT fetch proofs, parse compact tokens, verify signatures, query backends,
+persist state, sign, replay-protect, or read an ambient clock.
+
 ## UCAN Revocation
 
 r[ucan-revocation.cid-lookup]
