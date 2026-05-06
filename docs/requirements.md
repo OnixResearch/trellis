@@ -8311,6 +8311,17 @@ r[ucan-caveat.intersection-minimal]
 The intersection MUST not be more restrictive than the conjunction of
 both sets.
 
+## UCAN Caveat Evaluation Transcript
+
+r[ucan-caveat-evaluation.fact-accepts]
+A caveat evaluation fact MUST accept exactly when a policy is present and the policy satisfied the caveat.
+
+r[ucan-caveat-evaluation.transcript-accepts]
+A caveat evaluation transcript MUST accept exactly when every fact accepts.
+
+r[ucan-caveat-evaluation.first-failed-index]
+The first failed caveat index MUST identify the first missing-policy or unsatisfied fact, or the transcript length when all facts accept.
+
 ## UCAN Caveat Preservation
 
 r[ucan-caveat-preservation.byte-equality]
