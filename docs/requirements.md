@@ -8316,6 +8316,11 @@ both sets.
 r[ucan-claims-presence.required-fields]
 Parsed UCAN claims presence admission MUST accept exactly when issuer, audience, attenuations, proof-list, expiration, and not-before presence facts are all true.
 
+## UCAN Parsed Temporal Order
+
+r[ucan-temporal-order.not-before-precedes-expiration]
+Parsed UCAN temporal-order admission MUST accept exactly when the parsed not-before timestamp is strictly earlier than the parsed expiration timestamp.
+
 ## UCAN Caveat Evaluation Transcript
 
 r[ucan-caveat-evaluation.fact-accepts]
