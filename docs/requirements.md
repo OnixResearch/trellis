@@ -8344,6 +8344,14 @@ Parsed capability-list shape admission MUST accept exactly when the list is non-
 r[ucan-parsed-caveat-list-shape.required-entry-fields]
 Parsed caveat-list shape admission MUST accept exactly when every parsed caveat has domain, type, key, and payload presence facts; empty caveat lists MAY accept.
 
+## UCAN Parsed DID Claim Admission
+
+r[ucan-parsed-did-claim.claim-admission]
+Parsed DID claim admission MUST accept exactly when a shell-supplied DID claim fact is present, non-empty, and already trimmed.
+
+r[ucan-parsed-did-claim.claims-admission]
+Parsed DID claims admission MUST accept exactly when both issuer and audience DID claim facts are admitted.
+
 ## UCAN Proof Store Result Transcript
 
 r[ucan-proof-store-result-transcript.result-admission]
