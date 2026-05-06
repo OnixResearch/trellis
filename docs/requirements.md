@@ -8311,6 +8311,11 @@ r[ucan-caveat.intersection-minimal]
 The intersection MUST not be more restrictive than the conjunction of
 both sets.
 
+## UCAN Claims Presence
+
+r[ucan-claims-presence.required-fields]
+Parsed UCAN claims presence admission MUST accept exactly when issuer, audience, attenuations, expiration, and not-before presence facts are all true.
+
 ## UCAN Caveat Evaluation Transcript
 
 r[ucan-caveat-evaluation.fact-accepts]
