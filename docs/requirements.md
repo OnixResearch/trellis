@@ -8321,6 +8321,39 @@ Parsed UCAN claims presence admission MUST accept exactly when issuer, audience,
 r[ucan-temporal-order.not-before-precedes-expiration]
 Parsed UCAN temporal-order admission MUST accept exactly when the parsed not-before timestamp is strictly earlier than the parsed expiration timestamp.
 
+## UCAN Parsed Proof Reference List Shape
+
+r[ucan-proof-reference-list-shape.entry-shape]
+Parsed proof-reference list-shape admission MUST accept exactly when every shell-supplied entry fact has non-empty encoded bytes, base64url-no-pad structural admission, and non-empty decoded bytes.
+
+r[ucan-proof-reference-list-shape.list-shape]
+Parsed proof-reference list-shape admission over a list MUST accept exactly when every entry-shape fact accepts; empty root proof lists MAY accept.
+
+## UCAN Proof Reference Collection
+
+r[ucan-proof-reference-collection.collection-admission]
+Proof-reference collection admission MUST accept exactly when the caller-supplied reference count is within the caller-supplied bound and every reference is non-empty.
+
+## UCAN Parsed Capability List Shape
+
+r[ucan-parsed-capability-list-shape.required-entry-fields]
+Parsed capability-list shape admission MUST accept exactly when the list is non-empty and every parsed capability has resource and ability presence facts.
+
+## UCAN Parsed Caveat List Shape
+
+r[ucan-parsed-caveat-list-shape.required-entry-fields]
+Parsed caveat-list shape admission MUST accept exactly when every parsed caveat has domain, type, key, and payload presence facts; empty caveat lists MAY accept.
+
+## UCAN Proof Store Result Transcript
+
+r[ucan-proof-store-result-transcript.result-admission]
+Proof-store result admission MUST accept exactly when a non-empty requested reference has a successful backend result with returned compact-token bytes present.
+
+## UCAN Revocation Check Transcript
+
+r[ucan-revocation-check-transcript.result-admission]
+Revocation-check admission MUST accept exactly when a non-empty token reference has a successful backend result and the token is not revoked.
+
 ## UCAN Caveat Evaluation Transcript
 
 r[ucan-caveat-evaluation.fact-accepts]
