@@ -8314,7 +8314,7 @@ both sets.
 ## UCAN Claims Presence
 
 r[ucan-claims-presence.required-fields]
-Parsed UCAN claims presence admission MUST accept exactly when issuer, audience, attenuations, expiration, and not-before presence facts are all true.
+Parsed UCAN claims presence admission MUST accept exactly when issuer, audience, attenuations, proof-list, expiration, and not-before presence facts are all true.
 
 ## UCAN Caveat Evaluation Transcript
 
