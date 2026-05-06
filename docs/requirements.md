@@ -8311,6 +8311,21 @@ r[ucan-caveat.intersection-minimal]
 The intersection MUST not be more restrictive than the conjunction of
 both sets.
 
+## UCAN Caveat Preservation
+
+r[ucan-caveat-preservation.byte-equality]
+Byte equality helpers MUST accept if and only if two caveat identifier byte
+sequences have the same length and equal bytes at every index.
+
+r[ucan-caveat-preservation.child-contains-parent-id]
+A child caveat identifier list MUST contain a parent caveat identifier if and
+only if some child identifier equals the parent identifier byte-for-byte.
+
+r[ucan-caveat-preservation.parent-ids-preserved]
+Parent caveat identifier preservation MUST accept if and only if every parent
+caveat identifier appears byte-for-byte in the child caveat identifier list;
+children MAY include additional caveat identifiers.
+
 ## UCAN CID
 
 r[ucan-cid.cid-deterministic]
