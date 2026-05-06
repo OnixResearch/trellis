@@ -8344,6 +8344,11 @@ Parsed capability-list shape admission MUST accept exactly when the list is non-
 r[ucan-parsed-caveat-list-shape.required-entry-fields]
 Parsed caveat-list shape admission MUST accept exactly when every parsed caveat has domain, type, key, and payload presence facts; empty caveat lists MAY accept.
 
+## UCAN Parsed Caveat Payload Admission
+
+r[ucan-parsed-caveat-payload-admission.payload-facts]
+Parsed caveat payload admission MUST accept exactly when every shell-supplied payload fact has payload presence, encoded non-empty, encoded base64url-no-pad admission, and decoded non-empty bytes; empty caveat payload lists MAY accept.
+
 ## UCAN Parsed DID Claim Admission
 
 r[ucan-parsed-did-claim.claim-admission]
