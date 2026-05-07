@@ -140,6 +140,8 @@
 //! - `interval` — half-open interval contains, overlap, split, merge
 //! - `joint_consensus` — dual-quorum membership changes with intersection proof
 //! - `journal` — append-only transaction journal with running balances and seq num monotonicity
+//! - `knowledge_graph` — finite KG terms, triples, properties, ontology constraints, provenance,
+//!   alignment, query-shape, inference, embedding-index, and admission
 //! - `kv_version` — KV entry version computation: create/update with saturation
 //! - `layout_constraint` — tiling layout constraint resolution: satisfaction, clamping,
 //!   conservation
@@ -598,6 +600,7 @@ pub mod job_state;
 pub mod job_timeout;
 pub mod joint_consensus;
 pub mod journal;
+pub mod knowledge_graph;
 pub mod kv_version;
 pub mod last_applied;
 pub mod layout_constraint;
