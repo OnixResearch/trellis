@@ -10312,3 +10312,940 @@ shape predicates.
 - GIVEN a candidate model value and serialization/codec round-trip envelope
 - WHEN the value, schema, version, or output shape is not admitted by the finite model
 - THEN the round-trip primitive rejects the claim or requires the missing admission proof before asserting a bounded round trip
+
+### Requirement: Grammar Symbol Admission [r[domain-primitives.parsing-format.grammar-symbol]]
+The system MUST define finite grammar-symbol admission for terminal and
+nonterminal identifiers without claiming grammar completeness or recognition of
+an external language.
+
+#### Scenario: Symbol admission rejects malformed symbol metadata [r[domain-primitives.parsing-format.grammar-symbol.scenario.rejects-malformed-symbol-metadata]]
+
+- GIVEN a grammar symbol with a kind tag and bounded identifier metadata
+- WHEN the kind tag or identifier bounds are invalid
+- THEN the checked admission predicate rejects the symbol without mutating caller-owned token or grammar state
+
+### Requirement: Token Stream Shape [r[domain-primitives.parsing-format.token-stream]]
+The system MUST define finite token-stream shape checks for token kinds, source
+spans, and monotone ordering over a finite token sequence.
+
+#### Scenario: Token stream admits monotone non-overlapping spans [r[domain-primitives.parsing-format.token-stream.scenario.admits-monotone-nonoverlapping-spans]]
+
+- GIVEN a finite token sequence with half-open source spans
+- WHEN every token span is valid and ordered after the prior token span
+- THEN the stream shape predicate admits the sequence as structurally well-formed
+
+### Requirement: Source Span Predicate [r[domain-primitives.parsing-format.source-span]]
+The system MUST define half-open source span predicates for bounded start/end
+offsets, containment, overlap, and disjointness over a finite source length.
+
+#### Scenario: Source span rejects out-of-bounds ranges [r[domain-primitives.parsing-format.source-span.scenario.rejects-out-of-bounds-ranges]]
+
+- GIVEN a finite source length and a candidate half-open span
+- WHEN the start is greater than the end or the end exceeds the source length
+- THEN the span predicate rejects the candidate
+
+### Requirement: AST Shape Envelope [r[domain-primitives.parsing-format.ast-shape]]
+The system MUST define finite AST shape envelopes for node kind metadata, child
+range bounds, arity limits, root admission, and acyclic child references.
+
+#### Scenario: AST shape rejects dangling child ranges [r[domain-primitives.parsing-format.ast-shape.scenario.rejects-dangling-child-ranges]]
+
+- GIVEN a finite AST node table and a node with a declared child range
+- WHEN the child range exceeds the node table bounds or violates the arity limit
+- THEN the AST shape envelope rejects the node table
+
+### Requirement: Parse Error Envelope [r[domain-primitives.parsing-format.error-envelope]]
+The system MUST define deterministic parse-error metadata envelopes containing a
+bounded source position, error kind, and optional expected-symbol metadata.
+
+#### Scenario: Error envelope admits bounded diagnostic metadata [r[domain-primitives.parsing-format.error-envelope.scenario.admits-bounded-diagnostic-metadata]]
+
+- GIVEN a finite source length and deterministic parser decision metadata
+- WHEN the error position is within bounds and the error kind is admitted
+- THEN the error envelope admits the diagnostic metadata without claiming user-facing message quality
+
+### Requirement: Format Version Admission [r[domain-primitives.parsing-format.version-admission]]
+The system MUST define exact format-version admission for finite version tags,
+accepted version sets, and closed-open supported version ranges.
+
+#### Scenario: Version admission rejects unsupported versions [r[domain-primitives.parsing-format.version-admission.scenario.rejects-unsupported-versions]]
+
+- GIVEN a finite accepted version set or supported version range
+- WHEN an input version is outside the accepted metadata
+- THEN the version admission predicate rejects the input before format-specific decoding proceeds
+
+### Requirement: Serializer Shape Envelope [r[domain-primitives.parsing-format.serialize-shape]]
+The system MUST define serializer output-shape envelopes for finite emitted
+segments, length bounds, ordering metadata, and deterministic failure admission.
+
+#### Scenario: Serializer shape preserves declared segment order [r[domain-primitives.parsing-format.serialize-shape.scenario.preserves-declared-segment-order]]
+
+- GIVEN a finite list of serializer output segments with declared offsets and lengths
+- WHEN the segment metadata is admitted
+- THEN the output-shape envelope states that segment offsets are monotone and within the declared output length
+
+### Requirement: Deserializer Shape Envelope [r[domain-primitives.parsing-format.deserialize-shape]]
+The system MUST define deserializer input-shape and structural result envelopes
+for finite fields, consumed ranges, remaining ranges, and deterministic
+admission or rejection.
+
+#### Scenario: Deserializer shape separates consumed and remaining input [r[domain-primitives.parsing-format.deserialize-shape.scenario.separates-consumed-and-remaining-input]]
+
+- GIVEN a finite input and a structural deserializer result
+- WHEN the result is admitted
+- THEN the consumed range and remaining range are bounded, non-overlapping, and cover only admitted portions of the input
+
+### Requirement: Bounded Round-Trip Envelope [r[domain-primitives.parsing-format.roundtrip-envelope]]
+The system MUST define bounded canonical round-trip predicates only for
+explicitly admitted finite values, versions, and shape envelopes.
+
+#### Scenario: Round-trip envelope stays canonical and bounded [r[domain-primitives.parsing-format.roundtrip-envelope.scenario.stays-canonical-and-bounded]]
+
+- GIVEN an admitted finite value, an accepted format version, and a declared canonical serializer/deserializer envelope
+- WHEN a later implementation claims round-trip preservation
+- THEN the claim is scoped to the admitted canonical value set and does not imply arbitrary external-format compatibility
+
+### Requirement: Statistics Count Table [r[domain-primitives.stats-count-table]]
+The system MUST provide a statistics count-table primitive for finite category
+admission, bounded count updates, and overflow rejection.
+
+#### Scenario: Valid category update increments one count [r[domain-primitives.stats-count-table.scenario.valid-category-update-increments-one-count]]
+
+- GIVEN a valid finite count table and an admitted category
+- WHEN the count table is updated for that category
+- THEN exactly that category count increases and all other category counts are unchanged
+
+#### Scenario: Invalid category or overflowing count is rejected [r[domain-primitives.stats-count-table.scenario.invalid-category-or-overflowing-count-is-rejected]]
+
+- GIVEN an unknown category or a category count at its declared maximum
+- WHEN a count update is requested
+- THEN the update is rejected and the table state is unchanged
+
+### Requirement: Statistics Frequency Table [r[domain-primitives.stats-frequency-table]]
+The system MUST provide a frequency-table primitive for denominator-safe
+count-to-frequency derivation over finite non-negative counts.
+
+#### Scenario: Non-zero total count yields frequencies [r[domain-primitives.stats-frequency-table.scenario.non-zero-total-count-yields-frequencies]]
+
+- GIVEN finite non-negative counts whose total count is non-zero and representable
+- WHEN frequencies are derived
+- THEN each frequency is admitted under the declared ratio envelope and uses the total count as denominator
+
+#### Scenario: Zero or overflowing total count is rejected [r[domain-primitives.stats-frequency-table.scenario.zero-or-overflowing-total-count-is-rejected]]
+
+- GIVEN all-zero counts or counts whose total would overflow the declared accumulator
+- WHEN frequency derivation is requested
+- THEN the request is rejected or returns an explicit empty result instead of numeric frequencies
+
+### Requirement: Statistics Discrete Distribution [r[domain-primitives.stats-discrete-distribution]]
+The system MUST provide a discrete-distribution primitive for finite
+non-negative weights, positive total weight admission, and normalization
+envelopes.
+
+#### Scenario: Valid weights form admitted finite distribution [r[domain-primitives.stats-discrete-distribution.scenario.valid-weights-form-admitted-finite-distribution]]
+
+- GIVEN finite non-negative weights with a positive representable total weight
+- WHEN distribution admission is checked
+- THEN the distribution is accepted and every normalized weight lies inside the declared probability envelope
+
+#### Scenario: Invalid distribution weights are rejected [r[domain-primitives.stats-discrete-distribution.scenario.invalid-distribution-weights-are-rejected]]
+
+- GIVEN a negative weight, all-zero weights, or weights whose total overflows the accumulator
+- WHEN distribution admission is checked
+- THEN the distribution is rejected
+
+### Requirement: Statistics CDF Quantile [r[domain-primitives.stats-cdf-quantile]]
+The system MUST provide a CDF/quantile primitive for monotone cumulative weights,
+partition lookup, and deterministic tie policy.
+
+#### Scenario: Quantile lookup returns deterministic bucket [r[domain-primitives.stats-cdf-quantile.scenario.quantile-lookup-returns-deterministic-bucket]]
+
+- GIVEN a valid monotone cumulative distribution and an admitted query threshold
+- WHEN quantile lookup is evaluated
+- THEN the lookup returns exactly one bucket according to the declared boundary and tie policy
+
+#### Scenario: Invalid CDF or threshold is rejected [r[domain-primitives.stats-cdf-quantile.scenario.invalid-cdf-or-threshold-is-rejected]]
+
+- GIVEN a non-monotone CDF, zero final cumulative weight, overflowing cumulative weight, or query threshold outside the admitted range
+- WHEN CDF or quantile admission is checked
+- THEN the request is rejected
+
+### Requirement: Statistics Bounded Moments [r[domain-primitives.stats-bounded-moments]]
+The system MUST provide a bounded-moments primitive for finite count, sum, mean,
+and variance-envelope derivation with checked accumulators.
+
+#### Scenario: Valid sample set yields bounded moments [r[domain-primitives.stats-bounded-moments.scenario.valid-sample-set-yields-bounded-moments]]
+
+- GIVEN finite bounded samples whose count and accumulators are representable
+- WHEN moment envelopes are derived
+- THEN count, sum, mean envelope, and variance envelope are accepted within declared bounds
+
+#### Scenario: Moment derivation rejects empty or overflowing samples [r[domain-primitives.stats-bounded-moments.scenario.moment-derivation-rejects-empty-or-overflowing-samples]]
+
+- GIVEN an empty sample set where a mean is required or samples whose accumulators overflow
+- WHEN moment derivation is requested
+- THEN the request is rejected or returns an explicit empty result instead of numeric moments
+
+### Requirement: Statistics Deterministic Sampler [r[domain-primitives.stats-deterministic-sampler]]
+The system MUST provide a deterministic sampler-admission primitive for mapping
+admitted integer thresholds or sample indices into finite distribution buckets.
+
+#### Scenario: Admitted threshold maps to exactly one bucket [r[domain-primitives.stats-deterministic-sampler.scenario.admitted-threshold-maps-to-exactly-one-bucket]]
+
+- GIVEN a valid finite cumulative distribution and an admitted deterministic threshold
+- WHEN sample admission is evaluated
+- THEN the threshold maps to exactly one bucket according to the declared cumulative partition
+
+#### Scenario: Out-of-range deterministic sample is rejected [r[domain-primitives.stats-deterministic-sampler.scenario.out-of-range-deterministic-sample-is-rejected]]
+
+- GIVEN a threshold outside the admitted range or a malformed cumulative distribution
+- WHEN deterministic sample admission is checked
+- THEN the sample request is rejected
+
+### Requirement: Statistics Confidence Interval Envelope [r[domain-primitives.stats-confidence-interval-envelope]]
+The system MUST provide a confidence-interval-envelope primitive for ordered
+interval endpoints and bounded confidence metadata without coverage-probability
+claims.
+
+#### Scenario: Valid interval metadata is admitted [r[domain-primitives.stats-confidence-interval-envelope.scenario.valid-interval-metadata-is-admitted]]
+
+- GIVEN ordered interval endpoints and confidence metadata inside declared bounds
+- WHEN confidence-interval envelope admission is checked
+- THEN the interval metadata is accepted as a bounded interval record
+
+#### Scenario: Malformed interval metadata is rejected [r[domain-primitives.stats-confidence-interval-envelope.scenario.malformed-interval-metadata-is-rejected]]
+
+- GIVEN reversed endpoints, confidence metadata outside declared bounds, or non-representable endpoint arithmetic
+- WHEN confidence-interval envelope admission is checked
+- THEN the interval metadata is rejected
+
+### Requirement: Resource Budget Envelope [r[domain-primitives.resource-accounting.budget]]
+The system MUST define finite resource-budget envelopes for unit metadata,
+limits, consumed amounts, remaining amounts, and no-overflow arithmetic.
+
+#### Scenario: Budget rejects consumption beyond limit [r[domain-primitives.resource-accounting.budget.scenario.rejects-consumption-beyond-limit]]
+
+- GIVEN a finite budget with declared unit metadata and limit
+- WHEN a candidate consumed amount exceeds the declared limit
+- THEN the budget envelope rejects the state without claiming runtime enforcement
+
+### Requirement: Resource Counter Predicate [r[domain-primitives.resource-accounting.counter]]
+The system MUST define bounded usage-counter predicates for finite counter
+values, monotone increments, reset metadata, and maximum bounds.
+
+#### Scenario: Counter increment stays within bound [r[domain-primitives.resource-accounting.counter.scenario.increment-stays-within-bound]]
+
+- GIVEN a bounded counter value and a finite increment amount
+- WHEN the increment result is inside the declared maximum bound
+- THEN the counter predicate admits the increment and records deterministic usage metadata
+
+### Requirement: Resource Quota Envelope [r[domain-primitives.resource-accounting.quota]]
+The system MUST define quota envelopes for finite subjects, scopes, limits,
+current usage, and deterministic admission metadata.
+
+#### Scenario: Quota admission rejects scoped overuse [r[domain-primitives.resource-accounting.quota.scenario.rejects-scoped-overuse]]
+
+- GIVEN a finite quota for a subject and scope
+- WHEN a candidate usage amount would exceed the quota limit for that subject and scope
+- THEN the quota envelope rejects the candidate with deterministic overage metadata
+
+### Requirement: Resource Lease Envelope [r[domain-primitives.resource-accounting.lease]]
+The system MUST define finite lease envelopes for holders, resource identifiers,
+half-open validity intervals, renewal metadata, and expiry predicates.
+
+#### Scenario: Lease expires outside validity interval [r[domain-primitives.resource-accounting.lease.scenario.expires-outside-validity-interval]]
+
+- GIVEN a finite lease with a holder, resource identifier, and half-open validity interval
+- WHEN a candidate bucket is outside the lease interval
+- THEN the lease envelope treats the lease as expired for that bucket
+
+### Requirement: Resource Usage Window [r[domain-primitives.resource-accounting.usage-window]]
+The system MUST define bounded usage-window predicates for finite aggregation
+windows, admitted samples, sum/count metadata, and no-overflow envelopes.
+
+#### Scenario: Usage window aggregates admitted samples [r[domain-primitives.resource-accounting.usage-window.scenario.aggregates-admitted-samples]]
+
+- GIVEN a finite usage window and usage samples admitted by the window predicate
+- WHEN the aggregate amount is computed in the declared bounded domain
+- THEN the usage-window predicate admits only aggregate metadata that stays within the no-overflow envelope
+
+### Requirement: Resource Reservation Envelope [r[domain-primitives.resource-accounting.reservation]]
+The system MUST define reservation envelopes for finite resource identifiers,
+reserved amounts, capacity limits, and admitted reservation sets.
+
+#### Scenario: Reservation rejects capacity overflow [r[domain-primitives.resource-accounting.reservation.scenario.rejects-capacity-overflow]]
+
+- GIVEN a finite resource capacity and admitted reservations
+- WHEN adding a candidate reservation would make the reserved amount exceed capacity
+- THEN the reservation envelope rejects the candidate without claiming scheduling optimality
+
+### Requirement: Resource Overage Classification [r[domain-primitives.resource-accounting.overage]]
+The system MUST define deterministic overage classifications for finite limits,
+usage amounts, margins, and severity metadata.
+
+#### Scenario: Overage classification records exact margin [r[domain-primitives.resource-accounting.overage.scenario.records-exact-margin]]
+
+- GIVEN a finite limit and usage amount in the same unit domain
+- WHEN usage exceeds the limit
+- THEN the overage classification records the exact finite margin and deterministic severity metadata
+
+### Requirement: Resource Admission Envelope [r[domain-primitives.resource-accounting.admission]]
+The system MUST define deterministic resource-admission envelopes that return
+admit/reject metadata from finite budgets, quotas, leases, usage windows,
+reservations, and overage predicates.
+
+#### Scenario: Admission rejects exhausted budget deterministically [r[domain-primitives.resource-accounting.admission.scenario.rejects-exhausted-budget-deterministically]]
+
+- GIVEN a finite accounting state and a candidate resource request
+- WHEN the request would exceed an admitted budget, quota, lease, usage-window, or reservation predicate
+- THEN the admission envelope rejects the request with deterministic metadata and does not claim fairness or runtime enforcement
+
+### Requirement: Calendar Field Admission [r[domain-primitives.scheduling-calendar.calendar-field]]
+The system MUST define bounded calendar-field admission for finite field kinds,
+minimum/maximum values, and closed or closed-open value ranges.
+
+#### Scenario: Calendar field rejects out-of-range value [r[domain-primitives.scheduling-calendar.calendar-field.scenario.rejects-out-of-range-value]]
+
+- GIVEN a finite calendar field with declared minimum and maximum bounds
+- WHEN a candidate value falls outside the declared bounds
+- THEN the field admission predicate rejects the value without claiming timezone or locale-calendar correctness
+
+### Requirement: Time Bucket Metadata [r[domain-primitives.scheduling-calendar.time-bucket]]
+The system MUST define discrete time-bucket metadata for finite bucket indexes,
+positive bucket durations, and bounded bucket ranges.
+
+#### Scenario: Time bucket admits positive bounded duration [r[domain-primitives.scheduling-calendar.time-bucket.scenario.admits-positive-bounded-duration]]
+
+- GIVEN a bucket index, bucket duration, and maximum bucket count
+- WHEN the duration is positive and the index is inside the finite bucket range
+- THEN the bucket metadata predicate admits the bucket
+
+### Requirement: Schedule Interval Predicate [r[domain-primitives.scheduling-calendar.interval]]
+The system MUST define half-open schedule interval predicates for bounded start
+and end buckets, containment, overlap, and disjointness.
+
+#### Scenario: Interval conflict uses half-open overlap [r[domain-primitives.scheduling-calendar.interval.scenario.uses-half-open-overlap]]
+
+- GIVEN two admitted half-open intervals over the same finite bucket domain
+- WHEN the first interval end equals the second interval start
+- THEN the interval predicate treats the intervals as non-overlapping
+
+### Requirement: Recurrence Window Envelope [r[domain-primitives.scheduling-calendar.recurrence-window]]
+The system MUST define finite recurrence-window envelopes for candidate schedule
+buckets, horizon bounds, stride metadata, and deterministic enumeration limits.
+
+#### Scenario: Recurrence window stays within horizon [r[domain-primitives.scheduling-calendar.recurrence-window.scenario.stays-within-horizon]]
+
+- GIVEN a recurrence start bucket, stride, maximum candidates, and finite horizon
+- WHEN candidate buckets are admitted by the recurrence envelope
+- THEN every candidate bucket is within the horizon and respects the declared stride metadata
+
+### Requirement: Deadline Order Predicate [r[domain-primitives.scheduling-calendar.deadline-order]]
+The system MUST define deterministic deadline and priority ordering predicates
+for finite jobs or reservations.
+
+#### Scenario: Deadline order uses stable tie-break metadata [r[domain-primitives.scheduling-calendar.deadline-order.scenario.uses-stable-tie-break-metadata]]
+
+- GIVEN two finite scheduling items with equal deadlines and priorities
+- WHEN the ordering predicate compares them
+- THEN the predicate uses declared stable tie-break metadata rather than nondeterministic runtime order
+
+### Requirement: Schedule Conflict Predicate [r[domain-primitives.scheduling-calendar.conflict]]
+The system MUST define conflict predicates over admitted schedule intervals and
+finite resource identifiers.
+
+#### Scenario: Conflict requires shared resource and overlapping interval [r[domain-primitives.scheduling-calendar.conflict.scenario.requires-shared-resource-and-overlap]]
+
+- GIVEN two admitted reservations with resource identifiers and half-open intervals
+- WHEN the reservations use different resources or non-overlapping intervals
+- THEN the conflict predicate reports no conflict
+
+### Requirement: Resource Slot Envelope [r[domain-primitives.scheduling-calendar.resource-slot]]
+The system MUST define finite resource-slot envelopes for resource identifiers,
+capacity bounds, reservation counts, and admitted occupancy.
+
+#### Scenario: Resource slot rejects capacity overflow [r[domain-primitives.scheduling-calendar.resource-slot.scenario.rejects-capacity-overflow]]
+
+- GIVEN a finite resource slot with declared capacity and admitted reservations
+- WHEN the reservation count or declared occupancy exceeds capacity
+- THEN the resource-slot envelope rejects the slot
+
+### Requirement: Schedule Admission Envelope [r[domain-primitives.scheduling-calendar.admission]]
+The system MUST define deterministic schedule admission envelopes that return
+admit/reject metadata from finite intervals, deadlines, priorities, resources,
+and conflict predicates.
+
+#### Scenario: Admission rejects conflicting reservation deterministically [r[domain-primitives.scheduling-calendar.admission.scenario.rejects-conflicting-reservation-deterministically]]
+
+- GIVEN a finite schedule state and a candidate reservation
+- WHEN the candidate conflicts with an admitted reservation under the declared resource and interval predicates
+- THEN the admission envelope rejects the candidate with deterministic conflict metadata and does not claim optimal rescheduling
+
+### Requirement: Finite Sample Sequence [r[signal.finite-sample-sequence]]
+The system MUST define a finite sample sequence primitive with explicit length,
+channel/layout metadata, sample-domain bounds, and valid index admission.
+
+#### Scenario: Checked sample sequence accepts bounded finite metadata [r[signal.finite-sample-sequence.scenario.checked-sequence-accepts-bounded-finite-metadata]]
+
+- GIVEN finite length, channel count, layout metadata, and sample-domain bounds inside representable limits
+- WHEN a checked sample sequence constructor or checker evaluates the metadata
+- THEN it accepts the sequence metadata and exposes only indices within the finite length and channel layout
+
+#### Scenario: Invalid sample metadata is rejected without mutation [r[signal.finite-sample-sequence.scenario.invalid-sample-metadata-rejected-without-mutation]]
+
+- GIVEN a previously valid sample sequence value
+- WHEN a public checked operation receives invalid length, channel, layout, or sample-domain metadata
+- THEN it rejects the input explicitly and leaves the previously valid value unchanged
+
+### Requirement: FIR Filter Envelope [r[signal.fir-filter-envelope]]
+The system MUST define a finite FIR filter envelope primitive for kernel length,
+coefficient bounds, input sample bounds, and conservative accumulator/output
+bounds over exact discrete values.
+
+#### Scenario: FIR envelope bounds every admitted tap accumulation [r[signal.fir-filter-envelope.scenario.fir-envelope-bounds-every-admitted-tap-accumulation]]
+
+- GIVEN an admitted finite kernel, coefficient bounds, sample bounds, and accumulator envelope
+- WHEN a tap index is within the kernel length and an input sample is within the sample bounds
+- THEN the primitive states that the tap contribution and accumulated envelope remain within the declared conservative bounds
+
+#### Scenario: FIR envelope avoids floating-point frequency-response claims [r[signal.fir-filter-envelope.scenario.fir-envelope-avoids-floating-point-frequency-response-claims]]
+
+- GIVEN a finite FIR filter envelope requirement or implementation task
+- WHEN it states exported guarantees
+- THEN it does not claim floating-point filter accuracy, frequency response, phase response, or runtime DSP-library correctness
+
+### Requirement: Discrete Convolution Window [r[signal.convolution-window]]
+The system MUST define a discrete convolution window primitive that maps finite
+input length, finite kernel length, padding/admission policy, and output index to
+an exact support interval and conservative output envelope.
+
+#### Scenario: Convolution window maps output index to finite support [r[signal.convolution-window.scenario.convolution-window-maps-output-index-to-finite-support]]
+
+- GIVEN admitted finite input length, finite kernel length, padding policy, and output index
+- WHEN the convolution window primitive evaluates the output index
+- THEN it returns or specifies only support positions that are within admitted input/kernel bounds or explicitly marked as padded positions
+
+#### Scenario: Invalid convolution dimensions are rejected [r[signal.convolution-window.scenario.invalid-convolution-dimensions-rejected]]
+
+- GIVEN zero, overflowing, or otherwise invalid input/kernel/output dimensions
+- WHEN a checked convolution-window operation evaluates those dimensions
+- THEN it rejects the dimensions without constructing an invalid support mapping
+
+### Requirement: Decimation Admission [r[signal.decimation-admission]]
+The system MUST define a decimation admission primitive for finite input length,
+positive down-sampling factor, phase/offset, output length, and deterministic
+output-to-input index mapping.
+
+#### Scenario: Decimation maps each output index to one admitted input index [r[signal.decimation-admission.scenario.decimation-maps-each-output-index-to-one-admitted-input-index]]
+
+- GIVEN finite input length, positive decimation factor, admitted phase, and output index within the computed output length
+- WHEN the decimation primitive maps the output index
+- THEN the mapped input index is within the input length and follows the declared factor/phase formula
+
+#### Scenario: Invalid decimation factor or phase is rejected [r[signal.decimation-admission.scenario.invalid-decimation-factor-or-phase-rejected]]
+
+- GIVEN a zero factor, overflowing length computation, or phase outside the admitted factor/input range
+- WHEN a checked decimation operation evaluates the metadata
+- THEN it rejects the metadata and does not expose an output index mapping
+
+### Requirement: Interpolation Admission [r[signal.interpolation-admission]]
+The system MUST define an interpolation admission primitive for finite input
+length, positive up-sampling factor, output length, gap-fill policy, and
+deterministic output/input correspondence metadata.
+
+#### Scenario: Interpolation classifies source-aligned and gap outputs [r[signal.interpolation-admission.scenario.interpolation-classifies-source-aligned-and-gap-outputs]]
+
+- GIVEN finite input length, positive interpolation factor, admitted output length, and output index
+- WHEN the interpolation primitive classifies the output index
+- THEN it marks the output as either corresponding to an in-range source sample or to an admitted gap-fill position according to the declared factor policy
+
+#### Scenario: Invalid interpolation metadata is rejected [r[signal.interpolation-admission.scenario.invalid-interpolation-metadata-rejected]]
+
+- GIVEN a zero factor, overflowing output length, or gap-fill policy outside the supported finite model
+- WHEN a checked interpolation operation evaluates the metadata
+- THEN it rejects the metadata without exposing inconsistent output/input correspondence
+
+### Requirement: Peak Candidate Detection [r[signal.peak-candidate]]
+The system MUST define a peak-candidate primitive over finite sequences using a
+bounded neighborhood, threshold/envelope metadata, and deterministic tie handling.
+
+#### Scenario: Peak candidate satisfies local finite-neighborhood predicate [r[signal.peak-candidate.scenario.peak-candidate-satisfies-local-finite-neighborhood-predicate]]
+
+- GIVEN a finite sequence, candidate index, admitted neighborhood radius, threshold metadata, and tie policy
+- WHEN the peak-candidate predicate accepts the candidate index
+- THEN every compared neighbor is within the finite sequence and the candidate satisfies the declared threshold and ordering relation against those neighbors
+
+#### Scenario: Peak tie policy is deterministic [r[signal.peak-candidate.scenario.peak-tie-policy-is-deterministic]]
+
+- GIVEN equal-valued samples inside a peak neighborhood
+- WHEN the peak-candidate primitive evaluates candidates under the declared tie policy
+- THEN it admits candidates according to that deterministic policy rather than relying on iteration-order ambiguity
+
+### Requirement: Spectral Bin Metadata [r[signal.spectral-bin-metadata]]
+The system MUST define spectral-bin metadata primitives for finite bin count,
+bin index admission, range metadata, and bounded magnitude/energy envelopes over
+exact discrete or fixed-point values.
+
+#### Scenario: Spectral bin metadata admits only finite in-range bins [r[signal.spectral-bin-metadata.scenario.spectral-bin-metadata-admits-only-finite-in-range-bins]]
+
+- GIVEN finite bin count, range metadata, and a candidate bin index
+- WHEN the spectral-bin metadata primitive evaluates the bin index
+- THEN it admits only indices within the finite bin count and associates them with the declared range metadata
+
+#### Scenario: Spectral metadata avoids FFT numeric correctness claims [r[signal.spectral-bin-metadata.scenario.spectral-metadata-avoids-fft-numeric-correctness-claims]]
+
+- GIVEN a spectral-bin metadata requirement or implementation task
+- WHEN it states exported guarantees
+- THEN it does not claim FFT algorithm correctness, floating-point spectral accuracy, leakage/noise behavior, or runtime DSP-library correctness
+
+### Requirement: State Set Envelope [r[domain-primitives.state-machine-workflow.state]]
+The system MUST define finite state-set envelopes that admit declared states and
+record initial and terminal-state metadata before transitions or traces reference
+them.
+
+#### Scenario: Initial state must be declared [r[domain-primitives.state-machine-workflow.state.scenario.initial-state-must-be-declared]]
+
+- GIVEN a finite state-machine declaration with an initial state
+- WHEN state-set admission is evaluated
+- THEN the declaration is admitted only if the initial state belongs to the finite declared state set
+
+### Requirement: Transition Relation Envelope [r[domain-primitives.state-machine-workflow.transition]]
+The system MUST define transition relation envelopes over finite source state,
+event, target state, and optional guard metadata.
+
+#### Scenario: Transition endpoints must be declared states [r[domain-primitives.state-machine-workflow.transition.scenario.endpoints-must-be-declared-states]]
+
+- GIVEN a transition whose source or target state is absent from the declared state set
+- WHEN transition admission is evaluated
+- THEN the transition is rejected with endpoint metadata
+
+### Requirement: Event Envelope [r[domain-primitives.state-machine-workflow.event]]
+The system MUST define finite event envelopes that admit declared event symbols
+before transitions or workflow steps reference them.
+
+#### Scenario: Unknown event is rejected [r[domain-primitives.state-machine-workflow.event.scenario.unknown-event-rejected]]
+
+- GIVEN a transition referencing an event absent from the finite event set
+- WHEN event admission is evaluated
+- THEN the event reference is rejected with unknown-event metadata
+
+### Requirement: Guard Predicate Envelope [r[domain-primitives.state-machine-workflow.guard]]
+The system MUST define deterministic guard predicate envelopes over admitted
+transition context without claiming external side effects or runtime execution.
+
+#### Scenario: Failed guard blocks transition admission [r[domain-primitives.state-machine-workflow.guard.scenario.failed-guard-blocks-transition-admission]]
+
+- GIVEN an admitted source state, event, target state, and guard predicate metadata
+- WHEN the guard predicate evaluates to false in the finite transition context
+- THEN transition admission rejects the guarded transition with failed-guard metadata
+
+### Requirement: Transition Admission Envelope [r[domain-primitives.state-machine-workflow.admission]]
+The system MUST define deterministic transition admission and rejection envelopes
+for public exec surfaces that combine state, transition, event, and guard checks.
+
+#### Scenario: Undeclared transition is rejected deterministically [r[domain-primitives.state-machine-workflow.admission.scenario.undeclared-transition-rejected-deterministically]]
+
+- GIVEN a transition request that is absent from the finite transition relation
+- WHEN transition admission is evaluated
+- THEN the request is rejected with undeclared-transition metadata
+
+### Requirement: Workflow Step Envelope [r[domain-primitives.state-machine-workflow.step]]
+The system MUST define finite workflow step envelopes that reference declared
+states, events, and transition metadata without claiming runtime step execution.
+
+#### Scenario: Workflow step references declared transition metadata [r[domain-primitives.state-machine-workflow.step.scenario.references-declared-transition-metadata]]
+
+- GIVEN a workflow step with source state, event, and target state references
+- WHEN workflow step admission is evaluated
+- THEN the step is admitted only if those references match declared transition metadata
+
+### Requirement: Workflow Dependency Envelope [r[domain-primitives.state-machine-workflow.dependency]]
+The system MUST define finite workflow dependency envelopes over declared steps
+with deterministic dependency-shape admission metadata.
+
+#### Scenario: Dependency references declared workflow steps [r[domain-primitives.state-machine-workflow.dependency.scenario.references-declared-workflow-steps]]
+
+- GIVEN a workflow dependency edge between two step identifiers
+- WHEN dependency admission is evaluated
+- THEN the dependency is admitted only if both step identifiers are declared in the finite workflow step set
+
+### Requirement: Reachability Path Envelope [r[domain-primitives.state-machine-workflow.reachability]]
+The system MUST define bounded reachability/path envelopes over finite admitted
+transition systems and explicit path-witness metadata.
+
+#### Scenario: Reachability witness follows admitted transitions [r[domain-primitives.state-machine-workflow.reachability.scenario.witness-follows-admitted-transitions]]
+
+- GIVEN a finite path witness from one state to another
+- WHEN reachability admission is evaluated
+- THEN each adjacent state pair in the witness follows an admitted transition relation entry
+
+### Requirement: Terminal State Predicate Envelope [r[domain-primitives.state-machine-workflow.terminal]]
+The system MUST define terminal-state predicate envelopes over finite declared
+states without claiming liveness, eventual completion, or runtime scheduling.
+
+#### Scenario: Terminal predicate only accepts declared terminal state [r[domain-primitives.state-machine-workflow.terminal.scenario.only-accepts-declared-terminal-state]]
+
+- GIVEN a state candidate
+- WHEN terminal-state predicate evaluation is performed
+- THEN the predicate matches only if the candidate is declared as terminal in the finite state metadata
+
+### Requirement: Transition Trace Envelope [r[domain-primitives.state-machine-workflow.trace]]
+The system MUST define finite transition trace envelopes whose consecutive trace
+items are stepwise admitted by the transition relation and guard metadata.
+
+#### Scenario: Trace rejects invalid step [r[domain-primitives.state-machine-workflow.trace.scenario.rejects-invalid-step]]
+
+- GIVEN a finite transition trace containing one step absent from the admitted transition relation
+- WHEN trace admission is evaluated
+- THEN the trace is rejected with the invalid step index and transition metadata
+
+### Requirement: Page Range [r[storage.page-range]]
+The system MUST define a finite page-range primitive with checked page
+identifier bounds, span length metadata, and half-open page interval admission.
+
+#### Scenario: Checked page range admits finite half-open span [r[storage.page-range.scenario.checked-page-range-admits-finite-half-open-span]]
+
+- GIVEN finite page-count metadata, a start page, and an end page with start less than or equal to end
+- WHEN a checked page-range constructor evaluates the span
+- THEN it admits only page identifiers within the half-open interval and within the finite page count
+
+#### Scenario: Invalid page range is rejected without mutation [r[storage.page-range.scenario.invalid-page-range-rejected-without-mutation]]
+
+- GIVEN a previously valid page-range value
+- WHEN a public checked operation receives overflowing, reversed, or out-of-bounds page metadata
+- THEN it rejects the input explicitly and leaves the previously valid value unchanged
+
+### Requirement: Record Slot Table [r[storage.record-slot-table]]
+The system MUST define a finite record-slot table primitive with slot-count
+bounds, occupied/free state metadata, and valid slot-index admission.
+
+#### Scenario: Slot table admits only in-range occupied slots [r[storage.record-slot-table.scenario.slot-table-admits-only-in-range-occupied-slots]]
+
+- GIVEN finite slot-count metadata and occupied/free state for each admitted slot
+- WHEN a slot lookup evaluates a candidate slot index
+- THEN it admits occupied-slot access only for indices within the finite slot count whose state is occupied
+
+#### Scenario: Free slot remains explicit state [r[storage.record-slot-table.scenario.free-slot-remains-explicit-state]]
+
+- GIVEN a finite slot table with a free slot
+- WHEN the slot-state primitive evaluates that slot
+- THEN it exposes the free state explicitly rather than treating the slot as an occupied record
+
+### Requirement: Key Range [r[storage.key-range]]
+The system MUST define an ordered finite key-range primitive with lower and upper
+bounds, half-open membership, and overlap/disjointness metadata.
+
+#### Scenario: Key range membership follows half-open bounds [r[storage.key-range.scenario.key-range-membership-follows-half-open-bounds]]
+
+- GIVEN an admitted ordered key range with lower bound less than or equal to upper bound
+- WHEN membership is evaluated for a candidate key
+- THEN the key is admitted exactly when it is greater than or equal to the lower bound and strictly less than the upper bound
+
+#### Scenario: Invalid key range is rejected [r[storage.key-range.scenario.invalid-key-range-rejected]]
+
+- GIVEN unordered or non-representable key bounds
+- WHEN a checked key-range operation evaluates the bounds
+- THEN it rejects them without exposing inconsistent membership metadata
+
+### Requirement: Cursor Bounds [r[storage.cursor-bounds]]
+The system MUST define a cursor-bounds primitive for finite scan ranges, current
+cursor position, end state, and monotone cursor movement.
+
+#### Scenario: Cursor movement stays within admitted scan range [r[storage.cursor-bounds.scenario.cursor-movement-stays-within-admitted-scan-range]]
+
+- GIVEN an admitted finite scan range and cursor position within or at the end of that range
+- WHEN the cursor advances under the declared movement policy
+- THEN the resulting cursor is either within the same range at a later position or explicitly at the end state
+
+#### Scenario: Cursor rejects movement from invalid position [r[storage.cursor-bounds.scenario.cursor-rejects-movement-from-invalid-position]]
+
+- GIVEN a cursor position outside the admitted scan range and not equal to the declared end state
+- WHEN a checked cursor operation evaluates the position
+- THEN it rejects the operation without constructing an invalid next cursor
+
+### Requirement: Segment Map [r[storage.segment-map]]
+The system MUST define a finite segment-map primitive from logical key/page
+ranges to physical segment/page spans with explicit coverage and disjointness
+metadata.
+
+#### Scenario: Segment map associates logical range with finite physical span [r[storage.segment-map.scenario.segment-map-associates-logical-range-with-finite-physical-span]]
+
+- GIVEN an admitted logical range and finite physical segment/page span
+- WHEN the segment-map primitive evaluates the mapping
+- THEN it exposes only physical positions within the declared segment/page bounds for that logical range
+
+#### Scenario: Segment map rejects overlapping inconsistent spans [r[storage.segment-map.scenario.segment-map-rejects-overlapping-inconsistent-spans]]
+
+- GIVEN segment-map metadata with overlapping logical ranges that map to inconsistent physical spans under the declared policy
+- WHEN a checked segment-map constructor evaluates the metadata
+- THEN it rejects the map instead of exposing ambiguous logical-to-physical lookup metadata
+
+### Requirement: Lookup Result Admission [r[storage.lookup-result]]
+The system MUST define a lookup-result primitive that admits present, absent, and
+out-of-range outcomes according to finite table/range metadata and deterministic
+decision rules.
+
+#### Scenario: Present lookup result references admitted record [r[storage.lookup-result.scenario.present-lookup-result-references-admitted-record]]
+
+- GIVEN finite table/range metadata and a lookup result marked present
+- WHEN the lookup-result primitive validates the result
+- THEN the referenced key, slot, page, or record metadata is within the admitted finite bounds and matches the declared lookup key/range relation
+
+#### Scenario: Absent and out-of-range results are distinguished [r[storage.lookup-result.scenario.absent-and-out-of-range-results-are-distinguished]]
+
+- GIVEN a lookup key and admitted key-range metadata
+- WHEN the lookup-result primitive validates an unsuccessful result
+- THEN it distinguishes an in-range absent result from an out-of-range rejected result according to the declared bounds
+
+### Requirement: Compaction Envelope [r[storage.compaction-envelope]]
+The system MUST define a finite compaction envelope primitive that preserves live
+logical records and admitted key/slot membership while allowing physical page or
+segment spans to be remapped.
+
+#### Scenario: Compaction preserves live logical record identity [r[storage.compaction-envelope.scenario.compaction-preserves-live-logical-record-identity]]
+
+- GIVEN pre-compaction and post-compaction finite metadata plus a declared live-record set
+- WHEN the compaction envelope validates the remap
+- THEN every live logical record admitted before compaction is admitted after compaction with the same logical identity and allowed physical span remapping
+
+#### Scenario: Compaction may drop non-live records only by explicit policy [r[storage.compaction-envelope.scenario.compaction-may-drop-non-live-records-only-by-explicit-policy]]
+
+- GIVEN a record not included in the declared live-record set
+- WHEN the compaction envelope omits that record from post-compaction metadata
+- THEN the omission is valid only when the declared compaction policy explicitly allows dropping non-live records
+
+### Requirement: Versioned Slot [r[storage.versioned-slot]]
+The system MUST define a versioned-slot primitive over finite version metadata,
+slot state, visibility bounds, and deterministic latest-visible selection.
+
+#### Scenario: Latest-visible selection chooses maximal admitted version [r[storage.versioned-slot.scenario.latest-visible-selection-chooses-maximal-admitted-version]]
+
+- GIVEN a finite set of versions for a slot and an admitted read/version bound
+- WHEN the versioned-slot primitive selects a visible entry
+- THEN the selected entry is visible under the bound and no other admitted visible entry has a greater version under the declared ordering
+
+#### Scenario: Versioned slot rejects ambiguous latest entries [r[storage.versioned-slot.scenario.versioned-slot-rejects-ambiguous-latest-entries]]
+
+- GIVEN two distinct entries that are both maximal under the declared version ordering without a deterministic tie policy
+- WHEN a checked versioned-slot operation evaluates latest-visible selection
+- THEN it rejects the metadata instead of exposing an ambiguous latest-visible result
+
+### Requirement: Table Schema Metadata [r[domain-primitives.table-relational.table-schema]]
+The system MUST provide finite table/schema metadata envelopes that record table
+identifiers, declared columns, row-count bounds, schema-version metadata, and
+deterministic table admission results.
+
+#### Scenario: Unknown table schema is rejected explicitly [r[domain-primitives.table-relational.table-schema.scenario.unknown-table-schema-is-rejected-explicitly]]
+
+- GIVEN finite table/schema metadata and a declared schema registry envelope
+- WHEN a candidate table references an unknown schema identifier
+- THEN the table-schema primitive returns explicit rejection metadata without consulting a database engine
+
+### Requirement: Column Metadata Envelope [r[domain-primitives.table-relational.column]]
+The system MUST provide finite column metadata envelopes for column identifiers,
+declared value envelopes, nullability or presence policy, ordering position, and
+deterministic column admission results.
+
+#### Scenario: Column type mismatch is rejected before row admission [r[domain-primitives.table-relational.column.scenario.column-type-mismatch-is-rejected-before-row-admission]]
+
+- GIVEN finite column metadata and a candidate cell value envelope
+- WHEN the value envelope does not match the declared column envelope
+- THEN the column primitive rejects the cell before row admission is composed
+
+### Requirement: Row Shape Envelope [r[domain-primitives.table-relational.row]]
+The system MUST provide finite row shape envelopes that record row identifiers,
+cell positions, required/optional cell presence, and deterministic row admission
+results.
+
+#### Scenario: Missing required cell is reported [r[domain-primitives.table-relational.row.scenario.missing-required-cell-is-reported]]
+
+- GIVEN finite row shape metadata and required column positions
+- WHEN a required cell is absent
+- THEN the row primitive returns explicit missing-cell metadata
+
+### Requirement: Key Metadata Envelope [r[domain-primitives.table-relational.key]]
+The system MUST provide finite key metadata envelopes for primary-key-like,
+foreign-key-like, compound-key, and uniqueness predicates over declared row and
+column metadata without claiming database enforcement.
+
+#### Scenario: Duplicate finite key is rejected [r[domain-primitives.table-relational.key.scenario.duplicate-finite-key-is-rejected]]
+
+- GIVEN finite key metadata and admitted row envelopes
+- WHEN two rows violate a declared finite uniqueness predicate
+- THEN the key primitive returns explicit duplicate-key metadata without claiming database uniqueness enforcement
+
+### Requirement: Projection Filter Shape [r[domain-primitives.table-relational.projection-filter]]
+The system MUST provide deterministic projection/filter shape envelopes over
+finite column sets, row predicates, and admitted table metadata.
+
+#### Scenario: Projection references admitted columns only [r[domain-primitives.table-relational.projection-filter.scenario.projection-references-admitted-columns-only]]
+
+- GIVEN finite table metadata and a projection envelope
+- WHEN the projection references a column outside the admitted schema
+- THEN the projection/filter primitive rejects the operation shape
+
+### Requirement: Join Shape Metadata [r[domain-primitives.table-relational.join]]
+The system MUST provide finite join-shape metadata for declared input tables,
+join-key metadata, cardinality bounds, unmatched-row policy, and deterministic
+join-shape admission results.
+
+#### Scenario: Join key must be present in both inputs [r[domain-primitives.table-relational.join.scenario.join-key-must-be-present-in-both-inputs]]
+
+- GIVEN finite join metadata and two admitted table schemas
+- WHEN a declared join key is absent from either input schema
+- THEN the join primitive returns explicit join-key rejection metadata
+
+### Requirement: Grouping Metadata Envelope [r[domain-primitives.table-relational.grouping]]
+The system MUST provide finite grouping/aggregate-shape metadata for group keys,
+aggregate input columns, aggregate result metadata, and deterministic grouping
+admission without claiming aggregate numeric accuracy beyond declared exact
+models.
+
+#### Scenario: Grouping references admitted columns only [r[domain-primitives.table-relational.grouping.scenario.grouping-references-admitted-columns-only]]
+
+- GIVEN finite grouping metadata and an admitted table schema
+- WHEN a group key or aggregate input references an unknown column
+- THEN the grouping primitive returns explicit unknown-column rejection metadata
+
+### Requirement: Relational Admission Envelope [r[domain-primitives.table-relational.admission]]
+The system MUST provide deterministic relational admission/rejection envelopes
+that compose table/schema, column, row, key, projection/filter, join, and grouping
+metadata over finite relational data.
+
+#### Scenario: Admission requires all finite relational checks [r[domain-primitives.table-relational.admission.scenario.admission-requires-all-finite-relational-checks]]
+
+- GIVEN finite relational metadata and candidate table or operation shape
+- WHEN any schema, column, row, key, projection/filter, join, or grouping check rejects
+- THEN the relational-admission primitive returns an explicit rejection before any database engine, SQL, transaction, or query-planner claim is made
+
+### Requirement: Finite Byte String [r[text.finite-byte-string]]
+The system MUST define a finite byte-string primitive with explicit length
+bounds, valid byte-index admission, and no-mutation rejection semantics for
+checked public operations.
+
+#### Scenario: Checked byte string admits finite length and indices [r[text.finite-byte-string.scenario.checked-byte-string-admits-finite-length-and-indices]]
+
+- GIVEN a finite byte sequence and representable length metadata
+- WHEN a checked byte-string constructor or checker evaluates the sequence
+- THEN it admits only byte indices within the finite length and exposes the length as representable metadata
+
+#### Scenario: Invalid byte string metadata is rejected without mutation [r[text.finite-byte-string.scenario.invalid-byte-string-metadata-rejected-without-mutation]]
+
+- GIVEN a previously valid byte-string value
+- WHEN a public checked operation receives overflowing length, invalid slice, or out-of-bounds index metadata
+- THEN it rejects the input explicitly and leaves the previously valid value unchanged
+
+### Requirement: UTF-8 Boundary Range [r[text.utf8-boundary-range]]
+The system MUST define UTF-8 boundary/range metadata over finite byte strings for
+admitted character-boundary indices and half-open character/byte spans.
+
+#### Scenario: UTF-8 boundary range admits only character boundaries [r[text.utf8-boundary-range.scenario.utf8-boundary-range-admits-only-character-boundaries]]
+
+- GIVEN a finite byte string and a candidate byte range
+- WHEN the UTF-8 boundary-range primitive admits the range
+- THEN the range start and end are in bounds and occur on declared UTF-8 character boundaries
+
+#### Scenario: Invalid UTF-8 range is rejected [r[text.utf8-boundary-range.scenario.invalid-utf8-range-rejected]]
+
+- GIVEN a byte range that is out of bounds, reversed, or not aligned to admitted UTF-8 character boundaries
+- WHEN a checked UTF-8 range operation evaluates the range
+- THEN it rejects the range without exposing character-index metadata for it
+
+### Requirement: Token Span [r[text.token-span]]
+The system MUST define token-span metadata over finite text with token index,
+byte span, optional character span, and deterministic span-order constraints.
+
+#### Scenario: Token span maps token to admitted byte and character ranges [r[text.token-span.scenario.token-span-maps-token-to-admitted-byte-and-character-ranges]]
+
+- GIVEN finite text, token metadata, and an admitted token index
+- WHEN the token-span primitive evaluates the token
+- THEN it exposes a finite half-open byte span and, when UTF-8 metadata is present, a corresponding admitted character span
+
+#### Scenario: Token spans are ordered or explicitly overlapping by policy [r[text.token-span.scenario.token-spans-are-ordered-or-explicitly-overlapping-by-policy]]
+
+- GIVEN multiple token spans in finite text
+- WHEN the token-span metadata declares a non-overlap policy
+- THEN each later token span starts at or after the previous token span end
+
+### Requirement: Prefix and Suffix Predicate [r[text.prefix-suffix]]
+The system MUST define finite prefix and suffix predicates with length bounds,
+byte/character layer declaration, and exact sequence equality over admitted
+positions.
+
+#### Scenario: Prefix predicate compares only admitted prefix positions [r[text.prefix-suffix.scenario.prefix-predicate-compares-only-admitted-prefix-positions]]
+
+- GIVEN finite haystack and prefix sequences with admitted byte or character layer metadata
+- WHEN the prefix predicate accepts the prefix
+- THEN the prefix length is less than or equal to the haystack length and every admitted prefix position equals the corresponding haystack position
+
+#### Scenario: Suffix predicate compares only admitted suffix positions [r[text.prefix-suffix.scenario.suffix-predicate-compares-only-admitted-suffix-positions]]
+
+- GIVEN finite haystack and suffix sequences with admitted byte or character layer metadata
+- WHEN the suffix predicate accepts the suffix
+- THEN the suffix length is less than or equal to the haystack length and every admitted suffix position equals the corresponding haystack position at the declared offset
+
+### Requirement: Substring Span [r[text.substring-span]]
+The system MUST define substring containment and match-span admission over finite
+text with deterministic span metadata for accepted matches.
+
+#### Scenario: Substring match span is finite and in bounds [r[text.substring-span.scenario.substring-match-span-is-finite-and-in-bounds]]
+
+- GIVEN finite haystack and needle sequences plus a declared byte or character layer
+- WHEN the substring-span primitive admits a match
+- THEN the match span is within the haystack bounds and every admitted needle position equals the corresponding haystack position inside that span
+
+#### Scenario: Substring absence does not expose match span [r[text.substring-span.scenario.substring-absence-does-not-expose-match-span]]
+
+- GIVEN finite haystack and needle sequences
+- WHEN the substring-span primitive reports no admitted match
+- THEN it exposes absence metadata without constructing an out-of-bounds or inconsistent match span
+
+### Requirement: Edit Distance Envelope [r[text.edit-distance-envelope]]
+The system MUST define a bounded edit-distance envelope primitive for finite
+source/target lengths, operation-budget metadata, and conservative lower/upper
+bounds on accepted edit operations.
+
+#### Scenario: Edit-distance envelope admits only within declared budget [r[text.edit-distance-envelope.scenario.edit-distance-envelope-admits-only-within-declared-budget]]
+
+- GIVEN finite source and target lengths plus an edit-operation budget
+- WHEN the edit-distance envelope accepts a candidate edit path or summary
+- THEN the accepted operation count is representable, within the declared budget, and consistent with the finite source/target length envelope
+
+#### Scenario: Edit-distance envelope avoids unproved optimality claims [r[text.edit-distance-envelope.scenario.edit-distance-envelope-avoids-unproved-optimality-claims]]
+
+- GIVEN an edit-distance envelope requirement or implementation task
+- WHEN it states exported guarantees
+- THEN it does not claim algorithmic optimality or Levenshtein distance equality unless a dedicated proof for that algorithm is also specified
+
+### Requirement: Normalization Envelope [r[text.normalization-envelope]]
+The system MUST define normalization envelope metadata for finite source/output
+spans, length-growth bounds, supported normalization form tags, and explicit
+unsupported-form rejection.
+
+#### Scenario: Normalization envelope bounds output span metadata [r[text.normalization-envelope.scenario.normalization-envelope-bounds-output-span-metadata]]
+
+- GIVEN finite source text, a supported normalization form tag, and declared output length bounds
+- WHEN the normalization-envelope primitive admits normalized output metadata
+- THEN the output span is finite, representable, and within the declared conservative length-growth envelope
+
+#### Scenario: Normalization envelope avoids Unicode table correctness claims [r[text.normalization-envelope.scenario.normalization-envelope-avoids-unicode-table-correctness-claims]]
+
+- GIVEN a normalization-envelope requirement or implementation task
+- WHEN it states exported guarantees
+- THEN it does not claim full Unicode normalization table correctness, locale collation, or semantic text equivalence unless a dedicated model owns those claims
+
+### Requirement: Delimiter Split Join Shape [r[text.delimiter-split-join]]
+The system MUST define delimiter split/join shape metadata over finite text,
+finite delimiter spans, segment bounds, and deterministic empty-segment policy.
+
+#### Scenario: Delimiter split exposes finite ordered segments [r[text.delimiter-split-join.scenario.delimiter-split-exposes-finite-ordered-segments]]
+
+- GIVEN finite text, finite delimiter metadata, and a declared empty-segment policy
+- WHEN the delimiter split-shape primitive accepts the metadata
+- THEN it exposes finite ordered segment spans that are in bounds and consistent with the delimiter positions and empty-segment policy
+
+#### Scenario: Join shape accounts for delimiters between segments [r[text.delimiter-split-join.scenario.join-shape-accounts-for-delimiters-between-segments]]
+
+- GIVEN finite segment lengths and finite delimiter length metadata
+- WHEN the delimiter join-shape primitive computes or validates output length metadata
+- THEN the output length envelope accounts for every segment and every inserted delimiter between adjacent segments without overflow

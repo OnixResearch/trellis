@@ -17,14 +17,14 @@
 
 ## Phase 2: Future implementation
 
-- [ ] Add docs/requirements entries and Tracey IDs for finite table/schema metadata.
-- [ ] Implement and verify column metadata and type admission primitives.
-- [ ] Implement and verify row shape and cell-presence envelopes.
-- [ ] Implement and verify finite key/uniqueness metadata.
-- [ ] Implement and verify projection/filter shape envelopes.
-- [ ] Implement and verify finite join-shape metadata.
-- [ ] Implement and verify grouping and aggregate-shape metadata.
-- [ ] Implement deterministic relational admission/rejection composition.
-- [ ] Add focused positive and negative tests for each table/relational primitive.
-- [ ] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
-- [ ] Capture reviewable evidence and archive the change after all implementation tasks complete.
+- [x] Add docs/requirements entries and Tracey IDs for finite table/schema metadata.
+- [x] Implement and verify column metadata and type admission primitives.
+- [x] Implement and verify row shape and cell-presence envelopes.
+- [x] Implement and verify finite key/uniqueness metadata.
+- [x] Implement and verify projection/filter shape envelopes.
+- [x] Implement and verify finite join-shape metadata.
+- [x] Implement and verify grouping and aggregate-shape metadata.
+- [x] Implement deterministic relational admission/rejection composition.
+- [x] Add focused positive and negative tests for each table/relational primitive.
+- [x] Run focused Verus, Tracey uncovered/untested, and strict OpenSpec validation.
+- [x] Capture reviewable evidence and archive the change after all implementation tasks complete.
