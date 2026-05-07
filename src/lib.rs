@@ -240,6 +240,8 @@
 //! - `per_core_rwlock` — per-core reader aggregation, writer drain gating, and rwlock mode
 //!   refinement
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
+//! - `serialization_codec` — finite byte buffers, frames, length prefixes, schema/version,
+//!   checksum-shape metadata, encoder/decoder shape predicates, and bounded round trips
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `set_associative_lookup` — cache address decomposition and per-set tag lookup
@@ -787,6 +789,7 @@ pub mod seqlock;
 pub mod sequence;
 pub mod sequential;
 pub mod serializable_txn_guard;
+pub mod serialization_codec;
 pub mod serialize_inj;
 pub mod session_tree;
 pub mod set_associative_lookup;
