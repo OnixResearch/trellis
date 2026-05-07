@@ -292,6 +292,8 @@
 //! - `tier` — hot/warm/cold tier classification with promote/demote
 //! - `tiered_rate_limit` — global-first two-tier rate limiting with capacity invariant
 //! - `tiling` — 2D rect non-overlap, containment, strip partitioning for layout engines
+//! - `timeseries` — finite monotone timestamp indexes, aligned samples, windows, resample buckets,
+//!   rolling aggregates, and gap reports
 //! - `type_lattice` — type conversion reachability: reflexive, ANY top, STRING source
 //! - `type_unification` — first-order type syntax, occurs check, substitution application and
 //!   composition
@@ -822,6 +824,7 @@ pub mod ticket_lock;
 pub mod tier;
 pub mod tiered_rate_limit;
 pub mod tiling;
+pub mod timeseries;
 pub mod tlb_shootdown;
 pub mod token_timestamp;
 pub mod topo_sort;
