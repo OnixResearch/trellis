@@ -1886,6 +1886,9 @@ compare_versions MUST compare two version strings component-by-component, with n
 r[nix-version.parse-drv-name]
 parse_drv_name MUST split a derivation name at the first hyphen-digit boundary.
 
+r[verification-gaps.nix-version-bridge-decomposition]
+Nix version bridge decomposition MUST provide a finite admitted comparison wrapper for modeled version bytes, reject out-of-model bytes explicitly, and preserve the existing trusted-boundary inventory when the full compare_versions exec/spec bridge remains trusted.
+
 ## Nix String
 
 r[nix-string.string-length]

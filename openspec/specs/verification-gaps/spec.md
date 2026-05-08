@@ -206,3 +206,27 @@ r[verification-gaps.inventory-site-manifest-source]
 - GIVEN live source changes one external-body site but the manifest is not updated
 - WHEN the Rust checker compares manifest and source
 - THEN it rejects the drift before full verification can pass
+
+### Requirement: Nix Version Bridge Decomposition
+
+The system MUST provide a bounded structural decomposition of `src/nix_version.rs::compare_versions` that narrows verified claims to an explicit finite admission wrapper or records why the original bridge remains trusted without replacement weakened markers.
+
+r[verification-gaps.nix-version-bridge-decomposition]
+
+#### Scenario: Finite comparator agrees with modeled cases
+
+- GIVEN admitted finite version byte sequences within the modeled token rules
+- WHEN the modeled comparison wrapper compares them
+- THEN the result is delegated through the existing compare specification with an explicit admitted-input precondition
+
+#### Scenario: Out-of-model input boundary is explicit
+
+- GIVEN version bytes outside the admitted finite model
+- WHEN comparison admission is evaluated
+- THEN the wrapper returns no ordering claim instead of pretending the input was verified by the finite model
+
+#### Scenario: Failed closeout preserves trust inventory
+
+- GIVEN the full `compare_versions` exec/spec bridge remains trusted in this slice
+- WHEN the decomposition attempt is closed
+- THEN evidence records the bounded wrapper and no `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, `@verified-logic:exempt`, or new external body is introduced

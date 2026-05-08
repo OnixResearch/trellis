@@ -1,0 +1,38 @@
+=== ./scripts/verify.sh ===
+=== Coverage: r[impl] on every pub fn ===
+✓ all pub fns have r[impl] annotations
+=== Coverage: ensures on every verified pub fn ===
+✓ all verified pub fns have ensures clauses
+=== Proof-gap inventory drift ===
+✓ proof-gap inventory matches expected counts, sites, and classifications
+=== Clippy ===
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.10s
+✓ clippy clean
+=== Tests ===
+test result::tests::test_and_then ... ok
+test result::tests::test_map_err ... ok
+test result::tests::test_map_ok ... ok
+test result::tests::test_or_else ... ok
+test result::tests::test_unwrap_or ... ok
+test result::tests::prop_and_then_err_propagates ... ok
+test result::tests::prop_map_err_preserves_ok ... ok
+test result::tests::prop_map_ok_preserves_err ... ok
+test result::tests::prop_and_then_right_identity ... ok
+test result::tests::prop_map_ok_map_err_commute ... ok
+test result::tests::prop_or_else_err_uses_fallback ... ok
+test result::tests::prop_unwrap_or_err ... ok
+test result::tests::prop_unwrap_or_ok ... ok
+test result::tests::prop_or_else_ok_unchanged ... ok
+test result: ok. 4530 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.18s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 58.02s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+✓ tests pass
+=== Verus verification ===
+verification results:: 9856 verified, 0 errors
+✓ verus proofs pass
+=== Tracey coverage ===
+verified-logic/rust: 0 uncovered out of 1875 rules
+✓ no uncovered requirements
+verified-logic/rust: 0 untested (impl but no verify) out of 1875 rules
+✓ no untested requirements
+=== ALL CHECKS PASSED ===
