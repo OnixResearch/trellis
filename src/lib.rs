@@ -444,6 +444,7 @@ pub mod commit_advance;
 pub mod commit_notify;
 pub mod compaction_fence;
 pub mod composite_outcome;
+pub mod composite_receipt_envelope;
 pub mod config_admission;
 pub mod config_change;
 pub mod config_default;

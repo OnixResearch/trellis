@@ -11339,3 +11339,28 @@ The system MUST provide a Rust-script inventory gate that scans source files for
 
 r[verification-gaps.inventory-site-list-drift-gate]
 The system MUST make the Rust proof-gap inventory gate validate the exact external-body file/function site list, not only aggregate counts. The gate MUST fail closed when a same-count substitution removes one expected external-body site and introduces a new unexpected site, without mutating source files during negative fixture evidence.
+### Requirement: Composite Receipt Envelope Semantics [r[composite-primitives.receipt-envelope]]
+
+The system MUST provide bounded composite receipt and evidence-envelope semantics that admit a receipt only when its serialized envelope, artifact references, validation window, and optional query/table evidence are all finite and internally consistent.
+
+- **Composes:** `src/composite_receipt_envelope.rs`, `src/serialization_codec.rs`, `src/storage_index.rs`, `src/table_relational.rs`, and `src/graph_query_composition.rs`.
+- **Validity boundary:** schema/version, serialized round-trip shape, artifact declaration/range, storage segment, cursor/window bounds, table admission, graph-query result facade, and lookup admission are checked as finite predicates.
+- **Non-claims:** no runtime artifact storage, external CI/provider conformance, performance, or cryptographic-strength guarantee beyond existing trusted hash/crypto boundaries.
+
+#### Scenario: Well-formed receipt is admitted [r[composite-primitives.receipt-envelope.scenario.well-formed-receipt-is-admitted]]
+
+- GIVEN a receipt with admitted schema version, bounded serialized sections, declared artifacts, and consistent validation-window metadata
+- WHEN receipt-envelope admission is evaluated
+- THEN the receipt is accepted and every referenced artifact lies within the declared finite envelope
+
+#### Scenario: Dangling artifact reference is rejected [r[composite-primitives.receipt-envelope.scenario.dangling-artifact-reference-is-rejected]]
+
+- GIVEN a receipt whose evidence row references an undeclared artifact or out-of-window result
+- WHEN receipt-envelope admission is evaluated
+- THEN the receipt is rejected without accepting partial evidence
+
+#### Scenario: Query evidence composes with receipt envelope [r[composite-primitives.receipt-envelope.scenario.query-evidence-composes-with-receipt-envelope]]
+
+- GIVEN a graph-query or table result witness embedded in a receipt envelope
+- WHEN receipt admission succeeds
+- THEN the accepted receipt implies the underlying finite query/table witness predicates
