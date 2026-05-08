@@ -7,6 +7,10 @@ use std::io;
 use std::path::Path;
 use std::path::PathBuf;
 
+const DEFAULT_MANIFEST: &str = "docs/proof-gap-sites.tsv";
+const MANIFEST_HEADER: &str = "# verified-logic proof-gap-sites-v1";
+const EXPECTED_EXTERNAL_BODY_COUNT: usize = 16;
+
 #[derive(Clone, Copy, Debug)]
 struct MarkerSpec {
     key: &'static str,
@@ -14,18 +18,18 @@ struct MarkerSpec {
     expected: usize,
 }
 
-#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+#[derive(Clone, Debug, Eq, Ord, PartialEq, PartialOrd)]
 struct ExpectedSite {
-    path: &'static str,
-    next_fn: &'static str,
-    classification: &'static str,
+    path: String,
+    next_fn: String,
+    classification: String,
 }
 
 const MARKERS: &[MarkerSpec] = &[
     MarkerSpec {
         key: "external_body",
         text: "#[verifier::external_body]",
-        expected: 16,
+        expected: EXPECTED_EXTERNAL_BODY_COUNT,
     },
     MarkerSpec {
         key: "assume_specification",
@@ -49,96 +53,15 @@ const MARKERS: &[MarkerSpec] = &[
     },
 ];
 
-const EXPECTED_EXTERNAL_BODY_SITES: &[ExpectedSite] = &[
-    ExpectedSite {
-        path: "src/chain.rs",
-        next_fn: "pub fn compute_entry_hash(",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/chain.rs",
-        next_fn: "pub proof fn hash_collision_free(",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/nix_version.rs",
-        next_fn: "pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/snapshot_integrity.rs",
-        next_fn: "pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/snapshot_integrity.rs",
-        next_fn: "pub fn dual_hash(a: u64, b: u64) -> (result: u64)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_did.rs",
-        next_fn: "pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_did.rs",
-        next_fn: "pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_did.rs",
-        next_fn: "pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_did.rs",
-        next_fn: "pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/ucan_signature.rs",
-        next_fn: "pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)",
-        classification: "permanent-trust-boundary",
-    },
-    ExpectedSite {
-        path: "src/web_of_trust_principal.rs",
-        next_fn: "pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)",
-        classification: "permanent-trust-boundary",
-    },
-];
-
 #[derive(Debug)]
 struct Args {
     root: PathBuf,
+    manifest: PathBuf,
     write_report: Option<PathBuf>,
     fixture_extra_external_body: bool,
     fixture_site_substitution: bool,
     fixture_classification_substitution: bool,
+    fixture_stale_manifest: bool,
 }
 
 #[derive(Debug)]
@@ -165,27 +88,27 @@ struct SiteCheck {
 
 fn parse_args() -> Result<Args, String> {
     let mut root = PathBuf::from(".");
+    let mut manifest = PathBuf::from(DEFAULT_MANIFEST);
     let mut write_report = None;
     let mut fixture_extra_external_body = false;
     let mut fixture_site_substitution = false;
     let mut fixture_classification_substitution = false;
+    let mut fixture_stale_manifest = false;
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
-            "--root" => {
-                let value = args.next().ok_or("--root requires a path")?;
-                root = PathBuf::from(value);
-            }
+            "--root" => root = PathBuf::from(args.next().ok_or("--root requires a path")?),
+            "--manifest" => manifest = PathBuf::from(args.next().ok_or("--manifest requires a path")?),
             "--write-report" => {
-                let value = args.next().ok_or("--write-report requires a path")?;
-                write_report = Some(PathBuf::from(value));
+                write_report = Some(PathBuf::from(args.next().ok_or("--write-report requires a path")?))
             }
             "--fixture-extra-external-body" => fixture_extra_external_body = true,
             "--fixture-site-substitution" => fixture_site_substitution = true,
             "--fixture-classification-substitution" => fixture_classification_substitution = true,
+            "--fixture-stale-manifest" => fixture_stale_manifest = true,
             "--help" | "-h" => {
                 println!(
-                    "usage: check-proof-gap-inventory.rs [--root PATH] [--write-report PATH] [--fixture-extra-external-body] [--fixture-site-substitution] [--fixture-classification-substitution]"
+                    "usage: check-proof-gap-inventory.rs [--root PATH] [--manifest PATH] [--write-report PATH] [--fixture-extra-external-body] [--fixture-site-substitution] [--fixture-classification-substitution] [--fixture-stale-manifest]"
                 );
                 std::process::exit(0);
             }
@@ -194,10 +117,12 @@ fn parse_args() -> Result<Args, String> {
     }
     Ok(Args {
         root,
+        manifest,
         write_report,
         fixture_extra_external_body,
         fixture_site_substitution,
         fixture_classification_substitution,
+        fixture_stale_manifest,
     })
 }
 
@@ -247,13 +172,72 @@ fn scan_marker(root: &Path, files: &[PathBuf], spec: MarkerSpec) -> io::Result<M
     Ok(MarkerResult { spec, hits })
 }
 
-fn actual_count(result: &MarkerResult, fixture_extra_external_body: bool) -> usize {
-    let fixture_extra = if fixture_extra_external_body && result.spec.key == "external_body" {
-        1
+fn parse_manifest(root: &Path, manifest: &Path, fixture_stale_manifest: bool) -> Result<Vec<ExpectedSite>, String> {
+    let path = if manifest.is_absolute() {
+        manifest.to_path_buf()
     } else {
-        0
+        root.join(manifest)
     };
-    result.hits.len() + fixture_extra
+    let text = fs::read_to_string(&path).map_err(|err| format!("failed to read manifest {}: {err}", path.display()))?;
+    let mut lines = text.lines();
+    let header = lines.next().ok_or("manifest is empty")?;
+    if header.trim_end() != MANIFEST_HEADER {
+        return Err(format!("manifest malformed: first line must be `{MANIFEST_HEADER}`"));
+    }
+    let mut sites = Vec::new();
+    for (idx, line) in text.lines().enumerate().skip(1) {
+        let trimmed = line.trim_end();
+        if trimmed.is_empty() || trimmed.starts_with('#') {
+            continue;
+        }
+        let fields: Vec<&str> = trimmed.split('\t').collect();
+        if fields.len() != 3 || fields.iter().any(|field| field.trim().is_empty()) {
+            return Err(format!("manifest malformed at line {}: expected 3 tab-separated non-empty fields", idx + 1));
+        }
+        sites.push(ExpectedSite {
+            path: fields[0].to_string(),
+            next_fn: fields[1].to_string(),
+            classification: fields[2].to_string(),
+        });
+    }
+    if fixture_stale_manifest && !sites.is_empty() {
+        sites.remove(0);
+        sites.push(ExpectedSite {
+            path: "src/stale_manifest_boundary.rs".to_string(),
+            next_fn: "pub fn stale_manifest_boundary(".to_string(),
+            classification: "permanent-trust-boundary".to_string(),
+        });
+        sites.sort();
+    }
+    if sites.len() != EXPECTED_EXTERNAL_BODY_COUNT {
+        return Err(format!(
+            "manifest malformed: expected {EXPECTED_EXTERNAL_BODY_COUNT} sites, found {}",
+            sites.len()
+        ));
+    }
+    let mut sorted = sites.clone();
+    sorted.sort();
+    if sites != sorted {
+        return Err("manifest malformed: site entries must be sorted by path, function, classification".to_string());
+    }
+    sorted.dedup();
+    if sorted.len() != sites.len() {
+        return Err("manifest malformed: duplicate site entries are not allowed".to_string());
+    }
+    for site in &sites {
+        if site.classification != "permanent-trust-boundary" && site.classification != "closeable-structural-candidate"
+        {
+            return Err(format!(
+                "manifest malformed: unsupported classification `{}` for {}",
+                site.classification, site.path
+            ));
+        }
+    }
+    Ok(sites)
+}
+
+fn actual_count(result: &MarkerResult, fixture_extra_external_body: bool) -> usize {
+    result.hits.len() + usize::from(fixture_extra_external_body && result.spec.key == "external_body")
 }
 
 fn actual_external_body_sites(
@@ -265,42 +249,36 @@ fn actual_external_body_sites(
     for hit in &result.hits {
         if let Some(next_fn) = &hit.next_fn {
             actual.push(ExpectedSite {
-                path: Box::leak(hit.path.display().to_string().into_boxed_str()),
-                next_fn: Box::leak(next_fn.clone().into_boxed_str()),
-                classification: "permanent-trust-boundary",
+                path: hit.path.display().to_string(),
+                next_fn: next_fn.clone(),
+                classification: "permanent-trust-boundary".to_string(),
             });
         }
     }
     if fixture_site_substitution && !actual.is_empty() {
         actual.remove(0);
         actual.push(ExpectedSite {
-            path: "src/simulated_new_boundary.rs",
-            next_fn: "pub fn simulated_new_boundary(",
-            classification: "permanent-trust-boundary",
+            path: "src/simulated_new_boundary.rs".to_string(),
+            next_fn: "pub fn simulated_new_boundary(".to_string(),
+            classification: "permanent-trust-boundary".to_string(),
         });
     }
     if fixture_classification_substitution && !actual.is_empty() {
-        let first = actual[0];
-        actual[0] = ExpectedSite {
-            path: first.path,
-            next_fn: first.next_fn,
-            classification: "closeable-structural-candidate",
-        };
+        actual[0].classification = "closeable-structural-candidate".to_string();
     }
     actual.sort();
     actual
 }
 
 fn site_check(
+    expected: Vec<ExpectedSite>,
     result: &MarkerResult,
     fixture_site_substitution: bool,
     fixture_classification_substitution: bool,
 ) -> SiteCheck {
-    let mut expected = EXPECTED_EXTERNAL_BODY_SITES.to_vec();
-    expected.sort();
     let actual = actual_external_body_sites(result, fixture_site_substitution, fixture_classification_substitution);
-    let missing = expected.iter().copied().filter(|site| !actual.contains(site)).collect();
-    let unexpected = actual.iter().copied().filter(|site| !expected.contains(site)).collect();
+    let missing = expected.iter().filter(|site| !actual.contains(site)).cloned().collect();
+    let unexpected = actual.iter().filter(|site| !expected.contains(site)).cloned().collect();
     SiteCheck {
         expected,
         actual,
@@ -309,20 +287,23 @@ fn site_check(
     }
 }
 
-fn render_site(site: ExpectedSite) -> String {
+fn render_site(site: &ExpectedSite) -> String {
     format!("`{}` → `{}` classified `{}`", site.path, site.next_fn, site.classification)
 }
 
 fn render_report(
     results: &[MarkerResult],
+    manifest: &Path,
     fixture_extra_external_body: bool,
     fixture_site_substitution: bool,
     fixture_classification_substitution: bool,
+    fixture_stale_manifest: bool,
     site_check: &SiteCheck,
 ) -> String {
     let mut out = String::new();
     out.push_str("# Proof-Gap Inventory Report\n\n");
     out.push_str("Source root: `src/`\n\n");
+    out.push_str(&format!("Manifest: `{}`\n\n", manifest.display()));
     if fixture_extra_external_body {
         out.push_str("Fixture: simulated one extra `#[verifier::external_body]` marker.\n\n");
     }
@@ -332,6 +313,9 @@ fn render_report(
     if fixture_classification_substitution {
         out.push_str("Fixture: simulated same-site external-body classification substitution.\n\n");
     }
+    if fixture_stale_manifest {
+        out.push_str("Fixture: simulated stale manifest by removing one expected manifest site.\n\n");
+    }
     out.push_str("## Summary\n\n");
     out.push_str("| marker | expected | actual | status |\n");
     out.push_str("| --- | ---: | ---: | --- |\n");
@@ -340,7 +324,6 @@ fn render_report(
         let status = if actual == result.spec.expected { "ok" } else { "drift" };
         out.push_str(&format!("| `{}` | {} | {} | {} |\n", result.spec.key, result.spec.expected, actual, status));
     }
-
     let site_status = if site_check.missing.is_empty() && site_check.unexpected.is_empty() {
         "ok"
     } else {
@@ -348,14 +331,14 @@ fn render_report(
     };
     out.push_str("\n## External Body Site List and Classifications\n\n");
     out.push_str(&format!("Status: `{site_status}`\n\n"));
-    out.push_str(&format!("Expected sites: {}\n\n", site_check.expected.len()));
-    out.push_str(&format!("Actual sites: {}\n\n", site_check.actual.len()));
+    out.push_str(&format!("Expected sites from manifest: {}\n\n", site_check.expected.len()));
+    out.push_str(&format!("Actual sites from source: {}\n\n", site_check.actual.len()));
     if site_check.missing.is_empty() {
         out.push_str("Missing expected sites: none.\n\n");
     } else {
         out.push_str("Missing expected sites:\n");
         for site in &site_check.missing {
-            out.push_str(&format!("- {}\n", render_site(*site)));
+            out.push_str(&format!("- {}\n", render_site(site)));
         }
         out.push('\n');
     }
@@ -364,11 +347,10 @@ fn render_report(
     } else {
         out.push_str("Unexpected sites:\n");
         for site in &site_check.unexpected {
-            out.push_str(&format!("- {}\n", render_site(*site)));
+            out.push_str(&format!("- {}\n", render_site(site)));
         }
         out.push('\n');
     }
-
     out.push_str("## Hits\n\n");
     for result in results {
         out.push_str(&format!("### `{}`\n\n", result.spec.key));
@@ -389,11 +371,11 @@ fn render_report(
 }
 
 fn run(args: Args) -> Result<bool, String> {
+    let expected_sites = parse_manifest(&args.root, &args.manifest, args.fixture_stale_manifest)?;
     let src = args.root.join("src");
     let mut files = Vec::new();
     collect_rs_files(&src, &mut files).map_err(|err| format!("failed to scan {}: {err}", src.display()))?;
     files.sort();
-
     let mut results = Vec::new();
     for spec in MARKERS.iter().copied() {
         results.push(
@@ -401,17 +383,23 @@ fn run(args: Args) -> Result<bool, String> {
                 .map_err(|err| format!("failed while scanning `{}`: {err}", spec.key))?,
         );
     }
-
     let external_body = results
         .iter()
         .find(|result| result.spec.key == "external_body")
         .ok_or("missing external_body marker spec")?;
-    let sites = site_check(external_body, args.fixture_site_substitution, args.fixture_classification_substitution);
+    let sites = site_check(
+        expected_sites,
+        external_body,
+        args.fixture_site_substitution,
+        args.fixture_classification_substitution,
+    );
     let report = render_report(
         &results,
+        &args.manifest,
         args.fixture_extra_external_body,
         args.fixture_site_substitution,
         args.fixture_classification_substitution,
+        args.fixture_stale_manifest,
         &sites,
     );
     if let Some(path) = args.write_report {
@@ -420,7 +408,6 @@ fn run(args: Args) -> Result<bool, String> {
         }
         fs::write(&path, report.as_bytes()).map_err(|err| format!("failed to write {}: {err}", path.display()))?;
     }
-
     print!("{report}");
     let counts_ok = results
         .iter()

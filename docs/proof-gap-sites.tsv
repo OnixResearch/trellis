@@ -1,0 +1,18 @@
+# verified-logic proof-gap-sites-v1
+# path<TAB>function-signature<TAB>classification
+src/chain.rs	pub fn compute_entry_hash(	permanent-trust-boundary
+src/chain.rs	pub proof fn hash_collision_free(	permanent-trust-boundary
+src/nix_version.rs	pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)	permanent-trust-boundary
+src/snapshot_integrity.rs	pub fn dual_hash(a: u64, b: u64) -> (result: u64)	permanent-trust-boundary
+src/snapshot_integrity.rs	pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)	permanent-trust-boundary
+src/ucan_did.rs	pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)	permanent-trust-boundary
+src/ucan_did.rs	pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)	permanent-trust-boundary
+src/ucan_did.rs	pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)	permanent-trust-boundary
+src/ucan_did.rs	pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)	permanent-trust-boundary
+src/ucan_signature.rs	pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)	permanent-trust-boundary
+src/ucan_signature.rs	pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)	permanent-trust-boundary
+src/ucan_signature.rs	pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)	permanent-trust-boundary
+src/ucan_signature.rs	pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary
+src/ucan_signature.rs	pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary
+src/ucan_signature.rs	pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)	permanent-trust-boundary
+src/web_of_trust_principal.rs	pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)	permanent-trust-boundary

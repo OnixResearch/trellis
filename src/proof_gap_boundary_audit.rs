@@ -19,6 +19,7 @@ pub const INVENTORY_DRIFT_GATE_EXPECTED_EXTERNAL_BODY_COUNT: usize = 16;
 pub const INVENTORY_SITE_LIST_DRIFT_GATE_EXPECTED_SITE_COUNT: usize = 16;
 pub const INVENTORY_CLASSIFICATION_DRIFT_GATE_EXPECTED_SITE_COUNT: usize = 16;
 pub const INVENTORY_CLASSIFICATION_DRIFT_GATE_CLOSEABLE_CANDIDATE_COUNT: usize = 0;
+pub const INVENTORY_SITE_MANIFEST_SOURCE_EXPECTED_SITE_COUNT: usize = 16;
 
 // r[impl verification-gaps.boundary-audit.inventory]
 pub open spec fn proof_gap_inventory_counts_spec() -> (nat, nat, nat, nat, nat) {
@@ -73,6 +74,11 @@ pub open spec fn inventory_classification_drift_gate_expected_classification_spe
     )
 }
 
+// r[impl verification-gaps.inventory-site-manifest-source]
+pub open spec fn inventory_site_manifest_source_expected_site_count_spec() -> nat {
+    INVENTORY_SITE_MANIFEST_SOURCE_EXPECTED_SITE_COUNT as nat
+}
+
 // r[verify verification-gaps.boundary-audit.inventory]
 pub proof fn proof_gap_inventory_counts_current()
     ensures proof_gap_inventory_counts_spec() == (16nat, 0nat, 0nat, 0nat, 0nat)
@@ -112,6 +118,12 @@ pub proof fn proof_gap_inventory_site_list_drift_gate_expected_sites_current()
 // r[verify verification-gaps.inventory-classification-drift-gate]
 pub proof fn proof_gap_inventory_classification_drift_gate_expected_classifications_current()
     ensures inventory_classification_drift_gate_expected_classification_spec() == (16nat, 0nat)
+{
+}
+
+// r[verify verification-gaps.inventory-site-manifest-source]
+pub proof fn proof_gap_inventory_site_manifest_source_expected_sites_current()
+    ensures inventory_site_manifest_source_expected_site_count_spec() == 16nat
 {
 }
 
