@@ -1,7 +1,7 @@
 # composite-primitives Specification
 
 ## Purpose
-TBD - created by archiving change compose-verified-primitives. Update Purpose after archive.
+This specification defines composite verified-logic primitives that combine already-verified lower-level domains into higher-level finite facades. It records each facade's composed dependencies, validity boundary, and exported safety obligations so composite behavior remains traceable to reusable primitive contracts.
 ## Requirements
 ### Requirement: Durable Job Executor [r[composite-primitives.durable-job-executor]]
 

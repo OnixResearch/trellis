@@ -1,7 +1,7 @@
 # domain-primitives Specification
 
 ## Purpose
-TBD - created by archiving change add-raft-consensus-primitives. Update Purpose after archive.
+This specification defines reusable finite domain primitive requirements for protocol, data, scheduling, storage, parsing, numeric, and related verified-logic families. It records the admitted model envelopes, validity boundaries, and scenario-level obligations that implementation slices compose into machine-checked Rust/Verus predicates and proofs.
 ## Requirements
 ### Requirement: Finite Raft Model Envelope [r[domain-primitives.raft-consensus.model]]
 The system MUST define a finite Raft model envelope containing declared node

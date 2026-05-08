@@ -12,10 +12,11 @@ invariants, not bytecode representation or distribution protocol details.
 
 ### Requirement: Process State Monotonicity
 
-r[beam-process.lifecycle]
 A process MUST transition through states `alive → exiting → dead` in
 strictly forward order. No transition from `exiting` back to `alive` or
 from `dead` to any other state is permitted.
+
+r[beam-process.lifecycle]
 
 #### Scenario: Normal exit
 
@@ -31,10 +32,11 @@ from `dead` to any other state is permitted.
 
 ### Requirement: Process Heap Isolation
 
-r[beam-process.isolation]
 Processes with distinct pid identities MUST have logically isolated heaps.
 A mutation to one process's heap MUST NOT be observable by any process with
 another pid. The only inter-process data path is message copying.
+
+r[beam-process.isolation]
 
 #### Scenario: Distinct pids imply distinct heaps
 
@@ -51,10 +53,11 @@ another pid. The only inter-process data path is message copying.
 
 ### Requirement: Mailbox FIFO Ordering
 
-r[beam-mailbox.ordering]
 A process mailbox MUST maintain FIFO ordering of received messages. Messages
 from distinct senders MAY interleave, but messages from the same sender MUST
 appear in send order.
+
+r[beam-mailbox.ordering]
 
 #### Scenario: Same-sender ordering preserved
 
@@ -71,10 +74,11 @@ appear in send order.
 
 ### Requirement: Selective Receive
 
-r[beam-mailbox.selective-receive]
 A `receive` operation MUST scan the mailbox from the current save position
 and return the first message matching any of the supplied patterns. Messages
 that do not match MUST remain in the mailbox in their original order.
+
+r[beam-mailbox.selective-receive]
 
 #### Scenario: First match returned
 
@@ -90,11 +94,12 @@ that do not match MUST remain in the mailbox in their original order.
 
 ### Requirement: Save Offset Cursor
 
-r[beam-mailbox.save-offset]
 Between receive attempts, the mailbox cursor (save offset) MUST be
 maintained so that already-scanned non-matching messages are not re-scanned.
 A successful receive or a new message arrival that resets the cursor MUST
 set it to the appropriate position per BEAM semantics.
+
+r[beam-mailbox.save-offset]
 
 #### Scenario: Cursor advances past non-matches
 
@@ -110,10 +115,11 @@ set it to the appropriate position per BEAM semantics.
 
 ### Requirement: Asynchronous Send Always Succeeds
 
-r[beam-send.async]
 A send operation MUST complete from the sender's perspective without
 blocking, regardless of the recipient's state. The sender never observes
 a send failure due to a full mailbox or dead recipient.
+
+r[beam-send.async]
 
 #### Scenario: Send to live process
 
@@ -129,10 +135,11 @@ a send failure due to a full mailbox or dead recipient.
 
 ### Requirement: Link Symmetry
 
-r[beam-link.symmetry]
 Links MUST be symmetric. If process `A` is linked to process `B`, then `B`
 is linked to `A`. Creating or destroying a link MUST affect both endpoints
 atomically.
+
+r[beam-link.symmetry]
 
 #### Scenario: Link is bidirectional
 
@@ -148,10 +155,11 @@ atomically.
 
 ### Requirement: Exit Signal Propagation Through Links
 
-r[beam-link.propagation]
 When a process dies, it MUST send an exit signal carrying its exit reason to
 every process in its link set. A process receiving an exit signal with reason
 other than `normal` MUST itself begin exiting unless it is trapping exits.
+
+r[beam-link.propagation]
 
 #### Scenario: Abnormal exit cascades
 
@@ -173,10 +181,11 @@ other than `normal` MUST itself begin exiting unless it is trapping exits.
 
 ### Requirement: Trap Exit Converts Signals to Messages
 
-r[beam-link.trap-exit]
 A process with the `trap_exit` flag set MUST convert incoming exit signals
 into `{'EXIT', Pid, Reason}` messages delivered to its mailbox instead of
 triggering its own exit.
+
+r[beam-link.trap-exit]
 
 #### Scenario: Trapped exit becomes message
 
@@ -192,11 +201,12 @@ triggering its own exit.
 
 ### Requirement: Monitor is Unidirectional
 
-r[beam-monitor.unidirectional]
 A monitor MUST be unidirectional from the monitoring process to the monitored
 process. Monitor creation produces watcher-owned monitor state, leaves the
 monitored process state unchanged, and only the monitoring process observes
 any resulting DOWN message.
+
+r[beam-monitor.unidirectional]
 
 #### Scenario: Monitor does not affect monitored process
 
@@ -207,10 +217,11 @@ any resulting DOWN message.
 
 ### Requirement: DOWN Message Delivery
 
-r[beam-monitor.down]
 When a monitored process dies, the monitoring process MUST receive a
 `{'DOWN', Ref, process, Pid, Reason}` message. This delivery MUST occur
 exactly once per monitor reference.
+
+r[beam-monitor.down]
 
 #### Scenario: Monitored process dies
 
@@ -220,9 +231,10 @@ exactly once per monitor reference.
 
 ### Requirement: Late Monitor Delivers noproc
 
-r[beam-monitor.late]
 Creating a monitor for an already-dead process MUST immediately yield a
 `{'DOWN', Ref, process, Pid, noproc}` message.
+
+r[beam-monitor.late]
 
 #### Scenario: Monitor after death
 
@@ -232,11 +244,12 @@ Creating a monitor for an already-dead process MUST immediately yield a
 
 ### Requirement: Demonitor Prevents DOWN
 
-r[beam-monitor.demonitor]
 A successful `demonitor` MUST guarantee that no future DOWN message for that
 monitor reference is delivered. If a DOWN message is already in the
 monitoring process's mailbox, `demonitor` with the `flush` option MUST
 remove it.
+
+r[beam-monitor.demonitor]
 
 #### Scenario: Demonitor before death
 
@@ -252,10 +265,11 @@ remove it.
 
 ### Requirement: Reduction Budget Preemption
 
-r[beam-scheduler.preemption]
 Each process MUST be assigned a reduction budget per scheduling quantum. The
 scheduler MUST preempt the running process when its reduction budget is
 exhausted.
+
+r[beam-scheduler.preemption]
 
 #### Scenario: Budget exhausted causes preemption
 
@@ -271,11 +285,12 @@ exhausted.
 
 ### Requirement: Priority Run Queues
 
-r[beam-scheduler.priority]
 The scheduler MUST maintain separate run queues for priority levels `max`,
 `high`, `normal`, and `low`. Higher-priority queues MUST be drained before
 lower-priority queues receive CPU time, subject to starvation prevention
 for `normal` and `low`.
+
+r[beam-scheduler.priority]
 
 #### Scenario: Max priority runs first
 
@@ -291,9 +306,10 @@ for `normal` and `low`.
 
 ### Requirement: Registry Uniqueness
 
-r[beam-registry.uniqueness]
 The process registry MUST enforce a bijective mapping: each registered name
 maps to at most one pid, and each pid has at most one registered name.
+
+r[beam-registry.uniqueness]
 
 #### Scenario: Register succeeds for unique name
 
@@ -315,9 +331,10 @@ maps to at most one pid, and each pid has at most one registered name.
 
 ### Requirement: Registry Cleanup on Death
 
-r[beam-registry.cleanup]
 When a registered process dies, its registry entry MUST be automatically
 removed. After cleanup, the name is available for re-registration.
+
+r[beam-registry.cleanup]
 
 #### Scenario: Dead process unregistered
 
@@ -325,38 +342,73 @@ removed. After cleanup, the name is available for re-registration.
 - WHEN `P` dies
 - THEN `whereis(N)` returns `undefined`
 
-## Cross-Module Properties
+**Cross-Module Properties**
 
 ### Requirement: Death Propagates Through Links
 
-r[properties.beam-death-links]
 When a process dies, exit delivery through `beam_link` MUST respect the
 link rules for each reached peer: non-trapping alive peers begin exiting on
 abnormal signals, trapping peers receive `EXIT` messages, `kill` bypasses
 `trap_exit`, and peers with no remaining link observe nothing.
 
+r[properties.beam-death-links]
+
+#### Scenario: Linked death applies link rules
+
+- GIVEN a dying process with linked peers in trapping, non-trapping, and unlinked states
+- WHEN exit delivery is evaluated through the link model
+- THEN each peer observes exactly the outcome required by its remaining link and trap-exit state
+
 ### Requirement: Death Triggers Monitor DOWN
 
-r[properties.beam-death-monitor]
 Every active monitor on a dying process MUST produce exactly one DOWN message
 delivered to the monitoring process's `beam_mailbox`.
 
+r[properties.beam-death-monitor]
+
+#### Scenario: Active monitor receives one DOWN
+
+- GIVEN a process has one active monitor from a watcher
+- WHEN the monitored process dies
+- THEN the watcher receives exactly one DOWN message for that monitor reference
+
 ### Requirement: Death Finalizes Mailbox
 
-r[properties.beam-death-mailbox]
 Once a process enters `dead` state, no new messages MUST be added to its
 mailbox. Messages sent to a dead process via `beam_send` MUST be dropped.
 
+r[properties.beam-death-mailbox]
+
+#### Scenario: Dead mailbox rejects later sends
+
+- GIVEN a process has entered the `dead` state
+- WHEN another process sends it a message
+- THEN the message is dropped and the dead process mailbox is unchanged
+
 ### Requirement: Death Cleans Registry
 
-r[properties.beam-death-registry]
 A dying process MUST have its registry entry removed so a fresh
 register-then-cleanup roundtrip restores the prior registry and the same
 name can be registered again without violating `beam_registry` uniqueness.
 
+r[properties.beam-death-registry]
+
+#### Scenario: Death cleanup frees registry name
+
+- GIVEN a registered process dies
+- WHEN registry cleanup runs for that pid
+- THEN the prior name is removed and can be registered again without violating uniqueness
+
 ### Requirement: Scheduler Respects Process State
 
-r[properties.beam-scheduler-state]
 The scheduler MUST only place `alive` processes with pending work on the run
 queue. Processes in `exiting` or `dead` state MUST NOT be scheduled for
 reduction execution.
+
+r[properties.beam-scheduler-state]
+
+#### Scenario: Non-alive processes are not scheduled
+
+- GIVEN processes in `alive`, `exiting`, and `dead` states
+- WHEN the scheduler builds or selects from its run queue
+- THEN only alive processes with pending work are eligible for reduction execution
