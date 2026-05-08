@@ -4,13 +4,20 @@ use std::env;
 use std::ffi::OsStr;
 use std::fs;
 use std::io;
-use std::path::{Path, PathBuf};
+use std::path::Path;
+use std::path::PathBuf;
 
 #[derive(Clone, Copy, Debug)]
 struct MarkerSpec {
     key: &'static str,
     text: &'static str,
     expected: usize,
+}
+
+#[derive(Clone, Copy, Debug, Eq, Ord, PartialEq, PartialOrd)]
+struct ExpectedSite {
+    path: &'static str,
+    next_fn: &'static str,
 }
 
 const MARKERS: &[MarkerSpec] = &[
@@ -41,11 +48,79 @@ const MARKERS: &[MarkerSpec] = &[
     },
 ];
 
+const EXPECTED_EXTERNAL_BODY_SITES: &[ExpectedSite] = &[
+    ExpectedSite {
+        path: "src/chain.rs",
+        next_fn: "pub fn compute_entry_hash(",
+    },
+    ExpectedSite {
+        path: "src/chain.rs",
+        next_fn: "pub proof fn hash_collision_free(",
+    },
+    ExpectedSite {
+        path: "src/nix_version.rs",
+        next_fn: "pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)",
+    },
+    ExpectedSite {
+        path: "src/snapshot_integrity.rs",
+        next_fn: "pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)",
+    },
+    ExpectedSite {
+        path: "src/snapshot_integrity.rs",
+        next_fn: "pub fn dual_hash(a: u64, b: u64) -> (result: u64)",
+    },
+    ExpectedSite {
+        path: "src/ucan_did.rs",
+        next_fn: "pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_did.rs",
+        next_fn: "pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_did.rs",
+        next_fn: "pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_did.rs",
+        next_fn: "pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)",
+    },
+    ExpectedSite {
+        path: "src/ucan_signature.rs",
+        next_fn: "pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)",
+    },
+    ExpectedSite {
+        path: "src/web_of_trust_principal.rs",
+        next_fn: "pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)",
+    },
+];
+
 #[derive(Debug)]
 struct Args {
     root: PathBuf,
     write_report: Option<PathBuf>,
     fixture_extra_external_body: bool,
+    fixture_site_substitution: bool,
 }
 
 #[derive(Debug)]
@@ -62,10 +137,19 @@ struct MarkerResult {
     hits: Vec<Hit>,
 }
 
+#[derive(Debug)]
+struct SiteCheck {
+    expected: Vec<ExpectedSite>,
+    actual: Vec<ExpectedSite>,
+    missing: Vec<ExpectedSite>,
+    unexpected: Vec<ExpectedSite>,
+}
+
 fn parse_args() -> Result<Args, String> {
     let mut root = PathBuf::from(".");
     let mut write_report = None;
     let mut fixture_extra_external_body = false;
+    let mut fixture_site_substitution = false;
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -78,8 +162,11 @@ fn parse_args() -> Result<Args, String> {
                 write_report = Some(PathBuf::from(value));
             }
             "--fixture-extra-external-body" => fixture_extra_external_body = true,
+            "--fixture-site-substitution" => fixture_site_substitution = true,
             "--help" | "-h" => {
-                println!("usage: check-proof-gap-inventory.rs [--root PATH] [--write-report PATH] [--fixture-extra-external-body]");
+                println!(
+                    "usage: check-proof-gap-inventory.rs [--root PATH] [--write-report PATH] [--fixture-extra-external-body] [--fixture-site-substitution]"
+                );
                 std::process::exit(0);
             }
             other => return Err(format!("unknown argument: {other}")),
@@ -89,6 +176,7 @@ fn parse_args() -> Result<Args, String> {
         root,
         write_report,
         fixture_extra_external_body,
+        fixture_site_substitution,
     })
 }
 
@@ -138,12 +226,68 @@ fn scan_marker(root: &Path, files: &[PathBuf], spec: MarkerSpec) -> io::Result<M
     Ok(MarkerResult { spec, hits })
 }
 
-fn render_report(results: &[MarkerResult], fixture_extra_external_body: bool) -> String {
+fn actual_count(result: &MarkerResult, fixture_extra_external_body: bool) -> usize {
+    let fixture_extra = if fixture_extra_external_body && result.spec.key == "external_body" {
+        1
+    } else {
+        0
+    };
+    result.hits.len() + fixture_extra
+}
+
+fn actual_external_body_sites(result: &MarkerResult, fixture_site_substitution: bool) -> Vec<ExpectedSite> {
+    let mut actual = Vec::new();
+    for hit in &result.hits {
+        if let Some(next_fn) = &hit.next_fn {
+            actual.push(ExpectedSite {
+                path: Box::leak(hit.path.display().to_string().into_boxed_str()),
+                next_fn: Box::leak(next_fn.clone().into_boxed_str()),
+            });
+        }
+    }
+    if fixture_site_substitution && !actual.is_empty() {
+        actual.remove(0);
+        actual.push(ExpectedSite {
+            path: "src/simulated_new_boundary.rs",
+            next_fn: "pub fn simulated_new_boundary(",
+        });
+    }
+    actual.sort();
+    actual
+}
+
+fn site_check(result: &MarkerResult, fixture_site_substitution: bool) -> SiteCheck {
+    let mut expected = EXPECTED_EXTERNAL_BODY_SITES.to_vec();
+    expected.sort();
+    let actual = actual_external_body_sites(result, fixture_site_substitution);
+    let missing = expected.iter().copied().filter(|site| !actual.contains(site)).collect();
+    let unexpected = actual.iter().copied().filter(|site| !expected.contains(site)).collect();
+    SiteCheck {
+        expected,
+        actual,
+        missing,
+        unexpected,
+    }
+}
+
+fn render_site(site: ExpectedSite) -> String {
+    format!("`{}` → `{}`", site.path, site.next_fn)
+}
+
+fn render_report(
+    results: &[MarkerResult],
+    fixture_extra_external_body: bool,
+    fixture_site_substitution: bool,
+    site_check: &SiteCheck,
+) -> String {
     let mut out = String::new();
     out.push_str("# Proof-Gap Inventory Report\n\n");
     out.push_str("Source root: `src/`\n\n");
     if fixture_extra_external_body {
         out.push_str("Fixture: simulated one extra `#[verifier::external_body]` marker.\n\n");
+    }
+    if fixture_site_substitution {
+        out.push_str("Fixture: simulated same-count external-body site substitution.\n\n");
     }
     out.push_str("## Summary\n\n");
     out.push_str("| marker | expected | actual | status |\n");
@@ -151,22 +295,45 @@ fn render_report(results: &[MarkerResult], fixture_extra_external_body: bool) ->
     for result in results {
         let actual = actual_count(result, fixture_extra_external_body);
         let status = if actual == result.spec.expected { "ok" } else { "drift" };
-        out.push_str(&format!(
-            "| `{}` | {} | {} | {} |\n",
-            result.spec.key, result.spec.expected, actual, status
-        ));
+        out.push_str(&format!("| `{}` | {} | {} | {} |\n", result.spec.key, result.spec.expected, actual, status));
     }
-    out.push_str("\n## Hits\n\n");
+
+    let site_status = if site_check.missing.is_empty() && site_check.unexpected.is_empty() {
+        "ok"
+    } else {
+        "drift"
+    };
+    out.push_str("\n## External Body Site List\n\n");
+    out.push_str(&format!("Status: `{site_status}`\n\n"));
+    out.push_str(&format!("Expected sites: {}\n\n", site_check.expected.len()));
+    out.push_str(&format!("Actual sites: {}\n\n", site_check.actual.len()));
+    if site_check.missing.is_empty() {
+        out.push_str("Missing expected sites: none.\n\n");
+    } else {
+        out.push_str("Missing expected sites:\n");
+        for site in &site_check.missing {
+            out.push_str(&format!("- {}\n", render_site(*site)));
+        }
+        out.push('\n');
+    }
+    if site_check.unexpected.is_empty() {
+        out.push_str("Unexpected sites: none.\n\n");
+    } else {
+        out.push_str("Unexpected sites:\n");
+        for site in &site_check.unexpected {
+            out.push_str(&format!("- {}\n", render_site(*site)));
+        }
+        out.push('\n');
+    }
+
+    out.push_str("## Hits\n\n");
     for result in results {
         out.push_str(&format!("### `{}`\n\n", result.spec.key));
         if result.hits.is_empty() {
             out.push_str("No hits.\n\n");
         } else {
             for hit in &result.hits {
-                out.push_str(&format!(
-                    "- `{}:{}` `{}`",
-                    hit.path.display(), hit.line, hit.line_text
-                ));
+                out.push_str(&format!("- `{}:{}` `{}`", hit.path.display(), hit.line, hit.line_text));
                 if let Some(next_fn) = &hit.next_fn {
                     out.push_str(&format!(" → `{next_fn}`"));
                 }
@@ -178,20 +345,10 @@ fn render_report(results: &[MarkerResult], fixture_extra_external_body: bool) ->
     out
 }
 
-fn actual_count(result: &MarkerResult, fixture_extra_external_body: bool) -> usize {
-    let fixture_extra = if fixture_extra_external_body && result.spec.key == "external_body" {
-        1
-    } else {
-        0
-    };
-    result.hits.len() + fixture_extra
-}
-
 fn run(args: Args) -> Result<bool, String> {
     let src = args.root.join("src");
     let mut files = Vec::new();
-    collect_rs_files(&src, &mut files)
-        .map_err(|err| format!("failed to scan {}: {err}", src.display()))?;
+    collect_rs_files(&src, &mut files).map_err(|err| format!("failed to scan {}: {err}", src.display()))?;
     files.sort();
 
     let mut results = Vec::new();
@@ -202,21 +359,25 @@ fn run(args: Args) -> Result<bool, String> {
         );
     }
 
-    let report = render_report(&results, args.fixture_extra_external_body);
+    let external_body = results
+        .iter()
+        .find(|result| result.spec.key == "external_body")
+        .ok_or("missing external_body marker spec")?;
+    let sites = site_check(external_body, args.fixture_site_substitution);
+    let report = render_report(&results, args.fixture_extra_external_body, args.fixture_site_substitution, &sites);
     if let Some(path) = args.write_report {
         if let Some(parent) = path.parent() {
-            fs::create_dir_all(parent)
-                .map_err(|err| format!("failed to create {}: {err}", parent.display()))?;
+            fs::create_dir_all(parent).map_err(|err| format!("failed to create {}: {err}", parent.display()))?;
         }
-        fs::write(&path, report.as_bytes())
-            .map_err(|err| format!("failed to write {}: {err}", path.display()))?;
+        fs::write(&path, report.as_bytes()).map_err(|err| format!("failed to write {}: {err}", path.display()))?;
     }
 
     print!("{report}");
-    let ok = results
+    let counts_ok = results
         .iter()
         .all(|result| actual_count(result, args.fixture_extra_external_body) == result.spec.expected);
-    Ok(ok)
+    let sites_ok = sites.missing.is_empty() && sites.unexpected.is_empty();
+    Ok(counts_ok && sites_ok)
 }
 
 fn main() {
