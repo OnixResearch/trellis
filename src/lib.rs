@@ -567,6 +567,7 @@ pub mod graph_adjacency;
 pub mod graph_color;
 pub mod graph_component_partition;
 pub mod graph_frontier_cut;
+pub mod graph_query_composition;
 pub mod graph_reachability;
 pub mod graph_shortest_path_envelope;
 pub mod graph_topological_order;
