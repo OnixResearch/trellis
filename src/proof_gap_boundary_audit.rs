@@ -15,6 +15,7 @@ pub const CURRENT_NO_ENSURES_COUNT: usize = 0;
 pub const CURRENT_RUNTIME_EXEMPT_COUNT: usize = 0;
 pub const CURRENT_ASSUME_CALL_COUNT: usize = 0;
 pub const SELECTED_CLOSEABLE_BOUNDARY_COUNT: usize = 0;
+pub const INVENTORY_DRIFT_GATE_EXPECTED_EXTERNAL_BODY_COUNT: usize = 16;
 
 // r[impl verification-gaps.boundary-audit.inventory]
 pub open spec fn proof_gap_inventory_counts_spec() -> (nat, nat, nat, nat, nat) {
@@ -45,6 +46,17 @@ pub open spec fn published_inventory_count_spec() -> nat {
     CURRENT_EXTERNAL_BODY_COUNT as nat
 }
 
+// r[impl verification-gaps.inventory-drift-gate]
+pub open spec fn inventory_drift_gate_expected_counts_spec() -> (nat, nat, nat, nat, nat) {
+    (
+        INVENTORY_DRIFT_GATE_EXPECTED_EXTERNAL_BODY_COUNT as nat,
+        CURRENT_ASSUME_SPECIFICATION_COUNT as nat,
+        CURRENT_NO_ENSURES_COUNT as nat,
+        CURRENT_RUNTIME_EXEMPT_COUNT as nat,
+        CURRENT_ASSUME_CALL_COUNT as nat,
+    )
+}
+
 // r[verify verification-gaps.boundary-audit.inventory]
 pub proof fn proof_gap_inventory_counts_current()
     ensures proof_gap_inventory_counts_spec() == (16nat, 0nat, 0nat, 0nat, 0nat)
@@ -66,6 +78,12 @@ pub proof fn proof_gap_closeout_slice_introduces_no_replacement_markers()
 // r[verify verification-gaps.boundary-audit.inventory-sync]
 pub proof fn proof_gap_published_inventory_count_current()
     ensures published_inventory_count_spec() == 16nat
+{
+}
+
+// r[verify verification-gaps.inventory-drift-gate]
+pub proof fn proof_gap_inventory_drift_gate_expected_counts_current()
+    ensures inventory_drift_gate_expected_counts_spec() == (16nat, 0nat, 0nat, 0nat, 0nat)
 {
 }
 

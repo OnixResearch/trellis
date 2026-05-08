@@ -22,6 +22,15 @@ else
 fi
 echo ""
 
+echo "=== Proof-gap inventory drift ==="
+if ./scripts/check-proof-gap-inventory.rs; then
+    echo "✓ proof-gap inventory matches expected counts"
+else
+    echo "✗ proof-gap inventory drift detected"
+    FAIL=1
+fi
+echo ""
+
 echo "=== Clippy ==="
 if cargo clippy --all-targets -- -D warnings; then
     echo "✓ clippy clean"

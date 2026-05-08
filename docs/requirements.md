@@ -11333,3 +11333,6 @@ The system MUST drain at most one selected closeable boundary family per proof-g
 
 r[verification-gaps.boundary-audit.inventory-sync]
 The system MUST synchronize README, requirements, and canonical OpenSpec proof-gap totals from source-derived count evidence whenever the trusted-boundary inventory changes.
+
+r[verification-gaps.inventory-drift-gate]
+The system MUST provide a Rust-script inventory gate that scans source files for trusted or weakened proof-gap markers and fails when live counts drift from the published expected inventory. The gate MUST report the current 16 `#[verifier::external_body]` sites and zero `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and `@verified-logic:exempt` markers, and it MUST be included in `./scripts/verify.sh` before later verification stages claim success.
