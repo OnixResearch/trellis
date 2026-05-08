@@ -590,6 +590,7 @@ pub mod id_lookup_result;
 pub mod id_namespace_scope;
 pub mod id_registration_admission;
 pub mod id_scoped_uniqueness;
+pub mod index_query_pagination;
 pub mod index_select;
 pub mod install_snapshot;
 pub mod instruction_selection;

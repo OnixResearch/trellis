@@ -549,3 +549,27 @@ The system MUST provide bounded composite receipt and evidence-envelope semantic
 - GIVEN a graph-query or table result witness embedded in a receipt envelope
 - WHEN receipt admission succeeds
 - THEN the accepted receipt implies the underlying finite query/table witness predicates
+### Requirement: Index Query Pagination Semantics [r[composite-primitives.index-query-pagination]]
+
+The system MUST provide bounded index/query pagination semantics where accepted result pages are scan-equivalent for their finite windows, continuation cursors advance monotonically, and repeated pages cannot introduce duplicates outside the checked finite model.
+
+- **Validity boundary:** page windows, cursor bounds, storage page ranges, lookup admission, table admission, graph-query result facades, and index-scan equivalence are checked as finite predicates.
+- **Non-claims:** no database execution engine behavior, external query-language conformance, storage-layout/performance guarantee, or unbounded result-stream semantics.
+
+#### Scenario: First page matches bounded scan [r[composite-primitives.index-query-pagination.scenario.first-page-matches-bounded-scan]]
+
+- GIVEN an admitted query model and a finite page limit
+- WHEN the first page is accepted from an index-backed result
+- THEN every row in the page is admitted by the corresponding finite scan/window predicate
+
+#### Scenario: Continuation cursor advances [r[composite-primitives.index-query-pagination.scenario.continuation-cursor-advances]]
+
+- GIVEN an accepted page with a continuation cursor
+- WHEN the next page is evaluated from that cursor
+- THEN the cursor position advances monotonically and previously emitted rows are not re-emitted
+
+#### Scenario: Invalid cursor is rejected [r[composite-primitives.index-query-pagination.scenario.invalid-cursor-is-rejected]]
+
+- GIVEN a cursor outside the finite result envelope or inconsistent with the query model
+- WHEN pagination admission is evaluated
+- THEN the page is rejected
