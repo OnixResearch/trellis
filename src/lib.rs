@@ -741,6 +741,7 @@ pub mod priority_election;
 pub mod priority_inversion;
 pub mod probability_statistics;
 pub mod process_state;
+pub mod proof_gap_boundary_audit;
 pub mod properties;
 pub mod query_cost;
 pub mod quorum;

@@ -2,78 +2,107 @@
 
 ## Purpose
 
-This change closes one closeable proof boundary by internalizing
-`src/ucan_did.rs::varint_decode`. It also requires the published proof-gap
-inventory to stay source-derived and non-double-counted after the boundary is
-removed.
+This specification tracks source-derived proof-gap and trusted-boundary inventory requirements. It preserves the closed UCAN DID varint boundary requirement and records the current audit policy for remaining trusted cryptographic, codec, runtime, and solver-limit bridges.
 
 ## Requirements
 
 ### Requirement: UCAN DID Varint Decode Boundary Is Closed
 
+`src/ucan_did.rs::varint_decode` MUST no longer be a trusted or weakened proof boundary. The implementation MUST remove its `#[verifier::external_body]` attribute and MUST NOT replace it with `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, or a runtime-only `@verified-logic:exempt` marker.
+
 r[verification-gaps.close-ucan-did-varint-decode]
-`src/ucan_did.rs::varint_decode` MUST no longer be a trusted or weakened proof
-boundary. The implementation MUST remove its `#[verifier::external_body]`
-attribute and MUST NOT replace it with `assume(...)`,
-`assume_specification[...]`, `@verified-logic:no-ensures`, or a runtime-only
-`@verified-logic:exempt` marker.
 
 #### Scenario: Source audit finds no trusted varint decoder bridge
 
 - GIVEN the implementation is complete
 - WHEN `src/ucan_did.rs` is audited around `varint_decode`
-- THEN `varint_decode` has a normal verified postcondition tying the result to
-  `varint_decode_spec`
+- THEN `varint_decode` has a normal verified postcondition tying the result to `varint_decode_spec`
 - AND no trusted or exempt marker appears on that function
 
 #### Scenario: Decoder helper path has no replacement trust
 
 - GIVEN the implementation is complete
-- WHEN the `src/ucan_did.rs` decoder helper path is audited, including
-  `varint_decode`, bounded decode helpers, and bounded decode lemmas
-- THEN none of those items uses `#[verifier::external_body]`, `assume(...)`,
-  `assume_specification[...]`, `@verified-logic:no-ensures`, or
-  `@verified-logic:exempt`
+- WHEN the `src/ucan_did.rs` decoder helper path is audited, including `varint_decode`, bounded decode helpers, and bounded decode lemmas
+- THEN none of those items uses `#[verifier::external_body]`, `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, or `@verified-logic:exempt`
 
 #### Scenario: Verus proves the decoder
 
 - GIVEN the implementation is complete
-- WHEN `./scripts/verus.sh src/ucan_did.rs` and `./scripts/verus.sh src/lib.rs`
-  run
+- WHEN `./scripts/verus.sh src/ucan_did.rs` and `./scripts/verus.sh src/lib.rs` run
 - THEN both verifier runs pass without a `varint_decode` external body
 
 ### Requirement: Proof-Gap Inventory Reflects The Closed Boundary
 
+The repo-wide verification-gap inventory MUST remove the closeable row for `src/ucan_did.rs::varint_decode` and update all source-derived published totals. With the UCAN attenuation-chain checker, ability-subsumption checker, principal-link DID extraction bridge, SSA runtime-helper wrappers, instruction-selection public API surfaces, equal-input hash determinism / SHA-256 width facts, recursive `cv_fuel` proof lemmas, log-matching leader-append preservation lemmas, CID multibase round-trip bridge, and web-of-trust attestation/revocation signature-input checks verified, the current expected inventory is `16` total trusted/weakened/runtime-only boundaries: `16` `#[verifier::external_body]` sites, `0` `assume_specification[...]` bridges, and `0` instruction-selection runtime-only exemptions. No `@verified-logic:no-ensures` markers remain.
+
 r[verification-gaps.inventory-after-ucan-did-varint]
-The repo-wide verification-gap inventory MUST remove the closeable row for
-`src/ucan_did.rs::varint_decode` and update all source-derived published totals.
-With the UCAN attenuation-chain checker, ability-subsumption checker,
-principal-link DID extraction bridge, SSA runtime-helper wrappers, and the
-instruction-selection public API surfaces also directly covered, and the
-equal-input hash determinism / SHA-256 width facts, recursive `cv_fuel`
-proof lemmas, log-matching leader-append preservation lemmas, and the CID
-multibase round-trip bridge internalized through the shared DID base58btc model,
-and web-of-trust attestation/revocation signature-input checks verified from
-canonical bytes, the current expected inventory is `16` total
-trusted/weakened/runtime-only boundaries: `16`
-`#[verifier::external_body]` sites, `0` `assume_specification[...]` bridges, and
-`0` instruction-selection runtime-only exemptions. No
-`@verified-logic:no-ensures` markers remain.
 
 #### Scenario: Counts are derived from source
 
 - GIVEN the implementation is complete
-- WHEN the count evidence runs `rg` audits for `external_body`,
-  `assume_specification[...]`, `@verified-logic:no-ensures`, and
-  instruction-selection runtime-only exemptions
-- THEN `README.md`, `openspec/specs/verification-gaps/spec.md`, and captured
-  evidence publish the same non-double-counted total
+- WHEN the count evidence runs `rg` audits for `external_body`, `assume_specification[...]`, `@verified-logic:no-ensures`, and instruction-selection runtime-only exemptions
+- THEN `README.md`, `openspec/specs/verification-gaps/spec.md`, and captured evidence publish the same non-double-counted total
 - AND the evidence lists any overlapping category sites as non-additive
 
 #### Scenario: Tracey coverage stays green
 
-- GIVEN `docs/requirements.md` and code annotations are updated for this change
-  with the new or clarified `r[...]` IDs
-- WHEN `tracey query status` starts or confirms the daemon and then
-  `tracey query uncovered` and `tracey query untested` run sequentially
+- GIVEN `docs/requirements.md` and code annotations are updated for this change with the new or clarified `r[...]` IDs
+- WHEN `tracey query status` starts or confirms the daemon and then `tracey query uncovered` and `tracey query untested` run sequentially
 - THEN both coverage queries report zero missing coverage items
+
+### Requirement: Source-Derived Proof-Gap Boundary Inventory
+
+The system MUST maintain a source-derived inventory of remaining trusted or weakened proof boundaries before any proof-gap closeout attempt updates published counts.
+
+r[verification-gaps.boundary-audit.inventory]
+
+#### Scenario: Inventory lists every trusted boundary
+
+- GIVEN the audit command scans `src/` for `#[verifier::external_body]`
+- WHEN proof-gap inventory evidence is captured
+- THEN the evidence lists every matching file, function, and total count
+- AND it separately reports counts for `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and runtime-only exemption markers
+
+### Requirement: Permanent And Closeable Boundary Classification
+
+The system MUST classify each remaining proof boundary as permanent trust or a closeable structural candidate before implementation work removes, rewrites, or re-counts the boundary.
+
+r[verification-gaps.boundary-audit.classification]
+
+#### Scenario: Cryptographic runtime trust is not overclaimed
+
+- GIVEN a boundary represents runtime cryptography, digest implementation behavior, codec correctness, or collision resistance
+- WHEN the boundary is classified
+- THEN the classification records it as permanent trust unless a concrete structural wrapper proof is scoped without claiming cryptographic strength
+
+#### Scenario: Structural candidates include proof plan
+
+- GIVEN a boundary is classified as closeable
+- WHEN implementation begins
+- THEN the audit records the finite structural property to prove, the touched module, and the focused Verus/Tracey evidence required for closure
+
+### Requirement: Bounded Closeout Slice
+
+The system MUST drain at most one selected closeable boundary family per proof-gap audit closeout slice, and MUST NOT introduce `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, runtime-only exemption markers, or new `#[verifier::external_body]` sites as replacements.
+
+r[verification-gaps.boundary-audit.closeout-slice]
+
+#### Scenario: Failed closeout is reclassified rather than hidden
+
+- GIVEN the selected closeable boundary cannot be closed with a focused proof
+- WHEN the closeout attempt is abandoned
+- THEN the change records the blocker and classification update
+- AND no replacement weakened marker is added
+
+### Requirement: Published Inventory Synchronization
+
+The system MUST synchronize README, requirements, and canonical OpenSpec proof-gap totals from source-derived count evidence whenever the trusted-boundary inventory changes.
+
+r[verification-gaps.boundary-audit.inventory-sync]
+
+#### Scenario: Published counts match source audit
+
+- GIVEN a closeout changes the number of trusted or weakened proof boundaries
+- WHEN the change is verified
+- THEN README, `docs/requirements.md`, `openspec/specs/verification-gaps/spec.md`, and captured evidence report the same non-double-counted totals
+- AND Tracey uncovered and untested queries remain green

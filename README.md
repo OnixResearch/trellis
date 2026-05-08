@@ -10,7 +10,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**8730 Verus proofs · 4296 tests · 1772 requirements · 395 modules · 16 trusted/proof-gap boundaries**
+**9811 Verus proofs · 4535 tests · 1870 requirements · 396 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -474,7 +474,7 @@ runtime cost from specs, proofs, requires, or ensures.
 ```bash
 nix develop                # enter devshell
 cargo check                # compile (ghost code erased)
-cargo test                 # 4165 tests (unit + property + doc)
+cargo test                 # 4522 unit/property + 13 doc tests
 cargo clippy --all-targets -- -D warnings
 ```
 

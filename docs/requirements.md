@@ -11321,3 +11321,15 @@ The system MUST expose a composite graph-query result facade whose accepted resu
 - GIVEN a graph-query result with pattern witnesses, bindings, optional path witnesses, optional index evidence, and optional serialized envelope metadata
 - WHEN the result facade accepts the result
 - THEN every exported result row is backed by the corresponding finite primitive witnesses and no rejected predicate is bypassed
+
+r[verification-gaps.boundary-audit.inventory]
+The system MUST maintain a source-derived inventory of remaining trusted or weakened proof boundaries before any proof-gap closeout attempt updates published counts. Inventory evidence MUST list every `#[verifier::external_body]` site and separately report `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and runtime-only exemption counts.
+
+r[verification-gaps.boundary-audit.classification]
+The system MUST classify each remaining proof boundary as permanent trust or a closeable structural candidate before implementation work removes, rewrites, or re-counts the boundary. Cryptographic runtime trust, digest implementation behavior, codec correctness, and collision resistance MUST NOT be overclaimed as verified unless a concrete structural wrapper proof is scoped separately.
+
+r[verification-gaps.boundary-audit.closeout-slice]
+The system MUST drain at most one selected closeable boundary family per proof-gap audit closeout slice, and MUST NOT introduce `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, runtime-only exemption markers, or new `#[verifier::external_body]` sites as replacements. If no safe closeable candidate exists, the audit MUST record that decision and preserve source-derived counts.
+
+r[verification-gaps.boundary-audit.inventory-sync]
+The system MUST synchronize README, requirements, and canonical OpenSpec proof-gap totals from source-derived count evidence whenever the trusted-boundary inventory changes.
