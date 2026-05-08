@@ -1,0 +1,10 @@
+=== Proof-gap inventory drift ===
+✓ proof-gap inventory matches expected counts, sites, and classifications
+test result: ok. 4529 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.33s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 55.08s
+verification results:: 9847 verified, 0 errors
+verified-logic/rust: 0 uncovered out of 1873 rules
+✓ no uncovered requirements
+verified-logic/rust: 0 untested (impl but no verify) out of 1873 rules
+✓ no untested requirements
+=== ALL CHECKS PASSED ===

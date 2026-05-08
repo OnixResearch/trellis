@@ -24,7 +24,7 @@ echo ""
 
 echo "=== Proof-gap inventory drift ==="
 if ./scripts/check-proof-gap-inventory.rs; then
-    echo "✓ proof-gap inventory matches expected counts and sites"
+    echo "✓ proof-gap inventory matches expected counts, sites, and classifications"
 else
     echo "✗ proof-gap inventory drift detected"
     FAIL=1
