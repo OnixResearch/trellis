@@ -31,6 +31,15 @@ else
 fi
 echo ""
 
+echo "=== Aspen evidence index drift ==="
+if ./scripts/check-aspen-evidence-index.rs; then
+    echo "✓ Aspen evidence index matches recorded source commits and blobs"
+else
+    echo "✗ Aspen evidence index drift detected"
+    FAIL=1
+fi
+echo ""
+
 echo "=== Clippy ==="
 if cargo clippy --all-targets -- -D warnings; then
     echo "✓ clippy clean"
