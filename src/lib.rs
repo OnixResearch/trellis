@@ -44,6 +44,8 @@
 //! - `consistent_snapshot` — consistent cuts with lattice operations (join/meet) and message
 //!   consistency
 //! - `containment` — delegation containment: scope + mode + subsumption
+//! - `ability_effect` — finite ability requirement admission, handler discharge, and sandbox
+//!   attenuation
 //! - `content_addressed_code` — finite content-addressed definition identity, dependency closure,
 //!   and recursive group admission
 //! - `consistent_hash` — consistent hash ring with complete coverage
@@ -364,6 +366,7 @@
 //! - `coalesce_policy` — immediate vs deferred coalescing: convergence, total preservation
 //! - `fragmentation` — fragmentation metrics: external/internal bounds, can-satisfy
 
+pub mod ability_effect;
 pub mod access_mode;
 pub mod acid;
 pub mod algebraic;
