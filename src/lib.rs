@@ -47,6 +47,7 @@
 //! - `ability_effect` — finite ability requirement admission, handler discharge, and sandbox
 //!   attenuation
 //! - `typed_durable_reference` — finite typed durable reference, unpersist, and migration admission
+//! - `remote_computation` — finite remote computation dependency, ability, and resource admission
 //! - `content_addressed_code` — finite content-addressed definition identity, dependency closure,
 //!   and recursive group admission
 //! - `consistent_hash` — consistent hash ring with complete coverage
@@ -413,6 +414,7 @@ pub mod consistent_hash;
 pub mod consistent_snapshot;
 pub mod containment;
 pub mod content_addressed_code;
+pub mod remote_computation;
 pub mod typed_durable_reference;
 
 pub mod alloc_bitmap;

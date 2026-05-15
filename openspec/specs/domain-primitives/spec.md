@@ -3473,6 +3473,69 @@ The system MUST define schema/type migration admission as an explicit conversion
 - WHEN no conversion witness is declared
 - THEN migration admission rejects the request
 
+### Requirement: Remote Computation Envelope [r[domain-primitives.remote-computation.envelope]]
+The system MUST define finite remote computation envelopes containing computation identity, dependency-closure requirements, ability requirement sets, target node identity, and declared resource bounds, and MUST reject unknown targets or malformed bounds without claiming real network transport or execution.
+
+#### Scenario: Well-formed envelope is admitted
+
+- GIVEN a remote computation envelope whose computation, target node, dependency set, ability set, and resource bounds are all declared in the finite model
+- WHEN envelope admission is evaluated
+- THEN the envelope is admitted
+
+#### Scenario: Unknown target node is rejected
+
+- GIVEN a remote computation envelope targeting a node absent from the finite node set
+- WHEN envelope admission is evaluated
+- THEN the envelope is rejected with unknown-target metadata
+
+#### Scenario: Malformed resource bounds are rejected
+
+- GIVEN a remote computation envelope with zero declared memory or step bounds
+- WHEN envelope admission is evaluated
+- THEN the envelope is rejected with malformed-bound metadata
+
+### Requirement: Remote Dependency Availability Admission [r[domain-primitives.remote-computation.dependency-availability]]
+The system MUST define remote dependency availability admission that accepts a computation only when every dependency hash is already present on the target node or is declared fetchable, and MUST deterministically report ready, fetch-pending, or rejected state with the first missing dependency hash.
+
+#### Scenario: Present closure admits dependency availability
+
+- GIVEN a target node whose cache contains every dependency hash required by the computation
+- WHEN dependency availability is evaluated
+- THEN the computation is admitted as dependency-ready
+
+#### Scenario: Fetchable missing dependency is pending
+
+- GIVEN a required dependency hash absent from the target node but declared fetchable from the source
+- WHEN dependency availability is evaluated
+- THEN the computation is admitted only as fetch-pending with the missing dependency metadata
+
+#### Scenario: Unfetchable missing dependency is rejected
+
+- GIVEN a required dependency hash absent from the target node and not declared fetchable
+- WHEN dependency availability is evaluated
+- THEN remote admission rejects the computation with unfetchable-dependency metadata
+
+### Requirement: Remote Ability And Resource Admission [r[domain-primitives.remote-computation.ability-resource]]
+The system MUST define remote ability and resource admission where a target node may run a computation only when dependencies are ready, the sandbox-provided abilities cover the computation's required abilities, and declared resource bounds fit within the target's finite resource limits.
+
+#### Scenario: Ability and resource bounds admit execution eligibility
+
+- GIVEN a computation whose dependencies are ready, required abilities are provided by the target sandbox, and declared resource bounds fit the target limits
+- WHEN remote execution eligibility is evaluated
+- THEN the computation is admitted as eligible in the finite model
+
+#### Scenario: Missing remote ability rejects execution eligibility
+
+- GIVEN a computation requiring `Remote` or `IO`
+- WHEN the target sandbox does not provide that ability
+- THEN remote execution eligibility rejects the computation with missing-ability metadata
+
+#### Scenario: Resource bound overflow rejects execution eligibility
+
+- GIVEN a computation declaring memory or step bounds above the target's finite limits
+- WHEN remote execution eligibility is evaluated
+- THEN the computation is rejected with resource-bound metadata
+
 ## GPU Programming Primitives
 
 r[gpu.block-dim]
