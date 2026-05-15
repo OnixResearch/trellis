@@ -406,6 +406,176 @@ pub proof fn valid_gpu_tile_projection_is_admitted(b: GpuPitchedBuffer, tile: Gp
     ensures gpu_tile_projection_spec(b, tile)
 {}
 
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuElementwiseProgram {
+    pub elements: u64,
+    pub threads: u16,
+    pub elements_per_thread: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuGridStrideLoop {
+    pub len: u64,
+    pub start: u64,
+    pub stride: u16,
+    pub iterations: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuTiledKernel2D {
+    pub width: u16,
+    pub height: u16,
+    pub tile_width: u16,
+    pub tile_height: u16,
+    pub grid_x: u16,
+    pub grid_y: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuBlockReductionProgram {
+    pub input_len: u64,
+    pub block_threads: u16,
+    pub elements_per_thread: u16,
+    pub blocks: u16,
+    pub element_bytes: u16,
+    pub shared_capacity_bytes: u64,
+}
+
+// r[depends gpu.elementwise-program]
+pub open spec fn gpu_elementwise_program_capacity_spec(p: GpuElementwiseProgram) -> nat {
+    (p.threads as nat) * (p.elements_per_thread as nat)
+}
+
+// r[depends gpu.elementwise-program]
+pub open spec fn gpu_elementwise_program_spec(p: GpuElementwiseProgram) -> bool {
+    p.elements > 0 && p.threads > 0 && p.elements_per_thread > 0
+        && p.elements as nat <= gpu_elementwise_program_capacity_spec(p)
+}
+
+// r[impl gpu.elementwise-program]
+pub fn gpu_elementwise_program_valid(p: GpuElementwiseProgram) -> (result: bool)
+    ensures result == gpu_elementwise_program_spec(p)
+{
+    assert((p.threads as u64) * (p.elements_per_thread as u64) <= u64::MAX) by(nonlinear_arith);
+    p.elements > 0
+        && p.threads > 0
+        && p.elements_per_thread > 0
+        && p.elements <= (p.threads as u64) * (p.elements_per_thread as u64)
+}
+
+// r[verify gpu.elementwise-program]
+pub proof fn valid_gpu_elementwise_program_covers_elements(p: GpuElementwiseProgram)
+    requires gpu_elementwise_program_spec(p)
+    ensures p.elements as nat <= gpu_elementwise_program_capacity_spec(p)
+{}
+
+// r[depends gpu.grid-stride-loop]
+pub open spec fn gpu_grid_stride_last_index_spec(l: GpuGridStrideLoop) -> int {
+    (l.start as int) + ((l.iterations as int) - 1int) * (l.stride as int)
+}
+
+// r[depends gpu.grid-stride-loop]
+pub open spec fn gpu_grid_stride_loop_spec(l: GpuGridStrideLoop) -> bool {
+    l.len > 0 && l.stride > 0 && l.iterations > 0 && l.start < l.len
+        && gpu_grid_stride_last_index_spec(l) < l.len as int
+}
+
+// r[impl gpu.grid-stride-loop]
+pub fn gpu_grid_stride_loop_valid(l: GpuGridStrideLoop) -> (result: bool)
+    ensures result == gpu_grid_stride_loop_spec(l)
+{
+    if !(l.len > 0 && l.stride > 0 && l.iterations > 0 && l.start < l.len) {
+        false
+    } else {
+        assert(((l.iterations as u64) - 1u64) * (l.stride as u64) <= u64::MAX) by(nonlinear_arith);
+        ((l.iterations as u64) - 1u64) * (l.stride as u64) <= (l.len - 1u64) - l.start
+    }
+}
+
+// r[verify gpu.grid-stride-loop]
+pub proof fn valid_gpu_grid_stride_loop_stays_in_bounds(l: GpuGridStrideLoop)
+    requires gpu_grid_stride_loop_spec(l)
+    ensures gpu_grid_stride_last_index_spec(l) < l.len as int
+{}
+
+// r[depends gpu.tiled-kernel2d]
+pub open spec fn gpu_tiled_kernel2d_covers_spec(k: GpuTiledKernel2D) -> bool {
+    (k.grid_x as nat) * (k.tile_width as nat) >= k.width as nat
+        && (k.grid_y as nat) * (k.tile_height as nat) >= k.height as nat
+}
+
+// r[depends gpu.tiled-kernel2d]
+pub open spec fn gpu_tiled_kernel2d_spec(k: GpuTiledKernel2D) -> bool {
+    k.width > 0 && k.height > 0 && k.tile_width > 0 && k.tile_height > 0
+        && k.grid_x > 0 && k.grid_y > 0 && gpu_tiled_kernel2d_covers_spec(k)
+}
+
+// r[impl gpu.tiled-kernel2d]
+pub fn gpu_tiled_kernel2d_valid(k: GpuTiledKernel2D) -> (result: bool)
+    ensures result == gpu_tiled_kernel2d_spec(k)
+{
+    assert((k.grid_x as u64) * (k.tile_width as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((k.grid_y as u64) * (k.tile_height as u64) <= u64::MAX) by(nonlinear_arith);
+    k.width > 0
+        && k.height > 0
+        && k.tile_width > 0
+        && k.tile_height > 0
+        && k.grid_x > 0
+        && k.grid_y > 0
+        && (k.grid_x as u64) * (k.tile_width as u64) >= k.width as u64
+        && (k.grid_y as u64) * (k.tile_height as u64) >= k.height as u64
+}
+
+// r[verify gpu.tiled-kernel2d]
+pub proof fn valid_gpu_tiled_kernel2d_covers_output(k: GpuTiledKernel2D)
+    requires gpu_tiled_kernel2d_spec(k)
+    ensures gpu_tiled_kernel2d_covers_spec(k)
+{}
+
+// r[depends gpu.block-reduction-program]
+pub open spec fn gpu_block_reduction_capacity_spec(p: GpuBlockReductionProgram) -> nat {
+    (p.block_threads as nat) * (p.elements_per_thread as nat) * (p.blocks as nat)
+}
+
+// r[depends gpu.block-reduction-program]
+pub open spec fn gpu_block_reduction_shared_bytes_spec(p: GpuBlockReductionProgram) -> nat {
+    (p.block_threads as nat) * (p.element_bytes as nat)
+}
+
+// r[depends gpu.block-reduction-program]
+pub open spec fn gpu_block_reduction_program_spec(p: GpuBlockReductionProgram) -> bool {
+    p.input_len > 0 && p.block_threads > 0 && p.elements_per_thread > 0 && p.blocks > 0
+        && p.element_bytes > 0
+        && p.input_len as nat <= gpu_block_reduction_capacity_spec(p)
+        && gpu_block_reduction_shared_bytes_spec(p) <= p.shared_capacity_bytes as nat
+}
+
+// r[impl gpu.block-reduction-program]
+pub fn gpu_block_reduction_program_valid(p: GpuBlockReductionProgram) -> (result: bool)
+    ensures result == gpu_block_reduction_program_spec(p)
+{
+    assert((p.block_threads as u64) * (p.elements_per_thread as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((p.block_threads as u64) * (p.elements_per_thread as u64) * (p.blocks as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((p.block_threads as u64) * (p.element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    p.input_len > 0
+        && p.block_threads > 0
+        && p.elements_per_thread > 0
+        && p.blocks > 0
+        && p.element_bytes > 0
+        && p.input_len
+            <= (p.block_threads as u64) * (p.elements_per_thread as u64) * (p.blocks as u64)
+        && (p.block_threads as u64) * (p.element_bytes as u64) <= p.shared_capacity_bytes
+}
+
+// r[verify gpu.block-reduction-program]
+pub proof fn valid_gpu_block_reduction_program_has_capacity(p: GpuBlockReductionProgram)
+    requires gpu_block_reduction_program_spec(p)
+    ensures
+        p.input_len as nat <= gpu_block_reduction_capacity_spec(p),
+        gpu_block_reduction_shared_bytes_spec(p) <= p.shared_capacity_bytes as nat
+{}
+
 } // verus!
 
 #[cfg(test)]
@@ -578,6 +748,103 @@ mod tests {
             origin_y: 30,
             rows: 4,
             cols: 8
+        }));
+    }
+
+    #[test]
+    fn elementwise_program_requires_capacity_for_all_elements() {
+        assert!(gpu_elementwise_program_valid(GpuElementwiseProgram {
+            elements: 1024,
+            threads: 256,
+            elements_per_thread: 4
+        }));
+        assert!(!gpu_elementwise_program_valid(GpuElementwiseProgram {
+            elements: 1025,
+            threads: 256,
+            elements_per_thread: 4
+        }));
+        assert!(!gpu_elementwise_program_valid(GpuElementwiseProgram {
+            elements: 1024,
+            threads: 0,
+            elements_per_thread: 4
+        }));
+    }
+
+    #[test]
+    fn grid_stride_loop_last_index_must_stay_in_bounds() {
+        assert!(gpu_grid_stride_loop_valid(GpuGridStrideLoop {
+            len: 100,
+            start: 3,
+            stride: 8,
+            iterations: 13
+        }));
+        assert!(!gpu_grid_stride_loop_valid(GpuGridStrideLoop {
+            len: 100,
+            start: 3,
+            stride: 8,
+            iterations: 14
+        }));
+        assert!(!gpu_grid_stride_loop_valid(GpuGridStrideLoop {
+            len: 100,
+            start: 100,
+            stride: 8,
+            iterations: 1
+        }));
+    }
+
+    #[test]
+    fn tiled_kernel2d_grid_must_cover_output_domain() {
+        assert!(gpu_tiled_kernel2d_valid(GpuTiledKernel2D {
+            width: 100,
+            height: 65,
+            tile_width: 16,
+            tile_height: 16,
+            grid_x: 7,
+            grid_y: 5
+        }));
+        assert!(!gpu_tiled_kernel2d_valid(GpuTiledKernel2D {
+            width: 100,
+            height: 65,
+            tile_width: 16,
+            tile_height: 16,
+            grid_x: 6,
+            grid_y: 5
+        }));
+        assert!(!gpu_tiled_kernel2d_valid(GpuTiledKernel2D {
+            width: 100,
+            height: 65,
+            tile_width: 16,
+            tile_height: 0,
+            grid_x: 7,
+            grid_y: 5
+        }));
+    }
+
+    #[test]
+    fn block_reduction_program_requires_input_and_shared_capacity() {
+        assert!(gpu_block_reduction_program_valid(GpuBlockReductionProgram {
+            input_len: 4096,
+            block_threads: 256,
+            elements_per_thread: 4,
+            blocks: 4,
+            element_bytes: 4,
+            shared_capacity_bytes: 1024
+        }));
+        assert!(!gpu_block_reduction_program_valid(GpuBlockReductionProgram {
+            input_len: 4097,
+            block_threads: 256,
+            elements_per_thread: 4,
+            blocks: 4,
+            element_bytes: 4,
+            shared_capacity_bytes: 1024
+        }));
+        assert!(!gpu_block_reduction_program_valid(GpuBlockReductionProgram {
+            input_len: 4096,
+            block_threads: 256,
+            elements_per_thread: 4,
+            blocks: 4,
+            element_bytes: 4,
+            shared_capacity_bytes: 512
         }));
     }
 }

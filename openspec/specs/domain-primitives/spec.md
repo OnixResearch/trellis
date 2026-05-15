@@ -3342,3 +3342,15 @@ GPU tensor3D index admission MUST compose an admitted tensor3D layout with x/y/z
 
 r[gpu.tile-projection]
 GPU tile-projection admission MUST compose an admitted pitched buffer with positive tile rows/columns and MUST reject tile origins whose finite rectangle extends past the buffer width or height.
+
+r[gpu.elementwise-program]
+GPU elementwise-program admission MUST require a positive element count, positive thread count, and positive elements-per-thread, and MUST reject programs whose finite thread capacity cannot cover all elements.
+
+r[gpu.grid-stride-loop]
+GPU grid-stride-loop admission MUST require positive length, stride, and iteration count, MUST require the start index to be in bounds, and MUST reject loop shapes whose last visited index would exceed the finite input length.
+
+r[gpu.tiled-kernel2d]
+GPU tiled-kernel2D admission MUST require positive output dimensions, tile dimensions, and grid dimensions, and MUST require the finite tile grid to cover the output domain in both axes.
+
+r[gpu.block-reduction-program]
+GPU block-reduction-program admission MUST require positive input, thread, per-thread, block, and element sizes, MUST require finite work capacity to cover the input, and MUST require per-block shared-memory bytes to fit the declared shared capacity.
