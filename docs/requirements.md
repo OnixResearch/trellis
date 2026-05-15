@@ -11436,3 +11436,23 @@ r[verification-gaps.inventory-site-manifest-source]
 - GIVEN live source changes one external-body site but the manifest is not updated
 - WHEN the Rust checker compares manifest and source
 - THEN it rejects the drift before full verification can pass
+
+## GPU Programming Primitives
+
+r[gpu.block-dim]
+GPU block dimension admission MUST require positive x/y/z dimensions and MUST reject blocks whose finite thread product exceeds the declared maximum threads per block.
+
+r[gpu.grid-dim]
+GPU grid dimension admission MUST require positive x/y/z dimensions and MUST reject grids whose finite block product exceeds the declared maximum block count.
+
+r[gpu.thread-index]
+GPU thread-index admission MUST require an admitted block and grid, local thread coordinates strictly within the block dimensions, and block coordinates strictly within the grid dimensions.
+
+r[gpu.coalesced-access]
+GPU coalesced memory-access admission MUST require a positive lane count, positive element size, positive segment size, a lane-span no larger than the segment, and a base/span range contained in the buffer without relying on wrapping arithmetic.
+
+r[gpu.shared-tile]
+GPU shared-tile admission MUST require positive rows, columns, and element size, and MUST reject tiles whose finite byte footprint exceeds the declared shared-memory capacity.
+
+r[gpu.launch-envelope]
+GPU launch-envelope admission MUST compose admitted block dimensions, grid dimensions, and shared-tile metadata, and MUST reject launches whose shared-tile capacity exceeds the launch-level maximum shared memory per block.

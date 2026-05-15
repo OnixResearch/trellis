@@ -343,6 +343,7 @@ validation commands captured in the change evidence.
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
 | `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, and linear-memory bounds/grow semantics |
+| `gpu_primitives` | finite GPU launch, grid/block/thread bounds, coalesced access, and shared-tile admission |
 
 ### Scheduling primitives
 
