@@ -44,6 +44,8 @@
 //! - `consistent_snapshot` — consistent cuts with lattice operations (join/meet) and message
 //!   consistency
 //! - `containment` — delegation containment: scope + mode + subsumption
+//! - `content_addressed_code` — finite content-addressed definition identity, dependency closure,
+//!   and recursive group admission
 //! - `consistent_hash` — consistent hash ring with complete coverage
 //! - `consistency_history` — shared operation vocabulary for consistency-model predicates
 //! - `consistency_object` — object-level sequential-consistency and linearizability predicates
@@ -406,6 +408,7 @@ pub mod consistency_transactional;
 pub mod consistent_hash;
 pub mod consistent_snapshot;
 pub mod containment;
+pub mod content_addressed_code;
 
 pub mod alloc_bitmap;
 pub mod alloc_token;
