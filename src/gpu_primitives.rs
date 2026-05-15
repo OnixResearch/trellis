@@ -221,6 +221,191 @@ pub proof fn valid_gpu_launch_envelope_components_are_valid(e: GpuLaunchEnvelope
     ensures gpu_block_dim_spec(e.block), gpu_grid_dim_spec(e.grid), gpu_shared_tile_spec(e.shared_tile)
 {}
 
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuPitchedBuffer {
+    pub width: u16,
+    pub height: u16,
+    pub element_bytes: u16,
+    pub pitch_bytes: u32,
+    pub buffer_bytes: u64,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuTensor3D {
+    pub width: u16,
+    pub height: u16,
+    pub depth: u16,
+    pub element_bytes: u16,
+    pub buffer_bytes: u64,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuTensorIndex3D {
+    pub x: u16,
+    pub y: u16,
+    pub z: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuTileProjection {
+    pub origin_x: u16,
+    pub origin_y: u16,
+    pub rows: u16,
+    pub cols: u16,
+}
+
+// r[depends gpu.pitched-buffer]
+pub open spec fn gpu_pitched_row_bytes_spec(b: GpuPitchedBuffer) -> nat {
+    (b.width as nat) * (b.element_bytes as nat)
+}
+
+// r[depends gpu.pitched-buffer]
+pub open spec fn gpu_pitched_buffer_spec(b: GpuPitchedBuffer) -> bool {
+    b.width > 0 && b.height > 0 && b.element_bytes > 0
+        && gpu_pitched_row_bytes_spec(b) <= b.pitch_bytes as nat
+        && (b.pitch_bytes as nat) * (b.height as nat) <= b.buffer_bytes as nat
+}
+
+// r[impl gpu.pitched-buffer]
+pub fn gpu_pitched_buffer_valid(b: GpuPitchedBuffer) -> (result: bool)
+    ensures result == gpu_pitched_buffer_spec(b)
+{
+    assert((b.width as u64) * (b.element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((b.pitch_bytes as u64) * (b.height as u64) <= u64::MAX) by(nonlinear_arith);
+    b.width > 0
+        && b.height > 0
+        && b.element_bytes > 0
+        && (b.width as u64) * (b.element_bytes as u64) <= b.pitch_bytes as u64
+        && (b.pitch_bytes as u64) * (b.height as u64) <= b.buffer_bytes
+}
+
+// r[verify gpu.pitched-buffer]
+pub proof fn valid_gpu_pitched_buffer_is_admitted(b: GpuPitchedBuffer)
+    requires gpu_pitched_buffer_spec(b)
+    ensures gpu_pitched_buffer_spec(b), gpu_pitched_row_bytes_spec(b) <= b.pitch_bytes as nat
+{}
+
+// r[depends gpu.pitched-address]
+pub open spec fn gpu_pitched_offset_spec(b: GpuPitchedBuffer, x: u16, y: u16) -> nat {
+    (y as nat) * (b.pitch_bytes as nat) + (x as nat) * (b.element_bytes as nat)
+}
+
+// r[depends gpu.pitched-address]
+pub open spec fn gpu_pitched_address_spec(b: GpuPitchedBuffer, x: u16, y: u16) -> bool {
+    gpu_pitched_buffer_spec(b) && x < b.width && y < b.height
+        && (b.element_bytes as nat) <= b.buffer_bytes as nat
+        && gpu_pitched_offset_spec(b, x, y) + (b.element_bytes as nat) <= b.buffer_bytes as nat
+}
+
+// r[impl gpu.pitched-address]
+pub fn gpu_pitched_address_valid(b: GpuPitchedBuffer, x: u16, y: u16) -> (result: bool)
+    ensures result == gpu_pitched_address_spec(b, x, y)
+{
+    assert((y as u64) * (b.pitch_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((x as u64) * (b.element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((y as u64) * (b.pitch_bytes as u64) + (x as u64) * (b.element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    gpu_pitched_buffer_valid(b)
+        && x < b.width
+        && y < b.height
+        && (b.element_bytes as u64) <= b.buffer_bytes
+        && (y as u64) * (b.pitch_bytes as u64) + (x as u64) * (b.element_bytes as u64)
+            <= b.buffer_bytes - b.element_bytes as u64
+}
+
+// r[verify gpu.pitched-address]
+pub proof fn valid_gpu_pitched_address_is_in_bounds(b: GpuPitchedBuffer, x: u16, y: u16)
+    requires gpu_pitched_address_spec(b, x, y)
+    ensures gpu_pitched_offset_spec(b, x, y) + (b.element_bytes as nat) <= b.buffer_bytes as nat
+{}
+
+// r[depends gpu.tensor3d-layout]
+pub open spec fn gpu_tensor3d_element_count_spec(t: GpuTensor3D) -> nat {
+    (t.width as nat) * (t.height as nat) * (t.depth as nat)
+}
+
+// r[depends gpu.tensor3d-layout]
+pub open spec fn gpu_tensor3d_bytes_spec(t: GpuTensor3D) -> nat {
+    gpu_tensor3d_element_count_spec(t) * (t.element_bytes as nat)
+}
+
+// r[depends gpu.tensor3d-layout]
+pub open spec fn gpu_tensor3d_spec(t: GpuTensor3D) -> bool {
+    t.width > 0 && t.height > 0 && t.depth > 0 && t.element_bytes > 0
+        && gpu_tensor3d_bytes_spec(t) <= t.buffer_bytes as nat
+}
+
+// r[impl gpu.tensor3d-layout]
+pub fn gpu_tensor3d_valid(t: GpuTensor3D) -> (result: bool)
+    ensures result == gpu_tensor3d_spec(t)
+{
+    assert((t.width as u64) * (t.height as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((t.width as u64) * (t.height as u64) * (t.depth as u64) <= u64::MAX) by(nonlinear_arith);
+    assert((t.width as u64) * (t.height as u64) * (t.depth as u64) * (t.element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    t.width > 0
+        && t.height > 0
+        && t.depth > 0
+        && t.element_bytes > 0
+        && (t.width as u64) * (t.height as u64) * (t.depth as u64) * (t.element_bytes as u64)
+            <= t.buffer_bytes
+}
+
+// r[verify gpu.tensor3d-layout]
+pub proof fn valid_gpu_tensor3d_is_admitted(t: GpuTensor3D)
+    requires gpu_tensor3d_spec(t)
+    ensures gpu_tensor3d_spec(t), gpu_tensor3d_bytes_spec(t) <= t.buffer_bytes as nat
+{}
+
+// r[depends gpu.tensor3d-index]
+pub open spec fn gpu_tensor3d_index_spec(t: GpuTensor3D, i: GpuTensorIndex3D) -> bool {
+    gpu_tensor3d_spec(t) && i.x < t.width && i.y < t.height && i.z < t.depth
+}
+
+// r[depends gpu.tensor3d-index]
+pub open spec fn gpu_tensor3d_offset_spec(t: GpuTensor3D, i: GpuTensorIndex3D) -> nat {
+    (((i.z as nat) * (t.height as nat) + (i.y as nat)) * (t.width as nat) + (i.x as nat))
+        * (t.element_bytes as nat)
+}
+
+// r[impl gpu.tensor3d-index]
+pub fn gpu_tensor3d_index_valid(t: GpuTensor3D, i: GpuTensorIndex3D) -> (result: bool)
+    ensures result == gpu_tensor3d_index_spec(t, i)
+{
+    gpu_tensor3d_valid(t) && i.x < t.width && i.y < t.height && i.z < t.depth
+}
+
+// r[verify gpu.tensor3d-index]
+pub proof fn valid_gpu_tensor3d_index_is_admitted(t: GpuTensor3D, i: GpuTensorIndex3D)
+    requires gpu_tensor3d_index_spec(t, i)
+    ensures gpu_tensor3d_index_spec(t, i)
+{}
+
+// r[depends gpu.tile-projection]
+pub open spec fn gpu_tile_projection_spec(b: GpuPitchedBuffer, tile: GpuTileProjection) -> bool {
+    gpu_pitched_buffer_spec(b)
+        && tile.rows > 0
+        && tile.cols > 0
+        && (tile.origin_x as nat) + (tile.cols as nat) <= b.width as nat
+        && (tile.origin_y as nat) + (tile.rows as nat) <= b.height as nat
+}
+
+// r[impl gpu.tile-projection]
+pub fn gpu_tile_projection_valid(b: GpuPitchedBuffer, tile: GpuTileProjection) -> (result: bool)
+    ensures result == gpu_tile_projection_spec(b, tile)
+{
+    gpu_pitched_buffer_valid(b)
+        && tile.rows > 0
+        && tile.cols > 0
+        && (tile.origin_x as u64) + (tile.cols as u64) <= b.width as u64
+        && (tile.origin_y as u64) + (tile.rows as u64) <= b.height as u64
+}
+
+// r[verify gpu.tile-projection]
+pub proof fn valid_gpu_tile_projection_is_admitted(b: GpuPitchedBuffer, tile: GpuTileProjection)
+    requires gpu_tile_projection_spec(b, tile)
+    ensures gpu_tile_projection_spec(b, tile)
+{}
+
 } // verus!
 
 #[cfg(test)]
@@ -325,6 +510,74 @@ mod tests {
             grid: valid_grid(),
             shared_tile: tile,
             max_shared_bytes_per_block: 512
+        }));
+    }
+    fn valid_pitched_buffer() -> GpuPitchedBuffer {
+        GpuPitchedBuffer {
+            width: 64,
+            height: 32,
+            element_bytes: 4,
+            pitch_bytes: 256,
+            buffer_bytes: 8192,
+        }
+    }
+
+    #[test]
+    fn pitched_buffer_requires_pitch_and_backing_capacity() {
+        assert!(gpu_pitched_buffer_valid(valid_pitched_buffer()));
+        assert!(!gpu_pitched_buffer_valid(GpuPitchedBuffer {
+            pitch_bytes: 128,
+            ..valid_pitched_buffer()
+        }));
+        assert!(!gpu_pitched_buffer_valid(GpuPitchedBuffer {
+            buffer_bytes: 4096,
+            ..valid_pitched_buffer()
+        }));
+    }
+
+    #[test]
+    fn pitched_address_checks_coordinate_bounds_and_final_element() {
+        let b = valid_pitched_buffer();
+        assert!(gpu_pitched_address_valid(b, 63, 31));
+        assert!(!gpu_pitched_address_valid(b, 64, 31));
+        assert!(!gpu_pitched_address_valid(b, 63, 32));
+    }
+
+    #[test]
+    fn tensor3d_layout_and_index_are_finite() {
+        let t = GpuTensor3D {
+            width: 8,
+            height: 4,
+            depth: 2,
+            element_bytes: 4,
+            buffer_bytes: 256,
+        };
+        assert!(gpu_tensor3d_valid(t));
+        assert!(gpu_tensor3d_index_valid(t, GpuTensorIndex3D { x: 7, y: 3, z: 1 }));
+        assert!(!gpu_tensor3d_index_valid(t, GpuTensorIndex3D { x: 8, y: 3, z: 1 }));
+        assert!(!gpu_tensor3d_valid(GpuTensor3D { buffer_bytes: 255, ..t }));
+    }
+
+    #[test]
+    fn tile_projection_must_fit_inside_pitched_buffer() {
+        let b = valid_pitched_buffer();
+        assert!(gpu_tile_projection_valid(b, GpuTileProjection {
+            origin_x: 16,
+            origin_y: 8,
+            rows: 8,
+            cols: 16
+        }));
+        assert!(!gpu_tile_projection_valid(b, GpuTileProjection {
+            origin_x: 60,
+            origin_y: 8,
+            rows: 8,
+            cols: 8
+        }));
+        assert!(!gpu_tile_projection_valid(b, GpuTileProjection {
+            origin_x: 16,
+            origin_y: 30,
+            rows: 4,
+            cols: 8
         }));
     }
 }

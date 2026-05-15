@@ -128,8 +128,8 @@
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry
 //!   provenance
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
-//! - `gpu_primitives` — finite GPU launch, grid/block/thread, coalesced memory, and shared-tile
-//!   admission
+//! - `gpu_primitives` — finite GPU launch, grid/block/thread, pitched/tensor memory-layout,
+//!   coalesced memory, and shared-tile admission
 //! - `gossip` — gossip infection bounds and convergence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two

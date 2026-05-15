@@ -3327,3 +3327,18 @@ GPU shared-tile admission MUST require positive rows, columns, and element size,
 
 r[gpu.launch-envelope]
 GPU launch-envelope admission MUST compose admitted block dimensions, grid dimensions, and shared-tile metadata, and MUST reject launches whose shared-tile capacity exceeds the launch-level maximum shared memory per block.
+
+r[gpu.pitched-buffer]
+GPU pitched-buffer admission MUST require positive width, height, and element size, MUST require each row byte footprint to fit in the pitch, and MUST require the finite pitch-by-height backing footprint to fit in the buffer.
+
+r[gpu.pitched-address]
+GPU pitched-address admission MUST compose an admitted pitched buffer with in-bounds x/y coordinates and MUST require the addressed element span to fit inside the backing buffer.
+
+r[gpu.tensor3d-layout]
+GPU tensor3D layout admission MUST require positive width, height, depth, and element size, and MUST reject tensors whose finite row-major byte footprint exceeds the declared buffer size.
+
+r[gpu.tensor3d-index]
+GPU tensor3D index admission MUST compose an admitted tensor3D layout with x/y/z coordinates strictly inside the finite tensor shape.
+
+r[gpu.tile-projection]
+GPU tile-projection admission MUST compose an admitted pitched buffer with positive tile rows/columns and MUST reject tile origins whose finite rectangle extends past the buffer width or height.
