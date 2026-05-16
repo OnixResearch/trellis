@@ -576,6 +576,162 @@ pub proof fn valid_gpu_block_reduction_program_has_capacity(p: GpuBlockReduction
         gpu_block_reduction_shared_bytes_spec(p) <= p.shared_capacity_bytes as nat
 {}
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuReductionStage {
+    pub input_count: u64,
+    pub output_count: u64,
+    pub active_lanes: u16,
+    pub max_lanes: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuReductionTreeProgram {
+    pub declared_outputs: u64,
+    pub block_program: GpuBlockReductionProgram,
+}
+
+// r[depends domain-primitives.gpu.reduction-tree-program]
+pub open spec fn gpu_reduction_stage_spec(s: GpuReductionStage) -> bool {
+    s.input_count > 0
+        && s.output_count > 0
+        && s.output_count <= s.input_count
+        && s.active_lanes > 0
+        && s.max_lanes > 0
+        && s.active_lanes <= s.max_lanes
+        && s.active_lanes as nat <= s.input_count as nat
+}
+
+// r[depends domain-primitives.gpu.reduction-tree-program]
+pub open spec fn gpu_reduction_tree_from_spec(
+    stages: Seq<GpuReductionStage>,
+    index: nat,
+    current_count: u64,
+    declared_outputs: u64,
+) -> bool
+    decreases stages.len() - index
+{
+    if index >= stages.len() {
+        declared_outputs > 0 && current_count == declared_outputs && index == stages.len()
+    } else {
+        gpu_reduction_stage_spec(stages[index as int])
+            && stages[index as int].input_count == current_count
+            && gpu_reduction_tree_from_spec(
+                stages,
+                index + 1,
+                stages[index as int].output_count,
+                declared_outputs,
+            )
+    }
+}
+
+// r[depends domain-primitives.gpu.reduction-tree-program]
+pub open spec fn gpu_reduction_tree_program_spec(
+    p: GpuReductionTreeProgram,
+    stages: Seq<GpuReductionStage>,
+) -> bool {
+    gpu_block_reduction_program_spec(p.block_program)
+        && stages.len() > 0
+        && gpu_reduction_tree_from_spec(stages, 0, p.block_program.input_len, p.declared_outputs)
+}
+
+// r[impl domain-primitives.gpu.reduction-tree-program]
+pub fn gpu_reduction_stage_valid(s: GpuReductionStage) -> (result: bool)
+    ensures result == gpu_reduction_stage_spec(s)
+{
+    s.input_count > 0
+        && s.output_count > 0
+        && s.output_count <= s.input_count
+        && s.active_lanes > 0
+        && s.max_lanes > 0
+        && s.active_lanes <= s.max_lanes
+        && (s.active_lanes as u64) <= s.input_count
+}
+
+fn gpu_reduction_tree_from_valid(
+    stages: &Vec<GpuReductionStage>,
+    index: usize,
+    current_count: u64,
+    declared_outputs: u64,
+) -> (result: bool)
+    requires index <= stages@.len()
+    ensures
+        result == gpu_reduction_tree_from_spec(
+            stages@,
+            index as nat,
+            current_count,
+            declared_outputs,
+        )
+    decreases stages@.len() - index
+{
+    if index == stages.len() {
+        declared_outputs > 0 && current_count == declared_outputs
+    } else {
+        let stage = stages[index];
+        gpu_reduction_stage_valid(stage)
+            && stage.input_count == current_count
+            && gpu_reduction_tree_from_valid(stages, index + 1, stage.output_count, declared_outputs)
+    }
+}
+
+// r[impl domain-primitives.gpu.reduction-tree-program]
+pub fn gpu_reduction_tree_program_valid(
+    p: GpuReductionTreeProgram,
+    stages: &Vec<GpuReductionStage>,
+) -> (result: bool)
+    ensures result == gpu_reduction_tree_program_spec(p, stages@)
+{
+    gpu_block_reduction_program_valid(p.block_program)
+        && stages.len() > 0
+        && gpu_reduction_tree_from_valid(stages, 0, p.block_program.input_len, p.declared_outputs)
+}
+
+// r[verify domain-primitives.gpu.reduction-tree-program]
+pub proof fn valid_gpu_reduction_stage_is_non_expanding(s: GpuReductionStage)
+    requires gpu_reduction_stage_spec(s)
+    ensures
+        s.output_count > 0,
+        s.output_count <= s.input_count,
+        s.active_lanes > 0,
+        s.active_lanes <= s.max_lanes
+{}
+
+// r[verify domain-primitives.gpu.reduction-tree-program]
+pub proof fn reduction_tree_from_declared_outputs_positive(
+    stages: Seq<GpuReductionStage>,
+    index: nat,
+    current_count: u64,
+    declared_outputs: u64,
+)
+    requires
+        index <= stages.len(),
+        gpu_reduction_tree_from_spec(stages, index, current_count, declared_outputs)
+    ensures declared_outputs > 0
+    decreases stages.len() - index
+{
+    if index < stages.len() {
+        reduction_tree_from_declared_outputs_positive(
+            stages,
+            index + 1,
+            stages[index as int].output_count,
+            declared_outputs,
+        );
+    }
+}
+
+// r[verify domain-primitives.gpu.reduction-tree-program]
+pub proof fn valid_gpu_reduction_tree_reaches_declared_outputs(
+    p: GpuReductionTreeProgram,
+    stages: Seq<GpuReductionStage>,
+)
+    requires gpu_reduction_tree_program_spec(p, stages)
+    ensures
+        stages.len() > 0,
+        p.declared_outputs > 0,
+        gpu_block_reduction_program_spec(p.block_program)
+{
+    reduction_tree_from_declared_outputs_positive(stages, 0, p.block_program.input_len, p.declared_outputs);
+}
+
 } // verus!
 
 #[cfg(test)]
@@ -846,5 +1002,92 @@ mod tests {
             element_bytes: 4,
             shared_capacity_bytes: 512
         }));
+    }
+
+    fn reduction_tree_program() -> GpuReductionTreeProgram {
+        GpuReductionTreeProgram {
+            declared_outputs: 1,
+            block_program: GpuBlockReductionProgram {
+                input_len: 1024,
+                block_threads: 256,
+                elements_per_thread: 4,
+                blocks: 1,
+                element_bytes: 4,
+                shared_capacity_bytes: 1024,
+            },
+        }
+    }
+
+    fn reduction_stages() -> Vec<GpuReductionStage> {
+        vec![
+            GpuReductionStage {
+                input_count: 1024,
+                output_count: 256,
+                active_lanes: 256,
+                max_lanes: 256,
+            },
+            GpuReductionStage {
+                input_count: 256,
+                output_count: 32,
+                active_lanes: 32,
+                max_lanes: 256,
+            },
+            GpuReductionStage {
+                input_count: 32,
+                output_count: 1,
+                active_lanes: 1,
+                max_lanes: 256,
+            },
+        ]
+    }
+
+    #[test]
+    fn reduction_stage_requires_positive_non_expanding_counts_and_lanes() {
+        assert!(gpu_reduction_stage_valid(GpuReductionStage {
+            input_count: 64,
+            output_count: 32,
+            active_lanes: 32,
+            max_lanes: 64,
+        }));
+        assert!(!gpu_reduction_stage_valid(GpuReductionStage {
+            input_count: 64,
+            output_count: 65,
+            active_lanes: 32,
+            max_lanes: 64,
+        }));
+        assert!(!gpu_reduction_stage_valid(GpuReductionStage {
+            input_count: 64,
+            output_count: 32,
+            active_lanes: 65,
+            max_lanes: 64,
+        }));
+        assert!(!gpu_reduction_stage_valid(GpuReductionStage {
+            input_count: 64,
+            output_count: 32,
+            active_lanes: 65,
+            max_lanes: 128,
+        }));
+    }
+
+    #[test]
+    fn reduction_tree_reaches_declared_outputs_through_chain() {
+        assert!(gpu_reduction_tree_program_valid(reduction_tree_program(), &reduction_stages()));
+    }
+
+    #[test]
+    fn reduction_tree_rejects_empty_expanding_or_broken_chains() {
+        assert!(!gpu_reduction_tree_program_valid(reduction_tree_program(), &Vec::new()));
+
+        let mut expanding = reduction_stages();
+        expanding[1].output_count = 300;
+        assert!(!gpu_reduction_tree_program_valid(reduction_tree_program(), &expanding));
+
+        let mut broken = reduction_stages();
+        broken[1].input_count = 128;
+        assert!(!gpu_reduction_tree_program_valid(reduction_tree_program(), &broken));
+
+        let mut wrong_final = reduction_tree_program();
+        wrong_final.declared_outputs = 2;
+        assert!(!gpu_reduction_tree_program_valid(wrong_final, &reduction_stages()));
     }
 }
