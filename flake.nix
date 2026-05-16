@@ -40,6 +40,7 @@
           pkg-config
           clang
           mold
+          nix
         ];
 
         buildInputs = with pkgs; [
@@ -140,7 +141,9 @@
           '';
 
           # Every pub fn in verus! has ensures
-          check-ensures = pkgs.runCommand "check-ensures" {} ''
+          check-ensures = pkgs.runCommand "check-ensures" {
+            nativeBuildInputs = [ pkgs.python3 ];
+          } ''
             cd ${src}
             bash scripts/check-ensures.sh
             touch $out
@@ -170,19 +173,33 @@
             cd ${src}
             export HOME=$(mktemp -d)
 
-            UNCOVERED=$(tracey query uncovered 2>&1)
-            echo "$UNCOVERED"
-            echo "$UNCOVERED" | grep -q "0 uncovered" || {
-              echo "FAIL: uncovered requirements found"
+            # Tracey may return a transient daemon-start "Error: Cancelled" on
+            # the first query. Warm the daemon and retry boundedly before
+            # treating coverage as failed.
+            tracey query status || true
+
+            run_tracey_check() {
+              query="$1"
+              expected="$2"
+              label="$3"
+
+              for attempt in 1 2 3 4; do
+                output=$(tracey query "$query" 2>&1) || true
+                echo "$output"
+                if echo "$output" | grep -q "$expected"; then
+                  return 0
+                fi
+                if [ "$attempt" -lt 4 ]; then
+                  sleep 2
+                fi
+              done
+
+              echo "FAIL: $label requirements found"
               exit 1
             }
 
-            UNTESTED=$(tracey query untested 2>&1)
-            echo "$UNTESTED"
-            echo "$UNTESTED" | grep -q "0 untested" || {
-              echo "FAIL: untested requirements found"
-              exit 1
-            }
+            run_tracey_check uncovered "0 uncovered" uncovered
+            run_tracey_check untested "0 untested" untested
 
             touch $out
           '';
