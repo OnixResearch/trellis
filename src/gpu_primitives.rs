@@ -732,6 +732,122 @@ pub proof fn valid_gpu_reduction_tree_reaches_declared_outputs(
     reduction_tree_from_declared_outputs_positive(stages, 0, p.block_program.input_len, p.declared_outputs);
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuStencilDomain2D {
+    pub width: u16,
+    pub height: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuStencilWindow2D {
+    pub domain: GpuStencilDomain2D,
+    pub center_x: u16,
+    pub center_y: u16,
+    pub radius_x: u16,
+    pub radius_y: u16,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuStencilRead2D {
+    pub x: u16,
+    pub y: u16,
+}
+
+// r[depends domain-primitives.gpu.stencil-boundary-program]
+pub open spec fn gpu_stencil_domain2d_spec(d: GpuStencilDomain2D) -> bool {
+    d.width > 0 && d.height > 0
+}
+
+// r[depends domain-primitives.gpu.stencil-boundary-program]
+pub open spec fn gpu_stencil_point_in_domain_spec(d: GpuStencilDomain2D, x: u16, y: u16) -> bool {
+    gpu_stencil_domain2d_spec(d) && x < d.width && y < d.height
+}
+
+// r[depends domain-primitives.gpu.stencil-boundary-program]
+pub open spec fn gpu_stencil_full_window_spec(w: GpuStencilWindow2D) -> bool {
+    gpu_stencil_point_in_domain_spec(w.domain, w.center_x, w.center_y)
+        && w.center_x >= w.radius_x
+        && w.center_y >= w.radius_y
+        && (w.center_x as u64) + (w.radius_x as u64) < w.domain.width as u64
+        && (w.center_y as u64) + (w.radius_y as u64) < w.domain.height as u64
+}
+
+// r[depends domain-primitives.gpu.stencil-boundary-program]
+pub open spec fn gpu_stencil_guarded_window_spec(w: GpuStencilWindow2D) -> bool {
+    gpu_stencil_point_in_domain_spec(w.domain, w.center_x, w.center_y)
+}
+
+// r[depends domain-primitives.gpu.stencil-boundary-program]
+pub open spec fn gpu_stencil_guarded_read_spec(w: GpuStencilWindow2D, read: GpuStencilRead2D) -> bool {
+    gpu_stencil_guarded_window_spec(w)
+        && gpu_stencil_point_in_domain_spec(w.domain, read.x, read.y)
+        && read.x as u64 <= (w.center_x as u64) + (w.radius_x as u64)
+        && w.center_x as u64 <= (read.x as u64) + (w.radius_x as u64)
+        && read.y as u64 <= (w.center_y as u64) + (w.radius_y as u64)
+        && w.center_y as u64 <= (read.y as u64) + (w.radius_y as u64)
+}
+
+// r[impl domain-primitives.gpu.stencil-boundary-program]
+pub fn gpu_stencil_domain2d_valid(d: GpuStencilDomain2D) -> (result: bool)
+    ensures result == gpu_stencil_domain2d_spec(d)
+{
+    d.width > 0 && d.height > 0
+}
+
+// r[impl domain-primitives.gpu.stencil-boundary-program]
+pub fn gpu_stencil_point_in_domain_valid(d: GpuStencilDomain2D, x: u16, y: u16) -> (result: bool)
+    ensures result == gpu_stencil_point_in_domain_spec(d, x, y)
+{
+    gpu_stencil_domain2d_valid(d) && x < d.width && y < d.height
+}
+
+// r[impl domain-primitives.gpu.stencil-boundary-program]
+pub fn gpu_stencil_full_window_valid(w: GpuStencilWindow2D) -> (result: bool)
+    ensures result == gpu_stencil_full_window_spec(w)
+{
+    gpu_stencil_point_in_domain_valid(w.domain, w.center_x, w.center_y)
+        && w.center_x >= w.radius_x
+        && w.center_y >= w.radius_y
+        && (w.center_x as u64) + (w.radius_x as u64) < w.domain.width as u64
+        && (w.center_y as u64) + (w.radius_y as u64) < w.domain.height as u64
+}
+
+// r[impl domain-primitives.gpu.stencil-boundary-program]
+pub fn gpu_stencil_guarded_window_valid(w: GpuStencilWindow2D) -> (result: bool)
+    ensures result == gpu_stencil_guarded_window_spec(w)
+{
+    gpu_stencil_point_in_domain_valid(w.domain, w.center_x, w.center_y)
+}
+
+// r[impl domain-primitives.gpu.stencil-boundary-program]
+pub fn gpu_stencil_guarded_read_valid(w: GpuStencilWindow2D, read: GpuStencilRead2D) -> (result: bool)
+    ensures result == gpu_stencil_guarded_read_spec(w, read)
+{
+    gpu_stencil_guarded_window_valid(w)
+        && gpu_stencil_point_in_domain_valid(w.domain, read.x, read.y)
+        && read.x as u64 <= (w.center_x as u64) + (w.radius_x as u64)
+        && w.center_x as u64 <= (read.x as u64) + (w.radius_x as u64)
+        && read.y as u64 <= (w.center_y as u64) + (w.radius_y as u64)
+        && w.center_y as u64 <= (read.y as u64) + (w.radius_y as u64)
+}
+
+// r[verify domain-primitives.gpu.stencil-boundary-program]
+pub proof fn valid_gpu_stencil_full_window_reads_are_in_bounds(w: GpuStencilWindow2D)
+    requires gpu_stencil_full_window_spec(w)
+    ensures
+        gpu_stencil_point_in_domain_spec(w.domain, w.center_x, w.center_y),
+        w.center_x >= w.radius_x,
+        w.center_y >= w.radius_y,
+        (w.center_x as u64) + (w.radius_x as u64) < w.domain.width as u64,
+        (w.center_y as u64) + (w.radius_y as u64) < w.domain.height as u64,
+{}
+
+// r[verify domain-primitives.gpu.stencil-boundary-program]
+pub proof fn valid_gpu_stencil_guarded_read_is_in_bounds(w: GpuStencilWindow2D, read: GpuStencilRead2D)
+    requires gpu_stencil_guarded_read_spec(w, read)
+    ensures gpu_stencil_point_in_domain_spec(w.domain, read.x, read.y)
+{}
+
 } // verus!
 
 #[cfg(test)]
@@ -1089,5 +1205,38 @@ mod tests {
         let mut wrong_final = reduction_tree_program();
         wrong_final.declared_outputs = 2;
         assert!(!gpu_reduction_tree_program_valid(wrong_final, &reduction_stages()));
+    }
+
+    fn stencil_window(center_x: u16, center_y: u16, radius_x: u16, radius_y: u16) -> GpuStencilWindow2D {
+        GpuStencilWindow2D {
+            domain: GpuStencilDomain2D { width: 8, height: 6 },
+            center_x,
+            center_y,
+            radius_x,
+            radius_y,
+        }
+    }
+
+    #[test]
+    fn stencil_full_window_accepts_interior_reads() {
+        assert!(gpu_stencil_domain2d_valid(GpuStencilDomain2D { width: 8, height: 6 }));
+        assert!(gpu_stencil_full_window_valid(stencil_window(3, 3, 1, 2)));
+    }
+
+    #[test]
+    fn stencil_full_window_rejects_unguarded_edges_and_oversized_radius() {
+        assert!(!gpu_stencil_full_window_valid(stencil_window(0, 3, 1, 1)));
+        assert!(!gpu_stencil_full_window_valid(stencil_window(3, 5, 1, 1)));
+        assert!(!gpu_stencil_full_window_valid(stencil_window(3, 3, 8, 1)));
+    }
+
+    #[test]
+    fn stencil_guarded_boundary_admits_only_in_domain_reads() {
+        let w = stencil_window(0, 0, 1, 1);
+        assert!(gpu_stencil_guarded_window_valid(w));
+        assert!(gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 0, y: 0 }));
+        assert!(gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 1, y: 1 }));
+        assert!(!gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 2, y: 0 }));
+        assert!(!gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 0, y: 2 }));
     }
 }

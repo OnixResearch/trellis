@@ -11486,3 +11486,6 @@ GPU block-reduction-program admission MUST require positive input, thread, per-t
 
 r[domain-primitives.gpu.reduction-tree-program]
 GPU reduction-tree program admission MUST compose an admitted block-reduction envelope with a non-empty finite stage sequence, MUST require every stage to have positive non-expanding input/output cardinalities and bounded active lanes, MUST require adjacent stages to chain by output-to-input cardinality, and MUST require the final stage output to equal the declared finite output count without claiming operator algebra or numerical accuracy.
+
+r[domain-primitives.gpu.stencil-boundary-program]
+GPU stencil-boundary program admission MUST define finite 2D stencil domains, output coordinates, radii, and read windows such that full-window admission guarantees every modeled input read stays inside the declared input domain, unguarded boundary windows are rejected, and guarded boundary admission only claims in-domain reads without asserting numeric stencil semantics.
