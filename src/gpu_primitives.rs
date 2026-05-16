@@ -848,6 +848,146 @@ pub proof fn valid_gpu_stencil_guarded_read_is_in_bounds(w: GpuStencilWindow2D, 
     ensures gpu_stencil_point_in_domain_spec(w.domain, read.x, read.y)
 {}
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct GpuOutputWriteRegion {
+    pub base: u64,
+    pub span_bytes: u16,
+    pub buffer_bytes: u64,
+    pub logical_index: u64,
+}
+
+// r[depends domain-primitives.gpu.write-disjoint-program]
+pub open spec fn gpu_output_write_region_end_spec(r: GpuOutputWriteRegion) -> nat {
+    (r.base as nat) + (r.span_bytes as nat)
+}
+
+// r[depends domain-primitives.gpu.write-disjoint-program]
+pub open spec fn gpu_output_write_region_spec(r: GpuOutputWriteRegion) -> bool {
+    r.span_bytes > 0
+        && r.base <= r.buffer_bytes
+        && r.span_bytes as nat <= (r.buffer_bytes - r.base) as nat
+}
+
+// r[depends domain-primitives.gpu.write-disjoint-program]
+pub open spec fn gpu_write_regions_disjoint_or_same_spec(a: GpuOutputWriteRegion, b: GpuOutputWriteRegion) -> bool {
+    gpu_output_write_region_spec(a)
+        && gpu_output_write_region_spec(b)
+        && a.buffer_bytes == b.buffer_bytes
+        && (a.logical_index == b.logical_index
+            || gpu_output_write_region_end_spec(a) <= b.base as nat
+            || gpu_output_write_region_end_spec(b) <= a.base as nat)
+}
+
+// r[depends domain-primitives.gpu.write-disjoint-program]
+pub open spec fn gpu_elementwise_output_write_spec(
+    p: GpuElementwiseProgram,
+    logical_index: u32,
+    element_bytes: u16,
+    buffer_bytes: u64,
+) -> bool {
+    gpu_elementwise_program_spec(p)
+        && (logical_index as u64) < p.elements
+        && element_bytes > 0
+        && (logical_index as nat) * (element_bytes as nat) <= buffer_bytes as nat
+        && element_bytes as nat <= (buffer_bytes as nat) - ((logical_index as nat) * (element_bytes as nat))
+}
+
+// r[depends domain-primitives.gpu.write-disjoint-program]
+pub open spec fn gpu_tiled_output_write_spec(
+    k: GpuTiledKernel2D,
+    output: GpuPitchedBuffer,
+    x: u16,
+    y: u16,
+) -> bool {
+    gpu_tiled_kernel2d_spec(k)
+        && gpu_pitched_address_spec(output, x, y)
+        && x < k.width
+        && y < k.height
+}
+
+// r[impl domain-primitives.gpu.write-disjoint-program]
+pub fn gpu_output_write_region_valid(r: GpuOutputWriteRegion) -> (result: bool)
+    ensures result == gpu_output_write_region_spec(r)
+{
+    r.span_bytes > 0
+        && r.base <= r.buffer_bytes
+        && r.span_bytes as u64 <= r.buffer_bytes - r.base
+}
+
+// r[impl domain-primitives.gpu.write-disjoint-program]
+pub fn gpu_write_regions_disjoint_or_same_valid(
+    a: GpuOutputWriteRegion,
+    b: GpuOutputWriteRegion,
+) -> (result: bool)
+    ensures result == gpu_write_regions_disjoint_or_same_spec(a, b)
+{
+    gpu_output_write_region_valid(a)
+        && gpu_output_write_region_valid(b)
+        && a.buffer_bytes == b.buffer_bytes
+        && (a.logical_index == b.logical_index
+            || a.base + a.span_bytes as u64 <= b.base
+            || b.base + b.span_bytes as u64 <= a.base)
+}
+
+// r[impl domain-primitives.gpu.write-disjoint-program]
+pub fn gpu_elementwise_output_write_valid(
+    p: GpuElementwiseProgram,
+    logical_index: u32,
+    element_bytes: u16,
+    buffer_bytes: u64,
+) -> (result: bool)
+    ensures result == gpu_elementwise_output_write_spec(p, logical_index, element_bytes, buffer_bytes)
+{
+    assert((logical_index as u64) * (element_bytes as u64) <= u64::MAX) by(nonlinear_arith);
+    gpu_elementwise_program_valid(p)
+        && (logical_index as u64) < p.elements
+        && element_bytes > 0
+        && (logical_index as u64) * (element_bytes as u64) <= buffer_bytes
+        && element_bytes as u64 <= buffer_bytes - ((logical_index as u64) * (element_bytes as u64))
+}
+
+// r[impl domain-primitives.gpu.write-disjoint-program]
+pub fn gpu_tiled_output_write_valid(
+    k: GpuTiledKernel2D,
+    output: GpuPitchedBuffer,
+    x: u16,
+    y: u16,
+) -> (result: bool)
+    ensures result == gpu_tiled_output_write_spec(k, output, x, y)
+{
+    gpu_tiled_kernel2d_valid(k)
+        && gpu_pitched_address_valid(output, x, y)
+        && x < k.width
+        && y < k.height
+}
+
+// r[verify domain-primitives.gpu.write-disjoint-program]
+pub proof fn valid_gpu_output_write_region_stays_in_buffer(r: GpuOutputWriteRegion)
+    requires gpu_output_write_region_spec(r)
+    ensures gpu_output_write_region_end_spec(r) <= r.buffer_bytes as nat
+{}
+
+// r[verify domain-primitives.gpu.write-disjoint-program]
+pub proof fn valid_gpu_write_regions_distinct_are_disjoint(a: GpuOutputWriteRegion, b: GpuOutputWriteRegion)
+    requires
+        gpu_write_regions_disjoint_or_same_spec(a, b),
+        a.logical_index != b.logical_index,
+    ensures
+        gpu_output_write_region_end_spec(a) <= b.base as nat
+            || gpu_output_write_region_end_spec(b) <= a.base as nat,
+{}
+
+// r[verify domain-primitives.gpu.write-disjoint-program]
+pub proof fn valid_gpu_tiled_output_write_inside_buffer(
+    k: GpuTiledKernel2D,
+    output: GpuPitchedBuffer,
+    x: u16,
+    y: u16,
+)
+    requires gpu_tiled_output_write_spec(k, output, x, y)
+    ensures gpu_pitched_address_spec(output, x, y)
+{}
+
 } // verus!
 
 #[cfg(test)]
@@ -1238,5 +1378,97 @@ mod tests {
         assert!(gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 1, y: 1 }));
         assert!(!gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 2, y: 0 }));
         assert!(!gpu_stencil_guarded_read_valid(w, GpuStencilRead2D { x: 0, y: 2 }));
+    }
+
+    #[test]
+    fn output_write_region_requires_positive_in_buffer_span() {
+        assert!(gpu_output_write_region_valid(GpuOutputWriteRegion {
+            base: 16,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 4,
+        }));
+        assert!(!gpu_output_write_region_valid(GpuOutputWriteRegion {
+            base: 16,
+            span_bytes: 0,
+            buffer_bytes: 64,
+            logical_index: 4,
+        }));
+        assert!(!gpu_output_write_region_valid(GpuOutputWriteRegion {
+            base: 62,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 15,
+        }));
+    }
+
+    #[test]
+    fn output_write_disjointness_allows_same_index_and_rejects_aliasing() {
+        let a = GpuOutputWriteRegion {
+            base: 0,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 0,
+        };
+        let b = GpuOutputWriteRegion {
+            base: 4,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 1,
+        };
+        let same = GpuOutputWriteRegion {
+            base: 0,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 0,
+        };
+        let alias = GpuOutputWriteRegion {
+            base: 2,
+            span_bytes: 4,
+            buffer_bytes: 64,
+            logical_index: 1,
+        };
+        assert!(gpu_write_regions_disjoint_or_same_valid(a, b));
+        assert!(gpu_write_regions_disjoint_or_same_valid(a, same));
+        assert!(!gpu_write_regions_disjoint_or_same_valid(a, alias));
+    }
+
+    #[test]
+    fn elementwise_and_tiled_output_writes_stay_in_bounds() {
+        let p = GpuElementwiseProgram {
+            elements: 16,
+            threads: 4,
+            elements_per_thread: 4,
+        };
+        assert!(gpu_elementwise_output_write_valid(p, 15, 4, 64));
+        assert!(!gpu_elementwise_output_write_valid(p, 16, 4, 68));
+        assert!(!gpu_elementwise_output_write_valid(p, 15, 4, 62));
+
+        let k = GpuTiledKernel2D {
+            width: 8,
+            height: 6,
+            tile_width: 4,
+            tile_height: 3,
+            grid_x: 2,
+            grid_y: 2,
+        };
+        let output = GpuPitchedBuffer {
+            width: 8,
+            height: 6,
+            element_bytes: 4,
+            pitch_bytes: 32,
+            buffer_bytes: 192,
+        };
+        assert!(gpu_tiled_output_write_valid(k, output, 7, 5));
+        assert!(!gpu_tiled_output_write_valid(k, output, 8, 5));
+        assert!(!gpu_tiled_output_write_valid(
+            k,
+            GpuPitchedBuffer {
+                buffer_bytes: 190,
+                ..output
+            },
+            7,
+            5
+        ));
     }
 }

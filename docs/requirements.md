@@ -11489,3 +11489,6 @@ GPU reduction-tree program admission MUST compose an admitted block-reduction en
 
 r[domain-primitives.gpu.stencil-boundary-program]
 GPU stencil-boundary program admission MUST define finite 2D stencil domains, output coordinates, radii, and read windows such that full-window admission guarantees every modeled input read stays inside the declared input domain, unguarded boundary windows are rejected, and guarded boundary admission only claims in-domain reads without asserting numeric stencil semantics.
+
+r[domain-primitives.gpu.write-disjoint-program]
+GPU write-disjoint program admission MUST define finite output write regions with positive byte spans inside a declared output buffer, MUST admit same-logical-output aliases only when explicitly identified by the same logical index, MUST reject overlapping writes for distinct logical indices, and MUST compose elementwise and tiled output coordinates with the existing finite GPU program/layout envelopes without claiming CUDA scheduling or memory-order semantics.
