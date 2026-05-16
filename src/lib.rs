@@ -48,6 +48,8 @@
 //!   attenuation
 //! - `typed_durable_reference` — finite typed durable reference, unpersist, and migration admission
 //! - `remote_computation` — finite remote computation dependency, ability, and resource admission
+//! - `semantic_refactoring` — finite immutable name movement, compatible propagation, and
+//!   unresolved-dependent admission
 //! - `content_addressed_code` — finite content-addressed definition identity, dependency closure,
 //!   and recursive group admission
 //! - `consistent_hash` — consistent hash ring with complete coverage
@@ -415,6 +417,7 @@ pub mod consistent_snapshot;
 pub mod containment;
 pub mod content_addressed_code;
 pub mod remote_computation;
+pub mod semantic_refactoring;
 pub mod typed_durable_reference;
 
 pub mod alloc_bitmap;
