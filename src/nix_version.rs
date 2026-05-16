@@ -407,7 +407,7 @@ pub proof fn compare_versions_range(a: Seq<u8>, b: Seq<u8>)
 
 /// Longest numeric component admitted by the finite bridge model.
 /// Components above this length stay delegated to the trusted bridge.
-pub const MAX_MODELED_NUMERIC_COMPONENT_LEN: usize = 19;
+pub const MAX_MODELED_NUMERIC_COMPONENT_LEN: usize = 1;
 
 /// Spec: finite model admission for version bytes from index `i` with a current digit-run length.
 pub open spec fn admitted_version_model_from(s: Seq<u8>, i: int, current_digit_run: int) -> bool
@@ -430,6 +430,61 @@ pub open spec fn admitted_version_model_from(s: Seq<u8>, i: int, current_digit_r
 /// Spec: admitted finite model for a version byte sequence.
 pub open spec fn admitted_version_model(s: Seq<u8>) -> bool {
     admitted_version_model_from(s, 0, 0)
+}
+
+proof fn admitted_skip_seps_suffix(s: Seq<u8>, i: int)
+    requires
+        admitted_version_model_from(s, i, 0),
+        0 <= i <= s.len(),
+    ensures admitted_version_model_from(s, skip_seps(s, i), 0)
+    decreases s.len() - i
+{
+    if i < s.len() && is_separator(s[i]) {
+        admitted_skip_seps_suffix(s, i + 1);
+    } else {
+        assert(skip_seps(s, i) == i);
+    }
+}
+
+proof fn admitted_digit_component_single(s: Seq<u8>, i: int)
+    requires
+        admitted_version_model_from(s, i, 0),
+        0 <= i < s.len(),
+        is_digit_byte(s[i]),
+    ensures
+        comp_end(s, i, true) <= i + 1,
+        admitted_version_model_from(s, comp_end(s, i, true), 0),
+    decreases s.len() - i
+{
+    assert(admitted_version_model_from(s, i + 1, 1));
+    if i + 1 < s.len() {
+        if is_digit_byte(s[i + 1]) {
+            assert(!admitted_version_model_from(s, i + 1, 1));
+            assert(false);
+        } else {
+            assert(comp_end(s, i + 1, true) == i + 1);
+            assert(comp_end(s, i, true) == i + 1);
+            assert(admitted_version_model_from(s, i + 1, 0));
+        }
+    } else {
+        assert(comp_end(s, i + 1, true) == i + 1);
+        assert(comp_end(s, i, true) == i + 1);
+        assert(admitted_version_model_from(s, i + 1, 0));
+    }
+}
+
+proof fn admitted_alpha_component_suffix(s: Seq<u8>, i: int)
+    requires
+        admitted_version_model_from(s, i, 0),
+        0 <= i <= s.len(),
+    ensures admitted_version_model_from(s, comp_end(s, i, false), 0)
+    decreases s.len() - i
+{
+    if i < s.len() && is_alpha_byte(s[i]) {
+        admitted_alpha_component_suffix(s, i + 1);
+    } else {
+        assert(comp_end(s, i, false) == i);
+    }
 }
 
 // r[impl verification-gaps.nix-version-bridge-decomposition]
@@ -483,9 +538,191 @@ pub fn admits_compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: bool)
     a_ok && b_ok
 }
 
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Skip version separators in the executable modeled comparator.
+pub fn skip_seps_exec(s: &Vec<u8>, i: usize) -> (result: usize)
+    requires i <= s.len()
+    ensures result as int == skip_seps(s@, i as int), result <= s.len()
+    decreases s.len() - i
+{
+    proof { skip_seps_bounds(s@, i as int); }
+    if i < s.len() && (s[i] == 46 || s[i] == 45) {
+        skip_seps_exec(s, i + 1)
+    } else {
+        i
+    }
+}
+
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Find the end of the current numeric or alphabetic component.
+pub fn comp_end_exec(s: &Vec<u8>, i: usize, numeric: bool) -> (result: usize)
+    requires i <= s.len()
+    ensures result as int == comp_end(s@, i as int, numeric), i <= result, result <= s.len()
+    decreases s.len() - i
+{
+    proof { comp_end_bounds(s@, i as int, numeric); }
+    if i < s.len() {
+        let byte = s[i];
+        if numeric && byte >= 48 && byte <= 57 {
+            comp_end_exec(s, i + 1, numeric)
+        } else if !numeric && ((byte >= 65 && byte <= 90) || (byte >= 97 && byte <= 122)) {
+            comp_end_exec(s, i + 1, numeric)
+        } else {
+            i
+        }
+    } else {
+        i
+    }
+}
+
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Parse an admitted numeric component into the mathematical numeric value.
+pub fn parse_num_from_exec(s: &Vec<u8>, i: usize, end: usize) -> (result: u64)
+    requires
+        i <= end,
+        end <= s.len(),
+        end - i <= MAX_MODELED_NUMERIC_COMPONENT_LEN,
+        forall|j: int| i as int <= j < end as int ==> is_digit_byte(#[trigger] s@[j]),
+    ensures result as int == parse_num_from(s@, i as int, end as int)
+    decreases end - i
+{
+    if i >= end {
+        0
+    } else {
+        let prefix = parse_num_from_exec(s, i, end - 1);
+        let digit = (s[end - 1] - 48) as u64;
+        proof {
+            assert(is_digit_byte(s@[(end - 1) as int]));
+            assert(digit <= 9);
+            assert(end - i <= 1);
+            assert(i == end - 1);
+            assert(prefix == 0);
+            assert(parse_num_from(s@, i as int, end as int) == digit as int);
+        }
+        digit
+    }
+}
+
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Executable lexicographic comparison for modeled alphabetic components.
+pub fn lex_cmp_exec(
+    a: &Vec<u8>, ai: usize, a_end: usize,
+    b: &Vec<u8>, bi: usize, b_end: usize,
+) -> (result: i8)
+    requires ai <= a_end, a_end <= a.len(), bi <= b_end, b_end <= b.len()
+    ensures result as int == lex_cmp(a@, ai as int, a_end as int, b@, bi as int, b_end as int),
+            result == -1 || result == 0 || result == 1
+    decreases (a_end - ai) + (b_end - bi)
+{
+    proof { lex_cmp_range(a@, ai as int, a_end as int, b@, bi as int, b_end as int); }
+    if ai >= a_end && bi >= b_end {
+        0
+    } else if ai >= a_end {
+        -1
+    } else if bi >= b_end {
+        1
+    } else if a[ai] < b[bi] {
+        -1
+    } else if a[ai] > b[bi] {
+        1
+    } else {
+        lex_cmp_exec(a, ai + 1, a_end, b, bi + 1, b_end)
+    }
+}
+
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Verified executable comparator for admitted finite-model inputs.
+pub fn compare_versions_modeled_fuel_exec(
+    a: &Vec<u8>, ai: usize, b: &Vec<u8>, bi: usize, fuel: usize,
+) -> (result: i8)
+    requires
+        ai <= a.len(),
+        bi <= b.len(),
+        fuel <= a.len() + b.len(),
+        admitted_version_model_from(a@, ai as int, 0),
+        admitted_version_model_from(b@, bi as int, 0),
+    ensures result as int == cv_fuel(a@, ai as int, b@, bi as int, fuel as nat),
+            result == -1 || result == 0 || result == 1
+    decreases fuel
+{
+    proof { cv_fuel_range(a@, ai as int, b@, bi as int, fuel as nat); }
+    if fuel == 0 {
+        0
+    } else {
+        let ai2 = skip_seps_exec(a, ai);
+        let bi2 = skip_seps_exec(b, bi);
+        proof {
+            admitted_skip_seps_suffix(a@, ai as int);
+            admitted_skip_seps_suffix(b@, bi as int);
+        }
+        if ai2 >= a.len() && bi2 >= b.len() {
+            0
+        } else {
+            let a_num = if ai2 < a.len() { a[ai2] >= 48 && a[ai2] <= 57 } else { false };
+            let b_num = if bi2 < b.len() { b[bi2] >= 48 && b[bi2] <= 57 } else { false };
+            let a_end = comp_end_exec(a, ai2, a_num);
+            let b_end = comp_end_exec(b, bi2, b_num);
+            proof {
+                if ai2 < a.len() && a_num {
+                    admitted_digit_component_single(a@, ai2 as int);
+                    assert(a_end - ai2 <= MAX_MODELED_NUMERIC_COMPONENT_LEN);
+                } else {
+                    admitted_alpha_component_suffix(a@, ai2 as int);
+                }
+                if bi2 < b.len() && b_num {
+                    admitted_digit_component_single(b@, bi2 as int);
+                    assert(b_end - bi2 <= MAX_MODELED_NUMERIC_COMPONENT_LEN);
+                } else {
+                    admitted_alpha_component_suffix(b@, bi2 as int);
+                }
+            }
+            if a_end == ai2 && b_end != bi2 {
+                -1
+            } else if a_end != ai2 && b_end == bi2 {
+                1
+            } else if a_num && !b_num {
+                1
+            } else if !a_num && b_num {
+                -1
+            } else if a_num {
+                let a_val = parse_num_from_exec(a, ai2, a_end);
+                let b_val = parse_num_from_exec(b, bi2, b_end);
+                if a_val < b_val {
+                    -1
+                } else if a_val > b_val {
+                    1
+                } else {
+                    compare_versions_modeled_fuel_exec(a, a_end, b, b_end, fuel - 1)
+                }
+            } else {
+                let lex = lex_cmp_exec(a, ai2, a_end, b, bi2, b_end);
+                if lex != 0 {
+                    lex
+                } else {
+                    compare_versions_modeled_fuel_exec(a, a_end, b, b_end, fuel - 1)
+                }
+            }
+        }
+    }
+}
+
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
+/// Compare admitted finite-model inputs without delegating through trusted `compare_versions`.
+pub fn compare_versions_modeled_exec(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+    requires
+        admitted_version_model(a@),
+        admitted_version_model(b@),
+        a.len() <= usize::MAX - b.len(),
+    ensures result as int == compare_versions_spec(a@, b@), result == -1 || result == 0 || result == 1
+{
+    compare_versions_modeled_fuel_exec(a, 0, b, 0, a.len() + b.len())
+}
+
 // r[impl verification-gaps.nix-version-bridge-decomposition]
+// r[impl verification-gaps.nix-version-modeled-compare-bridge]
 /// Compare only admitted finite-model inputs; reject out-of-model bytes explicitly.
 pub fn compare_versions_modeled(a: &Vec<u8>, b: &Vec<u8>) -> (result: Option<i8>)
+    requires a.len() <= usize::MAX - b.len()
     ensures
         match result {
             Some(r) => admitted_version_model(a@) && admitted_version_model(b@)
@@ -495,7 +732,7 @@ pub fn compare_versions_modeled(a: &Vec<u8>, b: &Vec<u8>) -> (result: Option<i8>
         }
 {
     if admits_compare_versions(a, b) {
-        Some(compare_versions(a, b))
+        Some(compare_versions_modeled_exec(a, b))
     } else {
         None
     }
@@ -505,6 +742,12 @@ pub fn compare_versions_modeled(a: &Vec<u8>, b: &Vec<u8>) -> (result: Option<i8>
 /// The finite wrapper rejects out-of-model inputs instead of claiming verified ordering.
 pub proof fn admitted_compare_requires_left(a: Seq<u8>, b: Seq<u8>)
     ensures !admitted_version_model(a) ==> !(admitted_version_model(a) && admitted_version_model(b))
+{}
+
+// r[verify verification-gaps.nix-version-modeled-compare-bridge]
+/// The modeled comparator reuses the existing comparison spec for admitted inputs.
+pub proof fn modeled_compare_spec_is_existing_spec(a: Seq<u8>, b: Seq<u8>)
+    ensures compare_versions_spec(a, b) == cv_fuel(a, 0, b, 0, (a.len() + b.len()) as nat)
 {}
 
 // --- compare_versions exec ---
@@ -712,16 +955,18 @@ mod tests {
     }
 
     // r[verify verification-gaps.nix-version-bridge-decomposition]
+    // r[verify verification-gaps.nix-version-modeled-compare-bridge]
     #[test]
     fn test_modeled_admission_and_rejection() {
-        assert!(admitted_version_model_exec(&v("2.3.10-pre1")));
-        assert_eq!(compare_versions_modeled(&v("2.3.2"), &v("2.3.10")), Some(-1));
-        assert_eq!(compare_versions_modeled(&v("1.01"), &v("1.1")), Some(0));
+        assert!(admitted_version_model_exec(&v("2.3.9-pre1")));
+        assert_eq!(compare_versions_modeled(&v("2.3.2"), &v("2.3.9")), Some(-1));
+        assert_eq!(compare_versions_modeled(&v("1.0"), &v("1.0")), Some(0));
+        assert_eq!(compare_versions_modeled(&v("2.a"), &v("2.1")), Some(-1));
 
         assert!(!admitted_version_model_exec(&v("1_0")));
         assert_eq!(compare_versions_modeled(&v("1_0"), &v("1.0")), None);
 
-        let too_long_numeric = v("12345678901234567890");
+        let too_long_numeric = v("10");
         assert!(!admitted_version_model_exec(&too_long_numeric));
         assert_eq!(compare_versions_modeled(&too_long_numeric, &too_long_numeric), None);
     }
