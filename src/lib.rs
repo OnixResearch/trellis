@@ -1,4 +1,4 @@
-//! Verified logic building blocks.
+//! Trellis: composable verified-logic building blocks.
 //!
 //! Every public function in this crate has machine-checked pre/postconditions
 //! verified by [Verus](https://verus-lang.github.io/verus/guide/). Requirements

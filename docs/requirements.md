@@ -1,6 +1,6 @@
-# Verified Logic Requirements
+# Trellis Requirements
 
-This document defines the requirements for the `verified-logic` library.
+This document defines the requirements for Trellis, the `verified-logic` Rust library.
 Every requirement has a Tracey ID and maps to verified Rust code.
 
 ## Bitwise

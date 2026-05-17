@@ -1,6 +1,6 @@
 project:
-  name: verified-logic
-  description: Verified logic library — reusable building blocks with machine-checked proofs via Verus
+  name: trellis
+  description: Trellis — composable verified-logic building blocks with machine-checked proofs via Verus
   language: rust
   schema: spec-driven
 

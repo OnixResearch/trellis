@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Adopted **Trellis** as the project/repo name in user-facing docs while keeping the Rust crate name `verified-logic` for compatibility.
+
 ## v0.2.0 - 2026-05-16
 
 This release is a major proof-surface and model-coverage expansion since `v0.1.0`.

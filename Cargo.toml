@@ -3,7 +3,7 @@ name = "verified-logic"
 version = "0.2.0"
 edition = "2024"
 license = "AGPL-3.0-or-later"
-description = "Verified logic building blocks — machine-checked with Verus"
+description = "Trellis: composable verified-logic building blocks, machine-checked with Verus"
 
 [dependencies]
 anyhow = "1.0"

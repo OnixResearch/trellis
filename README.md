@@ -1,6 +1,8 @@
-# verified-logic
+# Trellis
 
-Reusable logic building blocks with machine-checked correctness.
+Natural, composable verified-logic building blocks for reliable systems.
+Trellis provides a lightweight structure for growing reusable proofs, specs,
+and runtime code that stays mechanically checked.
 
 The house style is a `spec fn` (mathematical definition) plus an
 `exec fn` whose `ensures result == spec(args)` clause is verified by
@@ -452,7 +454,7 @@ validation commands captured in the change evidence.
 
 ```toml
 [dependencies]
-verified-logic = { git = "https://github.com/yourname/verified-logic" }
+verified-logic = { git = "https://github.com/yourname/trellis" }
 ```
 
 ```rust

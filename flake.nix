@@ -1,5 +1,5 @@
 {
-  description = "verified-logic — Verified Rust library with Verus proofs and Tracey coverage";
+  description = "Trellis — composable verified-logic building blocks with Verus proofs and Tracey coverage";
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
