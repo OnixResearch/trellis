@@ -454,7 +454,7 @@ validation commands captured in the change evidence.
 
 ```toml
 [dependencies]
-verified-logic = { git = "https://github.com/yourname/trellis" }
+verified-logic = { git = "https://github.com/OnixResearch/trellis" }
 ```
 
 ```rust
