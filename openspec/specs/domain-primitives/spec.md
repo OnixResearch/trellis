@@ -3427,6 +3427,81 @@ The system MUST define sandbox ability attenuation where a sandboxed context can
 - WHEN a computation requiring `IO` is evaluated for sandbox admission
 - THEN the computation is rejected with missing-ability metadata
 
+### Requirement: Algebraic Effect Signature Admission [r[domain-primitives.algebraic-effect.signature]]
+The system MUST define finite algebraic-effect signatures whose operation declarations admit calls only by exact `(effect, operation)` identity, without claiming runtime stack capture, typechecker correctness, or handler execution semantics.
+
+#### Scenario: Declared operation is admitted
+
+- GIVEN a signature declaring operation `Read` for effect `Store`
+- WHEN a call references `(Store, Read)`
+- THEN signature admission accepts the call
+
+#### Scenario: Undeclared operation is rejected
+
+- GIVEN a signature declaring operation `Read` for effect `Store`
+- WHEN a call references `(Store, Write)` or `(Console, Read)` without a matching declaration
+- THEN signature admission rejects the call
+
+### Requirement: Algebraic Effect Invocation Arity [r[domain-primitives.algebraic-effect.arity]]
+The system MUST define finite invocation admission where an invocation is accepted only when the signature declares the same `(effect, operation)` identity and the declared input and output arities exactly match the invocation counts, while preserving a separate call-identity projection and without claiming runtime argument typechecking.
+
+#### Scenario: Matching arity is admitted
+
+- GIVEN a signature declaring `State.Put` with two inputs and one output
+- WHEN an invocation references `State.Put` with two input values and one expected output
+- THEN invocation admission accepts the invocation and its call identity is `(State, Put)`
+
+#### Scenario: Arity mismatch is rejected
+
+- GIVEN a signature declaring `State.Put` with two inputs and one output
+- WHEN an invocation references `State.Put` with one input or two expected outputs
+- THEN invocation admission rejects the invocation
+
+### Requirement: Algebraic Effect Handler Coverage [r[domain-primitives.algebraic-effect.handler-coverage]]
+The system MUST define finite handler coverage where an available handler for one effect covers exactly the declared operations for that effect that have matching handler clauses, leaving other effects outside the coverage claim.
+
+#### Scenario: Complete handler covers its handled effect
+
+- GIVEN a signature with operations `Ask` and `Tell` for effect `Log`
+- WHEN an available handler for `Log` declares clauses for both operations
+- THEN handler coverage accepts the handler for that effect
+
+#### Scenario: Missing handler clause rejects coverage
+
+- GIVEN a signature with operations `Ask` and `Tell` for effect `Log`
+- WHEN a handler for `Log` lacks a `Tell` clause
+- THEN handler coverage rejects the handler for that effect
+
+### Requirement: Algebraic Effect Handler Discharge [r[domain-primitives.algebraic-effect.handler-discharge]]
+The system MUST define finite residual-call discharge where a handler removes only calls for its handled effect and declared operation clauses, preserving calls for other effects or missing clauses in order.
+
+#### Scenario: Matching calls are discharged
+
+- GIVEN a call sequence containing handled `State.Get` calls and unhandled `Console.Print` calls
+- WHEN an available `State` handler with a `Get` clause is applied
+- THEN the residual call sequence excludes the handled `State.Get` calls and preserves the `Console.Print` calls in order
+
+#### Scenario: Missing clause remains residual
+
+- GIVEN a call sequence containing `State.Put`
+- WHEN a `State` handler lacks a `Put` clause
+- THEN `State.Put` remains in the residual call sequence
+
+### Requirement: Algebraic Effect Continuation Token [r[domain-primitives.algebraic-effect.continuation-token]]
+The system MUST define finite continuation tokens that can be resumed only by an available handler for the token's effect and become unusable after consumption, without claiming runtime continuation capture or re-entry semantics.
+
+#### Scenario: Matching unused token can resume
+
+- GIVEN an unused continuation token for effect `Async`
+- WHEN an available `Async` handler checks resume admission
+- THEN the token is admitted for resume
+
+#### Scenario: Consumed token cannot resume again
+
+- GIVEN a continuation token that has been consumed
+- WHEN any handler checks resume admission
+- THEN the token is rejected as already used
+
 ### Requirement: Typed Durable Reference Envelope [r[domain-primitives.typed-durable-reference.envelope]]
 The system MUST define finite typed durable reference envelopes containing value identity, expected type identity, schema/version metadata, and dependency-closure identity, and MUST reject references whose declared metadata is inconsistent or outside finite model bounds.
 

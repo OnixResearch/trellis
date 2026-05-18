@@ -11495,3 +11495,18 @@ GPU stencil-boundary program admission MUST define finite 2D stencil domains, ou
 
 r[domain-primitives.gpu.write-disjoint-program]
 GPU write-disjoint program admission MUST define finite output write regions with positive byte spans inside a declared output buffer, MUST admit same-logical-output aliases only when explicitly identified by the same logical index, MUST reject overlapping writes for distinct logical indices, and MUST compose elementwise and tiled output coordinates with the existing finite GPU program/layout envelopes without claiming CUDA scheduling or memory-order semantics.
+
+r[domain-primitives.algebraic-effect.signature]
+Algebraic-effect signature admission MUST admit calls only when a finite signature declares an operation with the exact same effect and operation identifiers, without claiming runtime stack capture, typechecker correctness, or handler execution semantics.
+
+r[domain-primitives.algebraic-effect.arity]
+Algebraic-effect invocation admission MUST admit an invocation only when a finite signature declares the same effect and operation identifiers with exactly matching input and output arities, and MUST expose the call identity separately from arity validation without claiming runtime argument typechecking.
+
+r[domain-primitives.algebraic-effect.handler-coverage]
+Algebraic-effect handler coverage MUST require an available handler and a matching handler clause for every declared operation belonging to the handled effect while leaving other effects outside the coverage claim.
+
+r[domain-primitives.algebraic-effect.handler-discharge]
+Algebraic-effect handler discharge MUST remove only calls for the handled effect and declared operation clauses, preserving calls for other effects or missing clauses in residual order.
+
+r[domain-primitives.algebraic-effect.continuation-token]
+Algebraic-effect continuation-token admission MUST allow resume only for unused tokens whose effect matches an available handler, and a consumed token MUST be rejected for any later resume check.

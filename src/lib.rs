@@ -46,6 +46,8 @@
 //! - `containment` — delegation containment: scope + mode + subsumption
 //! - `ability_effect` — finite ability requirement admission, handler discharge, and sandbox
 //!   attenuation
+//! - `algebraic_effect` — finite algebraic-effect signatures, handler coverage, residual calls, and
+//!   single-use continuation tokens
 //! - `typed_durable_reference` — finite typed durable reference, unpersist, and migration admission
 //! - `remote_computation` — finite remote computation dependency, ability, and resource admission
 //! - `semantic_refactoring` — finite immutable name movement, compatible propagation, and
@@ -379,6 +381,7 @@ pub mod ability_effect;
 pub mod access_mode;
 pub mod acid;
 pub mod algebraic;
+pub mod algebraic_effect;
 pub mod append_entries_build;
 pub mod append_entries_check;
 pub mod append_response;
