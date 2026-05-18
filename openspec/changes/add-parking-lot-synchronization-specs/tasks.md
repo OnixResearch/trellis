@@ -10,9 +10,9 @@
 
 ## Phase 3: Lock and condvar state machines
 
-- [ ] [depends:parking-lot-core] Implement compact raw mutex bit-state specs/checkers and proofs for `r[domain-primitives.parking-lot-raw-mutex.state-machine]`.
-- [ ] [depends:raw-mutex] Implement condvar association, notify-one, notify-all, and requeue specs/checkers with no-spurious-wakeup proofs for `r[domain-primitives.parking-lot-condvar.requeue-no-spurious]`.
-- [ ] [depends:parking-lot-core] Implement packed RwLock state, reader/writer fairness, downgrade, and upgrade specs/checkers for `r[domain-primitives.parking-lot-rwlock.packed-fair-state]`.
+- [x] [depends:parking-lot-core] Implement compact raw mutex bit-state specs/checkers and proofs for `r[domain-primitives.parking-lot-raw-mutex.state-machine]`. ✅ 5m (started: 2026-05-18T14:48:31Z → completed: 2026-05-18T14:53:08Z)
+- [x] [depends:raw-mutex] Implement condvar association, notify-one, notify-all, and requeue specs/checkers with no-spurious-wakeup proofs for `r[domain-primitives.parking-lot-condvar.requeue-no-spurious]`. ✅ 5m (started: 2026-05-18T14:48:31Z → completed: 2026-05-18T14:53:08Z)
+- [x] [depends:parking-lot-core] Implement packed RwLock state, reader/writer fairness, downgrade, and upgrade specs/checkers for `r[domain-primitives.parking-lot-rwlock.packed-fair-state]`. ✅ 5m (started: 2026-05-18T14:48:31Z → completed: 2026-05-18T14:53:08Z)
 
 ## Phase 4: Extension contracts
 
