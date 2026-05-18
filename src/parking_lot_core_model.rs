@@ -189,11 +189,13 @@ pub fn requeue_preserves_waiter_count(before: &ParkingLotTable, after: &RequeueR
 }
 
 // r[verify domain-primitives.parking-lot-core.queue-validity]
+// r[impl domain-primitives.parking-lot-core.queue-validity]
 pub fn valid_table_has_unique_waiters(table: &ParkingLotTable) -> bool {
     !table_valid(table) || waiters_unique(table)
 }
 
 // r[verify domain-primitives.parking-lot-core.operations]
+// r[impl domain-primitives.parking-lot-core.operations]
 pub fn park_preserves_validity_when_absent(table: &ParkingLotTable, key: u64, thread_id: u64) -> bool {
     if !table_valid(table) || has_waiter(table, thread_id) {
         true
@@ -203,6 +205,7 @@ pub fn park_preserves_validity_when_absent(table: &ParkingLotTable, key: u64, th
 }
 
 // r[verify domain-primitives.parking-lot-core.operations]
+// r[impl domain-primitives.parking-lot-core.operations]
 pub fn requeue_preserves_validity(table: &ParkingLotTable, from: u64, to: u64) -> bool {
     if !table_valid(table) {
         true

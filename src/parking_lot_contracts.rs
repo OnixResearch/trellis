@@ -27,6 +27,7 @@ pub enum OnceState {
     Poisoned,
 }
 
+#[allow(clippy::struct_excessive_bools)]
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub struct RawLockContract {
     pub mutual_exclusion: bool,
@@ -65,6 +66,7 @@ pub fn handoff_serves_oldest_waiter(waiters: &[u64], decision: HandoffDecision) 
 }
 
 // r[verify domain-primitives.parking-lot-fairness.eventual-handoff]
+// r[impl domain-primitives.parking-lot-fairness.eventual-handoff]
 pub fn fair_nonempty_unlock_hands_off(waiters: &[u64]) -> bool {
     if waiters.is_empty() {
         true
@@ -92,6 +94,7 @@ pub fn timeout_admission_valid(was_registered: bool, outcome: TimedWaitOutcome) 
 }
 
 // r[verify domain-primitives.parking-lot-timeout.timed-wait]
+// r[impl domain-primitives.parking-lot-timeout.timed-wait]
 pub fn notified_beats_timeout_race() -> bool {
     timed_wait_outcome(true, true, true) == TimedWaitOutcome::Notified
 }
@@ -130,6 +133,7 @@ pub fn reentrant_unlock(state: ReentrantMutexState, caller: u64) -> Option<Reent
 }
 
 // r[verify domain-primitives.parking-lot-reentrant-mutex.owner-count]
+// r[impl domain-primitives.parking-lot-reentrant-mutex.owner-count]
 pub fn reentrant_other_thread_cannot_enter(owner: u64, other: u64) -> bool {
     owner == other
         || reentrant_lock(
@@ -165,6 +169,7 @@ pub fn once_observe_initialized(state: OnceState) -> bool {
 }
 
 // r[verify domain-primitives.parking-lot-once.exactly-once]
+// r[impl domain-primitives.parking-lot-once.exactly-once]
 pub fn once_complete_is_terminal(initializer: u64) -> bool {
     once_start(OnceState::Complete, initializer).is_none()
         && once_finish(OnceState::Complete, initializer, true).is_none()
@@ -182,6 +187,7 @@ pub fn raw_lock_contract_valid(contract: RawLockContract) -> bool {
 }
 
 // r[verify domain-primitives.parking-lot-raw-lock-contracts.contracts]
+// r[impl domain-primitives.parking-lot-raw-lock-contracts.contracts]
 pub fn canonical_raw_lock_contract_valid() -> bool {
     raw_lock_contract_valid(RawLockContract {
         mutual_exclusion: true,
@@ -214,6 +220,7 @@ pub fn wait_for_contains_two_thread_cycle(edges: &[WaitForEdge], a: u64, b: u64)
 }
 
 // r[verify domain-primitives.parking-lot-deadlock-detector.cycle-soundness]
+// r[impl domain-primitives.parking-lot-deadlock-detector.cycle-soundness]
 pub fn detected_two_thread_cycle_is_sound(edges: &[WaitForEdge], a: u64, b: u64) -> bool {
     !wait_for_contains_two_thread_cycle(edges, a, b) || wait_for_reported_cycle_sound(edges, &[a, b])
 }

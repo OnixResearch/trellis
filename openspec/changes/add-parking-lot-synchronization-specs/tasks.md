@@ -25,6 +25,6 @@
 
 ## Phase 5: Integration and evidence
 
-- [ ] [depends:implementation] Add Tracey requirement coverage for all parking-lot synchronization requirements and update `src/lib.rs` module exports/docs.
-- [ ] [depends:implementation] Run focused tests, Verus checks for changed modules, `tracey query uncovered`, `tracey query untested`, `cargo clippy --all-targets -- -D warnings`, and repository validation; archive raw evidence logs.
+- [x] [depends:implementation] Add Tracey requirement coverage for all parking-lot synchronization requirements and update `src/lib.rs` module exports/docs. ✅ 13m (started: 2026-05-18T14:55:20Z → completed: 2026-05-18T15:08:33Z)
+- [x] [depends:implementation] Run focused tests, Verus checks for changed modules, `tracey query uncovered`, `tracey query untested`, `cargo clippy --all-targets -- -D warnings`, and repository validation; archive raw evidence logs. ✅ 13m (started: 2026-05-18T14:55:20Z → completed: 2026-05-18T15:08:33Z)
 - [ ] [depends:verification] Sync canonical specs, archive the change, commit, push, and verify clean state.

@@ -90,12 +90,14 @@ pub fn raw_mutex_waiter_accounted(
 }
 
 // r[verify domain-primitives.parking-lot-raw-mutex.state-machine]
+// r[impl domain-primitives.parking-lot-raw-mutex.state-machine]
 pub fn raw_mutex_fast_path_locks(thread_id: u64) -> bool {
     let (step, state) = raw_mutex_lock(RawMutexState::unlocked(), thread_id);
     step == RawMutexStep::AcquiredFast && raw_mutex_is_locked(state) && state.owner == Some(thread_id)
 }
 
 // r[verify domain-primitives.parking-lot-raw-mutex.state-machine]
+// r[impl domain-primitives.parking-lot-raw-mutex.state-machine]
 pub fn raw_mutex_queued_sets_parked(holder: u64, waiter: u64) -> bool {
     let state = RawMutexState {
         bits: RAW_MUTEX_LOCKED_BIT,

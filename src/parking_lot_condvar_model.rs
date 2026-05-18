@@ -70,12 +70,14 @@ pub fn condvar_wake_valid(kind: CondvarWakeKind, notify_event: bool, deadline_re
 }
 
 // r[verify domain-primitives.parking-lot-condvar.requeue-no-spurious]
+// r[impl domain-primitives.parking-lot-condvar.requeue-no-spurious]
 pub fn condvar_notify_all_accounts_for_all(state: CondvarState) -> bool {
     let result = condvar_notify_all_requeue(state);
     result.woken + result.requeued == state.waiter_count && result.remaining_condvar_waiters == 0
 }
 
 // r[verify domain-primitives.parking-lot-condvar.requeue-no-spurious]
+// r[impl domain-primitives.parking-lot-condvar.requeue-no-spurious]
 pub fn condvar_non_timeout_requires_notify() -> bool {
     !condvar_wake_valid(CondvarWakeKind::Notified, false, true)
 }

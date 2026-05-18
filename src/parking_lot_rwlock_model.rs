@@ -86,7 +86,7 @@ pub fn rwlock_downgrade(state: PackedRwLockState) -> Option<PackedRwLockState> {
 pub fn rwlock_upgradable_acquire(state: PackedRwLockState) -> Option<PackedRwLockState> {
     if rwlock_can_read(state, true) && !rwlock_has_upgradable(state) {
         Some(PackedRwLockState {
-            bits: state.bits + RWLOCK_ONE_READER | RWLOCK_UPGRADABLE_BIT,
+            bits: (state.bits + RWLOCK_ONE_READER) | RWLOCK_UPGRADABLE_BIT,
         })
     } else {
         None
@@ -97,7 +97,7 @@ pub fn rwlock_upgradable_acquire(state: PackedRwLockState) -> Option<PackedRwLoc
 pub fn rwlock_upgrade(state: PackedRwLockState) -> Option<PackedRwLockState> {
     if rwlock_state_valid(state) && rwlock_has_upgradable(state) && rwlock_reader_count(state) == 1 {
         Some(PackedRwLockState {
-            bits: (state.bits & !RWLOCK_UPGRADABLE_BIT) - RWLOCK_ONE_READER | RWLOCK_WRITER_BIT,
+            bits: ((state.bits & !RWLOCK_UPGRADABLE_BIT) - RWLOCK_ONE_READER) | RWLOCK_WRITER_BIT,
         })
     } else {
         None
@@ -105,11 +105,13 @@ pub fn rwlock_upgrade(state: PackedRwLockState) -> Option<PackedRwLockState> {
 }
 
 // r[verify domain-primitives.parking-lot-rwlock.packed-fair-state]
+// r[impl domain-primitives.parking-lot-rwlock.packed-fair-state]
 pub fn rwlock_downgrade_preserves_validity(state: PackedRwLockState) -> bool {
     rwlock_downgrade(state).is_none_or(rwlock_state_valid)
 }
 
 // r[verify domain-primitives.parking-lot-rwlock.packed-fair-state]
+// r[impl domain-primitives.parking-lot-rwlock.packed-fair-state]
 pub fn rwlock_upgradable_is_unique(state: PackedRwLockState) -> bool {
     if rwlock_has_upgradable(state) {
         rwlock_upgradable_acquire(state).is_none()
