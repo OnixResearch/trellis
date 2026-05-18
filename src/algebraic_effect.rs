@@ -107,6 +107,25 @@ pub open spec fn call_handled_by_handler_spec(call: EffectCall, handler: Algebra
     handler.available && call.effect == handler.handled_effect && handler_has_clause_spec(handler, call.operation)
 }
 
+// r[depends domain-primitives.algebraic-effect.handler-composition]
+pub open spec fn handler_clauses_disjoint_spec(left: AlgebraicHandler, right: AlgebraicHandler) -> bool {
+    forall|i: int, j: int| 0 <= i < left.clauses@.len() && 0 <= j < right.clauses@.len()
+        ==> left.clauses@[i] != right.clauses@[j]
+}
+
+// r[depends domain-primitives.algebraic-effect.handler-composition]
+pub open spec fn handler_composition_admitted_spec(left: AlgebraicHandler, right: AlgebraicHandler) -> bool {
+    left.available
+        && right.available
+        && left.handled_effect == right.handled_effect
+        && handler_clauses_disjoint_spec(left, right)
+}
+
+// r[depends domain-primitives.algebraic-effect.handler-composition]
+pub open spec fn composed_handler_clauses_spec(left: AlgebraicHandler, right: AlgebraicHandler) -> Seq<u64> {
+    left.clauses@ + right.clauses@
+}
+
 // r[depends domain-primitives.algebraic-effect.handler-discharge]
 pub open spec fn discharge_call_prefix_spec(calls: Seq<EffectCall>, handler: AlgebraicHandler, upto: int) -> Seq<EffectCall>
     recommends 0 <= upto <= calls.len(),
@@ -241,6 +260,86 @@ pub fn call_handled_by_handler(call: EffectCall, handler: &AlgebraicHandler) -> 
     ensures result == call_handled_by_handler_spec(call, *handler)
 {
     handler.available && call.effect == handler.handled_effect && handler_has_clause(handler, call.operation)
+}
+
+// r[impl domain-primitives.algebraic-effect.handler-composition]
+pub fn handler_clauses_disjoint(left: &AlgebraicHandler, right: &AlgebraicHandler) -> (result: bool)
+    ensures result == handler_clauses_disjoint_spec(*left, *right)
+{
+    let mut i: usize = 0;
+    while i < left.clauses.len()
+        invariant
+            0 <= i <= left.clauses.len(),
+            forall|li: int, rj: int| 0 <= li < i && 0 <= rj < right.clauses@.len()
+                ==> left.clauses@[li] != right.clauses@[rj],
+        decreases left.clauses.len() - i,
+    {
+        let mut j: usize = 0;
+        while j < right.clauses.len()
+            invariant
+                0 <= j <= right.clauses.len(),
+                0 <= i < left.clauses.len(),
+                forall|li: int, rj: int| 0 <= li < i && 0 <= rj < right.clauses@.len()
+                    ==> left.clauses@[li] != right.clauses@[rj],
+                forall|rj: int| 0 <= rj < j ==> left.clauses@[i as int] != right.clauses@[rj],
+            decreases right.clauses.len() - j,
+        {
+            if left.clauses[i] == right.clauses[j] {
+                assert(!handler_clauses_disjoint_spec(*left, *right));
+                return false;
+            }
+            j = j + 1;
+        }
+        assert forall|rj: int| 0 <= rj < right.clauses@.len() implies left.clauses@[i as int] != right.clauses@[rj] by {
+            assert(0 <= rj < j);
+        }
+        i = i + 1;
+    }
+    assert forall|li: int, rj: int| 0 <= li < left.clauses@.len() && 0 <= rj < right.clauses@.len()
+        implies left.clauses@[li] != right.clauses@[rj] by {
+        assert(0 <= li < i);
+    }
+    assert(handler_clauses_disjoint_spec(*left, *right));
+    true
+}
+
+// r[impl domain-primitives.algebraic-effect.handler-composition]
+pub fn handler_composition_admitted(left: &AlgebraicHandler, right: &AlgebraicHandler) -> (result: bool)
+    ensures result == handler_composition_admitted_spec(*left, *right)
+{
+    left.available && right.available && left.handled_effect == right.handled_effect && handler_clauses_disjoint(left, right)
+}
+
+// r[impl domain-primitives.algebraic-effect.handler-composition]
+pub fn compose_handlers(left: &AlgebraicHandler, right: &AlgebraicHandler) -> (result: AlgebraicHandler)
+    requires handler_composition_admitted_spec(*left, *right)
+    ensures
+        result.handled_effect == left.handled_effect,
+        result.available,
+        result.clauses@ == composed_handler_clauses_spec(*left, *right),
+{
+    let mut clauses: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < left.clauses.len()
+        invariant
+            0 <= i <= left.clauses.len(),
+            clauses@ == left.clauses@.subrange(0, i as int),
+        decreases left.clauses.len() - i,
+    {
+        clauses.push(left.clauses[i]);
+        i = i + 1;
+    }
+    let mut j: usize = 0;
+    while j < right.clauses.len()
+        invariant
+            0 <= j <= right.clauses.len(),
+            clauses@ == left.clauses@ + right.clauses@.subrange(0, j as int),
+        decreases right.clauses.len() - j,
+    {
+        clauses.push(right.clauses[j]);
+        j = j + 1;
+    }
+    AlgebraicHandler { handled_effect: left.handled_effect, clauses, available: true }
 }
 
 // r[impl domain-primitives.algebraic-effect.handler-coverage]
@@ -474,6 +573,77 @@ mod tests {
                 operation: 11
             },
         ]);
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.handler-composition]
+    fn handler_composition_unions_disjoint_same_effect_clauses() {
+        let state_read = AlgebraicHandler {
+            handled_effect: 4,
+            clauses: vec![1],
+            available: true,
+        };
+        let state_write = AlgebraicHandler {
+            handled_effect: 4,
+            clauses: vec![2, 3],
+            available: true,
+        };
+        let composed = compose_handlers(&state_read, &state_write);
+
+        assert!(handler_composition_admitted(&state_read, &state_write));
+        assert_eq!(composed.handled_effect, 4);
+        assert!(composed.available);
+        assert_eq!(composed.clauses, vec![1, 2, 3]);
+        assert!(call_handled_by_handler(
+            EffectCall {
+                effect: 4,
+                operation: 1
+            },
+            &composed
+        ));
+        assert!(call_handled_by_handler(
+            EffectCall {
+                effect: 4,
+                operation: 3
+            },
+            &composed
+        ));
+        assert!(!call_handled_by_handler(
+            EffectCall {
+                effect: 5,
+                operation: 1
+            },
+            &composed
+        ));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.handler-composition]
+    fn handler_composition_rejects_ambiguous_or_mismatched_handlers() {
+        let base = AlgebraicHandler {
+            handled_effect: 6,
+            clauses: vec![1, 2],
+            available: true,
+        };
+        let duplicate = AlgebraicHandler {
+            handled_effect: 6,
+            clauses: vec![2, 3],
+            available: true,
+        };
+        let other_effect = AlgebraicHandler {
+            handled_effect: 7,
+            clauses: vec![3],
+            available: true,
+        };
+        let unavailable = AlgebraicHandler {
+            handled_effect: 6,
+            clauses: vec![3],
+            available: false,
+        };
+
+        assert!(!handler_composition_admitted(&base, &duplicate));
+        assert!(!handler_composition_admitted(&base, &other_effect));
+        assert!(!handler_composition_admitted(&base, &unavailable));
     }
 
     #[test]

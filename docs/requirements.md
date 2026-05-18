@@ -11508,5 +11508,8 @@ Algebraic-effect handler coverage MUST require an available handler and a matchi
 r[domain-primitives.algebraic-effect.handler-discharge]
 Algebraic-effect handler discharge MUST remove only calls for the handled effect and declared operation clauses, preserving calls for other effects or missing clauses in residual order.
 
+r[domain-primitives.algebraic-effect.handler-composition]
+Algebraic-effect handler composition MUST admit composition only for available handlers of the same effect whose clause sets are disjoint, MUST reject duplicate cross-handler clauses as ambiguous, and MUST produce a composed handler with the union of clauses while preserving the handled effect.
+
 r[domain-primitives.algebraic-effect.continuation-token]
 Algebraic-effect continuation-token admission MUST allow resume only for unused tokens whose effect matches an available handler, and a consumed token MUST be rejected for any later resume check.

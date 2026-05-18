@@ -3487,6 +3487,27 @@ The system MUST define finite residual-call discharge where a handler removes on
 - WHEN a `State` handler lacks a `Put` clause
 - THEN `State.Put` remains in the residual call sequence
 
+### Requirement: Algebraic Effect Handler Composition [r[domain-primitives.algebraic-effect.handler-composition]]
+The system MUST define finite handler composition that admits only available handlers for the same effect with disjoint operation clauses, rejects duplicate cross-handler clauses as ambiguous, and produces a composed handler whose clauses are the left handler clauses followed by the right handler clauses while preserving the handled effect.
+
+#### Scenario: Disjoint handlers compose
+
+- GIVEN two available handlers for effect `State` with disjoint `Get` and `Put` clauses
+- WHEN handler composition is evaluated
+- THEN composition is admitted and the composed handler handles both operations for `State`
+
+#### Scenario: Duplicate clause is ambiguous
+
+- GIVEN two available handlers for effect `State` that both declare a `Get` clause
+- WHEN handler composition is evaluated
+- THEN composition is rejected as ambiguous
+
+#### Scenario: Different effects do not compose
+
+- GIVEN one handler for effect `State` and another handler for effect `Console`
+- WHEN handler composition is evaluated
+- THEN composition is rejected without producing a combined handler
+
 ### Requirement: Algebraic Effect Continuation Token [r[domain-primitives.algebraic-effect.continuation-token]]
 The system MUST define finite continuation tokens that can be resumed only by an available handler for the token's effect and become unusable after consumption, without claiming runtime continuation capture or re-entry semantics.
 
