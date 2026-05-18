@@ -11516,3 +11516,6 @@ Algebraic-effect handler composition MUST admit composition only for available h
 
 r[domain-primitives.algebraic-effect.continuation-token]
 Algebraic-effect continuation-token admission MUST allow resume only for unused tokens whose effect matches an available handler, and a consumed token MUST be rejected for any later resume check.
+
+r[domain-primitives.algebraic-effect.continuation-resume-mode]
+Algebraic-effect continuation resume-mode admission MUST distinguish resumable from non-resumable operations, MUST admit continuation resume only for unused matching tokens under a resumable operation mode, and MUST reject handler clauses that attempt to resume a non-resumable operation without claiming runtime continuation capture or re-entry semantics.

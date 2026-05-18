@@ -56,6 +56,20 @@ pub struct ContinuationToken {
     pub used: bool,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct OperationResumeMode {
+    pub effect: u64,
+    pub operation: u64,
+    pub resumable: bool,
+}
+
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct HandlerClauseResume {
+    pub handled_effect: u64,
+    pub operation: u64,
+    pub resumes: bool,
+}
+
 // r[depends domain-primitives.algebraic-effect.signature]
 pub open spec fn operation_matches_call_spec(operation: AlgebraicEffectOperation, call: EffectCall) -> bool {
     operation.effect == call.effect && operation.operation == call.operation
@@ -195,6 +209,25 @@ pub open spec fn discharge_effect_calls_spec(calls: Seq<EffectCall>, handler: Al
 // r[depends domain-primitives.algebraic-effect.continuation-token]
 pub open spec fn continuation_resume_admitted_spec(token: ContinuationToken, handler: AlgebraicHandler) -> bool {
     !token.used && handler.available && token.effect == handler.handled_effect
+}
+
+// r[depends domain-primitives.algebraic-effect.continuation-resume-mode]
+pub open spec fn operation_resume_mode_matches_call_spec(mode: OperationResumeMode, call: EffectCall) -> bool {
+    mode.effect == call.effect && mode.operation == call.operation
+}
+
+// r[depends domain-primitives.algebraic-effect.continuation-resume-mode]
+pub open spec fn continuation_mode_admitted_spec(token: ContinuationToken, handler: AlgebraicHandler, mode: OperationResumeMode) -> bool {
+    continuation_resume_admitted_spec(token, handler)
+        && token.effect == mode.effect
+        && mode.resumable
+}
+
+// r[depends domain-primitives.algebraic-effect.continuation-resume-mode]
+pub open spec fn handler_clause_resume_compatible_spec(mode: OperationResumeMode, clause: HandlerClauseResume) -> bool {
+    mode.effect == clause.handled_effect
+        && mode.operation == clause.operation
+        && (!clause.resumes || mode.resumable)
 }
 
 // r[depends domain-primitives.algebraic-effect.continuation-token]
@@ -512,6 +545,29 @@ pub fn continuation_resume_admitted(token: ContinuationToken, handler: &Algebrai
     !token.used && handler.available && token.effect == handler.handled_effect
 }
 
+// r[impl domain-primitives.algebraic-effect.continuation-resume-mode]
+pub fn operation_resume_mode_matches_call(mode: OperationResumeMode, call: EffectCall) -> (result: bool)
+    ensures result == operation_resume_mode_matches_call_spec(mode, call)
+{
+    mode.effect == call.effect && mode.operation == call.operation
+}
+
+// r[impl domain-primitives.algebraic-effect.continuation-resume-mode]
+pub fn continuation_mode_admitted(token: ContinuationToken, handler: &AlgebraicHandler, mode: OperationResumeMode) -> (result: bool)
+    ensures result == continuation_mode_admitted_spec(token, *handler, mode)
+{
+    continuation_resume_admitted(token, handler) && token.effect == mode.effect && mode.resumable
+}
+
+// r[impl domain-primitives.algebraic-effect.continuation-resume-mode]
+pub fn handler_clause_resume_compatible(mode: OperationResumeMode, clause: HandlerClauseResume) -> (result: bool)
+    ensures result == handler_clause_resume_compatible_spec(mode, clause)
+{
+    mode.effect == clause.handled_effect
+        && mode.operation == clause.operation
+        && (!clause.resumes || mode.resumable)
+}
+
 // r[impl domain-primitives.algebraic-effect.continuation-token]
 pub fn consume_continuation(token: ContinuationToken) -> (result: ContinuationToken)
     ensures result == consume_continuation_spec(token), result.used
@@ -522,6 +578,13 @@ pub fn consume_continuation(token: ContinuationToken) -> (result: ContinuationTo
 // r[verify domain-primitives.algebraic-effect.continuation-token]
 pub proof fn consumed_continuation_cannot_resume(token: ContinuationToken, handler: AlgebraicHandler)
     ensures !continuation_resume_admitted_spec(consume_continuation_spec(token), handler)
+{
+}
+
+// r[verify domain-primitives.algebraic-effect.continuation-resume-mode]
+pub proof fn non_resumable_operation_cannot_admit_mode_resume(token: ContinuationToken, handler: AlgebraicHandler, mode: OperationResumeMode)
+    requires !mode.resumable
+    ensures !continuation_mode_admitted_spec(token, handler, mode)
 {
 }
 
@@ -809,5 +872,75 @@ mod tests {
         assert!(continuation_resume_admitted(token, &handler));
         assert!(!continuation_resume_admitted(token, &other));
         assert!(!continuation_resume_admitted(consume_continuation(token), &handler));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.continuation-resume-mode]
+    fn continuation_resume_mode_rejects_non_resumable_operations() {
+        let handler = AlgebraicHandler {
+            handled_effect: 9,
+            clauses: vec![1, 2],
+            available: true,
+        };
+        let token = ContinuationToken {
+            token: 42,
+            effect: 9,
+            used: false,
+        };
+        let resumable = OperationResumeMode {
+            effect: 9,
+            operation: 1,
+            resumable: true,
+        };
+        let non_resumable = OperationResumeMode {
+            effect: 9,
+            operation: 2,
+            resumable: false,
+        };
+        let other_effect = OperationResumeMode {
+            effect: 10,
+            operation: 1,
+            resumable: true,
+        };
+
+        assert!(operation_resume_mode_matches_call(resumable, EffectCall {
+            effect: 9,
+            operation: 1
+        }));
+        assert!(continuation_mode_admitted(token, &handler, resumable));
+        assert!(!continuation_mode_admitted(token, &handler, non_resumable));
+        assert!(!continuation_mode_admitted(token, &handler, other_effect));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.continuation-resume-mode]
+    fn handler_clause_resume_must_match_operation_resume_mode() {
+        let resumable = OperationResumeMode {
+            effect: 4,
+            operation: 7,
+            resumable: true,
+        };
+        let non_resumable = OperationResumeMode {
+            resumable: false,
+            ..resumable
+        };
+        let resuming_clause = HandlerClauseResume {
+            handled_effect: 4,
+            operation: 7,
+            resumes: true,
+        };
+        let non_resuming_clause = HandlerClauseResume {
+            resumes: false,
+            ..resuming_clause
+        };
+        let wrong_operation = HandlerClauseResume {
+            operation: 8,
+            ..resuming_clause
+        };
+
+        assert!(handler_clause_resume_compatible(resumable, resuming_clause));
+        assert!(handler_clause_resume_compatible(non_resumable, non_resuming_clause));
+        assert!(!handler_clause_resume_compatible(non_resumable, resuming_clause));
+        assert!(!handler_clause_resume_compatible(resumable, wrong_operation));
     }
 }

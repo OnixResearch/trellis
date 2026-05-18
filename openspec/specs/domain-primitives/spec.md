@@ -3544,6 +3544,27 @@ The system MUST define finite continuation tokens that can be resumed only by an
 - WHEN any handler checks resume admission
 - THEN the token is rejected as already used
 
+### Requirement: Algebraic Effect Continuation Resume Mode [r[domain-primitives.algebraic-effect.continuation-resume-mode]]
+The system MUST define finite operation resume modes that distinguish resumable from non-resumable operations, admit continuation resume only when the token and handler match an explicitly resumable operation mode, and reject handler clauses that attempt to resume non-resumable operations without claiming runtime continuation capture or re-entry semantics.
+
+#### Scenario: Resumable operation admits matching continuation resume
+
+- GIVEN an unused continuation token for effect `Async`, an available `Async` handler, and a resumable operation mode for `Async.Await`
+- WHEN continuation resume-mode admission is evaluated
+- THEN the resume is admitted
+
+#### Scenario: Non-resumable operation rejects continuation resume
+
+- GIVEN an unused continuation token for effect `Log` and a non-resumable operation mode for `Log.Emit`
+- WHEN continuation resume-mode admission is evaluated
+- THEN the resume is rejected even if the token and handler effects match
+
+#### Scenario: Resuming clause must match operation mode
+
+- GIVEN a handler clause that resumes operation `State.Get`
+- WHEN it is checked against a non-resumable `State.Get` operation mode or a different operation mode
+- THEN the clause is rejected as incompatible
+
 ### Requirement: Typed Durable Reference Envelope [r[domain-primitives.typed-durable-reference.envelope]]
 The system MUST define finite typed durable reference envelopes containing value identity, expected type identity, schema/version metadata, and dependency-closure identity, and MUST reject references whose declared metadata is inconsistent or outside finite model bounds.
 
