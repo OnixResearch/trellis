@@ -177,6 +177,21 @@ pub open spec fn compose_effect_summaries_residual_spec(left: EffectSummary, rig
     right.residual.effects@
 }
 
+// r[depends domain-primitives.algebraic-effect.summary-handler-application]
+pub open spec fn handler_admitted_for_summary_spec(summary: EffectSummary, handler: AlgebraicHandler) -> bool {
+    handler.available && effect_row_contains_spec(summary.required, handler.handled_effect)
+}
+
+// r[depends domain-primitives.algebraic-effect.summary-handler-application]
+pub open spec fn apply_handler_to_summary_required_spec(summary: EffectSummary, handler: AlgebraicHandler) -> Seq<u64> {
+    summary.required.effects@
+}
+
+// r[depends domain-primitives.algebraic-effect.summary-handler-application]
+pub open spec fn apply_handler_to_summary_residual_spec(summary: EffectSummary, handler: AlgebraicHandler) -> Seq<u64> {
+    remove_effect_from_row_spec(summary.residual, handler.handled_effect)
+}
+
 // r[depends domain-primitives.algebraic-effect.handler-coverage]
 pub open spec fn handler_has_clause_spec(handler: AlgebraicHandler, operation: u64) -> bool {
     exists|i: int| 0 <= i < handler.clauses@.len() && handler.clauses@[i] == operation
@@ -467,6 +482,26 @@ pub fn compose_effect_summaries(left: &EffectSummary, right: &EffectSummary) -> 
     EffectSummary {
         required: copy_effect_row(&left.required),
         residual: copy_effect_row(&right.residual),
+    }
+}
+
+// r[impl domain-primitives.algebraic-effect.summary-handler-application]
+pub fn handler_admitted_for_summary(summary: &EffectSummary, handler: &AlgebraicHandler) -> (result: bool)
+    ensures result == handler_admitted_for_summary_spec(*summary, *handler)
+{
+    handler.available && effect_row_contains(&summary.required, handler.handled_effect)
+}
+
+// r[impl domain-primitives.algebraic-effect.summary-handler-application]
+pub fn apply_handler_to_summary(summary: &EffectSummary, handler: &AlgebraicHandler) -> (result: EffectSummary)
+    requires handler_admitted_for_summary_spec(*summary, *handler)
+    ensures
+        result.required.effects@ == apply_handler_to_summary_required_spec(*summary, *handler),
+        result.residual.effects@ == apply_handler_to_summary_residual_spec(*summary, *handler),
+{
+    EffectSummary {
+        required: copy_effect_row(&summary.required),
+        residual: remove_effect_from_row(&summary.residual, handler.handled_effect),
     }
 }
 
@@ -834,6 +869,39 @@ mod tests {
         let composed = compose_effect_summaries(&left, &right);
         assert_eq!(composed.required.effects, vec![1, 2]);
         assert_eq!(composed.residual.effects, vec![2]);
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.summary-handler-application]
+    fn handler_application_removes_handled_effect_from_summary_residual() {
+        let summary = EffectSummary {
+            required: EffectRow { effects: vec![1, 2] },
+            residual: EffectRow {
+                effects: vec![2, 1, 3, 1],
+            },
+        };
+        let handler = AlgebraicHandler {
+            handled_effect: 1,
+            clauses: vec![10],
+            available: true,
+        };
+        let unavailable = AlgebraicHandler {
+            available: false,
+            ..handler.clone()
+        };
+        let missing_required_effect = AlgebraicHandler {
+            handled_effect: 4,
+            clauses: vec![40],
+            available: true,
+        };
+
+        assert!(handler_admitted_for_summary(&summary, &handler));
+        assert!(!handler_admitted_for_summary(&summary, &unavailable));
+        assert!(!handler_admitted_for_summary(&summary, &missing_required_effect));
+
+        let applied = apply_handler_to_summary(&summary, &handler);
+        assert_eq!(applied.required.effects, vec![1, 2]);
+        assert_eq!(applied.residual.effects, vec![2, 3]);
     }
 
     #[test]

@@ -11508,6 +11508,9 @@ Algebraic-effect effect rows MUST define finite sets of permitted effect identif
 r[domain-primitives.algebraic-effect.effect-summary]
 Algebraic-effect summaries MUST define finite required and residual effect rows, MUST admit a summary only when every required effect is present in the ambient row, and MUST admit sequential summary composition only when the left residual row admits the right summary requirements, producing the left required row and right residual row without claiming full effect inference.
 
+r[domain-primitives.algebraic-effect.summary-handler-application]
+Algebraic-effect summary handler application MUST admit only available handlers whose handled effect appears in the summary required row, and applying an admitted handler MUST preserve the summary required row while removing that handled effect from the residual row without claiming handler execution semantics.
+
 r[domain-primitives.algebraic-effect.handler-coverage]
 Algebraic-effect handler coverage MUST require an available handler and a matching handler clause for every declared operation belonging to the handled effect while leaving other effects outside the coverage claim.
 

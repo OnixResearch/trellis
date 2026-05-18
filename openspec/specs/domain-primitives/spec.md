@@ -3505,6 +3505,21 @@ The system MUST define finite effect summaries with required and residual rows, 
 - WHEN summary composition is evaluated
 - THEN composition is rejected
 
+### Requirement: Algebraic Effect Summary Handler Application [r[domain-primitives.algebraic-effect.summary-handler-application]]
+The system MUST define finite summary handler application that admits only available handlers whose handled effect appears in the summary required row, and applying an admitted handler MUST preserve the summary required row while removing that handled effect from the residual row without claiming handler execution semantics.
+
+#### Scenario: Available required handler applies to summary
+
+- GIVEN a summary whose required and residual rows include `State`
+- WHEN an available `State` handler is checked and applied
+- THEN handler admission accepts it and the applied summary preserves the required row while removing `State` from the residual row
+
+#### Scenario: Unavailable or unrequired handler is rejected
+
+- GIVEN a summary whose required row includes `State` but not `Async`
+- WHEN an unavailable `State` handler or an available `Async` handler is checked
+- THEN summary handler admission rejects the handler
+
 ### Requirement: Algebraic Effect Handler Coverage [r[domain-primitives.algebraic-effect.handler-coverage]]
 The system MUST define finite handler coverage where an available handler for one effect covers exactly the declared operations for that effect that have matching handler clauses, leaving other effects outside the coverage claim.
 
