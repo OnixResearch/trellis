@@ -402,11 +402,11 @@ fn run(args: Args) -> Result<bool, String> {
         args.fixture_stale_manifest,
         &sites,
     );
-    if let Some(path) = args.write_report {
+    if let Some(path) = &args.write_report {
         if let Some(parent) = path.parent() {
             fs::create_dir_all(parent).map_err(|err| format!("failed to create {}: {err}", parent.display()))?;
         }
-        fs::write(&path, report.as_bytes()).map_err(|err| format!("failed to write {}: {err}", path.display()))?;
+        fs::write(path, report.as_bytes()).map_err(|err| format!("failed to write {}: {err}", path.display()))?;
     }
     print!("{report}");
     let counts_ok = results
