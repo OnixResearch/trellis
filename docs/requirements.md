@@ -11502,6 +11502,9 @@ Algebraic-effect signature admission MUST admit calls only when a finite signatu
 r[domain-primitives.algebraic-effect.arity]
 Algebraic-effect invocation admission MUST admit an invocation only when a finite signature declares the same effect and operation identifiers with exactly matching input and output arities, and MUST expose the call identity separately from arity validation without claiming runtime argument typechecking.
 
+r[domain-primitives.algebraic-effect.effect-row]
+Algebraic-effect effect rows MUST define finite sets of permitted effect identifiers, MUST admit calls only when their effect is present in the row, MUST admit handlers only when they are available and target an effect in the row, and MUST remove handled effects while preserving the order of remaining row entries without claiming type inference or runtime effect tracking.
+
 r[domain-primitives.algebraic-effect.handler-coverage]
 Algebraic-effect handler coverage MUST require an available handler and a matching handler clause for every declared operation belonging to the handled effect while leaving other effects outside the coverage claim.
 

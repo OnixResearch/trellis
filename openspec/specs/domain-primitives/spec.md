@@ -3457,6 +3457,27 @@ The system MUST define finite invocation admission where an invocation is accept
 - WHEN an invocation references `State.Put` with one input or two expected outputs
 - THEN invocation admission rejects the invocation
 
+### Requirement: Algebraic Effect Row [r[domain-primitives.algebraic-effect.effect-row]]
+The system MUST define finite effect rows as permitted effect identifiers, admit calls only when their effect is present in the row, admit handlers only when they are available and target a row effect, and remove handled effects while preserving the order of remaining row entries without claiming type inference or runtime effect tracking.
+
+#### Scenario: Row admits permitted calls
+
+- GIVEN an effect row containing `State` and `Console`
+- WHEN calls for `State` and `Async` are checked against the row
+- THEN the `State` call is admitted and the `Async` call is rejected
+
+#### Scenario: Handler target must be available in the row
+
+- GIVEN an effect row containing `State`
+- WHEN an available `State` handler and an unavailable `State` handler are checked
+- THEN only the available handler is admitted as targeting a row effect
+
+#### Scenario: Handled effect is removed from residual row
+
+- GIVEN an effect row containing `State`, `Console`, and another `State` entry
+- WHEN `State` is removed as handled
+- THEN the residual row preserves only the non-`State` effects in their original order
+
 ### Requirement: Algebraic Effect Handler Coverage [r[domain-primitives.algebraic-effect.handler-coverage]]
 The system MUST define finite handler coverage where an available handler for one effect covers exactly the declared operations for that effect that have matching handler clauses, leaving other effects outside the coverage claim.
 

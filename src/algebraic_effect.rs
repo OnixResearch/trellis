@@ -38,6 +38,11 @@ pub struct AlgebraicEffectSignature {
 }
 
 #[derive(Clone, PartialEq, Eq, Debug)]
+pub struct EffectRow {
+    pub effects: Vec<u64>,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AlgebraicHandler {
     pub handled_effect: u64,
     pub clauses: Vec<u64>,
@@ -87,6 +92,44 @@ pub open spec fn signature_declares_invocation_spec(operations: Seq<AlgebraicEff
 // r[depends domain-primitives.algebraic-effect.arity]
 pub open spec fn invocation_admitted_by_signature_spec(signature: AlgebraicEffectSignature, invocation: EffectInvocation) -> bool {
     signature_declares_invocation_spec(signature.operations@, invocation)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-row]
+pub open spec fn effect_row_contains_spec(row: EffectRow, effect: u64) -> bool {
+    exists|i: int| 0 <= i < row.effects@.len() && row.effects@[i] == effect
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-row]
+pub open spec fn call_admitted_by_row_spec(row: EffectRow, call: EffectCall) -> bool {
+    effect_row_contains_spec(row, call.effect)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-row]
+pub open spec fn handler_targets_row_effect_spec(row: EffectRow, handler: AlgebraicHandler) -> bool {
+    handler.available && effect_row_contains_spec(row, handler.handled_effect)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-row]
+pub open spec fn remove_effect_prefix_spec(effects: Seq<u64>, effect: u64, upto: int) -> Seq<u64>
+    recommends 0 <= upto <= effects.len(),
+    decreases upto,
+{
+    if upto <= 0 {
+        seq![]
+    } else {
+        let prev = remove_effect_prefix_spec(effects, effect, upto - 1);
+        let current = effects[upto - 1];
+        if current == effect {
+            prev
+        } else {
+            prev.push(current)
+        }
+    }
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-row]
+pub open spec fn remove_effect_from_row_spec(row: EffectRow, effect: u64) -> Seq<u64> {
+    remove_effect_prefix_spec(row.effects@, effect, row.effects@.len() as int)
 }
 
 // r[depends domain-primitives.algebraic-effect.handler-coverage]
@@ -229,6 +272,69 @@ pub fn invocation_admitted_by_signature(signature: &AlgebraicEffectSignature, in
     }
     assert(!signature_declares_invocation_spec(signature.operations@, invocation));
     false
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-row]
+pub fn effect_row_contains(row: &EffectRow, effect: u64) -> (result: bool)
+    ensures result == effect_row_contains_spec(*row, effect)
+{
+    let mut i: usize = 0;
+    while i < row.effects.len()
+        invariant
+            0 <= i <= row.effects.len(),
+            forall|k: int| 0 <= k < i ==> row.effects@[k] != effect,
+        decreases row.effects.len() - i,
+    {
+        if row.effects[i] == effect {
+            assert(effect_row_contains_spec(*row, effect));
+            return true;
+        }
+        i = i + 1;
+    }
+    assert forall|k: int| 0 <= k < row.effects@.len() implies row.effects@[k] != effect by {
+        assert(0 <= k < i);
+    }
+    assert(!effect_row_contains_spec(*row, effect));
+    false
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-row]
+pub fn call_admitted_by_row(row: &EffectRow, call: EffectCall) -> (result: bool)
+    ensures result == call_admitted_by_row_spec(*row, call)
+{
+    effect_row_contains(row, call.effect)
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-row]
+pub fn handler_targets_row_effect(row: &EffectRow, handler: &AlgebraicHandler) -> (result: bool)
+    ensures result == handler_targets_row_effect_spec(*row, *handler)
+{
+    handler.available && effect_row_contains(row, handler.handled_effect)
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-row]
+pub fn remove_effect_from_row(row: &EffectRow, effect: u64) -> (result: EffectRow)
+    ensures result.effects@ == remove_effect_from_row_spec(*row, effect)
+{
+    let mut effects: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < row.effects.len()
+        invariant
+            0 <= i <= row.effects.len(),
+            effects@ == remove_effect_prefix_spec(row.effects@, effect, i as int),
+        decreases row.effects.len() - i,
+    {
+        let current = row.effects[i];
+        if current != effect {
+            effects.push(current);
+            assert(effects@ == remove_effect_prefix_spec(row.effects@, effect, i as int + 1));
+        } else {
+            assert(effects@ == remove_effect_prefix_spec(row.effects@, effect, i as int + 1));
+        }
+        i = i + 1;
+    }
+    assert(effects@ == remove_effect_from_row_spec(*row, effect));
+    EffectRow { effects }
 }
 
 // r[impl domain-primitives.algebraic-effect.handler-coverage]
@@ -488,6 +594,41 @@ mod tests {
         assert!(invocation_admitted_by_signature(&signature, matching));
         assert!(!invocation_admitted_by_signature(&signature, wrong_input_count));
         assert!(!invocation_admitted_by_signature(&signature, wrong_output_count));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.effect-row]
+    fn effect_row_admits_calls_by_effect_and_removes_handled_effects() {
+        let row = EffectRow {
+            effects: vec![1, 2, 1, 3],
+        };
+        let state_handler = AlgebraicHandler {
+            handled_effect: 1,
+            clauses: vec![10],
+            available: true,
+        };
+        let unavailable_handler = AlgebraicHandler {
+            handled_effect: 2,
+            clauses: vec![20],
+            available: false,
+        };
+
+        assert!(effect_row_contains(&row, 1));
+        assert!(call_admitted_by_row(&row, EffectCall {
+            effect: 2,
+            operation: 20
+        }));
+        assert!(!call_admitted_by_row(&row, EffectCall {
+            effect: 4,
+            operation: 40
+        }));
+        assert!(handler_targets_row_effect(&row, &state_handler));
+        assert!(!handler_targets_row_effect(&row, &unavailable_handler));
+
+        let residual = remove_effect_from_row(&row, 1);
+        assert_eq!(residual.effects, vec![2, 3]);
+        assert!(!effect_row_contains(&residual, 1));
+        assert!(effect_row_contains(&residual, 2));
     }
 
     #[test]
