@@ -16,12 +16,12 @@
 
 ## Phase 4: Extension contracts
 
-- [ ] [depends:raw-mutex] Implement fair unlock/direct handoff specs/checkers for `r[domain-primitives.parking-lot-fairness.eventual-handoff]`.
-- [ ] [parallel] Implement timed wait/timeout admission specs/checkers for `r[domain-primitives.parking-lot-timeout.timed-wait]`.
-- [ ] [parallel] Implement reentrant mutex owner/count specs/checkers for `r[domain-primitives.parking-lot-reentrant-mutex.owner-count]`.
-- [ ] [parallel] Implement Once/OnceLock state specs/checkers for `r[domain-primitives.parking-lot-once.exactly-once]`.
-- [ ] [depends:raw-lock-contracts] Implement raw-lock trait contract predicates for mutex, RwLock, timed, fair, downgrade, and upgrade surfaces for `r[domain-primitives.parking-lot-raw-lock-contracts.contracts]`.
-- [ ] [parallel] Implement wait-for graph deadlock detector specs/checkers for `r[domain-primitives.parking-lot-deadlock-detector.cycle-soundness]`.
+- [x] [depends:raw-mutex] Implement fair unlock/direct handoff specs/checkers for `r[domain-primitives.parking-lot-fairness.eventual-handoff]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
+- [x] [parallel] Implement timed wait/timeout admission specs/checkers for `r[domain-primitives.parking-lot-timeout.timed-wait]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
+- [x] [parallel] Implement reentrant mutex owner/count specs/checkers for `r[domain-primitives.parking-lot-reentrant-mutex.owner-count]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
+- [x] [parallel] Implement Once/OnceLock state specs/checkers for `r[domain-primitives.parking-lot-once.exactly-once]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
+- [x] [depends:raw-lock-contracts] Implement raw-lock trait contract predicates for mutex, RwLock, timed, fair, downgrade, and upgrade surfaces for `r[domain-primitives.parking-lot-raw-lock-contracts.contracts]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
+- [x] [parallel] Implement wait-for graph deadlock detector specs/checkers for `r[domain-primitives.parking-lot-deadlock-detector.cycle-soundness]`. ✅ 2m (started: 2026-05-18T14:53:08Z → completed: 2026-05-18T14:55:20Z)
 
 ## Phase 5: Integration and evidence
 

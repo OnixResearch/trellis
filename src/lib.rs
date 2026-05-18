@@ -134,6 +134,7 @@
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
 //! - `parking_lot_condvar_model` — finite condition-variable association and requeue semantics
+//! - `parking_lot_contracts` — fairness, timeout, reentrant, Once, raw-lock, and deadlock contracts
 //! - `parking_lot_core_model` — finite parking-lot key/queue/requeue model
 //! - `parking_lot_raw_mutex` — compact raw-mutex locked/parked bit state machine
 //! - `parking_lot_rwlock_model` — packed parking-lot-style RwLock state transitions
@@ -729,6 +730,7 @@ pub mod ordering;
 pub mod page;
 pub mod page_checksum;
 pub mod parking_lot_condvar_model;
+pub mod parking_lot_contracts;
 pub mod parking_lot_core_model;
 pub mod parking_lot_raw_mutex;
 pub mod parking_lot_rwlock_model;
