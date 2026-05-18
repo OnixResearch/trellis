@@ -43,6 +43,12 @@ pub struct EffectRow {
 }
 
 #[derive(Clone, PartialEq, Eq, Debug)]
+pub struct EffectSummary {
+    pub required: EffectRow,
+    pub residual: EffectRow,
+}
+
+#[derive(Clone, PartialEq, Eq, Debug)]
 pub struct AlgebraicHandler {
     pub handled_effect: u64,
     pub clauses: Vec<u64>,
@@ -144,6 +150,31 @@ pub open spec fn remove_effect_prefix_spec(effects: Seq<u64>, effect: u64, upto:
 // r[depends domain-primitives.algebraic-effect.effect-row]
 pub open spec fn remove_effect_from_row_spec(row: EffectRow, effect: u64) -> Seq<u64> {
     remove_effect_prefix_spec(row.effects@, effect, row.effects@.len() as int)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-summary]
+pub open spec fn row_contains_all_effects_spec(row: EffectRow, required: EffectRow) -> bool {
+    forall|i: int| 0 <= i < required.effects@.len() ==> effect_row_contains_spec(row, #[trigger] required.effects@[i])
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-summary]
+pub open spec fn summary_admitted_by_row_spec(row: EffectRow, summary: EffectSummary) -> bool {
+    row_contains_all_effects_spec(row, summary.required)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-summary]
+pub open spec fn summary_composition_admitted_spec(left: EffectSummary, right: EffectSummary) -> bool {
+    summary_admitted_by_row_spec(left.residual, right)
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-summary]
+pub open spec fn compose_effect_summaries_required_spec(left: EffectSummary, right: EffectSummary) -> Seq<u64> {
+    left.required.effects@
+}
+
+// r[depends domain-primitives.algebraic-effect.effect-summary]
+pub open spec fn compose_effect_summaries_residual_spec(left: EffectSummary, right: EffectSummary) -> Seq<u64> {
+    right.residual.effects@
 }
 
 // r[depends domain-primitives.algebraic-effect.handler-coverage]
@@ -368,6 +399,75 @@ pub fn remove_effect_from_row(row: &EffectRow, effect: u64) -> (result: EffectRo
     }
     assert(effects@ == remove_effect_from_row_spec(*row, effect));
     EffectRow { effects }
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-summary]
+pub fn row_contains_all_effects(row: &EffectRow, required: &EffectRow) -> (result: bool)
+    ensures result == row_contains_all_effects_spec(*row, *required)
+{
+    let mut i: usize = 0;
+    while i < required.effects.len()
+        invariant
+            0 <= i <= required.effects.len(),
+            forall|k: int| 0 <= k < i ==> effect_row_contains_spec(*row, required.effects@[k]),
+        decreases required.effects.len() - i,
+    {
+        if !effect_row_contains(row, required.effects[i]) {
+            assert(!row_contains_all_effects_spec(*row, *required));
+            return false;
+        }
+        i = i + 1;
+    }
+    assert forall|k: int| 0 <= k < required.effects@.len() implies effect_row_contains_spec(*row, required.effects@[k]) by {
+        assert(0 <= k < i);
+    }
+    assert(row_contains_all_effects_spec(*row, *required));
+    true
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-summary]
+pub fn summary_admitted_by_row(row: &EffectRow, summary: &EffectSummary) -> (result: bool)
+    ensures result == summary_admitted_by_row_spec(*row, *summary)
+{
+    row_contains_all_effects(row, &summary.required)
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-summary]
+pub fn summary_composition_admitted(left: &EffectSummary, right: &EffectSummary) -> (result: bool)
+    ensures result == summary_composition_admitted_spec(*left, *right)
+{
+    summary_admitted_by_row(&left.residual, right)
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-summary]
+pub fn copy_effect_row(row: &EffectRow) -> (result: EffectRow)
+    ensures result.effects@ == row.effects@
+{
+    let mut effects: Vec<u64> = Vec::new();
+    let mut i: usize = 0;
+    while i < row.effects.len()
+        invariant
+            0 <= i <= row.effects.len(),
+            effects@ == row.effects@.subrange(0, i as int),
+        decreases row.effects.len() - i,
+    {
+        effects.push(row.effects[i]);
+        i = i + 1;
+    }
+    EffectRow { effects }
+}
+
+// r[impl domain-primitives.algebraic-effect.effect-summary]
+pub fn compose_effect_summaries(left: &EffectSummary, right: &EffectSummary) -> (result: EffectSummary)
+    requires summary_composition_admitted_spec(*left, *right)
+    ensures
+        result.required.effects@ == compose_effect_summaries_required_spec(*left, *right),
+        result.residual.effects@ == compose_effect_summaries_residual_spec(*left, *right),
+{
+    EffectSummary {
+        required: copy_effect_row(&left.required),
+        residual: copy_effect_row(&right.residual),
+    }
 }
 
 // r[impl domain-primitives.algebraic-effect.handler-coverage]
@@ -692,6 +792,48 @@ mod tests {
         assert_eq!(residual.effects, vec![2, 3]);
         assert!(!effect_row_contains(&residual, 1));
         assert!(effect_row_contains(&residual, 2));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.effect-summary]
+    fn effect_summary_admission_requires_all_effects_in_row() {
+        let ambient = EffectRow { effects: vec![1, 2, 3] };
+        let admitted = EffectSummary {
+            required: EffectRow { effects: vec![1, 3] },
+            residual: EffectRow { effects: vec![2] },
+        };
+        let rejected = EffectSummary {
+            required: EffectRow { effects: vec![1, 4] },
+            residual: EffectRow { effects: vec![2] },
+        };
+
+        assert!(row_contains_all_effects(&ambient, &admitted.required));
+        assert!(summary_admitted_by_row(&ambient, &admitted));
+        assert!(!summary_admitted_by_row(&ambient, &rejected));
+    }
+
+    #[test]
+    // r[verify domain-primitives.algebraic-effect.effect-summary]
+    fn effect_summary_composition_chains_residual_rows() {
+        let left = EffectSummary {
+            required: EffectRow { effects: vec![1, 2] },
+            residual: EffectRow { effects: vec![2, 3] },
+        };
+        let right = EffectSummary {
+            required: EffectRow { effects: vec![3] },
+            residual: EffectRow { effects: vec![2] },
+        };
+        let missing = EffectSummary {
+            required: EffectRow { effects: vec![4] },
+            residual: EffectRow { effects: vec![2] },
+        };
+
+        assert!(summary_composition_admitted(&left, &right));
+        assert!(!summary_composition_admitted(&left, &missing));
+
+        let composed = compose_effect_summaries(&left, &right);
+        assert_eq!(composed.required.effects, vec![1, 2]);
+        assert_eq!(composed.residual.effects, vec![2]);
     }
 
     #[test]

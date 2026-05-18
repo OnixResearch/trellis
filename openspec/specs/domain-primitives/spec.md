@@ -3478,6 +3478,33 @@ The system MUST define finite effect rows as permitted effect identifiers, admit
 - WHEN `State` is removed as handled
 - THEN the residual row preserves only the non-`State` effects in their original order
 
+### Requirement: Algebraic Effect Summary [r[domain-primitives.algebraic-effect.effect-summary]]
+The system MUST define finite effect summaries with required and residual rows, admit summaries only when every required effect is present in the ambient row, and admit sequential summary composition only when the left residual row admits the right summary requirements, producing the left required row and right residual row without claiming full effect inference.
+
+#### Scenario: Summary requires ambient effects
+
+- GIVEN an ambient row containing `State`, `Console`, and `Async`
+- WHEN a summary requiring `State` and `Async` is checked against that row
+- THEN summary admission accepts it
+
+#### Scenario: Missing required effect rejects summary
+
+- GIVEN an ambient row containing `State` and `Console`
+- WHEN a summary requiring `State` and `Async` is checked against that row
+- THEN summary admission rejects it
+
+#### Scenario: Sequential summaries compose through residual row
+
+- GIVEN a left summary whose residual row contains `Async` and a right summary requiring `Async`
+- WHEN summary composition is evaluated
+- THEN composition is admitted and the composed summary preserves the left required row and right residual row
+
+#### Scenario: Sequential summary composition rejects missing residual effects
+
+- GIVEN a left summary whose residual row lacks `Async` and a right summary requiring `Async`
+- WHEN summary composition is evaluated
+- THEN composition is rejected
+
 ### Requirement: Algebraic Effect Handler Coverage [r[domain-primitives.algebraic-effect.handler-coverage]]
 The system MUST define finite handler coverage where an available handler for one effect covers exactly the declared operations for that effect that have matching handler clauses, leaving other effects outside the coverage claim.
 

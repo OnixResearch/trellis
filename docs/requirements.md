@@ -11505,6 +11505,9 @@ Algebraic-effect invocation admission MUST admit an invocation only when a finit
 r[domain-primitives.algebraic-effect.effect-row]
 Algebraic-effect effect rows MUST define finite sets of permitted effect identifiers, MUST admit calls only when their effect is present in the row, MUST admit handlers only when they are available and target an effect in the row, and MUST remove handled effects while preserving the order of remaining row entries without claiming type inference or runtime effect tracking.
 
+r[domain-primitives.algebraic-effect.effect-summary]
+Algebraic-effect summaries MUST define finite required and residual effect rows, MUST admit a summary only when every required effect is present in the ambient row, and MUST admit sequential summary composition only when the left residual row admits the right summary requirements, producing the left required row and right residual row without claiming full effect inference.
+
 r[domain-primitives.algebraic-effect.handler-coverage]
 Algebraic-effect handler coverage MUST require an available handler and a matching handler clause for every declared operation belonging to the handled effect while leaving other effects outside the coverage claim.
 
