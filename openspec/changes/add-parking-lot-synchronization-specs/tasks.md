@@ -4,9 +4,9 @@
 
 ## Phase 2: Parking-lot core foundation
 
-- [ ] [serial] Define finite waiter, key, bucket, queue, and parking-lot table types plus validity predicates for `r[domain-primitives.parking-lot-core.queue-validity]`.
-- [ ] [depends:parking-lot-core] Implement park, unpark-one, unpark-all, and requeue specs/checkers with no-lost-wakeup and waiter-uniqueness proofs for `r[domain-primitives.parking-lot-core.operations]`.
-- [ ] [depends:parking-lot-core] Add positive/negative tests for duplicate waiters, wrong-key requeue, lost wakeup, empty unpark, and queue-preserving requeue cases.
+- [x] [serial] Define finite waiter, key, bucket, queue, and parking-lot table types plus validity predicates for `r[domain-primitives.parking-lot-core.queue-validity]`. ✅ 3m (started: 2026-05-18T14:45:30Z → completed: 2026-05-18T14:48:31Z)
+- [x] [depends:parking-lot-core] Implement park, unpark-one, unpark-all, and requeue specs/checkers with no-lost-wakeup and waiter-uniqueness proofs for `r[domain-primitives.parking-lot-core.operations]`. ✅ 3m (started: 2026-05-18T14:45:30Z → completed: 2026-05-18T14:48:31Z)
+- [x] [depends:parking-lot-core] Add positive/negative tests for duplicate waiters, wrong-key requeue, lost wakeup, empty unpark, and queue-preserving requeue cases. ✅ 3m (started: 2026-05-18T14:45:30Z → completed: 2026-05-18T14:48:31Z)
 
 ## Phase 3: Lock and condvar state machines
 

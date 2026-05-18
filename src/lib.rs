@@ -133,6 +133,7 @@
 //!   equivalence with canonical tag/index decomposition
 //! - `follower_read` — follower-side linearizable reads via leader commit confirmation
 //! - `futex_state` — futex wait/wake state machine: idle/waiting/notified transitions
+//! - `parking_lot_core_model` — finite parking-lot key/queue/requeue model
 //! - `ghost_history` — ghost state for Raft inductive proofs: vote history, leader logs, entry
 //!   provenance
 //! - `glob` — glob pattern matching with `*` wildcards for capabilities
@@ -724,6 +725,7 @@ pub mod option;
 pub mod ordering;
 pub mod page;
 pub mod page_checksum;
+pub mod parking_lot_core_model;
 pub mod parsing_format;
 pub mod partition;
 pub mod pattern;
