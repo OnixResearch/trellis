@@ -181,6 +181,17 @@ validation commands captured in the change evidence.
 | `subsumption` | variant subsumption |
 | `token_timestamp` | UCAN token timestamp validity |
 
+### Language and computation admission
+
+| Module | What it verifies |
+|---|---|
+| `ability_effect` | finite ability requirements, handler discharge, and sandbox attenuation |
+| `algebraic_effect` | finite algebraic-effect signatures, rows, summaries, handlers, and single-use continuations |
+| `content_addressed_code` | content-addressed definition identity, dependency closure, and recursive group admission |
+| `remote_computation` | remote computation dependency, ability, and resource admission |
+| `semantic_refactoring` | immutable name movement, compatible propagation, and unresolved-dependent admission |
+| `typed_durable_reference` | typed durable references, unpersist gates, and migration admission |
+
 ### Memory management
 
 | Module | What it verifies |
@@ -222,6 +233,11 @@ validation commands captured in the change evidence.
 | `rcu` | read-copy-update: grace periods, quiescent state, safe reclamation |
 | `mpsc_bounds` | MPSC channel bounds: occupancy, send/receive, capacity, close/drain |
 | `futex_state` | futex wait/wake FSM: idle/waiting/notified, notify idempotence |
+| `parking_lot_core_model` | finite key-to-waiter queues with uniqueness, requeue, and bucket metadata validity |
+| `parking_lot_raw_mutex` | compact raw-mutex locked/parked-bit acquisition and release state machine |
+| `parking_lot_condvar_model` | condition-variable association, notify, timeout, and no-spurious requeue semantics |
+| `parking_lot_rwlock_model` | packed reader/writer/upgradable RwLock state transitions and fairness gates |
+| `parking_lot_contracts` | parking-lot fairness, timeout, reentrant mutex, Once, raw-lock, and deadlock contracts |
 | `ticket_lock` | FIFO-fair spinlock: ticket/serving counters, fairness, bounded waiters |
 | `cas_loop` | CAS retry loop modeling: ABA detection via pack/unpack, retry bounds |
 | `bounded_mpmc` | bounded MPMC ring buffer: head/tail, lap-based empty/full, occupancy |
