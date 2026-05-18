@@ -501,7 +501,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
-./scripts/verus.sh         # verus only (8451 proofs)
+./scripts/verus.sh         # verus only
 ./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.sh    # every pub fn in verus! has ensures
 ```
@@ -509,9 +509,9 @@ cargo clippy --all-targets -- -D warnings
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 373 module declarations
+src/lib.rs              ← crate root, 581 public module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
-docs/requirements.md    ← 1734 tracey requirements
+docs/requirements.md    ← canonical requirement prose and Tracey anchors
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
 scripts/check-*.sh      ← annotation enforcement
