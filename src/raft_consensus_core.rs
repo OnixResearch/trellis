@@ -237,6 +237,19 @@ pub struct RaftAppendConflictMetadata {
     pub follower_log_len: u64,
 }
 
+/// Finite follower log-update metadata; it records only modeled lengths and rejection state.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftFollowerLogUpdateMetadata {
+    /// One-based previous-log prefix length retained from the follower log on accepted updates.
+    pub prev_log_index: u64,
+    /// Number of admitted entries appended after the retained prefix.
+    pub appended_len: u64,
+    /// Resulting follower-log length metadata after evaluating the update.
+    pub successor_len: u64,
+    /// Whether AppendEntries admission rejected the update before log mutation.
+    pub rejected: bool,
+}
+
 
 // r[depends domain-primitives.raft-consensus.openraft-log-pointers]
 /// Spec: OpenRaft-inspired log pointers are ordered in the finite safety lattice.
@@ -903,7 +916,7 @@ pub open spec fn raft_append_conflict_metadata_valid_spec(meta: RaftAppendConfli
         && (meta.conflict_index == 0 ==> meta.conflict_term == 0)
 }
 
-// r[depends domain-primitives.raft-consensus.append-entries]
+// r[depends domain-primitives.raft-consensus.follower-log-update]
 /// Spec: a finite follower log update truncates after the admitted previous-log prefix and appends entries.
 pub open spec fn raft_follower_log_update_spec(
     follower_log: Seq<LogEntry>,
@@ -913,6 +926,41 @@ pub open spec fn raft_follower_log_update_spec(
     recommends prev_log_index as int <= follower_log.len()
 {
     follower_log.subrange(0, prev_log_index as int) + entries
+}
+
+// r[depends domain-primitives.raft-consensus.follower-log-update]
+/// Spec: finite follower log-update metadata admits rejection/no-mutation or accepted prefix-plus-append length.
+pub open spec fn raft_follower_log_update_metadata_valid_spec(
+    meta: RaftFollowerLogUpdateMetadata,
+    follower_log_len: u64,
+) -> bool {
+    if meta.rejected {
+        meta.successor_len == follower_log_len
+    } else {
+        meta.prev_log_index <= follower_log_len
+            && meta.successor_len >= meta.prev_log_index
+            && meta.successor_len - meta.prev_log_index == meta.appended_len
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.follower-log-update]
+/// Return whether finite follower log-update metadata is internally admitted.
+/// This checks only finite prefix/length/no-mutation metadata; it does not claim storage durability.
+pub fn raft_follower_log_update_metadata_valid(
+    meta: &RaftFollowerLogUpdateMetadata,
+    follower_log_len: u64,
+) -> (result: bool)
+    ensures result == raft_follower_log_update_metadata_valid_spec(*meta, follower_log_len)
+{
+    if meta.rejected {
+        meta.successor_len == follower_log_len
+    } else if meta.prev_log_index > follower_log_len {
+        false
+    } else if meta.successor_len < meta.prev_log_index {
+        false
+    } else {
+        meta.successor_len - meta.prev_log_index == meta.appended_len
+    }
 }
 
 // r[impl domain-primitives.raft-consensus.append-entries]
@@ -935,7 +983,7 @@ pub proof fn concrete_append_conflict_is_bounded(meta: RaftAppendConflictMetadat
         meta.conflict_term == meta.conflict_term,
 {}
 
-// r[verify domain-primitives.raft-consensus.append-entries]
+// r[verify domain-primitives.raft-consensus.follower-log-update]
 /// An admitted follower update preserves every entry before the previous-log index.
 pub proof fn follower_update_preserves_admitted_prefix(
     follower_log: Seq<LogEntry>,
@@ -949,7 +997,7 @@ pub proof fn follower_update_preserves_admitted_prefix(
     ensures raft_follower_log_update_spec(follower_log, prev_log_index, entries)[i] == follower_log[i]
 {}
 
-// r[verify domain-primitives.raft-consensus.append-entries]
+// r[verify domain-primitives.raft-consensus.follower-log-update]
 /// A follower update length is the retained prefix plus the appended entry count.
 pub proof fn follower_update_length_matches_prefix_plus_entries(
     follower_log: Seq<LogEntry>,
@@ -959,6 +1007,33 @@ pub proof fn follower_update_length_matches_prefix_plus_entries(
     requires prev_log_index as int <= follower_log.len()
     ensures raft_follower_log_update_spec(follower_log, prev_log_index, entries).len()
         == prev_log_index as int + entries.len()
+{}
+
+// r[verify domain-primitives.raft-consensus.follower-log-update]
+/// Rejected follower updates carry no-mutation length metadata.
+pub proof fn rejected_follower_update_preserves_log_length(
+    meta: RaftFollowerLogUpdateMetadata,
+    follower_log_len: u64,
+)
+    requires
+        raft_follower_log_update_metadata_valid_spec(meta, follower_log_len),
+        meta.rejected,
+    ensures meta.successor_len == follower_log_len
+{}
+
+// r[verify domain-primitives.raft-consensus.follower-log-update]
+/// Accepted follower updates retain a bounded prefix and append exactly the recorded length.
+pub proof fn accepted_follower_update_length_is_prefix_plus_append(
+    meta: RaftFollowerLogUpdateMetadata,
+    follower_log_len: u64,
+)
+    requires
+        raft_follower_log_update_metadata_valid_spec(meta, follower_log_len),
+        !meta.rejected,
+    ensures
+        meta.prev_log_index <= follower_log_len,
+        meta.successor_len >= meta.prev_log_index,
+        meta.successor_len - meta.prev_log_index == meta.appended_len,
 {}
 
 // r[depends domain-primitives.raft-consensus.log-matching]
@@ -2400,6 +2475,48 @@ mod tests {
             follower_log_len: 3,
         };
         assert!(!raft_append_conflict_metadata_valid(&out_of_bounds));
+    }
+
+    // r[verify domain-primitives.raft-consensus.follower-log-update]
+    #[test]
+    fn follower_log_update_metadata_preserves_rejected_and_accepted_lengths() {
+        let rejected = RaftFollowerLogUpdateMetadata {
+            prev_log_index: 2,
+            appended_len: 1,
+            successor_len: 3,
+            rejected: true,
+        };
+        assert!(raft_follower_log_update_metadata_valid(&rejected, 3));
+
+        let unsafe_mutation = RaftFollowerLogUpdateMetadata {
+            successor_len: 4,
+            ..rejected
+        };
+        assert!(!raft_follower_log_update_metadata_valid(&unsafe_mutation, 3));
+
+        let accepted = RaftFollowerLogUpdateMetadata {
+            prev_log_index: 2,
+            appended_len: 2,
+            successor_len: 4,
+            rejected: false,
+        };
+        assert!(raft_follower_log_update_metadata_valid(&accepted, 3));
+
+        let prefix_out_of_bounds = RaftFollowerLogUpdateMetadata {
+            prev_log_index: 4,
+            appended_len: 1,
+            successor_len: 5,
+            rejected: false,
+        };
+        assert!(!raft_follower_log_update_metadata_valid(&prefix_out_of_bounds, 3));
+
+        let non_contiguous = RaftFollowerLogUpdateMetadata {
+            prev_log_index: 2,
+            appended_len: 2,
+            successor_len: 5,
+            rejected: false,
+        };
+        assert!(!raft_follower_log_update_metadata_valid(&non_contiguous, 3));
     }
 
     // r[verify domain-primitives.raft-consensus.log-matching]

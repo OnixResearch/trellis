@@ -1716,6 +1716,15 @@ implies equal terms for every prior index in the finite prefix. Follower
 log-update predicates admitted at a previous-log index MUST preserve that
 matching prefix before any appended entries.
 
+r[domain-primitives.raft-consensus.follower-log-update]
+Raft follower log-update primitives MUST model rejected AppendEntries updates as
+no-mutation outcomes and accepted updates as finite retained-prefix plus
+contiguous-append outcomes. Accepted metadata MUST keep the retained previous-log
+index inside the finite follower log and MUST report a successor length equal to
+the retained prefix plus admitted entry count without claiming storage durability,
+network delivery, or production follower mutation semantics beyond this finite
+update slice.
+
 r[domain-primitives.raft-consensus.commit]
 Raft commit-index primitives MUST admit a candidate commit index only when a
 finite quorum of replicas has matched that index, the candidate does not move

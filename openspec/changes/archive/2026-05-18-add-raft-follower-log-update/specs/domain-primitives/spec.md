@@ -1,10 +1,8 @@
 ## MODIFIED Requirements
 
-### Requirement: Follower Log Update Predicate
+### Requirement: Follower Log Update Predicate [r[domain-primitives.raft-consensus.follower-log-update]]
 
 The system MUST expose a finite follower log-update implementation surface for AppendEntries outcomes that leaves the follower log unchanged on rejection, preserves the matching prefix on accepted requests, truncates only conflicting suffix entries, appends admitted entries contiguously, and records deterministic conflict/update metadata.
-
-r[domain-primitives.raft-consensus.follower-log-update]
 
 #### Scenario: Rejected append does not mutate follower log
 

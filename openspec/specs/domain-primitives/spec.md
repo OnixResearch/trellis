@@ -123,15 +123,30 @@ and explicit conflict/rejection metadata.
 - THEN the request is rejected with previous-log-conflict metadata
 
 ### Requirement: Follower Log Update Predicate [r[domain-primitives.raft-consensus.follower-log-update]]
-The system MUST define follower log-update predicates that preserve the matching
-prefix, truncate only conflicting suffixes, append admitted entries contiguously,
-and leave the log unchanged on rejected AppendEntries requests.
+
+The system MUST expose a finite follower log-update implementation surface for
+AppendEntries outcomes that leaves the follower log unchanged on rejection,
+preserves the matching prefix on accepted requests, truncates only conflicting
+suffix entries, appends admitted entries contiguously, and records deterministic
+conflict/update metadata.
 
 #### Scenario: Rejected append does not mutate follower log [r[domain-primitives.raft-consensus.follower-log-update.scenario.rejected-append-no-mutation]]
 
-- GIVEN a follower log and a rejected AppendEntries request
+- GIVEN a follower log and AppendEntries request fail previous-log admission
 - WHEN the follower log-update predicate is evaluated
-- THEN the successor log equals the original log and the rejection metadata identifies the conflict
+- THEN the successor log equals the original log and rejection metadata identifies the first conflict
+
+#### Scenario: Accepted append preserves matching prefix [r[domain-primitives.raft-consensus.follower-log-update.scenario.accepted-append-preserves-prefix]]
+
+- GIVEN an AppendEntries request has a matching previous-log boundary and admitted entries
+- WHEN the follower log-update predicate is evaluated
+- THEN every entry at or before the previous-log index is preserved in the successor log
+
+#### Scenario: Accepted append is contiguous after truncation [r[domain-primitives.raft-consensus.follower-log-update.scenario.accepted-append-contiguous]]
+
+- GIVEN an AppendEntries request replaces a conflicting suffix with admitted entries
+- WHEN the follower log-update predicate is evaluated
+- THEN the successor log has no index gaps and appended entries begin exactly after the retained prefix
 
 ### Requirement: Log Matching Invariant [r[domain-primitives.raft-consensus.log-matching]]
 The system MUST define and later prove the Raft log-matching invariant: if two
