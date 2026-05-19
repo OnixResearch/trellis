@@ -1649,6 +1649,32 @@ has_won_election MUST return true if and only if votes_received constitutes a qu
 
 ## Raft Consensus Domain Primitives
 
+r[domain-primitives.raft-consensus.model]
+Raft finite-model envelope primitives MUST admit node ids only inside a non-empty
+one-based node universe, MUST bound terms, log indexes, command identifiers,
+message kinds, and configuration epochs by caller-provided finite limits, and
+MUST report deterministic first-failure metadata before higher-level transition
+predicates rely on those references.
+
+r[domain-primitives.raft-consensus.node-state]
+Raft node-state envelope primitives MUST admit only follower, candidate, or
+leader roles inside the finite model. Leader role metadata MUST belong to the
+node current term, candidate role metadata MUST record a self-vote in that term,
+and applied/commit/log indexes MUST remain ordered.
+
+r[domain-primitives.raft-consensus.applied-prefix]
+Raft applied-prefix primitives MUST admit only monotone contiguous application
+steps. Non-empty steps MUST start at the next unapplied index, the new
+last-applied index MUST be committed and present in the local log, and no-op
+steps MUST carry no first-applied index.
+
+r[domain-primitives.raft-consensus.client-proposal]
+Raft client-proposal primitives MUST admit finite command identifiers only when
+the target node is model-valid and admitted as leader for the exact proposal
+term. Proposals to followers, stale terms, future terms, unknown commands, or
+out-of-model nodes MUST reject with deterministic metadata and MUST NOT claim
+client retry, end-to-end linearizability, or application execution behavior.
+
 r[domain-primitives.raft-consensus.term]
 Raft term update primitives MUST keep the receiver current term monotone when
 observing any term-bearing input. Observing a lower or equal term MUST keep the

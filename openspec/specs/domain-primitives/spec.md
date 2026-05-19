@@ -4,10 +4,11 @@
 This specification defines reusable finite domain primitive requirements for protocol, data, scheduling, storage, parsing, numeric, and related verified-logic families. It records the admitted model envelopes, validity boundaries, and scenario-level obligations that implementation slices compose into machine-checked Rust/Verus predicates and proofs.
 ## Requirements
 ### Requirement: Finite Raft Model Envelope [r[domain-primitives.raft-consensus.model]]
-The system MUST define a finite Raft model envelope containing declared node
-identities, term bounds, log-index bounds, command identifiers, message kinds,
-configuration epochs, and explicit validity predicates before any Raft transition
-or invariant references them.
+The system MUST expose finite Raft model envelope predicates over a non-empty
+one-based node universe, term bounds, log-index bounds, command identifiers,
+message kinds, and configuration epochs. Model admission MUST reject unknown
+nodes or out-of-bound references with deterministic first-failure metadata before
+any higher-level transition predicate relies on those values.
 
 #### Scenario: Unknown node is rejected [r[domain-primitives.raft-consensus.model.scenario.unknown-node-rejected]]
 
@@ -16,14 +17,17 @@ or invariant references them.
 - THEN the reference is rejected with unknown-node metadata
 
 ### Requirement: Node State Envelope [r[domain-primitives.raft-consensus.node-state]]
-The system MUST define follower, candidate, and leader state envelopes whose term,
-log, vote, commit, and applied metadata are admitted by the finite Raft model.
+The system MUST expose follower, candidate, and leader state envelopes whose
+node identity, term, role term, vote, log, commit, applied, and configuration
+metadata are admitted by the finite Raft model. Node-state admission MUST reject
+invalid roles, leader role-term drift, candidate non-self-votes, and
+applied/commit/log ordering violations with deterministic metadata.
 
 #### Scenario: Leader state must belong to current term [r[domain-primitives.raft-consensus.node-state.scenario.leader-state-current-term]]
 
 - GIVEN a node marked as leader for a term different from its current term
 - WHEN node-state admission is evaluated
-- THEN the state is rejected with inconsistent-term metadata
+- THEN the state is rejected with inconsistent-leader-term metadata
 
 ### Requirement: Term Monotonicity Predicate [r[domain-primitives.raft-consensus.term]]
 The system MUST define term predicates that keep current terms monotone across
@@ -193,15 +197,16 @@ are equal.
 - THEN the pair is rejected with divergent-command metadata
 
 ### Requirement: Applied Prefix Predicate [r[domain-primitives.raft-consensus.applied-prefix]]
-The system MUST define applied-prefix predicates that apply only committed log
-prefixes, preserve prefix order, and never apply entries beyond the admitted
-commit index.
+The system MUST expose applied-prefix predicates that admit only monotone
+contiguous state-machine application metadata. Non-empty steps MUST start at the
+next unapplied index, the new last-applied index MUST be committed and present
+in the local log, and no-op steps MUST carry no first-applied index.
 
 #### Scenario: Applying uncommitted entry is rejected [r[domain-primitives.raft-consensus.applied-prefix.scenario.uncommitted-apply-rejected]]
 
 - GIVEN an apply step whose target index is greater than the admitted commit index
 - WHEN applied-prefix admission is evaluated
-- THEN the step is rejected with uncommitted-apply metadata
+- THEN the step is rejected with uncommitted-apply metadata before state-machine execution
 
 ### Requirement: Snapshot Metadata Predicate [r[domain-primitives.raft-consensus.snapshot]]
 The system MUST define finite snapshot metadata containing last-included index,
@@ -259,7 +264,7 @@ correctness.
 
 - GIVEN a client proposal addressed to a node not admitted as leader for its current term
 - WHEN client-proposal admission is evaluated
-- THEN the proposal is rejected with not-leader metadata
+- THEN the proposal is rejected with not-leader metadata before append eligibility
 
 ### Requirement: Transition Trace Predicate [r[domain-primitives.raft-consensus.trace]]
 The system MUST define finite transition traces whose adjacent states are related
