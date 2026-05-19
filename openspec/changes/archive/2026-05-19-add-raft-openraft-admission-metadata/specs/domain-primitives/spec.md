@@ -38,15 +38,15 @@ r[domain-primitives.raft-consensus.openraft-vote-log-io]
 
 ### Requirement: OpenRaft Effective Membership Admission Metadata
 
-OpenRaft-inspired effective-membership primitives MUST expose deterministic admission metadata for committed/effective epoch ordering and rollback-to-committed behavior. Admission MUST return OK for ordered committed/effective metadata, rollback admission MUST restore the effective epoch to the committed epoch, and the primitive MUST NOT claim joint-consensus runtime reconfiguration beyond finite metadata ordering.
+OpenRaft-inspired effective-membership primitives MUST expose deterministic admission metadata for committed/effective epoch ordering and a separate finite rollback helper for conflicting uncommitted effective membership. Admission metadata MUST return OK for ordered committed/effective metadata and MUST report older-effective metadata deterministically. Rollback evaluation MUST restore the effective epoch to the committed epoch, and the primitive MUST NOT claim joint-consensus runtime reconfiguration beyond finite metadata ordering.
 
 r[domain-primitives.raft-consensus.openraft-effective-membership]
 
 #### Scenario: Conflicting effective membership rollback reports committed epoch
 
 - GIVEN finite effective-membership metadata whose uncommitted effective epoch must be rolled back
-- WHEN rollback admission metadata is evaluated
-- THEN the result reports OK with the effective epoch restored to the committed epoch
+- WHEN conflicting-log rollback is evaluated
+- THEN the effective epoch is restored to the committed epoch
 
 ### Requirement: OpenRaft Replication Session Admission Metadata
 
