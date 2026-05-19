@@ -1,0 +1,5 @@
+$ ./scripts/check-verification-policy.rs
+PASS nickel typecheck verification-policy/policy.ncl
+PASS nickel export verification-policy/policy.ncl
+PASS generated policy fresh verification-policy/generated/policy.json
+verification policy check: PASS

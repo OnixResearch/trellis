@@ -1,0 +1,1 @@
+$ nix build .#checks.$(nix eval --raw --impure --expr builtins.currentSystem).verification-policy --print-build-logs

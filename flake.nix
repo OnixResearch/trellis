@@ -29,7 +29,9 @@
             (builtins.match ".*\\.sh$" path) != null
             || (builtins.match ".*/scripts/.*\\.rs$" path) != null
             || (builtins.match ".*\\.md$" path) != null
-            || (builtins.match ".*\\.styx$" path) != null;
+            || (builtins.match ".*\\.styx$" path) != null
+            || (builtins.match ".*\\.ncl$" path) != null
+            || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null;
           combinedFilter = path: type:
             (scriptFilter path type) || (craneLib.filterCargoSources path type);
         in pkgs.lib.cleanSourceWith {
@@ -169,6 +171,18 @@
             cp scripts/checker-fixtures.rs "$TMPDIR/checker-fixtures.rs"
             rustc "$TMPDIR/checker-fixtures.rs" -o "$TMPDIR/checker-fixtures"
             "$TMPDIR/checker-fixtures"
+            touch $out
+          '';
+
+          # Nickel-authored verification policy freshness
+          verification-policy = pkgs.runCommand "verification-policy" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang pkgs.nickel ];
+          } ''
+            cd ${src}
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-verification-policy.rs "$TMPDIR/check-verification-policy.rs"
+            rustc "$TMPDIR/check-verification-policy.rs" -o "$TMPDIR/check-verification-policy"
+            "$TMPDIR/check-verification-policy"
             touch $out
           '';
 
