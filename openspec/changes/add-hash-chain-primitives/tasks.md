@@ -8,9 +8,9 @@
 
 ## Phase 2: Append and Shape Primitives
 
-- [ ] [depends:core-commitments] Implement batch/fold append specs and proofs by composing the existing append-preserves theorem.
-- [ ] [depends:chain.log-shape] Add log-shape predicates for contiguous/increasing indices and the chosen term policy; keep shape validity separate from hash validity.
-- [ ] [depends:chain.log-shape] Add positive tests/proptests for valid shaped hash chains and negative tests for gaps, non-monotone index cases, and term-policy violations.
+- [x] [depends:core-commitments] Implement batch/fold append specs and proofs by composing the existing append-preserves theorem. ✅ 7m (started: 2026-05-19T20:33:24Z → completed: 2026-05-19T20:40:05Z)
+- [x] [depends:chain.log-shape] Add log-shape predicates for contiguous/increasing indices and the chosen term policy; keep shape validity separate from hash validity. ✅ 7m (started: 2026-05-19T20:33:24Z → completed: 2026-05-19T20:40:05Z)
+- [x] [depends:chain.log-shape] Add positive tests/proptests for valid shaped hash chains and negative tests for gaps, non-monotone index cases, and term-policy violations. ✅ 7m (started: 2026-05-19T20:33:24Z → completed: 2026-05-19T20:40:05Z)
 
 ## Phase 3: Tamper and Domain Boundaries
 

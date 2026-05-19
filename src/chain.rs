@@ -333,6 +333,132 @@ pub proof fn divergence_implies_different_tip(chain1: Seq<ChainEntry>, chain2: S
     assert(chain1[k].hash != chain2[k].hash);
 }
 
+// --- batch append and log shape ---
+
+// r[depends chain.batch-append]
+// r[impl chain.batch-append]
+/// Spec: append a batch by folding one correctly linked entry at a time.
+pub open spec fn append_batch_spec(base: Seq<ChainEntry>, batch: Seq<ChainEntry>) -> Seq<ChainEntry>
+    decreases batch.len()
+{
+    if batch.len() == 0 {
+        base
+    } else {
+        append_batch_spec(
+            base.push(batch[0]),
+            batch.subrange(1, batch.len() as int),
+        )
+    }
+}
+
+// r[depends chain.batch-append]
+// r[impl chain.batch-append]
+/// Spec: every batch entry is correctly hashed from the current folded tip.
+pub open spec fn batch_correctly_hashed_spec(base: Seq<ChainEntry>, batch: Seq<ChainEntry>) -> bool
+    decreases batch.len()
+{
+    if batch.len() == 0 {
+        true
+    } else {
+        correctly_hashed(base, batch[0])
+            && batch_correctly_hashed_spec(
+                base.push(batch[0]),
+                batch.subrange(1, batch.len() as int),
+            )
+    }
+}
+
+// r[depends chain.batch-append]
+// r[impl chain.batch-append]
+/// Spec: admitted batch append preserves validity and extends the base chain.
+pub open spec fn batch_append_preserves_prop(base: Seq<ChainEntry>, batch: Seq<ChainEntry>) -> bool {
+    (chain_valid_spec(base) && batch_correctly_hashed_spec(base, batch))
+        ==> chain_valid_spec(append_batch_spec(base, batch))
+}
+
+// r[verify chain.batch-append]
+/// Proof: a correctly linked batch preserves chain validity by repeated append.
+pub proof fn prove_batch_append_preserves(base: Seq<ChainEntry>, batch: Seq<ChainEntry>)
+    requires
+        chain_valid_spec(base),
+        batch_correctly_hashed_spec(base, batch),
+    ensures chain_valid_spec(append_batch_spec(base, batch))
+    decreases batch.len()
+{
+    if batch.len() == 0 {
+    } else {
+        let first = batch[0];
+        let rest = batch.subrange(1, batch.len() as int);
+        prove_append_preserves(base, first);
+        prove_batch_append_preserves(base.push(first), rest);
+    }
+}
+
+// r[verify chain.batch-append]
+/// Proof: batch append leaves the original base prefix unchanged.
+pub proof fn batch_append_extends_base(base: Seq<ChainEntry>, batch: Seq<ChainEntry>)
+    requires batch_correctly_hashed_spec(base, batch)
+    ensures chain_extends_spec(base, append_batch_spec(base, batch))
+    decreases batch.len()
+{
+    if batch.len() == 0 {
+        assert forall|i: int| #![trigger base[i]] 0 <= i < base.len() implies base[i] == base[i] by {}
+    } else {
+        let first = batch[0];
+        let rest = batch.subrange(1, batch.len() as int);
+        batch_append_extends_base(base.push(first), rest);
+        let result = append_batch_spec(base, batch);
+        assert(result == append_batch_spec(base.push(first), rest));
+        assert forall|i: int| #![trigger base[i]] 0 <= i < base.len() implies base[i] == result[i] by {
+            assert(base.push(first)[i] == base[i]);
+        }
+    }
+}
+
+// r[depends chain.log-shape]
+// r[impl chain.log-shape]
+/// Spec: indices are contiguous from `first_index` in mathematical integer space.
+pub open spec fn indices_contiguous_from_spec(entries: Seq<ChainEntry>, first_index: u64) -> bool {
+    forall|i: int| #![trigger entries[i]] 0 <= i < entries.len() ==>
+        entries[i].index as int == first_index as int + i
+}
+
+// r[depends chain.log-shape]
+// r[impl chain.log-shape]
+/// Spec: terms are monotonically nondecreasing along the chain.
+pub open spec fn terms_nondecreasing_spec(entries: Seq<ChainEntry>) -> bool {
+    forall|i: int| #![trigger entries[i]] 1 <= i < entries.len() ==>
+        entries[i - 1].term <= entries[i].term
+}
+
+// r[depends chain.log-shape]
+// r[impl chain.log-shape]
+/// Spec: shape validity is separate from hash validity.
+pub open spec fn log_shape_valid_spec(entries: Seq<ChainEntry>, first_index: u64) -> bool {
+    indices_contiguous_from_spec(entries, first_index) && terms_nondecreasing_spec(entries)
+}
+
+// r[depends chain.log-shape]
+// r[impl chain.log-shape]
+/// Spec: combined log validity composes hash-chain validity with log shape validity.
+pub open spec fn shaped_chain_valid_spec(entries: Seq<ChainEntry>, first_index: u64) -> bool {
+    chain_valid_spec(entries) && log_shape_valid_spec(entries, first_index)
+}
+
+// r[verify chain.log-shape]
+/// Proof: combined validity implies ordinary hash-chain validity.
+pub proof fn shaped_chain_implies_hash_valid(entries: Seq<ChainEntry>, first_index: u64)
+    requires shaped_chain_valid_spec(entries, first_index)
+    ensures chain_valid_spec(entries)
+{}
+
+// r[verify chain.log-shape]
+/// Proof: combined validity implies separate shape validity.
+pub proof fn shaped_chain_implies_shape_valid(entries: Seq<ChainEntry>, first_index: u64)
+    requires shaped_chain_valid_spec(entries, first_index)
+    ensures log_shape_valid_spec(entries, first_index)
+{}
+
 // --- collision resistance (axiom) ---
 
 // r[depends chain.collision-free]
@@ -567,6 +693,18 @@ mod tests {
         true
     }
 
+    fn is_log_shape_valid(chain: &[ChainEntry], first_index: u64) -> bool {
+        for (i, entry) in chain.iter().enumerate() {
+            if entry.index != first_index + i as u64 {
+                return false;
+            }
+            if i > 0 && chain[i - 1].term > entry.term {
+                return false;
+            }
+        }
+        true
+    }
+
     // r[verify chain.chain-valid]
     #[test]
     fn test_empty_chain_valid() {
@@ -669,6 +807,31 @@ mod tests {
         assert_ne!(h1, h3);
         let h4 = test_hash(1, 1, 1, 42);
         assert_ne!(h1, h4);
+    }
+
+    // r[verify chain.log-shape]
+    #[test]
+    fn test_log_shape_accepts_contiguous_nondecreasing_terms() {
+        let mut chain = build_chain(&[(1, 1, 100), (2, 1, 200), (3, 2, 300)]);
+        chain[0].term = 1;
+        chain[1].term = 1;
+        chain[2].term = 2;
+        assert!(is_log_shape_valid(&chain, 1));
+    }
+
+    // r[verify chain.log-shape]
+    #[test]
+    fn test_log_shape_rejects_index_gap() {
+        let mut chain = build_chain(&[(1, 1, 100), (2, 1, 200), (3, 2, 300)]);
+        chain[1].index = 7;
+        assert!(!is_log_shape_valid(&chain, 1));
+    }
+
+    // r[verify chain.log-shape]
+    #[test]
+    fn test_log_shape_rejects_term_regression() {
+        let chain = build_chain(&[(1, 2, 100), (2, 1, 200), (3, 2, 300)]);
+        assert!(!is_log_shape_valid(&chain, 1));
     }
 
     proptest! {
