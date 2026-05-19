@@ -305,7 +305,9 @@ quorum, log, snapshot, membership, and invariant checks.
 The system MUST define finite OpenRaft-inspired log pointer metadata for purged,
 snapshot, applied, committed, flushed, submitted, and accepted indexes, and MUST
 reject pointer regressions that violate the ordered pointer lattice without
-claiming disk durability or storage implementation behavior.
+claiming disk durability or storage implementation behavior. Admission metadata
+MUST return OK exactly for the valid pointer predicate and otherwise report the
+first pointer-order violation in stable lattice order.
 
 #### Scenario: Pointer regression is rejected [r[domain-primitives.raft-consensus.openraft-log-pointers.scenario.pointer-regression-rejected]]
 
@@ -313,10 +315,19 @@ claiming disk durability or storage implementation behavior.
 - WHEN log-pointer admission is evaluated
 - THEN the metadata is rejected with pointer-order failure evidence
 
+#### Scenario: First pointer-order violation is reported [r[domain-primitives.raft-consensus.openraft-log-pointers.scenario.first-pointer-violation-reported]]
+
+- GIVEN finite log pointers with multiple lattice violations
+- WHEN log-pointer admission metadata is evaluated
+- THEN the result reports the first violation in deterministic pointer-lattice order
+
 ### Requirement: OpenRaft I/O Progress [r[domain-primitives.raft-consensus.openraft-io-progress]]
 The system MUST define finite flushed, submitted, and accepted I/O progress
 cursors, require flushed <= submitted <= accepted, and admit progress updates only
-when every cursor moves monotonically.
+when every cursor moves monotonically. Admission metadata MUST return OK exactly
+for the valid monotone-update predicate and otherwise report invalid old metadata,
+invalid new metadata, or the first regressing cursor without claiming fsync,
+crash recovery, or storage durability.
 
 #### Scenario: Backwards I/O cursor update is rejected [r[domain-primitives.raft-consensus.openraft-io-progress.scenario.backwards-cursor-rejected]]
 
@@ -324,10 +335,17 @@ when every cursor moves monotonically.
 - WHEN progress-update admission is evaluated
 - THEN the update is rejected without claiming storage completion behavior
 
+#### Scenario: Invalid old progress is reported before regressions [r[domain-primitives.raft-consensus.openraft-io-progress.scenario.invalid-old-progress-first]]
+
+- GIVEN invalid old progress metadata and a regressing update
+- WHEN progress-update admission metadata is evaluated
+- THEN invalid old progress is reported before cursor-regression metadata
+
 ### Requirement: OpenRaft Vote/Log I/O Ordering [r[domain-primitives.raft-consensus.openraft-vote-log-io]]
 The system MUST define finite vote/log I/O ordering predicates that admit a log
 write only when term/vote metadata for that log term has already been ordered
-first. The predicate MUST NOT claim fsync, crash recovery, or storage durability.
+first. Admission metadata MUST return OK exactly for the ordering predicate and
+MUST NOT claim fsync, crash recovery, or storage durability.
 
 #### Scenario: Log write before term metadata is rejected [r[domain-primitives.raft-consensus.openraft-vote-log-io.scenario.log-before-term-rejected]]
 
@@ -338,7 +356,10 @@ first. The predicate MUST NOT claim fsync, crash recovery, or storage durability
 ### Requirement: OpenRaft Effective Membership Rollback [r[domain-primitives.raft-consensus.openraft-effective-membership]]
 The system MUST define finite committed/effective membership metadata where the
 committed epoch is not newer than the effective epoch, and MUST define rollback
-of conflicting uncommitted effective membership to the committed epoch.
+of conflicting uncommitted effective membership to the committed epoch. Admission
+metadata MUST return OK exactly for ordered committed/effective metadata and MUST
+report older-effective metadata deterministically without claiming runtime
+joint-consensus reconfiguration behavior.
 
 #### Scenario: Conflicting effective membership rolls back [r[domain-primitives.raft-consensus.openraft-effective-membership.scenario.rollback-to-committed]]
 
@@ -350,7 +371,9 @@ of conflicting uncommitted effective membership to the committed epoch.
 The system MUST define finite replication-session identity from leader term,
 leader node, and governing membership log index. Progress updates MUST be
 admitted only for the current session, with monotone matched index bounded by the
-leader log.
+leader log. Admission metadata MUST return OK exactly for the current-session
+bounded-update predicate and otherwise reject stale sessions before matched-index
+movement or leader-log-bound checks.
 
 #### Scenario: Stale replication progress is rejected [r[domain-primitives.raft-consensus.openraft-replication-session.scenario.stale-progress-rejected]]
 
@@ -358,11 +381,18 @@ leader log.
 - WHEN progress-update admission is evaluated
 - THEN the update is rejected and cannot mutate the current session progress
 
+#### Scenario: Stale session is reported before index checks [r[domain-primitives.raft-consensus.openraft-replication-session.scenario.stale-session-first]]
+
+- GIVEN a stale replication session and a backwards matched-index update
+- WHEN replication progress admission metadata is evaluated
+- THEN stale-session metadata is reported before matched-index metadata
+
 ### Requirement: OpenRaft Read Linearizer Readiness [r[domain-primitives.raft-consensus.openraft-read-linearizer]]
 The system MUST define finite read-linearizer readiness as local last-applied
-index catching up to the read log index. The predicate MUST NOT claim quorum RPC,
-lease timing, clock-drift, network delivery, or end-to-end application
-linearizability behavior.
+index catching up to the read log index. Admission metadata MUST return OK exactly
+for the local-apply catch-up predicate and MUST NOT claim quorum RPC, lease
+timing, clock-drift, network delivery, or end-to-end application linearizability
+behavior.
 
 #### Scenario: Read before apply catch-up is rejected [r[domain-primitives.raft-consensus.openraft-read-linearizer.scenario.apply-catchup-required]]
 

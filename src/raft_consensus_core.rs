@@ -313,6 +313,43 @@ pub const RAFT_CLIENT_PROPOSAL_STALE_TERM: u64 = 5;
 /// Stable client-proposal rejection code: proposal term is newer than the leader state.
 pub const RAFT_CLIENT_PROPOSAL_FUTURE_TERM: u64 = 6;
 
+/// Stable OpenRaft-inspired admission code: all finite operational checks passed.
+pub const RAFT_OPENRAFT_OK: u64 = 0;
+/// Stable OpenRaft-inspired admission code: purged pointer is after snapshot pointer.
+pub const RAFT_OPENRAFT_PURGED_AFTER_SNAPSHOT: u64 = 1;
+/// Stable OpenRaft-inspired admission code: snapshot pointer is after applied pointer.
+pub const RAFT_OPENRAFT_SNAPSHOT_AFTER_APPLIED: u64 = 2;
+/// Stable OpenRaft-inspired admission code: applied pointer is after committed pointer.
+pub const RAFT_OPENRAFT_APPLIED_AFTER_COMMITTED: u64 = 3;
+/// Stable OpenRaft-inspired admission code: committed pointer is after submitted pointer.
+pub const RAFT_OPENRAFT_COMMITTED_AFTER_SUBMITTED: u64 = 4;
+/// Stable OpenRaft-inspired admission code: flushed pointer is after submitted pointer.
+pub const RAFT_OPENRAFT_FLUSHED_AFTER_SUBMITTED: u64 = 5;
+/// Stable OpenRaft-inspired admission code: submitted pointer is after accepted pointer.
+pub const RAFT_OPENRAFT_SUBMITTED_AFTER_ACCEPTED: u64 = 6;
+/// Stable OpenRaft-inspired admission code: existing progress metadata is invalid.
+pub const RAFT_OPENRAFT_OLD_PROGRESS_INVALID: u64 = 7;
+/// Stable OpenRaft-inspired admission code: new progress metadata is invalid.
+pub const RAFT_OPENRAFT_NEW_PROGRESS_INVALID: u64 = 8;
+/// Stable OpenRaft-inspired admission code: flushed cursor regressed.
+pub const RAFT_OPENRAFT_FLUSHED_REGRESSED: u64 = 9;
+/// Stable OpenRaft-inspired admission code: submitted cursor regressed.
+pub const RAFT_OPENRAFT_SUBMITTED_REGRESSED: u64 = 10;
+/// Stable OpenRaft-inspired admission code: accepted cursor regressed.
+pub const RAFT_OPENRAFT_ACCEPTED_REGRESSED: u64 = 11;
+/// Stable OpenRaft-inspired admission code: vote/term metadata has not been ordered before log I/O.
+pub const RAFT_OPENRAFT_PRIOR_TERM_METADATA_REQUIRED: u64 = 12;
+/// Stable OpenRaft-inspired admission code: effective membership is older than committed membership.
+pub const RAFT_OPENRAFT_EFFECTIVE_BEFORE_COMMITTED: u64 = 13;
+/// Stable OpenRaft-inspired admission code: replication update belongs to a stale session.
+pub const RAFT_OPENRAFT_STALE_REPLICATION_SESSION: u64 = 14;
+/// Stable OpenRaft-inspired admission code: replication matched index moved backwards.
+pub const RAFT_OPENRAFT_MATCHED_INDEX_REGRESSED: u64 = 15;
+/// Stable OpenRaft-inspired admission code: replication matched index is beyond leader log.
+pub const RAFT_OPENRAFT_MATCHED_INDEX_AFTER_LEADER_LOG: u64 = 16;
+/// Stable OpenRaft-inspired admission code: local apply has not caught up to the read index.
+pub const RAFT_OPENRAFT_APPLY_CATCHUP_REQUIRED: u64 = 17;
+
 /// Finite Raft model envelope. Bounds are caller-provided model limits, not runtime resource claims.
 #[derive(Copy, Clone, Debug)]
 pub struct RaftModelEnvelope {
@@ -412,6 +449,15 @@ pub struct RaftClientProposalAdmissionResult {
     /// Whether the proposal is eligible for the modeled leader append path.
     pub admitted: bool,
     /// Stable RAFT_CLIENT_PROPOSAL_* code for success or the first rejected field.
+    pub failing_check: u64,
+}
+
+/// Deterministic finite OpenRaft-inspired operational admission result.
+#[derive(Copy, Clone, Debug)]
+pub struct RaftOpenraftAdmissionResult {
+    /// Whether all finite OpenRaft-inspired operational checks passed.
+    pub admitted: bool,
+    /// Stable RAFT_OPENRAFT_* code for success or the first rejected field.
     pub failing_check: u64,
 }
 
@@ -895,6 +941,17 @@ pub proof fn follower_client_proposal_rejects(
 {}
 
 // r[depends domain-primitives.raft-consensus.openraft-log-pointers]
+// r[depends domain-primitives.raft-consensus.openraft-io-progress]
+// r[depends domain-primitives.raft-consensus.openraft-vote-log-io]
+// r[depends domain-primitives.raft-consensus.openraft-effective-membership]
+// r[depends domain-primitives.raft-consensus.openraft-replication-session]
+// r[depends domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Spec: stable OpenRaft-inspired operational admission codes are drawn from the modeled code set.
+pub open spec fn raft_openraft_code_valid_spec(code: u64) -> bool {
+    code <= RAFT_OPENRAFT_APPLY_CATCHUP_REQUIRED
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-log-pointers]
 /// Spec: OpenRaft-inspired log pointers are ordered in the finite safety lattice.
 pub open spec fn raft_operational_log_pointers_valid_spec(ptrs: RaftOperationalLogPointers) -> bool {
     ptrs.purged <= ptrs.snapshot
@@ -976,6 +1033,105 @@ pub open spec fn raft_replication_progress_update_admit_spec(
 /// Spec: finite read-linearizer readiness holds once local apply has caught up to the read log index.
 pub open spec fn raft_read_linearizer_ready_spec(meta: RaftReadLinearizerMetadata) -> bool {
     meta.read_log_index <= meta.last_applied_index
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-log-pointers]
+/// Spec: deterministic first-failure metadata for finite OpenRaft-inspired log-pointer admission.
+pub open spec fn raft_openraft_log_pointers_admission_result_spec(
+    ptrs: RaftOperationalLogPointers,
+) -> RaftOpenraftAdmissionResult {
+    if ptrs.purged > ptrs.snapshot {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_PURGED_AFTER_SNAPSHOT }
+    } else if ptrs.snapshot > ptrs.applied {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SNAPSHOT_AFTER_APPLIED }
+    } else if ptrs.applied > ptrs.committed {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_APPLIED_AFTER_COMMITTED }
+    } else if ptrs.committed > ptrs.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_COMMITTED_AFTER_SUBMITTED }
+    } else if ptrs.flushed > ptrs.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_FLUSHED_AFTER_SUBMITTED }
+    } else if ptrs.submitted > ptrs.accepted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SUBMITTED_AFTER_ACCEPTED }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-io-progress]
+/// Spec: deterministic first-failure metadata for finite OpenRaft-inspired I/O progress admission.
+pub open spec fn raft_openraft_io_progress_admission_result_spec(
+    old_progress: RaftIoProgressMetadata,
+    new_progress: RaftIoProgressMetadata,
+) -> RaftOpenraftAdmissionResult {
+    if !raft_io_progress_valid_spec(old_progress) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_OLD_PROGRESS_INVALID }
+    } else if !raft_io_progress_valid_spec(new_progress) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_NEW_PROGRESS_INVALID }
+    } else if old_progress.flushed > new_progress.flushed {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_FLUSHED_REGRESSED }
+    } else if old_progress.submitted > new_progress.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SUBMITTED_REGRESSED }
+    } else if old_progress.accepted > new_progress.accepted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_ACCEPTED_REGRESSED }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-vote-log-io]
+/// Spec: deterministic first-failure metadata for finite OpenRaft-inspired vote/log I/O ordering.
+pub open spec fn raft_openraft_vote_log_io_admission_result_spec(
+    meta: RaftVoteLogIoMetadata,
+) -> RaftOpenraftAdmissionResult {
+    if raft_vote_log_io_ordered_spec(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_PRIOR_TERM_METADATA_REQUIRED }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-effective-membership]
+/// Spec: deterministic metadata for finite OpenRaft-inspired effective membership admission.
+pub open spec fn raft_openraft_effective_membership_admission_result_spec(
+    meta: RaftEffectiveMembershipMetadata,
+) -> RaftOpenraftAdmissionResult {
+    if raft_effective_membership_valid_spec(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_EFFECTIVE_BEFORE_COMMITTED }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-replication-session]
+/// Spec: deterministic first-failure metadata for finite OpenRaft-inspired replication progress admission.
+pub open spec fn raft_openraft_replication_progress_admission_result_spec(
+    current: RaftReplicationSessionMetadata,
+    update_session: RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+) -> RaftOpenraftAdmissionResult {
+    if !raft_replication_session_matches_spec(current, update_session) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_STALE_REPLICATION_SESSION }
+    } else if old_matched_index > new_matched_index {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_MATCHED_INDEX_REGRESSED }
+    } else if new_matched_index > leader_last_log_index {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_MATCHED_INDEX_AFTER_LEADER_LOG }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[depends domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Spec: deterministic metadata for finite OpenRaft-inspired read-linearizer readiness.
+pub open spec fn raft_openraft_read_linearizer_admission_result_spec(
+    meta: RaftReadLinearizerMetadata,
+) -> RaftOpenraftAdmissionResult {
+    if raft_read_linearizer_ready_spec(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_APPLY_CATCHUP_REQUIRED }
+    }
 }
 
 // r[impl domain-primitives.raft-consensus.openraft-log-pointers]
@@ -1089,6 +1245,123 @@ pub fn raft_read_linearizer_ready(meta: &RaftReadLinearizerMetadata) -> (result:
     meta.read_log_index <= meta.last_applied_index
 }
 
+// r[impl domain-primitives.raft-consensus.openraft-log-pointers]
+/// Return deterministic first-failure metadata for finite OpenRaft-inspired log pointers.
+pub fn raft_openraft_log_pointers_admission_result(
+    ptrs: &RaftOperationalLogPointers,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_log_pointers_admission_result_spec(*ptrs)
+{
+    if ptrs.purged > ptrs.snapshot {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_PURGED_AFTER_SNAPSHOT }
+    } else if ptrs.snapshot > ptrs.applied {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SNAPSHOT_AFTER_APPLIED }
+    } else if ptrs.applied > ptrs.committed {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_APPLIED_AFTER_COMMITTED }
+    } else if ptrs.committed > ptrs.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_COMMITTED_AFTER_SUBMITTED }
+    } else if ptrs.flushed > ptrs.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_FLUSHED_AFTER_SUBMITTED }
+    } else if ptrs.submitted > ptrs.accepted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SUBMITTED_AFTER_ACCEPTED }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-io-progress]
+/// Return deterministic first-failure metadata for finite OpenRaft-inspired I/O progress.
+pub fn raft_openraft_io_progress_admission_result(
+    old_progress: &RaftIoProgressMetadata,
+    new_progress: &RaftIoProgressMetadata,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_io_progress_admission_result_spec(*old_progress, *new_progress)
+{
+    if !raft_io_progress_valid(old_progress) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_OLD_PROGRESS_INVALID }
+    } else if !raft_io_progress_valid(new_progress) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_NEW_PROGRESS_INVALID }
+    } else if old_progress.flushed > new_progress.flushed {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_FLUSHED_REGRESSED }
+    } else if old_progress.submitted > new_progress.submitted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_SUBMITTED_REGRESSED }
+    } else if old_progress.accepted > new_progress.accepted {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_ACCEPTED_REGRESSED }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-vote-log-io]
+/// Return deterministic admission metadata for finite OpenRaft-inspired vote/log I/O ordering.
+pub fn raft_openraft_vote_log_io_admission_result(
+    meta: &RaftVoteLogIoMetadata,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_vote_log_io_admission_result_spec(*meta)
+{
+    if raft_vote_log_io_ordered(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_PRIOR_TERM_METADATA_REQUIRED }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-effective-membership]
+/// Return deterministic admission metadata for finite OpenRaft-inspired effective membership.
+pub fn raft_openraft_effective_membership_admission_result(
+    meta: &RaftEffectiveMembershipMetadata,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_effective_membership_admission_result_spec(*meta)
+{
+    if raft_effective_membership_valid(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_EFFECTIVE_BEFORE_COMMITTED }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-replication-session]
+/// Return deterministic first-failure metadata for finite OpenRaft-inspired replication progress.
+pub fn raft_openraft_replication_progress_admission_result(
+    current: &RaftReplicationSessionMetadata,
+    update_session: &RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_replication_progress_admission_result_spec(
+        *current,
+        *update_session,
+        old_matched_index,
+        new_matched_index,
+        leader_last_log_index,
+    )
+{
+    if !raft_replication_session_matches(current, update_session) {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_STALE_REPLICATION_SESSION }
+    } else if old_matched_index > new_matched_index {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_MATCHED_INDEX_REGRESSED }
+    } else if new_matched_index > leader_last_log_index {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_MATCHED_INDEX_AFTER_LEADER_LOG }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    }
+}
+
+// r[impl domain-primitives.raft-consensus.openraft-read-linearizer]
+/// Return deterministic readiness metadata for finite OpenRaft-inspired read-linearizers.
+pub fn raft_openraft_read_linearizer_admission_result(
+    meta: &RaftReadLinearizerMetadata,
+) -> (result: RaftOpenraftAdmissionResult)
+    ensures result == raft_openraft_read_linearizer_admission_result_spec(*meta)
+{
+    if raft_read_linearizer_ready(meta) {
+        RaftOpenraftAdmissionResult { admitted: true, failing_check: RAFT_OPENRAFT_OK }
+    } else {
+        RaftOpenraftAdmissionResult { admitted: false, failing_check: RAFT_OPENRAFT_APPLY_CATCHUP_REQUIRED }
+    }
+}
+
 // r[verify domain-primitives.raft-consensus.openraft-log-pointers]
 /// Valid OpenRaft-inspired log pointers expose the core state-machine/commit ordering.
 pub proof fn valid_log_pointers_order_applied_and_committed(ptrs: RaftOperationalLogPointers)
@@ -1157,6 +1430,117 @@ pub proof fn admitted_replication_progress_is_current_and_bounded(
 pub proof fn ready_read_linearizer_has_applied_read_index(meta: RaftReadLinearizerMetadata)
     requires raft_read_linearizer_ready_spec(meta)
     ensures meta.read_log_index <= meta.last_applied_index
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+/// OK OpenRaft-inspired log-pointer admission is exactly the existing pointer lattice predicate.
+pub proof fn openraft_log_pointer_ok_implies_valid(ptrs: RaftOperationalLogPointers)
+    requires raft_openraft_log_pointers_admission_result_spec(ptrs).admitted
+    ensures raft_operational_log_pointers_valid_spec(ptrs)
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+/// A purged-after-snapshot pointer violation is reported before later pointer checks.
+pub proof fn openraft_log_pointer_purged_failure_is_first(ptrs: RaftOperationalLogPointers)
+    requires ptrs.purged > ptrs.snapshot
+    ensures
+        !raft_openraft_log_pointers_admission_result_spec(ptrs).admitted,
+        raft_openraft_log_pointers_admission_result_spec(ptrs).failing_check == RAFT_OPENRAFT_PURGED_AFTER_SNAPSHOT,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-io-progress]
+/// OK OpenRaft-inspired I/O progress admission is exactly the existing monotone-update predicate.
+pub proof fn openraft_io_progress_ok_implies_admitted(
+    old_progress: RaftIoProgressMetadata,
+    new_progress: RaftIoProgressMetadata,
+)
+    requires raft_openraft_io_progress_admission_result_spec(old_progress, new_progress).admitted
+    ensures raft_io_progress_advance_admit_spec(old_progress, new_progress)
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-io-progress]
+/// Invalid old I/O progress is reported before update regression checks.
+pub proof fn openraft_io_progress_invalid_old_failure_is_first(
+    old_progress: RaftIoProgressMetadata,
+    new_progress: RaftIoProgressMetadata,
+)
+    requires !raft_io_progress_valid_spec(old_progress)
+    ensures
+        !raft_openraft_io_progress_admission_result_spec(old_progress, new_progress).admitted,
+        raft_openraft_io_progress_admission_result_spec(old_progress, new_progress).failing_check == RAFT_OPENRAFT_OLD_PROGRESS_INVALID,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-vote-log-io]
+/// OK vote/log I/O admission is exactly the existing prior-term ordering predicate.
+pub proof fn openraft_vote_log_io_ok_implies_ordered(meta: RaftVoteLogIoMetadata)
+    requires raft_openraft_vote_log_io_admission_result_spec(meta).admitted
+    ensures raft_vote_log_io_ordered_spec(meta)
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-effective-membership]
+/// OK effective-membership admission is exactly the existing committed/effective epoch order.
+pub proof fn openraft_effective_membership_ok_implies_valid(meta: RaftEffectiveMembershipMetadata)
+    requires raft_openraft_effective_membership_admission_result_spec(meta).admitted
+    ensures raft_effective_membership_valid_spec(meta)
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-replication-session]
+/// OK replication-progress admission is exactly the existing current-session bounded-update predicate.
+pub proof fn openraft_replication_progress_ok_implies_admitted(
+    current: RaftReplicationSessionMetadata,
+    update_session: RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+)
+    requires raft_openraft_replication_progress_admission_result_spec(
+        current,
+        update_session,
+        old_matched_index,
+        new_matched_index,
+        leader_last_log_index,
+    ).admitted
+    ensures raft_replication_progress_update_admit_spec(
+        current,
+        update_session,
+        old_matched_index,
+        new_matched_index,
+        leader_last_log_index,
+    )
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-replication-session]
+/// Stale replication sessions are rejected before matched-index checks.
+pub proof fn openraft_replication_stale_session_failure_is_first(
+    current: RaftReplicationSessionMetadata,
+    update_session: RaftReplicationSessionMetadata,
+    old_matched_index: u64,
+    new_matched_index: u64,
+    leader_last_log_index: u64,
+)
+    requires !raft_replication_session_matches_spec(current, update_session)
+    ensures
+        !raft_openraft_replication_progress_admission_result_spec(
+            current,
+            update_session,
+            old_matched_index,
+            new_matched_index,
+            leader_last_log_index,
+        ).admitted,
+        raft_openraft_replication_progress_admission_result_spec(
+            current,
+            update_session,
+            old_matched_index,
+            new_matched_index,
+            leader_last_log_index,
+        ).failing_check == RAFT_OPENRAFT_STALE_REPLICATION_SESSION,
+{}
+
+// r[verify domain-primitives.raft-consensus.openraft-read-linearizer]
+/// OK read-linearizer admission is exactly the existing local-apply catch-up predicate.
+pub proof fn openraft_read_linearizer_ok_implies_ready(meta: RaftReadLinearizerMetadata)
+    requires raft_openraft_read_linearizer_admission_result_spec(meta).admitted
+    ensures raft_read_linearizer_ready_spec(meta)
 {}
 
 // r[depends domain-primitives.raft-consensus.membership]
@@ -3122,6 +3506,117 @@ mod tests {
         let rejected = raft_client_proposal_admission_result(&model, &unknown_command, &leader);
         assert!(!rejected.admitted);
         assert_eq!(rejected.failing_check, RAFT_CLIENT_PROPOSAL_MODEL_FAILED);
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+    // r[verify domain-primitives.raft-consensus.openraft-io-progress]
+    // r[verify domain-primitives.raft-consensus.openraft-vote-log-io]
+    // r[verify domain-primitives.raft-consensus.openraft-effective-membership]
+    // r[verify domain-primitives.raft-consensus.openraft-replication-session]
+    // r[verify domain-primitives.raft-consensus.openraft-read-linearizer]
+    #[test]
+    fn openraft_admission_metadata_reports_ok_for_valid_operational_records() {
+        let ptrs = RaftOperationalLogPointers {
+            purged: 1,
+            snapshot: 2,
+            applied: 3,
+            committed: 4,
+            flushed: 3,
+            submitted: 5,
+            accepted: 6,
+        };
+        let pointer_result = raft_openraft_log_pointers_admission_result(&ptrs);
+        assert!(pointer_result.admitted);
+        assert_eq!(pointer_result.failing_check, RAFT_OPENRAFT_OK);
+
+        let old_progress = RaftIoProgressMetadata { flushed: 1, submitted: 2, accepted: 3 };
+        let new_progress = RaftIoProgressMetadata { flushed: 2, submitted: 3, accepted: 4 };
+        let io_result = raft_openraft_io_progress_admission_result(&old_progress, &new_progress);
+        assert!(io_result.admitted);
+        assert_eq!(io_result.failing_check, RAFT_OPENRAFT_OK);
+
+        let vote_io = RaftVoteLogIoMetadata { persisted_term: 5, log_term: 4 };
+        assert!(raft_openraft_vote_log_io_admission_result(&vote_io).admitted);
+
+        let membership = RaftEffectiveMembershipMetadata { committed_epoch: 7, effective_epoch: 8 };
+        assert!(raft_openraft_effective_membership_admission_result(&membership).admitted);
+
+        let session = RaftReplicationSessionMetadata {
+            leader_term: 9,
+            leader_node: 2,
+            membership_log_index: 11,
+        };
+        let replication_result = raft_openraft_replication_progress_admission_result(
+            &session,
+            &session,
+            3,
+            4,
+            5,
+        );
+        assert!(replication_result.admitted);
+        assert_eq!(replication_result.failing_check, RAFT_OPENRAFT_OK);
+
+        let read = RaftReadLinearizerMetadata { read_log_index: 5, last_applied_index: 5 };
+        assert!(raft_openraft_read_linearizer_admission_result(&read).admitted);
+    }
+
+    // r[verify domain-primitives.raft-consensus.openraft-log-pointers]
+    // r[verify domain-primitives.raft-consensus.openraft-io-progress]
+    // r[verify domain-primitives.raft-consensus.openraft-vote-log-io]
+    // r[verify domain-primitives.raft-consensus.openraft-effective-membership]
+    // r[verify domain-primitives.raft-consensus.openraft-replication-session]
+    // r[verify domain-primitives.raft-consensus.openraft-read-linearizer]
+    #[test]
+    fn openraft_admission_metadata_reports_stable_first_failures() {
+        let ptrs = RaftOperationalLogPointers {
+            purged: 9,
+            snapshot: 2,
+            applied: 1,
+            committed: 0,
+            flushed: 8,
+            submitted: 3,
+            accepted: 2,
+        };
+        let pointer_result = raft_openraft_log_pointers_admission_result(&ptrs);
+        assert!(!pointer_result.admitted);
+        assert_eq!(pointer_result.failing_check, RAFT_OPENRAFT_PURGED_AFTER_SNAPSHOT);
+
+        let invalid_old = RaftIoProgressMetadata { flushed: 4, submitted: 3, accepted: 5 };
+        let regressing_new = RaftIoProgressMetadata { flushed: 1, submitted: 2, accepted: 1 };
+        let io_result = raft_openraft_io_progress_admission_result(&invalid_old, &regressing_new);
+        assert!(!io_result.admitted);
+        assert_eq!(io_result.failing_check, RAFT_OPENRAFT_OLD_PROGRESS_INVALID);
+
+        let vote_io = RaftVoteLogIoMetadata { persisted_term: 2, log_term: 3 };
+        let vote_result = raft_openraft_vote_log_io_admission_result(&vote_io);
+        assert!(!vote_result.admitted);
+        assert_eq!(vote_result.failing_check, RAFT_OPENRAFT_PRIOR_TERM_METADATA_REQUIRED);
+
+        let bad_membership = RaftEffectiveMembershipMetadata { committed_epoch: 9, effective_epoch: 8 };
+        let membership_result = raft_openraft_effective_membership_admission_result(&bad_membership);
+        assert!(!membership_result.admitted);
+        assert_eq!(membership_result.failing_check, RAFT_OPENRAFT_EFFECTIVE_BEFORE_COMMITTED);
+
+        let current = RaftReplicationSessionMetadata {
+            leader_term: 4,
+            leader_node: 2,
+            membership_log_index: 10,
+        };
+        let stale = RaftReplicationSessionMetadata { leader_term: 3, ..current };
+        let replication_result = raft_openraft_replication_progress_admission_result(
+            &current,
+            &stale,
+            8,
+            7,
+            6,
+        );
+        assert!(!replication_result.admitted);
+        assert_eq!(replication_result.failing_check, RAFT_OPENRAFT_STALE_REPLICATION_SESSION);
+
+        let read = RaftReadLinearizerMetadata { read_log_index: 6, last_applied_index: 5 };
+        let read_result = raft_openraft_read_linearizer_admission_result(&read);
+        assert!(!read_result.admitted);
+        assert_eq!(read_result.failing_check, RAFT_OPENRAFT_APPLY_CATCHUP_REQUIRED);
     }
 
     // r[verify domain-primitives.raft-consensus.term]
