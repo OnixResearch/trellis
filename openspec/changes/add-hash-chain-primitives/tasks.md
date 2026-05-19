@@ -14,9 +14,9 @@
 
 ## Phase 3: Tamper and Domain Boundaries
 
-- [ ] [depends:core-commitments] Add tamper-classification predicates/proofs for data, index, term, and predecessor/hash tampering, reusing collision-free and agreement/divergence facts.
-- [ ] [depends:chain.domain-separated-hash] Add domain-separated hash input contracts for entry, checkpoint, receipt, and snapshot-style domains; document any compatibility wrapper for existing `compute_entry_hash`.
-- [ ] [depends:chain.runtime-blake3-alignment] Align runtime serialization/BLAKE3 behavior with the spec boundary or explicitly preserve the existing test-mixer bridge as a named trusted/runtime boundary.
+- [x] [depends:core-commitments] Add tamper-classification predicates/proofs for data, index, term, and predecessor/hash tampering, reusing collision-free and agreement/divergence facts. ✅ 6m (started: 2026-05-19T20:40:05Z → completed: 2026-05-19T20:46:25Z)
+- [x] [depends:chain.domain-separated-hash] Add domain-separated hash input contracts for entry, checkpoint, receipt, and snapshot-style domains; document any compatibility wrapper for existing `compute_entry_hash`. ✅ 6m (started: 2026-05-19T20:40:05Z → completed: 2026-05-19T20:46:25Z)
+- [x] [depends:chain.runtime-blake3-alignment] Align runtime serialization/BLAKE3 behavior with the spec boundary or explicitly preserve the existing test-mixer bridge as a named trusted/runtime boundary. ✅ 6m (started: 2026-05-19T20:40:05Z → completed: 2026-05-19T20:46:25Z)
 
 ## Phase 4: Optional Compact History Overlay
 

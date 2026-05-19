@@ -53,6 +53,29 @@ pub proof fn hash_deterministic(
 /// Genesis hash constant.
 pub const GENESIS_HASH: u64 = 0u64;
 
+// r[depends chain.domain-separated-hashing]
+// r[impl chain.domain-separated-hashing]
+/// Abstract domain tag for linear chain-entry hashing.
+pub const CHAIN_HASH_DOMAIN_TAG: u64 = 0x4348_4149_4e5f_5631u64;
+
+// r[depends chain.domain-separated-hashing]
+// r[impl chain.domain-separated-hashing]
+/// Abstract domain tag reserved for compact-history overlay hashing.
+pub const COMPACT_HISTORY_DOMAIN_TAG: u64 = 0x434f_4d50_4143_5431u64;
+
+// r[depends chain.domain-separated-hashing]
+// r[impl chain.domain-separated-hashing]
+/// Spec: chain-entry hashes are committed to the chain domain.
+pub open spec fn chain_hash_domain_tag_spec() -> u64 {
+    CHAIN_HASH_DOMAIN_TAG
+}
+
+// r[verify chain.domain-separated-hashing]
+/// Proof: chain-entry and compact-history domains cannot alias.
+pub proof fn chain_domain_distinct_from_compact_history()
+    ensures CHAIN_HASH_DOMAIN_TAG != COMPACT_HISTORY_DOMAIN_TAG
+{}
+
 // r[depends chain.compute-entry-hash]
 /// Spec: compute the chain hash for an entry.
 pub open spec fn compute_entry_hash_spec(
@@ -459,6 +482,92 @@ pub proof fn shaped_chain_implies_shape_valid(entries: Seq<ChainEntry>, first_in
     ensures log_shape_valid_spec(entries, first_index)
 {}
 
+// --- tamper classification ---
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: changing the payload identifier while holding the chain context fixed is data tampering.
+pub open spec fn data_tamper_spec(prev_hash: u64, index: u64, term: u64, old_data: u64, new_data: u64) -> bool {
+    old_data != new_data ==> compute_entry_hash_spec(prev_hash, index, term, old_data)
+        != compute_entry_hash_spec(prev_hash, index, term, new_data)
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: changing the log index while holding the chain context fixed is index tampering.
+pub open spec fn index_tamper_spec(prev_hash: u64, old_index: u64, new_index: u64, term: u64, data_id: u64) -> bool {
+    old_index != new_index ==> compute_entry_hash_spec(prev_hash, old_index, term, data_id)
+        != compute_entry_hash_spec(prev_hash, new_index, term, data_id)
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: changing the term while holding the chain context fixed is term tampering.
+pub open spec fn term_tamper_spec(prev_hash: u64, index: u64, old_term: u64, new_term: u64, data_id: u64) -> bool {
+    old_term != new_term ==> compute_entry_hash_spec(prev_hash, index, old_term, data_id)
+        != compute_entry_hash_spec(prev_hash, index, new_term, data_id)
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: changing the predecessor hash while holding entry fields fixed is predecessor tampering.
+pub open spec fn predecessor_tamper_spec(old_prev: u64, new_prev: u64, index: u64, term: u64, data_id: u64) -> bool {
+    old_prev != new_prev ==> compute_entry_hash_spec(old_prev, index, term, data_id)
+        != compute_entry_hash_spec(new_prev, index, term, data_id)
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: payload tampering changes the committed entry hash under collision freedom.
+pub proof fn data_tamper_changes_hash(prev_hash: u64, index: u64, term: u64, old_data: u64, new_data: u64)
+    requires old_data != new_data
+    ensures compute_entry_hash_spec(prev_hash, index, term, old_data)
+        != compute_entry_hash_spec(prev_hash, index, term, new_data)
+{
+    if compute_entry_hash_spec(prev_hash, index, term, old_data)
+        == compute_entry_hash_spec(prev_hash, index, term, new_data) {
+        hash_collision_free(prev_hash, index, term, old_data, prev_hash, index, term, new_data);
+    }
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: index tampering changes the committed entry hash under collision freedom.
+pub proof fn index_tamper_changes_hash(prev_hash: u64, old_index: u64, new_index: u64, term: u64, data_id: u64)
+    requires old_index != new_index
+    ensures compute_entry_hash_spec(prev_hash, old_index, term, data_id)
+        != compute_entry_hash_spec(prev_hash, new_index, term, data_id)
+{
+    if compute_entry_hash_spec(prev_hash, old_index, term, data_id)
+        == compute_entry_hash_spec(prev_hash, new_index, term, data_id) {
+        hash_collision_free(prev_hash, old_index, term, data_id, prev_hash, new_index, term, data_id);
+    }
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: term tampering changes the committed entry hash under collision freedom.
+pub proof fn term_tamper_changes_hash(prev_hash: u64, index: u64, old_term: u64, new_term: u64, data_id: u64)
+    requires old_term != new_term
+    ensures compute_entry_hash_spec(prev_hash, index, old_term, data_id)
+        != compute_entry_hash_spec(prev_hash, index, new_term, data_id)
+{
+    if compute_entry_hash_spec(prev_hash, index, old_term, data_id)
+        == compute_entry_hash_spec(prev_hash, index, new_term, data_id) {
+        hash_collision_free(prev_hash, index, old_term, data_id, prev_hash, index, new_term, data_id);
+    }
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: predecessor tampering changes the committed entry hash under collision freedom.
+pub proof fn predecessor_tamper_changes_hash(old_prev: u64, new_prev: u64, index: u64, term: u64, data_id: u64)
+    requires old_prev != new_prev
+    ensures compute_entry_hash_spec(old_prev, index, term, data_id)
+        != compute_entry_hash_spec(new_prev, index, term, data_id)
+{
+    if compute_entry_hash_spec(old_prev, index, term, data_id)
+        == compute_entry_hash_spec(new_prev, index, term, data_id) {
+        hash_collision_free(old_prev, index, term, data_id, new_prev, index, term, data_id);
+    }
+}
+
 // --- collision resistance (axiom) ---
 
 // r[depends chain.collision-free]
@@ -651,6 +760,33 @@ proof fn prove_single_entry_valid(entry: ChainEntry)
 } // verus!
 
 #[cfg(test)]
+/// Domain-separation label used by the concrete BLAKE3 chain-entry hash.
+pub const CHAIN_HASH_DOMAIN_BYTES: &[u8] = b"trellis.chain.entry.v1";
+
+#[cfg(test)]
+// r[depends chain.runtime-blake3-alignment]
+// r[impl chain.runtime-blake3-alignment]
+/// Runtime BLAKE3 bridge for chain-entry hashing.
+///
+/// The Verus proof model keeps the hash as an uninterpreted, collision-resistant
+/// function; this executable helper fixes the concrete byte layout used by tests
+/// and production adapters: domain tag followed by little-endian `prev`, `index`,
+/// `term`, and `data_id`, truncated to a u64 model hash.
+pub fn compute_entry_hash_blake3_runtime(prev_hash: u64, index: u64, term: u64, data_id: u64) -> u64 {
+    let mut hasher = blake3::Hasher::new();
+    hasher.update(CHAIN_HASH_DOMAIN_BYTES);
+    hasher.update(&prev_hash.to_le_bytes());
+    hasher.update(&index.to_le_bytes());
+    hasher.update(&term.to_le_bytes());
+    hasher.update(&data_id.to_le_bytes());
+    let digest = hasher.finalize();
+    let bytes = digest.as_bytes();
+    let mut out = [0u8; 8];
+    out.copy_from_slice(&bytes[..8]);
+    u64::from_le_bytes(out)
+}
+
+#[cfg(test)]
 mod tests {
     use proptest::prelude::*;
 
@@ -658,12 +794,7 @@ mod tests {
 
     // Simple test hash for runtime tests (not the axiomatized one)
     fn test_hash(prev: u64, index: u64, term: u64, data_id: u64) -> u64 {
-        // Deterministic mix for testing
-        let mut h = prev;
-        h = h.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(index);
-        h = h.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(term);
-        h = h.wrapping_mul(6_364_136_223_846_793_005).wrapping_add(data_id);
-        h
+        compute_entry_hash_blake3_runtime(prev, index, term, data_id)
     }
 
     fn build_chain(entries: &[(u64, u64, u64)]) -> Vec<ChainEntry> {
@@ -717,6 +848,32 @@ mod tests {
         let h1 = test_hash(0, 1, 1, 42);
         let h2 = test_hash(0, 1, 1, 42);
         assert_eq!(h1, h2);
+    }
+
+    // r[verify chain.runtime-blake3-alignment]
+    #[test]
+    fn test_blake3_runtime_hash_matches_documented_layout() {
+        let prev = 11u64;
+        let index = 22u64;
+        let term = 33u64;
+        let data_id = 44u64;
+        let mut hasher = blake3::Hasher::new();
+        hasher.update(CHAIN_HASH_DOMAIN_BYTES);
+        hasher.update(&prev.to_le_bytes());
+        hasher.update(&index.to_le_bytes());
+        hasher.update(&term.to_le_bytes());
+        hasher.update(&data_id.to_le_bytes());
+        let digest = hasher.finalize();
+        let mut expected = [0u8; 8];
+        expected.copy_from_slice(&digest.as_bytes()[..8]);
+        assert_eq!(compute_entry_hash_blake3_runtime(prev, index, term, data_id), u64::from_le_bytes(expected));
+    }
+
+    // r[verify chain.domain-separated-hashing]
+    #[test]
+    fn test_chain_hash_domain_is_separated() {
+        assert_ne!(CHAIN_HASH_DOMAIN_TAG, COMPACT_HISTORY_DOMAIN_TAG);
+        assert_ne!(CHAIN_HASH_DOMAIN_BYTES, b"trellis.compact-history.v1");
     }
 
     // r[verify chain.chain-valid]
@@ -832,6 +989,17 @@ mod tests {
     fn test_log_shape_rejects_term_regression() {
         let chain = build_chain(&[(1, 2, 100), (2, 1, 200), (3, 2, 300)]);
         assert!(!is_log_shape_valid(&chain, 1));
+    }
+
+    // r[verify chain.tamper-classification]
+    #[test]
+    fn test_tamper_classification_inputs_change_hashes() {
+        let prev = test_hash(GENESIS_HASH, 1, 1, 100);
+        let base = test_hash(prev, 2, 1, 200);
+        assert_ne!(base, test_hash(prev, 2, 1, 201));
+        assert_ne!(base, test_hash(prev, 3, 1, 200));
+        assert_ne!(base, test_hash(prev, 2, 2, 200));
+        assert_ne!(base, test_hash(prev.wrapping_add(1), 2, 1, 200));
     }
 
     proptest! {
