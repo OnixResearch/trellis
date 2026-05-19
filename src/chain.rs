@@ -186,6 +186,153 @@ proof fn prefix_valid(entries: Seq<ChainEntry>, k: int)
     }
 }
 
+// --- tip commitments, extension, checkpoints, and forks ---
+
+// r[depends chain.tip-commitment]
+// r[impl chain.tip-commitment]
+/// Spec: compact commitment to the current chain tip.
+/// Empty chains commit to genesis; non-empty chains commit to the final entry hash.
+pub open spec fn chain_tip_spec(entries: Seq<ChainEntry>) -> u64 {
+    if entries.len() == 0 {
+        GENESIS_HASH as u64
+    } else {
+        entries[entries.len() - 1].hash
+    }
+}
+
+// r[verify chain.tip-commitment]
+/// Proof: empty-chain tip is the genesis hash.
+pub proof fn empty_tip_is_genesis(entries: Seq<ChainEntry>)
+    requires entries.len() == 0
+    ensures chain_tip_spec(entries) == GENESIS_HASH as u64
+{}
+
+// r[verify chain.tip-commitment]
+/// Proof: non-empty-chain tip is the last entry hash.
+pub proof fn nonempty_tip_is_last(entries: Seq<ChainEntry>)
+    requires entries.len() > 0
+    ensures chain_tip_spec(entries) == entries[entries.len() - 1].hash
+{}
+
+// r[depends chain.extension-prefix]
+// r[impl chain.extension-prefix]
+/// Spec: `full` extends `prefix` exactly when `prefix` is an unchanged prefix.
+pub open spec fn chain_extends_spec(prefix: Seq<ChainEntry>, full: Seq<ChainEntry>) -> bool {
+    prefix.len() <= full.len()
+        && forall|i: int| #![trigger prefix[i]] 0 <= i < prefix.len() ==> prefix[i] == full[i]
+}
+
+// r[verify chain.extension-prefix]
+/// Proof: selecting a prefix from a valid full chain yields a valid chain.
+pub proof fn valid_selected_prefix(entries: Seq<ChainEntry>, k: int)
+    requires chain_valid_spec(entries), 0 <= k <= entries.len()
+    ensures
+        chain_valid_spec(entries.subrange(0, k)),
+        chain_extends_spec(entries.subrange(0, k), entries),
+{
+    prefix_valid(entries, k);
+    let prefix = entries.subrange(0, k);
+    assert forall|i: int| #![trigger prefix[i]] 0 <= i < prefix.len() implies prefix[i] == entries[i] by {
+        assert(prefix[i] == entries[i]);
+    }
+}
+
+// r[verify chain.extension-prefix]
+/// Proof: extension preserves each prefix entry pointwise.
+pub proof fn extension_preserves_entry(prefix: Seq<ChainEntry>, full: Seq<ChainEntry>, i: int)
+    requires chain_extends_spec(prefix, full), 0 <= i < prefix.len()
+    ensures prefix[i] == full[i]
+{}
+
+// r[depends chain.checkpoint-anchor]
+// r[impl chain.checkpoint-anchor]
+/// Spec: checkpoint hash authenticates an in-range position of a valid chain.
+pub open spec fn checkpoint_valid_spec(entries: Seq<ChainEntry>, index: int, expected_hash: u64) -> bool {
+    chain_valid_spec(entries)
+        && 0 <= index < entries.len()
+        && entries[index].hash == expected_hash
+}
+
+// r[verify chain.checkpoint-anchor]
+/// Proof: matching checkpoints on valid chains authenticate equal prefixes.
+pub proof fn checkpoint_anchor_agreement(
+    chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>, index: int, expected_hash: u64,
+)
+    requires
+        checkpoint_valid_spec(chain1, index, expected_hash),
+        checkpoint_valid_spec(chain2, index, expected_hash),
+    ensures forall|i: int| #![trigger chain1[i]] 0 <= i <= index ==> chain1[i] == chain2[i]
+{
+    assert(chain1[index].hash == chain2[index].hash);
+    prove_chain_agreement(chain1, chain2, index);
+}
+
+// r[verify chain.checkpoint-anchor]
+/// Proof: a valid checkpoint's selected prefix is valid.
+pub proof fn checkpoint_prefix_valid(entries: Seq<ChainEntry>, index: int, expected_hash: u64)
+    requires checkpoint_valid_spec(entries, index, expected_hash)
+    ensures chain_valid_spec(entries.subrange(0, index + 1))
+{
+    prefix_valid(entries, index + 1);
+}
+
+// r[depends chain.fork-detection]
+// r[impl chain.fork-detection]
+/// Spec: two chains diverge when some shared in-range entry differs.
+pub open spec fn chains_diverge_spec(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>) -> bool {
+    exists|i: int| 0 <= i < chain1.len() && i < chain2.len() && chain1[i] != chain2[i]
+}
+
+// r[depends chain.fork-detection]
+// r[impl chain.fork-detection]
+/// Spec: valid same-length chains with the same tip have no fork.
+pub open spec fn same_tip_no_fork_prop(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>) -> bool {
+    (chain_valid_spec(chain1) && chain_valid_spec(chain2)
+        && chain1.len() == chain2.len()
+        && chain_tip_spec(chain1) == chain_tip_spec(chain2))
+    ==> !chains_diverge_spec(chain1, chain2)
+}
+
+// r[verify chain.fork-detection]
+/// Proof: valid same-length chains with equal tips have no divergent entry.
+pub proof fn same_tip_no_fork(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>)
+    requires
+        chain_valid_spec(chain1),
+        chain_valid_spec(chain2),
+        chain1.len() == chain2.len(),
+        chain_tip_spec(chain1) == chain_tip_spec(chain2),
+    ensures !chains_diverge_spec(chain1, chain2)
+{
+    if chain1.len() == 0 {
+        assert(!chains_diverge_spec(chain1, chain2));
+    } else {
+        let k = chain1.len() - 1;
+        assert(chain1[k].hash == chain_tip_spec(chain1));
+        assert(chain2[k].hash == chain_tip_spec(chain2));
+        prove_chain_agreement(chain1, chain2, k);
+        assert forall|i: int| 0 <= i < chain1.len() && i < chain2.len() implies chain1[i] == chain2[i] by {
+            assert(i <= k);
+        }
+        assert(!chains_diverge_spec(chain1, chain2));
+    }
+}
+
+// r[verify chain.fork-detection]
+/// Proof: any divergence in valid same-length chains forces different tips.
+pub proof fn divergence_implies_different_tip(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>, j: int)
+    requires
+        chain_valid_spec(chain1),
+        chain_valid_spec(chain2),
+        chain1.len() == chain2.len(),
+        0 <= j < chain1.len(),
+        chain1[j] != chain2[j],
+    ensures chain_tip_spec(chain1) != chain_tip_spec(chain2)
+{
+    let k = chain1.len() - 1;
+    prove_chain_divergence(chain1, chain2, j, k);
+    assert(chain1[k].hash != chain2[k].hash);
+}
+
 // --- collision resistance (axiom) ---
 
 // r[depends chain.collision-free]

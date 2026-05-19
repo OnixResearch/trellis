@@ -1,10 +1,10 @@
 ## Phase 1: Core Commitments
 
 - [x] [serial] Add canonical `chain` OpenSpec/domain requirements and docs anchors for tip commitment, extension/prefix, checkpoint anchoring, and fork detection. ✅ 2m (started: 2026-05-19T20:26:28Z → completed: 2026-05-19T20:28:01Z)
-- [ ] [depends:chain.tip-commitment] Implement `r[impl]`/`r[verify]` coverage for `chain_tip_spec`, including empty genesis tip and non-empty last-hash cases.
-- [ ] [depends:chain.extension-prefix] Implement prefix/extension predicates and proofs that valid full chains yield valid prefixes without changing prefix entries.
-- [ ] [depends:chain.checkpoint-anchor] Implement checkpoint anchoring over `(index, expected_hash)` and prove matching checkpoint hashes authenticate the corresponding valid prefix.
-- [ ] [depends:chain.fork-detection] Implement first-divergence/fork predicates and prove same-length valid chains with equal tips cannot diverge.
+- [x] [depends:chain.tip-commitment] Implement `r[impl]`/`r[verify]` coverage for `chain_tip_spec`, including empty genesis tip and non-empty last-hash cases. ✅ 5m (started: 2026-05-19T20:28:01Z → completed: 2026-05-19T20:33:24Z)
+- [x] [depends:chain.extension-prefix] Implement prefix/extension predicates and proofs that valid full chains yield valid prefixes without changing prefix entries. ✅ 5m (started: 2026-05-19T20:28:01Z → completed: 2026-05-19T20:33:24Z)
+- [x] [depends:chain.checkpoint-anchor] Implement checkpoint anchoring over `(index, expected_hash)` and prove matching checkpoint hashes authenticate the corresponding valid prefix. ✅ 5m (started: 2026-05-19T20:28:01Z → completed: 2026-05-19T20:33:24Z)
+- [x] [depends:chain.fork-detection] Implement first-divergence/fork predicates and prove same-length valid chains with equal tips cannot diverge. ✅ 5m (started: 2026-05-19T20:28:01Z → completed: 2026-05-19T20:33:24Z)
 
 ## Phase 2: Append and Shape Primitives
 
