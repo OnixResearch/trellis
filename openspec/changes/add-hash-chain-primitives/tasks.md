@@ -20,8 +20,8 @@
 
 ## Phase 4: Optional Compact History Overlay
 
-- [ ] [parallel] Specify the compact-history overlay (`chain.compact-history-proof`) as optional and base-chain-composing, not a replacement for `chain_valid_spec`.
-- [ ] [depends:chain.compact-history-proof] If implemented in this slice, add membership/range proof predicates and tests; otherwise leave the requirement as planned/future with no runtime claim.
+- [x] [parallel] Specify the compact-history overlay (`chain.compact-history-proof`) as optional and base-chain-composing, not a replacement for `chain_valid_spec`. ✅ 3m (started: 2026-05-19T20:46:25Z → completed: 2026-05-19T20:49:35Z)
+- [x] [depends:chain.compact-history-proof] If implemented in this slice, add membership/range proof predicates and tests; otherwise leave the requirement as planned/future with no runtime claim. ✅ 3m (started: 2026-05-19T20:46:25Z → completed: 2026-05-19T20:49:35Z)
 
 ## Phase 5: Validation and Evidence
 

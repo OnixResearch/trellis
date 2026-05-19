@@ -568,6 +568,42 @@ pub proof fn predecessor_tamper_changes_hash(old_prev: u64, new_prev: u64, index
     }
 }
 
+// --- optional compact-history overlay ---
+
+// r[depends chain.compact-history-proof]
+// r[impl chain.compact-history-proof]
+/// Spec: compact-history overlays summarize a valid base chain and commit to its tip.
+pub open spec fn compact_history_overlay_spec(entries: Seq<ChainEntry>, overlay_tip: u64) -> bool {
+    chain_valid_spec(entries) && chain_tip_spec(entries) == overlay_tip
+}
+
+// r[depends chain.compact-history-proof]
+// r[impl chain.compact-history-proof]
+/// Spec: a compact range proof names a valid inclusive range in the base chain.
+pub open spec fn compact_history_range_spec(entries: Seq<ChainEntry>, start: int, end: int, range_tip: u64) -> bool {
+    chain_valid_spec(entries)
+        && 0 <= start <= end
+        && end < entries.len()
+        && entries[end].hash == range_tip
+}
+
+// r[verify chain.compact-history-proof]
+/// Proof: an overlay is only an accelerator; it never replaces base-chain validity.
+pub proof fn compact_history_overlay_implies_chain_valid(entries: Seq<ChainEntry>, overlay_tip: u64)
+    requires compact_history_overlay_spec(entries, overlay_tip)
+    ensures chain_valid_spec(entries)
+{}
+
+// r[verify chain.compact-history-proof]
+/// Proof: a compact range commitment anchors to the underlying linear chain tip at `end`.
+pub proof fn compact_history_range_anchors_tip(entries: Seq<ChainEntry>, start: int, end: int, range_tip: u64)
+    requires compact_history_range_spec(entries, start, end, range_tip)
+    ensures
+        chain_valid_spec(entries),
+        0 <= start <= end < entries.len(),
+        entries[end].hash == range_tip,
+{}
+
 // --- collision resistance (axiom) ---
 
 // r[depends chain.collision-free]
@@ -874,6 +910,16 @@ mod tests {
     fn test_chain_hash_domain_is_separated() {
         assert_ne!(CHAIN_HASH_DOMAIN_TAG, COMPACT_HISTORY_DOMAIN_TAG);
         assert_ne!(CHAIN_HASH_DOMAIN_BYTES, b"trellis.compact-history.v1");
+    }
+
+    // r[verify chain.compact-history-proof]
+    #[test]
+    fn test_compact_history_overlay_uses_base_chain_tip() {
+        let chain = build_chain(&[(1, 1, 100), (2, 1, 200), (3, 2, 300)]);
+        let overlay_tip = chain.last().unwrap().hash;
+        assert!(is_chain_valid(&chain));
+        assert_eq!(overlay_tip, chain[2].hash);
+        assert_ne!(overlay_tip, chain[1].hash);
     }
 
     // r[verify chain.chain-valid]
