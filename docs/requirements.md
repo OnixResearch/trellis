@@ -656,6 +656,60 @@ r[chain.single-entry-valid]
 A single entry correctly hashed from the genesis hash MUST form a
 valid chain of length one.
 
+r[chain.tip-commitment]
+The chain-tip commitment MUST return the genesis hash for an empty chain
+and the final entry hash for a non-empty chain. For a valid chain, the tip
+commitment MUST commit to the full prefix under the existing agreement and
+collision-free assumptions.
+
+r[chain.extension-prefix]
+A chain extension predicate MUST hold exactly when the shorter chain is an
+unchanged prefix of the longer chain. Extension MUST remain separate from
+hash validity, while valid full chains MUST yield valid selected prefixes.
+
+r[chain.checkpoint-anchor]
+A checkpoint anchor over an index and expected hash MUST be valid only when
+the chain is valid, the index is in range, and the entry hash at that index
+matches the expected hash. Matching checkpoint anchors MUST authenticate the
+prefix through that index.
+
+r[chain.fork-detection]
+Fork detection MUST identify whether two chains diverge. For valid chains of
+the same length, equal tip commitments MUST imply no divergence, and any
+entry divergence MUST force different tip commitments.
+
+r[chain.batch-append]
+Batch append MUST fold correctly hashed entries over a valid base chain,
+preserve validity at each append step, and leave the original prefix
+unchanged. Incorrectly hashed batch entries MUST not receive a verified
+append-preserves claim.
+
+r[chain.log-shape]
+Log-shape predicates MUST be separate from hash validity and MUST cover the
+chosen contiguous/increasing index policy plus term policy. Hash validity
+alone MUST NOT imply index or term well-formedness.
+
+r[chain.tamper-classification]
+Tamper-classification lemmas MUST classify detectable valid-chain divergence
+as data identifier, index, term, or predecessor/hash tampering while reusing
+existing collision-free, agreement, and divergence facts.
+
+r[chain.domain-separated-hash]
+Domain-separated hash input contracts MUST distinguish entry, checkpoint,
+receipt, and snapshot-style commitments. A hash from one domain MUST NOT be
+accepted as verified evidence for another domain without an explicit
+compatibility wrapper.
+
+r[chain.runtime-blake3-alignment]
+Runtime chain hashing MUST either use the documented deterministic BLAKE3
+serialization boundary or keep any deterministic test-mixer bridge explicit
+as a trusted/runtime boundary with no cryptographic-strength claim.
+
+r[chain.compact-history-proof]
+An optional compact-history overlay MAY provide skip-link, Merkle, or MMR
+membership/range proofs. The overlay MUST compose with base chain tips or
+checkpoints and MUST NOT replace or weaken linear chain validity.
+
 ## Batch Limits
 
 r[batch.check-limits]

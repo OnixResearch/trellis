@@ -1,6 +1,6 @@
 ## Phase 1: Core Commitments
 
-- [ ] [serial] Add canonical `chain` OpenSpec/domain requirements and docs anchors for tip commitment, extension/prefix, checkpoint anchoring, and fork detection.
+- [x] [serial] Add canonical `chain` OpenSpec/domain requirements and docs anchors for tip commitment, extension/prefix, checkpoint anchoring, and fork detection. ✅ 2m (started: 2026-05-19T20:26:28Z → completed: 2026-05-19T20:28:01Z)
 - [ ] [depends:chain.tip-commitment] Implement `r[impl]`/`r[verify]` coverage for `chain_tip_spec`, including empty genesis tip and non-empty last-hash cases.
 - [ ] [depends:chain.extension-prefix] Implement prefix/extension predicates and proofs that valid full chains yield valid prefixes without changing prefix entries.
 - [ ] [depends:chain.checkpoint-anchor] Implement checkpoint anchoring over `(index, expected_hash)` and prove matching checkpoint hashes authenticate the corresponding valid prefix.
