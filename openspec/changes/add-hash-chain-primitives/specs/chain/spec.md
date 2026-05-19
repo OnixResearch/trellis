@@ -22,6 +22,8 @@ r[chain.tip-commitment]
 
 The system MUST define a chain-extension predicate where one chain extends another exactly when the shorter chain is an unchanged prefix of the longer chain. Extension MUST be independent from hash validity, and separate proofs MUST show that a valid full chain preserves validity for any admitted prefix.
 
+r[chain.extension-prefix]
+
 #### Scenario: Extended chain preserves prefix entries
 
 - GIVEN a prefix chain and a full chain where the full chain extends the prefix

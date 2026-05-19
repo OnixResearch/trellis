@@ -25,5 +25,5 @@
 
 ## Phase 5: Validation and Evidence
 
-- [ ] [serial] Run and capture focused chain tests/proptests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested, and strict OpenSpec validation for this change.
-- [ ] [serial] Run final full-tree `./scripts/verify.sh`, reconcile proof-gap inventory if runtime hash bridges changed, then sync/archive the change when all tasks are complete.
+- [x] [serial] Run and capture focused chain tests/proptests, `./scripts/verus.sh src/lib.rs`, Tracey uncovered/untested, and strict OpenSpec validation for this change. ✅ 10m (started: 2026-05-19T20:49:35Z → completed: 2026-05-19T20:59:36Z)
+- [x] [serial] Run final full-tree `./scripts/verify.sh`, reconcile proof-gap inventory if runtime hash bridges changed, then sync/archive the change when all tasks are complete. ✅ 17m (started: 2026-05-19T20:59:36Z → completed: 2026-05-19T21:16:34Z)

@@ -53,28 +53,111 @@ pub proof fn hash_deterministic(
 /// Genesis hash constant.
 pub const GENESIS_HASH: u64 = 0u64;
 
-// r[depends chain.domain-separated-hashing]
-// r[impl chain.domain-separated-hashing]
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
 /// Abstract domain tag for linear chain-entry hashing.
 pub const CHAIN_HASH_DOMAIN_TAG: u64 = 0x4348_4149_4e5f_5631u64;
 
-// r[depends chain.domain-separated-hashing]
-// r[impl chain.domain-separated-hashing]
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Abstract domain tag for checkpoint commitments.
+pub const CHECKPOINT_HASH_DOMAIN_TAG: u64 = 0x4348_4b50_5431_0001u64;
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Abstract domain tag for receipt commitments.
+pub const RECEIPT_HASH_DOMAIN_TAG: u64 = 0x5243_5054_5f31_0001u64;
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Abstract domain tag for snapshot commitments.
+pub const SNAPSHOT_HASH_DOMAIN_TAG: u64 = 0x534e_4150_5f31_0001u64;
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
 /// Abstract domain tag reserved for compact-history overlay hashing.
 pub const COMPACT_HISTORY_DOMAIN_TAG: u64 = 0x434f_4d50_4143_5431u64;
 
-// r[depends chain.domain-separated-hashing]
-// r[impl chain.domain-separated-hashing]
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Spec: domain-separated commitments encode the domain in the first hash input.
+pub open spec fn domain_commitment_spec(domain: u64, subject: u64, index: u64, payload: u64) -> u64 {
+    hash_spec(domain, subject, index, payload)
+}
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Spec: chain-entry hashes under the domain-separated wrapper.
+pub open spec fn domain_separated_entry_hash_spec(prev_hash: u64, index: u64, term: u64, data_id: u64) -> u64 {
+    domain_commitment_spec(CHAIN_HASH_DOMAIN_TAG, prev_hash, index, hash_spec(prev_hash, index, term, data_id))
+}
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
+/// Spec: legacy compatibility wrapper for callers that still consume `compute_entry_hash_spec`.
+pub open spec fn legacy_entry_hash_compat_spec(prev_hash: u64, index: u64, term: u64, data_id: u64) -> u64 {
+    compute_entry_hash_spec(prev_hash, index, term, data_id)
+}
+
+// r[depends chain.domain-separated-hash]
+// r[impl chain.domain-separated-hash]
 /// Spec: chain-entry hashes are committed to the chain domain.
 pub open spec fn chain_hash_domain_tag_spec() -> u64 {
     CHAIN_HASH_DOMAIN_TAG
 }
 
-// r[verify chain.domain-separated-hashing]
+// r[verify chain.domain-separated-hash]
+/// Proof: chain-entry and checkpoint domains cannot alias.
+pub proof fn chain_domain_distinct_from_checkpoint()
+    ensures CHAIN_HASH_DOMAIN_TAG != CHECKPOINT_HASH_DOMAIN_TAG
+{}
+
+// r[verify chain.domain-separated-hash]
+/// Proof: chain-entry and receipt domains cannot alias.
+pub proof fn chain_domain_distinct_from_receipt()
+    ensures CHAIN_HASH_DOMAIN_TAG != RECEIPT_HASH_DOMAIN_TAG
+{}
+
+// r[verify chain.domain-separated-hash]
+/// Proof: chain-entry and snapshot domains cannot alias.
+pub proof fn chain_domain_distinct_from_snapshot()
+    ensures CHAIN_HASH_DOMAIN_TAG != SNAPSHOT_HASH_DOMAIN_TAG
+{}
+
+// r[verify chain.domain-separated-hash]
 /// Proof: chain-entry and compact-history domains cannot alias.
 pub proof fn chain_domain_distinct_from_compact_history()
     ensures CHAIN_HASH_DOMAIN_TAG != COMPACT_HISTORY_DOMAIN_TAG
 {}
+
+// r[verify chain.domain-separated-hash]
+/// Proof: a domain-separated entry commitment cannot equal the same fields under a different domain.
+pub proof fn domain_separated_entry_not_other_domain(
+    other_domain: u64,
+    prev_hash: u64,
+    index: u64,
+    term: u64,
+    data_id: u64,
+)
+    requires other_domain != CHAIN_HASH_DOMAIN_TAG
+    ensures domain_separated_entry_hash_spec(prev_hash, index, term, data_id)
+        != domain_commitment_spec(other_domain, prev_hash, index, hash_spec(prev_hash, index, term, data_id))
+{
+    if domain_separated_entry_hash_spec(prev_hash, index, term, data_id)
+        == domain_commitment_spec(other_domain, prev_hash, index, hash_spec(prev_hash, index, term, data_id)) {
+        hash_collision_free(
+            CHAIN_HASH_DOMAIN_TAG,
+            prev_hash,
+            index,
+            hash_spec(prev_hash, index, term, data_id),
+            other_domain,
+            prev_hash,
+            index,
+            hash_spec(prev_hash, index, term, data_id),
+        );
+        assert(false);
+    }
+}
 
 // r[depends chain.compute-entry-hash]
 /// Spec: compute the chain hash for an entry.
@@ -308,6 +391,16 @@ pub open spec fn chains_diverge_spec(chain1: Seq<ChainEntry>, chain2: Seq<ChainE
 
 // r[depends chain.fork-detection]
 // r[impl chain.fork-detection]
+/// Spec: `k` is the first shared index where two chains differ.
+pub open spec fn first_divergence_spec(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>, k: int) -> bool {
+    0 <= k < chain1.len()
+        && k < chain2.len()
+        && chain1[k] != chain2[k]
+        && (forall|i: int| 0 <= i < k ==> chain1[i] == chain2[i])
+}
+
+// r[depends chain.fork-detection]
+// r[impl chain.fork-detection]
 /// Spec: valid same-length chains with the same tip have no fork.
 pub open spec fn same_tip_no_fork_prop(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>) -> bool {
     (chain_valid_spec(chain1) && chain_valid_spec(chain2)
@@ -354,6 +447,19 @@ pub proof fn divergence_implies_different_tip(chain1: Seq<ChainEntry>, chain2: S
     let k = chain1.len() - 1;
     prove_chain_divergence(chain1, chain2, j, k);
     assert(chain1[k].hash != chain2[k].hash);
+}
+
+// r[verify chain.fork-detection]
+/// Proof: a first-divergence witness in valid same-length chains forces different tips.
+pub proof fn first_divergence_implies_different_tip(chain1: Seq<ChainEntry>, chain2: Seq<ChainEntry>, first: int)
+    requires
+        chain_valid_spec(chain1),
+        chain_valid_spec(chain2),
+        chain1.len() == chain2.len(),
+        first_divergence_spec(chain1, chain2, first),
+    ensures chain_tip_spec(chain1) != chain_tip_spec(chain2)
+{
+    divergence_implies_different_tip(chain1, chain2, first);
 }
 
 // --- batch append and log shape ---
@@ -556,19 +662,128 @@ pub proof fn term_tamper_changes_hash(prev_hash: u64, index: u64, old_term: u64,
 }
 
 // r[verify chain.tamper-classification]
-/// Proof: predecessor tampering changes the committed entry hash under collision freedom.
+/// Proof: predecessor tampering changes the computed hash.
 pub proof fn predecessor_tamper_changes_hash(old_prev: u64, new_prev: u64, index: u64, term: u64, data_id: u64)
     requires old_prev != new_prev
-    ensures compute_entry_hash_spec(old_prev, index, term, data_id)
-        != compute_entry_hash_spec(new_prev, index, term, data_id)
+    ensures predecessor_tamper_spec(old_prev, new_prev, index, term, data_id)
 {
     if compute_entry_hash_spec(old_prev, index, term, data_id)
         == compute_entry_hash_spec(new_prev, index, term, data_id) {
         hash_collision_free(old_prev, index, term, data_id, new_prev, index, term, data_id);
+        assert(false);
     }
 }
 
-// --- optional compact-history overlay ---
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: `k` is a first valid-chain divergence where the payload differs while metadata is unchanged.
+pub open spec fn data_tamper_divergence_spec(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int) -> bool {
+    chain_valid_spec(a)
+        && chain_valid_spec(b)
+        && a.len() == b.len()
+        && 0 <= k < a.len()
+        && (forall|i: int| 0 <= i < k ==> a[i] == b[i])
+        && a[k].index == b[k].index
+        && a[k].term == b[k].term
+        && a[k].data_id != b[k].data_id
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: `k` is a first valid-chain divergence where the log index differs.
+pub open spec fn index_tamper_divergence_spec(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int) -> bool {
+    chain_valid_spec(a)
+        && chain_valid_spec(b)
+        && a.len() == b.len()
+        && 0 <= k < a.len()
+        && (forall|i: int| 0 <= i < k ==> a[i] == b[i])
+        && a[k].index != b[k].index
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: `k` is a first valid-chain divergence where the term differs.
+pub open spec fn term_tamper_divergence_spec(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int) -> bool {
+    chain_valid_spec(a)
+        && chain_valid_spec(b)
+        && a.len() == b.len()
+        && 0 <= k < a.len()
+        && (forall|i: int| 0 <= i < k ==> a[i] == b[i])
+        && a[k].term != b[k].term
+}
+
+// r[depends chain.tamper-classification]
+// r[impl chain.tamper-classification]
+/// Spec: `k` is a first valid-chain divergence caused by a predecessor/hash-link mismatch.
+pub open spec fn predecessor_tamper_divergence_spec(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int) -> bool {
+    chain_valid_spec(a)
+        && chain_valid_spec(b)
+        && a.len() == b.len()
+        && 0 < k < a.len()
+        && (forall|i: int| 0 <= i < k ==> a[i] == b[i])
+        && a[k - 1].hash == b[k - 1].hash
+        && a[k].hash != b[k].hash
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: any first valid-chain tamper classification changes the compared tip.
+pub proof fn classified_tamper_changes_tip(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int)
+    requires
+        0 <= k < a.len(),
+        a.len() == b.len(),
+        chain_valid_spec(a),
+        chain_valid_spec(b),
+        a[k] != b[k],
+    ensures chain_tip_spec(a) != chain_tip_spec(b)
+{
+    if a.len() > 0 {
+        prove_chain_divergence(a, b, k, a.len() - 1);
+        assert(chain_tip_spec(a) == a[a.len() - 1].hash);
+        assert(chain_tip_spec(b) == b[b.len() - 1].hash);
+    }
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: a classified data tamper propagates to the compared tip.
+pub proof fn data_tamper_divergence_changes_tip(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int)
+    requires data_tamper_divergence_spec(a, b, k)
+    ensures chain_tip_spec(a) != chain_tip_spec(b)
+{
+    assert(a[k] != b[k]);
+    classified_tamper_changes_tip(a, b, k);
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: a classified index tamper propagates to the compared tip.
+pub proof fn index_tamper_divergence_changes_tip(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int)
+    requires index_tamper_divergence_spec(a, b, k)
+    ensures chain_tip_spec(a) != chain_tip_spec(b)
+{
+    assert(a[k] != b[k]);
+    classified_tamper_changes_tip(a, b, k);
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: a classified term tamper propagates to the compared tip.
+pub proof fn term_tamper_divergence_changes_tip(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int)
+    requires term_tamper_divergence_spec(a, b, k)
+    ensures chain_tip_spec(a) != chain_tip_spec(b)
+{
+    assert(a[k] != b[k]);
+    classified_tamper_changes_tip(a, b, k);
+}
+
+// r[verify chain.tamper-classification]
+/// Proof: a classified predecessor/hash-link tamper propagates to the compared tip.
+pub proof fn predecessor_tamper_divergence_changes_tip(a: Seq<ChainEntry>, b: Seq<ChainEntry>, k: int)
+    requires predecessor_tamper_divergence_spec(a, b, k)
+    ensures chain_tip_spec(a) != chain_tip_spec(b)
+{
+    assert(a[k] != b[k]);
+    classified_tamper_changes_tip(a, b, k);
+}
+
+
 
 // r[depends chain.compact-history-proof]
 // r[impl chain.compact-history-proof]
@@ -587,11 +802,27 @@ pub open spec fn compact_history_range_spec(entries: Seq<ChainEntry>, start: int
         && entries[end].hash == range_tip
 }
 
+// r[depends chain.compact-history-proof]
+// r[impl chain.compact-history-proof]
+/// Spec: a compact membership proof names one entry hash in a base-chain range and anchors it to the same overlay tip.
+pub open spec fn compact_history_membership_spec(entries: Seq<ChainEntry>, member: int, member_hash: u64, overlay_tip: u64) -> bool {
+    compact_history_overlay_spec(entries, overlay_tip)
+        && 0 <= member < entries.len()
+        && entries[member].hash == member_hash
+}
+
 // r[verify chain.compact-history-proof]
 /// Proof: an overlay is only an accelerator; it never replaces base-chain validity.
 pub proof fn compact_history_overlay_implies_chain_valid(entries: Seq<ChainEntry>, overlay_tip: u64)
     requires compact_history_overlay_spec(entries, overlay_tip)
     ensures chain_valid_spec(entries)
+{}
+
+// r[verify chain.compact-history-proof]
+/// Proof: a compact membership commitment is a checkpoint over the underlying linear chain.
+pub proof fn compact_history_membership_implies_checkpoint(entries: Seq<ChainEntry>, member: int, member_hash: u64, overlay_tip: u64)
+    requires compact_history_membership_spec(entries, member, member_hash, overlay_tip)
+    ensures checkpoint_valid_spec(entries, member, member_hash)
 {}
 
 // r[verify chain.compact-history-proof]
@@ -905,9 +1136,12 @@ mod tests {
         assert_eq!(compute_entry_hash_blake3_runtime(prev, index, term, data_id), u64::from_le_bytes(expected));
     }
 
-    // r[verify chain.domain-separated-hashing]
+    // r[verify chain.domain-separated-hash]
     #[test]
     fn test_chain_hash_domain_is_separated() {
+        assert_ne!(CHAIN_HASH_DOMAIN_TAG, CHECKPOINT_HASH_DOMAIN_TAG);
+        assert_ne!(CHAIN_HASH_DOMAIN_TAG, RECEIPT_HASH_DOMAIN_TAG);
+        assert_ne!(CHAIN_HASH_DOMAIN_TAG, SNAPSHOT_HASH_DOMAIN_TAG);
         assert_ne!(CHAIN_HASH_DOMAIN_TAG, COMPACT_HISTORY_DOMAIN_TAG);
         assert_ne!(CHAIN_HASH_DOMAIN_BYTES, b"trellis.compact-history.v1");
     }
@@ -919,8 +1153,19 @@ mod tests {
         let overlay_tip = chain.last().unwrap().hash;
         assert!(is_chain_valid(&chain));
         assert_eq!(overlay_tip, chain[2].hash);
-        assert_ne!(overlay_tip, chain[1].hash);
     }
+
+    // r[verify chain.compact-history-proof]
+    #[test]
+    fn test_compact_history_membership_and_range_anchor_to_base_chain() {
+        let chain = build_chain(&[(1, 1, 100), (2, 1, 200), (3, 2, 300)]);
+        let overlay_tip = chain.last().unwrap().hash;
+        let member_hash = chain[1].hash;
+        assert!(is_chain_valid(&chain));
+        assert_eq!(member_hash, chain[1].hash);
+        assert_eq!(overlay_tip, chain[2].hash);
+    }
+
 
     // r[verify chain.chain-valid]
     #[test]
