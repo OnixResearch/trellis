@@ -514,7 +514,7 @@ src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
 docs/requirements.md    ← canonical requirement prose and Tracey anchors
 scripts/verus.sh        ← verus wrapper with nix store paths
 scripts/verify.sh       ← full verification pipeline
-scripts/check-*.sh      ← annotation enforcement
+scripts/check-*.rs      ← annotation enforcement
 ```
 
 Most modules follow the same pattern (tracked exceptions are listed in
