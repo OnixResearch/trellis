@@ -502,8 +502,8 @@ cargo clippy --all-targets -- -D warnings
 ```bash
 ./scripts/verify.sh        # all gates: clippy → tests → verus → coverage
 ./scripts/verus.sh         # verus only
-./scripts/check-coverage.sh   # every pub fn has r[impl] annotation
-./scripts/check-ensures.sh    # every pub fn in verus! has ensures
+./scripts/check-coverage.rs   # every pub fn has r[impl] annotation
+./scripts/check-ensures.rs    # every pub fn in verus! has ensures
 ```
 
 ## Structure

@@ -14,7 +14,7 @@ Reduce the number of active directories under `openspec/changes/` by actually fi
 - `cargo test --quiet`
 - `cargo clippy --all-targets -- -D warnings`
 - `./scripts/verus.sh src/lib.rs`
-- `./scripts/check-ensures.sh`
+- `./scripts/check-ensures.rs`
 - `tracey query uncovered`
 - `tracey query untested`
 

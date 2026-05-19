@@ -13,7 +13,7 @@ r[chaoscontrol-validation.iterative-exec]
 The exec helpers in `src/chaoscontrol_scheduler.rs` and
 `src/chaoscontrol_fault_schedule.rs` MUST remain acyclic. Validation for this
 change uses deterministic command
-`python3 scripts/check-iterative-exec.py src/chaoscontrol_scheduler.rs src/chaoscontrol_fault_schedule.rs`.
+`scripts/check-iterative-exec.rs src/chaoscontrol_scheduler.rs src/chaoscontrol_fault_schedule.rs`.
 That audit collects functions in those two files that are not `spec fn` or
 `proof fn`, requires intra-module exec helper calls to use bare local function
 names, builds the module-local exec call graph from those bare local calls, and

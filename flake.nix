@@ -27,6 +27,7 @@
         src = let
           scriptFilter = path: _type:
             (builtins.match ".*\\.sh$" path) != null
+            || (builtins.match ".*/scripts/.*\\.rs$" path) != null
             || (builtins.match ".*\\.md$" path) != null
             || (builtins.match ".*\\.styx$" path) != null;
           combinedFilter = path: type:
@@ -134,18 +135,26 @@
           };
 
           # Every pub fn has r[impl] annotation
-          check-coverage = pkgs.runCommand "check-coverage" {} ''
+          check-coverage = pkgs.runCommand "check-coverage" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
+          } ''
             cd ${src}
-            bash scripts/check-coverage.sh
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-coverage.rs "$TMPDIR/check-coverage.rs"
+            rustc "$TMPDIR/check-coverage.rs" -o "$TMPDIR/check-coverage"
+            "$TMPDIR/check-coverage"
             touch $out
           '';
 
           # Every pub fn in verus! has ensures
           check-ensures = pkgs.runCommand "check-ensures" {
-            nativeBuildInputs = [ pkgs.python3 ];
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
           } ''
             cd ${src}
-            bash scripts/check-ensures.sh
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-ensures.rs "$TMPDIR/check-ensures.rs"
+            rustc "$TMPDIR/check-ensures.rs" -o "$TMPDIR/check-ensures"
+            "$TMPDIR/check-ensures"
             touch $out
           '';
 
