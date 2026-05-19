@@ -131,7 +131,7 @@ r[verification-gaps.inventory-drift-gate]
 #### Scenario: Full verification includes the drift gate
 
 - GIVEN the repository verification script is run
-- WHEN `./scripts/verify.sh` reaches the proof-gap inventory stage
+- WHEN `./scripts/verify.rs` reaches the proof-gap inventory stage
 - THEN it invokes the Rust inventory script before cargo, Verus, and Tracey checks claim success
 
 ### Requirement: Proof-Gap Site-List Drift Gate
@@ -157,7 +157,7 @@ r[verification-gaps.inventory-site-list-drift-gate]
 #### Scenario: Full verification enforces exact sites
 
 - GIVEN the repository verification script is run
-- WHEN `./scripts/verify.sh` invokes the proof-gap inventory drift stage
+- WHEN `./scripts/verify.rs` invokes the proof-gap inventory drift stage
 - THEN the Rust checker validates both marker counts and the exact external-body site list before full verification can pass
 
 ### Requirement: Proof-Gap Classification Drift Gate
@@ -180,7 +180,7 @@ r[verification-gaps.inventory-classification-drift-gate]
 
 #### Scenario: Full verification enforces classifications
 
-- GIVEN `./scripts/verify.sh` runs
+- GIVEN `./scripts/verify.rs` runs
 - WHEN it invokes the proof-gap inventory drift stage
 - THEN classification drift is checked before full verification can pass
 ### Requirement: Proof-Gap Site Manifest Source

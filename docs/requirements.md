@@ -11442,7 +11442,7 @@ r[verification-gaps.boundary-audit.inventory-sync]
 The system MUST synchronize README, requirements, and canonical OpenSpec proof-gap totals from source-derived count evidence whenever the trusted-boundary inventory changes.
 
 r[verification-gaps.inventory-drift-gate]
-The system MUST provide a Rust-script inventory gate that scans source files for trusted or weakened proof-gap markers and fails when live counts drift from the published expected inventory. The gate MUST report the current 16 `#[verifier::external_body]` sites and zero `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and `@verified-logic:exempt` markers, and it MUST be included in `./scripts/verify.sh` before later verification stages claim success.
+The system MUST provide a Rust-script inventory gate that scans source files for trusted or weakened proof-gap markers and fails when live counts drift from the published expected inventory. The gate MUST report the current 16 `#[verifier::external_body]` sites and zero `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and `@verified-logic:exempt` markers, and it MUST be included in `./scripts/verify.rs` before later verification stages claim success.
 
 r[verification-gaps.inventory-site-list-drift-gate]
 The system MUST make the Rust proof-gap inventory gate validate the exact external-body file/function site list, not only aggregate counts. The gate MUST fail closed when a same-count substitution removes one expected external-body site and introduces a new unexpected site, without mutating source files during negative fixture evidence.
@@ -11514,7 +11514,7 @@ The system MUST validate the classification attached to every expected proof-gap
 
 #### Scenario: Full verification enforces classifications
 
-- GIVEN `./scripts/verify.sh` runs
+- GIVEN `./scripts/verify.rs` runs
 - WHEN it invokes the proof-gap inventory drift stage
 - THEN classification drift is checked before full verification can pass
 ### Requirement: Proof-Gap Site Manifest Source

@@ -21,7 +21,7 @@ This release is a major proof-surface and model-coverage expansion since `v0.1.0
 The release candidate is expected to pass the maintained repository gate:
 
 ```sh
-CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/verify.sh
+CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/verify.rs
 ```
 
 plus clean OpenSpec status and a clean jj/git worktree.
