@@ -504,6 +504,7 @@ cargo clippy --all-targets -- -D warnings
 ./scripts/verus.sh         # verus only
 ./scripts/check-coverage.rs   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.rs    # every pub fn in verus! has ensures
+./scripts/checker-fixtures.rs # valid/invalid regression fixtures for checker behavior
 ```
 
 ## Structure

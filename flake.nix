@@ -158,6 +158,20 @@
             touch $out
           '';
 
+          # Fixture-backed regression tests for checker scripts
+          checker-fixtures = pkgs.runCommand "checker-fixtures" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
+          } ''
+            cd ${src}
+            export TMPDIR=$(mktemp -d)
+            export CHECKER_FIXTURES_TMPDIR="$NIX_BUILD_TOP/checker-fixtures-tmp"
+            mkdir -p "$CHECKER_FIXTURES_TMPDIR"
+            cp scripts/checker-fixtures.rs "$TMPDIR/checker-fixtures.rs"
+            rustc "$TMPDIR/checker-fixtures.rs" -o "$TMPDIR/checker-fixtures"
+            "$TMPDIR/checker-fixtures"
+            touch $out
+          '';
+
           # Verus formal verification
           verus-proofs = pkgs.runCommand "verus-proofs" {
             nativeBuildInputs = [ verus ];

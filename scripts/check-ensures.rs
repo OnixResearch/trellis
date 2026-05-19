@@ -179,8 +179,17 @@ fn collect_src_rs(root: &Path) -> Result<Vec<PathBuf>, String> {
     Ok(files)
 }
 
+fn checker_root() -> Result<PathBuf, String> {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    match args.as_slice() {
+        [] => Ok(repo_root()),
+        [flag, path] if flag == "--root" => Ok(PathBuf::from(path)),
+        _ => Err("usage: check-ensures.rs [--root <repo-or-fixture-root>]".to_string()),
+    }
+}
+
 fn main() -> Result<(), String> {
-    let root = repo_root();
+    let root = checker_root()?;
     std::env::set_current_dir(&root).map_err(|err| format!("failed to cd {}: {err}", root.display()))?;
     let mut report = Report::default();
     for path in collect_src_rs(&root)? {
