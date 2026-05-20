@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10291 Verus proofs · 4621 tests · 1929 requirements · 585 modules · 16 trusted/proof-gap boundaries**
+**10340 Verus proofs · 4650 tests · 1929 requirements · 586 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -93,12 +93,12 @@ validation commands captured in the change evidence.
 
 ### Rust async primitives
 
-| Module | What it will verify |
+| Module | What it verifies |
 |---|---|
-| `async_task_state` | finite pending/ready/completed/cancelled task lifecycle admission (skeleton) |
-| `task_waker` | finite registered/notified/taken waker-slot admission (skeleton) |
-| `oneshot_channel` | finite send-once/receive-once single-slot channel admission (skeleton) |
-| `drop_guard` | finite armed/disarmed/cleaned exactly-once cleanup guard admission (skeleton) |
+| `async_task_state` | finite pending/ready/completed/cancelled task lifecycle admission with terminal-transition rejection proofs and focused positive/negative tests |
+| `task_waker` | finite empty/registered/notified/taken generation-tagged waker-slot admission plus no-lost-wake bridge predicates that avoid callback/fairness claims |
+| `oneshot_channel` | finite open/sent/received/closed/cancelled single-slot channel admission plus receiver readiness/waker-notification composition |
+| `drop_guard` | finite armed/disarmed/cleaned exactly-once cleanup guard admission with repeated-cleanup rejection evidence |
 
 ### Raft consensus
 
