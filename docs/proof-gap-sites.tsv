@@ -1,18 +1,18 @@
 # verified-logic proof-gap-sites-v1
-# path<TAB>function-signature<TAB>classification
-src/chain.rs	pub fn compute_entry_hash(	permanent-trust-boundary
-src/chain.rs	pub proof fn hash_collision_free(	permanent-trust-boundary
-src/nix_version.rs	fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)	permanent-trust-boundary
-src/snapshot_integrity.rs	pub fn dual_hash(a: u64, b: u64) -> (result: u64)	permanent-trust-boundary
-src/snapshot_integrity.rs	pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)	permanent-trust-boundary
-src/ucan_did.rs	pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)	permanent-trust-boundary
-src/ucan_did.rs	pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)	permanent-trust-boundary
-src/ucan_did.rs	pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)	permanent-trust-boundary
-src/ucan_did.rs	pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)	permanent-trust-boundary
-src/ucan_signature.rs	pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)	permanent-trust-boundary
-src/ucan_signature.rs	pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)	permanent-trust-boundary
-src/ucan_signature.rs	pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)	permanent-trust-boundary
-src/ucan_signature.rs	pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary
-src/ucan_signature.rs	pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary
-src/ucan_signature.rs	pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)	permanent-trust-boundary
-src/web_of_trust_principal.rs	pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)	permanent-trust-boundary
+# path<TAB>function-signature<TAB>classification<TAB>rationale
+src/chain.rs	pub fn compute_entry_hash(	permanent-trust-boundary	Runtime chain-entry digest bridge depends on the external BLAKE3 implementation while the model tracks deterministic input bytes.
+src/chain.rs	pub proof fn hash_collision_free(	permanent-trust-boundary	Collision-resistance is an architectural hash assumption that cannot be proved inside the finite Verus model.
+src/nix_version.rs	fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)	permanent-trust-boundary	Only out-of-model Nix version byte sequences use this fallback after modeled inputs route through verified comparison helpers.
+src/snapshot_integrity.rs	pub fn dual_hash(a: u64, b: u64) -> (result: u64)	permanent-trust-boundary	Runtime dual-hash computation delegates to a trusted digest bridge while structural snapshot checks remain verified.
+src/snapshot_integrity.rs	pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)	permanent-trust-boundary	Collision resistance for the dual-hash model is an explicit cryptographic assumption rather than an internal proof claim.
+src/ucan_did.rs	pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)	permanent-trust-boundary	External base58btc codec behavior remains trusted after verified alphabet screening and structural DID parsing.
+src/ucan_did.rs	pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)	permanent-trust-boundary	External base58btc encoding correctness is modeled as a codec contract outside the verified structural wrappers.
+src/ucan_did.rs	pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)	permanent-trust-boundary	Injectivity of the external base58btc codec is an axiom needed to connect encoded DID bytes to decoded inputs.
+src/ucan_did.rs	pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)	permanent-trust-boundary	Round-trip behavior of the external base58btc codec is trusted while varint and key-suffix structure are verified separately.
+src/ucan_signature.rs	pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)	permanent-trust-boundary	Ed25519 public-key derivation is delegated to the cryptographic implementation after verified byte-length admission.
+src/ucan_signature.rs	pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)	permanent-trust-boundary	Ed25519 signing is an external cryptographic operation wrapped by verified key and signature shape checks.
+src/ucan_signature.rs	pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)	permanent-trust-boundary	Ed25519 verification is an external cryptographic operation with verified structural admission at the API boundary.
+src/ucan_signature.rs	pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary	Signature round-trip correctness is a cryptographic axiom connecting trusted sign and verify operations.
+src/ucan_signature.rs	pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)	permanent-trust-boundary	Wrong-key rejection is a cryptographic soundness assumption for Ed25519 verification outside the structural model.
+src/ucan_signature.rs	pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)	permanent-trust-boundary	Wrong-message rejection is a cryptographic soundness assumption for Ed25519 verification outside the structural model.
+src/web_of_trust_principal.rs	pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)	permanent-trust-boundary	Principal digest derivation depends on an external BLAKE3 runtime bridge while canonical input construction is verified.

@@ -1,0 +1,40 @@
+PASS git diff --check
+{
+  "items": [
+    {
+      "id": "roi-01-proof-gap-rationale-manifest",
+      "type": "change",
+      "valid": true,
+      "issues": [],
+      "durationMs": 2
+    }
+  ],
+  "summary": {
+    "totals": {
+      "items": 1,
+      "passed": 1,
+      "failed": 0
+    },
+    "byType": {
+      "change": {
+        "items": 1,
+        "passed": 1,
+        "failed": 0
+      }
+    }
+  },
+  "version": "1.0"
+}
+verified-logic/rust: 0 uncovered out of 1922 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+verified-logic/rust: 0 untested (impl but no verify) out of 1922 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+✓ README metrics headline is fresh at line 15 (10291 Verus proofs, 4617 tests, 1922 requirements, 581 modules, 16 trusted/proof-gap boundaries)

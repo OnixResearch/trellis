@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10289 Verus proofs · 4617 tests · 1919 requirements · 581 modules · 16 trusted/proof-gap boundaries**
+**10291 Verus proofs · 4617 tests · 1922 requirements · 581 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -570,6 +570,7 @@ cargo clippy --all-targets -- -D warnings
 ./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
+./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```
 
 ## Structure
@@ -636,4 +637,4 @@ In addition to `external_body`, the current audit also tracks:
 - `0` `assume(...)` soundness oracles
 - `0` placeholder-spec surfaces
 
-All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/spec.md` with rationale.
+All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/spec.md`, and `docs/proof-gap-sites.tsv` is the checked per-site source for exact trusted-boundary rationale.

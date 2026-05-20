@@ -213,6 +213,27 @@
             touch $out
           '';
 
+          # Proof-gap inventory exact-site, classification, and rationale drift
+          proof-gap-inventory = pkgs.runCommand "proof-gap-inventory" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
+          } ''
+            cd ${src}
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-proof-gap-inventory.rs "$TMPDIR/check-proof-gap-inventory.rs"
+            rustc "$TMPDIR/check-proof-gap-inventory.rs" -o "$TMPDIR/check-proof-gap-inventory"
+            "$TMPDIR/check-proof-gap-inventory"
+            for fixture in missing-rationale blank-rationale malformed-rationale; do
+              if "$TMPDIR/check-proof-gap-inventory" "--fixture-$fixture" >"$TMPDIR/$fixture.out" 2>&1; then
+                echo "FAIL: --fixture-$fixture unexpectedly succeeded"
+                cat "$TMPDIR/$fixture.out"
+                exit 1
+              fi
+              grep -q "manifest malformed" "$TMPDIR/$fixture.out"
+              echo "PASS: --fixture-$fixture failed closed"
+            done
+            touch $out
+          '';
+
           # Verus formal verification
           verus-proofs = pkgs.runCommand "verus-proofs" {
             nativeBuildInputs = [ verus ];

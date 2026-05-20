@@ -11541,6 +11541,21 @@ r[verification-gaps.inventory-site-manifest-source]
 - WHEN the Rust checker compares manifest and source
 - THEN it rejects the drift before full verification can pass
 
+### Requirement: Proof-Gap Manifest Rationale Source
+
+r[verification-gaps.manifest-rationale-source]
+The proof-gap site manifest MUST include path, function signature, classification, and a non-empty rationale for every expected trusted or weakened boundary so each remaining trust boundary has checked per-site justification.
+
+### Requirement: Proof-Gap Manifest Rationale Drift Gate
+
+r[verification-gaps.manifest-rationale-drift-gate]
+The Rust proof-gap inventory checker MUST reject missing, blank, malformed, stale, duplicate, or unsorted rationale-bearing manifest rows before full verification can pass, while preserving exact-site and classification drift checks.
+
+### Requirement: Published Proof-Gap Rationale Alignment
+
+r[verification-gaps.manifest-rationale-publication]
+Published proof-gap documentation MUST identify `docs/proof-gap-sites.tsv` as the checked per-site rationale source and the canonical OpenSpec verification-gaps spec MUST record the rationale manifest requirements after archive.
+
 ## GPU Programming Primitives
 
 r[gpu.block-dim]

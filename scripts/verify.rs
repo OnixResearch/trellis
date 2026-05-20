@@ -150,7 +150,7 @@ fn main() -> std::process::ExitCode {
         "Proof-gap inventory drift",
         "./scripts/check-proof-gap-inventory.rs",
         std::iter::empty::<&str>(),
-        "✓ proof-gap inventory matches expected counts, sites, and classifications",
+        "✓ proof-gap inventory matches expected counts, sites, classifications, and rationale manifest",
         "✗ proof-gap inventory drift detected",
     );
     runner.run_status(

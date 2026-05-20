@@ -1,4 +1,4 @@
-#!/usr/bin/env -S nix shell "github:nix-community/fenix?rev=092bd452904e749efa39907aa4a20a42678ac31e#minimal.toolchain" nixpkgs#gcc -c cargo -q -Zscript
+#!/usr/bin/env -S nix shell "github:nix-community/fenix?rev=092bd452904e749efa39907aa4a20a42678ac31e#minimal.toolchain" nixpkgs#clang -c cargo -q -Zscript
 
 use std::env;
 use std::ffi::OsStr;
@@ -62,6 +62,9 @@ struct Args {
     fixture_site_substitution: bool,
     fixture_classification_substitution: bool,
     fixture_stale_manifest: bool,
+    fixture_missing_rationale: bool,
+    fixture_blank_rationale: bool,
+    fixture_malformed_rationale: bool,
 }
 
 #[derive(Debug)]
@@ -94,6 +97,9 @@ fn parse_args() -> Result<Args, String> {
     let mut fixture_site_substitution = false;
     let mut fixture_classification_substitution = false;
     let mut fixture_stale_manifest = false;
+    let mut fixture_missing_rationale = false;
+    let mut fixture_blank_rationale = false;
+    let mut fixture_malformed_rationale = false;
     let mut args = env::args().skip(1);
     while let Some(arg) = args.next() {
         match arg.as_str() {
@@ -106,9 +112,12 @@ fn parse_args() -> Result<Args, String> {
             "--fixture-site-substitution" => fixture_site_substitution = true,
             "--fixture-classification-substitution" => fixture_classification_substitution = true,
             "--fixture-stale-manifest" => fixture_stale_manifest = true,
+            "--fixture-missing-rationale" => fixture_missing_rationale = true,
+            "--fixture-blank-rationale" => fixture_blank_rationale = true,
+            "--fixture-malformed-rationale" => fixture_malformed_rationale = true,
             "--help" | "-h" => {
                 println!(
-                    "usage: check-proof-gap-inventory.rs [--root PATH] [--manifest PATH] [--write-report PATH] [--fixture-extra-external-body] [--fixture-site-substitution] [--fixture-classification-substitution] [--fixture-stale-manifest]"
+                    "usage: check-proof-gap-inventory.rs [--root PATH] [--manifest PATH] [--write-report PATH] [--fixture-extra-external-body] [--fixture-site-substitution] [--fixture-classification-substitution] [--fixture-stale-manifest] [--fixture-missing-rationale] [--fixture-blank-rationale] [--fixture-malformed-rationale]"
                 );
                 std::process::exit(0);
             }
@@ -123,6 +132,9 @@ fn parse_args() -> Result<Args, String> {
         fixture_site_substitution,
         fixture_classification_substitution,
         fixture_stale_manifest,
+        fixture_missing_rationale,
+        fixture_blank_rationale,
+        fixture_malformed_rationale,
     })
 }
 
@@ -172,13 +184,23 @@ fn scan_marker(root: &Path, files: &[PathBuf], spec: MarkerSpec) -> io::Result<M
     Ok(MarkerResult { spec, hits })
 }
 
-fn parse_manifest(root: &Path, manifest: &Path, fixture_stale_manifest: bool) -> Result<Vec<ExpectedSite>, String> {
+fn parse_manifest(
+    root: &Path,
+    manifest: &Path,
+    fixture_stale_manifest: bool,
+    fixture_missing_rationale: bool,
+    fixture_blank_rationale: bool,
+    fixture_malformed_rationale: bool,
+) -> Result<Vec<ExpectedSite>, String> {
     let path = if manifest.is_absolute() {
         manifest.to_path_buf()
     } else {
         root.join(manifest)
     };
-    let text = fs::read_to_string(&path).map_err(|err| format!("failed to read manifest {}: {err}", path.display()))?;
+    let mut text = fs::read_to_string(&path).map_err(|err| format!("failed to read manifest {}: {err}", path.display()))?;
+    if fixture_missing_rationale || fixture_blank_rationale || fixture_malformed_rationale {
+        text = apply_rationale_fixture(&text, fixture_missing_rationale, fixture_blank_rationale, fixture_malformed_rationale)?;
+    }
     let mut lines = text.lines();
     let header = lines.next().ok_or("manifest is empty")?;
     if header.trim_end() != MANIFEST_HEADER {
@@ -191,8 +213,14 @@ fn parse_manifest(root: &Path, manifest: &Path, fixture_stale_manifest: bool) ->
             continue;
         }
         let fields: Vec<&str> = trimmed.split('\t').collect();
-        if fields.len() != 3 || fields.iter().any(|field| field.trim().is_empty()) {
-            return Err(format!("manifest malformed at line {}: expected 3 tab-separated non-empty fields", idx + 1));
+        if fields.len() != 4 {
+            return Err(format!("manifest malformed at line {}: expected 4 tab-separated fields: path, function signature, classification, rationale", idx + 1));
+        }
+        if fields[..3].iter().any(|field| field.trim().is_empty()) {
+            return Err(format!("manifest malformed at line {}: path, function signature, and classification must be non-empty", idx + 1));
+        }
+        if fields[3].trim().is_empty() {
+            return Err(format!("manifest malformed at line {}: rationale must be non-empty", idx + 1));
         }
         sites.push(ExpectedSite {
             path: fields[0].to_string(),
@@ -234,6 +262,42 @@ fn parse_manifest(root: &Path, manifest: &Path, fixture_stale_manifest: bool) ->
         }
     }
     Ok(sites)
+}
+
+fn apply_rationale_fixture(
+    text: &str,
+    missing: bool,
+    blank: bool,
+    malformed: bool,
+) -> Result<String, String> {
+    let mut out = Vec::new();
+    let mut changed = false;
+    for (idx, line) in text.lines().enumerate() {
+        if idx == 0 {
+            out.push(line.to_string());
+            continue;
+        }
+        if !changed && !line.trim_end().is_empty() && !line.starts_with('#') {
+            let fields: Vec<&str> = line.split('\t').collect();
+            if fields.len() != 4 {
+                return Err("rationale fixture requires a valid four-field manifest row".to_string());
+            }
+            if missing {
+                out.push(fields[..3].join("\t"));
+            } else if blank {
+                out.push(format!("{}\t", fields[..3].join("\t")));
+            } else if malformed {
+                out.push(format!("{}\t{}\textra-field", fields[..3].join("\t"), fields[3]));
+            }
+            changed = true;
+        } else {
+            out.push(line.to_string());
+        }
+    }
+    if !changed {
+        return Err("rationale fixture could not find a manifest row to mutate".to_string());
+    }
+    Ok(out.join("\n"))
 }
 
 fn actual_count(result: &MarkerResult, fixture_extra_external_body: bool) -> usize {
@@ -298,6 +362,9 @@ fn render_report(
     fixture_site_substitution: bool,
     fixture_classification_substitution: bool,
     fixture_stale_manifest: bool,
+    fixture_missing_rationale: bool,
+    fixture_blank_rationale: bool,
+    fixture_malformed_rationale: bool,
     site_check: &SiteCheck,
 ) -> String {
     let mut out = String::new();
@@ -316,6 +383,15 @@ fn render_report(
     if fixture_stale_manifest {
         out.push_str("Fixture: simulated stale manifest by removing one expected manifest site.\n\n");
     }
+    if fixture_missing_rationale {
+        out.push_str("Fixture: simulated manifest row missing rationale field.\n\n");
+    }
+    if fixture_blank_rationale {
+        out.push_str("Fixture: simulated manifest row with blank rationale field.\n\n");
+    }
+    if fixture_malformed_rationale {
+        out.push_str("Fixture: simulated manifest row with an extra rationale column.\n\n");
+    }
     out.push_str("## Summary\n\n");
     out.push_str("| marker | expected | actual | status |\n");
     out.push_str("| --- | ---: | ---: | --- |\n");
@@ -329,10 +405,11 @@ fn render_report(
     } else {
         "drift"
     };
-    out.push_str("\n## External Body Site List and Classifications\n\n");
+    out.push_str("\n## External Body Site List, Classifications, and Rationales\n\n");
     out.push_str(&format!("Status: `{site_status}`\n\n"));
     out.push_str(&format!("Expected sites from manifest: {}\n\n", site_check.expected.len()));
     out.push_str(&format!("Actual sites from source: {}\n\n", site_check.actual.len()));
+    out.push_str(&format!("Manifest rationales: {} non-empty entries.\n\n", site_check.expected.len()));
     if site_check.missing.is_empty() {
         out.push_str("Missing expected sites: none.\n\n");
     } else {
@@ -371,7 +448,14 @@ fn render_report(
 }
 
 fn run(args: Args) -> Result<bool, String> {
-    let expected_sites = parse_manifest(&args.root, &args.manifest, args.fixture_stale_manifest)?;
+    let expected_sites = parse_manifest(
+        &args.root,
+        &args.manifest,
+        args.fixture_stale_manifest,
+        args.fixture_missing_rationale,
+        args.fixture_blank_rationale,
+        args.fixture_malformed_rationale,
+    )?;
     let src = args.root.join("src");
     let mut files = Vec::new();
     collect_rs_files(&src, &mut files).map_err(|err| format!("failed to scan {}: {err}", src.display()))?;
@@ -400,6 +484,9 @@ fn run(args: Args) -> Result<bool, String> {
         args.fixture_site_substitution,
         args.fixture_classification_substitution,
         args.fixture_stale_manifest,
+        args.fixture_missing_rationale,
+        args.fixture_blank_rationale,
+        args.fixture_malformed_rationale,
         &sites,
     );
     if let Some(path) = &args.write_report {
