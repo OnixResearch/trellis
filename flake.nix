@@ -186,6 +186,19 @@
             touch $out
           '';
 
+          # README module catalog drift
+          readme-module-catalog = pkgs.runCommand "readme-module-catalog" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
+          } ''
+            cd ${src}
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-readme-module-catalog.rs "$TMPDIR/check-readme-module-catalog.rs"
+            rustc "$TMPDIR/check-readme-module-catalog.rs" -o "$TMPDIR/check-readme-module-catalog"
+            "$TMPDIR/check-readme-module-catalog"
+            "$TMPDIR/check-readme-module-catalog" --self-test
+            touch $out
+          '';
+
           # Verus formal verification
           verus-proofs = pkgs.runCommand "verus-proofs" {
             nativeBuildInputs = [ verus ];

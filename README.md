@@ -51,7 +51,7 @@ validation commands captured in the change evidence.
 | Module | Composition purpose | Status |
 |---|---|---|
 | `durable_job_executor` | durable, idempotent, retry-aware job execution | verified |
-| `fenced_distributed_lock` | stale-holder-safe lease writes with fencing tokens | verified |
+| `distributed_lock` | stale-holder-safe lease writes with fencing tokens | verified |
 | `linearizable_read_gate` | Raft read-index / lease-read admission | verified |
 | `safe_snapshot_replication` | complete, integrity-checked snapshot installation | verified |
 | `crash_safe_page_cache` | WAL-backed dirty-page recovery | verified |
@@ -466,6 +466,68 @@ validation commands captured in the change evidence.
 | `concurrent_composition` | concurrency protocol ↔ data structure invariant chains across 7 groups |
 | `consensus_path` | end-to-end Raft read/write path composition proofs |
 
+### Additional public module coverage
+
+The drift checker treats the compact lists below as README catalog entries for public modules whose detailed descriptions remain in the crate-level `src/lib.rs` documentation. Keep these names synchronized with `pub mod` declarations; add a fuller table row above when a module needs human-facing explanation.
+
+- **beam**: `beam_link`, `beam_mailbox`, `beam_monitor`, `beam_process`, `beam_registry`, `beam_scheduler`, `beam_send`
+- **bounded**: `bounded_interval`
+- **cache**: `cache_partition`
+- **chaoscontrol**: `chaoscontrol_coverage`, `chaoscontrol_fault_schedule`, `chaoscontrol_fault_state`, `chaoscontrol_frontier`, `chaoscontrol_input_tree`, `chaoscontrol_oracle`, `chaoscontrol_scheduler`
+- **composite**: `composite_outcome`, `composite_receipt_envelope`
+- **config**: `config_admission`, `config_default`, `config_key`, `config_override_precedence`, `config_typed_value`, `config_validation_decision`
+- **consistency**: `consistency_history`, `consistency_object`, `consistency_refinement`, `consistency_relations`, `consistency_session`, `consistency_transactional`
+- **constant**: `constant_folding`
+- **constraint**: `constraint_admission`, `constraint_assignment`, `constraint_consistency`, `constraint_domain`, `constraint_propagation`, `constraint_relation`, `constraint_variable`, `constraint_witness`
+- **control**: `control_actuator_saturation`, `control_deadband`, `control_error_signal`, `control_flow_graph`, `control_hysteresis`, `control_rate_limit`, `control_safety_envelope`, `control_setpoint`
+- **cron**: `cron_field`, `cron_match`, `cron_next`
+- **ct**: `ct_select`
+- **data**: `data_validation_admission`, `data_validation_cross_field`, `data_validation_enum_constraint`, `data_validation_error_accumulation`, `data_validation_field_presence`, `data_validation_normalization_decision`, `data_validation_range_constraint`, `data_validation_schema_predicate`
+- **ds**: `ds_bounded_array`, `ds_fifo_queue`, `ds_key_value_map`, `ds_priority_queue`, `ds_ring_buffer`, `ds_union_find`
+- **false**: `false_sharing`
+- **feature**: `feature_flag_gate`, `feature_flag_rollout_bucket`
+- **fetch**: `fetch_add`
+- **fs**: `fs_path_admission`, `fs_path_containment`, `fs_path_extension_type`, `fs_path_form`, `fs_path_join_split`, `fs_path_normalization`, `fs_path_segment`, `fs_path_traversal`
+- **geom**: `geom_admission`, `geom_bounds`, `geom_containment`, `geom_grid_cell`, `geom_intersection`, `geom_orientation`, `geom_point_vector`, `geom_transform`
+- **gis**: `gis_bounding_box`, `gis_coordinate_envelope`, `gis_linestring_topology`, `gis_tile_index`
+- **graph**: `graph_adjacency`, `graph_component_partition`, `graph_frontier_cut`, `graph_query_composition`, `graph_reachability`, `graph_shortest_path_envelope`, `graph_topological_order`
+- **hypervisor**: `hypervisor_dirty_log`, `hypervisor_exit`, `hypervisor_gpa`, `hypervisor_interrupt`, `hypervisor_memslot`, `hypervisor_vcpu`
+- **id**: `id_alias_map`, `id_canonicalization`, `id_collision_metadata`, `id_identifier_envelope`, `id_lookup_result`, `id_namespace_scope`, `id_registration_admission`, `id_scoped_uniqueness`
+- **index**: `index_query_pagination`
+- **instruction**: `instruction_selection`
+- **knowledge**: `knowledge_graph`
+- **left**: `left_right`
+- **metric**: `metric_admission`, `metric_aggregate`, `metric_alert`, `metric_counter`, `metric_gauge`, `metric_histogram`, `metric_id`, `metric_labels`, `metric_window`
+- **ml**: `ml_batch_iterator`, `ml_confusion_matrix`, `ml_dataset_split`, `ml_feature_normalization`, `ml_inference_envelope`, `ml_label_encoding`, `ml_tensor_shape`, `ml_top_k`
+- **net**: `net_checksum_shape`, `net_endpoint_address`, `net_header_field`, `net_message_sequence`, `net_packet_frame`, `net_parser_admission`, `net_payload_bound`, `net_protocol_admission`
+- **nix**: `nix_base32`, `nix_drv_serialize`, `nix_fingerprint`, `nix_hash_truncate`, `nix_store_path`
+- **numeric**: `numeric_affine_transform_discrete`, `numeric_checked_arithmetic_envelope`, `numeric_denominator_safe_ratio`, `numeric_fixed_point_scale`, `numeric_histogram_counter`, `numeric_monotone_sequence`, `numeric_prefix_sum`, `numeric_quantized_threshold`
+- **opt**: `opt_admission`, `opt_bound`, `opt_candidate_ranking`, `opt_dominance`, `opt_feasible_set`, `opt_frontier`, `opt_objective`, `opt_optimum_witness`
+- **parsing**: `parsing_format`
+- **physics**: `physics_collision_envelope`, `physics_contact_manifold`, `physics_energy_budget`, `physics_integrator_step`, `physics_momentum_budget`, `physics_time_horizon`, `physics_units`, `physics_vector_bounds`
+- **policy**: `policy_action`, `policy_authorization`, `policy_conflict`, `policy_delegation`, `policy_grant_denial`, `policy_principal`, `policy_resource`, `policy_rule`
+- **probability**: `probability_statistics`
+- **proof**: `proof_gap_boundary_audit`
+- **raft**: `raft_consensus_core`
+- **rect**: `rect_grid_index`
+- **resource**: `resource_accounting`
+- **scheduling**: `scheduling_calendar`
+- **sel4**: `sel4_asid`, `sel4_cap_rights`, `sel4_cdt`, `sel4_cspace`, `sel4_endpoint`, `sel4_fault_ipc`, `sel4_invariants`, `sel4_invocation`, `sel4_irq`, `sel4_notification`, `sel4_ready_queue`, `sel4_reply`, `sel4_tcb`, `sel4_untyped`, `sel4_vspace`
+- **serialization**: `serialization_codec`
+- **shamir**: `shamir_field`, `shamir_lagrange`, `shamir_poly`, `shamir_reconstruct`, `shamir_split`, `shamir_threshold`
+- **signal**: `signal_processing`
+- **state**: `state_machine_workflow`
+- **storage**: `storage_index`
+- **surelock**: `surelock_deadlock`, `surelock_id`, `surelock_key`, `surelock_level`, `surelock_lockset`
+- **table**: `table_relational`
+- **text**: `text_string`
+- **type**: `type_unification`
+- **ucan**: `ucan_ability`, `ucan_backend_transcript`, `ucan_base64url`, `ucan_capability_merge`, `ucan_caveat`, `ucan_caveat_evaluation`, `ucan_caveat_preservation`, `ucan_chain`, `ucan_cid`, `ucan_claims_presence`, `ucan_compact`, `ucan_delegation_depth`, `ucan_did`, `ucan_header`, `ucan_invocation`, `ucan_json`, `ucan_parsed_capability_shape`, `ucan_parsed_caveat_payload`, `ucan_parsed_caveat_shape`, `ucan_parsed_did_claim`, `ucan_principal_link`, `ucan_proof_reference`, `ucan_proof_reference_collection`, `ucan_proof_reference_list_shape`, `ucan_proof_store_result`, `ucan_proof_traversal`, `ucan_replay_admission`, `ucan_revocation`, `ucan_revocation_check`, `ucan_signature`, `ucan_temporal`, `ucan_temporal_order`, `ucan_token`, `ucan_verification_stage`
+- **ungrouped**: `calendar`, `cryptoshedding`, `mesi`, `moesi`, `nonce`, `timeseries`, `zeroize`
+- **vision**: `vision_color_layout`, `vision_color_transform_envelope`, `vision_connected_components`, `vision_convolution_window`, `vision_detection_nms`, `vision_image_buffer`, `vision_image_pyramid`, `vision_roi`
+- **web**: `web_of_trust_attestation`, `web_of_trust_chain`, `web_of_trust_policy`, `web_of_trust_principal`, `web_of_trust_resolution`, `web_of_trust_revocation`
+- **zircon**: `zircon_channel`, `zircon_event`, `zircon_fifo`, `zircon_futex`, `zircon_handle`, `zircon_job`, `zircon_port`, `zircon_rights`, `zircon_socket`, `zircon_timer`, `zircon_wait`
+
 ## Usage
 
 ```toml
@@ -506,6 +568,7 @@ cargo clippy --all-targets -- -D warnings
 ./scripts/check-ensures.rs    # every pub fn in verus! has ensures
 ./scripts/checker-fixtures.rs # valid/invalid regression fixtures for checker behavior
 ./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
+./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
 ```
 
 ## Structure

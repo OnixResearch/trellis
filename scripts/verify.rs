@@ -161,6 +161,20 @@ fn main() -> std::process::ExitCode {
         "✗ Aspen evidence index drift detected",
     );
     runner.run_status(
+        "README module catalog drift",
+        "./scripts/check-readme-module-catalog.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "README module catalog checker fixtures",
+        "./scripts/check-readme-module-catalog.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Clippy",
         "nix",
         [
