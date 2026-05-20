@@ -15,6 +15,12 @@ pub enum WakerSlot {
     Taken { generation: u64 },
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct NoLostWakeBridge {
+    pub observed_ready: bool,
+    pub slot: WakerSlot,
+}
+
 // r[depends rust-primitives.task-waker]
 pub open spec fn waker_slot_generation_spec(slot: WakerSlot) -> Option<u64> {
     match slot {
@@ -61,6 +67,37 @@ pub open spec fn waker_take_spec(slot: WakerSlot) -> Option<WakerSlot> {
         WakerSlot::Registered { .. } => None,
         WakerSlot::Taken { .. } => None,
     }
+}
+
+// r[depends rust-primitives.no-lost-wake]
+pub open spec fn no_lost_wake_after_readiness_spec(
+    task: crate::async_task_state::AsyncTaskState,
+    slot: WakerSlot,
+    generation: u64,
+) -> Option<NoLostWakeBridge> {
+    if task == crate::async_task_state::AsyncTaskState::Ready {
+        Some(NoLostWakeBridge { observed_ready: true, slot })
+    } else if task == crate::async_task_state::AsyncTaskState::Pending {
+        match waker_wake_spec(slot, generation) {
+            Some(next_slot) => Some(NoLostWakeBridge { observed_ready: true, slot: next_slot }),
+            None => None,
+        }
+    } else {
+        None
+    }
+}
+
+// r[depends rust-primitives.no-lost-wake]
+pub open spec fn no_lost_wake_satisfied_spec(
+    task: crate::async_task_state::AsyncTaskState,
+    slot: WakerSlot,
+    generation: u64,
+    bridge: NoLostWakeBridge,
+) -> bool {
+    no_lost_wake_after_readiness_spec(task, slot, generation) == Some(bridge)
+        && bridge.observed_ready
+        && (bridge.slot == WakerSlot::Notified { generation }
+            || task == crate::async_task_state::AsyncTaskState::Ready)
 }
 
 // r[impl rust-primitives.task-waker]
@@ -112,6 +149,31 @@ pub fn waker_take(slot: WakerSlot) -> (result: Option<WakerSlot>)
     }
 }
 
+// r[impl rust-primitives.no-lost-wake]
+pub fn no_lost_wake_after_readiness(
+    task: crate::async_task_state::AsyncTaskState,
+    slot: WakerSlot,
+    generation: u64,
+) -> (result: Option<NoLostWakeBridge>)
+    ensures result == no_lost_wake_after_readiness_spec(task, slot, generation)
+{
+    match task {
+        crate::async_task_state::AsyncTaskState::Ready => Some(NoLostWakeBridge {
+            observed_ready: true,
+            slot,
+        }),
+        crate::async_task_state::AsyncTaskState::Pending => match waker_wake(slot, generation) {
+            Some(next_slot) => Some(NoLostWakeBridge {
+                observed_ready: true,
+                slot: next_slot,
+            }),
+            None => None,
+        },
+        crate::async_task_state::AsyncTaskState::Completed
+        | crate::async_task_state::AsyncTaskState::Cancelled => None,
+    }
+}
+
 // r[verify rust-primitives.task-waker]
 pub proof fn wake_after_registration_is_observable(generation: u64)
     ensures waker_wake_spec(waker_register_spec(WakerSlot::Empty, generation), generation)
@@ -136,6 +198,34 @@ pub proof fn replaced_waker_ignores_stale_generation(old_generation: u64, new_ge
 pub proof fn taking_notification_consumes_at_most_one(generation: u64)
     ensures waker_take_spec(WakerSlot::Notified { generation }) == Some(WakerSlot::Taken { generation }),
         waker_take_spec(WakerSlot::Taken { generation }) == None::<WakerSlot>
+{}
+// r[verify rust-primitives.no-lost-wake]
+pub proof fn registered_waiter_observes_later_readiness(generation: u64)
+    ensures no_lost_wake_satisfied_spec(
+        crate::async_task_state::AsyncTaskState::Pending,
+        WakerSlot::Registered { generation },
+        generation,
+        NoLostWakeBridge { observed_ready: true, slot: WakerSlot::Notified { generation } },
+    )
+{}
+
+// r[verify rust-primitives.no-lost-wake]
+pub proof fn ready_before_register_needs_no_new_wake(generation: u64)
+    ensures no_lost_wake_satisfied_spec(
+        crate::async_task_state::AsyncTaskState::Ready,
+        WakerSlot::Registered { generation },
+        generation,
+        NoLostWakeBridge { observed_ready: true, slot: WakerSlot::Registered { generation } },
+    )
+{}
+
+// r[verify rust-primitives.no-lost-wake]
+pub proof fn terminal_task_creates_no_wake_bridge(generation: u64)
+    ensures no_lost_wake_after_readiness_spec(
+            crate::async_task_state::AsyncTaskState::Completed,
+            WakerSlot::Registered { generation },
+            generation,
+        ) == None::<NoLostWakeBridge>
 {}
 } // verus!
 
@@ -170,5 +260,45 @@ mod tests {
     fn empty_or_registered_take_has_no_notification() {
         assert_eq!(waker_take(WakerSlot::Empty), None);
         assert_eq!(waker_take(WakerSlot::Registered { generation: 3 }), None);
+    }
+
+    #[test]
+    fn no_lost_wake_notifies_registered_waiter_after_readiness() {
+        let bridge = no_lost_wake_after_readiness(
+            crate::async_task_state::AsyncTaskState::Pending,
+            WakerSlot::Registered { generation: 11 },
+            11,
+        );
+        assert_eq!(
+            bridge,
+            Some(NoLostWakeBridge {
+                observed_ready: true,
+                slot: WakerSlot::Notified { generation: 11 },
+            })
+        );
+    }
+
+    #[test]
+    fn ready_before_register_needs_no_new_notification() {
+        let slot = WakerSlot::Registered { generation: 12 };
+        assert_eq!(
+            no_lost_wake_after_readiness(crate::async_task_state::AsyncTaskState::Ready, slot, 12),
+            Some(NoLostWakeBridge {
+                observed_ready: true,
+                slot,
+            })
+        );
+    }
+
+    #[test]
+    fn terminal_task_does_not_create_wake_bridge() {
+        assert_eq!(
+            no_lost_wake_after_readiness(
+                crate::async_task_state::AsyncTaskState::Completed,
+                WakerSlot::Registered { generation: 13 },
+                13,
+            ),
+            None
+        );
     }
 }
