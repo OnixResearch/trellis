@@ -11,7 +11,7 @@
 
 ## Phase 3: Oneshot and Drop Guard
 
-- [ ] [depends:rust-primitives.oneshot-channel] Implement single-slot oneshot channel state, send/receive/close/cancel helpers, proof bridges, and tests for send-once, receive-once, closed-send rejection, and cancellation behavior.
+- [x] [depends:rust-primitives.oneshot-channel] Implement single-slot oneshot channel state, send/receive/close/cancel helpers, proof bridges, and tests for send-once, receive-once, closed-send rejection, and cancellation behavior. ✅ 3m 22s (started: 2026-05-20T03:36:58Z → completed: 2026-05-20T03:40:20Z; evidence: `nix develop -c cargo test --quiet oneshot_channel`, `nix develop -c ./scripts/verus.sh src/lib.rs`, `nix develop -c cargo clippy --all-targets -- -D warnings`, `nix develop -c rustfmt --check src/oneshot_channel.rs`, `openspec validate add-rust-async-primitives --strict --json`)
 - [ ] [depends:rust-primitives.oneshot-readiness] Compose successful oneshot sends with async task readiness and waker notification; add negative tests proving rejected sends do not create readiness evidence.
 - [ ] [depends:rust-primitives.drop-guard] Implement armed/disarmed/cleaned drop-guard state helpers, exactly-once cleanup proofs, and positive/negative tests for cleanup, disarm, and repeated cleanup attempts.
 
