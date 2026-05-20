@@ -5,7 +5,7 @@
 
 ## Phase 2: Async State and Waker Core
 
-- [ ] [depends:rust-primitives.async-task-state] Implement finite async task-state spec predicates, executable admission helpers, proof bridges, and positive/negative tests for ready/completed/cancelled transitions.
+- [x] [depends:rust-primitives.async-task-state] Implement finite async task-state spec predicates, executable admission helpers, proof bridges, and positive/negative tests for ready/completed/cancelled transitions. ✅ 6m 22s (started: 2026-05-20T03:15:37Z → completed: 2026-05-20T03:21:59Z; evidence: `nix develop -c cargo test --quiet async_task_state`, `nix develop -c cargo clippy --all-targets -- -D warnings`, `nix develop -c ./scripts/verus.sh src/lib.rs`, `nix develop -c rustfmt --check src/async_task_state.rs`, `openspec validate add-rust-async-primitives --strict --json`)
 - [ ] [depends:rust-primitives.task-waker] Implement finite waker-slot spec predicates, executable helpers, proof bridges, and positive/negative tests for register/replace/wake/take/idempotent wake behavior.
 - [ ] [depends:rust-primitives.no-lost-wake] Implement no-lost-wake bridge predicates/proofs between task readiness and waker-slot state without claiming callback execution or scheduler fairness.
 
