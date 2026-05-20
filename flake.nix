@@ -29,6 +29,7 @@
             (builtins.match ".*\\.sh$" path) != null
             || (builtins.match ".*/scripts/.*\\.rs$" path) != null
             || (builtins.match ".*\\.md$" path) != null
+            || (builtins.match ".*\\.tsv$" path) != null
             || (builtins.match ".*\\.styx$" path) != null
             || (builtins.match ".*\\.ncl$" path) != null
             || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null;
@@ -196,6 +197,19 @@
             rustc "$TMPDIR/check-readme-module-catalog.rs" -o "$TMPDIR/check-readme-module-catalog"
             "$TMPDIR/check-readme-module-catalog"
             "$TMPDIR/check-readme-module-catalog" --self-test
+            touch $out
+          '';
+
+          # README headline metrics static drift
+          readme-metrics = pkgs.runCommand "readme-metrics" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang ];
+          } ''
+            cd ${src}
+            export TMPDIR=$(mktemp -d)
+            cp scripts/check-readme-metrics.rs "$TMPDIR/check-readme-metrics.rs"
+            rustc "$TMPDIR/check-readme-metrics.rs" -o "$TMPDIR/check-readme-metrics"
+            "$TMPDIR/check-readme-metrics"
+            "$TMPDIR/check-readme-metrics" --self-test
             touch $out
           '';
 

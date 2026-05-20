@@ -569,6 +569,7 @@ cargo clippy --all-targets -- -D warnings
 ./scripts/checker-fixtures.rs # valid/invalid regression fixtures for checker behavior
 ./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
+./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ```
 
 ## Structure

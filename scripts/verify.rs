@@ -175,6 +175,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "README headline metrics drift",
+        "./scripts/check-readme-metrics.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "README headline metrics checker self-test",
+        "./scripts/check-readme-metrics.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Clippy",
         "nix",
         [
