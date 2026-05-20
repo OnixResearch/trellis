@@ -11641,3 +11641,26 @@ Algebraic-effect continuation-token admission MUST allow resume only for unused 
 
 r[domain-primitives.algebraic-effect.continuation-resume-mode]
 Algebraic-effect continuation resume-mode admission MUST distinguish resumable from non-resumable operations, MUST admit continuation resume only for unused matching tokens under a resumable operation mode, and MUST reject handler clauses that attempt to resume a non-resumable operation without claiming runtime continuation capture or re-entry semantics.
+
+## Rust Async Primitives
+
+r[rust-primitives.async-task-state]
+Rust async task-state primitives MUST model a finite lifecycle with pending, ready, completed, and cancelled states. Admission helpers MUST reject transitions that mutate terminal completed or cancelled tasks and MUST refine the documented state predicate rather than a separate runtime policy.
+
+r[rust-primitives.task-waker]
+Task-waker slot primitives MUST model finite empty, registered, notified, and taken states. Registration MUST bind the current generation, replacement MUST supersede stale generations, wake admission MUST be idempotent for an already-notified generation, and take admission MUST consume at most one pending notification.
+
+r[rust-primitives.no-lost-wake]
+No-lost-wake bridge predicates MUST connect task readiness with waker-slot state: when readiness is admitted after a generation is registered, the model MUST record either notification for that generation or an already-ready consumer observation. The bridge MUST NOT claim callback execution, scheduler fairness, or OS wake delivery.
+
+r[rust-primitives.oneshot-channel]
+Oneshot channel primitives MUST model a single finite slot with open, sent, received, closed, and cancelled states. Sending MUST succeed at most once, receiving MUST consume at most one sent value, closing MUST reject future sends, and cancellation MUST preserve no-duplicate-delivery evidence.
+
+r[rust-primitives.oneshot-readiness]
+Oneshot readiness composition MUST connect successful sends to receiver task readiness and waker-slot notification. Rejected sends MUST NOT create new receiver readiness or wake evidence.
+
+r[rust-primitives.drop-guard]
+Drop-guard primitives MUST model finite armed, disarmed, cleaned, and terminal states. Cleanup admission MUST run at most once for an armed guard, disarm MUST prevent later cleanup, and terminal states MUST remain stable under repeated cleanup attempts.
+
+r[rust-primitives.verification-coverage]
+Rust async primitive public helpers MUST carry explicit `r[impl]` coverage, proof functions MUST carry matching `r[verify]` coverage for the stated finite predicates, and focused tests MUST include positive and negative transition cases before README/catalog text claims implemented verification.

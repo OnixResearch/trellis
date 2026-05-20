@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10291 Verus proofs · 4617 tests · 1922 requirements · 581 modules · 16 trusted/proof-gap boundaries**
+**10291 Verus proofs · 4621 tests · 1929 requirements · 585 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -90,6 +90,15 @@ validation commands captured in the change evidence.
 | `ring_buffer` | FIFO queue with power-of-two capacity |
 | `sequence` | monotonic sequence generator with batch reservation |
 | `slice` | chunk count, prefix/suffix equality, all-equal, mismatch |
+
+### Rust async primitives
+
+| Module | What it will verify |
+|---|---|
+| `async_task_state` | finite pending/ready/completed/cancelled task lifecycle admission (skeleton) |
+| `task_waker` | finite registered/notified/taken waker-slot admission (skeleton) |
+| `oneshot_channel` | finite send-once/receive-once single-slot channel admission (skeleton) |
+| `drop_guard` | finite armed/disarmed/cleaned exactly-once cleanup guard admission (skeleton) |
 
 ### Raft consensus
 

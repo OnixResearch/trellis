@@ -1,7 +1,7 @@
 ## Phase 1: Spec and Skeleton
 
-- [ ] [serial] Add docs/requirements anchors and OpenSpec requirement coverage for `r[rust-primitives.async-task-state]`, `r[rust-primitives.task-waker]`, `r[rust-primitives.no-lost-wake]`, `r[rust-primitives.oneshot-channel]`, `r[rust-primitives.oneshot-readiness]`, `r[rust-primitives.drop-guard]`, and `r[rust-primitives.verification-coverage]`.
-- [ ] [depends:rust-primitives.verification-coverage] Add module skeletons, `src/lib.rs` exports, README catalog entries, and no-op compile coverage for `async_task_state`, `task_waker`, `oneshot_channel`, and `drop_guard`.
+- [x] [serial] Add docs/requirements anchors and OpenSpec requirement coverage for `r[rust-primitives.async-task-state]`, `r[rust-primitives.task-waker]`, `r[rust-primitives.no-lost-wake]`, `r[rust-primitives.oneshot-channel]`, `r[rust-primitives.oneshot-readiness]`, `r[rust-primitives.drop-guard]`, and `r[rust-primitives.verification-coverage]`.
+- [x] [depends:rust-primitives.verification-coverage] Add module skeletons, `src/lib.rs` exports, README catalog entries, and no-op compile coverage for `async_task_state`, `task_waker`, `oneshot_channel`, and `drop_guard`.
 
 ## Phase 2: Async State and Waker Core
 
