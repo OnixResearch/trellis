@@ -17,7 +17,7 @@
 
 ## Phase 4: Cross-Module and Documentation
 
-- [ ] [depends:phase-2-3] Add focused cross-module properties for task-state ↔ waker and oneshot ↔ waker readiness composition, keeping any broader async-runtime properties out of scope.
+- [x] [depends:phase-2-3] Add focused cross-module properties for task-state ↔ waker and oneshot ↔ waker readiness composition, keeping any broader async-runtime properties out of scope. ✅ 2m 28s (started: 2026-05-20T03:47:42Z → completed: 2026-05-20T03:50:10Z; evidence: `nix develop -c cargo test --quiet task_waker`, `nix develop -c cargo test --quiet oneshot_channel`, `nix develop -c ./scripts/verus.sh src/lib.rs`, `nix develop -c cargo clippy --all-targets -- -D warnings`, `nix develop -c rustfmt --check src/task_waker.rs`, `nix develop -c rustfmt --check src/oneshot_channel.rs`, `openspec validate add-rust-async-primitives --strict --json`)
 - [ ] [depends:rust-primitives.verification-coverage] Update README/module catalog and generated requirement/docs references so public claims match implemented proof/test coverage.
 
 ## Phase 5: Validation and Evidence

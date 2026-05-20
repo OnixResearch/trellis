@@ -227,6 +227,20 @@ pub proof fn terminal_task_creates_no_wake_bridge(generation: u64)
             generation,
         ) == None::<NoLostWakeBridge>
 {}
+
+// r[verify rust-primitives.no-lost-wake]
+pub proof fn pending_mark_ready_notifies_registered_waiter(generation: u64)
+    ensures crate::async_task_state::async_task_transition_spec(
+            crate::async_task_state::AsyncTaskState::Pending,
+            crate::async_task_state::AsyncTaskAction::MarkReady,
+        ) == Some(crate::async_task_state::AsyncTaskState::Ready),
+        no_lost_wake_satisfied_spec(
+            crate::async_task_state::AsyncTaskState::Pending,
+            WakerSlot::Registered { generation },
+            generation,
+            NoLostWakeBridge { observed_ready: true, slot: WakerSlot::Notified { generation } },
+        )
+{}
 } // verus!
 
 #[cfg(test)]

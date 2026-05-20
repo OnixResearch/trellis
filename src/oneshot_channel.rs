@@ -265,6 +265,33 @@ pub proof fn failed_send_does_not_create_readiness(value: u64, generation: u64)
             generation,
         ) == None::<OneshotReadinessBridge>
 {}
+
+// r[verify rust-primitives.oneshot-readiness]
+pub proof fn successful_oneshot_send_satisfies_no_lost_wake(value: u64, generation: u64)
+    ensures crate::task_waker::no_lost_wake_satisfied_spec(
+        crate::async_task_state::AsyncTaskState::Pending,
+        crate::task_waker::WakerSlot::Registered { generation },
+        generation,
+        crate::task_waker::NoLostWakeBridge {
+            observed_ready: true,
+            slot: crate::task_waker::WakerSlot::Notified { generation },
+        },
+    ),
+        oneshot_send_readiness_spec(
+            OneshotState::Open,
+            value,
+            crate::async_task_state::AsyncTaskState::Pending,
+            crate::task_waker::WakerSlot::Registered { generation },
+            generation,
+        ) == Some(OneshotReadinessBridge {
+            sent_state: OneshotState::Sent { value },
+            receiver_state: crate::async_task_state::AsyncTaskState::Ready,
+            wake_bridge: crate::task_waker::NoLostWakeBridge {
+                observed_ready: true,
+                slot: crate::task_waker::WakerSlot::Notified { generation },
+            },
+        })
+{}
 } // verus!
 
 #[cfg(test)]
