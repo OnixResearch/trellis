@@ -2,7 +2,7 @@
 # path<TAB>function-signature<TAB>classification
 src/chain.rs	pub fn compute_entry_hash(	permanent-trust-boundary
 src/chain.rs	pub proof fn hash_collision_free(	permanent-trust-boundary
-src/nix_version.rs	pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)	permanent-trust-boundary
+src/nix_version.rs	fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)	permanent-trust-boundary
 src/snapshot_integrity.rs	pub fn dual_hash(a: u64, b: u64) -> (result: u64)	permanent-trust-boundary
 src/snapshot_integrity.rs	pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)	permanent-trust-boundary
 src/ucan_did.rs	pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)	permanent-trust-boundary

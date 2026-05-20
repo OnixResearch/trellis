@@ -752,15 +752,16 @@ pub proof fn modeled_compare_spec_is_existing_spec(a: Seq<u8>, b: Seq<u8>)
 
 // --- compare_versions exec ---
 
-// r[impl nix-version.compare-versions]
-/// Compare two Nix version strings.
-/// Exec remains trusted: the open spec is machine-checked, the exec's
-/// correspondence is verified by comprehensive proptest oracles.
-/// @verified-logic:permanent-z3-limit — cv_fuel spec too deep for exec-spec connection
+/// Trusted fallback for version strings outside the finite modeled subset.
+///
+/// The broad exec/spec equality claim was narrowed out of this trusted bridge:
+/// admitted finite-model inputs now flow through verified executable helpers in
+/// `compare_versions`, while this fallback only promises a normalized ordering
+/// for out-of-model or length-overflow cases.
+/// @verified-logic:permanent-z3-limit — full unbounded exec/spec connection remains trusted only for fallback behavior
 #[verifier::external_body]
-pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
-    ensures result as int == compare_versions_spec(a@, b@),
-            result == -1 || result == 0 || result == 1
+fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+    ensures result == -1 || result == 0 || result == 1
 {
     let mut ai: usize = 0;
     let mut bi: usize = 0;
@@ -816,6 +817,25 @@ pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
                 std::cmp::Ordering::Equal => {}
             }
         }
+    }
+}
+
+// r[impl nix-version.compare-versions]
+/// Compare two Nix version strings.
+///
+/// Inputs admitted by the finite model are compared by verified executable
+/// helpers. Out-of-model inputs stay on the explicit trusted fallback and carry
+/// only a range guarantee.
+pub fn compare_versions(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)
+    ensures
+        result == -1 || result == 0 || result == 1,
+        admitted_version_model(a@) && admitted_version_model(b@) && a.len() <= usize::MAX - b.len()
+            ==> result as int == compare_versions_spec(a@, b@),
+{
+    if admits_compare_versions(a, b) && a.len() <= usize::MAX - b.len() {
+        compare_versions_modeled_exec(a, b)
+    } else {
+        compare_versions_unmodeled_trusted(a, b)
     }
 }
 
@@ -943,6 +963,24 @@ mod tests {
 
         // Empty vs non-empty
         assert_eq!(compare_versions(&v("1.0"), &v("1.0.1")), -1);
+    }
+
+    // r[verify nix-version.compare-versions]
+    // r[verify verification-gaps.nix-version-modeled-compare-bridge]
+    #[test]
+    fn test_compare_versions_narrowed_trust_boundary() {
+        let admitted_left = v("2.3.2");
+        let admitted_right = v("2.3.9");
+        assert!(admitted_version_model_exec(&admitted_left));
+        assert!(admitted_version_model_exec(&admitted_right));
+        assert_eq!(compare_versions_modeled(&admitted_left, &admitted_right), Some(-1));
+        assert_eq!(compare_versions(&admitted_left, &admitted_right), -1);
+
+        let unmodeled_left = v("2.3.10");
+        let unmodeled_right = v("2.3.2");
+        assert!(!admitted_version_model_exec(&unmodeled_left));
+        assert_eq!(compare_versions_modeled(&unmodeled_left, &unmodeled_right), None);
+        assert_eq!(compare_versions(&unmodeled_left, &unmodeled_right), 1);
     }
 
     // r[verify nix-version.parse-drv-name]

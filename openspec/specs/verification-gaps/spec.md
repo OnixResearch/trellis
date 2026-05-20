@@ -3,9 +3,7 @@
 ## Purpose
 
 This specification tracks source-derived proof-gap and trusted-boundary inventory requirements. It preserves the closed UCAN DID varint boundary requirement and records the current audit policy for remaining trusted cryptographic, codec, runtime, and solver-limit bridges.
-
 ## Requirements
-
 ### Requirement: UCAN DID Varint Decode Boundary Is Closed
 
 `src/ucan_did.rs::varint_decode` MUST no longer be a trusted or weakened proof boundary. The implementation MUST remove its `#[verifier::external_body]` attribute and MUST NOT replace it with `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, or a runtime-only `@verified-logic:exempt` marker.
@@ -183,6 +181,7 @@ r[verification-gaps.inventory-classification-drift-gate]
 - GIVEN `./scripts/verify.rs` runs
 - WHEN it invokes the proof-gap inventory drift stage
 - THEN classification drift is checked before full verification can pass
+
 ### Requirement: Proof-Gap Site Manifest Source
 
 The system MUST load the expected proof-gap external-body site baseline from a checked repository manifest and fail closed when the manifest is malformed, stale, or inconsistent with live source.
@@ -208,8 +207,7 @@ r[verification-gaps.inventory-site-manifest-source]
 - THEN it rejects the drift before full verification can pass
 
 ### Requirement: Nix Version Bridge Decomposition
-
-The system MUST provide a bounded structural decomposition of `src/nix_version.rs::compare_versions` that narrows verified claims to an explicit finite admission wrapper or records why the original bridge remains trusted without replacement weakened markers.
+The system MUST provide a bounded structural decomposition of `src/nix_version.rs::compare_versions` that routes admitted finite-model inputs through verified executable comparison helpers while keeping out-of-model inputs on an explicit fallback trusted boundary.
 
 r[verification-gaps.nix-version-bridge-decomposition]
 
@@ -225,15 +223,14 @@ r[verification-gaps.nix-version-bridge-decomposition]
 - WHEN comparison admission is evaluated
 - THEN the wrapper returns no ordering claim instead of pretending the input was verified by the finite model
 
-#### Scenario: Failed closeout preserves trust inventory
+#### Scenario: Public API narrows the trusted bridge
 
-- GIVEN the full `compare_versions` exec/spec bridge remains trusted in this slice
-- WHEN the decomposition attempt is closed
-- THEN evidence records the bounded wrapper and no `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, `@verified-logic:exempt`, or new external body is introduced
+- GIVEN admitted finite-model inputs within the public `compare_versions` API preconditions
+- WHEN `compare_versions` evaluates them
+- THEN it uses the verified modeled executable path and the trusted inventory retains only the unmodeled fallback boundary
 
 ### Requirement: Nix Version Modeled Compare Bridge
-
-The system MUST compute admitted finite-model Nix version comparisons through verified executable helpers for separator skipping, component bounds, numeric parsing, and lexicographic comparison. The modeled wrapper MUST return an ordering matching `compare_versions_spec` for admitted inputs, return no ordering claim for out-of-model inputs, and keep the full `compare_versions` external-body trusted boundary visible when the broader API remains trusted.
+The system MUST compute admitted finite-model Nix version comparisons through verified executable helpers for separator skipping, component bounds, numeric parsing, and lexicographic comparison. The modeled wrapper MUST return an ordering matching `compare_versions_spec` for admitted inputs, return no ordering claim for out-of-model inputs, and keep only the unmodeled fallback external-body trusted boundary visible for the broader API.
 
 r[verification-gaps.nix-version-modeled-compare-bridge]
 
@@ -252,7 +249,36 @@ r[verification-gaps.nix-version-modeled-compare-bridge]
 
 #### Scenario: Trusted inventory remains visible
 
-- GIVEN the full `compare_versions` exec/spec bridge remains trusted after this slice
+- GIVEN the public `compare_versions` bridge has been narrowed to admitted finite-model correctness
 - WHEN proof-gap inventory evidence is captured
-- THEN the existing trusted-boundary count and site list still include `src/nix_version.rs::compare_versions`
-- AND no replacement weakened marker or new external body is introduced
+- THEN the trusted-boundary count is unchanged and the site list includes `src/nix_version.rs::compare_versions_unmodeled_trusted`
+- AND no replacement weakened marker or additional external body is introduced
+
+### Requirement: Single Trusted Boundary Closure Slice
+A trusted-boundary closure change MUST select one tracked proof-gap site or one tightly related site family, justify why it is closeable or narrowable, and update source, inventory, and evidence together.
+
+r[verification-gaps.single-boundary-closure]
+
+#### Scenario: Target is selected from current inventory
+
+- GIVEN the current proof-gap inventory lists trusted boundaries
+- WHEN this change begins implementation
+- THEN it records the selected target site, current classification, and reason it is suitable for closure or narrowing
+
+#### Scenario: Closure removes or narrows trust honestly
+
+- GIVEN a selected trusted boundary
+- WHEN implementation changes are complete
+- THEN the source either removes the trusted marker with verified replacement logic or narrows the trusted contract without hiding an equivalent new trust boundary elsewhere
+
+#### Scenario: Inventory matches source
+
+- GIVEN source proof-gap markers and the proof-gap manifest
+- WHEN the proof-gap inventory checker runs
+- THEN expected counts, site names, and classifications match the source tree
+
+#### Scenario: Verification evidence supports the count
+
+- GIVEN the closure or narrowing is claimed complete
+- WHEN focused tests, Verus, Tracey coverage, and full verification run
+- THEN the evidence supports the updated trusted-boundary count and no uncovered or untested requirements remain

@@ -1988,10 +1988,10 @@ r[nix-version.parse-drv-name]
 parse_drv_name MUST split a derivation name at the first hyphen-digit boundary.
 
 r[verification-gaps.nix-version-bridge-decomposition]
-Nix version bridge decomposition MUST provide a finite admitted comparison wrapper for modeled version bytes, reject out-of-model bytes explicitly, and preserve the existing trusted-boundary inventory when the full compare_versions exec/spec bridge remains trusted.
+Nix version bridge decomposition MUST route admitted finite-model inputs through verified executable comparison helpers, keep out-of-model inputs on an explicit fallback trusted boundary, and preserve the trusted-boundary inventory without replacement weakened markers.
 
 r[verification-gaps.nix-version-modeled-compare-bridge]
-The modeled Nix version comparator MUST compute admitted finite-model inputs through verified executable separator, component, numeric, and lexicographic helpers, return None for out-of-model inputs, and leave the full compare_versions trusted boundary visible in the inventory when the broader bridge remains trusted.
+The modeled Nix version comparator MUST compute admitted finite-model inputs through verified executable separator, component, numeric, and lexicographic helpers, return None for out-of-model inputs, and ensure the public compare_versions API uses the modeled path for admitted inputs while leaving only the unmodeled fallback visible in the trusted-boundary inventory.
 
 ## Nix String
 
