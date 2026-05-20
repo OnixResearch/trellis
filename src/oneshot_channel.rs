@@ -23,6 +23,13 @@ pub struct OneshotReceive {
     pub state: OneshotState,
 }
 
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct OneshotReadinessBridge {
+    pub sent_state: OneshotState,
+    pub receiver_state: crate::async_task_state::AsyncTaskState,
+    pub wake_bridge: crate::task_waker::NoLostWakeBridge,
+}
+
 // r[depends rust-primitives.oneshot-channel]
 pub open spec fn oneshot_terminal_spec(state: OneshotState) -> bool {
     match state {
@@ -68,6 +75,37 @@ pub open spec fn oneshot_cancel_spec(state: OneshotState) -> Option<OneshotState
     match state {
         OneshotState::Open | OneshotState::Sent { .. } => Some(OneshotState::Cancelled),
         OneshotState::Received { .. } | OneshotState::Closed | OneshotState::Cancelled => None,
+    }
+}
+
+// r[depends rust-primitives.oneshot-readiness]
+pub open spec fn oneshot_send_readiness_spec(
+    channel: OneshotState,
+    value: u64,
+    receiver: crate::async_task_state::AsyncTaskState,
+    slot: crate::task_waker::WakerSlot,
+    generation: u64,
+) -> Option<OneshotReadinessBridge> {
+    match oneshot_send_spec(channel, value) {
+        Some(sent_state) => match crate::async_task_state::async_task_transition_spec(
+            receiver,
+            crate::async_task_state::AsyncTaskAction::MarkReady,
+        ) {
+            Some(receiver_state) => match crate::task_waker::no_lost_wake_after_readiness_spec(
+                receiver,
+                slot,
+                generation,
+            ) {
+                Some(wake_bridge) => Some(OneshotReadinessBridge {
+                    sent_state,
+                    receiver_state,
+                    wake_bridge,
+                }),
+                None => None,
+            },
+            None => None,
+        },
+        None => None,
     }
 }
 
@@ -133,6 +171,36 @@ pub fn oneshot_cancel(state: OneshotState) -> (result: Option<OneshotState>)
     }
 }
 
+// r[impl rust-primitives.oneshot-readiness]
+pub fn oneshot_send_readiness(
+    channel: OneshotState,
+    value: u64,
+    receiver: crate::async_task_state::AsyncTaskState,
+    slot: crate::task_waker::WakerSlot,
+    generation: u64,
+) -> (result: Option<OneshotReadinessBridge>)
+    ensures result == oneshot_send_readiness_spec(channel, value, receiver, slot, generation)
+{
+    match oneshot_send(channel, value) {
+        Some(sent_state) => match crate::async_task_state::async_task_mark_ready(receiver) {
+            Some(receiver_state) => match crate::task_waker::no_lost_wake_after_readiness(
+                receiver,
+                slot,
+                generation,
+            ) {
+                Some(wake_bridge) => Some(OneshotReadinessBridge {
+                    sent_state,
+                    receiver_state,
+                    wake_bridge,
+                }),
+                None => None,
+            },
+            None => None,
+        },
+        None => None,
+    }
+}
+
 // r[verify rust-primitives.oneshot-channel]
 pub proof fn send_then_receive_consumes_one_value(value: u64)
     ensures oneshot_receive_spec(OneshotState::Sent { value }) == Some(OneshotReceive {
@@ -160,6 +228,42 @@ pub proof fn cancelled_receiver_prevents_duplicate_delivery(value: u64)
     ensures oneshot_cancel_spec(OneshotState::Sent { value }) == Some(OneshotState::Cancelled),
         oneshot_receive_spec(OneshotState::Cancelled) == None::<OneshotReceive>,
         oneshot_terminal_spec(OneshotState::Cancelled)
+{}
+
+// r[verify rust-primitives.oneshot-readiness]
+pub proof fn successful_send_wakes_registered_receiver(value: u64, generation: u64)
+    ensures oneshot_send_readiness_spec(
+        OneshotState::Open,
+        value,
+        crate::async_task_state::AsyncTaskState::Pending,
+        crate::task_waker::WakerSlot::Registered { generation },
+        generation,
+    ) == Some(OneshotReadinessBridge {
+        sent_state: OneshotState::Sent { value },
+        receiver_state: crate::async_task_state::AsyncTaskState::Ready,
+        wake_bridge: crate::task_waker::NoLostWakeBridge {
+            observed_ready: true,
+            slot: crate::task_waker::WakerSlot::Notified { generation },
+        },
+    })
+{}
+
+// r[verify rust-primitives.oneshot-readiness]
+pub proof fn failed_send_does_not_create_readiness(value: u64, generation: u64)
+    ensures oneshot_send_readiness_spec(
+        OneshotState::Closed,
+        value,
+        crate::async_task_state::AsyncTaskState::Pending,
+        crate::task_waker::WakerSlot::Registered { generation },
+        generation,
+    ) == None::<OneshotReadinessBridge>,
+        oneshot_send_readiness_spec(
+            OneshotState::Sent { value },
+            value,
+            crate::async_task_state::AsyncTaskState::Pending,
+            crate::task_waker::WakerSlot::Registered { generation },
+            generation,
+        ) == None::<OneshotReadinessBridge>
 {}
 } // verus!
 
@@ -199,5 +303,50 @@ mod tests {
         assert_eq!(oneshot_cancel(OneshotState::Sent { value: 10 }), Some(OneshotState::Cancelled));
         assert_eq!(oneshot_receive(OneshotState::Cancelled), None);
         assert!(oneshot_is_terminal(OneshotState::Cancelled));
+    }
+
+    #[test]
+    fn successful_send_wakes_registered_receiver_at_runtime() {
+        assert_eq!(
+            oneshot_send_readiness(
+                OneshotState::Open,
+                14,
+                crate::async_task_state::AsyncTaskState::Pending,
+                crate::task_waker::WakerSlot::Registered { generation: 5 },
+                5,
+            ),
+            Some(OneshotReadinessBridge {
+                sent_state: OneshotState::Sent { value: 14 },
+                receiver_state: crate::async_task_state::AsyncTaskState::Ready,
+                wake_bridge: crate::task_waker::NoLostWakeBridge {
+                    observed_ready: true,
+                    slot: crate::task_waker::WakerSlot::Notified { generation: 5 },
+                },
+            })
+        );
+    }
+
+    #[test]
+    fn failed_send_does_not_create_receiver_readiness() {
+        assert_eq!(
+            oneshot_send_readiness(
+                OneshotState::Closed,
+                15,
+                crate::async_task_state::AsyncTaskState::Pending,
+                crate::task_waker::WakerSlot::Registered { generation: 6 },
+                6,
+            ),
+            None
+        );
+        assert_eq!(
+            oneshot_send_readiness(
+                OneshotState::Sent { value: 15 },
+                16,
+                crate::async_task_state::AsyncTaskState::Pending,
+                crate::task_waker::WakerSlot::Registered { generation: 6 },
+                6,
+            ),
+            None
+        );
     }
 }
