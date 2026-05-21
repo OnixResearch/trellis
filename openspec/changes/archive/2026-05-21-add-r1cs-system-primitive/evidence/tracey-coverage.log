@@ -1,0 +1,24 @@
+### tracey status
+This project tracks requirements for "verified-logic". The requirements are defined in docs/*.md and are referenced in code using r[...] annotations (for example, r[verified-logic.some-requirement]).
+The implementation being checked: rust.
+
+verified-logic/rust: 1936 of 1936 requirements are covered. 1936 of 1936 have a verification reference.
+
+---
+→ Run `tracey query uncovered`
+→ Run `tracey query untested`
+→ Run `tracey query unmapped`
+
+### tracey uncovered
+verified-logic/rust: 0 uncovered out of 1936 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+### tracey untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1936 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
