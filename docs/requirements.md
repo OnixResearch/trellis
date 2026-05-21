@@ -11664,3 +11664,27 @@ Drop-guard primitives MUST model finite armed, disarmed, cleaned, and terminal s
 
 r[rust-primitives.verification-coverage]
 Rust async primitive public helpers MUST carry explicit `r[impl]` coverage, proof functions MUST carry matching `r[verify]` coverage for the stated finite predicates, and focused tests MUST include positive and negative transition cases before README/catalog text claims implemented verification.
+
+## R1CS Circuit Primitives
+
+r[rust-primitives.r1cs-row-shape]
+A finite single-row R1CS envelope MUST expose explicit row and witness lengths,
+a bounded modulus, three coefficient slots for each of A/B/C, and three witness
+slots. Admission MUST reject zero lengths, lengths above three, invalid moduli,
+and coefficient or witness values outside the supported finite element bound.
+
+r[rust-primitives.r1cs-dot-product]
+The R1CS dot-product helper MUST compute the active pairwise coefficient/witness
+sum modulo the row modulus for admitted row/witness shapes, and inactive slots
+MUST NOT affect shorter-row results.
+
+r[rust-primitives.r1cs-row-satisfaction]
+A one-row R1CS satisfaction helper MUST return true exactly when row and witness
+shapes are admitted, lengths match, and `<A,w> * <B,w> == <C,w>` modulo the row
+modulus. It MUST reject malformed shapes, mismatched lengths, and unsatisfied
+equations, and MUST NOT claim multi-row constraint-system or proving-system
+soundness.
+
+r[rust-primitives.r1cs-verification-coverage]
+R1CS public helpers MUST carry explicit implementation and verification coverage
+with positive and negative runtime tests before module/catalog claims are made.

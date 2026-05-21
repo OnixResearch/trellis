@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10341 Verus proofs · 4650 tests · 1929 requirements · 585 modules · 16 trusted/proof-gap boundaries**
+**10378 Verus proofs · 4656 tests · 1933 requirements · 586 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -99,6 +99,12 @@ validation commands captured in the change evidence.
 | `task_waker` | finite empty/registered/notified/taken generation-tagged waker-slot admission plus no-lost-wake bridge predicates that avoid callback/fairness claims |
 | `oneshot_channel` | finite open/sent/received/closed/cancelled single-slot channel admission plus receiver readiness/waker-notification composition |
 | `drop_guard` | finite armed/disarmed/cleaned exactly-once cleanup guard admission with repeated-cleanup rejection evidence |
+
+### Circuit primitives
+
+| Module | What it verifies |
+|---|---|
+| `r1cs_constraint` | bounded single-row R1CS shape, modular dot product, and satisfaction admission without multi-row/proving-system claims |
 
 ### Raft consensus
 

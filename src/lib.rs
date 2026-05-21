@@ -99,6 +99,8 @@
 //!   safe-reuse checks over live ranges
 //! - `wasm_primitives` — exact Wasm value tags, `i32.add` stack discipline, typed local access, and
 //!   linear-memory bounds/grow semantics
+//! - `r1cs_constraint` — bounded single-row R1CS shape, modular dot product, and satisfaction
+//!   admission
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
 //!   live-out facts
 //! - `debruijn` — de Bruijn shifting, substitution, and beta reduction with scope preservation
@@ -781,6 +783,7 @@ pub mod query_cost;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;
+pub mod r1cs_constraint;
 pub mod raft_consensus_core;
 pub mod raft_membership_manager;
 pub mod raft_step;
