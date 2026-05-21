@@ -101,6 +101,7 @@
 //!   linear-memory bounds/grow semantics
 //! - `r1cs_constraint` — bounded single-row R1CS shape, modular dot product, and satisfaction
 //!   admission
+//! - `r1cs_gates` — bounded multiplication, addition, and constant gate adapters into R1CS rows
 //! - `r1cs_system` — bounded multi-row R1CS system shape and shared-witness satisfaction admission
 //! - `r1cs_public_inputs` — bounded public-input binding and R1CS statement satisfaction admission
 //! - `dead_code_elimination` — dead instruction classification from side-effect tagging and
@@ -786,6 +787,7 @@ pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;
 pub mod r1cs_constraint;
+pub mod r1cs_gates;
 pub mod r1cs_public_inputs;
 pub mod r1cs_system;
 pub mod raft_consensus_core;
