@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10390 Verus proofs · 4662 tests · 1936 requirements · 587 modules · 16 trusted/proof-gap boundaries**
+**10403 Verus proofs · 4670 tests · 1939 requirements · 588 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -106,6 +106,7 @@ validation commands captured in the change evidence.
 |---|---|
 | `r1cs_constraint` | bounded single-row R1CS shape, modular dot product, and satisfaction admission without multi-row/proving-system claims |
 | `r1cs_system` | bounded multi-row R1CS system shape and shared-witness satisfaction without proving-system claims |
+| `r1cs_public_inputs` | bounded public-input binding and R1CS statement satisfaction without proving-system claims |
 
 ### Raft consensus
 
