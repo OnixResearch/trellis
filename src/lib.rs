@@ -102,6 +102,7 @@
 //! - `r1cs_constraint` — bounded single-row R1CS shape, modular dot product, and satisfaction
 //!   admission
 //! - `r1cs_boolean` — bounded booleanity row encoding and satisfaction over an R1CS witness slot
+//! - `r1cs_bit_decomposition` — bounded two-bit decomposition over boolean R1CS witness slots
 //! - `r1cs_gates` — bounded multiplication, addition, and constant gate adapters into R1CS rows
 //! - `r1cs_system` — bounded multi-row R1CS system shape and shared-witness satisfaction admission
 //! - `r1cs_public_inputs` — bounded public-input binding and R1CS statement satisfaction admission
@@ -787,6 +788,7 @@ pub mod query_cost;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;
+pub mod r1cs_bit_decomposition;
 pub mod r1cs_boolean;
 pub mod r1cs_constraint;
 pub mod r1cs_gates;
