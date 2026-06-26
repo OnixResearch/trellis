@@ -7,6 +7,8 @@
 
 use vstd::prelude::*;
 
+use crate::r1cs_constraint::R1csRow;
+use crate::r1cs_constraint::R1csWitness;
 #[cfg(verus_keep_ghost)]
 use crate::r1cs_constraint::r1cs_element_valid_spec;
 use crate::r1cs_constraint::r1cs_len_valid;
@@ -23,8 +25,6 @@ use crate::r1cs_constraint::r1cs_row_valid_spec;
 use crate::r1cs_constraint::r1cs_witness_valid;
 #[cfg(verus_keep_ghost)]
 use crate::r1cs_constraint::r1cs_witness_valid_spec;
-use crate::r1cs_constraint::R1csRow;
-use crate::r1cs_constraint::R1csWitness;
 use crate::r1cs_gates::r1cs_one_at;
 #[cfg(verus_keep_ghost)]
 use crate::r1cs_gates::r1cs_one_at_spec;
@@ -196,8 +196,28 @@ pub proof fn unsatisfied_boolean_row_rejects(boolean: R1csBoolean, witness: R1cs
 {}
 
 // r[verify rust-primitives.r1cs-boolean-verification-coverage]
-pub proof fn r1cs_boolean_primitive_coverage_catalogued()
-    ensures true
+pub proof fn r1cs_boolean_primitive_coverage_catalogued(
+    boolean: R1csBoolean,
+    witness: R1csWitness,
+)
+    ensures
+        !r1cs_boolean_valid_spec(boolean) ==> !r1cs_boolean_satisfied_spec(boolean, witness),
+        r1cs_boolean_valid_spec(boolean) ==> r1cs_row_valid_spec(r1cs_boolean_row_spec(boolean)),
+        (!r1cs_witness_valid_spec(witness) || witness.len != boolean.witness_len)
+            ==> !r1cs_boolean_satisfied_spec(boolean, witness),
+        witness.w0 != 1 ==> !r1cs_boolean_satisfied_spec(boolean, witness),
+        (r1cs_boolean_valid_spec(boolean)
+            && r1cs_witness_valid_spec(witness)
+            && witness.len == boolean.witness_len
+            && r1cs_boolean_one_wire_satisfied_spec(witness)
+            && !r1cs_row_satisfied_spec(r1cs_boolean_row_spec(boolean), witness))
+            ==> !r1cs_boolean_satisfied_spec(boolean, witness),
+        r1cs_boolean_satisfied_spec(boolean, witness)
+            ==> (r1cs_boolean_valid_spec(boolean)
+                && r1cs_witness_valid_spec(witness)
+                && witness.len == boolean.witness_len
+                && r1cs_boolean_one_wire_satisfied_spec(witness)
+                && r1cs_row_satisfied_spec(r1cs_boolean_row_spec(boolean), witness)),
 {}
 } // verus!
 
@@ -205,21 +225,44 @@ pub proof fn r1cs_boolean_primitive_coverage_catalogued()
 mod tests {
     use super::*;
 
+    const VALID_WITNESS_LEN: u8 = 3;
+    const VALID_MODULUS: u16 = 13;
+    const BOOLEAN_INDEX_ONE: u8 = 1;
+    const BOOLEAN_INDEX_TWO: u8 = 2;
+    const MODULUS_MINUS_ONE: u16 = VALID_MODULUS - 1;
+    const IRRELEVANT_WITNESS_VALUE: u16 = 7;
+    const NON_BOOLEAN_VALUE: u16 = 2;
+    const OVERLARGE_MODULUS: u16 = 17;
+    const OVERLARGE_WITNESS_VALUE: u16 = 16;
+    const MISMATCHED_WITNESS_LEN: u8 = 2;
+
     fn boolean_at_one() -> R1csBoolean {
         R1csBoolean {
-            witness_len: 3,
-            modulus: 13,
-            index: 1,
+            witness_len: VALID_WITNESS_LEN,
+            modulus: VALID_MODULUS,
+            index: BOOLEAN_INDEX_ONE,
+        }
+    }
+
+    fn boolean_at_two() -> R1csBoolean {
+        R1csBoolean {
+            witness_len: VALID_WITNESS_LEN,
+            modulus: VALID_MODULUS,
+            index: BOOLEAN_INDEX_TWO,
+        }
+    }
+
+    fn witness_slots(w1: u16, w2: u16) -> R1csWitness {
+        R1csWitness {
+            len: VALID_WITNESS_LEN,
+            w0: 1,
+            w1,
+            w2,
         }
     }
 
     fn witness(value: u16) -> R1csWitness {
-        R1csWitness {
-            len: 3,
-            w0: 1,
-            w1: value,
-            w2: 7,
-        }
+        witness_slots(value, IRRELEVANT_WITNESS_VALUE)
     }
 
     #[test]
@@ -234,7 +277,7 @@ mod tests {
 
     #[test]
     fn two_is_not_boolean() {
-        assert!(!r1cs_boolean_satisfied(boolean_at_one(), witness(2)));
+        assert!(!r1cs_boolean_satisfied(boolean_at_one(), witness(NON_BOOLEAN_VALUE)));
     }
 
     #[test]
@@ -243,7 +286,7 @@ mod tests {
         let row = r1cs_boolean_row(boolean);
         assert_eq!(row.a1, 1);
         assert_eq!(row.b0, 1);
-        assert_eq!(row.b1, 12);
+        assert_eq!(row.b1, MODULUS_MINUS_ONE);
         assert_eq!(row.c0, 0);
         assert!(r1cs_row_satisfied(row, witness(1)));
     }
@@ -259,7 +302,7 @@ mod tests {
     #[test]
     fn out_of_range_index_is_rejected() {
         let mut boolean = boolean_at_one();
-        boolean.index = 3;
+        boolean.index = VALID_WITNESS_LEN;
         assert!(!r1cs_boolean_valid(boolean));
         assert!(!r1cs_boolean_satisfied(boolean, witness(1)));
     }
@@ -267,7 +310,7 @@ mod tests {
     #[test]
     fn overlarge_modulus_minus_one_coefficient_is_rejected() {
         let mut boolean = boolean_at_one();
-        boolean.modulus = 17;
+        boolean.modulus = OVERLARGE_MODULUS;
         assert!(!r1cs_boolean_valid(boolean));
         assert!(!r1cs_boolean_satisfied(boolean, witness(1)));
     }
@@ -282,7 +325,39 @@ mod tests {
     #[test]
     fn malformed_witness_length_is_rejected() {
         let mut bad = witness(1);
-        bad.len = 2;
+        bad.len = MISMATCHED_WITNESS_LEN;
         assert!(!r1cs_boolean_satisfied(boolean_at_one(), bad));
+    }
+
+    #[test]
+    fn row_at_second_boolean_slot_is_valid_and_satisfied() {
+        let boolean = boolean_at_two();
+        let row = r1cs_boolean_row(boolean);
+        assert_eq!(row.a1, 0);
+        assert_eq!(row.a2, 1);
+        assert_eq!(row.b1, 0);
+        assert_eq!(row.b2, MODULUS_MINUS_ONE);
+        assert!(r1cs_row_satisfied(row, witness_slots(IRRELEVANT_WITNESS_VALUE, 1)));
+    }
+
+    #[test]
+    fn malformed_witness_value_is_rejected() {
+        let mut bad = witness(1);
+        bad.w1 = OVERLARGE_WITNESS_VALUE;
+        assert!(!r1cs_witness_valid(bad));
+        assert!(!r1cs_boolean_satisfied(boolean_at_one(), bad));
+    }
+
+    #[test]
+    fn valid_but_unsatisfied_encoded_row_is_rejected() {
+        let boolean = boolean_at_one();
+        let bad = witness(NON_BOOLEAN_VALUE);
+        let row = r1cs_boolean_row(boolean);
+        assert!(r1cs_boolean_valid(boolean));
+        assert!(r1cs_witness_valid(bad));
+        assert_eq!(bad.len, boolean.witness_len);
+        assert!(r1cs_boolean_one_wire_satisfied(bad));
+        assert!(!r1cs_row_satisfied(row, bad));
+        assert!(!r1cs_boolean_satisfied(boolean, bad));
     }
 }

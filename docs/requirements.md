@@ -11882,7 +11882,7 @@ r[rust-primitives.r1cs-boolean-satisfaction]
 
 ### Requirement: R1CS Boolean Verification Coverage
 
-The R1CS boolean primitive MUST include implementation and verification coverage for shape admission, row encoding, satisfaction, malformed shape rejection, missing one-wire rejection, and non-boolean witness rejection.
+The R1CS boolean primitive MUST include non-vacuous implementation, verification, and runtime coverage for shape admission, row encoding, satisfaction, malformed shape rejection, malformed witness rejection, missing one-wire rejection, non-boolean witness rejection, and valid-but-unsatisfied encoded-row rejection.
 
 r[rust-primitives.r1cs-boolean-verification-coverage]
 
@@ -11891,6 +11891,13 @@ r[rust-primitives.r1cs-boolean-verification-coverage]
 - GIVEN the R1CS boolean primitive is present
 - WHEN repo-wide requirement coverage checks run
 - THEN the boolean requirements MUST have implementation and verification references
+
+#### Scenario: Coverage proof states concrete boolean implications
+
+- GIVEN malformed boolean shapes, malformed witnesses, missing one-wire witnesses, or admitted booleans whose encoded row is unsatisfied
+- WHEN the boolean coverage proof is reviewed
+- THEN the proof postconditions MUST state the corresponding validity or rejection implications instead of only `true`
+
 ### Requirement: R1CS Bit Decomposition Shape
 
 A bounded R1CS bit-decomposition primitive MUST admit only valid witness lengths, valid boolean-compatible moduli, a bounded value below four, and two distinct nonzero bit witness indices inside the active witness prefix.

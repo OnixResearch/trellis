@@ -1,0 +1,214 @@
+$ CAIRN_ARCHIVE_DATE=2026-06-26 cairn archive strengthen-r1cs-boolean-proof-coverage --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: strengthen-r1cs-boolean-proof-coverage",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-r1cs-boolean-proof-coverage",
+  "dry_run": false,
+  "input_hash": "0921e697b9e5a4182f1f10f8b038d16d2b61beba58f155552c5e0875c0aff9e5",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "3e3360328c3676c4e94739d1525ed2ae518b6c425e487e8b3ce8a466801932a2",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/design.md"
+        },
+        {
+          "content_hash": "34a13676d17ddeeff83fde36c44a00b72179efc65206de90204dfd3e5f83e278",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/baseline-proof-review-candidates.log"
+        },
+        {
+          "content_hash": "2961654c2edddb2117738362ed0c4dc71d0754bbbb558c74f8222bf3a6bd2af3",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/baseline-r1cs-boolean-tests.log"
+        },
+        {
+          "content_hash": "bd38a41aafded3b91026242082720747292402f1944e3600b9b1c7996e5d3861",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "9d82f7114f815040d4bf5bfeb6abe9747b6897ea141387c468e0d0577593c36e",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "f14e1ed7f3d25ef27568baf896e1d675d50a8ba54a4907c89cfc0b26cc65b1d4",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/cairn-gates-pre-implementation.log"
+        },
+        {
+          "content_hash": "b4394b06835c1ec74f306ce1eb0f2893fefb68ab1fbfa9e9b5b278a77e4ea76b",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "01b59610ef29f4d677d91ecea647bb67b09a313025af0a9e2f5fa356f6cc8cee",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "c57d39b80864b5d8b4bb924e7a4e83eef3b48cffa4258d2a52cc5e2af5b23e3f",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "7cdfa4a858b0f660ffff5f0aee1da2318c3d559536d8475b1631a6d1f65c392a",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/r1cs-boolean-tests.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "03beea6d48e38c056ab28e73aebecfddfdf010c15a399cbf48457dad35cf1526",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "c979029f00dbbb6a3356924c28e8e09136cd1357db0b189bc5c4359500cdc2c9",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/evidence/verus-lib.log"
+        },
+        {
+          "content_hash": "ea7ec9a59ae039cdd6a0fdd50fe70a21581b4e7fb2db2d9a767fbc6eeb96a44e",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/proposal.md"
+        },
+        {
+          "content_hash": "0e64e2522e4017f796c07b9805d1d3b3d1c4188173bac1762768f5279a389b7a",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/specs/rust-primitives/spec.md"
+        },
+        {
+          "content_hash": "303cdffad116b9f2d78a5f1ddc8ff47a05a813a95152261dfe765984ed1f5e8c",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-strengthen-r1cs-boolean-proof-coverage/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage"
+        }
+      ],
+      "manifest_hash": "1a49e9ff5c81a6222a752b957aefa1f133c2d3f5ee0054b7c347e8300ef051eb"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "3e3360328c3676c4e94739d1525ed2ae518b6c425e487e8b3ce8a466801932a2",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/design.md"
+        },
+        {
+          "content_hash": "34a13676d17ddeeff83fde36c44a00b72179efc65206de90204dfd3e5f83e278",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/baseline-proof-review-candidates.log"
+        },
+        {
+          "content_hash": "2961654c2edddb2117738362ed0c4dc71d0754bbbb558c74f8222bf3a6bd2af3",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/baseline-r1cs-boolean-tests.log"
+        },
+        {
+          "content_hash": "bd38a41aafded3b91026242082720747292402f1944e3600b9b1c7996e5d3861",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "9d82f7114f815040d4bf5bfeb6abe9747b6897ea141387c468e0d0577593c36e",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "f14e1ed7f3d25ef27568baf896e1d675d50a8ba54a4907c89cfc0b26cc65b1d4",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/cairn-gates-pre-implementation.log"
+        },
+        {
+          "content_hash": "b4394b06835c1ec74f306ce1eb0f2893fefb68ab1fbfa9e9b5b278a77e4ea76b",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "01b59610ef29f4d677d91ecea647bb67b09a313025af0a9e2f5fa356f6cc8cee",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "c57d39b80864b5d8b4bb924e7a4e83eef3b48cffa4258d2a52cc5e2af5b23e3f",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "7cdfa4a858b0f660ffff5f0aee1da2318c3d559536d8475b1631a6d1f65c392a",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/r1cs-boolean-tests.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "03beea6d48e38c056ab28e73aebecfddfdf010c15a399cbf48457dad35cf1526",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "c979029f00dbbb6a3356924c28e8e09136cd1357db0b189bc5c4359500cdc2c9",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/evidence/verus-lib.log"
+        },
+        {
+          "content_hash": "ea7ec9a59ae039cdd6a0fdd50fe70a21581b4e7fb2db2d9a767fbc6eeb96a44e",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/proposal.md"
+        },
+        {
+          "content_hash": "0e64e2522e4017f796c07b9805d1d3b3d1c4188173bac1762768f5279a389b7a",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/specs/rust-primitives/spec.md"
+        },
+        {
+          "content_hash": "303cdffad116b9f2d78a5f1ddc8ff47a05a813a95152261dfe765984ed1f5e8c",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-r1cs-boolean-proof-coverage/tasks.md"
+        }
+      ],
+      "manifest_hash": "64a9db788d779b3e1a5221b1051fe56d91a28ec5c5e21ecdb9ddc5a6315f9d76"
+    },
+    "kind": "archive",
+    "manifest_hash": "388f56d689109e46f122664d949e67aae851c40e566fe34bf5c3b7b75f6ad2cd"
+  },
+  "plan_hash": "2d47321fe691d5e6b4a051b8350504cef19be5eed1943bf3ed21e2d4d7f39fa8",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "f3f3a9a20e09fe5f8cb5b6af16191c9ef9f2de63bbe64961fd3959b46e62bca0"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}
