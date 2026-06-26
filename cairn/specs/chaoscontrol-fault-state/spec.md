@@ -52,7 +52,7 @@ subgraph notions are out of scope.
 
 r[chaoscontrol-fault-state.liveness-gate]
 Depends on `r[chaoscontrol-fault-state.quorum-health]`.
-For valid fault states, the derived healthy-period gate reports healthy
+For valid fault states, the derived healthy-period gate MUST report healthy
 exactly when all participants are alive and `quorum_reachable` holds for that
 same state.
 

@@ -82,9 +82,9 @@ least as up-to-date as the voter's.
 
 ### Requirement: Log Entry Agreement
 
-Two logs `agree_at(a, b, i)` at index `i` if both have an entry at
-index `i` and the entries have the same term. Agreement does not
-require value equality — only term equality.
+For two logs, `agree_at(a, b, i)` MUST be the predicate that both have an entry
+at index `i` and the entries have the same term. Agreement does not require
+value equality — only term equality.
 
 ### Requirement: Log Prefix Matching
 

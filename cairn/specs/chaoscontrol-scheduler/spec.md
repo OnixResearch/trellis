@@ -10,7 +10,7 @@ ChaosControl.
 ### Requirement: Scheduler Turn Semantics
 
 r[chaoscontrol-scheduler.turns]
-Scheduler primitives apply only when `num_vcpus >= 1` and valid scheduler
+Scheduler primitives MUST apply only when `num_vcpus >= 1` and valid scheduler
 state. Valid scheduler state means `0 <= active < num_vcpus`, stored
 `default_quantum >= 1`, randomized strategies satisfy `1 <= min_quantum <= max_quantum`,
 and `remaining` is either the exhausted SMP value `0` immediately after a
@@ -103,7 +103,7 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 ### Requirement: Fault Schedule Replay Semantics
 
 r[chaoscontrol-fault-schedule.replay]
-Replay and subset helpers operate on normalized schedules. A normalized fault
+Replay and subset helpers MUST operate on normalized schedules. A normalized fault
 schedule has unique ordinals, stable `(time_ns, ordinal)` order, and
 `0 <= cursor <= len`. The public `add` helper is defined only on
 undrained normalized schedules with `cursor = 0`; adding to a partially drained
@@ -140,7 +140,7 @@ never re-delivers an already drained fault.
 ### Requirement: Fault Schedule Subset Semantics
 
 r[chaoscontrol-fault-schedule.subset]
-Subset extraction ranges over the full normalized source schedule. It clones
+Subset extraction MUST range over the full normalized source schedule. It clones
 exactly the first occurrence of each selected in-bounds source index, ignores
 out-of-bounds indices, ignores repeated selections after the first, carries
 that source schedule index forward as the result `ordinal`, resets the result

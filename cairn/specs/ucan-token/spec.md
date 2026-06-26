@@ -97,6 +97,7 @@ present.
 #### Scenario: Valid token passes all sub-checks
 
 - GIVEN a payload and signature-valid input that pass validate_envelope
+- WHEN validating the token envelope
 - THEN sig_valid == true
 - AND temporal_valid(exp, nbf, now, tol) == true
 - AND iss != aud

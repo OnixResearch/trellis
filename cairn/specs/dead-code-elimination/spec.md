@@ -57,12 +57,12 @@ program point.
 
 ### Requirement: Side-Effecting Instructions Never Dead
 
-No instruction with an effectful opcode can be classified as dead,
+An instruction with an effectful opcode MUST never be classified as dead,
 regardless of liveness.
 
 ### Requirement: Live Definitions Never Dead
 
-No instruction whose defined variable is live-out can be classified
+An instruction whose defined variable is live-out MUST never be classified
 as dead, regardless of opcode.
 
 ### Requirement: No Live Instruction Removed

@@ -32,11 +32,12 @@ r[cryptoshedding.tree-well-formedness]
 
 - GIVEN two independent chains L1→I1→R1 and L2→R2
 - AND no cycles exist
+- WHEN tree well-formedness is checked
 - THEN the tree is well-formed
 
 ### Requirement: Shed Definition
 
-Shedding key K produces a new keystore equal to the old keystore with K
+Shedding key K MUST produce a new keystore equal to the old keystore with K
 removed. The tree structure is unchanged.
 
 r[cryptoshedding.shed-definition]
@@ -58,7 +59,7 @@ r[cryptoshedding.shed-definition]
 
 Data is encrypted under leaf nodes only (internal nodes protect other
 keys, not data directly). A datum encrypted under leaf key L is
-recoverable if and only if every key on the chain from L to its root is
+MUST be recoverable if and only if every key on the chain from L to its root is
 present in the keystore.
 
 r[cryptoshedding.chain-recoverability]
@@ -168,7 +169,7 @@ r[cryptoshedding.rotation-correctness]
 
 ### Requirement: Idempotent Destruction
 
-Destroying an already-destroyed key is a no-op: the keystore and the
+Destroying an already-destroyed key MUST be a no-op: the keystore and the
 recoverability of all data are unchanged.
 
 r[cryptoshedding.idempotent-destruction]
