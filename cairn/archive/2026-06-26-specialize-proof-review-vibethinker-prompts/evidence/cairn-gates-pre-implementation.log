@@ -1,0 +1,84 @@
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}
+
+$ cairn gate proposal specialize-proof-review-vibethinker-prompts --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "specialize-proof-review-vibethinker-prompts",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "dfbe18f51336dc6711aee61a4805449192e3009aec53dd94773b3c5a8f639a37",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "100b88da1e61d5c0d256f77467aa860edb2c0487662d20e69fa01d255e643e26",
+  "stage": "proposal",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate design specialize-proof-review-vibethinker-prompts --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "specialize-proof-review-vibethinker-prompts",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "cf44ab0b7f73a7db7f87ae88b080d84a6b1f08a87a6d847581077ced116a25bf",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "211e603194967ebfc55f9b7aeb797e3db4ec2aad9a502598b3217ae8c6931056",
+  "stage": "design",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate tasks specialize-proof-review-vibethinker-prompts --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "specialize-proof-review-vibethinker-prompts",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "b054703d9b83b94290ba8485c45e2f25c55f7f0596896453d5c1268adf75877e",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "d47ffd3b2de7f65cbaa1a7eb95f465dc318a399badb204757053a777934a8329",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}

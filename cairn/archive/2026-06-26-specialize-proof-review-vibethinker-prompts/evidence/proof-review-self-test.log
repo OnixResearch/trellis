@@ -1,0 +1,3 @@
+$ proof-review-candidates.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-candidates self-test: PASS

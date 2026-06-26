@@ -38,6 +38,15 @@ const MARKDOWN_EXTENSION: &str = "md";
 const SOURCE_PATH_PREFIX: &str = "src/";
 const SOURCE_PATH_SUFFIX: &str = ".rs";
 const VIBETHINKER_MAX_TOKENS_HINT: usize = 16_384;
+const VIBETHINKER_BASE_TASK: &str = "Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only; do not suggest adding or hiding trust boundaries.";
+const VIBETHINKER_OUTPUT_CONTRACT: [&str; 6] = [
+    "Concrete proof postconditions or lemma splits, using existing specs only.",
+    "Executable positive or negative test cases, not tests for proof functions.",
+    "Spec wording gaps or overclaims, if any.",
+    "Patch-critique risks if this packet already includes changed source.",
+    "Do not repeat scanner findings unless adding a new actionable detail.",
+    "If no issue remains, say `no focused concerns`.",
+];
 
 const SCORE_ACTIVE_CHANGE: usize = 600;
 const SCORE_ACTIVE_UNCHECKED_TASK: usize = 25;
@@ -767,7 +776,7 @@ fn render_report(inputs: &ReviewInputs, candidates: &[Candidate], max_candidates
 
     out.push_str("## VibeThinker Prompt Shape\n\n");
     out.push_str(&format!(
-        "Use `max_tokens={}` and ask: `Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only; do not suggest trust boundaries.`\n",
+        "Use `max_tokens={}`. Packets include a base task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings.\n",
         VIBETHINKER_MAX_TOKENS_HINT
     ));
     out
@@ -830,13 +839,68 @@ fn sanitize_packet_name(path: &str) -> String {
     path.chars().map(|ch| if ch.is_ascii_alphanumeric() { ch } else { '_' }).collect()
 }
 
+fn specialized_prompt_guidance(findings: &[Finding]) -> Vec<&'static str> {
+    let mut guidance = Vec::new();
+    for finding in findings.iter().take(DEFAULT_MAX_PACKET_FINDINGS) {
+        let prompt = prompt_guidance_for_rule(&finding.rule_id);
+        if !guidance.contains(&prompt) {
+            guidance.push(prompt);
+        }
+    }
+    guidance
+}
+
+fn prompt_guidance_for_rule(rule_id: &str) -> &'static str {
+    match rule_id {
+        "active-cairn-change" => {
+            "For `active-cairn-change`: check scope drift, unchecked-task claims, and whether evidence supports archive readiness."
+        }
+        "worktree-changed-source" => {
+            "For `worktree-changed-source`: critique the current patch for overclaims, missing postconditions, and missing negative tests."
+        }
+        "untrusted-boundary-marker" => {
+            "For `untrusted-boundary-marker`: confirm the boundary classification and name any way to reduce or better document trust without adding new trust."
+        }
+        "permanent-boundary-marker" => {
+            "For `permanent-boundary-marker`: only flag stale rationale, missing manifest coverage, or accidental expansion of the permanent boundary."
+        }
+        "vacuous-ensures-true" => {
+            "For `vacuous-ensures-true`: propose concrete non-vacuous postconditions using existing specs and local helper proofs."
+        }
+        "empty-nontrivial-proof" => {
+            "For `empty-nontrivial-proof`: decide whether the proof is definitional, vacuous from preconditions, or missing a small lemma; give one actionable improvement."
+        }
+        "active-prefix-semantics" => {
+            "For `active-prefix-semantics`: list boundary cases for zero, max, inactive, out-of-range, mismatch, and fuel/termination paths that are not already tested."
+        }
+        "missing-negative-test-hints" => {
+            "For `missing-negative-test-hints`: list only executable sad-path tests with concrete malformed inputs and expected false/error results."
+        }
+        _ => "For unclassified findings: return only new concrete proof, spec, or executable-test gaps.",
+    }
+}
+
 fn render_packet(candidate: &Candidate, text: &str) -> String {
     let mut out = String::new();
     out.push_str(&format!("# Proof Review Packet: `{}`\n\n", candidate.path));
     out.push_str(&format!("Score: `{}`\n\n", candidate.score));
     out.push_str("## Ask VibeThinker\n\n");
-    out.push_str("Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only. Do not suggest adding or hiding trust boundaries.\n\n");
-    out.push_str("## Findings\n\n");
+    out.push_str(&format!("Use `max_tokens={VIBETHINKER_MAX_TOKENS_HINT}` and ask:\n\n"));
+    out.push_str("```text\n");
+    out.push_str(VIBETHINKER_BASE_TASK);
+    out.push_str("\n```");
+    out.push_str("\n\nRequested output:\n");
+    for item in VIBETHINKER_OUTPUT_CONTRACT {
+        out.push_str(&format!("- {item}\n"));
+    }
+    let guidance = specialized_prompt_guidance(&candidate.findings);
+    if !guidance.is_empty() {
+        out.push_str("\nRule-specific focus:\n");
+        for item in guidance {
+            out.push_str(&format!("- {item}\n"));
+        }
+    }
+    out.push_str("\n## Findings\n\n");
     for finding in candidate.findings.iter().take(DEFAULT_MAX_PACKET_FINDINGS) {
         let location = finding.line.map(|line| format!(":{line}")).unwrap_or_default();
         out.push_str(&format!(
@@ -962,6 +1026,13 @@ mod tests {
     let packet = render_packet(weak, weak_source);
     if !packet.contains("## Test Excerpt") || !packet.contains("accepts_member") {
         return Err("self-test packet omitted expected test excerpt".to_string());
+    }
+    if !packet.contains("Requested output:")
+        || !packet.contains("For `vacuous-ensures-true`")
+        || !packet.contains("For `empty-nontrivial-proof`")
+        || !packet.contains("not tests for proof functions")
+    {
+        return Err("self-test packet omitted specialized VibeThinker prompt guidance".to_string());
     }
 
     println!("proof-review-candidates self-test: PASS");
