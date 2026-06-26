@@ -7,6 +7,8 @@
 
 use vstd::prelude::*;
 
+use crate::r1cs_constraint::R1csRow;
+use crate::r1cs_constraint::R1csWitness;
 use crate::r1cs_constraint::r1cs_element_valid;
 #[cfg(verus_keep_ghost)]
 use crate::r1cs_constraint::r1cs_element_valid_spec;
@@ -24,8 +26,6 @@ use crate::r1cs_constraint::r1cs_row_valid_spec;
 use crate::r1cs_constraint::r1cs_witness_valid;
 #[cfg(verus_keep_ghost)]
 use crate::r1cs_constraint::r1cs_witness_valid_spec;
-use crate::r1cs_constraint::R1csRow;
-use crate::r1cs_constraint::R1csWitness;
 
 verus! {
 pub const R1CS_GATE_MUL: u8 = 0;
@@ -307,14 +307,36 @@ pub proof fn unsatisfied_encoded_row_rejects_gate(gate: R1csGate, witness: R1csW
 {}
 
 // r[verify rust-primitives.r1cs-gate-verification-coverage]
-pub proof fn r1cs_gate_primitive_coverage_catalogued()
-    ensures true
+pub proof fn r1cs_gate_primitive_coverage_catalogued(gate: R1csGate, witness: R1csWitness)
+    ensures
+        !r1cs_gate_valid_spec(gate) ==> !r1cs_gate_satisfied_spec(gate, witness),
+        (!r1cs_witness_valid_spec(witness) || witness.len != gate.witness_len)
+            ==> !r1cs_gate_satisfied_spec(gate, witness),
+        (r1cs_gate_requires_one_wire_spec(gate) && witness.w0 != 1)
+            ==> !r1cs_gate_satisfied_spec(gate, witness),
+        (r1cs_gate_valid_spec(gate)
+            && r1cs_witness_valid_spec(witness)
+            && witness.len == gate.witness_len
+            && r1cs_gate_one_wire_satisfied_spec(gate, witness)
+            && !r1cs_row_satisfied_spec(r1cs_gate_row_spec(gate), witness))
+            ==> !r1cs_gate_satisfied_spec(gate, witness),
+        r1cs_gate_satisfied_spec(gate, witness)
+            ==> (r1cs_gate_valid_spec(gate)
+                && r1cs_witness_valid_spec(witness)
+                && witness.len == gate.witness_len
+                && r1cs_gate_one_wire_satisfied_spec(gate, witness)
+                && r1cs_row_satisfied_spec(r1cs_gate_row_spec(gate), witness)),
 {}
 } // verus!
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const UNSUPPORTED_GATE_KIND: u8 = 3;
+    const MISMATCHED_WITNESS_LEN: u8 = 2;
+    const OVERLARGE_WITNESS_VALUE: u16 = 16;
+    const BAD_ADDITION_OUTPUT: u16 = 7;
 
     fn mul_witness() -> R1csWitness {
         R1csWitness {
@@ -435,6 +457,46 @@ mod tests {
         gate.z = 3;
         assert!(!r1cs_gate_valid(gate));
         assert!(!r1cs_gate_satisfied(gate, mul_witness()));
+    }
+
+    #[test]
+    fn unsupported_gate_kind_is_rejected() {
+        let mut gate = mul_gate();
+        gate.kind = UNSUPPORTED_GATE_KIND;
+        assert!(!r1cs_gate_kind_valid(gate.kind));
+        assert!(!r1cs_gate_valid(gate));
+        assert!(!r1cs_gate_satisfied(gate, mul_witness()));
+    }
+
+    #[test]
+    fn mismatched_witness_length_is_rejected() {
+        let gate = mul_gate();
+        let mut witness = mul_witness();
+        witness.len = MISMATCHED_WITNESS_LEN;
+        assert!(r1cs_witness_valid(witness));
+        assert!(!r1cs_gate_satisfied(gate, witness));
+    }
+
+    #[test]
+    fn malformed_witness_is_rejected() {
+        let gate = mul_gate();
+        let mut witness = mul_witness();
+        witness.w0 = OVERLARGE_WITNESS_VALUE;
+        assert!(!r1cs_witness_valid(witness));
+        assert!(!r1cs_gate_satisfied(gate, witness));
+    }
+
+    #[test]
+    fn valid_addition_gate_rejects_unsatisfied_encoded_row() {
+        let gate = add_gate();
+        let mut witness = one_wire_witness();
+        witness.w2 = BAD_ADDITION_OUTPUT;
+        let row = r1cs_gate_row(gate);
+        assert!(r1cs_gate_valid(gate));
+        assert!(r1cs_witness_valid(witness));
+        assert!(r1cs_gate_one_wire_satisfied(gate, witness));
+        assert!(!r1cs_row_satisfied(row, witness));
+        assert!(!r1cs_gate_satisfied(gate, witness));
     }
 
     #[test]
