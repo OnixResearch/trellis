@@ -17,4 +17,4 @@ Out of scope: PLONK lookup arguments, commitments, transcripts, table hashing, a
 
 ## Verification
 
-Run focused lookup tests, Verus over `src/lib.rs`, clippy, full cargo tests, Tracey coverage, strict OpenSpec validation, and `TMPDIR=/tmp ./scripts/verify.rs` with logs saved under the change archive.
+Run focused lookup tests, Verus over `src/lib.rs`, clippy, full cargo tests, Tracey coverage, Cairn validation, and `TMPDIR=/tmp ./scripts/verify.rs` with logs saved under the change evidence directory.

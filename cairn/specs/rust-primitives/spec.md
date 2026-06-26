@@ -407,6 +407,7 @@ r[rust-primitives.r1cs-boolean-verification-coverage]
 - GIVEN the R1CS boolean primitive is present
 - WHEN repo-wide requirement coverage checks run
 - THEN the boolean requirements MUST have implementation and verification references
+
 ### Requirement: R1CS Bit Decomposition Shape
 
 A bounded R1CS bit-decomposition primitive MUST admit only valid witness lengths, valid boolean-compatible moduli, a bounded value below four, and two distinct nonzero bit witness indices inside the active witness prefix.

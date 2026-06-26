@@ -3,13 +3,24 @@
 //! Full verification pipeline. Exits non-zero on any failure.
 
 use std::ffi::OsStr;
+use std::path::Path;
 use std::path::PathBuf;
-use std::process::{Command, Stdio};
+use std::process::Command;
+use std::process::Stdio;
 use std::thread;
 use std::time::Duration;
 
 const TRACEY_ATTEMPTS: usize = 4;
 const TRACEY_RETRY_DELAY: Duration = Duration::from_secs(2);
+const CARGO_ENV_VAR: &str = "TRELLIS_VERIFY_CARGO";
+const RUSTC_ENV_VAR: &str = "RUSTC";
+const RUSTDOC_ENV_VAR: &str = "RUSTDOC";
+const CARGO_BIN_NAME: &str = "cargo";
+const RUSTC_BIN_NAME: &str = "rustc";
+const RUSTDOC_BIN_NAME: &str = "rustdoc";
+const CARGO_VERSION_PREFIX: &str = "cargo ";
+const EDITION_2024_MIN_CARGO_MAJOR: u32 = 1;
+const EDITION_2024_MIN_CARGO_MINOR: u32 = 85;
 
 struct Runner {
     repo_root: PathBuf,
@@ -32,10 +43,11 @@ impl Runner {
         println!();
     }
 
-    fn run_status<I, S>(&mut self, title: &str, program: &str, args: I, pass: &str, fail: &str)
+    fn run_status<I, S, P>(&mut self, title: &str, program: P, args: I, pass: &str, fail: &str)
     where
         I: IntoIterator<Item = S>,
         S: AsRef<OsStr>,
+        P: AsRef<OsStr>,
     {
         self.section(title);
         let status = Command::new(program)
@@ -119,6 +131,61 @@ impl Runner {
     }
 }
 
+#[derive(Clone, Copy, Eq, Ord, PartialEq, PartialOrd)]
+struct CargoVersion {
+    major: u32,
+    minor: u32,
+}
+
+fn parse_cargo_version(text: &str) -> Option<CargoVersion> {
+    let version = text.strip_prefix(CARGO_VERSION_PREFIX)?;
+    let mut parts = version.split(['.', '-', ' ']);
+    let major = parts.next()?.parse().ok()?;
+    let minor = parts.next()?.parse().ok()?;
+    Some(CargoVersion { major, minor })
+}
+
+fn supports_edition_2024(version: CargoVersion) -> bool {
+    version.major > EDITION_2024_MIN_CARGO_MAJOR
+        || (version.major == EDITION_2024_MIN_CARGO_MAJOR && version.minor >= EDITION_2024_MIN_CARGO_MINOR)
+}
+
+fn cargo_version(path: &Path) -> Option<CargoVersion> {
+    let output = Command::new(path).arg("--version").output().ok()?;
+    if !output.status.success() {
+        return None;
+    }
+    let stdout = String::from_utf8_lossy(&output.stdout);
+    parse_cargo_version(stdout.trim())
+}
+
+fn path_cargo_candidates() -> Vec<PathBuf> {
+    match std::env::var_os("PATH") {
+        Some(path) => std::env::split_paths(&path).map(|directory| directory.join(CARGO_BIN_NAME)).collect(),
+        None => Vec::new(),
+    }
+}
+
+fn selected_cargo() -> PathBuf {
+    if let Some(path) = std::env::var_os(CARGO_ENV_VAR) {
+        return PathBuf::from(path);
+    }
+
+    for candidate in path_cargo_candidates() {
+        match cargo_version(&candidate) {
+            Some(version) if supports_edition_2024(version) => return candidate,
+            Some(_) | None => {}
+        }
+    }
+
+    PathBuf::from(CARGO_BIN_NAME)
+}
+
+fn sibling_tool(cargo: &Path, name: &str) -> Option<PathBuf> {
+    let tool = cargo.parent()?.join(name);
+    if tool.exists() { Some(tool) } else { None }
+}
+
 fn repo_root() -> PathBuf {
     match Command::new("git").args(["rev-parse", "--show-toplevel"]).output() {
         Ok(output) if output.status.success() => {
@@ -131,6 +198,19 @@ fn repo_root() -> PathBuf {
 
 fn main() -> std::process::ExitCode {
     let mut runner = Runner::new(repo_root());
+    let cargo = selected_cargo();
+    println!("Using Cargo: {}", cargo.display());
+    let rustc = sibling_tool(&cargo, RUSTC_BIN_NAME);
+    if let Some(rustc) = &rustc {
+        println!("Using Rustc: {}", rustc.display());
+        std::env::set_var(RUSTC_ENV_VAR, rustc);
+    }
+    let rustdoc = sibling_tool(&cargo, RUSTDOC_BIN_NAME);
+    if let Some(rustdoc) = &rustdoc {
+        println!("Using Rustdoc: {}", rustdoc.display());
+        std::env::set_var(RUSTDOC_ENV_VAR, rustdoc);
+    }
+    runner.blank();
 
     runner.run_status(
         "Coverage: r[impl] on every pub fn",
@@ -190,21 +270,12 @@ fn main() -> std::process::ExitCode {
     );
     runner.run_status(
         "Clippy",
-        "nix",
-        [
-            "develop",
-            "-c",
-            "cargo",
-            "clippy",
-            "--all-targets",
-            "--",
-            "-D",
-            "warnings",
-        ],
+        &cargo,
+        ["clippy", "--all-targets", "--", "-D", "warnings"],
         "✓ clippy clean",
         "✗ clippy failed",
     );
-    runner.run_status("Tests", "nix", ["develop", "-c", "cargo", "test"], "✓ tests pass", "✗ tests failed");
+    runner.run_status("Tests", &cargo, ["test"], "✓ tests pass", "✗ tests failed");
     runner.run_status(
         "Verus verification",
         "./scripts/verus.sh",

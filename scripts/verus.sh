@@ -12,6 +12,16 @@ shift 2>/dev/null || true
 
 cd "$(git rev-parse --show-toplevel)"
 
+if [ ! -x "$VERUS_ROOT/rust_verify" ]; then
+  if [ "$FILE" = "src/lib.rs" ] && [ "$#" -eq 0 ]; then
+    SYSTEM="$(nix eval --raw --impure --expr 'builtins.currentSystem')"
+    exec nix build ".#checks.${SYSTEM}.verus-proofs" --no-link -L
+  fi
+  echo "rust_verify not found at $VERUS_ROOT/rust_verify" >&2
+  echo "Set VERUS_ROOT to a live Verus checkout/store path, or run src/lib.rs through the flake verus-proofs check." >&2
+  exit 127
+fi
+
 VERUS_Z3_PATH="$VERUS_ROOT/z3" \
 LD_LIBRARY_PATH="$RUST_TOOLCHAIN/lib" \
 exec "$VERUS_ROOT/rust_verify" \
