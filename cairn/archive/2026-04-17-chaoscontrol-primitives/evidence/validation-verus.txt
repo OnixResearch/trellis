@@ -1,0 +1,2 @@
+$ ./scripts/verus.sh src/lib.rs
+verification results:: 7580 verified, 0 errors

@@ -1,0 +1,36 @@
+OpenSpec tasks gate (stack-frame-layout)
+
+Strategy: cross-family
+
+## Tasks Gate Review: `stack-frame-layout`
+
+### 1. Traceability
+
+Every task traces cleanly:
+
+| Task | Traces to |
+|------|-----------|
+| Phase 1 (slot model, helpers, export) | Design Decisions 1–5, Proposal "What Changes" |
+| Phase 2 (proofs, tests) | Proposal "Verification surface", Design Decision 6 |
+| Phase 3 (spec sync) | Proposal "What Changes" bullets 3–5 |
+| Phase 4 (validation/archive) | Design Decision 6 |
+
+### 2. Task quality
+
+Tasks are small, verifiable, and sensibly ordered (model → proofs/tests → spec sync → validation). Phase 1–3 checked off before Phase 4 validation matches the napkin pattern about marking completed phases before trusting the gate.
+
+### 3. Verification coverage
+
+Phase 2 covers proof lemmas, positive/negative unit tests, and proptests. Phase 4 captures both cargo test and Verus evidence. This is adequate.
+
+### 4. Napkin check
+
+- "Run OpenSpec gate early" — Phase 4 includes gate capture, and Phase 1–3 are already done, so this is sequenced correctly.
+- "Targeted baseline checks" — Phase 4 task 1 uses `cargo test --quiet stack_frame_layout`, matching the pattern.
+- No missing tasks implied by napkin entries.
+
+### 5. Status and next steps
+
+Phases 1–3 are complete. Phase 4 has 4 unchecked validation/archive tasks. **The change is ready for Phase 4 execution** — run the evidence captures and archive.
+
+**Verdict: Pass.** Execute the four Phase 4 tasks to complete the change.

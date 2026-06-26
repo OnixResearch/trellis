@@ -1,0 +1,4 @@
+$ python - <<PY
+composite facade modules exported: []
+composite facade source files present: []
+PASS: no unlanded composite facade modules are exported

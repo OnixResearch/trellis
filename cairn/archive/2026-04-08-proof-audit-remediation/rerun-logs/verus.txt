@@ -1,0 +1,909 @@
+$ ./scripts/verus.sh src/lib.rs
+note: automatically chose triggers for this expression:
+   --> src/forest.rs:946:9
+    |
+946 |         assert forall|x: int| 0 <= x < parents@.len() implies
+    |         ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/forest.rs:947:42
+    |
+947 |             (has_child@[x] == true <==> !is_leaf_spec(pm, x))
+    |                                          ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/forest.rs:977:13
+    |
+977 | /             forall|x: int| 0 <= x < parents@.len() ==> (
+978 | |                 has_child@[x] == true <==> !is_leaf_spec(pm, x)
+979 | |             ),
+    | |_____________^
+
+note:   trigger 1 of 1:
+   --> src/forest.rs:978:45
+    |
+978 |                 has_child@[x] == true <==> !is_leaf_spec(pm, x)
+    |                                             ^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/log.rs:51:8
+   |
+51 |     && forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+   |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 2:
+  --> src/log.rs:51:38
+   |
+51 |     && forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+   |                                      ^^^^
+
+note:   trigger 2 of 2:
+  --> src/log.rs:51:51
+   |
+51 |     && forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+   |                                                   ^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/log.rs:68:13
+   |
+68 |             forall|j: int| 0 <= j < i as int ==> a@[j].term == b@[j].term,
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 2:
+  --> src/log.rs:68:50
+   |
+68 |             forall|j: int| 0 <= j < i as int ==> a@[j].term == b@[j].term,
+   |                                                  ^^^^^
+
+note:   trigger 2 of 2:
+  --> src/log.rs:68:64
+   |
+68 |             forall|j: int| 0 <= j < i as int ==> a@[j].term == b@[j].term,
+   |                                                                ^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/log.rs:128:9
+    |
+128 | /         forall|i: int| 0 <= i < log.len()
+129 | |             ==> log_append_spec(log, entry)[i] == log[i]
+    | |________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/log.rs:129:51
+    |
+129 |             ==> log_append_spec(log, entry)[i] == log[i]
+    |                                                   ^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/log.rs:159:9
+    |
+159 |         forall|i: int| 0 <= i < k ==> log_truncate_spec(log, k)[i] == log[i]
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/log.rs:159:71
+    |
+159 |         forall|i: int| 0 <= i < k ==> log_truncate_spec(log, k)[i] == log[i]
+    |                                                                       ^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/pattern.rs:119:8
+    |
+119 |     || forall|i: int| 0 <= i < p2.len() ==> seq_contains_int(p1, p2[i])
+    |        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/pattern.rs:119:66
+    |
+119 |     || forall|i: int| 0 <= i < p2.len() ==> seq_contains_int(p1, p2[i])
+    |                                                                  ^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/pattern.rs:209:9
+    |
+209 |         assert forall|i: int| 0 <= i < p.len()
+    |         ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/pattern.rs:210:41
+    |
+210 |             implies seq_contains_int(p, p[i])
+    |                                         ^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/pattern.rs:238:9
+    |
+238 |         assert forall|i: int| 0 <= i < c.len()
+    |         ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/pattern.rs:239:41
+    |
+239 |             implies seq_contains_int(a, c[i])
+    |                                         ^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/type_lattice.rs:213:9
+    |
+213 |         forall|t: u8| is_valid_type_spec(t) ==> can_convert_spec(TYPE_STRING(), t),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/type_lattice.rs:213:23
+    |
+213 |         forall|t: u8| is_valid_type_spec(t) ==> can_convert_spec(TYPE_STRING(), t),
+    |                       ^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/bloom.rs:38:5
+   |
+38 | /     forall|i: int| 0 <= i < positions.len() as int
+39 | |         ==> bits[positions[i]]
+   | |______________________________^
+
+note:   trigger 1 of 1:
+  --> src/bloom.rs:39:18
+   |
+39 |         ==> bits[positions[i]]
+   |                  ^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/bloom.rs:51:9
+   |
+51 | /         forall|i: int| 0 <= i < positions@.len()
+52 | |             ==> bits@[positions@[i] as int],
+   | |___________________________________________^
+
+note:   trigger 1 of 1:
+  --> src/bloom.rs:52:23
+   |
+52 |             ==> bits@[positions@[i] as int],
+   |                       ^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/bloom.rs:65:13
+   |
+65 | /             forall|k: int| 0 <= k < i as int
+66 | |                 ==> bits@[positions@[k] as int],
+   | |_______________________________________________^
+
+note:   trigger 1 of 1:
+  --> src/bloom.rs:66:27
+   |
+66 |                 ==> bits@[positions@[k] as int],
+   |                           ^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/bloom.rs:93:13
+   |
+93 | /             forall|k: int| 0 <= k < i as int
+94 | |                 ==> bits@[mapped@[k]],
+   | |_____________________________________^
+
+note:   trigger 1 of 1:
+  --> src/bloom.rs:94:27
+   |
+94 |                 ==> bits@[mapped@[k]],
+   |                           ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/bloom.rs:107:12
+    |
+107 |     assert(forall|k: int| 0 <= k < positions@.len() as int ==> bits@[mapped@[k]]);
+    |            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/bloom.rs:107:70
+    |
+107 |     assert(forall|k: int| 0 <= k < positions@.len() as int ==> bits@[mapped@[k]]);
+    |                                                                      ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/bloom.rs:156:5
+    |
+156 |     assert forall|i: int| 0 <= i < positions.len() as int implies inserted[positions[i]] by {
+    |     ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/bloom.rs:156:76
+    |
+156 |     assert forall|i: int| 0 <= i < positions.len() as int implies inserted[positions[i]] by {
+    |                                                                            ^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/consistent_hash.rs:110:9
+    |
+110 | /         exists|i: int| 0 <= i < ring.len() as int
+111 | |             && ring[i].1 == lookup_spec(ring, key_hash)
+    | |_______________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/consistent_hash.rs:111:16
+    |
+111 |             && ring[i].1 == lookup_spec(ring, key_hash)
+    |                ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:100:9
+    |
+100 |     &&& forall|i: int| 0 <= i < caches.len() ==> is_valid_state_spec(caches[i])
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:100:70
+    |
+100 |     &&& forall|i: int| 0 <= i < caches.len() ==> is_valid_state_spec(caches[i])
+    |                                                                      ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:335:9
+    |
+335 | /         forall|i: int| 0 <= i < old(caches)@.len()
+336 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:336:37
+    |
+336 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:340:9
+    |
+340 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:340:71
+    |
+340 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |                                                                       ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:397:9
+    |
+397 | /         forall|i: int| 0 <= i < old(caches)@.len()
+398 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:398:37
+    |
+398 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:402:9
+    |
+402 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:402:71
+    |
+402 |         forall|j: int| 0 <= j < caches@.len() ==> is_valid_state_spec(caches@[j]),
+    |                                                                       ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:667:9
+    |
+667 | /         forall|i: int| 0 <= i < caches.len()
+668 | |             ==> is_valid_state_spec(caches[i]),
+    | |______________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:668:37
+    |
+668 |             ==> is_valid_state_spec(caches[i]),
+    |                                     ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:671:9
+    |
+671 | /         forall|j: int| 0 <= j < caches.len() ==> (
+672 | |             (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+673 | |             && (j != writer && j >= from
+674 | |                 ==> invalidate_others_spec(caches, writer, from)[j] == STATE_INVALID)
+675 | |         ),
+    | |_________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:672:81
+    |
+672 |             (j == writer ==> invalidate_others_spec(caches, writer, from)[j] == caches[j])
+    |                                                                                 ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:704:9
+    |
+704 | /         forall|i: int| 0 <= i < caches.len()
+705 | |             ==> is_valid_state_spec(caches[i]),
+    | |______________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:705:37
+    |
+705 |             ==> is_valid_state_spec(caches[i]),
+    |                                     ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:497:9
+    |
+497 | /         forall|i: int| 0 <= i < old(caches)@.len()
+498 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:498:37
+    |
+498 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/mesi.rs:515:9
+    |
+515 | /         forall|i: int| 0 <= i < old(caches)@.len()
+516 | |             ==> is_valid_state_spec(old(caches)@[i]),
+    | |____________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/mesi.rs:516:37
+    |
+516 |             ==> is_valid_state_spec(old(caches)@[i]),
+    |                                     ^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/fast_backtrack.rs:142:9
+    |
+142 |         forall|j: int| result <= j <= from ==> log[j].term == term,
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/fast_backtrack.rs:142:48
+    |
+142 |         forall|j: int| result <= j <= from ==> log[j].term == term,
+    |                                                ^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/fast_backtrack.rs:116:17
+    |
+116 |                 forall|j: int| scan <= j <= idx as int ==> log@[j].term == cterm,
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/fast_backtrack.rs:116:60
+    |
+116 |                 forall|j: int| scan <= j <= idx as int ==> log@[j].term == cterm,
+    |                                                            ^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/txn_dependency.rs:66:21
+   |
+66 |             let w = choose|k: int| 0 <= k < edges@.len() && edges@[k].0 == from && edges@[k].1 == to;
+   |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/txn_dependency.rs:66:61
+   |
+66 |             let w = choose|k: int| 0 <= k < edges@.len() && edges@[k].0 == from && edges@[k].1 == to;
+   |                                                             ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/txn_dependency.rs:116:21
+    |
+116 |             let w = choose|k: int| 0 <= k < edges@.len() && edges@[k].0 == edges@[k].1;
+    |                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/txn_dependency.rs:116:61
+    |
+116 |             let w = choose|k: int| 0 <= k < edges@.len() && edges@[k].0 == edges@[k].1;
+    |                                                             ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/causal_order.rs:121:13
+    |
+121 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/causal_order.rs:121:50
+    |
+121 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+    |                                                  ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/nix_closure.rs:47:5
+   |
+47 |     exists|i: int| 0 <= i < result.len() as int && result[i].key == key
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/nix_closure.rs:47:52
+   |
+47 |     exists|i: int| 0 <= i < result.len() as int && result[i].key == key
+   |                                                    ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/nix_closure.rs:52:5
+   |
+52 | /     forall|i: int, j: int| 0 <= i < j < items.len() as int
+53 | |         ==> items[i].key != items[j].key
+   | |________________________________________^
+
+note:   trigger 1 of 1:
+  --> src/nix_closure.rs:53:13
+   |
+53 |         ==> items[i].key != items[j].key
+   |             ^^^^^^^^        ^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/pointwise.rs:81:9
+   |
+81 | /         forall|i: int| 0 <= i < a.len() as int ==>
+82 | |             pointwise_merge_spec(a, b, f)[i] >= a[i],
+   | |____________________________________________________^
+
+note:   trigger 1 of 1:
+  --> src/pointwise.rs:82:49
+   |
+82 |             pointwise_merge_spec(a, b, f)[i] >= a[i],
+   |                                                 ^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/pointwise.rs:94:9
+   |
+94 | /         forall|i: int| 0 <= i < a.len() as int ==>
+95 | |             pointwise_merge_spec(a, b, f)[i] >= b[i],
+   | |____________________________________________________^
+
+note:   trigger 1 of 1:
+  --> src/pointwise.rs:95:49
+   |
+95 |             pointwise_merge_spec(a, b, f)[i] >= b[i],
+   |                                                 ^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/vector_clock.rs:125:13
+    |
+125 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/vector_clock.rs:125:50
+    |
+125 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+    |                                                  ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/vector_clock.rs:160:13
+    |
+160 |             forall|j: int| 0 <= j < i as int && j == idx as int ==> result@[j] == (v@[j] + 1) as u64,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/vector_clock.rs:160:69
+    |
+160 |             forall|j: int| 0 <= j < i as int && j == idx as int ==> result@[j] == (v@[j] + 1) as u64,
+    |                                                                     ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/vector_clock.rs:246:13
+    |
+246 |     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= a[i]
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/vector_clock.rs:246:79
+    |
+246 |     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= a[i]
+    |                                                                               ^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/vector_clock.rs:256:13
+    |
+256 |     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= b[i]
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/vector_clock.rs:256:79
+    |
+256 |     ensures forall|i: int| 0 <= i < a.len() as int ==> merge_spec(a, b)[i] >= b[i]
+    |                                                                               ^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/vector_clock.rs:280:13
+    |
+280 |       ensures forall|j: int| 0 <= j < v.len() as int && j != idx ==>
+    |  _____________^
+281 | |         increment_spec(v, idx)[j] == v[j]
+    | |_________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/vector_clock.rs:281:38
+    |
+281 |         increment_spec(v, idx)[j] == v[j]
+    |                                      ^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/partition.rs:49:5
+   |
+49 | /     forall|j: int| 0 <= j < i ==> {
+50 | |         &&& is_non_empty_interval_spec(intervals[j].0, intervals[j].1)
+51 | |         &&& (j + 1 < i ==> is_adjacent_pair_spec(intervals[j].1, intervals[j + 1].0))
+52 | |         &&& (j > 0 ==> intervals[j - 1].0 <= intervals[j].0)
+53 | |     }
+   | |_____^
+
+note:   trigger 1 of 1:
+  --> src/partition.rs:50:56
+   |
+50 |         &&& is_non_empty_interval_spec(intervals[j].0, intervals[j].1)
+   |                                                        ^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/partition.rs:198:13
+    |
+198 |       ensures forall|i: int| 0 <= i < intervals.len() ==>
+    |  _____________^
+199 | |         is_non_empty_interval_spec(intervals[i].0, intervals[i].1)
+    | |__________________________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/partition.rs:199:36
+    |
+199 |         is_non_empty_interval_spec(intervals[i].0, intervals[i].1)
+    |                                    ^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/nix_attrset.rs:19:5
+   |
+19 | /     forall|i: int, j: int| 0 <= i < j < attrs.len() as int
+20 | |         ==> attrs[i].0 != attrs[j].0
+   | |____________________________________^
+
+note:   trigger 1 of 1:
+  --> src/nix_attrset.rs:20:13
+   |
+20 |         ==> attrs[i].0 != attrs[j].0
+   |             ^^^^^^^^      ^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/nix_attrset.rs:111:5
+    |
+111 |     exists|i: int| 0 <= i < attrs.len() as int && attrs[i].0 == key
+    |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/nix_attrset.rs:111:51
+    |
+111 |     exists|i: int| 0 <= i < attrs.len() as int && attrs[i].0 == key
+    |                                                   ^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/nix_attrset.rs:144:17
+    |
+144 |         let i = choose|i: int| 0 <= i < attrs.len() as int && attrs[i].0 == key;
+    |                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/nix_attrset.rs:144:63
+    |
+144 |         let i = choose|i: int| 0 <= i < attrs.len() as int && attrs[i].0 == key;
+    |                                                               ^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/nix_attrset.rs:176:32
+    |
+176 |             let chosen = Ghost(choose|ci: int| 0 <= ci < mapped_attrs@.len() as int && mapped_attrs@[ci].0 == key@);
+    |                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/nix_attrset.rs:176:88
+    |
+176 |             let chosen = Ghost(choose|ci: int| 0 <= ci < mapped_attrs@.len() as int && mapped_attrs@[ci].0 == key@);
+    |                                                                                        ^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:158:13
+    |
+158 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:158:58
+    |
+158 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:178:13
+    |
+178 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:178:58
+    |
+178 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:260:13
+    |
+260 |       ensures forall|x: int| is_member_spec(set_difference_from_spec(a, b, from), x)
+    |  _____________^
+261 | |         ==> !is_member_spec(b, x),
+    | |_________________________________^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:261:14
+    |
+261 |         ==> !is_member_spec(b, x),
+    |              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:285:13
+    |
+285 |       ensures forall|x: int| is_member_spec(set_difference_spec(a, b), x)
+    |  _____________^
+286 | |         ==> !is_member_spec(b, x),
+    | |_________________________________^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:286:14
+    |
+286 |         ==> !is_member_spec(b, x),
+    |              ^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:358:13
+    |
+358 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:358:58
+    |
+358 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:378:13
+    |
+378 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:378:58
+    |
+378 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:496:13
+    |
+496 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:496:58
+    |
+496 |             forall|bi: int| 0 <= bi < j as int ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:515:13
+    |
+515 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:515:58
+    |
+515 |             forall|bi: int| 0 <= bi < b@.len() ==> in_b@[b_int[bi]] == true,
+    |                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/seq_set.rs:517:13
+    |
+517 |             forall|ai: int| 0 <= ai < i as int ==> is_member_spec(b_int, a_int[ai]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/seq_set.rs:517:74
+    |
+517 |             forall|ai: int| 0 <= ai < i as int ==> is_member_spec(b_int, a_int[ai]),
+    |                                                                          ^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/crdt.rs:43:13
+   |
+43 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/crdt.rs:43:50
+   |
+43 |             forall|j: int| 0 <= j < i as int ==> result@[j] == max_spec(a@[j], b@[j]),
+   |                                                  ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/crdt.rs:157:13
+    |
+157 |             forall|j: int| 0 <= j < i as int && j == idx as int ==> result@[j] == (counter@[j] + 1) as u64,
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/crdt.rs:157:69
+    |
+157 |             forall|j: int| 0 <= j < i as int && j == idx as int ==> result@[j] == (counter@[j] + 1) as u64,
+    |                                                                     ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/wal_recovery.rs:146:9
+    |
+146 | /         forall|i: int| 0 <= i < entries@.len() ==>
+147 | |             (entries@[i].0 as int) < old(state)@.len(),
+    | |______________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/wal_recovery.rs:147:14
+    |
+147 |             (entries@[i].0 as int) < old(state)@.len(),
+    |              ^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/wal_recovery.rs:158:13
+    |
+158 | /             forall|j: int| 0 <= j < entries@.len() ==>
+159 | |                 (entries@[j].0 as int) < original.len(),
+    | |_______________________________________________________^
+
+note:   trigger 1 of 1:
+   --> src/wal_recovery.rs:159:18
+    |
+159 |                 (entries@[j].0 as int) < original.len(),
+    |                  ^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/eviction.rs:244:9
+    |
+244 |         exists|i: int| 0 <= i < entries.len() && !entries[i].1
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/eviction.rs:244:51
+    |
+244 |         exists|i: int| 0 <= i < entries.len() && !entries[i].1
+    |                                                   ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/eviction.rs:248:19
+    |
+248 |     let witness = choose|i: int| 0 <= i < entries.len() && !entries[i].1;
+    |                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/eviction.rs:248:61
+    |
+248 |     let witness = choose|i: int| 0 <= i < entries.len() && !entries[i].1;
+    |                                                             ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/properties.rs:414:13
+    |
+414 |             forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 2:
+   --> src/properties.rs:414:43
+    |
+414 |             forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+    |                                           ^^^^
+
+note:   trigger 2 of 2:
+   --> src/properties.rs:414:56
+    |
+414 |             forall|i: int| 0 <= i < k ==> a[i].term == b[i].term
+    |                                                        ^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/env_scrub.rs:51:13
+   |
+51 |             forall|j: int| 0 <= j < i as int ==> result@[j] == to_upper_byte_spec(s@[j]),
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/env_scrub.rs:51:50
+   |
+51 |             forall|j: int| 0 <= j < i as int ==> result@[j] == to_upper_byte_spec(s@[j]),
+   |                                                  ^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/env_scrub.rs:431:9
+    |
+431 |         forall|i: int| idx <= i < keys.len() as int ==> !is_secret_spec(keys[i]),
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/env_scrub.rs:431:73
+    |
+431 |         forall|i: int| idx <= i < keys.len() as int ==> !is_secret_spec(keys[i]),
+    |                                                                         ^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cas.rs:188:17
+    |
+188 |               &&& forall|j: int| 0 <= j < idx ==> check_condition_spec(
+    |  _________________^
+189 | |                     conditions@[j].0,
+190 | |                     conditions@[j].1,
+191 | |                     conditions@[j].2,
+192 | |                 )
+    | |_________________^
+
+note:   trigger 1 of 1:
+   --> src/cas.rs:189:21
+    |
+189 |                     conditions@[j].0,
+    |                     ^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cas.rs:194:30
+    |
+194 |           result.is_none() ==> forall|j: int| 0 <= j < conditions@.len()
+    |  ______________________________^
+195 | |             ==> check_condition_spec(
+196 | |                     conditions@[j].0,
+197 | |                     conditions@[j].1,
+198 | |                     conditions@[j].2,
+199 | |                 ),
+    | |_________________^
+
+note:   trigger 1 of 1:
+   --> src/cas.rs:196:21
+    |
+196 |                     conditions@[j].0,
+    |                     ^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cas.rs:205:13
+    |
+205 | /             forall|j: int| 0 <= j < i as int ==> check_condition_spec(
+206 | |                 conditions@[j].0,
+207 | |                 conditions@[j].1,
+208 | |                 conditions@[j].2,
+209 | |             ),
+    | |_____________^
+
+note:   trigger 1 of 1:
+   --> src/cas.rs:206:17
+    |
+206 |                 conditions@[j].0,
+    |                 ^^^^^^^^^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> src/cas.rs:205:13
+    |
+205 | /             forall|j: int| 0 <= j < i as int ==> check_condition_spec(
+206 | |                 conditions@[j].0,
+207 | |                 conditions@[j].1,
+208 | |                 conditions@[j].2,
+209 | |             ),
+    | |_____________^
+
+verification results:: 5053 verified, 0 errors

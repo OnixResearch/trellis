@@ -1,0 +1,13 @@
+commit 892113b9233692ac1454fdf26100fe57d23eebdd
+Author:     brittonr <b@robitzs.ch>
+AuthorDate: Wed Apr 15 12:04:29 2026 -0400
+Commit:     brittonr <b@robitzs.ch>
+CommitDate: Wed Apr 15 12:04:29 2026 -0400
+
+    Archive sel4-endpoint-ipc: land verified sel4_endpoint model, sync sel4-endpoint requirements/spec text, capture targeted and full validation evidence, and move the change under openspec/changes/archive/2026-04-15-sel4-endpoint-ipc/ to cut active change count from 30 to 29.
+    
+    Result: {"status":"keep","active_changes":29}
+--- baseline docs/requirements.md sel4-fault-ipc hits
+--- baseline src/lib.rs sel4_fault_ipc hits
+--- baseline canonical spec presence
+baseline-spec-absent

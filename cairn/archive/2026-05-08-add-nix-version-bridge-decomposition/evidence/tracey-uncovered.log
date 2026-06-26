@@ -1,0 +1,6 @@
+=== tracey query uncovered --prefix verification-gaps.nix-version-bridge-decomposition ===
+verified-logic/rust: 0 uncovered out of 1875 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`

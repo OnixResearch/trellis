@@ -1,0 +1,140 @@
++            prefix + seq![next as usize],
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            (remaining - 1) as nat,
++            0,
++        );
++        let tail = choose|tail: Seq<usize>|
++            tail.len() == (remaining - 1) as int
++                && chain_valid_at_spec((prefix + seq![next as usize]) + tail, roots, attestations, revocations, subject, t)
++                && (((remaining - 1) as nat) == 0 || tail[0] == 0usize || 0 < tail[0] as nat);
++        let suffix = seq![next as usize] + tail;
++        assert(suffix.len() == remaining as int);
++        assert(prefix + suffix == (prefix + seq![next as usize]) + tail);
++        assert(chain_valid_at_spec(prefix + suffix, roots, attestations, revocations, subject, t));
++        assert(suffix[0] == next as usize);
++        assert(exact_suffix_from_spec(prefix, roots, attestations, revocations, subject, t, remaining, next));
++    } else {
++        search_exact_len_sound_from(prefix, roots, attestations, revocations, subject, t, remaining, next + 1);
++        let suffix = choose|suffix: Seq<usize>|
++            suffix.len() == remaining as int
++                && chain_valid_at_spec(prefix + suffix, roots, attestations, revocations, subject, t)
++                && (remaining == 0 || suffix[0] == (next + 1) as usize || (next + 1) < suffix[0] as nat);
++        assert(suffix.len() == remaining as int);
++        assert(chain_valid_at_spec(prefix + suffix, roots, attestations, revocations, subject, t));
++        if remaining > 0 {
++            if suffix[0] == (next + 1) as usize {
++                assert(next + 1 <= usize::MAX as nat);
++                assert(next < suffix[0] as nat);
++            } else {
++                assert((next + 1) < suffix[0] as nat);
++                assert(next < suffix[0] as nat);
++            }
++        }
++        assert(exact_suffix_from_spec(prefix, roots, attestations, revocations, subject, t, remaining, next));
++    }
++}
++
++proof fn search_exact_len_complete_from(
++    prefix: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    remaining: nat,
++    next: nat,
++    suffix: Seq<usize>,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        next <= attestations.len(),
++        suffix.len() == remaining as int,
++        chain_valid_at_spec(prefix + suffix, roots, attestations, revocations, subject, t),
++        remaining == 0 || suffix[0] == next as usize || next < suffix[0] as nat,
++    ensures
++        search_exact_len_from_spec(prefix, roots, attestations, revocations, subject, t, remaining, next),
++    decreases remaining, if remaining > 0 && next <= suffix[0] as nat { suffix[0] as nat - next + 1 } else { 0 }
++{
++    if remaining == 0 {
++    } else {
++        let witness = prefix + suffix;
++        assert(chain_indices_in_range_spec(witness, attestations));
++        chain_indices_in_range_from_implies_index(witness, attestations, 0, prefix.len() as int);
++        assert((suffix[0] as int) < attestations.len());
++        let first = suffix[0] as nat;
++        if suffix[0] == next as usize {
++            seq_head_tail_usize(suffix);
++            let tail = suffix.subrange(1, suffix.len() as int);
++            assert((prefix + seq![first as usize]) + tail == prefix + suffix);
++            assert(tail.len() == (remaining - 1) as int);
++            assert(chain_valid_at_spec((prefix + seq![first as usize]) + tail, roots, attestations, revocations, subject, t));
++            if tail.len() > 0 {
++                let new_prefix = prefix + seq![first as usize];
++                let new_witness = new_prefix + tail;
++                assert(new_witness == witness);
++                chain_indices_in_range_from_implies_index(new_witness, attestations, 0, new_prefix.len() as int);
++                assert((tail[0] as int) < attestations.len());
++            }
++            search_exact_len_complete_from(
++                prefix + seq![first as usize],
++                roots,
++                attestations,
++                revocations,
++                subject,
++                t,
++                (remaining - 1) as nat,
++                0,
++                tail,
++            );
++        } else {
++            search_exact_len_complete_from(prefix, roots, attestations, revocations, subject, t, remaining, next + 1, suffix);
++        }
++    }
++}
++
++proof fn search_upto_len_sound_from(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++    current: nat,
++)
++    requires
++        attestations.len() <= usize::MAX as nat,
++        current >= 1,
++        search_upto_len_from_spec(roots, attestations, revocations, subject, depth, t, current),
++    ensures
++        exists|witness: Seq<usize>|
++            0 < witness.len() <= depth as int
++                && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t),
++    decreases if current <= depth { depth - current + 1 } else { 0 }
++{
++    if current > depth {
++        assert(false);
++    } else if search_exact_len_from_spec(Seq::empty(), roots, attestations, revocations, subject, t, current, 0) {
++        search_exact_len_sound_from(Seq::empty(), roots, attestations, revocations, subject, t, current, 0);
++        let witness = choose|witness: Seq<usize>|
++            witness.len() == current as int
++                && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t)
++                && (current == 0 || 0 <= witness[0] as nat);
++        assert(0 < witness.len());
++        assert(witness.len() <= depth as int);
++    } else {
++        search_upto_len_sound_from(roots, attestations, revocations, subject, depth, t, current + 1);
++    }
++}
++
++proof fn search_upto_len_complete_from(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++    current: nat,

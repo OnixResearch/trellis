@@ -1,0 +1,2 @@
+$ tracey query untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1555 rules

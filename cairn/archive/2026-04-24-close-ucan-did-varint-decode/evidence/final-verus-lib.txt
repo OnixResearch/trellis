@@ -1,0 +1,7 @@
+$ ./scripts/verus.sh src/lib.rs
+note: full verifier output includes routine auto-trigger diagnostics; summary line below is from the completed run.
+
+verification results:: 8451 verified, 0 errors
+warning: 18 warnings emitted
+
+exit_code=0

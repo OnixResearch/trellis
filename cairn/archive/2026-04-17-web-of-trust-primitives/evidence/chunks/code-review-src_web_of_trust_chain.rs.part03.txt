@@ -1,0 +1,140 @@
++
++fn chain_adjacency_from(
++    witness: &Vec<usize>,
++    attestations: &Vec<Attestation>,
++    from: usize,
++) -> (result: bool)
++    requires
++        from <= witness.len(),
++        chain_indices_in_range_spec(witness@, attestations@),
++    ensures result == chain_adjacency_from_spec(witness@, attestations@, from as int)
++    decreases witness.len() - from
++{
++    if from >= witness.len() {
++        true
++    } else if from == witness.len() - 1 {
++        true
++    } else {
++        proof {
++            chain_indices_in_range_from_implies_index(witness@, attestations@, 0, from as int);
++            chain_indices_in_range_from_implies_index(witness@, attestations@, 0, (from + 1) as int);
++        }
++        let left = &attestations[witness[from]];
++        let right = &attestations[witness[from + 1]];
++        digest_equal(&left.subject.digest, &right.issuer.digest)
++            && chain_adjacency_from(witness, attestations, from + 1)
++    }
++}
++
++fn subject_fresh_upto(
++    witness: &Vec<usize>,
++    attestations: &Vec<Attestation>,
++    edge_idx: usize,
++    upto: usize,
++) -> (result: bool)
++    requires
++        edge_idx < witness.len(),
++        upto <= edge_idx,
++        chain_indices_in_range_spec(witness@, attestations@),
++    ensures result == subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, upto as int)
++    decreases upto + 1
++{
++    proof {
++        chain_indices_in_range_from_implies_index(witness@, attestations@, 0, edge_idx as int);
++        if upto > 0 {
++            chain_indices_in_range_from_implies_index(witness@, attestations@, 0, (upto - 1) as int);
++        }
++    }
++    let subject = &attestations[witness[edge_idx]].subject.digest;
++    let current = if upto == 0 {
++        &attestations[witness[0]].issuer.digest
++    } else {
++        &attestations[witness[upto - 1]].subject.digest
++    };
++    proof {
++        assert(subject@ == attestations@[witness@[edge_idx as int] as int].subject.digest@);
++        if upto == 0 {
++            assert(current@ == chain_principal_at_spec(witness@, attestations@, 0));
++        } else {
++            assert(current@ == chain_principal_at_spec(witness@, attestations@, upto as int));
++        }
++    }
++    if !digest_equal(subject, current) {
++        proof {
++            assert(subject@ != current@);
++        }
++        if upto == 0 {
++            proof {
++                assert(subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, -1));
++                assert(subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, upto as int));
++            }
++            true
++        } else {
++            let rest = subject_fresh_upto(witness, attestations, edge_idx, upto - 1);
++            proof {
++                assert(rest == subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, (upto - 1) as int));
++                assert(chain_principal_at_spec(witness@, attestations@, upto as int) != attestations@[witness@[edge_idx as int] as int].subject.digest@);
++                assert(subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, upto as int)
++                    == (chain_principal_at_spec(witness@, attestations@, upto as int)
++                        != attestations@[witness@[edge_idx as int] as int].subject.digest@
++                        && subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, (upto - 1) as int)));
++            }
++            rest
++        }
++    } else {
++        proof {
++            assert(subject@ == current@);
++            assert(!subject_fresh_upto_spec(witness@, attestations@, edge_idx as int, upto as int));
++        }
++        false
++    }
++}
++
++fn no_repeated_from(
++    witness: &Vec<usize>,
++    attestations: &Vec<Attestation>,
++    from: usize,
++) -> (result: bool)
++    requires
++        from <= witness.len(),
++        chain_indices_in_range_spec(witness@, attestations@),
++    ensures result == no_repeated_from_spec(witness@, attestations@, from as int)
++    decreases witness.len() - from
++{
++    if from >= witness.len() {
++        true
++    } else {
++        subject_fresh_upto(witness, attestations, from, from)
++            && no_repeated_from(witness, attestations, from + 1)
++    }
++}
++
++// r[impl web-of-trust.chain-validity]
++/// Check whether an attestation-index witness forms a valid active trust chain.
++pub fn chain_valid_at(
++    witness: &Vec<usize>,
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    t: u64,
++) -> (result: bool)
++    ensures result == chain_valid_at_spec(witness@, roots@, attestations@, revocations@, *subject, t)
++{
++    if witness.is_empty() {
++        false
++    } else {
++        let in_range = chain_indices_in_range_from(witness, attestations, 0);
++        if !in_range {
++            false
++        } else {
++            let first = witness[0];
++            proof {
++                chain_indices_in_range_from_implies_index(witness@, attestations@, 0, 0);
++            }
++            root_member_from(roots, &attestations[first].issuer, 0)
++                && chain_edges_active_from(witness, attestations, revocations, t, 0)
++                && chain_adjacency_from(witness, attestations, 0)
++                && no_repeated_from(witness, attestations, 0)
++                && {
++                    proof {

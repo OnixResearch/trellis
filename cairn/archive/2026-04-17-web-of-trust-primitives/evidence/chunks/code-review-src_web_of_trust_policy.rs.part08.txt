@@ -1,0 +1,140 @@
++        t: u64,
++    ) -> bool {
++        if k == 0 || depth == 0 {
++            return false;
++        }
++
++        let mut seen: Vec<Vec<u8>> = Vec::new();
++        let mut count = 0usize;
++        for att in attestations {
++            if att.subject.digest != subject.digest {
++                continue;
++            }
++            if att.issuer.digest == subject.digest {
++                continue;
++            }
++            if att.role_tag != TRUST_ROLE_TAG || !attestation_active_at(att, revocations, t) {
++                continue;
++            }
++            if seen.contains(&att.issuer.digest) {
++                continue;
++            }
++            let mut visited = vec![subject.digest.clone(), att.issuer.digest.clone()];
++            if rooted_oracle_dfs(&att.issuer, roots, attestations, revocations, depth - 1, t, &mut visited) {
++                seen.push(att.issuer.digest.clone());
++                count += 1;
++                if count >= k {
++                    return true;
++                }
++            }
++        }
++        false
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_distinct_roots_satisfy_threshold_at_depth_one() {
++        let a_key = vec![1, 2, 3];
++        let b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&a_key), principal_id_from_bytes(&b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(threshold_accepts(&roots, &vec![att1, att2], &Vec::new(), &subject, 2, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_zero_threshold_rejects() {
++        let root = principal_id_from_bytes(&[1, 2, 3]);
++        let subject = principal_id_from_bytes(&[4, 5, 6]);
++        assert!(!threshold_accepts(&vec![root], &Vec::new(), &Vec::new(), &subject, 0, 3, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_depth_zero_rejects_subject() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!threshold_accepts(&roots, &vec![att], &Vec::new(), &subject, 1, 0, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_root_subject_still_needs_introducers() {
++        let root_key = vec![1, 2, 3];
++        let root = principal_id_from_bytes(&root_key);
++        let roots = vec![root];
++        assert!(!threshold_accepts(&roots, &Vec::new(), &Vec::new(), &roots[0], 1, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_too_small_depth_rejects_indirect_introducer() {
++        let root_key = vec![1, 2, 3];
++        let a_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!threshold_accepts(&roots, &vec![att1, att2], &Vec::new(), &subject, 1, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_repeated_final_hop_self_introduction_rejects() {
++        let root_key = vec![1, 2, 3];
++        let att = signed_attestation(root_key.clone(), root_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&root_key);
++        assert!(!threshold_accepts(&roots, &vec![att], &Vec::new(), &subject, 1, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_duplicate_attestations_do_not_double_count() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att1 = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!threshold_accepts(&roots, &vec![att1, att2], &Vec::new(), &subject, 2, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_invalid_attestation_is_ignored_by_threshold() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let invalid = Attestation {
++            issuer_key_bytes: vec![4, 5, 0],
++            ..att2
++        };
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!threshold_accepts(&roots, &vec![att1, invalid], &Vec::new(), &subject, 2, 1, 5));
++    }
++
++    // r[verify web-of-trust.threshold]
++    #[test]
++    fn test_invalid_revocation_is_ignored_by_threshold() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let rev = signed_family_revocation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 5);
++        let invalid = Revocation {
++            family_subject_key_bytes: vec![7, 8, 0],
++            ..rev
++        };
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];

@@ -1,0 +1,3 @@
+PASS --fixture-missing-rationale failed closed with manifest validation diagnostic
+PASS --fixture-blank-rationale failed closed with manifest validation diagnostic
+PASS --fixture-malformed-rationale failed closed with manifest validation diagnostic

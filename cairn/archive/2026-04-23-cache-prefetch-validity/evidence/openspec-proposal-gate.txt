@@ -1,0 +1,9 @@
+OpenSpec proposal gate (cache-prefetch-validity)
+
+Strategy: cross-family
+
+## Design Review: cache-prefetch-validity
+
+### Verdict: **Approve**
+
+All five proposal-review issues are resolved. The design is concrete, decisions are well-justified, and the spec is tightened accordingly.

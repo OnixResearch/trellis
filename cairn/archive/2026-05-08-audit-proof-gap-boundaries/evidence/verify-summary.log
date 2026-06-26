@@ -1,0 +1,8 @@
+test result: ok. 4522 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.58s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 58.26s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+verification results:: 9811 verified, 0 errors
+verified-logic/rust: 1870 of 1870 requirements are covered. 1870 of 1870 have a verification reference.
+verified-logic/rust: 0 uncovered out of 1870 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1870 rules
+=== ALL CHECKS PASSED ===

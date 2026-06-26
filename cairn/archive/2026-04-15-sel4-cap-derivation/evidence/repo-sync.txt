@@ -1,0 +1,8 @@
+Commit ID: d0cedf8b15f0d91b633230f6712844e86fda61e9
+Change ID: qsrtuoktysxxyvrltkznvnntmrqozkpr
+Author   : brittonr <b@robitzs.ch> (2026-04-15 09:15:28)
+Committer: brittonr <b@robitzs.ch> (2026-04-15 09:15:28)
+--- baseline docs/requirements.md sel4-cdt hits
+--- baseline src/lib.rs sel4_cdt hits
+--- baseline canonical spec presence
+baseline-spec-absent

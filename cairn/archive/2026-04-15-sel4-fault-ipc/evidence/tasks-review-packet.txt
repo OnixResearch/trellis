@@ -1,0 +1,11 @@
+# Tasks Review Packet
+
+## Phase 1: Core model and proofs
+- `src/sel4_fault_ipc.rs` landed the structured fault model, semantic encode/decode helpers, handler-context delivery helpers, and the exported module surface.
+- Baseline shipped-surface audit is captured in `evidence/repo-sync.txt`.
+- Targeted module validation is captured in `evidence/cargo-test-sel4-fault-ipc.txt` and `evidence/verus-sel4-fault-ipc.txt`.
+- Requirement/spec sync for `sel4-fault-ipc.*` is reflected in the archived tree and canonical spec.
+
+## Repo validation and archive
+- Repo-wide validation transcripts are listed in `evidence/review-index.md`.
+- Archive review surfaces are indexed in `evidence/review-index.md`.

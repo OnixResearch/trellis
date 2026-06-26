@@ -1,0 +1,140 @@
++                        chain_indices_in_range_from_implies_index(
++                            witness@,
++                            attestations@,
++                            0,
++                            (witness.len() - 1) as int,
++                        );
++                    }
++                    digest_equal(&attestations[witness[witness.len() - 1]].subject.digest, &subject.digest)
++                }
++        }
++    }
++}
++
++proof fn chain_edges_active_from_implies_index(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    t: u64,
++    from: int,
++    idx: int,
++)
++    requires
++        chain_indices_in_range_from_spec(witness, attestations, from),
++        chain_edges_active_from_spec(witness, attestations, revocations, t, from),
++        from <= idx < witness.len(),
++    ensures
++        attestations[witness[idx] as int].role_tag == TRUST_ROLE_TAG,
++        attestation_active_at_spec(attestations[witness[idx] as int], revocations, t),
++    decreases if from <= idx { idx - from + 1 } else { 0 }
++{
++    if from == idx {
++    } else {
++        chain_edges_active_from_implies_index(witness, attestations, revocations, t, from + 1, idx);
++    }
++}
++
++proof fn chain_adjacency_from_implies_index(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++    idx: int,
++)
++    requires
++        chain_indices_in_range_spec(witness, attestations),
++        chain_adjacency_from_spec(witness, attestations, from),
++        from <= idx,
++        idx + 1 < witness.len(),
++    ensures
++        attestations[witness[idx] as int].subject.digest@
++            == attestations[witness[idx + 1] as int].issuer.digest@,
++    decreases if from <= idx { idx - from + 1 } else { 0 }
++{
++    if from == idx {
++    } else {
++        chain_adjacency_from_implies_index(witness, attestations, from + 1, idx);
++    }
++}
++
++// r[verify web-of-trust.chain-validity]
++/// Valid chains start from a root issuer.
++pub proof fn chain_valid_root_issuer(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++)
++    requires chain_valid_at_spec(witness, roots, attestations, revocations, subject, t)
++    ensures root_member_spec(roots, attestations[witness[0] as int].issuer)
++{
++}
++
++// r[verify web-of-trust.chain-validity]
++/// Adjacent attestations line up subject-to-next-issuer.
++pub proof fn chain_valid_adjacency(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    i: nat,
++)
++    requires
++        chain_valid_at_spec(witness, roots, attestations, revocations, subject, t),
++        i + 1 < witness.len(),
++    ensures
++        attestations[witness[i as int] as int].subject.digest@
++            == attestations[witness[(i + 1) as int] as int].issuer.digest@
++{
++    chain_adjacency_from_implies_index(witness, attestations, 0, i as int);
++}
++
++// r[verify web-of-trust.chain-validity]
++/// Valid chains are simple paths with no repeated principals.
++pub proof fn chain_valid_simple_path(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++)
++    requires chain_valid_at_spec(witness, roots, attestations, revocations, subject, t)
++    ensures no_repeated_principal_spec(witness, attestations)
++{
++}
++
++// r[verify web-of-trust.chain-validity]
++/// Only operational `trust` attestations contribute chain edges.
++pub proof fn chain_valid_role_filtered(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    i: nat,
++)
++    requires
++        chain_valid_at_spec(witness, roots, attestations, revocations, subject, t),
++        i < witness.len(),
++    ensures
++        attestations[witness[i as int] as int].role_tag == TRUST_ROLE_TAG
++{
++    chain_edges_active_from_implies_index(witness, attestations, revocations, t, 0, i as int);
++}
++
++// r[verify web-of-trust.chain-validity]
++/// Every chain edge is active at the evaluation time.
++pub proof fn chain_valid_requires_active_edges(
++    witness: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    i: nat,
++)

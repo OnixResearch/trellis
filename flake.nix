@@ -297,6 +297,7 @@
             cargo-nextest
             cargo-watch
             rust-analyzer
+            steel
           ];
 
           inputsFrom = [ verified-logic ];

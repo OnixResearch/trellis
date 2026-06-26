@@ -1,0 +1,5 @@
+commit a5c4c92fda3b06f1e46a846e69de979af676f6a6
+--- baseline docs/requirements.md sel4-tcb hits
+--- baseline src/lib.rs sel4_tcb hits
+--- baseline canonical spec presence
+baseline-spec-absent

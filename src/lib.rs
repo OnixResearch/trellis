@@ -103,6 +103,7 @@
 //!   admission
 //! - `r1cs_boolean` — bounded booleanity row encoding and satisfaction over an R1CS witness slot
 //! - `r1cs_bit_decomposition` — bounded two-bit decomposition over boolean R1CS witness slots
+//! - `r1cs_lookup` — bounded lookup-table membership over active R1CS witness/table prefixes
 //! - `r1cs_gates` — bounded multiplication, addition, and constant gate adapters into R1CS rows
 //! - `r1cs_system` — bounded multi-row R1CS system shape and shared-witness satisfaction admission
 //! - `r1cs_public_inputs` — bounded public-input binding and R1CS statement satisfaction admission
@@ -389,12 +390,12 @@ pub mod access_mode;
 pub mod acid;
 pub mod algebraic;
 pub mod algebraic_effect;
-pub mod async_task_state;
 pub mod append_entries_build;
 pub mod append_entries_check;
 pub mod append_response;
 pub mod approval;
 pub mod arithmetic;
+pub mod async_task_state;
 pub mod authorize;
 pub mod backend_frame_allocator;
 pub mod backoff;
@@ -792,6 +793,7 @@ pub mod r1cs_bit_decomposition;
 pub mod r1cs_boolean;
 pub mod r1cs_constraint;
 pub mod r1cs_gates;
+pub mod r1cs_lookup;
 pub mod r1cs_public_inputs;
 pub mod r1cs_system;
 pub mod raft_consensus_core;

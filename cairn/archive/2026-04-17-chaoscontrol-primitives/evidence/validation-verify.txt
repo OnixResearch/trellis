@@ -1,0 +1,11 @@
+$ ./scripts/verify.sh
+✓ all pub fns have r[impl] annotations
+✓ all verified pub fns have ensures clauses
+✓ clippy clean
+✗ tests failed (known doctest skew with shared target dir; isolated target dir passes: 3901+13 tests)
+✓ verus proofs pass (7580 verified, 0 errors)
+✓ no uncovered requirements (0 uncovered out of 1555 rules)
+✓ no untested requirements (0 untested out of 1555 rules)
+
+Note: cargo test passes with CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic.
+The shared target dir failure is a known doctest crate-version skew flake documented in CLAUDE.md.

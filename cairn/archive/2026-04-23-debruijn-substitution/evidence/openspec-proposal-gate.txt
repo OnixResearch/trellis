@@ -1,0 +1,9 @@
+OpenSpec proposal gate (debruijn-substitution)
+
+Strategy: cross-family
+
+## Design Review: `debruijn-substitution`
+
+### Verdict: **Approve**
+
+Already reviewed and approved. No artifacts have changed since the prior pass — same decisions, same spec, same coverage. Ready for implementation.

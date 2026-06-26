@@ -1,0 +1,3 @@
+
+Checked 1448 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses

@@ -1,0 +1,19 @@
+# Validation Review Packet
+
+## Targeted validation
+- `V1-targeted.md` records:
+  - `./scripts/verus.sh src/register_allocation.rs` → `43 verified, 0 errors`
+  - `CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet register_allocation` → `10 passed; 0 failed`
+
+## Repo validation
+- `V4-repo-validation.md` records:
+  - cargo test: `4155 passed` plus `13` repo-index tests and `13` doc tests
+  - cargo clippy: success under `-D warnings`
+  - full-lib Verus: `8542 verified, 0 errors`
+  - check-ensures: success
+  - Tracey: `0 uncovered`, `0 untested` out of `1721` rules
+  - verify.sh: `=== ALL CHECKS PASSED ===`
+- Raw transcript files are indexed in `evidence/review-index.md`.
+
+## Archive status
+- `R5-archive.md` records the archive move for the landed change.

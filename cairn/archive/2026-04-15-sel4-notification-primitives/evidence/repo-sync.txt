@@ -1,0 +1,13 @@
+commit 6cef6c0a51c6f19d15a88f2e1fca831fe19463a5
+Author:     brittonr <b@robitzs.ch>
+AuthorDate: Wed Apr 15 12:31:50 2026 -0400
+Commit:     brittonr <b@robitzs.ch>
+CommitDate: Wed Apr 15 12:31:50 2026 -0400
+
+    Archive sel4-fault-ipc: land verified `sel4_fault_ipc` encode/decode and handler-delivery model, sync `docs/requirements.md`, `openspec/specs/sel4-fault-ipc/spec.md`, README and verification-gap counts, capture targeted and full validation evidence, pass OpenSpec design/tasks review, and move the change under `openspec/changes/archive/2026-04-15-sel4-fault-ipc/` to cut active change count from 29 to 28.
+    
+    Result: {"status":"keep","active_changes":28}
+--- baseline docs/requirements.md sel4-notification hits
+--- baseline src/lib.rs sel4_notification hits
+--- baseline canonical spec presence
+baseline-spec-absent

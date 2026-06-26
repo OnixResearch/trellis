@@ -1,0 +1,17 @@
+M  .agent/napkin.md
+M  AGENTS.md
+M  README.md
+M  docs/requirements.md
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/cargo-clippy.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/cargo-test.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/implementation.diff
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/implementation.stat
+AM openspec/changes/archive/2026-04-13-liveness-analysis/evidence/pre-commit-status.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/tracey-uncovered.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/tracey-untested.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/verify.txt
+A  openspec/changes/archive/2026-04-13-liveness-analysis/evidence/verus-lib.txt
+M  openspec/changes/archive/2026-04-13-liveness-analysis/proposal.md
+M  openspec/changes/archive/2026-04-13-liveness-analysis/tasks.md
+M  src/lib.rs
+A  src/liveness_analysis.rs

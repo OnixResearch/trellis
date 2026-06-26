@@ -1,0 +1,176 @@
+$ ./scripts/verus.sh src/cache_hierarchy.rs
+note: automatically chose triggers for this expression:
+  --> src/cache_hierarchy.rs:70:5
+   |
+70 |     forall|i: int| 0 <= i < l1.len() ==> contains_line_spec(l2, l1[i])
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/cache_hierarchy.rs:70:65
+   |
+70 |     forall|i: int| 0 <= i < l1.len() ==> contains_line_spec(l2, l1[i])
+   |                                                                 ^^^^^
+
+note: automatically chose triggers for this expression:
+  --> src/cache_hierarchy.rs:76:5
+   |
+76 |     forall|i: int| 0 <= i < l1.len() ==> !contains_line_spec(l2, l1[i])
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+  --> src/cache_hierarchy.rs:76:66
+   |
+76 |     forall|i: int| 0 <= i < l1.len() ==> !contains_line_spec(l2, l1[i])
+   |                                                                  ^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:298:13
+    |
+298 |             assert forall|i: int| 0 <= i < append_unique_spec(l1, line).len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:299:74
+    |
+299 |                 implies contains_line_spec(append_unique_spec(l2, line), append_unique_spec(l1, line)[i]) by {
+    |                                                                          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:310:13
+    |
+310 |             assert forall|i: int| 0 <= i < append_unique_spec(l1, line).len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:311:73
+    |
+311 |                 implies !contains_line_spec(remove_line_spec(l2, line), append_unique_spec(l1, line)[i]) by {
+    |                                                                         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:331:13
+    |
+331 |             assert forall|i: int| 0 <= i < remove_line_spec(l1, line).len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:332:48
+    |
+332 |                 implies contains_line_spec(l2, remove_line_spec(l1, line)[i]) by {
+    |                                                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:342:17
+    |
+342 |                 assert forall|i: int| 0 <= i < remove_line_spec(l1, line).len()
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:343:79
+    |
+343 |                     implies !contains_line_spec(append_unique_spec(l2, line), remove_line_spec(l1, line)[i]) by {
+    |                                                                               ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:352:17
+    |
+352 |                 assert forall|i: int| 0 <= i < remove_line_spec(l1, line).len()
+    |                 ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:353:53
+    |
+353 |                     implies !contains_line_spec(l2, remove_line_spec(l1, line)[i]) by {
+    |                                                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:372:13
+    |
+372 |             assert forall|i: int| 0 <= i < l1.len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:373:74
+    |
+373 |                 implies contains_line_spec(append_unique_spec(l2, line), l1[i]) by {
+    |                                                                          ^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:382:13
+    |
+382 |             assert forall|i: int| 0 <= i < remove_line_spec(l1, line).len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:383:75
+    |
+383 |                 implies !contains_line_spec(append_unique_spec(l2, line), remove_line_spec(l1, line)[i]) by {
+    |                                                                           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:403:13
+    |
+403 |             assert forall|i: int| 0 <= i < remove_line_spec(l1, line).len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:404:72
+    |
+404 |                 implies contains_line_spec(remove_line_spec(l2, line), remove_line_spec(l1, line)[i]) by {
+    |                                                                        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:414:13
+    |
+414 |             assert forall|i: int| 0 <= i < l1.len()
+    |             ^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:415:73
+    |
+415 |                 implies !contains_line_spec(remove_line_spec(l2, line), l1[i]) by {
+    |                                                                         ^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:553:13
+    |
+553 |             forall|i: int| 0 <= i < index as int ==> contains_line_spec(l2@, l1@[i]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:553:78
+    |
+553 |             forall|i: int| 0 <= i < index as int ==> contains_line_spec(l2@, l1@[i]),
+    |                                                                              ^^^^^^
+
+note: automatically chose triggers for this expression:
+   --> src/cache_hierarchy.rs:575:13
+    |
+575 |             forall|i: int| 0 <= i < index as int ==> !contains_line_spec(l2@, l1@[i]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+note:   trigger 1 of 1:
+   --> src/cache_hierarchy.rs:575:79
+    |
+575 |             forall|i: int| 0 <= i < index as int ==> !contains_line_spec(l2@, l1@[i]),
+    |                                                                               ^^^^^^
+
+note: Verus printed one or more automatically chosen quantifier triggers
+      because it had low confidence in the chosen triggers.
+      To suppress these messages, do one of the following:
+        (1) manually annotate a single desired trigger using #[trigger]
+            (example: forall|i: int, j: int| f(i) && #[trigger] g(i) && #[trigger] h(j)),
+        (2) manually annotate multiple desired triggers using #![trigger ...]
+            (example: forall|i: int| #![trigger f(i)] #![trigger g(i)] f(i) && g(i)),
+        (3) accept the automatically chosen trigger using #![auto]
+            (example: forall|i: int, j: int| #![auto] f(i) && g(i) && h(j))
+        (4) use the --triggers-mode silent command-line option to suppress all printing of triggers.
+      (Note: triggers are used by the underlying SMT theorem prover to instantiate quantifiers;
+      the theorem prover instantiates a quantifier whenever some expression matches the
+      pattern specified by one of the quantifier's triggers.)
+   --> src/cache_hierarchy.rs:575:13
+    |
+575 |             forall|i: int| 0 <= i < index as int ==> !contains_line_spec(l2@, l1@[i]),
+    |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+verification results:: 38 verified, 0 errors

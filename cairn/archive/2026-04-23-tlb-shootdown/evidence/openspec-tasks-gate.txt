@@ -1,0 +1,39 @@
+OpenSpec tasks gate (tlb-shootdown)
+
+Strategy: cross-family
+
+## Design Review: `tlb-shootdown`
+
+### Verdict: Ready for implementation
+
+The design is well-structured, covers the full spec surface, and makes good choices for this repo's patterns.
+
+### Strengths
+
+- Clean two-layer architecture (single-page core + range lifting) matches the `moesi.rs` / `store_buffer.rs` precedents
+- Data model choices are well-justified: `Vec<bool>` bitmap over `Set`, `Vec<u64>` page-local state, spec-only matrix
+- Proof plan is ordered correctly: local update facts → ack invariant → freshness theorem → lifting
+- Risk acknowledgments are explicit and reasonable
+- API returns `Option` for invalid indices — consistent with repo style
+
+### Minor notes (non-blocking)
+
+**1. `TLB_UNMAPPED` sentinel value**
+
+The design says `TLB_UNMAPPED` means "stale cached translation is absent" but doesn't specify the sentinel. Since the TLB state is `Vec<u64>`, presumably `TLB_UNMAPPED = 0` or `u64::MAX`. Either works; just pick one and document it in the struct. Not a design gap — just an implementation detail to settle in Phase 2.
+
+**2. `check_tlb_freshness` scope**
+
+This function checks whether *all* entries in a `Vec<u64>` are `TLB_UNMAPPED`. The freshness theorem connects completion + ack invariant to this predicate. That's clean. Just note that this is a whole-vector scan, not a single-entry check — the name could mislead callers expecting per-entry queries. Minor naming concern, not blocking.
+
+**3. Ack invariant maintenance across IPI + ack separation**
+
+The design correctly notes that `acknowledge_shootdown` preserves the ack invariant "when the caller acknowledges only after a successful invalidation step." This means the invariant is a *protocol-level* property requiring the caller to sequence `handle_shootdown_ipi` before `acknowledge_shootdown` for the same core. The spec and proof should make this sequencing precondition explicit — likely as a `requires` on `acknowledge_shootdown` or as a stated protocol assumption. The design implies this but doesn't spell it out as a formal precondition.
+
+**4. Napkin alignment**
+
+- `Seq::new(...)` pointwise pattern (napkin: "patterns that work") — the range lifting layer should use this instead of recursive scan specs. The design says "pointwise" which aligns.
+- No `cargo fmt --all` risk here since this is a single new file.
+- Canonical spec timing: per previous task review, defer `openspec/specs/tlb-shootdown/spec.md` creation to archive phase and use `git add -f`.
+
+### No unresolved choices requiring human input. Proceed to implementation.

@@ -1,0 +1,11 @@
+inventory_runtime_instruction_rows=['is_well_formed_tree', 'is_valid_tile_pattern', 'subtree_eval', 'tiling_cost', 'tile_matches', 'optimal_tiling', 'check_coverage', 'check_soundness']
+is_well_formed_tree: site='`src/instruction_selection.rs:83 is_well_formed_tree`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+is_valid_tile_pattern: site='`src/instruction_selection.rs:94 is_valid_tile_pattern`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+subtree_eval: site='`src/instruction_selection.rs:119 subtree_eval`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+tiling_cost: site='`src/instruction_selection.rs:147 tiling_cost`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+tile_matches: site='`src/instruction_selection.rs:155 tile_matches`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+optimal_tiling: site='`src/instruction_selection.rs:201 optimal_tiling`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+check_coverage: site='`src/instruction_selection.rs:211 check_coverage`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+check_soundness: site='`src/instruction_selection.rs:238 check_soundness`', path=True, name=True, classification='Closeable runtime-only', rationale=True, coverage=True
+RESULT: PASS
+checked_inventory_rows=8

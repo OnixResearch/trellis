@@ -1,0 +1,11 @@
+# Tasks Review Packet
+
+## Phase 1: Core model and proofs
+- `src/sel4_reply.rs` landed the reply-cap lifecycle model, caller/callee pairing, and `reply` / `cancel` / `revoke` transitions.
+- Baseline shipped-surface audit is captured in `evidence/repo-sync.txt`.
+- Targeted module validation is captured in `evidence/cargo-test-sel4-reply.txt` and `evidence/verus-sel4-reply.txt`.
+- Requirement/spec sync for `sel4-reply.*` is reflected in the archived tree and canonical spec.
+
+## Repo validation and archive
+- Repo-wide validation transcripts are listed in `evidence/review-index.md`.
+- Archive review surfaces are indexed in `evidence/review-index.md`.

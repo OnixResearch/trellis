@@ -1,0 +1,18 @@
+$ ./scripts/check-coverage.rs
+
+Checked 2385 pub fn declarations, 0 exempted
+✓ all pub fns have r[impl] annotations
+$ ./scripts/check-ensures.rs
+
+Checked 2284 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
+$ ./scripts/checker-fixtures.rs
+PASS coverage-valid
+PASS coverage-missing-impl
+PASS ensures-valid
+PASS ensures-missing-clause
+PASS iterative-valid
+PASS iterative-self-cycle
+PASS iterative-mutual-cycle
+PASS iterative-qualified-local-call
+checker fixture self-tests: PASS

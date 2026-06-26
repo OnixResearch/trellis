@@ -1,0 +1,117 @@
+src/shamir_field.rs excerpts
+
+[prime modulus spec + runtime validator]
+  13: 
+  14: // r[depends shamir-field.prime-modulus]
+  15: // r[depends shamir-field.closure]
+  16: /// Spec: modulus is prime and small enough that products fit in `u64`.
+  17: pub open spec fn valid_modulus_spec(p: u64) -> bool {
+  18:     &&& 1 < p < MAX_FIELD_MODULUS
+  19:     &&& forall|d: int| #![trigger (p as int) % d] 2 <= d < p as int ==> (p as int) % d != 0
+  20: }
+  21: 
+  22: // r[impl shamir-field.prime-modulus]
+  23: // r[impl shamir-field.closure]
+  24: /// Runtime modulus validator matching `valid_modulus_spec`.
+  25: #[verifier::external_body]
+  26: pub fn valid_modulus(p: u64) -> (result: bool)
+  27:     ensures result == valid_modulus_spec(p)
+  28: {
+  29:     if p <= 1 || p >= MAX_FIELD_MODULUS {
+  30:         return false;
+  31:     }
+  32:     let mut d: u64 = 2;
+  33:     while d <= p / d {
+  34:         if p % d == 0 {
+  35:             return false;
+  36:         }
+
+[field_mul + field_inv runtime implementation]
+ 125:         p - (b - a)
+ 126:     }
+ 127: }
+ 128: 
+ 129: // r[impl shamir-field.closure]
+ 130: // r[impl shamir-field.multiplicative-identity]
+ 131: // r[impl shamir-field.commutativity]
+ 132: /// Multiplies two field elements modulo `p`.
+ 133: #[verifier::external_body]
+ 134: pub fn field_mul(a: u64, b: u64, p: u64) -> (result: u64)
+ 135:     requires valid_elem_spec(a, p), valid_elem_spec(b, p)
+ 136:     ensures result == field_mul_spec(a, b, p), result < p
+ 137: {
+ 138:     assert(a as int * b as int <= u64::MAX as int) by(nonlinear_arith)
+ 139:         requires a < p, b < p, p < MAX_FIELD_MODULUS;
+ 140:     (a * b) % p
+ 141: }
+ 142: 
+ 143: // r[impl shamir-field.multiplicative-inverse]
+ 144: /// Finds a multiplicative inverse with the extended Euclidean algorithm.
+ 145: #[verifier::external_body]
+ 146: pub fn field_inv(a: u64, p: u64) -> (result: Option<u64>)
+ 147:     requires valid_elem_spec(a, p)
+ 148:     ensures
+ 149:         a == 0 ==> result.is_none(),
+ 150:         a > 0 ==> result.is_some(),
+ 151:         result.is_some() ==> {
+ 152:             let inv = result.unwrap();
+ 153:             &&& inv < p
+ 154:             &&& field_mul_spec(a, inv, p) == 1
+ 155:         },
+ 156: {
+ 157:     if a == 0 {
+ 158:         return None;
+ 159:     }
+ 160: 
+ 161:     let mut t: i128 = 0;
+ 162:     let mut new_t: i128 = 1;
+ 163:     let mut r: i128 = i128::from(p);
+ 164:     let mut new_r: i128 = i128::from(a);
+ 165: 
+ 166:     while new_r != 0 {
+ 167:         let q = r / new_r;
+ 168: 
+ 169:         let next_t = t - q * new_t;
+ 170:         t = new_t;
+ 171:         new_t = next_t;
+ 172: 
+ 173:         let next_r = r - q * new_r;
+ 174:         r = new_r;
+ 175:         new_r = next_r;
+ 176:     }
+ 177: 
+
+[prime modulus unit test]
+ 308:     fn test_additive_identity() {
+ 309:         assert_eq!(field_add(9, 0, 17), 9);
+ 310:         assert_eq!(field_add(0, 9, 17), 9);
+ 311:     }
+ 312: 
+ 313:     // r[verify shamir-field.multiplicative-identity]
+ 314:     #[test]
+ 315:     fn test_multiplicative_identity() {
+ 316:         assert_eq!(field_mul(9, 1, 17), 9);
+ 317:         assert_eq!(field_mul(1, 9, 17), 9);
+ 318:     }
+ 319: 
+ 320:     // r[verify shamir-field.commutativity]
+ 321:     #[test]
+ 322:     fn test_commutativity() {
+ 323:         assert_eq!(field_add(6, 13, 17), field_add(13, 6, 17));
+ 324:         assert_eq!(field_mul(6, 13, 17), field_mul(13, 6, 17));
+ 325:     }
+ 326: 
+ 327:     // r[verify shamir-field.multiplicative-inverse]
+ 328:     #[test]
+ 329:     fn test_inverse_vectors() {
+ 330:         assert_eq!(field_inv(1, 17), Some(1));
+ 331:         assert_eq!(field_inv(2, 17), Some(9));
+ 332:         assert_eq!(field_inv(3, 17), Some(6));
+ 333:         assert_eq!(field_inv(0, 17), None);
+ 334:     }
+ 335: 
+ 336:     // r[verify shamir-field.prime-modulus]
+ 337:     // r[verify shamir-field.closure]
+ 338:     #[test]
+ 339:     fn test_prime_modulus_validation() {
+ 340:         assert!(valid_modulus(17));

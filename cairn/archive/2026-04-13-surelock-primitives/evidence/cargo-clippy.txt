@@ -1,0 +1,3 @@
+    Blocking waiting for file lock on build directory
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 21.22s

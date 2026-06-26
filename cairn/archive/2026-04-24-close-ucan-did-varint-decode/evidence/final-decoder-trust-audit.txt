@@ -1,0 +1,159 @@
+$ rg -n 'fn varint_decode|varint_decode_spec|varint_decode_fuel|checked_(mul|add)_u64|varint_decode_rejects|varint_decode_accepts|VARINT_BASE|VARINT_CONTINUATION_BIT|VARINT_PAYLOAD_MASK|MAX_U64_VARINT_BYTES' src/ucan_did.rs
+48:pub const VARINT_BASE: u64 = 128;
+50:pub const VARINT_CONTINUATION_BIT: u8 = 128;
+52:pub const VARINT_PAYLOAD_MASK: u8 = 127;
+58:pub const MAX_U64_VARINT_BYTES: usize = 10;
+74:    if n < VARINT_BASE {
+77:        seq![(n % VARINT_BASE + VARINT_CONTINUATION_BIT as u64) as u8]
+78:            + varint_encode_spec((n / VARINT_BASE) as u64)
+82:pub open spec fn checked_mul_u64_spec(a: u64, b: u64) -> Option<u64> {
+90:pub open spec fn checked_add_u64_spec(a: u64, b: u64) -> Option<u64> {
+99:    if byte < VARINT_CONTINUATION_BIT {
+102:        (byte - VARINT_CONTINUATION_BIT) as u64
+106:pub open spec fn varint_decode_fuel_spec(bytes: Seq<u8>, fuel: nat) -> Option<(u64, nat)>
+113:        if byte < VARINT_CONTINUATION_BIT {
+117:            match varint_decode_fuel_spec(tail, (fuel - 1) as nat) {
+121:                    match checked_mul_u64_spec(rest_value, VARINT_BASE) {
+123:                        Some(scaled_rest) => match checked_add_u64_spec(low, scaled_rest) {
+138:pub open spec fn varint_decode_spec(bytes: Seq<u8>) -> Option<(u64, nat)> {
+139:    varint_decode_fuel_spec(bytes, MAX_U64_VARINT_BYTES as nat)
+142:proof fn checked_mul_u64_fits(a: u64, b: u64)
+144:    ensures checked_mul_u64_spec(a, b) == Some((a as int * b as int) as u64),
+148:proof fn checked_add_u64_fits(a: u64, b: u64)
+150:    ensures checked_add_u64_spec(a, b) == Some((a as int + b as int) as u64),
+157:    if exp == 0 { 1int } else { VARINT_BASE as int * pow128_spec((exp - 1) as nat) }
+176:    if n < VARINT_BASE {
+183:                assert(pow128_spec(budget) == VARINT_BASE as int * pow128_spec((budget - 1) as nat));
+184:                assert(pow128_spec(budget) == VARINT_BASE as int);
+185:                assert(n as int >= VARINT_BASE as int);
+190:        assert(pow128_spec(budget) == VARINT_BASE as int * pow128_spec(next_budget));
+191:        assert(((n / VARINT_BASE) as int) < pow128_spec(next_budget)) by(nonlinear_arith)
+193:                (n as int) < (VARINT_BASE as int) * pow128_spec(next_budget),
+195:                n >= VARINT_BASE;
+196:        varint_encode_len_bounded_by((n / VARINT_BASE) as u64, next_budget);
+197:        assert(varint_encode_spec(n).len() == 1 + varint_encode_spec((n / VARINT_BASE) as u64).len());
+202:    ensures varint_encode_spec(n).len() <= MAX_U64_VARINT_BYTES as nat,
+204:    assert(pow128_spec(MAX_U64_VARINT_BYTES as nat) > u64::MAX as int) by(compute_only);
+205:    varint_encode_len_bounded_by(n, MAX_U64_VARINT_BYTES as nat);
+208:proof fn varint_decode_fuel_prefix_free(n: u64, suffix: Seq<u8>, fuel: nat)
+211:        varint_decode_fuel_spec(varint_encode_spec(n) + suffix, fuel)
+216:    if n < VARINT_BASE {
+218:        assert(varint_decode_fuel_spec(enc + suffix, fuel) == Some((n, 1nat)));
+220:        let tail_val = (n / VARINT_BASE) as u64;
+221:        let low = (n % VARINT_BASE) as u64;
+222:        let low_byte = (low + VARINT_CONTINUATION_BIT as u64) as u8;
+228:        varint_decode_fuel_prefix_free(tail_val, suffix, (fuel - 1) as nat);
+229:        assert(varint_decode_fuel_spec(tail_enc + suffix, (fuel - 1) as nat)
+231:        assert(tail_val as int * VARINT_BASE as int <= n as int) by(nonlinear_arith)
+232:            requires tail_val == n / VARINT_BASE, n >= VARINT_BASE;
+233:        assert(tail_val as int * VARINT_BASE as int <= u64::MAX as int) by(nonlinear_arith)
+234:            requires tail_val as int * VARINT_BASE as int <= n as int;
+235:        checked_mul_u64_fits(tail_val, VARINT_BASE);
+236:        let scaled_int = tail_val as int * VARINT_BASE as int;
+238:        assert(VARINT_BASE as int > 0);
+240:            requires tail_val as int >= 0, VARINT_BASE as int > 0, scaled_int == tail_val as int * VARINT_BASE as int;
+244:        assert(scaled as int == tail_val as int * VARINT_BASE as int);
+247:                low == n % VARINT_BASE,
+248:                tail_val == n / VARINT_BASE,
+249:                scaled as int == tail_val as int * VARINT_BASE as int;
+250:        checked_add_u64_fits(low, scaled);
+253:                low == n % VARINT_BASE,
+254:                tail_val == n / VARINT_BASE,
+255:                scaled as int == tail_val as int * VARINT_BASE as int,
+256:                n >= VARINT_BASE;
+258:        assert(varint_decode_fuel_spec(enc + suffix, fuel) == Some((n, enc.len())));
+265:    ensures varint_decode_spec(varint_encode_spec(n)) == Some((n, varint_encode_spec(n).len())),
+268:    varint_decode_fuel_prefix_free(n, Seq::<u8>::empty(), MAX_U64_VARINT_BYTES as nat);
+274:pub proof fn varint_decode_rejects_empty()
+275:    ensures varint_decode_spec(Seq::<u8>::empty()) == None::<(u64, nat)>,
+281:pub proof fn varint_decode_rejects_single_continuation()
+282:    ensures varint_decode_spec(seq![VARINT_CONTINUATION_BIT]) == None::<(u64, nat)>,
+284:    assert(varint_decode_spec(seq![VARINT_CONTINUATION_BIT]) == None::<(u64, nat)>) by(compute_only);
+289:pub proof fn varint_decode_accepts_nonminimal_zero()
+290:    ensures varint_decode_spec(seq![VARINT_CONTINUATION_BIT, 0u8]) == Some((0u64, 2nat)),
+292:    assert(varint_decode_spec(seq![VARINT_CONTINUATION_BIT, 0u8]) == Some((0u64, 2nat))) by(compute_only);
+297:pub proof fn varint_decode_rejects_overlong_continuations()
+298:    ensures varint_decode_spec(seq![
+299:        VARINT_CONTINUATION_BIT,
+300:        VARINT_CONTINUATION_BIT,
+301:        VARINT_CONTINUATION_BIT,
+302:        VARINT_CONTINUATION_BIT,
+303:        VARINT_CONTINUATION_BIT,
+304:        VARINT_CONTINUATION_BIT,
+305:        VARINT_CONTINUATION_BIT,
+306:        VARINT_CONTINUATION_BIT,
+307:        VARINT_CONTINUATION_BIT,
+308:        VARINT_CONTINUATION_BIT,
+311:    assert(varint_decode_spec(seq![
+312:        VARINT_CONTINUATION_BIT,
+313:        VARINT_CONTINUATION_BIT,
+314:        VARINT_CONTINUATION_BIT,
+315:        VARINT_CONTINUATION_BIT,
+316:        VARINT_CONTINUATION_BIT,
+317:        VARINT_CONTINUATION_BIT,
+318:        VARINT_CONTINUATION_BIT,
+319:        VARINT_CONTINUATION_BIT,
+320:        VARINT_CONTINUATION_BIT,
+321:        VARINT_CONTINUATION_BIT,
+327:pub proof fn varint_decode_rejects_overflowing_final_payload()
+328:    ensures varint_decode_spec(seq![
+341:    assert(varint_decode_spec(seq![
+378:        if val < VARINT_BASE {
+383:        let low = (val % VARINT_BASE + VARINT_CONTINUATION_BIT as u64) as u8;
+385:        val = val / VARINT_BASE;
+389:fn checked_mul_u64(a: u64, b: u64) -> (result: Option<u64>)
+390:    ensures result == checked_mul_u64_spec(a, b)
+395:fn checked_add_u64(a: u64, b: u64) -> (result: Option<u64>)
+396:    ensures result == checked_add_u64_spec(a, b)
+401:fn varint_decode_fuel(
+408:        fuel <= MAX_U64_VARINT_BYTES,
+412:            Some((val, len)) => varint_decode_fuel_spec(
+417:            None => varint_decode_fuel_spec(
+434:    if byte < VARINT_CONTINUATION_BIT {
+437:            assert(varint_decode_fuel_spec(view, fuel as nat) == Some((byte as u64, 1nat)));
+448:    let tail = varint_decode_fuel(bytes, offset + 1, fuel - 1);
+455:                assert(varint_decode_fuel_spec(tail_view, (fuel - 1) as nat).is_none());
+456:                assert(varint_decode_fuel_spec(view, fuel as nat).is_none());
+461:            let low = (byte - VARINT_CONTINUATION_BIT) as u64;
+465:            let scaled_rest = match checked_mul_u64(rest_value, VARINT_BASE) {
+472:                        assert(varint_decode_fuel_spec(tail_view, (fuel - 1) as nat)
+474:                        assert(checked_mul_u64_spec(rest_value, VARINT_BASE).is_none());
+475:                        assert(varint_decode_fuel_spec(view, fuel as nat).is_none());
+480:            let value = match checked_add_u64(low, scaled_rest) {
+487:                        assert(varint_decode_fuel_spec(tail_view, (fuel - 1) as nat)
+489:                        assert(checked_mul_u64_spec(rest_value, VARINT_BASE) == Some(scaled_rest));
+490:                        assert(checked_add_u64_spec(low, scaled_rest).is_none());
+491:                        assert(varint_decode_fuel_spec(view, fuel as nat).is_none());
+500:                assert(varint_decode_fuel_spec(tail_view, (fuel - 1) as nat)
+502:                assert(checked_mul_u64_spec(rest_value, VARINT_BASE) == Some(scaled_rest));
+503:                assert(checked_add_u64_spec(low, scaled_rest) == Some(value));
+504:                assert(varint_decode_fuel_spec(view, fuel as nat) == Some((value, rest_len as nat + 1)));
+520:pub fn varint_decode(bytes: &Vec<u8>) -> (result: Option<(u64, usize)>)
+523:            Some((val, len)) => varint_decode_spec(bytes@) == Some((val, len as nat))
+525:            None => varint_decode_spec(bytes@).is_none(),
+528:    let result = varint_decode_fuel(bytes, 0usize, MAX_U64_VARINT_BYTES);
+531:        assert(varint_decode_spec(bytes@) == varint_decode_fuel_spec(bytes@, MAX_U64_VARINT_BYTES as nat));
+547:    match varint_decode_spec(prefixed) {
+569:proof fn varint_decode_prefix_free(n: u64, suffix: Seq<u8>)
+571:        varint_decode_spec(varint_encode_spec(n) + suffix)
+576:    varint_decode_fuel_prefix_free(n, suffix, MAX_U64_VARINT_BYTES as nat);
+821:        VARINT_PAYLOAD_MASK as u64,
+822:        VARINT_BASE,
+824:        VARINT_BASE * HALF_DIVISOR,
+829:    const ED25519_VARINT: &[u8] = &[CODEC_ED25519 as u8, (CODEC_ED25519 / VARINT_BASE) as u8];
+831:    const NON_MINIMAL_ZERO: &[u8] = &[VARINT_CONTINUATION_BIT, 0];
+867:        let truncated = vec![VARINT_CONTINUATION_BIT];
+886:    fn test_varint_decode_accepts_non_minimal_representable() {
+892:    fn test_varint_decode_rejects_overlong_without_terminator() {
+893:        let overlong = vec![VARINT_CONTINUATION_BIT; MAX_U64_VARINT_BYTES];
+898:    fn test_varint_decode_rejects_overflowing_final_payload() {
+899:        let mut encoded = vec![VARINT_MAX_CONTINUATION_BYTE; MAX_U64_VARINT_BYTES - 1];
+
+$ rg -n 'external_body|assume\s*\(|assume_specification\[|@verified-logic:no-ensures|@verified-logic:exempt' src/ucan_did.rs
+7://! Varint encode/decode is fully internalized. Base58btc is external_body
+596:#[verifier::external_body]
+604:#[verifier::external_body]
+613:#[verifier::external_body]
+622:#[verifier::external_body]
+
+result: decoder helper path has no external_body/assume/assume_specification/no-ensures/exempt markers; remaining external_body hits are base58btc codec axioms/wrappers outside the varint decoder path.

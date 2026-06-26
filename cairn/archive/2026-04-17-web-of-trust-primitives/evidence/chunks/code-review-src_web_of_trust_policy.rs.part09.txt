@@ -1,0 +1,45 @@
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(threshold_accepts(&roots, &vec![att1, att2], &vec![invalid], &subject, 2, 1, 5));
++    }
++
++    proptest! {
++        // r[verify web-of-trust.threshold]
++        #[test]
++        fn prop_threshold_accepts_oracle(
++            subject_choice in 0usize..4,
++            k in 0usize..4,
++            depth in 0usize..4,
++            time in 0u64..20,
++            duplicate_final in any::<bool>(),
++        ) {
++            let root_a_key = vec![1, 2, 3];
++            let root_b_key = vec![4, 5, 6];
++            let subject_key = vec![7, 8, 9];
++            let self_key = vec![10, 11, 12];
++
++            let mut attestations = vec![
++                signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1),
++                signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2),
++                signed_attestation(root_a_key.clone(), root_b_key.clone(), TRUST_ROLE_TAG, 0, 20, 3),
++                signed_attestation(root_a_key.clone(), self_key.clone(), TRUST_ROLE_TAG, 0, 20, 4),
++                signed_attestation(self_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 5),
++                signed_attestation(subject_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 6),
++            ];
++            if duplicate_final {
++                attestations.push(signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 7));
++            }
++            let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++            let subjects = [
++                principal_id_from_bytes(&root_a_key),
++                principal_id_from_bytes(&root_b_key),
++                principal_id_from_bytes(&subject_key),
++                principal_id_from_bytes(&self_key),
++            ];
++            let subject = &subjects[subject_choice];
++            let revocations = Vec::new();
++
++            let oracle = threshold_accepts_oracle(&roots, &attestations, &revocations, subject, k, depth, time);
++            prop_assert_eq!(threshold_accepts(&roots, &attestations, &revocations, subject, k, depth, time), oracle);
++        }
++    }
++}

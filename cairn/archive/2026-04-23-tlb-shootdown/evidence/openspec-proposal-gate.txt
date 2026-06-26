@@ -1,0 +1,11 @@
+OpenSpec proposal gate (tlb-shootdown)
+
+Strategy: cross-family
+
+## Design Re-Review: `tlb-shootdown`
+
+### Verdict: Ready for implementation. No changes needed.
+
+The design fully covers the proposal and spec, decisions are justified, the proof plan is well-ordered, and there are no unresolved choices blocking implementation. My previous minor notes (sentinel value, `check_tlb_freshness` naming, ack invariant sequencing precondition) are implementation-time details, not design gaps.
+
+Proceed to Phase 1.

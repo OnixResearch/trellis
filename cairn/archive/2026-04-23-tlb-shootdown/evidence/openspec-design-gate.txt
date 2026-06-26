@@ -1,0 +1,55 @@
+OpenSpec design gate (tlb-shootdown)
+
+Strategy: cross-family
+
+VERDICT: PASS
+
+## Findings
+
+- [low] [class=omission] [scope=design] [route=prompt] [promoted=no] Design does not specify the sentinel value for `TLB_UNMAPPED`
+  - Evidence: `design.md` says "`TLB_UNMAPPED` means the stale cached translation is absent" but never pins it to a concrete constant (e.g., `0u64`, `u64::MAX`). The spec scenarios test for "absent" without defining the representation. This is fine for spec-level reasoning but will need a concrete choice before tasks/implementation. Not blocking.
+
+- [low] [class=omission] [scope=design] [route=prompt] [promoted=no] No explicit error-model decision for `handle_shootdown_ipi` when a core is not targeted or has already acknowledged
+  - Evidence: `design.md` API section says "Invalid indices return `None` rather than panicking" but does not distinguish between an out-of-bounds core index and a core that is not targeted or has already handled the IPI. The spec's termination scenarios (r[tlb-shootdown.termination]) require "first acknowledgment" semantics, implying idempotency or rejection must be decided. Not blocking at design stage but should be nailed down in tasks.
+
+- [low] [class=omission] [scope=design] [route=prompt] [promoted=no] Design does not state whether `ShootdownRequest.acked` covers all cores or only targeted cores
+  - Evidence: `design.md` defines `acked: Vec<bool>` sized implicitly by context. The spec's freshness requirement (r[tlb-shootdown.freshness]) says "every targeted core." If the bitmap is all-cores-wide, non-targeted entries need a defined state. If it is targeted-only, an index mapping is needed. Should be clarified before implementation.
+
+- [info] [class=pattern] [scope=design] [route=guidance] [promoted=no] Design correctly mirrors repo patterns (`mesi.rs`, `store_buffer.rs`) as noted
+  - Evidence: `design.md` explicitly calls out "recursive spec helpers, plus proof lemmas that lift local update facts into global protocol invariants." Consistent with napkin entry on `Seq::new(...)` and per-index results for single-writer proofs.
+
+## Stage Check
+
+**What matches:**
+- Design covers every proposal goal: single-page freshness, termination/monotonicity, initiator safety, self-invalidation, isolation, and range coverage.
+- Design covers every delta-spec requirement ID: `r[tlb-shootdown.freshness]`, `r[tlb-shootdown.termination]`, `r[tlb-shootdown.initiator-safety]`, `r[tlb-shootdown.self-invalidation]`, `r[tlb-shootdown.isolation]`, `r[tlb-shootdown.range]`.
+- All six exec functions from the proposal appear in the design API section with signatures.
+- Proof plan (§Proof Plan, steps 1–4) traces directly to the spec scenarios: local update facts → ack invariant → freshness theorem → isolation/range lifting. Each step maps to at least one requirement.
+- Risks/trade-offs section is explicit about what is not modeled (page-table result, concurrent scheduling, heavy runtime range API).
+- Non-goals in the proposal are reflected as non-goals in the design.
+- No napkin anti-patterns triggered (no `cargo fmt --all`, no premature archive marking, no missing napkin file).
+
+**What is missing (non-blocking):**
+- Concrete sentinel value for `TLB_UNMAPPED`.
+- Idempotency/rejection semantics for duplicate IPI handling or duplicate acknowledgment.
+- Bitmap sizing decision (all-cores vs. targeted-only).
+
+These are implementation-level details appropriate for the tasks stage.
+
+**Stage readiness:** The design stage is complete and internally consistent with both the proposal and delta spec. No blocking gaps.
+
+## Next Actions
+
+1. When writing `tasks.md`, pin the `TLB_UNMAPPED` sentinel value and the bitmap-sizing decision as explicit sub-tasks.
+2. In tasks, add a sub-task to decide and document idempotency semantics for `handle_shootdown_ipi` and `acknowledge_shootdown` (reject vs. no-op on duplicate calls), ensuring consistency with r[tlb-shootdown.termination] scenario "Pending count never increases."
+3. Proceed to tasks stage.
+
+## Promotion Hints
+- repeated 30x [class=omission] [scope=design] [route=prompt]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec design gate/template to block repeated omission findings. Example trigger: The design does not map each requirement to a concrete proof or test strategy.
+  sources: openspec-gate=30
+- repeated 3x [class=pattern] [scope=design] [route=guidance]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec design gate/template to block repeated pattern findings. Example trigger: Napkin identity-substitution correction is properly incorporated
+  sources: openspec-gate=3

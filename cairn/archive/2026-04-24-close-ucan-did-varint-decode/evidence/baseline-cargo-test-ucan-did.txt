@@ -1,0 +1,11 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet ucan_did
+note: user-level sccache wrapper emitted startup/log-file diagnostics during baseline capture, then fell back to rustc; final cargo exit code was 0.
+
+running 8 tests
+........
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 4144 filtered out; finished in 0.00s
+
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 13 filtered out; finished in 0.00s
+
+exit_code=0

@@ -1,0 +1,29 @@
+# Tasks Review Packet
+
+## Completed checklist slices
+- Phase 1 model/helper slice completed in `src/instruction_selection.rs` and `src/lib.rs`:
+  - tree model, `NodePath`, well-formedness boundary
+  - valid tile-pattern boundary including root-`Specific`
+  - const-literal match boundary for const tiles
+  - helper surfaces `tiling_cost`, `check_coverage`, `check_soundness`
+- Phase 2 matching/failure slice completed:
+  - `tile_matches`
+  - canonical uncovered-root ordering
+  - invalid root-`Any` rejection
+  - root failure identity and canonical first-unmatched-root reporting
+  - negative const-literal mismatch test
+- Phase 3 DP/determinism slice completed:
+  - recursive candidate formation
+  - total-cost comparison and tie-break ordering
+  - canonical preorder `Tiling` serialization
+  - repeated-run deterministic output coverage
+- Phase 4 coverage/soundness slice completed:
+  - `check_coverage` now recomputes coverage from the tree plus selections instead of trusting stored `covered_paths`
+  - selected-tile semantic checking / successful-tiling soundness helper surface
+- Phase 5 evidence slice completed:
+  - raw validation transcripts saved under `evidence/raw/`
+  - validation summary updated in `evidence/validation-review-packet.txt`
+
+## Archive traceability checkpoint
+- Archive/finish remains blocked unless checklist items are visibly checked with saved evidence.
+- This packet exists to preserve task-level traceability that was previously lost during archive attempts.

@@ -1,0 +1,17 @@
+counts.md total: parsed=44, source=44, ok=True
+counts.md external_body: parsed=33, source=33, ok=True
+counts.md assume_specification: parsed=3, source=3, ok=True
+counts.md runtime_instruction: parsed=8, source=8, ok=True
+counts.md split: permanent=29, closeable=15, total=44
+counts.md no_ensures: parsed=1, source=1, ok=True
+README total: True
+README external_body: True
+README assume_specification: True
+README runtime instruction exemptions: True
+SPEC total: True
+SPEC external_body: True
+SPEC assume_specification: True
+SPEC runtime instruction exemptions: True
+SPEC no_ensures nonadditive: True
+RESULT: PASS
+source={'external_body': 33, 'assume_specification': 3, 'runtime_instruction': 8, 'no_ensures': 1, 'total': 44}

@@ -1,0 +1,140 @@
++    ensures !revocation_effective_at_spec(rev, att, t)
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// A fixed signature cannot validate two different canonical revocation payloads for the same issuer bytes.
++pub proof fn revocation_signature_binds_payload(
++    issuer_key_bytes: Seq<u8>,
++    payload1: Seq<u8>,
++    payload2: Seq<u8>,
++    signature: Seq<u8>,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),
++        revocation_signature_valid_bytes_spec(issuer_key_bytes, payload1, signature),
++        revocation_signature_valid_bytes_spec(issuer_key_bytes, payload2, signature),
++    ensures
++        payload1 == payload2,
++{
++    assert(revocation_signature_input_spec(issuer_key_bytes, payload1) == Some(signature));
++    assert(revocation_signature_input_spec(issuer_key_bytes, payload2) == Some(signature));
++    assert(revocation_signature_input_spec(issuer_key_bytes, payload1)
++        == revocation_signature_input_spec(issuer_key_bytes, payload2));
++    let prefix = seq![REVOCATION_SIGNATURE_DOMAIN_TAG]
++        + canonical_byte_string_spec(issuer_key_bytes).unwrap();
++    concat_right_cancel(prefix, payload1, payload2);
++}
++
++// r[verify web-of-trust.revocation]
++/// Once effective, a revocation remains effective at later times.
++pub proof fn revocation_monotone(rev: Revocation, att: Attestation, t1: u64, t2: u64)
++    requires
++        revocation_effective_at_spec(rev, att, t1),
++        t1 <= t2,
++    ensures
++        revocation_effective_at_spec(rev, att, t2),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Exact-payload revocations match exactly the canonical attestation payload bytes.
++pub proof fn revocation_exact_payload_correct(rev: Revocation, att: Attestation)
++    requires revocation_matches_exact_payload_spec(rev, att)
++    ensures
++        rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG,
++        attestation_payload_of_spec(att) == Some(rev.exact_payload_target@),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Family-target revocations match exactly one `(issuer, subject, role)` family.
++pub proof fn revocation_family_target_correct(rev: Revocation, att: Attestation)
++    requires revocation_matches_family_spec(rev, att)
++    ensures
++        rev.target_kind_tag == FAMILY_TARGET_KIND_TAG,
++        rev.family_subject.digest@ == att.subject.digest@,
++        rev.family_role_tag == att.role_tag,
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Invalid target-kind tags are rejected as non-canonical.
++pub proof fn revocation_invalid_kind_rejected(rev: Revocation)
++    requires rev.target_kind_tag != EXACT_PAYLOAD_TARGET_KIND_TAG && rev.target_kind_tag != FAMILY_TARGET_KIND_TAG
++    ensures revocation_target_encoding_spec(rev).is_none(),
++{
++}
++
++// r[verify web-of-trust.revocation]
++/// Overlong canonical fields are rejected as non-canonical.
++pub proof fn revocation_overlong_rejected(
++    issuer_key_bytes: Seq<u8>,
++    target_encoding: Seq<u8>,
++    target_kind_tag: u8,
++    effective_time: u64,
++)
++    requires
++        !length_fits_u32_spec(issuer_key_bytes.len()) || !length_fits_u32_spec(target_encoding.len()),
++    ensures
++        revocation_payload_bytes_spec(issuer_key_bytes, target_kind_tag, target_encoding, effective_time).is_none(),
++{
++}
++
++} // verus!
++
++#[cfg(test)]
++mod tests {
++    use proptest::prelude::*;
++
++    use super::*;
++    use crate::web_of_trust_attestation::{Attestation, TRUST_ROLE_TAG};
++    use crate::web_of_trust_principal::principal_id_from_bytes;
++
++    fn signed_attestation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        not_before: u64,
++        not_after: u64,
++        sequence_no: u64,
++    ) -> Attestation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Attestation {
++            issuer_key_bytes,
++            issuer,
++            subject_key_bytes,
++            subject,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++            signature: Vec::new(),
++        };
++        let payload = attestation_payload_bytes(&unsigned).unwrap();
++        let signature = crate::web_of_trust_attestation::attestation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Attestation { signature, ..unsigned }
++    }
++
++    fn signed_exact_payload_revocation(att: &Attestation, effective_time: u64) -> Revocation {
++        let issuer = principal_id_from_bytes(&att.issuer_key_bytes);
++        let family_subject = principal_id_from_bytes(&att.subject_key_bytes);
++        let exact_payload_target = attestation_payload_bytes(att).unwrap();
++        let unsigned = Revocation {
++            issuer_key_bytes: att.issuer_key_bytes.clone(),
++            issuer,
++            target_kind_tag: EXACT_PAYLOAD_TARGET_KIND_TAG,
++            exact_payload_target,
++            family_subject_key_bytes: att.subject_key_bytes.clone(),
++            family_subject,
++            family_role_tag: att.role_tag,
++            effective_time,
++            signature: Vec::new(),
++        };
++        let payload = revocation_payload_bytes(&unsigned).unwrap();
++        let signature = revocation_signature_bytes_runtime(unsigned.issuer_key_bytes.as_slice(), payload.as_slice());
++        Revocation { signature, ..unsigned }

@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10450 Verus proofs · 4697 tests · 1951 requirements · 591 modules · 16 trusted/proof-gap boundaries**
+**10463 Verus proofs · 4696 tests · 1955 requirements · 592 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -106,6 +106,7 @@ validation commands captured in the change evidence.
 |---|---|
 | `r1cs_constraint` | bounded single-row R1CS shape, modular dot product, and satisfaction admission without multi-row/proving-system claims |
 | `r1cs_bit_decomposition` | bounded two-bit decomposition over boolean R1CS witness slots without arbitrary-width range-check/proving-system claims |
+| `r1cs_lookup` | bounded lookup-table membership over active R1CS witness/table prefixes without PLONK lookup/proving-system claims |
 | `r1cs_boolean` | bounded booleanity row encoding and satisfaction for witness-slot bit constraints without range-check/proving-system claims |
 | `r1cs_gates` | bounded multiplication, addition, and constant gate adapters into R1CS rows without circuit-builder/proving-system claims |
 | `r1cs_system` | bounded multi-row R1CS system shape and shared-witness satisfaction without proving-system claims |

@@ -1,0 +1,19 @@
+# Validation Review Packet
+
+## Repo validation transcripts
+- `cargo-test.txt` — full `cargo test`
+- `cargo-clippy.txt` — full `cargo clippy --all-targets -- -D warnings`
+- `verus-lib.txt` — `./scripts/verus.sh src/lib.rs`
+- `verify.txt` — `./scripts/verify.sh`
+- `tracey-uncovered.txt` — `tracey query uncovered`
+- `tracey-untested.txt` — `tracey query untested`
+
+## Result summary
+- Validation summaries and archive bookkeeping are preserved in the archive packet; see `evidence/review-index.md`.
+- `verify.txt` is present for the landed tree.
+- Tracey uncovered/untested transcripts are present.
+- Verus, cargo test, and cargo clippy transcripts are present.
+
+## Archive status
+- `clean-tree-claim.md` scopes the preserved clean-tree evidence to the archived snapshot.
+- `post-e7058e5-git-status.txt` is the preserved empty `git status --short` snapshot.

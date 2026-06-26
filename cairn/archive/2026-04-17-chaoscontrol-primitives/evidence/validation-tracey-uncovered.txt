@@ -1,0 +1,2 @@
+$ tracey query uncovered
+verified-logic/rust: 0 uncovered out of 1555 rules

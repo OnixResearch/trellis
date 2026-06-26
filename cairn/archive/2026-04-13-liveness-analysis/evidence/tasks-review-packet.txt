@@ -1,0 +1,22 @@
+# Tasks Review Packet
+
+## Phase 1: Dataflow infrastructure
+- Phase 1 checklist is preserved in `evidence/final-tasks.md`.
+
+## Phase 2: Fixed-point iteration
+- The archived scope records synchronous whole-graph rounds and the `2 × V × B` convergence bound; see `evidence/final-tasks.md`.
+
+## Phase 3: Correctness properties
+- Dataflow equation, use-def, def-kills, and exit-boundary obligations are all checked off in `evidence/final-tasks.md`.
+
+## Phase 4: Live ranges
+- Live-range definition, connected witness-path property, and exec-level `compute_liveness*` surfaces are all checked off in `evidence/final-tasks.md`.
+
+## Phase 5: Tests
+- Unit tests and proptests are checked off in `evidence/final-tasks.md`.
+- Repo validation transcripts are listed in `evidence/review-index.md`.
+
+## Scope correction and archive state
+- Draft-to-landed scope correction is summarized in `evidence/task-mapping.md`.
+- Clean-tree claim scope is summarized in `evidence/clean-tree-claim.md`.
+- Review surfaces are indexed in `evidence/review-index.md`.

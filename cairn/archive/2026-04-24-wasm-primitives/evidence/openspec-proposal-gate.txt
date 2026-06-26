@@ -1,0 +1,5 @@
+OpenSpec proposal gate (wasm-primitives)
+
+Strategy: cross-family
+
+Proposal unchanged. All five checks pass. Ready for implementation.

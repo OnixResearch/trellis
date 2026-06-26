@@ -1,0 +1,13 @@
+change_spec_ids: 10
+OK web-of-trust.principal-fingerprint
+OK web-of-trust.attestation-signature
+OK web-of-trust.attestation-window
+OK web-of-trust.revocation
+OK web-of-trust.chain-validity
+OK web-of-trust.rooted-resolution
+OK web-of-trust.threshold
+OK properties.web-of-trust.revocation-cuts-trust
+OK properties.web-of-trust.depth-monotone
+OK properties.web-of-trust.threshold-dedup
+
+PASS mirror complete

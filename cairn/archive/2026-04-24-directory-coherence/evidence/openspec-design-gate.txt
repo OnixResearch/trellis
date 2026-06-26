@@ -1,0 +1,16 @@
+OpenSpec design gate (directory-coherence)
+
+Strategy: cross-family
+
+VERDICT: PASS
+
+Key findings:
+- Low-severity note to pin the concrete representation of `DIR_UNCACHED` / `DIR_SHARED` / `DIR_EXCLUSIVE`.
+- Low-severity note to make cache-index preconditions explicit on `process_read_request`, `process_write_request`, and `process_eviction`.
+- Reviewer confirmed the design covers all six proposal capabilities, all top-level requirements, and the verification strategy.
+
+Stage check summary:
+- Proposal ↔ design coverage: complete.
+- Design ↔ spec coverage: complete.
+- Verification strategy is now explicit.
+- Ready to proceed: yes.

@@ -1,0 +1,19 @@
+# Validation Review Packet
+
+## Targeted module validation
+- `cargo test --quiet cache_hierarchy` → `evidence/cargo-test-cache-hierarchy.txt` (`12 passed; 0 failed`)
+- `./scripts/verus.sh src/cache_hierarchy.rs` → `evidence/verus-cache-hierarchy.txt` (`29 verified, 0 errors`)
+
+## Repo validation
+- `cargo test --quiet` → `evidence/cargo-test.txt`
+- `cargo clippy --all-targets -- -D warnings` → `evidence/clippy.txt`
+- `./scripts/verus.sh src/lib.rs` → `evidence/verus.txt`
+- `./scripts/check-ensures.sh` → `evidence/check-ensures.txt`
+- `tracey query uncovered` → `evidence/tracey-uncovered.txt`
+- `tracey query untested` → `evidence/tracey-untested.txt`
+
+## Result summary
+- Targeted cargo tests: pass
+- Targeted Verus: pass
+- Repo cargo/clippy/full-lib-Verus/check-ensures transcripts are present
+- Tracey transcripts are present for uncovered and untested queries

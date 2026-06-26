@@ -1,0 +1,65 @@
+# ./scripts/verify.sh evidence
+
+Command:
+
+```bash
+./scripts/verify.sh > openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/verify.full.txt 2>&1
+```
+
+Result: exit code 0 (pueue task 39 success).
+
+Raw error diagnostics matching '^error:' or '^error[': 0.
+Tracey transient cancellation lines: 0.
+
+Key success markers from raw log:
+
+Checked 1661 pub fn declarations, 10 exempted
+✓ clippy clean
+test result: ok. 4152 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.60s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 75.45s
+✓ tests pass
+verification results:: 8425 verified, 0 errors
+✓ verus proofs pass
+✓ no uncovered requirements
+✓ no untested requirements
+=== ALL CHECKS PASSED ===
+
+Tail:
+
+```text
+2537 |         assert forall|k: int| 0 <= k < len as int implies result@[k] == extend_to_spec(acc@, len as nat)[k] by {
+     |         ^^^^^^
+
+verification results:: 8425 verified, 0 errors
+warning: 18 warnings emitted
+
+✓ verus proofs pass
+
+=== Tracey coverage ===
+This project tracks requirements for "verified-logic". The requirements are defined in docs/*.md and are referenced in code using r[...] annotations (for example, r[verified-logic.some-requirement]).
+The implementation being checked: rust.
+
+verified-logic/rust: 1708 of 1708 requirements are covered. 1708 of 1708 have a verification reference.
+
+---
+→ Run `tracey query uncovered`
+→ Run `tracey query untested`
+→ Run `tracey query unmapped`
+
+
+verified-logic/rust: 0 uncovered out of 1708 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+✓ no uncovered requirements
+
+verified-logic/rust: 0 untested (impl but no verify) out of 1708 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+✓ no untested requirements
+
+=== ALL CHECKS PASSED ===
+```

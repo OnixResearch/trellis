@@ -1,0 +1,140 @@
++            remaining,
++            next + 1,
++        )
++    }
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn search_chain_with_final_upto_len_from_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    final_idx: nat,
++    depth: nat,
++    current: nat,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++{
++    exists|len: nat|
++        current <= len < depth
++            && search_chain_with_final_exact_len_from_spec(
++                Seq::empty(),
++                roots,
++                attestations,
++                revocations,
++                subject,
++                t,
++                final_idx,
++                len,
++                0,
++            )
++}
++
++// r[depends web-of-trust.threshold]
++/// Final-hop qualification under the threshold policy.
++pub open spec fn introducer_qualifies_at_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    final_idx: nat,
++    depth: nat,
++    t: u64,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++{
++    depth > 0
++        && search_chain_with_final_upto_len_from_spec(
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            final_idx,
++            depth,
++            0,
++        )
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn threshold_accepts_from_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    k: nat,
++    depth: nat,
++    t: u64,
++    from: nat,
++    seen: Seq<usize>,
++) -> bool
++    recommends
++        attestations.len() <= usize::MAX as nat,
++        seen_indices_in_range_spec(seen, attestations),
++    decreases if from <= attestations.len() { attestations.len() - from } else { 0 }
++{
++    if k == 0 {
++        true
++    } else if from >= attestations.len() {
++        false
++    } else {
++        let digest = attestations[from as int].issuer.digest@;
++        if introducer_qualifies_at_spec(roots, attestations, revocations, subject, from, depth, t)
++            && !seen_introducer_spec(seen, attestations, digest)
++        {
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                (k - 1) as nat,
++                depth,
++                t,
++                from + 1,
++                seen + seq![from as usize],
++            )
++        } else {
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                from + 1,
++                seen,
++            )
++        }
++    }
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn threshold_accepts_witness_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    k: nat,
++    depth: nat,
++    t: u64,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++{
++    k > 0 && threshold_accepts_from_spec(roots, attestations, revocations, subject, k, depth, t, 0, Seq::empty())
++}
++
++// r[depends web-of-trust.threshold]
++/// Threshold acceptance over distinct introducers.
++pub open spec fn threshold_accepts_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    k: nat,
++    depth: nat,
++    t: u64,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat

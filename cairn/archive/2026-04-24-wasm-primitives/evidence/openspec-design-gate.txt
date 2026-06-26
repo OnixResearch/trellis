@@ -1,0 +1,5 @@
+OpenSpec design gate (wasm-primitives)
+
+Strategy: cross-family
+
+Design unchanged. All five checks pass. Ready for implementation.

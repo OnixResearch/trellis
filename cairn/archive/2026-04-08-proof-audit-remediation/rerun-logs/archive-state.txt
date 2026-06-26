@@ -1,0 +1,2 @@
+$ if [ -d openspec/changes/proof-audit-remediation ]; then echo active-present; else echo active-absent; fi
+active-absent
