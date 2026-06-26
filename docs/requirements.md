@@ -11686,8 +11686,7 @@ equations, and MUST NOT claim multi-row constraint-system or proving-system
 soundness.
 
 r[rust-primitives.r1cs-verification-coverage]
-R1CS public helpers MUST carry explicit implementation and verification coverage
-with positive and negative runtime tests before module/catalog claims are made.
+The base R1CS row primitive MUST carry non-vacuous implementation, verification, and runtime coverage for length predicates, element predicates, modulus predicates, row/witness shape admission, dot-product helpers, row satisfaction, malformed row rejection, malformed witness rejection, and length mismatch rejection before module/catalog claims are made.
 
 ### Requirement: R1CS System Shape
 

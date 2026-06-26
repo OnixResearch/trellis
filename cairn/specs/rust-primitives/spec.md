@@ -198,18 +198,6 @@ r[rust-primitives.r1cs-row-satisfaction]
 - WHEN row satisfaction is evaluated
 - THEN the helper returns false
 
-### Requirement: R1CS Verification Coverage
-
-The R1CS primitive MUST provide explicit `r[impl]` and `r[verify]` coverage for every public helper introduced by this change, plus positive and negative runtime tests before README/catalog claims are made.
-
-r[rust-primitives.r1cs-verification-coverage]
-
-#### Scenario: Public helper has traceable coverage
-
-- GIVEN a public helper in `r1cs_constraint`
-- WHEN repo-wide coverage checks are run
-- THEN the helper has explicit requirement coverage and corresponding proof or test evidence
-
 ### Requirement: R1CS System Shape
 
 The system MUST expose a finite multi-row R1CS envelope with explicit system length, shared modulus, and three physical row slots. System admission MUST reject zero lengths, lengths above the finite row-slot count, invalid system moduli, invalid active rows, and active rows whose modulus differs from the system modulus. Inactive rows MUST NOT affect system-shape admission.
@@ -509,3 +497,21 @@ r[rust-primitives.r1cs-gate-verification-coverage]
 - GIVEN malformed gates, malformed witnesses, missing one-wire witnesses, or valid gates whose encoded row is unsatisfied
 - WHEN the gate coverage proof is reviewed
 - THEN the proof postconditions MUST state the corresponding satisfaction rejection implications instead of only `true`
+
+### Requirement: R1CS Verification Coverage
+
+The base R1CS row primitive MUST include non-vacuous implementation, verification, and runtime coverage for length predicates, element predicates, modulus predicates, row/witness shape admission, dot-product helpers, row satisfaction, malformed row rejection, malformed witness rejection, and length mismatch rejection.
+
+r[rust-primitives.r1cs-verification-coverage]
+
+#### Scenario: Coverage remains catalogued
+
+- GIVEN the base R1CS row primitive is present
+- WHEN repo-wide requirement coverage checks run
+- THEN the row requirements MUST have implementation and verification references
+
+#### Scenario: Coverage proof states concrete row implications
+
+- GIVEN invalid row or witness lengths, malformed rows, malformed witnesses, length mismatches, or satisfied rows
+- WHEN the row coverage proof is reviewed
+- THEN the proof postconditions MUST state the corresponding validity, rejection, or satisfaction-decomposition implications instead of only `true`

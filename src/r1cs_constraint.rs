@@ -264,8 +264,23 @@ pub proof fn length_mismatch_rejected(row: R1csRow, witness: R1csWitness)
 {}
 
 // r[verify rust-primitives.r1cs-dot-product]
-pub proof fn dot_product_coverage_catalogued()
-    ensures true
+pub proof fn dot_product_coverage_catalogued(row: R1csRow, witness: R1csWitness)
+    ensures
+        r1cs_dot_a_spec(row, witness)
+            == ((row.a0 as int) * (witness.w0 as int)
+                + if row.len >= 2 { (row.a1 as int) * (witness.w1 as int) } else { 0int }
+                + if row.len >= 3 { (row.a2 as int) * (witness.w2 as int) } else { 0int })
+                % (row.modulus as int),
+        r1cs_dot_b_spec(row, witness)
+            == ((row.b0 as int) * (witness.w0 as int)
+                + if row.len >= 2 { (row.b1 as int) * (witness.w1 as int) } else { 0int }
+                + if row.len >= 3 { (row.b2 as int) * (witness.w2 as int) } else { 0int })
+                % (row.modulus as int),
+        r1cs_dot_c_spec(row, witness)
+            == ((row.c0 as int) * (witness.w0 as int)
+                + if row.len >= 2 { (row.c1 as int) * (witness.w1 as int) } else { 0int }
+                + if row.len >= 3 { (row.c2 as int) * (witness.w2 as int) } else { 0int })
+                % (row.modulus as int),
 {}
 
 // r[verify rust-primitives.r1cs-row-satisfaction]
@@ -281,14 +296,28 @@ pub proof fn malformed_witness_rejected(row: R1csRow, witness: R1csWitness)
 {}
 
 // r[verify rust-primitives.r1cs-verification-coverage]
-pub proof fn r1cs_primitive_coverage_catalogued()
-    ensures true
+pub proof fn r1cs_primitive_coverage_catalogued(row: R1csRow, witness: R1csWitness)
+    ensures
+        (row.len == 0 || row.len > R1CS_MAX_LEN || witness.len == 0 || witness.len > R1CS_MAX_LEN)
+            ==> (!r1cs_row_valid_spec(row) || !r1cs_witness_valid_spec(witness)),
+        row.len != witness.len ==> !r1cs_row_satisfied_spec(row, witness),
+        !r1cs_row_valid_spec(row) ==> !r1cs_row_satisfied_spec(row, witness),
+        !r1cs_witness_valid_spec(witness) ==> !r1cs_row_satisfied_spec(row, witness),
+        r1cs_row_satisfied_spec(row, witness)
+            ==> (r1cs_row_valid_spec(row)
+                && r1cs_witness_valid_spec(witness)
+                && row.len == witness.len
+                && ((r1cs_dot_a_spec(row, witness) * r1cs_dot_b_spec(row, witness)) % (row.modulus as int)
+                    == r1cs_dot_c_spec(row, witness))),
 {}
 } // verus!
 
 #[cfg(test)]
 mod tests {
     use super::*;
+
+    const INVALID_ZERO_LEN: u8 = 0;
+    const OVERLARGE_ELEMENT: u16 = 16;
 
     fn satisfied_row() -> (R1csRow, R1csWitness) {
         (
@@ -352,6 +381,23 @@ mod tests {
         let (mut row, witness) = satisfied_row();
         row.modulus = 1;
         assert!(!r1cs_row_valid(row));
+        assert!(!r1cs_row_satisfied(row, witness));
+    }
+
+    #[test]
+    fn zero_row_length_is_rejected() {
+        let (mut row, witness) = satisfied_row();
+        row.len = INVALID_ZERO_LEN;
+        assert!(!r1cs_len_valid(row.len));
+        assert!(!r1cs_row_valid(row));
+        assert!(!r1cs_row_satisfied(row, witness));
+    }
+
+    #[test]
+    fn malformed_witness_value_is_rejected() {
+        let (row, mut witness) = satisfied_row();
+        witness.w0 = OVERLARGE_ELEMENT;
+        assert!(!r1cs_witness_valid(witness));
         assert!(!r1cs_row_satisfied(row, witness));
     }
 

@@ -1,0 +1,84 @@
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}
+
+$ cairn gate proposal strengthen-r1cs-constraint-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-constraint-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "72a00c69118e95a87dd1d30fd2b4865dc9a9a689f7b5de326ddd1181f6b04b85",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "7a063d0ba8838bcbcd73e01965dbe4347fa94ccff60066f89bb3552b6bbb6041",
+  "stage": "proposal",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate design strengthen-r1cs-constraint-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-constraint-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "f9fa3415b87c7bb1e207799fdc17877bf263d46bcfc1666940e9962b2b1c82b3",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "c1a078e039effd92b0a90ca2e8f323c764d975ecf724ec4d4fdb523448c5276c",
+  "stage": "design",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate tasks strengthen-r1cs-constraint-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-constraint-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "f877d711b7239538efad2f6cbf26c7b6650e7aaba647e3b3cb0f04cff9cdc0cf",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "01c9847e5ae549bb5fe92041d76053c0030e982d96789b8cd78cf3f68094d20b",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}
