@@ -1,0 +1,84 @@
+warning: unknown experimental feature 'wasm-builtin'
+PASS proof-review policy fresh proof-review/generated/policy.json
+# Proof Review Candidates
+
+Deterministic prefilter for focused VibeThinker proof critique. VibeThinker output is advisory; validation remains cargo, Verus, Tracey, Cairn, and repo checkers.
+
+> Note: legacy `openspec/changes` exists but is ignored by this native Cairn scanner. Native `cairn/changes` is the authoritative lifecycle input; legacy cleanup/migration is explicit.
+
+## Active Cairn Changes
+
+- `strengthen-r1cs-system-proof-coverage`: 2 unchecked task(s); referenced source paths: src/append_entries_build.rs, src/lib.rs, src/r1cs_public_inputs.rs, src/r1cs_system.rs, src/ucan_did.rs, src/ucan_signature.rs
+
+## Ranked Candidates
+
+| Rank | Score | Path | Top reasons |
+| ---: | ---: | --- | --- |
+| 1 | 1485 | `src/ucan_signature.rs` | referenced by active Cairn change `strengthen-r1cs-system-proof-coverage`; trusted or weakened … |
+| 2 | 1285 | `src/ucan_did.rs` | referenced by active Cairn change `strengthen-r1cs-system-proof-coverage`; trusted or weakened … |
+| 3 | 1135 | `src/r1cs_system.rs` | referenced by active Cairn change `strengthen-r1cs-system-proof-coverage`; source file is chang… |
+| 4 | 950 | `src/r1cs_public_inputs.rs` | referenced by active Cairn change `strengthen-r1cs-system-proof-coverage`; proof `r1cs_public_i… |
+| 5 | 905 | `src/append_entries_build.rs` | referenced by active Cairn change `strengthen-r1cs-system-proof-coverage`; empty proof body for… |
+
+## Candidate Details
+
+### `src/ucan_signature.rs` — score 1485
+
+Showing top 6 of 14 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+650): `src/ucan_signature.rs` — 2 unchecked task(s) remain in the active change.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:254 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:263 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:275 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:289 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:303 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+
+### `src/ucan_did.rs` — score 1285
+
+Showing top 6 of 12 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+650): `src/ucan_did.rs` — 2 unchecked task(s) remain in the active change.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:623 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:631 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:640 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:649 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **empty-nontrivial-proof** (+35): `src/ucan_did.rs`:142 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/r1cs_system.rs` — score 1135
+
+Showing top 6 of 9 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+650): `src/r1cs_system.rs` — 2 unchecked task(s) remain in the active change.
+- **worktree-changed-source** (+250): `src/r1cs_system.rs` — Changed verified source is immediately actionable for proof critique.
+- **empty-nontrivial-proof** (+35): `src/r1cs_system.rs`:125 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_system.rs`:131 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_system.rs`:142 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_system.rs`:148 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/r1cs_public_inputs.rs` — score 950
+
+Showing top 6 of 8 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+650): `src/r1cs_public_inputs.rs` — 2 unchecked task(s) remain in the active change.
+- **vacuous-ensures-true** (+100): `src/r1cs_public_inputs.rs`:248 — Replace catalogue-only postconditions with concrete implications or document it as Tracey-only metadata.
+- **empty-nontrivial-proof** (+35): `src/r1cs_public_inputs.rs`:175 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_public_inputs.rs`:185 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_public_inputs.rs`:200 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_public_inputs.rs`:228 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/append_entries_build.rs` — score 905
+
+Showing top 6 of 12 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+650): `src/append_entries_build.rs` — 2 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:174 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:180 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:187 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:197 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:203 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+## VibeThinker Prompt Shape
+
+Use `max_tokens=16384`. Packets include a base task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings.
+wrote report: target/proof-review/candidates.md
+wrote packets: target/proof-review/packets

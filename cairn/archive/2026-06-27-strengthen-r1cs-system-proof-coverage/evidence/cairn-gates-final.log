@@ -1,0 +1,106 @@
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}
+
+$ cairn gate proposal strengthen-r1cs-system-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-system-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "2c3b081003a91b89f2f1e6f4848aaf75427565369febe603e2a8f92ee32484da",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "05d628d213e7823fb1b61767823ba4068848b74b8565442678f93ffb7893085c",
+  "stage": "proposal",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate design strengthen-r1cs-system-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-system-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "75f652c60688dee23fddbc4bc045a737a1422ec3f6f795a75a06132c0055e503",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "642080c543b8dd596b25efd832e927f74f0c52ae864d0cff8bf72cc18d53f931",
+  "stage": "design",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate tasks strengthen-r1cs-system-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-system-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "5a01ae4e517fff883c8c44f8e78a75ab5d51955da83eff9d0430709a17bc15bc",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "7483998b2e093a0818c530e88f59be211739f88b7119216dfc3a4cc532db887b",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-system-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "1825a7129a03db4a237b2b5ed4776db8629c02d4de04473590e461cc9db32f70",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "606fd44b04530a41b8d201d1e5bb2636061d67cfb82f233d0aadc0893abc6fa1",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}
