@@ -1,0 +1,15 @@
+$ tracey query uncovered
+verified-logic/rust: 0 uncovered out of 1955 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+
+$ tracey query untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1955 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+

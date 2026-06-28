@@ -1,0 +1,27 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}
+
+$ find cairn/changes -maxdepth 1 -mindepth 1 -type d ! -name archive -print | sort
+
+$ git status --short
+ D cairn/changes/add-proof-review-agent-loop/design.md
+ D cairn/changes/add-proof-review-agent-loop/evidence/cairn-gates-initial.log
+ D cairn/changes/add-proof-review-agent-loop/evidence/change-create.log
+ D cairn/changes/add-proof-review-agent-loop/proposal.md
+ D cairn/changes/add-proof-review-agent-loop/specs/proof-review-automation/spec.md
+ D cairn/changes/add-proof-review-agent-loop/tasks.md
+ M cairn/specs/proof-review-automation/spec.md
+ M proof-review/generated/policy.json
+ M proof-review/policy.ncl
+?? cairn/archive/2026-06-27-add-proof-review-agent-loop/
+?? scripts/proof-review-loop.rs

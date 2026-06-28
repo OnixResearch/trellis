@@ -6,6 +6,179 @@
     "@verified-logic:permanent-axiom",
     "@verified-logic:permanent-z3-limit"
   ],
+  "loop": {
+    "apply_recipes": [
+      {
+        "id": "vacuous-coverage-proof",
+        "mutates_source": true,
+        "rationale": "Only catalogue proofs with vacuous ensures are eligible for deterministic apply-mode hardening, and only when no trust-boundary finding is present for the selected target.",
+        "requires_no_trust_markers": true,
+        "rule_id": "vacuous-ensures-true",
+        "validation_gate": "verify-wrapper"
+      }
+    ],
+    "default_max_iterations": 1,
+    "default_mode": "dry-run",
+    "max_iterations_limit": 3,
+    "modes": [
+      {
+        "description": "Plan one candidate and validation receipt without mutating source, lifecycle state, archives, commits, or remotes.",
+        "mutates_lifecycle": false,
+        "mutates_source": false,
+        "name": "dry-run",
+        "runs_validation": false
+      },
+      {
+        "description": "Create one reviewable Cairn change package and stop before source edits.",
+        "mutates_lifecycle": true,
+        "mutates_source": false,
+        "name": "assisted",
+        "runs_validation": false
+      },
+      {
+        "description": "Apply only deterministic proof-hardening recipes that pass the no-trust-boundary guard and configured validation gates.",
+        "mutates_lifecycle": true,
+        "mutates_source": true,
+        "name": "apply",
+        "runs_validation": true
+      }
+    ],
+    "no_push_default": true,
+    "preferred_candidate_rules": [
+      "vacuous-ensures-true",
+      "empty-nontrivial-proof",
+      "missing-negative-test-hints",
+      "active-prefix-semantics"
+    ],
+    "receipt_dir": "target/proof-review/loop-receipts",
+    "skip_trust_boundary_rules": [
+      "untrusted-boundary-marker",
+      "permanent-boundary-marker"
+    ],
+    "slug_prefix": "proof-review",
+    "stop_conditions": [
+      {
+        "id": "dirty-tree",
+        "rationale": "The loop must not mix unrelated local edits into generated evidence or commits.",
+        "severity": "blocker"
+      },
+      {
+        "id": "active-cairn-change",
+        "rationale": "Only one active Cairn package may be driven by the loop at a time.",
+        "severity": "blocker"
+      },
+      {
+        "id": "trust-boundary-only",
+        "rationale": "Permanent and untrusted boundary findings are review context, not automatic proof-hardening targets.",
+        "severity": "blocker"
+      },
+      {
+        "id": "unsupported-apply-pattern",
+        "rationale": "Apply mode is limited to deterministic vacuous coverage proof recipes.",
+        "severity": "blocker"
+      },
+      {
+        "id": "validation-failed",
+        "rationale": "Validation output, not advisory model output, decides whether an iteration may archive.",
+        "severity": "blocker"
+      },
+      {
+        "id": "push-disabled",
+        "rationale": "The loop never pushes by default and this repo keeps push as an explicit human action.",
+        "severity": "blocker"
+      },
+      {
+        "id": "missing-evidence",
+        "rationale": "Archive completion requires scanner, packet, validation, sync, archive, and final status evidence.",
+        "severity": "blocker"
+      }
+    ],
+    "validation_commands": [
+      {
+        "command": [
+          "./scripts/proof-review-candidates.rs",
+          "--check-policy"
+        ],
+        "evidence": "proof-review-candidates.log",
+        "id": "scanner",
+        "modes": [
+          "dry-run",
+          "assisted",
+          "apply"
+        ],
+        "required": true
+      },
+      {
+        "command": [
+          "cargo",
+          "test",
+          "--quiet"
+        ],
+        "evidence": "focused-tests.log",
+        "id": "focused-tests",
+        "modes": [
+          "apply"
+        ],
+        "required": true
+      },
+      {
+        "command": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ],
+        "evidence": "verus-src-lib.log",
+        "id": "verus-lib",
+        "modes": [
+          "apply"
+        ],
+        "required": true
+      },
+      {
+        "command": [
+          "tracey",
+          "query",
+          "uncovered",
+          "&&",
+          "tracey",
+          "query",
+          "untested"
+        ],
+        "evidence": "tracey-coverage.log",
+        "id": "tracey-coverage",
+        "modes": [
+          "apply"
+        ],
+        "required": true
+      },
+      {
+        "command": [
+          "cairn",
+          "validate",
+          "--root",
+          "."
+        ],
+        "evidence": "cairn-gates.log",
+        "id": "cairn-gates",
+        "modes": [
+          "assisted",
+          "apply"
+        ],
+        "required": true
+      },
+      {
+        "command": [
+          "TMPDIR=/tmp",
+          "./scripts/verify.rs"
+        ],
+        "evidence": "verify-rs.log",
+        "id": "verify-wrapper",
+        "modes": [
+          "apply"
+        ],
+        "required": true
+      }
+    ]
+  },
   "max_candidates": 12,
   "max_packet_findings": 6,
   "max_score_findings_per_rule": 6,
@@ -59,5 +232,5 @@
       "severity": "review"
     }
   ],
-  "version": "1"
+  "version": "2"
 }
