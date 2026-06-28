@@ -1,0 +1,18 @@
+$ git status --short
+ M cairn/specs/proof-review-automation/spec.md
+ M scripts/proof-review-tracey-coverage.rs
+ M src/beam_link.rs
+?? cairn/archive/2026-06-28-proof-review-beam-link/
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}

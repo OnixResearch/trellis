@@ -26,12 +26,12 @@ fn combined_output(output: &Output) -> String {
     combined
 }
 
-fn is_transient_tracey_cancelled(success: bool, output: &str) -> bool {
-    !success && output.contains(TRANSIENT_CANCELLED_MARKER)
+fn is_transient_tracey_cancelled(output: &str) -> bool {
+    output.contains(TRANSIENT_CANCELLED_MARKER)
 }
 
-fn should_retry_tracey(success: bool, output: &str, attempt: usize) -> bool {
-    attempt <= TRANSIENT_RETRY_LIMIT && is_transient_tracey_cancelled(success, output)
+fn should_retry_tracey(output: &str, attempt: usize) -> bool {
+    attempt <= TRANSIENT_RETRY_LIMIT && is_transient_tracey_cancelled(output)
 }
 
 fn run_tracey_query(query: &str, attempt: usize) -> Result<Output, String> {
@@ -54,13 +54,16 @@ fn run_query_with_retry(query: &str) -> Result<(), String> {
         let output = run_tracey_query(query, attempt)?;
         print_output(&output);
         let combined = combined_output(&output);
-        if output.status.success() {
-            return Ok(());
-        }
-        if should_retry_tracey(output.status.success(), &combined, attempt) {
+        if should_retry_tracey(&combined, attempt) {
             println!("retrying transient Tracey cancellation for `{query}`");
             attempt += FIRST_ATTEMPT;
             continue;
+        }
+        if is_transient_tracey_cancelled(&combined) {
+            return Err(format!("{TRACEY_BIN} {QUERY_ARG} {query} hit transient cancellation after retry budget"));
+        }
+        if output.status.success() {
+            return Ok(());
         }
         return Err(format!("{TRACEY_BIN} {QUERY_ARG} {query} failed"));
     }
@@ -79,20 +82,20 @@ fn require(condition: bool, message: &str) -> Result<(), String> {
 
 fn run_self_test() -> Result<(), String> {
     require(
-        should_retry_tracey(false, SELF_TEST_CANCELLED_OUTPUT, FIRST_ATTEMPT),
+        should_retry_tracey(SELF_TEST_CANCELLED_OUTPUT, FIRST_ATTEMPT),
         "transient cancellation should retry on first attempt",
     )?;
     require(
-        !should_retry_tracey(false, SELF_TEST_CANCELLED_OUTPUT, FIRST_ATTEMPT + TRANSIENT_RETRY_LIMIT),
+        !should_retry_tracey(SELF_TEST_CANCELLED_OUTPUT, FIRST_ATTEMPT + TRANSIENT_RETRY_LIMIT),
         "transient cancellation should not retry after retry budget",
     )?;
     require(
-        !should_retry_tracey(false, SELF_TEST_COVERAGE_FAILURE_OUTPUT, FIRST_ATTEMPT),
-        "ordinary coverage failure should not retry",
+        is_transient_tracey_cancelled(SELF_TEST_CANCELLED_OUTPUT),
+        "transient cancellation marker should be detected even if a tool exits successfully",
     )?;
     require(
-        !should_retry_tracey(true, SELF_TEST_CANCELLED_OUTPUT, FIRST_ATTEMPT),
-        "successful output should not retry",
+        !should_retry_tracey(SELF_TEST_COVERAGE_FAILURE_OUTPUT, FIRST_ATTEMPT),
+        "ordinary coverage failure should not retry",
     )?;
     println!("proof-review-tracey-coverage self-test: PASS");
     Ok(())
