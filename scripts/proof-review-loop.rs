@@ -987,14 +987,14 @@ fn create_assisted_change(root: &Path, policy: &LoopPolicy, ready: &ReadyPlan) -
 
 fn render_assisted_proposal(ready: &ReadyPlan) -> String {
     format!(
-        "## Why\n\nThe proof-review scanner selected `{}` as the next bounded proof-hardening target. Capturing a dedicated Cairn package keeps the advisory packet, source patch, validation logs, and archive evidence reviewable.\n\n## What Changes\n\n- Review the scanner findings for `{}`.\n- Apply only proof/test hardening that does not add or hide trust boundaries.\n- Capture focused validation, Tracey coverage, Cairn gates, and repo verification evidence before archive.\n\n## Impact\n\n- **Files**: expected source/test edits for `{}`, this Cairn package, and archived evidence.\n- **Testing**: focused tests where available, Verus over `src/lib.rs`, Tracey uncovered/untested, Cairn validation/gates, and `TMPDIR=/tmp ./scripts/verify.rs`.\n",
+        "## Why\n\nThe proof-review scanner selected `{}` as the next bounded proof-hardening target. Capturing a dedicated Cairn package keeps the advisory packet, source patch, validation logs, and archive evidence reviewable.\n\n## What Changes\n\n- Review the scanner findings for `{}`.\n- Apply only proof/test hardening that does not add or hide trust boundaries.\n- Capture target-cleared scanner evidence, focused validation, Tracey coverage, Cairn gates, and repo verification evidence before archive.\n- Freeze validation logs before archive and write any later status refresh as post-archive evidence instead of rewriting archived logs.\n\n## Impact\n\n- **Files**: expected source/test edits for `{}`, this Cairn package, and archived evidence.\n- **Testing**: focused tests where available, Verus over `src/lib.rs`, Tracey uncovered/untested with one retry for transient daemon cancellation, Cairn validation/gates, and `TMPDIR=/tmp ./scripts/verify.rs`.\n",
         ready.candidate.path, ready.candidate.path, ready.candidate.path
     )
 }
 
 fn render_assisted_design(ready: &ReadyPlan) -> String {
     format!(
-        "## Context\n\nThe loop selected `{}` with score `{}` and findings `{}`. VibeThinker packet output is advisory-only; repository checks remain authoritative.\n\n## Decisions\n\n### 1. Keep the iteration bounded\n\n**Choice:** Handle one proof-review target in this package.\n\n**Rationale:** One target keeps source diffs, evidence, and archive review small.\n\n### 2. Do not expand trust\n\n**Choice:** Reject any patch that adds `external_body`, `assume_specification`, `assume(`, or `@verified-logic:no-ensures`.\n\n**Rationale:** Proof-review automation exists to harden coverage, not to hide gaps.\n\n### 3. Validation decides completion\n\n**Choice:** Archive only after focused checks, Verus, Tracey, Cairn gates, and the repo verification wrapper succeed.\n\n**Rationale:** Advisory model critique can guide review, but cannot prove correctness.\n",
+        "## Context\n\nThe loop selected `{}` with score `{}` and findings `{}`. VibeThinker packet output is advisory-only; repository checks remain authoritative.\n\n## Decisions\n\n### 1. Keep the iteration bounded\n\n**Choice:** Handle one proof-review target in this package.\n\n**Rationale:** One target keeps source diffs, evidence, and archive review small.\n\n### 2. Do not expand trust\n\n**Choice:** Reject any patch that adds `external_body`, `assume_specification`, `assume(`, or `@verified-logic:no-ensures`.\n\n**Rationale:** Proof-review automation exists to harden coverage, not to hide gaps.\n\n### 3. Validation decides completion\n\n**Choice:** Archive only after focused checks, Verus, Tracey, Cairn gates, the repo verification wrapper, and a target-cleared scanner rerun succeed or document the remaining finding.\n\n**Rationale:** Advisory model critique can guide review, but cannot prove correctness.\n\n### 4. Retry only known transient Tracey failures\n\n**Choice:** If Tracey daemon auto-start reports transient cancellation, rerun direct uncovered and untested queries once and keep both attempts in evidence.\n\n**Rationale:** A retry handles the documented daemon race without hiding persistent coverage failures.\n\n### 5. Freeze archive evidence\n\n**Choice:** Treat pre-archive validation logs as immutable once copied into the archive; save later status checks as post-archive evidence files.\n\n**Rationale:** Frozen logs keep archive review reproducible and prevent accidental evidence drift.\n",
         ready.candidate.path,
         ready.candidate.score,
         ready.candidate.rule_ids.iter().cloned().collect::<Vec<_>>().join(", ")
@@ -1003,14 +1003,21 @@ fn render_assisted_design(ready: &ReadyPlan) -> String {
 
 fn render_assisted_tasks(requirement_id: &str, ready: &ReadyPlan) -> String {
     format!(
-        "## Phase 1: Proof-review hardening\n\n- [ ] [serial] Inspect scanner evidence and VibeThinker packet for `{}`. r[{}]\n- [ ] [serial] Apply proof/test hardening without adding trust boundaries. r[{}]\n- [ ] [serial] Add positive and negative tests or explain why the target is proof-only. r[{}]\n\n## Phase 2: Validation and archive\n\n- [ ] [serial] Run focused tests, Verus over `src/lib.rs`, Tracey uncovered/untested, Cairn gates, and `TMPDIR=/tmp ./scripts/verify.rs`; save evidence logs. r[{}]\n- [ ] [serial] Sync/archive the change and commit completed evidence. r[{}]\n",
-        ready.candidate.path, requirement_id, requirement_id, requirement_id, requirement_id, requirement_id
+        "## Phase 1: Proof-review hardening\n\n- [ ] [serial] Inspect scanner evidence and VibeThinker packet for `{}`; triage accepted vs rejected advisory items. r[{}]\n- [ ] [serial] Apply proof/test hardening without adding trust boundaries. r[{}]\n- [ ] [serial] Add positive and negative tests or explain why the target is proof-only. r[{}]\n\n## Phase 2: Validation and archive\n\n- [ ] [serial] Rerun the proof-review scanner and save target-cleared evidence for `{}` that shows the original finding cleared or explains any remaining advisory finding. r[{}]\n- [ ] [serial] Run focused tests, Verus over `src/lib.rs`, Tracey uncovered/untested, Cairn gates, and `TMPDIR=/tmp ./scripts/verify.rs`; retry Tracey once only for transient daemon cancellation and save evidence logs. r[{}]\n- [ ] [serial] Freeze validation logs, sync/archive the change, then write any final status refresh as post-archive evidence without rewriting frozen logs. r[{}]\n", 
+        ready.candidate.path,
+        requirement_id,
+        requirement_id,
+        requirement_id,
+        ready.candidate.path,
+        requirement_id,
+        requirement_id,
+        requirement_id
     )
 }
 
 fn render_assisted_spec(requirement_id: &str, ready: &ReadyPlan) -> String {
     format!(
-        "## ADDED Requirements\n\n### Requirement: Bounded Proof Review Iteration for {}\n\nThe proof-review iteration for `{}` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, and MUST archive scanner, advisory packet, validation, sync, archive, and final status evidence before claiming completion.\n\nr[{}]\n\n#### Scenario: Iteration archives only after validation\n\n- GIVEN `{}` has been selected by the proof-review loop\n- WHEN the change is prepared for archive\n- THEN focused checks, Verus, Tracey, Cairn gates, and repo verification evidence MUST be present and successful\n",
+        "## ADDED Requirements\n\n### Requirement: Bounded Proof Review Iteration for {}\n\nThe proof-review iteration for `{}` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, MUST record target-cleared scanner evidence for the original finding, and MUST archive scanner, advisory packet, frozen validation, sync, archive, and final status evidence before claiming completion.\n\nr[{}]\n\n#### Scenario: Iteration archives only after validation\n\n- GIVEN `{}` has been selected by the proof-review loop\n- WHEN the change is prepared for archive\n- THEN focused checks, Verus, Tracey, Cairn gates, target-cleared scanner evidence, and repo verification evidence MUST be present and successful or explicitly explain any remaining advisory finding\n\n#### Scenario: Archive evidence stays immutable\n\n- GIVEN pre-archive validation logs have been saved\n- WHEN the change is archived and a final status refresh is needed\n- THEN the archived validation logs MUST NOT be rewritten and the refresh MUST be saved as post-archive evidence\n",
         ready.candidate.path, ready.candidate.path, requirement_id, ready.candidate.path
     )
 }
@@ -1177,6 +1184,11 @@ fn run_self_test() -> Result<(), String> {
     )?;
     require(ready.change_slug == "proof-review-vacuous", "slug generation mismatch")?;
     require(packet_file_name("src/vacuous.rs") == "src_vacuous_rs.md", "packet filename mismatch")?;
+    let generated_tasks = render_assisted_tasks("proof-review.iteration.vacuous", &ready);
+    require(generated_tasks.contains("target-cleared"), "generated tasks missing target-cleared evidence")?;
+    require(generated_tasks.contains("retry Tracey once"), "generated tasks missing Tracey retry rule")?;
+    let generated_spec = render_assisted_spec("proof-review.iteration.vacuous", &ready);
+    require(generated_spec.contains("Archive evidence stays immutable"), "generated spec missing archive freeze rule")?;
 
     let receipt = render_receipt(&LoopPlan::Ready(ready));
     require(receipt.contains("\"status\": \"planned\""), "ready receipt missing status")?;

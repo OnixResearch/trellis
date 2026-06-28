@@ -34,14 +34,18 @@ const CAIRN_CHANGES_DIR: &str = "cairn/changes";
 const LEGACY_OPENSPEC_CHANGES_DIR: &str = "openspec/changes";
 const ARCHIVE_DIR_NAME: &str = "archive";
 const TASKS_FILE_NAME: &str = "tasks.md";
+const EVIDENCE_DIR_NAME: &str = "evidence";
 const MARKDOWN_EXTENSION: &str = "md";
 const SOURCE_PATH_PREFIX: &str = "src/";
 const SOURCE_PATH_SUFFIX: &str = ".rs";
 const VIBETHINKER_MAX_TOKENS_HINT: usize = 16_384;
 const VIBETHINKER_BASE_TASK: &str = "Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only; do not suggest adding or hiding trust boundaries.";
-const VIBETHINKER_OUTPUT_CONTRACT: [&str; 6] = [
+const VIBETHINKER_OUTPUT_CONTRACT: [&str; 9] = [
     "Concrete proof postconditions or lemma splits, using existing specs only.",
-    "Executable positive or negative test cases, not tests for proof functions.",
+    "Executable positive or negative test cases through public/runtime APIs, not tests for proof functions.",
+    "Do not propose tests that rely on violating `requires` clauses, panics, or impossible allocations.",
+    "Keep boundary suggestions small enough for ordinary unit/property tests; mark infeasible stress cases as non-actionable.",
+    "Separate accepted actionable items from rejected/non-actionable advisory items.",
     "Spec wording gaps or overclaims, if any.",
     "Patch-critique risks if this packet already includes changed source.",
     "Do not repeat scanner findings unless adding a new actionable detail.",
@@ -398,6 +402,9 @@ fn collect_markdown_files(dir: &Path, out: &mut Vec<PathBuf>) -> Result<(), Stri
         let entry = entry.map_err(|err| format!("failed to read markdown entry: {err}"))?;
         let path = entry.path();
         if path.is_dir() {
+            if path.file_name().and_then(|name| name.to_str()) == Some(EVIDENCE_DIR_NAME) {
+                continue;
+            }
             collect_markdown_files(&path, out)?;
         } else if path.extension().and_then(|ext| ext.to_str()) == Some(MARKDOWN_EXTENSION) {
             out.push(path);
@@ -1011,7 +1018,7 @@ mod tests {
     reject_finding(&strong_findings, "vacuous-ensures-true")?;
     reject_finding(&strong_findings, "missing-negative-test-hints")?;
 
-    let fixture_root = create_self_test_fixture(weak_source)?;
+    let fixture_root = create_self_test_fixture(weak_source, strong_source)?;
     let inputs = build_review_inputs(&fixture_root)?;
     let candidates = rank_candidates(&inputs);
     let weak = candidates
@@ -1019,6 +1026,7 @@ mod tests {
         .find(|candidate| candidate.path == "src/weak.rs")
         .ok_or("self-test fixture did not rank src/weak.rs")?;
     require_finding(&weak.findings, "active-cairn-change")?;
+    reject_active_candidate(&candidates, "src/noise.rs")?;
     let report = render_report(&inputs, &candidates, DEFAULT_MAX_CANDIDATES);
     if !report.contains("src/weak.rs") || !report.contains("VibeThinker") {
         return Err("self-test report omitted expected target or prompt shape".to_string());
@@ -1031,6 +1039,8 @@ mod tests {
         || !packet.contains("For `vacuous-ensures-true`")
         || !packet.contains("For `empty-nontrivial-proof`")
         || !packet.contains("not tests for proof functions")
+        || !packet.contains("violating `requires`")
+        || !packet.contains("Separate accepted actionable items")
     {
         return Err("self-test packet omitted specialized VibeThinker prompt guidance".to_string());
     }
@@ -1055,7 +1065,20 @@ fn reject_finding(findings: &[Finding], rule_id: &str) -> Result<(), String> {
     }
 }
 
-fn create_self_test_fixture(weak_source: &str) -> Result<PathBuf, String> {
+fn reject_active_candidate(candidates: &[Candidate], path: &str) -> Result<(), String> {
+    let has_active_finding = candidates
+        .iter()
+        .find(|candidate| candidate.path == path)
+        .map(|candidate| candidate.findings.iter().any(|finding| finding.rule_id == "active-cairn-change"))
+        .unwrap_or(false);
+    if has_active_finding {
+        Err(format!("evidence-only path `{path}` was treated as an active-change source reference"))
+    } else {
+        Ok(())
+    }
+}
+
+fn create_self_test_fixture(weak_source: &str, noise_source: &str) -> Result<PathBuf, String> {
     let unique = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map(|duration| duration.as_nanos())
@@ -1067,10 +1090,15 @@ fn create_self_test_fixture(weak_source: &str) -> Result<PathBuf, String> {
     let src = root.join(SRC_DIR);
     fs::create_dir_all(&src).map_err(|err| format!("failed to create {}: {err}", src.display()))?;
     fs::write(src.join("weak.rs"), weak_source).map_err(|err| format!("failed to write weak fixture: {err}"))?;
+    fs::write(src.join("noise.rs"), noise_source).map_err(|err| format!("failed to write noise fixture: {err}"))?;
     let change = root.join(CAIRN_CHANGES_DIR).join("demo-proof-review");
     fs::create_dir_all(&change).map_err(|err| format!("failed to create {}: {err}", change.display()))?;
     fs::write(change.join(TASKS_FILE_NAME), "# Tasks\n\n- [ ] Review `src/weak.rs` proof slice.\n")
         .map_err(|err| format!("failed to write tasks fixture: {err}"))?;
+    let evidence = change.join(EVIDENCE_DIR_NAME);
+    fs::create_dir_all(&evidence).map_err(|err| format!("failed to create {}: {err}", evidence.display()))?;
+    fs::write(evidence.join("proof-review-candidates.md"), "# Archived scanner output\n\n## Candidate `src/noise.rs`\n")
+        .map_err(|err| format!("failed to write evidence fixture: {err}"))?;
     Ok(root)
 }
 

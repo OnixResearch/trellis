@@ -176,7 +176,7 @@ let Policy = {
       {
         id = "tracey-coverage",
         modes = ["apply"],
-        command = ["tracey", "query", "uncovered", "&&", "tracey", "query", "untested"],
+        command = ["./scripts/proof-review-tracey-coverage.rs"],
         evidence = "tracey-coverage.log",
         required = true,
       },

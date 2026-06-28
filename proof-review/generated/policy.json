@@ -135,13 +135,7 @@
       },
       {
         "command": [
-          "tracey",
-          "query",
-          "uncovered",
-          "&&",
-          "tracey",
-          "query",
-          "untested"
+          "./scripts/proof-review-tracey-coverage.rs"
         ],
         "evidence": "tracey-coverage.log",
         "id": "tracey-coverage",

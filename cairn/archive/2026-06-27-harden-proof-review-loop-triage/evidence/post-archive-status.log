@@ -1,0 +1,21 @@
+$ git status --short
+ M cairn/specs/proof-review-automation/spec.md
+ M proof-review/generated/policy.json
+ M proof-review/policy.ncl
+ M scripts/proof-review-candidates.rs
+ M scripts/proof-review-loop.rs
+?? cairn/archive/2026-06-27-harden-proof-review-loop-triage/
+?? scripts/proof-review-tracey-coverage.rs
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}

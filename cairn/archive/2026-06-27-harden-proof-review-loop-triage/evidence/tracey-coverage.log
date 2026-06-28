@@ -1,0 +1,17 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-tracey-coverage.rs
+warning: unknown experimental feature 'wasm-builtin'
+$ tracey query uncovered # attempt 1
+verified-logic/rust: 0 uncovered out of 1955 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+$ tracey query untested # attempt 1
+verified-logic/rust: 0 untested (impl but no verify) out of 1955 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+tracey coverage PASS
