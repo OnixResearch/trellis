@@ -7,6 +7,6 @@
 
 ## Phase 2: Evidence and archive
 
-- [ ] [serial] Run focused lookup tests and Verus verification over `src/lib.rs`.
-- [ ] [serial] Run full clippy, full cargo tests, Tracey coverage, strict OpenSpec validation, and `TMPDIR=/tmp ./scripts/verify.rs`; save evidence logs.
-- [ ] [serial] Mark tasks complete, sync/archive the change, commit, push, and confirm clean synced status.
+- [x] [serial] Run focused lookup tests and Verus verification over `src/lib.rs`.
+- [x] [serial] Run full clippy, full cargo tests, Tracey coverage, strict OpenSpec validation, and `TMPDIR=/tmp ./scripts/verify.rs`; save evidence logs.
+- [x] [serial] Mark tasks complete, sync/archive the change, commit locally, and confirm clean synced status. Push is deferred until explicitly requested.
