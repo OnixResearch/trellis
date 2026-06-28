@@ -1,0 +1,16 @@
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "add-proof-review-agent-loop",
+  "command": "change_create",
+  "created": [
+    "cairn/changes/add-proof-review-agent-loop",
+    "cairn/changes/add-proof-review-agent-loop/proposal.md",
+    "cairn/changes/add-proof-review-agent-loop/design.md",
+    "cairn/changes/add-proof-review-agent-loop/tasks.md",
+    "cairn/changes/add-proof-review-agent-loop/specs"
+  ],
+  "existing": [],
+  "layout": "cairn",
+  "mutated": true,
+  "root": "."
+}
