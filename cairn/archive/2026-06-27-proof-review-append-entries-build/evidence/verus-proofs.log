@@ -1,0 +1,2 @@
+$ NIX_CONFIG="builders =" nix build .#checks.x86_64-linux.verus-proofs --no-link -L
+warning: unknown experimental feature 'wasm-builtin'

@@ -1,0 +1,215 @@
+$ CAIRN_ARCHIVE_DATE=2026-06-27 nix run path:/home/brittonr/git/cairn#cairn -- archive proof-review-append-entries-build --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: proof-review-append-entries-build",
+      "kind": "archive_change",
+      "path": "./cairn/changes/proof-review-append-entries-build"
+    }
+  ],
+  "blocked": false,
+  "change": "proof-review-append-entries-build",
+  "dry_run": true,
+  "input_hash": "230ed270739aec61836f6d8f37ec6326296a085bdfec6a72c9d9c331c57f6fee",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "b694b938dda70efba395a439c32a6752e0b8a3aa2b08337d213ef588a6edebdb",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "b0178db5c9dfb169031be6ddffc433a3845d53c27b27bf9576ed5f7e073702b4"
+}
+
+$ CAIRN_ARCHIVE_DATE=2026-06-27 nix run path:/home/brittonr/git/cairn#cairn -- archive proof-review-append-entries-build --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: proof-review-append-entries-build",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build"
+    }
+  ],
+  "blocked": false,
+  "change": "proof-review-append-entries-build",
+  "dry_run": false,
+  "input_hash": "230ed270739aec61836f6d8f37ec6326296a085bdfec6a72c9d9c331c57f6fee",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "33acfdc4264a4530020b47e75560233e95c46f6c70f158273afd3d70942421bf",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/design.md"
+        },
+        {
+          "content_hash": "54c693a80746eab7d54c7f5bf5e4cee2450fa9e37e759cf7fbf1295ce3b80d0e",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/cairn-archive.log"
+        },
+        {
+          "content_hash": "a4c5335ec9e75f4a30e349679ba5af6aa01f43bc64a31ee03fcc14df96e2431a",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "d874473f2112ccf9802e99ba1626f09ca3530acb70047e6632648ed49bf75139",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "76500fcab3dae8996c74afe7c44afc15789d4aa8b60498e48514b54adfefb4a8",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/cairn-sync.log"
+        },
+        {
+          "content_hash": "1a25e667e692902b1478d290ce8b0e0394128cb0b26d64c583c6a305c1f961ac",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/cargo-test-append-entries-build.log"
+        },
+        {
+          "content_hash": "2fc67fabef3200b1b7128781b92544a9cb65624670d4476b9cf304e93f50905d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/proof-review-candidates-post.log"
+        },
+        {
+          "content_hash": "b681a3decf89d5d548378fd4cbd29d2c485aec6628b5770002bf0afb7a3e1ff8",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/proof-review-candidates.md"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "2c0c9f27badcefb8a4319a22f3097540cbc9ab08b5a23c4708882b4a1036edcc",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "6854a8df1eae4391459533a9188c995a2a344d8fe4147becdbaf2fcf174327d3",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/verus-proofs.log"
+        },
+        {
+          "content_hash": "97d26d5d83bb2d40b037ccd8554e8c9a21bea583d56fb30e81733564c643bbf1",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/evidence/vibethinker-packet-path.txt"
+        },
+        {
+          "content_hash": "9e9cfb68bcfedfe65fe27cf0d2f290f30b1192e5f480991dee7c26e4e61724bb",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/proposal.md"
+        },
+        {
+          "content_hash": "bf67e3a090bb36c4616c1837059462ab2674b648eba3989aab0c290d02f3f2ba",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "3cec5a398657a1e79acad229277084390df73891f9e0a0421867516d4ecc7aec",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-proof-review-append-entries-build/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/proof-review-append-entries-build"
+        }
+      ],
+      "manifest_hash": "ee9621129c0fe937e22b5619d91c4d3a574d5982598e781454462c84dd43dd2a"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "33acfdc4264a4530020b47e75560233e95c46f6c70f158273afd3d70942421bf",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/design.md"
+        },
+        {
+          "content_hash": "54c693a80746eab7d54c7f5bf5e4cee2450fa9e37e759cf7fbf1295ce3b80d0e",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/cairn-archive.log"
+        },
+        {
+          "content_hash": "a4c5335ec9e75f4a30e349679ba5af6aa01f43bc64a31ee03fcc14df96e2431a",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "d874473f2112ccf9802e99ba1626f09ca3530acb70047e6632648ed49bf75139",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "76500fcab3dae8996c74afe7c44afc15789d4aa8b60498e48514b54adfefb4a8",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/cairn-sync.log"
+        },
+        {
+          "content_hash": "1a25e667e692902b1478d290ce8b0e0394128cb0b26d64c583c6a305c1f961ac",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/cargo-test-append-entries-build.log"
+        },
+        {
+          "content_hash": "2fc67fabef3200b1b7128781b92544a9cb65624670d4476b9cf304e93f50905d",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/proof-review-candidates-post.log"
+        },
+        {
+          "content_hash": "b681a3decf89d5d548378fd4cbd29d2c485aec6628b5770002bf0afb7a3e1ff8",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/proof-review-candidates.md"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "2c0c9f27badcefb8a4319a22f3097540cbc9ab08b5a23c4708882b4a1036edcc",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "6854a8df1eae4391459533a9188c995a2a344d8fe4147becdbaf2fcf174327d3",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/verus-proofs.log"
+        },
+        {
+          "content_hash": "97d26d5d83bb2d40b037ccd8554e8c9a21bea583d56fb30e81733564c643bbf1",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/evidence/vibethinker-packet-path.txt"
+        },
+        {
+          "content_hash": "9e9cfb68bcfedfe65fe27cf0d2f290f30b1192e5f480991dee7c26e4e61724bb",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/proposal.md"
+        },
+        {
+          "content_hash": "bf67e3a090bb36c4616c1837059462ab2674b648eba3989aab0c290d02f3f2ba",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "3cec5a398657a1e79acad229277084390df73891f9e0a0421867516d4ecc7aec",
+          "exists": true,
+          "path": "./cairn/changes/proof-review-append-entries-build/tasks.md"
+        }
+      ],
+      "manifest_hash": "55e4d62b2e1fc3f5af810196d9cdad54587f4296027358a1d6c641efa8cad48a"
+    },
+    "kind": "archive",
+    "manifest_hash": "c7525d41ac887a7429eef50a0ee988ef7e61a9f3eaa1002dc6ae5c73e0faf232"
+  },
+  "plan_hash": "bf64a0fab349d576cb65a07c87e6fbad8cfe023ca6c137fee622dc46da10374e",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "2ad7fd9ec6ab3b2bcfc4f371d94a57133a95be2601b80fc3dec61d731d781517"
+}
