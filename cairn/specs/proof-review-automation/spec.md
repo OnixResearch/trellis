@@ -47,3 +47,15 @@ r[proof-review.agent-loop]
 - GIVEN unrelated dirty files, an active Cairn change, a trust-boundary-only candidate, an unsupported patch shape, failed validation, or a push request without an explicit push flag
 - WHEN the proof-review loop evaluates the next iteration
 - THEN it MUST stop without hiding the blocker and MUST report the exact stop reason in its receipt or dry-run output
+
+### Requirement: Bounded Proof Review Iteration for src/arena.rs
+
+The proof-review iteration for `src/arena.rs` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, and MUST archive scanner, advisory packet, validation, sync, archive, and final status evidence before claiming completion.
+
+r[proof-review.iteration.proof.review.arena]
+
+#### Scenario: Iteration archives only after validation
+
+- GIVEN `src/arena.rs` has been selected by the proof-review loop
+- WHEN the change is prepared for archive
+- THEN focused checks, Verus, Tracey, Cairn gates, and repo verification evidence MUST be present and successful
