@@ -3,8 +3,8 @@
 //! This module intentionally lands compact MVP semantic slices: exact value
 //! tags, operand-stack discipline for `i32.add`, typed local access,
 //! bounds-checked linear memory with page growth, typed control labels for
-//! branch/return arity checks, and a small validation-state slice for
-//! unreachable-stack polymorphism. The public surface is exec-first;
+//! branch/return arity checks, unreachable-stack polymorphism, and structured
+//! control-frame stack-height restoration. The public surface is exec-first;
 //! proof-facing specs stay inside this module. It does not model whole module
 //! validation, tables, or indirect calls.
 
@@ -61,9 +61,19 @@ pub struct WasmControlLabel {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+pub struct WasmControlFrame {
+    pub kind: WasmLabelKind,
+    pub params: Vec<WasmValueType>,
+    pub results: Vec<WasmValueType>,
+    pub entry_height: usize,
+    pub entry_reachable: bool,
+}
+
+#[derive(Debug, PartialEq, Eq)]
 pub struct WasmValidationState {
     pub operand_types: Vec<WasmValueType>,
     pub control: Vec<WasmControlLabel>,
+    pub frames: Vec<WasmControlFrame>,
     pub reachable: bool,
 }
 
@@ -217,6 +227,26 @@ pub open spec fn validation_return_ready_spec(state: WasmValidationState) -> boo
     &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, state.control@[0].results@))
 }
 
+pub open spec fn frame_stack_top_index_spec(frames_len: nat) -> int
+    recommends frames_len > 0
+{
+    frames_len as int - 1
+}
+
+// r[impl wasm-validation.block-entry]
+pub open spec fn validation_enter_ready_spec(state: WasmValidationState, params: Seq<WasmValueType>) -> bool {
+    validation_pop_ready_spec(state, params)
+}
+
+// r[impl wasm-validation.control-frame]
+// r[impl wasm-validation.block-end]
+pub open spec fn validation_frame_end_ready_spec(state: WasmValidationState) -> bool {
+    &&& state.frames@.len() > 0
+    &&& state.control@.len() > 0
+    &&& state.frames@[frame_stack_top_index_spec(state.frames@.len())].entry_height as int <= state.operand_types@.len()
+    &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, state.frames@[frame_stack_top_index_spec(state.frames@.len())].results@))
+}
+
 proof fn typed_values_after_set(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
     requires
         typed_values_spec(values, types),
@@ -296,6 +326,23 @@ fn page_byte_len(pages: usize) -> (result: Option<usize>)
         Some(total_bytes) => Some(total_bytes),
         None => None,
     }
+}
+
+fn clone_value_types(types: &Vec<WasmValueType>) -> (result: Vec<WasmValueType>)
+    ensures result@ == types@
+{
+    let mut cloned: Vec<WasmValueType> = Vec::new();
+    let mut index: usize = 0usize;
+    while index < types.len()
+        invariant
+            0 <= index <= types@.len(),
+            cloned@ == types@.subrange(0, index as int),
+        decreases types.len() - index,
+    {
+        cloned.push(types[index]);
+        index += 1usize;
+    }
+    cloned
 }
 
 fn label_is_function(label: &WasmControlLabel) -> (result: bool)
@@ -623,6 +670,7 @@ pub fn validate_unreachable(state: &mut WasmValidationState)
         !state.reachable,
         state.operand_types@ == old(state).operand_types@,
         state.control@ == old(state).control@,
+        state.frames@ == old(state).frames@,
 {
     state.reachable = false;
 }
@@ -633,10 +681,12 @@ pub fn validate_i32_add(state: &mut WasmValidationState) -> (result: bool)
         result <==> validation_i32_add_ready_spec(*old(state)),
         result ==> state.reachable == old(state).reachable,
         result ==> state.control@ == old(state).control@,
+        result ==> state.frames@ == old(state).frames@,
         result && old(state).reachable ==> state.operand_types@ == old(state).operand_types@.subrange(0, old(state).operand_types@.len() - i32_binary_operand_count_spec()) + seq![WasmValueType::I32],
         result && !old(state).reachable ==> state.operand_types@ == old(state).operand_types@ + seq![WasmValueType::I32],
         !result ==> state.reachable == old(state).reachable,
         !result ==> state.control@ == old(state).control@,
+        !result ==> state.frames@ == old(state).frames@,
         !result ==> state.operand_types@ == old(state).operand_types@,
 {
     if state.reachable {
@@ -663,6 +713,7 @@ pub fn validate_br(state: &mut WasmValidationState, depth: usize) -> (result: bo
         result <==> validation_branch_ready_spec(*old(state), depth as int),
         state.operand_types@ == old(state).operand_types@,
         state.control@ == old(state).control@,
+        state.frames@ == old(state).frames@,
         result ==> !state.reachable,
         !result ==> state.reachable == old(state).reachable,
 {
@@ -684,6 +735,7 @@ pub fn validate_return(state: &mut WasmValidationState) -> (result: bool)
         result <==> validation_return_ready_spec(*old(state)),
         state.operand_types@ == old(state).operand_types@,
         state.control@ == old(state).control@,
+        state.frames@ == old(state).frames@,
         result ==> !state.reachable,
         !result ==> state.reachable == old(state).reachable,
 {
@@ -697,6 +749,136 @@ pub fn validate_return(state: &mut WasmValidationState) -> (result: bool)
         return false;
     }
     state.reachable = false;
+    true
+}
+
+// r[impl wasm-validation.control-frame]
+// r[impl wasm-validation.block-entry]
+pub fn validate_enter_block(state: &mut WasmValidationState, params: Vec<WasmValueType>, results: Vec<WasmValueType>) -> (result: bool)
+    ensures
+        result <==> validation_enter_ready_spec(*old(state), params@),
+        result ==> state.reachable == old(state).reachable,
+        result && old(state).reachable ==> state.operand_types@ == old(state).operand_types@.subrange(0, old(state).operand_types@.len() - params@.len()),
+        result && !old(state).reachable ==> state.operand_types@ == old(state).operand_types@,
+        result ==> state.control@.len() == old(state).control@.len() + 1,
+        result ==> state.frames@.len() == old(state).frames@.len() + 1,
+        !result ==> state.reachable == old(state).reachable,
+        !result ==> state.operand_types@ == old(state).operand_types@,
+        !result ==> state.control@ == old(state).control@,
+        !result ==> state.frames@ == old(state).frames@,
+{
+    if !validation_pop_ready(state, &params) {
+        return false;
+    }
+    let entry_reachable = state.reachable;
+    if state.reachable {
+        let new_len = state.operand_types.len() - params.len();
+        state.operand_types.truncate(new_len);
+    }
+    let entry_height = state.operand_types.len();
+    let label_params = clone_value_types(&params);
+    let label_results = clone_value_types(&results);
+    state.control.push(WasmControlLabel { kind: WasmLabelKind::Block, params: label_params, results: label_results });
+    state.frames.push(WasmControlFrame { kind: WasmLabelKind::Block, params, results, entry_height, entry_reachable });
+    true
+}
+
+// r[impl wasm-validation.control-frame]
+// r[impl wasm-validation.block-entry]
+pub fn validate_enter_loop(state: &mut WasmValidationState, params: Vec<WasmValueType>, results: Vec<WasmValueType>) -> (result: bool)
+    ensures
+        result <==> validation_enter_ready_spec(*old(state), params@),
+        result ==> state.reachable == old(state).reachable,
+        result && old(state).reachable ==> state.operand_types@ == old(state).operand_types@.subrange(0, old(state).operand_types@.len() - params@.len()),
+        result && !old(state).reachable ==> state.operand_types@ == old(state).operand_types@,
+        result ==> state.control@.len() == old(state).control@.len() + 1,
+        result ==> state.frames@.len() == old(state).frames@.len() + 1,
+        !result ==> state.reachable == old(state).reachable,
+        !result ==> state.operand_types@ == old(state).operand_types@,
+        !result ==> state.control@ == old(state).control@,
+        !result ==> state.frames@ == old(state).frames@,
+{
+    if !validation_pop_ready(state, &params) {
+        return false;
+    }
+    let entry_reachable = state.reachable;
+    if state.reachable {
+        let new_len = state.operand_types.len() - params.len();
+        state.operand_types.truncate(new_len);
+    }
+    let entry_height = state.operand_types.len();
+    let label_params = clone_value_types(&params);
+    let label_results = clone_value_types(&results);
+    state.control.push(WasmControlLabel { kind: WasmLabelKind::Loop, params: label_params, results: label_results });
+    state.frames.push(WasmControlFrame { kind: WasmLabelKind::Loop, params, results, entry_height, entry_reachable });
+    true
+}
+
+// r[impl wasm-validation.control-frame]
+// r[impl wasm-validation.block-end]
+pub fn validate_end_control_frame(state: &mut WasmValidationState) -> (result: bool)
+    ensures
+        result ==> validation_frame_end_ready_spec(*old(state)),
+        result ==> state.control@.len() == old(state).control@.len() - 1,
+        result ==> state.frames@.len() == old(state).frames@.len() - 1,
+        result ==> state.reachable == old(state).frames@[frame_stack_top_index_spec(old(state).frames@.len())].entry_reachable,
+        result ==> state.operand_types@.len() == old(state).frames@[frame_stack_top_index_spec(old(state).frames@.len())].entry_height as int + old(state).frames@[frame_stack_top_index_spec(old(state).frames@.len())].results@.len(),
+        !result ==> state.reachable == old(state).reachable,
+        !result ==> state.operand_types@ == old(state).operand_types@,
+        !result ==> state.control@ == old(state).control@,
+        !result ==> state.frames@ == old(state).frames@,
+{
+    if state.frames.len() == 0usize {
+        return false;
+    }
+    if state.control.len() == 0usize {
+        return false;
+    }
+    let old_control_len = state.control.len();
+    let old_frames_len = state.frames.len();
+    assert(old_control_len > 0usize);
+    assert(old_frames_len > 0usize);
+    assert(old_control_len as int == old(state).control@.len());
+    assert(old_frames_len as int == old(state).frames@.len());
+    let frame_index = old_frames_len - 1usize;
+    assert(frame_index as int == frame_stack_top_index_spec(state.frames@.len()));
+    let entry_height = state.frames[frame_index].entry_height;
+    if entry_height > state.operand_types.len() {
+        return false;
+    }
+    if state.reachable && !validation_pop_ready(state, &state.frames[frame_index].results) {
+        return false;
+    }
+    let entry_reachable = state.frames[frame_index].entry_reachable;
+    let frame_results = clone_value_types(&state.frames[frame_index].results);
+    state.operand_types.truncate(entry_height);
+    let mut result_index: usize = 0usize;
+    while result_index < frame_results.len()
+        invariant
+            0 <= result_index <= frame_results@.len(),
+            state.operand_types@.len() == entry_height as int + result_index as int,
+            state.control.len() == old_control_len,
+            state.frames.len() == old_frames_len,
+        decreases frame_results.len() - result_index,
+    {
+        state.operand_types.push(frame_results[result_index]);
+        result_index += 1usize;
+    }
+    assert(state.control.len() == old_control_len);
+    assert(state.frames.len() == old_frames_len);
+    let new_control_len = old_control_len - 1usize;
+    assert(new_control_len < old_control_len);
+    assert(new_control_len as int == old(state).control@.len() - 1);
+    assert(new_control_len <= state.control.len());
+    state.control.truncate(new_control_len);
+    assert(state.control@.len() == new_control_len as int);
+    assert(state.control@.len() == old(state).control@.len() - 1);
+    assert(frame_index as int == old(state).frames@.len() - 1);
+    assert(frame_index <= state.frames.len());
+    state.frames.truncate(frame_index);
+    assert(state.frames@.len() == frame_index as int);
+    assert(state.frames@.len() == old(state).frames@.len() - 1);
+    state.reachable = entry_reachable;
     true
 }
 
@@ -867,6 +1049,27 @@ proof fn validation_return_ready_implies_function_root(state: WasmValidationStat
     ensures validation_return_ready_spec(state) ==> state.control@.len() > 0 && label_is_function_spec(state.control@[0])
 {}
 
+// r[verify wasm-validation.control-frame]
+proof fn frame_end_ready_implies_frame_and_label(state: WasmValidationState)
+    ensures validation_frame_end_ready_spec(state) ==> state.frames@.len() > 0 && state.control@.len() > 0
+{}
+
+// r[verify wasm-validation.block-entry]
+proof fn unreachable_enter_ready(state: WasmValidationState, params: Seq<WasmValueType>)
+    requires !state.reachable
+    ensures validation_enter_ready_spec(state, params)
+{}
+
+// r[verify wasm-validation.block-end]
+proof fn unreachable_frame_end_needs_only_shape(state: WasmValidationState)
+    requires
+        !state.reachable,
+        state.frames@.len() > 0,
+        state.control@.len() > 0,
+        state.frames@[frame_stack_top_index_spec(state.frames@.len())].entry_height as int <= state.operand_types@.len(),
+    ensures validation_frame_end_ready_spec(state)
+{}
+
 // r[verify wasm-locals.access]
 proof fn typed_local_update_preserves_frame(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
     requires
@@ -946,6 +1149,7 @@ mod tests {
         WasmValidationState {
             operand_types,
             control,
+            frames: Vec::<WasmControlFrame>::new(),
             reachable,
         }
     }
@@ -1195,6 +1399,128 @@ mod tests {
         assert!(!validate_return(&mut state));
         assert!(state.reachable);
         assert_eq!(state.operand_types, vec![WasmValueType::I64]);
+    }
+
+    // r[verify wasm-validation.control-frame]
+    // r[verify wasm-validation.block-entry]
+    #[test]
+    fn test_validate_enter_block_consumes_params_and_records_frame() {
+        let mut state = validation_state(
+            vec![WasmValueType::I64, WasmValueType::I32],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+
+        assert!(validate_enter_block(&mut state, vec![WasmValueType::I32], vec![WasmValueType::F64]));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64]);
+        assert_eq!(state.control.len(), CONTROL_DEPTH_ONE + CONTROL_DEPTH_ONE);
+        assert_eq!(state.frames.len(), CONTROL_DEPTH_ONE);
+        assert_eq!(state.frames[0].kind, WasmLabelKind::Block);
+        assert_eq!(state.frames[0].entry_height, CONTROL_DEPTH_ONE);
+        assert_eq!(state.frames[0].results, vec![WasmValueType::F64]);
+    }
+
+    // r[verify wasm-validation.block-entry]
+    #[test]
+    fn test_validate_enter_loop_rejects_reachable_param_mismatch() {
+        let mut state =
+            validation_state(vec![WasmValueType::I64], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(!validate_enter_loop(&mut state, vec![WasmValueType::I32], Vec::<WasmValueType>::new()));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64]);
+        assert_eq!(state.control.len(), CONTROL_DEPTH_ONE);
+        assert!(state.frames.is_empty());
+    }
+
+    // r[verify wasm-validation.control-frame]
+    // r[verify wasm-validation.block-entry]
+    #[test]
+    fn test_validate_enter_loop_consumes_params_and_pushes_loop_label() {
+        let mut state = validation_state(
+            vec![WasmValueType::I64, WasmValueType::I32],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+        assert!(validate_enter_loop(&mut state, vec![WasmValueType::I32], vec![WasmValueType::F32]));
+        assert_eq!(state.operand_types, vec![WasmValueType::I64]);
+        assert_eq!(state.control[CONTROL_DEPTH_ONE].kind, WasmLabelKind::Loop);
+        assert_eq!(state.control[CONTROL_DEPTH_ONE].params, vec![WasmValueType::I32]);
+        assert_eq!(state.frames[0].entry_height, CONTROL_DEPTH_ONE);
+    }
+
+    // r[verify wasm-validation.block-entry]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_enter_block_unreachable_is_stack_polymorphic() {
+        let mut state =
+            validation_state(Vec::<WasmValueType>::new(), vec![function_label(Vec::<WasmValueType>::new())], false);
+        assert!(validate_enter_block(&mut state, vec![WasmValueType::I32], vec![WasmValueType::I64]));
+        assert!(!state.reachable);
+        assert!(state.operand_types.is_empty());
+        assert_eq!(state.frames[0].entry_height, MEMORY_INDEX_ZERO);
+    }
+
+    // r[verify wasm-validation.block-end]
+    #[test]
+    fn test_validate_end_control_frame_restores_height_plus_results() {
+        let mut state =
+            validation_state(vec![WasmValueType::I64], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(validate_enter_block(&mut state, Vec::<WasmValueType>::new(), vec![WasmValueType::I32]));
+        state.operand_types.push(WasmValueType::F64);
+        state.operand_types.push(WasmValueType::I32);
+
+        assert!(validate_end_control_frame(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64, WasmValueType::I32]);
+        assert_eq!(state.control.len(), CONTROL_DEPTH_ONE);
+        assert!(state.frames.is_empty());
+    }
+
+    // r[verify wasm-validation.block-end]
+    #[test]
+    fn test_validate_end_control_frame_rejects_reachable_result_mismatch() {
+        let mut state =
+            validation_state(vec![WasmValueType::I64], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(validate_enter_block(&mut state, Vec::<WasmValueType>::new(), vec![WasmValueType::I32]));
+        state.operand_types.push(WasmValueType::I64);
+        let before_operands = state.operand_types.clone();
+        let before_control_len = state.control.len();
+        let before_frames_len = state.frames.len();
+
+        assert!(!validate_end_control_frame(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, before_operands);
+        assert_eq!(state.control.len(), before_control_len);
+        assert_eq!(state.frames.len(), before_frames_len);
+    }
+
+    // r[verify wasm-validation.block-end]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_end_control_frame_unreachable_synthesizes_results() {
+        let mut state =
+            validation_state(vec![WasmValueType::I64], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(validate_enter_block(&mut state, Vec::<WasmValueType>::new(), vec![WasmValueType::I32]));
+        validate_unreachable(&mut state);
+        assert!(!state.reachable);
+
+        assert!(validate_end_control_frame(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64, WasmValueType::I32]);
+        assert_eq!(state.control.len(), CONTROL_DEPTH_ONE);
+        assert!(state.frames.is_empty());
+    }
+
+    // r[verify wasm-validation.block-end]
+    #[test]
+    fn test_validate_end_control_frame_rejects_missing_frame() {
+        let mut state =
+            validation_state(vec![WasmValueType::I32], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(!validate_end_control_frame(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I32]);
+        assert!(state.frames.is_empty());
     }
 
     // r[verify wasm-locals.access]

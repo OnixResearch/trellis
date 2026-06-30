@@ -7263,6 +7263,25 @@ control-label arity rules while the current path is reachable. Successful `br`,
 Malformed branch depths, missing function roots, and reachable suffix mismatches
 MUST be rejected.
 
+r[wasm-validation.control-frame]
+The Wasm validation model MUST record structured control frames with label kind,
+parameter types, result types, entry operand-stack height, and entry
+reachability. Helpers that enter or end modeled blocks and loops MUST keep the
+control-frame stack aligned with the branch-label stack.
+
+r[wasm-validation.block-entry]
+The Wasm validation model MUST admit block and loop entry only when reachable
+state has a matching parameter suffix, or when the current path is unreachable.
+Successful entry MUST remove consumed parameter types, push an aligned control
+frame and branch label, and keep reachability unchanged.
+
+r[wasm-validation.block-end]
+The Wasm validation model MUST admit ending the innermost frame only when
+reachable state has a result-type suffix matching that frame, or when the current
+path is unreachable. Successful end MUST pop the frame and aligned label,
+restore the operand-type stack to the frame entry height, append the frame result
+types, and restore reachability to the frame's entry reachability.
+
 ## Loop Detection
 
 r[loop.back-edge]
