@@ -3,10 +3,11 @@
 //! This module intentionally lands compact MVP semantic slices: exact value
 //! tags, operand-stack discipline for `i32.add`, typed local access,
 //! bounds-checked linear memory with page growth, typed control labels for
-//! branch/return arity checks, unreachable-stack polymorphism, and structured
-//! control-frame stack-height restoration. The public surface is exec-first;
-//! proof-facing specs stay inside this module. It does not model whole module
-//! validation, tables, or indirect calls.
+//! branch/return arity checks, unreachable-stack polymorphism, structured
+//! control-frame stack-height restoration, and finite table/signature checks for
+//! `call_indirect`. The public surface is exec-first; proof-facing specs stay
+//! inside this module. It does not model whole module validation, element
+//! segment initialization, multi-table reference types, or callee execution.
 
 #![allow(clippy::too_many_lines)]
 
@@ -61,6 +62,17 @@ pub struct WasmControlLabel {
 }
 
 #[derive(Debug, PartialEq, Eq)]
+pub struct WasmFuncType {
+    pub params: Vec<WasmValueType>,
+    pub results: Vec<WasmValueType>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct WasmTable {
+    pub entries: Vec<Option<WasmFuncType>>,
+}
+
+#[derive(Debug, PartialEq, Eq)]
 pub struct WasmControlFrame {
     pub kind: WasmLabelKind,
     pub params: Vec<WasmValueType>,
@@ -112,6 +124,33 @@ pub open spec fn value_type_matches_spec(actual: WasmValueType, expected: WasmVa
 pub open spec fn type_stack_suffix_has_types_spec(stack: Seq<WasmValueType>, expected: Seq<WasmValueType>) -> bool {
     &&& stack.len() >= expected.len()
     &&& forall|i: int| #![trigger expected[i]] 0 <= i < expected.len() ==> value_type_matches_spec(stack[stack.len() - expected.len() + i], expected[i])
+}
+
+pub open spec fn value_type_sequences_match_spec(actual: Seq<WasmValueType>, expected: Seq<WasmValueType>) -> bool {
+    &&& actual.len() == expected.len()
+    &&& forall|i: int| #![trigger expected[i]] 0 <= i < expected.len() ==> value_type_matches_spec(actual[i], expected[i])
+}
+
+// r[impl wasm-table.signature]
+pub open spec fn func_type_matches_spec(actual: WasmFuncType, expected: WasmFuncType) -> bool {
+    &&& value_type_sequences_match_spec(actual.params@, expected.params@)
+    &&& value_type_sequences_match_spec(actual.results@, expected.results@)
+}
+
+pub open spec fn table_entry_initialized_spec(table: WasmTable, index: int) -> bool {
+    &&& 0 <= index < table.entries@.len()
+    &&& table.entries@[index].is_some()
+}
+
+// r[impl wasm-table.signature]
+pub open spec fn table_entry_signature_matches_spec(table: WasmTable, index: int, expected: WasmFuncType) -> bool {
+    &&& table_entry_initialized_spec(table, index)
+    &&& func_type_matches_spec(table.entries@[index].unwrap(), expected)
+}
+
+// r[impl wasm-validation.call-indirect]
+pub open spec fn call_indirect_operand_types_spec(expected: WasmFuncType) -> Seq<WasmValueType> {
+    expected.params@ + seq![WasmValueType::I32]
 }
 
 pub open spec fn i32_binary_operand_count_spec() -> int {
@@ -225,6 +264,12 @@ pub open spec fn validation_return_ready_spec(state: WasmValidationState) -> boo
     &&& state.control@.len() > 0
     &&& label_is_function_spec(state.control@[0])
     &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, state.control@[0].results@))
+}
+
+// r[impl wasm-validation.call-indirect]
+pub open spec fn validation_call_indirect_ready_spec(state: WasmValidationState, table: WasmTable, index: int, expected: WasmFuncType) -> bool {
+    &&& table_entry_signature_matches_spec(table, index, expected)
+    &&& validation_pop_ready_spec(state, call_indirect_operand_types_spec(expected))
 }
 
 pub open spec fn frame_stack_top_index_spec(frames_len: nat) -> int
@@ -343,6 +388,69 @@ fn clone_value_types(types: &Vec<WasmValueType>) -> (result: Vec<WasmValueType>)
         index += 1usize;
     }
     cloned
+}
+
+fn call_indirect_operand_types(expected: &WasmFuncType) -> (result: Vec<WasmValueType>)
+    ensures result@ == call_indirect_operand_types_spec(*expected)
+{
+    let mut operand_types = clone_value_types(&expected.params);
+    operand_types.push(WasmValueType::I32);
+    operand_types
+}
+
+fn append_value_types(target: &mut Vec<WasmValueType>, values: &Vec<WasmValueType>)
+    ensures target@ == old(target)@ + values@
+{
+    let old_len = target.len();
+    let mut index: usize = 0usize;
+    while index < values.len()
+        invariant
+            0 <= index <= values@.len(),
+            target@.len() == old_len as int + index as int,
+            target@ == old(target)@ + values@.subrange(0, index as int),
+        decreases values.len() - index,
+    {
+        target.push(values[index]);
+        index += 1usize;
+    }
+}
+
+fn value_type_sequence_matches(actual: &Vec<WasmValueType>, expected: &Vec<WasmValueType>) -> (result: bool)
+    ensures result == value_type_sequences_match_spec(actual@, expected@)
+{
+    if actual.len() != expected.len() {
+        return false;
+    }
+    let mut index: usize = 0usize;
+    while index < expected.len()
+        invariant
+            0 <= index <= expected@.len(),
+            actual@.len() == expected@.len(),
+            forall|i: int| 0 <= i < index as int ==> value_type_matches_spec(actual@[i], expected@[i]),
+        decreases expected.len() - index,
+    {
+        if !value_type_matches(actual[index], expected[index]) {
+            proof {
+                let witness = index as int;
+                assert(0 <= witness < expected@.len());
+                assert(!value_type_matches_spec(actual@[witness], expected@[witness]));
+                assert(exists|i: int| 0 <= i < expected@.len() && !value_type_matches_spec(actual@[i], expected@[i]));
+                assert(!value_type_sequences_match_spec(actual@, expected@));
+            }
+            return false;
+        }
+        index += 1usize;
+    }
+    true
+}
+
+fn func_type_matches(actual: &WasmFuncType, expected: &WasmFuncType) -> (result: bool)
+    ensures result == func_type_matches_spec(*actual, *expected)
+{
+    if !value_type_sequence_matches(&actual.params, &expected.params) {
+        return false;
+    }
+    value_type_sequence_matches(&actual.results, &expected.results)
 }
 
 fn label_is_function(label: &WasmControlLabel) -> (result: bool)
@@ -620,6 +728,19 @@ pub fn return_arity_ok(stack: &Vec<WasmValue>, control: &Vec<WasmControlLabel>) 
     stack_suffix_matches_label(stack, &control[0usize])
 }
 
+// r[impl wasm-table.signature]
+pub fn table_entry_signature_matches(table: &WasmTable, index: usize, expected: &WasmFuncType) -> (result: bool)
+    ensures result == table_entry_signature_matches_spec(*table, index as int, *expected)
+{
+    if index >= table.entries.len() {
+        return false;
+    }
+    match &table.entries[index] {
+        Some(actual) => func_type_matches(actual, expected),
+        None => false,
+    }
+}
+
 // r[impl wasm-validation.unreachable-stack]
 pub fn validation_pop_ready(state: &WasmValidationState, expected: &Vec<WasmValueType>) -> (result: bool)
     ensures result == validation_pop_ready_spec(*state, expected@)
@@ -749,6 +870,43 @@ pub fn validate_return(state: &mut WasmValidationState) -> (result: bool)
         return false;
     }
     state.reachable = false;
+    true
+}
+
+// r[impl wasm-validation.call-indirect]
+pub fn validate_call_indirect(
+    state: &mut WasmValidationState,
+    table: &WasmTable,
+    index: usize,
+    expected: &WasmFuncType,
+) -> (result: bool)
+    ensures
+        result <==> validation_call_indirect_ready_spec(*old(state), *table, index as int, *expected),
+        result ==> state.reachable == old(state).reachable,
+        result ==> state.control@ == old(state).control@,
+        result ==> state.frames@ == old(state).frames@,
+        result && old(state).reachable ==> state.operand_types@ == old(state).operand_types@.subrange(0, old(state).operand_types@.len() - call_indirect_operand_types_spec(*expected).len()) + expected.results@,
+        result && !old(state).reachable ==> state.operand_types@ == old(state).operand_types@ + expected.results@,
+        !result ==> state.reachable == old(state).reachable,
+        !result ==> state.operand_types@ == old(state).operand_types@,
+        !result ==> state.control@ == old(state).control@,
+        !result ==> state.frames@ == old(state).frames@,
+{
+    if !table_entry_signature_matches(table, index, expected) {
+        return false;
+    }
+    let expected_operands = call_indirect_operand_types(expected);
+    if !validation_pop_ready(state, &expected_operands) {
+        return false;
+    }
+    if state.reachable {
+        assert(validation_pop_ready_spec(*state, expected_operands@));
+        assert(type_stack_suffix_has_types_spec(state.operand_types@, expected_operands@));
+        assert(state.operand_types@.len() >= expected_operands@.len());
+        let new_len = state.operand_types.len() - expected_operands.len();
+        state.operand_types.truncate(new_len);
+    }
+    append_value_types(&mut state.operand_types, &expected.results);
     true
 }
 
@@ -1049,6 +1207,27 @@ proof fn validation_return_ready_implies_function_root(state: WasmValidationStat
     ensures validation_return_ready_spec(state) ==> state.control@.len() > 0 && label_is_function_spec(state.control@[0])
 {}
 
+// r[verify wasm-table.signature]
+proof fn table_entry_signature_implies_initialized(table: WasmTable, index: int, expected: WasmFuncType)
+    ensures table_entry_signature_matches_spec(table, index, expected) ==> table_entry_initialized_spec(table, index)
+{}
+
+// r[verify wasm-table.signature]
+proof fn matching_func_type_has_matching_params(actual: WasmFuncType, expected: WasmFuncType)
+    ensures func_type_matches_spec(actual, expected) ==> value_type_sequences_match_spec(actual.params@, expected.params@)
+{}
+
+// r[verify wasm-validation.call-indirect]
+proof fn call_indirect_ready_implies_table_match(state: WasmValidationState, table: WasmTable, index: int, expected: WasmFuncType)
+    ensures validation_call_indirect_ready_spec(state, table, index, expected) ==> table_entry_signature_matches_spec(table, index, expected)
+{}
+
+// r[verify wasm-validation.call-indirect]
+proof fn unreachable_call_indirect_pop_ready(state: WasmValidationState, expected: WasmFuncType)
+    requires !state.reachable
+    ensures validation_pop_ready_spec(state, call_indirect_operand_types_spec(expected))
+{}
+
 // r[verify wasm-validation.control-frame]
 proof fn frame_end_ready_implies_frame_and_label(state: WasmValidationState)
     ensures validation_frame_end_ready_spec(state) ==> state.frames@.len() > 0 && state.control@.len() > 0
@@ -1109,6 +1288,9 @@ mod tests {
     const CONTROL_DEPTH_ZERO: usize = 0usize;
     const CONTROL_DEPTH_ONE: usize = 1usize;
     const OUT_OF_RANGE_BRANCH_DEPTH: usize = 1usize;
+    const TABLE_INDEX_ZERO: usize = 0usize;
+    const TABLE_INDEX_ONE: usize = 1usize;
+    const TABLE_INDEX_TWO: usize = 2usize;
     const MAX_PROP_MEMORY_BYTES: usize = 32usize;
     const MAX_PROP_STORE_BYTES: usize = 8usize;
 
@@ -1139,6 +1321,18 @@ mod tests {
             params,
             results,
         }
+    }
+
+    fn func_type(params: Vec<WasmValueType>, results: Vec<WasmValueType>) -> WasmFuncType {
+        WasmFuncType { params, results }
+    }
+
+    fn table(entries: Vec<Option<WasmFuncType>>) -> WasmTable {
+        WasmTable { entries }
+    }
+
+    fn call_indirect_expected() -> WasmFuncType {
+        func_type(vec![WasmValueType::I64, WasmValueType::I32], vec![WasmValueType::F32])
     }
 
     fn validation_state(
@@ -1399,6 +1593,99 @@ mod tests {
         assert!(!validate_return(&mut state));
         assert!(state.reachable);
         assert_eq!(state.operand_types, vec![WasmValueType::I64]);
+    }
+
+    // r[verify wasm-table.signature]
+    #[test]
+    fn test_table_entry_signature_matches_initialized_entry() {
+        let expected = call_indirect_expected();
+        let table = table(vec![Some(func_type(vec![WasmValueType::I64, WasmValueType::I32], vec![
+            WasmValueType::F32,
+        ]))]);
+
+        assert!(table_entry_signature_matches(&table, TABLE_INDEX_ZERO, &expected));
+    }
+
+    // r[verify wasm-table.signature]
+    #[test]
+    fn test_table_entry_signature_rejects_missing_and_mismatch() {
+        let expected = call_indirect_expected();
+        let table = table(vec![
+            None,
+            Some(func_type(vec![WasmValueType::I64], vec![WasmValueType::F32])),
+        ]);
+
+        assert!(!table_entry_signature_matches(&table, TABLE_INDEX_ZERO, &expected));
+        assert!(!table_entry_signature_matches(&table, TABLE_INDEX_ONE, &expected));
+        assert!(!table_entry_signature_matches(&table, TABLE_INDEX_TWO, &expected));
+    }
+
+    // r[verify wasm-validation.call-indirect]
+    #[test]
+    fn test_validate_call_indirect_consumes_params_and_index_then_pushes_results() {
+        let expected = call_indirect_expected();
+        let table = table(vec![Some(func_type(vec![WasmValueType::I64, WasmValueType::I32], vec![
+            WasmValueType::F32,
+        ]))]);
+        let mut state = validation_state(
+            vec![
+                WasmValueType::F64,
+                WasmValueType::I64,
+                WasmValueType::I32,
+                WasmValueType::I32,
+            ],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+
+        assert!(validate_call_indirect(&mut state, &table, TABLE_INDEX_ZERO, &expected));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::F64, WasmValueType::F32]);
+    }
+
+    // r[verify wasm-validation.call-indirect]
+    #[test]
+    fn test_validate_call_indirect_rejects_stack_mismatch_without_mutation() {
+        let expected = call_indirect_expected();
+        let table = table(vec![Some(func_type(vec![WasmValueType::I64, WasmValueType::I32], vec![
+            WasmValueType::F32,
+        ]))]);
+        let mut state = validation_state(
+            vec![
+                WasmValueType::F64,
+                WasmValueType::I64,
+                WasmValueType::I32,
+                WasmValueType::I64,
+            ],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+        let before_operands = state.operand_types.clone();
+
+        assert!(!validate_call_indirect(&mut state, &table, TABLE_INDEX_ZERO, &expected));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, before_operands);
+    }
+
+    // r[verify wasm-validation.call-indirect]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_call_indirect_unreachable_synthesizes_results_but_checks_table() {
+        let expected = call_indirect_expected();
+        let matching_table = table(vec![Some(func_type(vec![WasmValueType::I64, WasmValueType::I32], vec![
+            WasmValueType::F32,
+        ]))]);
+        let bad_table = table(vec![None]);
+        let mut state =
+            validation_state(Vec::<WasmValueType>::new(), vec![function_label(Vec::<WasmValueType>::new())], false);
+
+        assert!(validate_call_indirect(&mut state, &matching_table, TABLE_INDEX_ZERO, &expected));
+        assert!(!state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::F32]);
+
+        let before_operands = state.operand_types.clone();
+        assert!(!validate_call_indirect(&mut state, &bad_table, TABLE_INDEX_ZERO, &expected));
+        assert_eq!(state.operand_types, before_operands);
     }
 
     // r[verify wasm-validation.control-frame]

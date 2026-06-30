@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10469 Verus proofs · 4705 tests · 1955 requirements · 592 modules · 16 trusted/proof-gap boundaries**
+**10516 Verus proofs · 4761 tests · 1966 requirements · 592 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -381,7 +381,7 @@ validation commands captured in the change evidence.
 |---|---|
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
-| `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, and control-frame stack-height restoration |
+| `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, and finite `call_indirect` table/signature admission |
 | `gpu_primitives` | finite GPU program shapes, launch/grid/block/thread bounds, pitched/tensor memory-layout, coalesced access, and shared-tile admission |
 
 ### Scheduling primitives

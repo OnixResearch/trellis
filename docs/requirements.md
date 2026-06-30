@@ -7282,6 +7282,21 @@ path is unreachable. Successful end MUST pop the frame and aligned label,
 restore the operand-type stack to the frame entry height, append the frame result
 types, and restore reachability to the frame's entry reachability.
 
+r[wasm-table.signature]
+The Wasm table model MUST represent a finite sequence of optional function
+signatures. A table entry MUST be admitted for indirect-call use only when the
+selected index is in bounds, initialized, and its parameter and result type
+sequences exactly match the expected function type.
+
+r[wasm-validation.call-indirect]
+The Wasm validation model MUST admit modeled `call_indirect` only when
+table-entry signature admission succeeds and, while reachable, the operand-type
+stack suffix exactly matches the expected function parameters followed by an
+`i32` table-index operand. Successful reachable validation MUST consume that
+suffix and push the expected result types. Successful unreachable validation MUST
+keep operand pops stack-polymorphic but still require a matching table entry and
+synthesize the expected result types.
+
 ## Loop Detection
 
 r[loop.back-edge]
