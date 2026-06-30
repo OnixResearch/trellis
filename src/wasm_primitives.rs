@@ -2,10 +2,11 @@
 //!
 //! This module intentionally lands compact MVP semantic slices: exact value
 //! tags, operand-stack discipline for `i32.add`, typed local access,
-//! bounds-checked linear memory with page growth, and typed control labels for
-//! branch/return arity checks. The public surface is exec-first;
-//! proof-facing specs stay inside this module. It does not model whole
-//! validation judgments, tables, or indirect calls.
+//! bounds-checked linear memory with page growth, typed control labels for
+//! branch/return arity checks, and a small validation-state slice for
+//! unreachable-stack polymorphism. The public surface is exec-first;
+//! proof-facing specs stay inside this module. It does not model whole module
+//! validation, tables, or indirect calls.
 
 #![allow(clippy::too_many_lines)]
 
@@ -59,6 +60,13 @@ pub struct WasmControlLabel {
     pub results: Vec<WasmValueType>,
 }
 
+#[derive(Debug, PartialEq, Eq)]
+pub struct WasmValidationState {
+    pub operand_types: Vec<WasmValueType>,
+    pub control: Vec<WasmControlLabel>,
+    pub reachable: bool,
+}
+
 // ============================================================
 // Specs
 // ============================================================
@@ -85,6 +93,15 @@ pub open spec fn value_has_type_spec(value: WasmValue, ty: WasmValueType) -> boo
 pub open spec fn typed_values_spec(values: Seq<WasmValue>, types: Seq<WasmValueType>) -> bool {
     &&& values.len() == types.len()
     &&& forall|i: int| #![trigger values[i]] 0 <= i < values.len() ==> value_has_type_spec(values[i], types[i])
+}
+
+pub open spec fn value_type_matches_spec(actual: WasmValueType, expected: WasmValueType) -> bool {
+    actual == expected
+}
+
+pub open spec fn type_stack_suffix_has_types_spec(stack: Seq<WasmValueType>, expected: Seq<WasmValueType>) -> bool {
+    &&& stack.len() >= expected.len()
+    &&& forall|i: int| #![trigger expected[i]] 0 <= i < expected.len() ==> value_type_matches_spec(stack[stack.len() - expected.len() + i], expected[i])
 }
 
 pub open spec fn i32_binary_operand_count_spec() -> int {
@@ -173,6 +190,31 @@ pub open spec fn return_values_ready_spec(stack: Seq<WasmValue>, control: Seq<Wa
     &&& control.len() > 0
     &&& label_is_function_spec(control[0])
     &&& stack_suffix_has_types_spec(stack, control[0].results@)
+}
+
+// r[impl wasm-validation.unreachable-stack]
+pub open spec fn validation_pop_ready_spec(state: WasmValidationState, expected: Seq<WasmValueType>) -> bool {
+    !state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, expected)
+}
+
+// r[impl wasm-validation.i32-add]
+pub open spec fn validation_i32_add_ready_spec(state: WasmValidationState) -> bool {
+    &&& (!state.reachable || state.operand_types@.len() >= i32_binary_operand_count_spec())
+    &&& (!state.reachable || value_type_matches_spec(state.operand_types@[state.operand_types@.len() - 1], WasmValueType::I32))
+    &&& (!state.reachable || value_type_matches_spec(state.operand_types@[state.operand_types@.len() - i32_binary_operand_count_spec()], WasmValueType::I32))
+}
+
+// r[impl wasm-validation.control-transfer]
+pub open spec fn validation_branch_ready_spec(state: WasmValidationState, depth: int) -> bool {
+    &&& branch_depth_valid_spec(state.control@, depth)
+    &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, branch_label_types_spec(state.control@[branch_target_index_spec(state.control@.len(), depth)])))
+}
+
+// r[impl wasm-validation.control-transfer]
+pub open spec fn validation_return_ready_spec(state: WasmValidationState) -> bool {
+    &&& state.control@.len() > 0
+    &&& label_is_function_spec(state.control@[0])
+    &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, state.control@[0].results@))
 }
 
 proof fn typed_values_after_set(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
@@ -265,6 +307,19 @@ fn label_is_function(label: &WasmControlLabel) -> (result: bool)
     }
 }
 
+#[allow(clippy::match_like_matches_macro)]
+fn value_type_matches(actual: WasmValueType, expected: WasmValueType) -> (result: bool)
+    ensures result == value_type_matches_spec(actual, expected)
+{
+    match (actual, expected) {
+        (WasmValueType::I32, WasmValueType::I32)
+        | (WasmValueType::I64, WasmValueType::I64)
+        | (WasmValueType::F32, WasmValueType::F32)
+        | (WasmValueType::F64, WasmValueType::F64) => true,
+        _ => false,
+    }
+}
+
 fn branch_label_expected_len(label: &WasmControlLabel) -> (result: usize)
     ensures result as int == branch_label_types_spec(*label).len()
 {
@@ -303,6 +358,42 @@ fn stack_suffix_matches_label(stack: &Vec<WasmValue>, label: &WasmControlLabel) 
         decreases expected_len - index,
     {
         if !branch_label_expected_type_matches(label, index, stack[start + index]) {
+            return false;
+        }
+        index += 1usize;
+    }
+    true
+}
+
+fn branch_label_expected_value_type_matches(label: &WasmControlLabel, index: usize, value_type: WasmValueType) -> (result: bool)
+    requires index < branch_label_types_spec(*label).len()
+    ensures result == value_type_matches_spec(value_type, branch_label_types_spec(*label)[index as int])
+{
+    match label.kind {
+        WasmLabelKind::Function | WasmLabelKind::Block => value_type_matches(value_type, label.results[index]),
+        WasmLabelKind::Loop => value_type_matches(value_type, label.params[index]),
+    }
+}
+
+fn type_stack_suffix_matches_label(stack: &Vec<WasmValueType>, label: &WasmControlLabel) -> (result: bool)
+    ensures result <==> type_stack_suffix_has_types_spec(stack@, branch_label_types_spec(*label))
+{
+    let expected_len = branch_label_expected_len(label);
+    if stack.len() < expected_len {
+        return false;
+    }
+    let start = stack.len() - expected_len;
+    let mut index: usize = 0usize;
+    while index < expected_len
+        invariant
+            0 <= index <= expected_len,
+            expected_len as int == branch_label_types_spec(*label).len(),
+            stack@.len() >= expected_len as int,
+            start + expected_len == stack.len(),
+            forall|i: int| 0 <= i < index as int ==> value_type_matches_spec(stack@[start as int + i], branch_label_types_spec(*label)[i]),
+        decreases expected_len - index,
+    {
+        if !branch_label_expected_value_type_matches(label, index, stack[start + index]) {
             return false;
         }
         index += 1usize;
@@ -482,6 +573,133 @@ pub fn return_arity_ok(stack: &Vec<WasmValue>, control: &Vec<WasmControlLabel>) 
     stack_suffix_matches_label(stack, &control[0usize])
 }
 
+// r[impl wasm-validation.unreachable-stack]
+pub fn validation_pop_ready(state: &WasmValidationState, expected: &Vec<WasmValueType>) -> (result: bool)
+    ensures result == validation_pop_ready_spec(*state, expected@)
+{
+    if !state.reachable {
+        return true;
+    }
+    if expected.len() == 0usize {
+        return true;
+    }
+    let expected_len = expected.len();
+    if state.operand_types.len() < expected_len {
+        return false;
+    }
+    let start = state.operand_types.len() - expected_len;
+    let mut index: usize = 0usize;
+    while index < expected_len
+        invariant
+            0 <= index <= expected_len,
+            expected_len == expected.len(),
+            state.reachable,
+            state.operand_types@.len() >= expected_len as int,
+            start + expected_len == state.operand_types.len(),
+            forall|i: int| 0 <= i < index as int ==> value_type_matches_spec(state.operand_types@[start as int + i], expected@[i]),
+        decreases expected_len - index,
+    {
+        if !value_type_matches(state.operand_types[start + index], expected[index]) {
+            proof {
+                let witness = index as int;
+                assert(0 <= witness < expected@.len());
+                assert(start as int + witness == state.operand_types@.len() - expected@.len() + witness);
+                assert(!value_type_matches_spec(state.operand_types@[start as int + witness], expected@[witness]));
+                assert(exists|i: int| 0 <= i < expected@.len() && !value_type_matches_spec(state.operand_types@[state.operand_types@.len() - expected@.len() + i], expected@[i]));
+                assert(!type_stack_suffix_has_types_spec(state.operand_types@, expected@));
+                assert(state.reachable);
+                assert(!validation_pop_ready_spec(*state, expected@));
+            }
+            return false;
+        }
+        index += 1usize;
+    }
+    true
+}
+
+// r[impl wasm-validation.control-transfer]
+pub fn validate_unreachable(state: &mut WasmValidationState)
+    ensures
+        !state.reachable,
+        state.operand_types@ == old(state).operand_types@,
+        state.control@ == old(state).control@,
+{
+    state.reachable = false;
+}
+
+// r[impl wasm-validation.i32-add]
+pub fn validate_i32_add(state: &mut WasmValidationState) -> (result: bool)
+    ensures
+        result <==> validation_i32_add_ready_spec(*old(state)),
+        result ==> state.reachable == old(state).reachable,
+        result ==> state.control@ == old(state).control@,
+        result && old(state).reachable ==> state.operand_types@ == old(state).operand_types@.subrange(0, old(state).operand_types@.len() - i32_binary_operand_count_spec()) + seq![WasmValueType::I32],
+        result && !old(state).reachable ==> state.operand_types@ == old(state).operand_types@ + seq![WasmValueType::I32],
+        !result ==> state.reachable == old(state).reachable,
+        !result ==> state.control@ == old(state).control@,
+        !result ==> state.operand_types@ == old(state).operand_types@,
+{
+    if state.reachable {
+        if state.operand_types.len() < I32_BINARY_OPERAND_COUNT {
+            return false;
+        }
+        let rhs_index = state.operand_types.len() - 1usize;
+        let lhs_index = state.operand_types.len() - I32_BINARY_OPERAND_COUNT;
+        if !value_type_matches(state.operand_types[rhs_index], WasmValueType::I32) {
+            return false;
+        }
+        if !value_type_matches(state.operand_types[lhs_index], WasmValueType::I32) {
+            return false;
+        }
+        state.operand_types.truncate(lhs_index);
+    }
+    state.operand_types.push(WasmValueType::I32);
+    true
+}
+
+// r[impl wasm-validation.control-transfer]
+pub fn validate_br(state: &mut WasmValidationState, depth: usize) -> (result: bool)
+    ensures
+        result <==> validation_branch_ready_spec(*old(state), depth as int),
+        state.operand_types@ == old(state).operand_types@,
+        state.control@ == old(state).control@,
+        result ==> !state.reachable,
+        !result ==> state.reachable == old(state).reachable,
+{
+    if !branch_depth_valid(&state.control, depth) {
+        return false;
+    }
+    let label_index = state.control.len() - 1usize - depth;
+    assert(label_index as int == branch_target_index_spec(state.control@.len(), depth as int));
+    if state.reachable && !type_stack_suffix_matches_label(&state.operand_types, &state.control[label_index]) {
+        return false;
+    }
+    state.reachable = false;
+    true
+}
+
+// r[impl wasm-validation.control-transfer]
+pub fn validate_return(state: &mut WasmValidationState) -> (result: bool)
+    ensures
+        result <==> validation_return_ready_spec(*old(state)),
+        state.operand_types@ == old(state).operand_types@,
+        state.control@ == old(state).control@,
+        result ==> !state.reachable,
+        !result ==> state.reachable == old(state).reachable,
+{
+    if state.control.len() == 0usize {
+        return false;
+    }
+    if !label_is_function(&state.control[0usize]) {
+        return false;
+    }
+    if state.reachable && !type_stack_suffix_matches_label(&state.operand_types, &state.control[0usize]) {
+        return false;
+    }
+    state.reachable = false;
+    true
+}
+
 // r[impl wasm-memory.bounds]
 // r[impl wasm-memory.grow]
 pub fn new_memory(initial_pages: usize) -> (result: Option<LinearMemory>)
@@ -627,6 +845,28 @@ proof fn return_ready_implies_function_root(stack: Seq<WasmValue>, control: Seq<
     ensures return_values_ready_spec(stack, control) ==> control.len() > 0 && label_is_function_spec(control[0])
 {}
 
+// r[verify wasm-validation.unreachable-stack]
+proof fn unreachable_pop_admits_any(state: WasmValidationState, expected: Seq<WasmValueType>)
+    requires !state.reachable
+    ensures validation_pop_ready_spec(state, expected)
+{}
+
+// r[verify wasm-validation.i32-add]
+proof fn unreachable_i32_add_ready(state: WasmValidationState)
+    requires !state.reachable
+    ensures validation_i32_add_ready_spec(state)
+{}
+
+// r[verify wasm-validation.control-transfer]
+proof fn validation_branch_ready_implies_depth_valid(state: WasmValidationState, depth: int)
+    ensures validation_branch_ready_spec(state, depth) ==> branch_depth_valid_spec(state.control@, depth)
+{}
+
+// r[verify wasm-validation.control-transfer]
+proof fn validation_return_ready_implies_function_root(state: WasmValidationState)
+    ensures validation_return_ready_spec(state) ==> state.control@.len() > 0 && label_is_function_spec(state.control@[0])
+{}
+
 // r[verify wasm-locals.access]
 proof fn typed_local_update_preserves_frame(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
     requires
@@ -695,6 +935,18 @@ mod tests {
             kind: WasmLabelKind::Loop,
             params,
             results,
+        }
+    }
+
+    fn validation_state(
+        operand_types: Vec<WasmValueType>,
+        control: Vec<WasmControlLabel>,
+        reachable: bool,
+    ) -> WasmValidationState {
+        WasmValidationState {
+            operand_types,
+            control,
+            reachable,
         }
     }
 
@@ -810,6 +1062,139 @@ mod tests {
         assert!(branch_depth_valid(&control, CONTROL_DEPTH_ONE));
         assert!(branch_arity_ok(&stack, &control, CONTROL_DEPTH_ONE));
         assert!(!branch_arity_ok(&stack, &control, CONTROL_DEPTH_ZERO));
+    }
+
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validation_pop_ready_reachable_vs_unreachable() {
+        let expected = vec![WasmValueType::I32];
+        let reachable =
+            validation_state(vec![WasmValueType::I64], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(!validation_pop_ready(&reachable, &expected));
+
+        let unreachable =
+            validation_state(Vec::<WasmValueType>::new(), vec![function_label(Vec::<WasmValueType>::new())], false);
+        assert!(validation_pop_ready(&unreachable, &expected));
+    }
+
+    // r[verify wasm-validation.i32-add]
+    #[test]
+    fn test_validate_i32_add_reachable_consumes_two_and_pushes_one() {
+        let mut state = validation_state(
+            vec![WasmValueType::I64, WasmValueType::I32, WasmValueType::I32],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+
+        assert!(validate_i32_add(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64, WasmValueType::I32]);
+    }
+
+    // r[verify wasm-validation.i32-add]
+    #[test]
+    fn test_validate_i32_add_rejects_reachable_mismatch() {
+        let mut state = validation_state(
+            vec![WasmValueType::I32, WasmValueType::I64],
+            vec![function_label(Vec::<WasmValueType>::new())],
+            true,
+        );
+        let before = state.operand_types.clone();
+
+        assert!(!validate_i32_add(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, before);
+    }
+
+    // r[verify wasm-validation.i32-add]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_i32_add_unreachable_is_stack_polymorphic() {
+        let mut state =
+            validation_state(Vec::<WasmValueType>::new(), vec![function_label(Vec::<WasmValueType>::new())], false);
+
+        assert!(validate_i32_add(&mut state));
+        assert!(!state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I32]);
+    }
+
+    // r[verify wasm-validation.control-transfer]
+    #[test]
+    fn test_validate_unreachable_marks_path_unreachable() {
+        let mut state =
+            validation_state(vec![WasmValueType::I32], vec![function_label(Vec::<WasmValueType>::new())], true);
+        validate_unreachable(&mut state);
+        assert!(!state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I32]);
+    }
+
+    // r[verify wasm-validation.control-transfer]
+    #[test]
+    fn test_validate_br_marks_unreachable_and_rejects_bad_depth() {
+        let mut state = validation_state(
+            vec![WasmValueType::I32],
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+            ],
+            true,
+        );
+        assert!(validate_br(&mut state, CONTROL_DEPTH_ZERO));
+        assert!(!state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I32]);
+
+        let mut bad_depth =
+            validation_state(vec![WasmValueType::I32], vec![function_label(Vec::<WasmValueType>::new())], true);
+        assert!(!validate_br(&mut bad_depth, OUT_OF_RANGE_BRANCH_DEPTH));
+        assert!(bad_depth.reachable);
+    }
+
+    // r[verify wasm-validation.control-transfer]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_br_unreachable_skips_suffix_requirement() {
+        let mut state = validation_state(
+            Vec::<WasmValueType>::new(),
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+            ],
+            false,
+        );
+        assert!(validate_br(&mut state, CONTROL_DEPTH_ZERO));
+        assert!(!state.reachable);
+        assert!(state.operand_types.is_empty());
+    }
+
+    // r[verify wasm-validation.control-transfer]
+    #[test]
+    fn test_validate_return_marks_unreachable_and_rejects_bad_roots() {
+        let mut state = validation_state(
+            vec![WasmValueType::I32, WasmValueType::F64],
+            vec![function_label(vec![WasmValueType::I32, WasmValueType::F64])],
+            true,
+        );
+        assert!(validate_return(&mut state));
+        assert!(!state.reachable);
+
+        let mut empty_control = validation_state(vec![WasmValueType::I32], Vec::<WasmControlLabel>::new(), true);
+        assert!(!validate_return(&mut empty_control));
+        assert!(empty_control.reachable);
+
+        let mut non_function_root =
+            validation_state(vec![WasmValueType::I32], vec![block_label(vec![WasmValueType::I32])], true);
+        assert!(!validate_return(&mut non_function_root));
+        assert!(non_function_root.reachable);
+    }
+
+    // r[verify wasm-validation.control-transfer]
+    #[test]
+    fn test_validate_return_rejects_reachable_suffix_mismatch() {
+        let mut state =
+            validation_state(vec![WasmValueType::I64], vec![function_label(vec![WasmValueType::I32])], true);
+        assert!(!validate_return(&mut state));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, vec![WasmValueType::I64]);
     }
 
     // r[verify wasm-locals.access]

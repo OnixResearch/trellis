@@ -7245,6 +7245,24 @@ function label and the operand-stack suffix exactly matches that function
 label's result types. Empty control stacks or non-function roots MUST be
 rejected.
 
+r[wasm-validation.unreachable-stack]
+The Wasm validation model MUST track operand types, control labels, and current
+reachability. Reachable input-pop checks MUST require an exact operand-type
+suffix match, while unreachable input-pop checks MUST be admitted without that
+suffix.
+
+r[wasm-validation.i32-add]
+The Wasm validation model MUST admit `i32.add` only when reachable state has two
+trailing `i32` operand types, or when the current path is unreachable. On
+success, validation MUST record one produced `i32` result type.
+
+r[wasm-validation.control-transfer]
+The Wasm validation model MUST validate `br` and `return` against the existing
+control-label arity rules while the current path is reachable. Successful `br`,
+`return`, and `unreachable` validation MUST mark the current path unreachable.
+Malformed branch depths, missing function roots, and reachable suffix mismatches
+MUST be rejected.
+
 ## Loop Detection
 
 r[loop.back-edge]

@@ -98,7 +98,8 @@
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
 //!   safe-reuse checks over live ranges
 //! - `wasm_primitives` — exact Wasm value tags, `i32.add` stack discipline, typed local access,
-//!   linear-memory bounds/grow semantics, and control-label branch/return arity
+//!   linear-memory bounds/grow semantics, control-label branch/return arity, and
+//!   unreachable-stack validation
 //! - `r1cs_constraint` — bounded single-row R1CS shape, modular dot product, and satisfaction
 //!   admission
 //! - `r1cs_boolean` — bounded booleanity row encoding and satisfaction over an R1CS witness slot
