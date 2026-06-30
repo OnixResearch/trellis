@@ -1,10 +1,11 @@
 //! Verified WebAssembly primitive core.
 //!
-//! This module intentionally lands a compact MVP semantic slice: exact value
-//! tags, operand-stack discipline for `i32.add`, typed local access, and
-//! bounds-checked linear memory with page growth. The public surface is
-//! exec-first; proof-facing specs stay inside this module. It does not model
-//! control labels, validation judgments, tables, or indirect calls.
+//! This module intentionally lands compact MVP semantic slices: exact value
+//! tags, operand-stack discipline for `i32.add`, typed local access,
+//! bounds-checked linear memory with page growth, and typed control labels for
+//! branch/return arity checks. The public surface is exec-first;
+//! proof-facing specs stay inside this module. It does not model whole
+//! validation judgments, tables, or indirect calls.
 
 #![allow(clippy::too_many_lines)]
 
@@ -42,6 +43,20 @@ pub struct LocalFrame {
 pub struct LinearMemory {
     pub bytes: Vec<u8>,
     pub pages: usize,
+}
+
+#[derive(Debug, Copy, Clone, PartialEq, Eq)]
+pub enum WasmLabelKind {
+    Function,
+    Block,
+    Loop,
+}
+
+#[derive(Debug, PartialEq, Eq)]
+pub struct WasmControlLabel {
+    pub kind: WasmLabelKind,
+    pub params: Vec<WasmValueType>,
+    pub results: Vec<WasmValueType>,
 }
 
 // ============================================================
@@ -113,6 +128,51 @@ pub open spec fn memory_window_ok_spec(memory: LinearMemory, addr: int, width: i
     &&& 0 <= addr
     &&& 0 <= width
     &&& addr + width <= memory.bytes@.len()
+}
+
+pub open spec fn label_is_function_spec(label: WasmControlLabel) -> bool {
+    matches!(label.kind, WasmLabelKind::Function)
+}
+
+pub open spec fn label_is_loop_spec(label: WasmControlLabel) -> bool {
+    matches!(label.kind, WasmLabelKind::Loop)
+}
+
+// r[impl wasm-control.labels]
+pub open spec fn branch_label_types_spec(label: WasmControlLabel) -> Seq<WasmValueType> {
+    match label.kind {
+        WasmLabelKind::Function | WasmLabelKind::Block => label.results@,
+        WasmLabelKind::Loop => label.params@,
+    }
+}
+
+pub open spec fn stack_suffix_has_types_spec(stack: Seq<WasmValue>, expected: Seq<WasmValueType>) -> bool {
+    &&& stack.len() >= expected.len()
+    &&& forall|i: int| #![trigger expected[i]] 0 <= i < expected.len() ==> value_has_type_spec(stack[stack.len() - expected.len() + i], expected[i])
+}
+
+// r[impl wasm-control.branch-arity]
+pub open spec fn branch_depth_valid_spec(control: Seq<WasmControlLabel>, depth: int) -> bool {
+    0 <= depth < control.len()
+}
+
+pub open spec fn branch_target_index_spec(control_len: nat, depth: int) -> int
+    recommends 0 <= depth < control_len
+{
+    control_len as int - 1 - depth
+}
+
+// r[impl wasm-control.branch-arity]
+pub open spec fn branch_values_ready_spec(stack: Seq<WasmValue>, control: Seq<WasmControlLabel>, depth: int) -> bool {
+    &&& branch_depth_valid_spec(control, depth)
+    &&& stack_suffix_has_types_spec(stack, branch_label_types_spec(control[branch_target_index_spec(control.len(), depth)]))
+}
+
+// r[impl wasm-control.return-arity]
+pub open spec fn return_values_ready_spec(stack: Seq<WasmValue>, control: Seq<WasmControlLabel>) -> bool {
+    &&& control.len() > 0
+    &&& label_is_function_spec(control[0])
+    &&& stack_suffix_has_types_spec(stack, control[0].results@)
 }
 
 proof fn typed_values_after_set(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
@@ -194,6 +254,60 @@ fn page_byte_len(pages: usize) -> (result: Option<usize>)
         Some(total_bytes) => Some(total_bytes),
         None => None,
     }
+}
+
+fn label_is_function(label: &WasmControlLabel) -> (result: bool)
+    ensures result == label_is_function_spec(*label)
+{
+    match label.kind {
+        WasmLabelKind::Function => true,
+        WasmLabelKind::Block | WasmLabelKind::Loop => false,
+    }
+}
+
+fn branch_label_expected_len(label: &WasmControlLabel) -> (result: usize)
+    ensures result as int == branch_label_types_spec(*label).len()
+{
+    match label.kind {
+        WasmLabelKind::Function | WasmLabelKind::Block => label.results.len(),
+        WasmLabelKind::Loop => label.params.len(),
+    }
+}
+
+fn branch_label_expected_type_matches(label: &WasmControlLabel, index: usize, value: WasmValue) -> (result: bool)
+    requires index < branch_label_types_spec(*label).len()
+    ensures result == value_has_type_spec(value, branch_label_types_spec(*label)[index as int])
+{
+    match label.kind {
+        WasmLabelKind::Function | WasmLabelKind::Block => value_has_type(value, label.results[index]),
+        WasmLabelKind::Loop => value_has_type(value, label.params[index]),
+    }
+}
+
+fn stack_suffix_matches_label(stack: &Vec<WasmValue>, label: &WasmControlLabel) -> (result: bool)
+    ensures result <==> stack_suffix_has_types_spec(stack@, branch_label_types_spec(*label))
+{
+    let expected_len = branch_label_expected_len(label);
+    if stack.len() < expected_len {
+        return false;
+    }
+    let start = stack.len() - expected_len;
+    let mut index: usize = 0usize;
+    while index < expected_len
+        invariant
+            0 <= index <= expected_len,
+            expected_len as int == branch_label_types_spec(*label).len(),
+            stack@.len() >= expected_len as int,
+            start + expected_len == stack.len(),
+            forall|i: int| 0 <= i < index as int ==> value_has_type_spec(stack@[start as int + i], branch_label_types_spec(*label)[i]),
+        decreases expected_len - index,
+    {
+        if !branch_label_expected_type_matches(label, index, stack[start + index]) {
+            return false;
+        }
+        index += 1usize;
+    }
+    true
 }
 
 // ============================================================
@@ -334,6 +448,40 @@ pub fn exec_i32_add(stack: &mut Vec<WasmValue>) -> (result: bool)
     }
 }
 
+// r[impl wasm-control.branch-arity]
+pub fn branch_depth_valid(control: &Vec<WasmControlLabel>, depth: usize) -> (result: bool)
+    ensures result == branch_depth_valid_spec(control@, depth as int)
+{
+    depth < control.len()
+}
+
+// r[impl wasm-control.branch-arity]
+pub fn branch_arity_ok(stack: &Vec<WasmValue>, control: &Vec<WasmControlLabel>, depth: usize) -> (result: bool)
+    ensures result <==> branch_values_ready_spec(stack@, control@, depth as int)
+{
+    if !branch_depth_valid(control, depth) {
+        return false;
+    }
+    let label_index = control.len() - 1usize - depth;
+    assert(label_index as int == branch_target_index_spec(control@.len(), depth as int));
+    stack_suffix_matches_label(stack, &control[label_index])
+}
+
+// r[impl wasm-control.return-arity]
+pub fn return_arity_ok(stack: &Vec<WasmValue>, control: &Vec<WasmControlLabel>) -> (result: bool)
+    ensures result <==> return_values_ready_spec(stack@, control@)
+{
+    if control.len() == 0usize {
+        return false;
+    }
+    if !label_is_function(&control[0usize]) {
+        return false;
+    }
+    assert(label_is_function_spec(control@[0]));
+    assert(branch_label_types_spec(control@[0]) == control@[0].results@);
+    stack_suffix_matches_label(stack, &control[0usize])
+}
+
 // r[impl wasm-memory.bounds]
 // r[impl wasm-memory.grow]
 pub fn new_memory(initial_pages: usize) -> (result: Option<LinearMemory>)
@@ -464,6 +612,21 @@ proof fn i32_add_requires_two_i32s(stack: Seq<WasmValue>)
             ==> stack.len() >= i32_binary_operand_count_spec()
 {}
 
+// r[verify wasm-control.labels]
+proof fn loop_branch_uses_params(label: WasmControlLabel)
+    ensures label_is_loop_spec(label) ==> branch_label_types_spec(label) == label.params@
+{}
+
+// r[verify wasm-control.branch-arity]
+proof fn branch_ready_implies_depth_valid(stack: Seq<WasmValue>, control: Seq<WasmControlLabel>, depth: int)
+    ensures branch_values_ready_spec(stack, control, depth) ==> branch_depth_valid_spec(control, depth)
+{}
+
+// r[verify wasm-control.return-arity]
+proof fn return_ready_implies_function_root(stack: Seq<WasmValue>, control: Seq<WasmControlLabel>)
+    ensures return_values_ready_spec(stack, control) ==> control.len() > 0 && label_is_function_spec(control[0])
+{}
+
 // r[verify wasm-locals.access]
 proof fn typed_local_update_preserves_frame(values: Seq<WasmValue>, types: Seq<WasmValueType>, index: int, value: WasmValue)
     requires
@@ -500,12 +663,39 @@ mod tests {
     const I32_ADD_RESULT: u32 = 42u32;
     const STACK_UNDERFLOW_LEN: usize = 1usize;
     const OUT_OF_BOUNDS_OFFSET: usize = 1usize;
+    const CONTROL_DEPTH_ZERO: usize = 0usize;
+    const CONTROL_DEPTH_ONE: usize = 1usize;
+    const OUT_OF_RANGE_BRANCH_DEPTH: usize = 1usize;
     const MAX_PROP_MEMORY_BYTES: usize = 32usize;
     const MAX_PROP_STORE_BYTES: usize = 8usize;
 
     fn sample_frame() -> LocalFrame {
         new_local_frame(vec![WasmValueType::I32, WasmValueType::F64], vec![WasmValue::I32(7u32), WasmValue::F64(9u64)])
             .expect("sample frame should be well typed")
+    }
+
+    fn function_label(results: Vec<WasmValueType>) -> WasmControlLabel {
+        WasmControlLabel {
+            kind: WasmLabelKind::Function,
+            params: Vec::<WasmValueType>::new(),
+            results,
+        }
+    }
+
+    fn block_label(results: Vec<WasmValueType>) -> WasmControlLabel {
+        WasmControlLabel {
+            kind: WasmLabelKind::Block,
+            params: Vec::<WasmValueType>::new(),
+            results,
+        }
+    }
+
+    fn loop_label(params: Vec<WasmValueType>, results: Vec<WasmValueType>) -> WasmControlLabel {
+        WasmControlLabel {
+            kind: WasmLabelKind::Loop,
+            params,
+            results,
+        }
     }
 
     // r[verify wasm-value.types]
@@ -537,6 +727,89 @@ mod tests {
         let mut mismatch = vec![WasmValue::I32(1u32), WasmValue::I64(2u64)];
         assert!(!exec_i32_add(&mut mismatch));
         assert_eq!(mismatch, vec![WasmValue::I32(1u32), WasmValue::I64(2u64)]);
+    }
+
+    // r[verify wasm-control.branch-arity]
+    #[test]
+    fn test_branch_arity_to_block_uses_result_types() {
+        let control = vec![
+            function_label(Vec::<WasmValueType>::new()),
+            block_label(vec![WasmValueType::I32]),
+        ];
+        let stack = vec![WasmValue::I64(9u64), WasmValue::I32(7u32)];
+
+        assert!(branch_depth_valid(&control, CONTROL_DEPTH_ZERO));
+        assert!(branch_arity_ok(&stack, &control, CONTROL_DEPTH_ZERO));
+    }
+
+    // r[verify wasm-control.branch-arity]
+    #[test]
+    fn test_branch_arity_rejects_bad_depth_and_type_mismatch() {
+        let one_label_control = vec![function_label(Vec::<WasmValueType>::new())];
+        let stack = vec![WasmValue::I32(7u32)];
+        assert!(!branch_depth_valid(&one_label_control, OUT_OF_RANGE_BRANCH_DEPTH));
+        assert!(!branch_arity_ok(&stack, &one_label_control, OUT_OF_RANGE_BRANCH_DEPTH));
+
+        let control = vec![
+            function_label(Vec::<WasmValueType>::new()),
+            block_label(vec![WasmValueType::I32]),
+        ];
+        let mismatch = vec![WasmValue::I64(9u64)];
+        assert!(!branch_arity_ok(&mismatch, &control, CONTROL_DEPTH_ZERO));
+    }
+
+    // r[verify wasm-control.labels]
+    // r[verify wasm-control.branch-arity]
+    #[test]
+    fn test_loop_branch_uses_params_not_results() {
+        let control = vec![
+            function_label(Vec::<WasmValueType>::new()),
+            loop_label(vec![WasmValueType::I64], vec![WasmValueType::I32]),
+        ];
+        let param_stack = vec![WasmValue::I32(1u32), WasmValue::I64(2u64)];
+        let result_stack = vec![WasmValue::I32(1u32)];
+
+        assert!(branch_arity_ok(&param_stack, &control, CONTROL_DEPTH_ZERO));
+        assert!(!branch_arity_ok(&result_stack, &control, CONTROL_DEPTH_ZERO));
+    }
+
+    // r[verify wasm-control.return-arity]
+    #[test]
+    fn test_return_arity_uses_function_results() {
+        let control = vec![
+            function_label(vec![WasmValueType::I32, WasmValueType::F64]),
+            block_label(vec![WasmValueType::I64]),
+        ];
+        let stack = vec![WasmValue::I64(1u64), WasmValue::I32(7u32), WasmValue::F64(9u64)];
+        assert!(return_arity_ok(&stack, &control));
+
+        let wrong_suffix = vec![WasmValue::I32(7u32), WasmValue::I64(9u64)];
+        assert!(!return_arity_ok(&wrong_suffix, &control));
+    }
+
+    // r[verify wasm-control.return-arity]
+    #[test]
+    fn test_return_arity_rejects_missing_function_root() {
+        let empty_control = Vec::<WasmControlLabel>::new();
+        let stack = vec![WasmValue::I32(7u32)];
+        assert!(!return_arity_ok(&stack, &empty_control));
+
+        let non_function_root = vec![block_label(vec![WasmValueType::I32])];
+        assert!(!return_arity_ok(&stack, &non_function_root));
+    }
+
+    // r[verify wasm-control.branch-arity]
+    #[test]
+    fn test_outer_branch_depth_targets_function_label() {
+        let control = vec![
+            function_label(vec![WasmValueType::I64]),
+            block_label(vec![WasmValueType::I32]),
+        ];
+        let stack = vec![WasmValue::I64(9u64)];
+
+        assert!(branch_depth_valid(&control, CONTROL_DEPTH_ONE));
+        assert!(branch_arity_ok(&stack, &control, CONTROL_DEPTH_ONE));
+        assert!(!branch_arity_ok(&stack, &control, CONTROL_DEPTH_ZERO));
     }
 
     // r[verify wasm-locals.access]

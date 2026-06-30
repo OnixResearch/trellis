@@ -7229,6 +7229,22 @@ success, old memory contents MUST remain unchanged as a prefix of the grown
 memory and the appended bytes MUST be zero. On failure, memory MUST remain
 unchanged.
 
+r[wasm-control.labels]
+Wasm control labels MUST distinguish function, block, and loop targets. Branch
+target arity MUST use result types for function and block labels, and parameter
+types for loop labels.
+
+r[wasm-control.branch-arity]
+A modeled branch MUST be admitted only when its depth names an in-bounds control
+label and the operand-stack suffix exactly matches the target label types. Depth
+0 MUST name the innermost label.
+
+r[wasm-control.return-arity]
+A modeled return MUST be admitted only when the control stack has a root
+function label and the operand-stack suffix exactly matches that function
+label's result types. Empty control stacks or non-function roots MUST be
+rejected.
+
 ## Loop Detection
 
 r[loop.back-edge]
