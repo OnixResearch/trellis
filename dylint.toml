@@ -1,0 +1,8 @@
+# Consumer-owned Octet lint config for Trellis.
+#
+# Runner policy lives in `[workspace.metadata.octet]` in Cargo.toml. Keep lint
+# tuning here narrow and reviewable so the flake/pre-commit gate exercises the
+# repo-pinned Octet defaults unless a specific Trellis proof pattern needs an
+# explicit exception.
+
+[octet]

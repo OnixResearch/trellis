@@ -577,6 +577,7 @@ runtime cost from specs, proofs, requires, or ensures.
 
 ```bash
 nix develop                # enter devshell
+pre-commit install         # install the local Octet pre-commit hook
 cargo check                # compile (ghost code erased)
 cargo test                 # 4617 unit/property + 13 doc tests
 cargo clippy --all-targets -- -D warnings
@@ -586,6 +587,7 @@ cargo clippy --all-targets -- -D warnings
 
 ```bash
 ./scripts/verify.rs        # all gates: clippy → tests → verus → coverage
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').octet --no-link -L # Octet lints
 ./scripts/verus.sh         # verus only
 ./scripts/check-coverage.rs   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.rs    # every pub fn in verus! has ensures
@@ -595,6 +597,10 @@ cargo clippy --all-targets -- -D warnings
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```
+
+The Octet check uses `octet-baseline.json` to accept current warning-level
+findings while rejecting any new unbaselined stable finding ID. The local
+pre-commit hook delegates to that same pinned Nix check.
 
 ## Structure
 

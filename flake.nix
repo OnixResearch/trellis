@@ -9,9 +9,10 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
+    octet.url = "git+ssh://git@github.com/OnixResearch/octet.git";
   };
 
-  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, ... }:
+  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -32,6 +33,8 @@
             || (builtins.match ".*\\.tsv$" path) != null
             || (builtins.match ".*\\.styx$" path) != null
             || (builtins.match ".*\\.ncl$" path) != null
+            || (builtins.baseNameOf path == "dylint.toml")
+            || (builtins.baseNameOf path == "octet-baseline.json")
             || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null;
           combinedFilter = path: type:
             (scriptFilter path type) || (craneLib.filterCargoSources path type);
@@ -56,6 +59,10 @@
 
         cargoArtifacts = craneLib.buildDepsOnly {
           inherit src nativeBuildInputs buildInputs;
+        };
+
+        octetConsumerVendorDir = craneLib.vendorCargoDeps {
+          cargoLock = ./Cargo.lock;
         };
 
         verified-logic = craneLib.buildPackage {
@@ -136,6 +143,24 @@
           fmt = craneLib.cargoFmt {
             inherit src;
           };
+
+          # Octet/Tiger Style lints, shared with the local pre-commit hook.
+          # Existing findings are accepted in octet-baseline.json; new stable IDs fail.
+          octet = pkgs.runCommand "trellis-octet-baseline-check" {
+            nativeBuildInputs = nativeBuildInputs ++ [ octet.packages.${system}.cargo-octet ];
+            inherit buildInputs;
+          } ''
+            export HOME="$PWD/home"
+            mkdir -p "$HOME"
+            cp -r ${src} source
+            chmod -R u+w source
+            cd source
+            export CARGO_HOME="$PWD/.cargo-home"
+            mkdir -p "$CARGO_HOME"
+            cp "${octetConsumerVendorDir}/config.toml" "$CARGO_HOME/config.toml"
+            cargo-octet check --baseline octet-baseline.json -p verified-logic -- --lib
+            mkdir -p "$out"
+          '';
 
           # Every pub fn has r[impl] annotation
           check-coverage = pkgs.runCommand "check-coverage" {
@@ -298,6 +323,7 @@
             cargo-watch
             rust-analyzer
             steel
+            pre-commit
           ];
 
           inputsFrom = [ verified-logic ];

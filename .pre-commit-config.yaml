@@ -1,0 +1,11 @@
+repos:
+  - repo: local
+    hooks:
+      - id: octet
+        name: Octet lint gate
+        entry: scripts/pre-commit-octet.sh
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [pre-commit]
