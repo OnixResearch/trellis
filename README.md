@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10525 Verus proofs · 4765 tests · 1967 requirements · 592 modules · 16 trusted/proof-gap boundaries**
+**10525 Verus proofs · 4765 tests · 1967 requirements · 600 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -381,7 +381,7 @@ validation commands captured in the change evidence.
 |---|---|
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
-| `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, finite `call_indirect` table/signature admission, and `br_table` target validation |
+| `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, finite indirect-call table/signature admission, and branch-table target validation |
 | `gpu_primitives` | finite GPU program shapes, launch/grid/block/thread bounds, pitched/tensor memory-layout, coalesced access, and shared-tile admission |
 | `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` | finite HDL IR admission, deterministic Verilog/SystemVerilog emission, adapter refinement, generated-vector collateral, and tool-evidence classification |
 
