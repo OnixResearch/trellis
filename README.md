@@ -575,6 +575,8 @@ runtime cost from specs, proofs, requires, or ensures.
 
 ## Development
 
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations.
+
 ```bash
 nix develop                # enter devshell
 pre-commit install         # install the local Octet pre-commit hook
