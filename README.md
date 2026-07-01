@@ -575,7 +575,7 @@ runtime cost from specs, proofs, requires, or ensures.
 
 ## Development
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain.
 
 ```bash
 nix develop                # enter devshell
@@ -597,6 +597,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
 ./scripts/check-crate-metadata.rs # Cargo package metadata discoverability and local path validation
+./scripts/check-module-guide.rs # task-oriented module guide link drift and fixture self-test
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```

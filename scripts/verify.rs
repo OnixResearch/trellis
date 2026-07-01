@@ -262,6 +262,8 @@ fn main() -> std::process::ExitCode {
         "",
         "",
     );
+    runner.run_status("Module guide link drift", "./scripts/check-module-guide.rs", std::iter::empty::<&str>(), "", "");
+    runner.run_status("Module guide checker self-test", "./scripts/check-module-guide.rs", ["--self-test"], "", "");
     runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
