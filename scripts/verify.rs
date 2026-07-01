@@ -266,6 +266,8 @@ fn main() -> std::process::ExitCode {
     runner.run_status("Module guide checker self-test", "./scripts/check-module-guide.rs", ["--self-test"], "", "");
     runner.run_status("Cookbook recipe metadata", "./scripts/check-cookbook.rs", std::iter::empty::<&str>(), "", "");
     runner.run_status("Cookbook checker self-test", "./scripts/check-cookbook.rs", ["--self-test"], "", "");
+    runner.run_status("Runnable examples docs", "./scripts/check-examples.rs", std::iter::empty::<&str>(), "", "");
+    runner.run_status("Runnable examples checker self-test", "./scripts/check-examples.rs", ["--self-test"], "", "");
     runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
@@ -288,6 +290,7 @@ fn main() -> std::process::ExitCode {
         "✗ clippy failed",
     );
     runner.run_status("Tests", &cargo, ["test"], "✓ tests pass", "✗ tests failed");
+    runner.run_status("Examples", &cargo, ["check", "--examples"], "✓ examples compile", "✗ examples failed");
     runner.run_status(
         "Verus verification",
         "./scripts/verus.sh",

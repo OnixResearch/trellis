@@ -573,6 +573,16 @@ let ok = can_start_op(false);  // true (not draining)
 For normal `cargo build`, the `vstd` crate erases all ghost code. No
 runtime cost from specs, proofs, requires, or ensures.
 
+## Runnable examples
+
+Each example compiles through normal Cargo without invoking Verus:
+
+- [`examples/core_basics.rs`](examples/core_basics.rs): `cargo run --example core_basics`
+- [`examples/consensus_admission.rs`](examples/consensus_admission.rs): `cargo run --example consensus_admission`
+- [`examples/ucan_web_of_trust.rs`](examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
+- [`examples/r1cs_single_row.rs`](examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
+- [`examples/storage_allocator.rs`](examples/storage_allocator.rs): `cargo run --example storage_allocator`
+
 ## Development
 
 Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.

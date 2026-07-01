@@ -2,9 +2,8 @@
 
 Use this guide when you know the job you want to model but not the module name.
 Every module reference below links to the local source file so `scripts/check-module-guide.rs`
-can reject stale links. Runnable examples are being added by the separate
-`add-runnable-examples` Cairn change; entries without example links intentionally
-point to source and requirements first.
+can reject stale links. Runnable example links and commands are checked by
+`scripts/check-examples.rs`.
 
 ## Bounded arithmetic and data-shape checks
 
@@ -98,6 +97,16 @@ models.
 Caveat: several compiler modules expose verified finite analyses over the shared
 raw IR rather than a full compiler frontend/backend. Check module docs for the
 exact execution semantics.
+
+## Runnable examples
+
+Run examples through normal Cargo; no Verus invocation is required:
+
+- [`core_basics`](../examples/core_basics.rs): `cargo run --example core_basics`
+- [`consensus_admission`](../examples/consensus_admission.rs): `cargo run --example consensus_admission`
+- [`ucan_web_of_trust`](../examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
+- [`r1cs_single_row`](../examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
+- [`storage_allocator`](../examples/storage_allocator.rs): `cargo run --example storage_allocator`
 
 ## Verification and contribution workflow
 
