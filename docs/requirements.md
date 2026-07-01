@@ -12117,6 +12117,15 @@ adapter, the hardware IR evaluator result MUST match the source spec or
 executable helper result for the same admitted inputs, and rejected adapter
 candidates MUST leave the source primitive unchanged.
 
+r[hardware-output.adapter-emission]
+The system MUST expose a pure adapter-emission planning decision that returns an
+HDL emission request only when adapter eligibility, finite-input refinement,
+emitted-shape support, and the requested emitter mode all pass. Planning MUST
+fail closed for refined adapters without emitted HDL support, unsupported emitter
+modes, unsupported adapter candidates, out-of-domain adapter inputs, evaluator
+rejection, and emitter rejection, and MUST NOT expose a partial HDL request on
+rejection.
+
 r[hardware-output.verilog-emission]
 The system MUST emit deterministic Verilog text only from admitted hardware IR
 modules. Verilog emission MUST use canonical module, port, declaration,

@@ -160,7 +160,7 @@
 //!   memory-layout, coalesced memory, and shared-tile admission
 //! - `gossip` — gossip infection bounds and convergence
 //! - `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` — finite HDL IR admission,
-//!   deterministic Verilog/SystemVerilog emission, adapter refinement, and validation evidence
+//!   deterministic Verilog/SystemVerilog emission, adapter refinement/emission planning, and validation evidence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free

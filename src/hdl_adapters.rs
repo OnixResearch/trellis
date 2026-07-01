@@ -7,6 +7,11 @@
 #![allow(clippy::struct_excessive_bools)]
 
 use crate::bitfield::extract_field;
+use crate::hdl_emit::HdlEmitError;
+use crate::hdl_emit::HdlEmitRequest;
+use crate::hdl_emit::HdlEmitterMode;
+use crate::hdl_emit::HdlExampleKind;
+use crate::hdl_emit::emit_hdl;
 use crate::hdl_ir::HDL_EMPTY_COUNT;
 use crate::hdl_ir::HDL_MAX_WIDTH;
 use crate::hdl_ir::HDL_OPTIONAL_RESET_LIMIT;
@@ -28,6 +33,7 @@ pub const HDL_ADAPTER_SINGLE_REGISTER: u16 = 1;
 pub const HDL_ADAPTER_FSM_STATES: u16 = 2;
 pub const HDL_ADAPTER_ZERO_STATE: u16 = 0;
 pub const HDL_ADAPTER_ONE_STATE: u16 = 1;
+pub const HDL_ADAPTER_EMITTED_BITWISE_WIDTH: u16 = 8;
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
 pub enum HdlAdapterKind {
@@ -48,6 +54,22 @@ pub enum HdlAdapterError {
     UnsupportedShape,
     OutOfDomain,
     EvaluatorRejected(HdlEvalError),
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub enum HdlAdapterEmissionError {
+    UnsupportedShape,
+    OutOfDomain,
+    UnsupportedOutput,
+    EvaluatorRejected(HdlEvalError),
+    EmitterRejected(HdlEmitError),
+    RefinementFailed,
+}
+
+#[derive(Clone, Copy, Debug, PartialEq, Eq)]
+pub struct HdlAdapterEmissionPlan {
+    pub request: HdlEmitRequest,
+    pub expected_observable: u64,
 }
 
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
@@ -92,6 +114,14 @@ fn hdl_adapter_kind_supported(kind: HdlAdapterKind) -> bool {
             | HdlAdapterKind::WrappingAdd
             | HdlAdapterKind::SmallFsmToggle
     )
+}
+
+fn hdl_adapter_emission_error(error: HdlAdapterError) -> HdlAdapterEmissionError {
+    match error {
+        HdlAdapterError::UnsupportedShape => HdlAdapterEmissionError::UnsupportedShape,
+        HdlAdapterError::OutOfDomain => HdlAdapterEmissionError::OutOfDomain,
+        HdlAdapterError::EvaluatorRejected(error) => HdlAdapterEmissionError::EvaluatorRejected(error),
+    }
 }
 
 // r[impl hardware-output.adapter-subset]
@@ -172,6 +202,28 @@ fn hdl_adapter_op(kind: HdlAdapterKind) -> Result<HdlExprKind, HdlAdapterError> 
     }
 }
 
+fn hdl_adapter_emitted_example(
+    candidate: HdlAdapterCandidate,
+    mode: HdlEmitterMode,
+) -> Result<HdlExampleKind, HdlAdapterEmissionError> {
+    match candidate.kind {
+        HdlAdapterKind::BitwiseAnd if candidate.width == HDL_ADAPTER_EMITTED_BITWISE_WIDTH => {
+            Ok(HdlExampleKind::BitwiseAnd)
+        }
+        HdlAdapterKind::SmallFsmToggle if mode == HdlEmitterMode::SystemVerilog => Ok(HdlExampleKind::FsmToggle),
+        HdlAdapterKind::BitwiseAnd
+        | HdlAdapterKind::BitfieldLowExtract
+        | HdlAdapterKind::WrappingAdd
+        | HdlAdapterKind::SmallFsmToggle => Err(HdlAdapterEmissionError::UnsupportedOutput),
+        HdlAdapterKind::UnsupportedHeap
+        | HdlAdapterKind::UnsupportedIo
+        | HdlAdapterKind::UnsupportedAsync
+        | HdlAdapterKind::UnsupportedCrypto
+        | HdlAdapterKind::UnsupportedDistributed
+        | HdlAdapterKind::UnsupportedSpecOnly => Err(HdlAdapterEmissionError::UnsupportedShape),
+    }
+}
+
 fn hdl_source_result(candidate: HdlAdapterCandidate, input: HdlAdapterInput) -> Result<u64, HdlAdapterError> {
     if !hdl_adapter_eligible(candidate) {
         return Err(HdlAdapterError::UnsupportedShape);
@@ -236,6 +288,42 @@ pub fn hdl_adapter_refines_source(
     let source = hdl_source_result(candidate, input)?;
     let lowered = hdl_evaluator_result(candidate, input)?;
     Ok(source == lowered)
+}
+
+// r[impl hardware-output.adapter-emission]
+pub fn hdl_adapter_emission_plan(
+    candidate: HdlAdapterCandidate,
+    input: HdlAdapterInput,
+    mode: HdlEmitterMode,
+) -> Result<HdlAdapterEmissionPlan, HdlAdapterEmissionError> {
+    if candidate.kind == HdlAdapterKind::SmallFsmToggle && input.current_state >= HDL_ADAPTER_FSM_STATES {
+        return Err(HdlAdapterEmissionError::OutOfDomain);
+    }
+
+    let source = hdl_source_result(candidate, input).map_err(hdl_adapter_emission_error)?;
+    let lowered = hdl_evaluator_result(candidate, input).map_err(hdl_adapter_emission_error)?;
+    if source != lowered {
+        return Err(HdlAdapterEmissionError::RefinementFailed);
+    }
+
+    let module = hdl_lower_adapter(candidate).map_err(hdl_adapter_emission_error)?;
+    let kind = hdl_adapter_emitted_example(candidate, mode)?;
+    let request = HdlEmitRequest {
+        module,
+        mode,
+        kind,
+        include_assertion_snippet: kind == HdlExampleKind::FsmToggle,
+        reserved_identifier: false,
+        unsupported_construct: false,
+    };
+
+    match emit_hdl(request) {
+        Ok(_) => Ok(HdlAdapterEmissionPlan {
+            request,
+            expected_observable: lowered,
+        }),
+        Err(error) => Err(HdlAdapterEmissionError::EmitterRejected(error)),
+    }
 }
 
 #[cfg(test)]
@@ -342,5 +430,96 @@ mod tests {
             ..input()
         };
         assert_eq!(hdl_adapter_refines_source(fsm, invalid), Err(HdlAdapterError::OutOfDomain));
+    }
+
+    // r[verify hardware-output.adapter-emission]
+    // r[verify hardware-output.testing.adapter-property]
+    #[test]
+    fn adapter_emission_plan_accepts_supported_emitted_shapes() {
+        let bitwise = hdl_adapter_emission_plan(
+            candidate(HdlAdapterKind::BitwiseAnd, TEST_WIDTH),
+            input(),
+            HdlEmitterMode::Verilog,
+        )
+        .expect("bitwise adapter emission plan");
+        assert_eq!(bitwise.request.kind, HdlExampleKind::BitwiseAnd);
+        assert_eq!(bitwise.request.mode, HdlEmitterMode::Verilog);
+        assert_eq!(bitwise.expected_observable, TEST_AND);
+        assert!(emit_hdl(bitwise.request).is_ok());
+
+        let fsm_input = HdlAdapterInput {
+            lhs: u64::from(HDL_ADAPTER_ONE_STATE),
+            ..input()
+        };
+        let fsm = hdl_adapter_emission_plan(
+            candidate(HdlAdapterKind::SmallFsmToggle, HDL_ADAPTER_SINGLE_OUTPUT),
+            fsm_input,
+            HdlEmitterMode::SystemVerilog,
+        )
+        .expect("fsm adapter emission plan");
+        assert_eq!(fsm.request.kind, HdlExampleKind::FsmToggle);
+        assert_eq!(fsm.request.mode, HdlEmitterMode::SystemVerilog);
+        assert!(fsm.request.include_assertion_snippet);
+        assert_eq!(fsm.expected_observable, u64::from(HDL_ADAPTER_ONE_STATE));
+        assert!(emit_hdl(fsm.request).is_ok());
+    }
+
+    // r[verify hardware-output.adapter-emission]
+    // r[verify hardware-output.testing.fail-closed]
+    #[test]
+    fn adapter_emission_plan_rejects_unemitted_or_invalid_shapes() {
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::WrappingAdd, TEST_WIDTH),
+                input(),
+                HdlEmitterMode::Verilog
+            ),
+            Err(HdlAdapterEmissionError::UnsupportedOutput)
+        );
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::BitfieldLowExtract, TEST_BITFIELD_WIDTH),
+                input(),
+                HdlEmitterMode::SystemVerilog
+            ),
+            Err(HdlAdapterEmissionError::UnsupportedOutput)
+        );
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::SmallFsmToggle, HDL_ADAPTER_SINGLE_OUTPUT),
+                input(),
+                HdlEmitterMode::Verilog
+            ),
+            Err(HdlAdapterEmissionError::UnsupportedOutput)
+        );
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::BitwiseAnd, TEST_BITFIELD_WIDTH),
+                input(),
+                HdlEmitterMode::Verilog
+            ),
+            Err(HdlAdapterEmissionError::UnsupportedOutput)
+        );
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::UnsupportedHeap, TEST_WIDTH),
+                input(),
+                HdlEmitterMode::Verilog
+            ),
+            Err(HdlAdapterEmissionError::UnsupportedShape)
+        );
+
+        let invalid = HdlAdapterInput {
+            current_state: OUT_OF_DOMAIN_STATE,
+            ..input()
+        };
+        assert_eq!(
+            hdl_adapter_emission_plan(
+                candidate(HdlAdapterKind::SmallFsmToggle, HDL_ADAPTER_SINGLE_OUTPUT),
+                invalid,
+                HdlEmitterMode::SystemVerilog
+            ),
+            Err(HdlAdapterEmissionError::OutOfDomain)
+        );
     }
 }

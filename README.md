@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10525 Verus proofs · 4765 tests · 1967 requirements · 600 modules · 16 trusted/proof-gap boundaries**
+**10525 Verus proofs · 4823 tests · 1994 requirements · 600 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
