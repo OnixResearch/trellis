@@ -594,6 +594,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/checker-fixtures.rs # valid/invalid regression fixtures for checker behavior
 ./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
+./scripts/check-crate-metadata.rs # Cargo package metadata discoverability and local path validation
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```
