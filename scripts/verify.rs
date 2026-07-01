@@ -269,6 +269,20 @@ fn main() -> std::process::ExitCode {
     runner.run_status("Runnable examples docs", "./scripts/check-examples.rs", std::iter::empty::<&str>(), "", "");
     runner.run_status("Runnable examples checker self-test", "./scripts/check-examples.rs", ["--self-test"], "", "");
     runner.run_status(
+        "Runtime-cost evidence metadata",
+        "./scripts/check-runtime-evidence.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Runtime-cost evidence checker self-test",
+        "./scripts/check-runtime-evidence.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
         std::iter::empty::<&str>(),

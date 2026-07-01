@@ -571,7 +571,9 @@ let ok = can_start_op(false);  // true (not draining)
 ```
 
 For normal `cargo build`, the `vstd` crate erases all ghost code. No
-runtime cost from specs, proofs, requires, or ensures.
+runtime cost from specs, proofs, requires, or ensures. See
+[docs/runtime-cost.md](docs/runtime-cost.md) for reproducible normal-build
+evidence records.
 
 ## Runnable examples
 
@@ -609,6 +611,8 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-crate-metadata.rs # Cargo package metadata discoverability and local path validation
 ./scripts/check-module-guide.rs # task-oriented module guide link drift and fixture self-test
 ./scripts/check-cookbook.rs # cookbook recipe field/link drift and fixture self-test
+./scripts/check-examples.rs # runnable example link/run-command drift and fixture self-test
+./scripts/check-runtime-evidence.rs # runtime-cost evidence record metadata and fixture self-test
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```
