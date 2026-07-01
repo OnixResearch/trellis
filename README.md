@@ -538,6 +538,7 @@ The drift checker treats the compact lists below as README catalog entries for p
 - **serialization**: `serialization_codec`
 - **shamir**: `shamir_field`, `shamir_lagrange`, `shamir_poly`, `shamir_reconstruct`, `shamir_split`, `shamir_threshold`
 - **signal**: `signal_processing`
+- **spreadsheet**: `spreadsheet_address`, `spreadsheet_dependency`, `spreadsheet_formula`, `spreadsheet_recalc`
 - **state**: `state_machine_workflow`
 - **storage**: `storage_index`
 - **surelock**: `surelock_deadlock`, `surelock_id`, `surelock_key`, `surelock_level`, `surelock_lockset`

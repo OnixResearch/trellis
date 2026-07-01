@@ -12214,3 +12214,66 @@ include focused backend tests, generated fixture checks, Verus proof checks for
 touched verified modules, Tracey uncovered and untested queries, Cairn
 validation, Cairn proposal/design/tasks gates, and cargo/clippy checks as
 applicable to touched Rust code.
+
+## Spreadsheet Logic
+
+r[domain-primitives.spreadsheet.address]
+The system MUST provide finite spreadsheet sheet-bound and cell-address
+envelopes that record row bounds, column bounds, cell coordinates, and
+deterministic address-admission results. A checked cell address MUST be admitted
+only when both coordinates are inside the declared finite sheet bounds, and
+rejected address admission MUST leave prior admitted sheet metadata unchanged.
+
+r[domain-primitives.spreadsheet.range]
+The system MUST provide finite rectangular-range envelopes that normalize two
+admitted endpoint addresses into a canonical rectangle, expose deterministic
+range membership, and expand only to admitted cell coordinates inside the
+declared sheet bounds.
+
+r[domain-primitives.spreadsheet.formula]
+The system MUST provide a finite spreadsheet formula and value model covering
+blank values, exact numeric values, booleans, text, explicit errors, constants,
+cell references, rectangular ranges, arithmetic operations, and finite aggregate
+operations. Formula admission MUST reject syntactically or structurally invalid
+formulas before dependency extraction or evaluation.
+
+r[domain-primitives.spreadsheet.dependency]
+The system MUST provide deterministic dependency-extraction predicates that
+return exactly the finite set of precedent cell coordinates named by an admitted
+formula, including all cells contained in admitted referenced ranges. Dependency
+extraction MUST be pure over formula structure and declared sheet bounds, and
+MUST NOT depend on current formatted values, cached results, external workbook
+files, clocks, or volatile runtime state.
+
+r[domain-primitives.spreadsheet.cycle]
+The system MUST reject spreadsheet formula sets whose dependency graph contains
+a cycle before formula evaluation begins. An admitted formula set MUST have an
+acyclic dependency graph over the finite formula-cell coordinates and their
+extracted precedents.
+
+r[domain-primitives.spreadsheet.recalc]
+The system MUST provide recalculation-order predicates that admit only finite
+orders where each selected formula cell appears after every selected formula
+precedent required by its extracted dependency set. Successful recalculation
+order admission MUST refine the acyclic dependency graph and MUST NOT introduce
+formula cells outside the declared finite sheet metadata.
+
+r[domain-primitives.spreadsheet.dirty-propagation]
+The system MUST provide dirty-cell propagation predicates that include each
+changed cell and every formula cell reachable from changed cells through reverse
+spreadsheet dependencies, while excluding formula cells that are not reachable
+dependents under the admitted finite dependency graph.
+
+r[domain-primitives.spreadsheet.error]
+The system MUST provide explicit deterministic spreadsheet error envelopes for
+bad references, division by zero, value-shape mismatches, and cycle rejection.
+Error-producing checks MUST return the same error metadata for the same admitted
+inputs, MUST NOT panic, and MUST NOT mutate admitted sheet, formula, dependency,
+or recalculation metadata.
+
+r[domain-primitives.spreadsheet.admission]
+The system MUST provide a deterministic spreadsheet-admission composition that
+requires address admission, range admission, formula admission, dependency
+extraction, cycle rejection, recalculation-order admission, dirty-propagation
+admission, and error-envelope determinism before any spreadsheet evaluation
+claim is exposed.

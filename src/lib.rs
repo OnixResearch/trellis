@@ -116,6 +116,9 @@
 //!   transfer over the shared raw IR
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi
 //!   elimination
+//! - `spreadsheet_address` / `spreadsheet_formula` / `spreadsheet_dependency` /
+//!   `spreadsheet_recalc` — finite spreadsheet address/range, formula, dependency, cycle,
+//!   recalc, dirty-propagation, and error admission
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -875,6 +878,10 @@ pub mod snapshot_isolation;
 pub mod snapshot_transfer;
 pub mod spin_backoff;
 pub mod split_coalesce;
+pub mod spreadsheet_address;
+pub mod spreadsheet_dependency;
+pub mod spreadsheet_formula;
+pub mod spreadsheet_recalc;
 pub mod ssa_construction;
 pub mod stack_frame_layout;
 pub mod state_machine_safety;
