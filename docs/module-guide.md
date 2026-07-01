@@ -101,8 +101,9 @@ exact execution semantics.
 
 ## Verification and contribution workflow
 
-For contribution mechanics, start with [CONTRIBUTING.md](../CONTRIBUTING.md) and
-[`docs/module-template.md`](module-template.md). For proof-gap adjacency, check
+For contribution mechanics, start with [CONTRIBUTING.md](../CONTRIBUTING.md),
+[`docs/module-template.md`](module-template.md), and [the cookbook](cookbook.md).
+For proof-gap adjacency, check
 `docs/proof-gap-sites.tsv` and run `./scripts/check-proof-gap-inventory.rs`.
 For module catalog drift, run `./scripts/check-readme-module-catalog.rs` and
 `./scripts/check-module-guide.rs`.
