@@ -4,10 +4,11 @@
 //! tags, operand-stack discipline for `i32.add`, typed local access,
 //! bounds-checked linear memory with page growth, typed control labels for
 //! branch/return arity checks, unreachable-stack polymorphism, structured
-//! control-frame stack-height restoration, and finite table/signature checks for
-//! `call_indirect`. The public surface is exec-first; proof-facing specs stay
-//! inside this module. It does not model whole module validation, element
-//! segment initialization, multi-table reference types, or callee execution.
+//! control-frame stack-height restoration, finite table/signature checks for
+//! `call_indirect`, and multi-target `br_table` validation. The public surface
+//! is exec-first; proof-facing specs stay inside this module. It does not model
+//! whole module validation, element segment initialization, multi-table reference
+//! types, runtime branch selection, or callee execution.
 
 #![allow(clippy::too_many_lines)]
 
@@ -259,6 +260,39 @@ pub open spec fn validation_branch_ready_spec(state: WasmValidationState, depth:
     &&& (!state.reachable || type_stack_suffix_has_types_spec(state.operand_types@, branch_label_types_spec(state.control@[branch_target_index_spec(state.control@.len(), depth)])))
 }
 
+// r[impl wasm-validation.br-table]
+pub open spec fn branch_table_target_matches_default_spec(control: Seq<WasmControlLabel>, depth: int, default_depth: int) -> bool {
+    &&& branch_depth_valid_spec(control, depth)
+    &&& branch_depth_valid_spec(control, default_depth)
+    &&& value_type_sequences_match_spec(
+        branch_label_types_spec(control[branch_target_index_spec(control.len(), depth)]),
+        branch_label_types_spec(control[branch_target_index_spec(control.len(), default_depth)]),
+    )
+}
+
+pub open spec fn branch_table_targets_valid_spec(control: Seq<WasmControlLabel>, depths: Seq<usize>, default_depth: int) -> bool {
+    &&& branch_depth_valid_spec(control, default_depth)
+    &&& forall|i: int| #![trigger depths[i]] 0 <= i < depths.len() ==> branch_table_target_matches_default_spec(control, depths[i] as int, default_depth)
+}
+
+pub open spec fn branch_table_default_types_spec(control: Seq<WasmControlLabel>, default_depth: int) -> Seq<WasmValueType> {
+    if branch_depth_valid_spec(control, default_depth) {
+        branch_label_types_spec(control[branch_target_index_spec(control.len(), default_depth)])
+    } else {
+        seq![]
+    }
+}
+
+pub open spec fn branch_table_operand_types_spec(control: Seq<WasmControlLabel>, default_depth: int) -> Seq<WasmValueType> {
+    branch_table_default_types_spec(control, default_depth) + seq![WasmValueType::I32]
+}
+
+// r[impl wasm-validation.br-table]
+pub open spec fn validation_br_table_ready_spec(state: WasmValidationState, depths: Seq<usize>, default_depth: int) -> bool {
+    &&& branch_table_targets_valid_spec(state.control@, depths, default_depth)
+    &&& validation_pop_ready_spec(state, branch_table_operand_types_spec(state.control@, default_depth))
+}
+
 // r[impl wasm-validation.control-transfer]
 pub open spec fn validation_return_ready_spec(state: WasmValidationState) -> bool {
     &&& state.control@.len() > 0
@@ -436,6 +470,86 @@ fn value_type_sequence_matches(actual: &Vec<WasmValueType>, expected: &Vec<WasmV
                 assert(!value_type_matches_spec(actual@[witness], expected@[witness]));
                 assert(exists|i: int| 0 <= i < expected@.len() && !value_type_matches_spec(actual@[i], expected@[i]));
                 assert(!value_type_sequences_match_spec(actual@, expected@));
+            }
+            return false;
+        }
+        index += 1usize;
+    }
+    true
+}
+
+fn branch_label_types(label: &WasmControlLabel) -> (result: Vec<WasmValueType>)
+    ensures result@ == branch_label_types_spec(*label)
+{
+    match label.kind {
+        WasmLabelKind::Function | WasmLabelKind::Block => clone_value_types(&label.results),
+        WasmLabelKind::Loop => clone_value_types(&label.params),
+    }
+}
+
+fn branch_label_types_match(actual: &WasmControlLabel, expected: &WasmControlLabel) -> (result: bool)
+    ensures result == value_type_sequences_match_spec(branch_label_types_spec(*actual), branch_label_types_spec(*expected))
+{
+    let actual_types = branch_label_types(actual);
+    let expected_types = branch_label_types(expected);
+    value_type_sequence_matches(&actual_types, &expected_types)
+}
+
+fn branch_table_operand_types(control: &Vec<WasmControlLabel>, default_depth: usize) -> (result: Vec<WasmValueType>)
+    requires branch_depth_valid_spec(control@, default_depth as int)
+    ensures result@ == branch_table_operand_types_spec(control@, default_depth as int)
+{
+    let default_index = control.len() - 1usize - default_depth;
+    assert(default_index as int == branch_target_index_spec(control@.len(), default_depth as int));
+    let mut operand_types = branch_label_types(&control[default_index]);
+    operand_types.push(WasmValueType::I32);
+    operand_types
+}
+
+fn branch_table_targets_valid(control: &Vec<WasmControlLabel>, depths: &Vec<usize>, default_depth: usize) -> (result: bool)
+    ensures result == branch_table_targets_valid_spec(control@, depths@, default_depth as int)
+{
+    if !branch_depth_valid(control, default_depth) {
+        return false;
+    }
+    let default_index = control.len() - 1usize - default_depth;
+    assert(default_index as int == branch_target_index_spec(control@.len(), default_depth as int));
+    let mut index: usize = 0usize;
+    while index < depths.len()
+        invariant
+            0 <= index <= depths@.len(),
+            branch_depth_valid_spec(control@, default_depth as int),
+            default_index as int == branch_target_index_spec(control@.len(), default_depth as int),
+            forall|i: int| 0 <= i < index as int ==> branch_table_target_matches_default_spec(control@, depths@[i] as int, default_depth as int),
+        decreases depths.len() - index,
+    {
+        let depth = depths[index];
+        if !branch_depth_valid(control, depth) {
+            proof {
+                let witness = index as int;
+                assert(0 <= witness < depths@.len());
+                assert(!branch_depth_valid_spec(control@, depth as int));
+                assert(depths@[witness] == depth);
+                assert(!branch_table_target_matches_default_spec(control@, depths@[witness] as int, default_depth as int));
+                assert(exists|i: int| 0 <= i < depths@.len() && !branch_table_target_matches_default_spec(control@, depths@[i] as int, default_depth as int));
+                assert(!branch_table_targets_valid_spec(control@, depths@, default_depth as int));
+            }
+            return false;
+        }
+        let target_index = control.len() - 1usize - depth;
+        assert(target_index as int == branch_target_index_spec(control@.len(), depth as int));
+        if !branch_label_types_match(&control[target_index], &control[default_index]) {
+            proof {
+                let witness = index as int;
+                assert(0 <= witness < depths@.len());
+                assert(depths@[witness] == depth);
+                assert(!value_type_sequences_match_spec(
+                    branch_label_types_spec(control@[branch_target_index_spec(control@.len(), depth as int)]),
+                    branch_label_types_spec(control@[branch_target_index_spec(control@.len(), default_depth as int)]),
+                ));
+                assert(!branch_table_target_matches_default_spec(control@, depths@[witness] as int, default_depth as int));
+                assert(exists|i: int| 0 <= i < depths@.len() && !branch_table_target_matches_default_spec(control@, depths@[i] as int, default_depth as int));
+                assert(!branch_table_targets_valid_spec(control@, depths@, default_depth as int));
             }
             return false;
         }
@@ -873,6 +987,27 @@ pub fn validate_return(state: &mut WasmValidationState) -> (result: bool)
     true
 }
 
+// r[impl wasm-validation.br-table]
+pub fn validate_br_table(state: &mut WasmValidationState, depths: &Vec<usize>, default_depth: usize) -> (result: bool)
+    ensures
+        result <==> validation_br_table_ready_spec(*old(state), depths@, default_depth as int),
+        state.operand_types@ == old(state).operand_types@,
+        state.control@ == old(state).control@,
+        state.frames@ == old(state).frames@,
+        result ==> !state.reachable,
+        !result ==> state.reachable == old(state).reachable,
+{
+    if !branch_table_targets_valid(&state.control, depths, default_depth) {
+        return false;
+    }
+    let expected_operands = branch_table_operand_types(&state.control, default_depth);
+    if !validation_pop_ready(state, &expected_operands) {
+        return false;
+    }
+    state.reachable = false;
+    true
+}
+
 // r[impl wasm-validation.call-indirect]
 pub fn validate_call_indirect(
     state: &mut WasmValidationState,
@@ -1202,6 +1337,22 @@ proof fn validation_branch_ready_implies_depth_valid(state: WasmValidationState,
     ensures validation_branch_ready_spec(state, depth) ==> branch_depth_valid_spec(state.control@, depth)
 {}
 
+// r[verify wasm-validation.br-table]
+proof fn br_table_ready_implies_default_depth_valid(state: WasmValidationState, depths: Seq<usize>, default_depth: int)
+    ensures validation_br_table_ready_spec(state, depths, default_depth) ==> branch_depth_valid_spec(state.control@, default_depth)
+{}
+
+// r[verify wasm-validation.br-table]
+proof fn br_table_target_match_implies_depth_valid(control: Seq<WasmControlLabel>, depth: int, default_depth: int)
+    ensures branch_table_target_matches_default_spec(control, depth, default_depth) ==> branch_depth_valid_spec(control, depth)
+{}
+
+// r[verify wasm-validation.br-table]
+proof fn unreachable_br_table_pop_ready(state: WasmValidationState, control: Seq<WasmControlLabel>, default_depth: int)
+    requires !state.reachable
+    ensures validation_pop_ready_spec(state, branch_table_operand_types_spec(control, default_depth))
+{}
+
 // r[verify wasm-validation.control-transfer]
 proof fn validation_return_ready_implies_function_root(state: WasmValidationState)
     ensures validation_return_ready_spec(state) ==> state.control@.len() > 0 && label_is_function_spec(state.control@[0])
@@ -1287,6 +1438,7 @@ mod tests {
     const OUT_OF_BOUNDS_OFFSET: usize = 1usize;
     const CONTROL_DEPTH_ZERO: usize = 0usize;
     const CONTROL_DEPTH_ONE: usize = 1usize;
+    const CONTROL_DEPTH_TWO: usize = 2usize;
     const OUT_OF_RANGE_BRANCH_DEPTH: usize = 1usize;
     const TABLE_INDEX_ZERO: usize = 0usize;
     const TABLE_INDEX_ONE: usize = 1usize;
@@ -1562,6 +1714,103 @@ mod tests {
         assert!(validate_br(&mut state, CONTROL_DEPTH_ZERO));
         assert!(!state.reachable);
         assert!(state.operand_types.is_empty());
+    }
+
+    // r[verify wasm-validation.br-table]
+    #[test]
+    fn test_validate_br_table_accepts_matching_block_and_loop_targets() {
+        let mut state = validation_state(
+            vec![WasmValueType::F64, WasmValueType::I32, WasmValueType::I32],
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+                loop_label(vec![WasmValueType::I32], vec![WasmValueType::F64]),
+            ],
+            true,
+        );
+        let before_operands = state.operand_types.clone();
+        let depths = vec![CONTROL_DEPTH_ZERO, CONTROL_DEPTH_ONE];
+
+        assert!(validate_br_table(&mut state, &depths, CONTROL_DEPTH_ONE));
+        assert!(!state.reachable);
+        assert_eq!(state.operand_types, before_operands);
+    }
+
+    // r[verify wasm-validation.br-table]
+    #[test]
+    fn test_validate_br_table_rejects_bad_depth_and_target_mismatch() {
+        let mut bad_depth = validation_state(
+            vec![WasmValueType::I32, WasmValueType::I32],
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+            ],
+            true,
+        );
+        let bad_depth_operands = bad_depth.operand_types.clone();
+        assert!(!validate_br_table(&mut bad_depth, &vec![CONTROL_DEPTH_TWO], CONTROL_DEPTH_ZERO));
+        assert!(bad_depth.reachable);
+        assert_eq!(bad_depth.operand_types, bad_depth_operands);
+
+        let mut mismatch = validation_state(
+            vec![WasmValueType::I32, WasmValueType::I32],
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+                loop_label(vec![WasmValueType::I64], Vec::<WasmValueType>::new()),
+            ],
+            true,
+        );
+        assert!(!validate_br_table(&mut mismatch, &vec![CONTROL_DEPTH_ZERO], CONTROL_DEPTH_ONE));
+        assert!(mismatch.reachable);
+    }
+
+    // r[verify wasm-validation.br-table]
+    #[test]
+    fn test_validate_br_table_rejects_reachable_stack_mismatch() {
+        let mut state = validation_state(
+            vec![WasmValueType::F64, WasmValueType::I32, WasmValueType::I64],
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+                loop_label(vec![WasmValueType::I32], Vec::<WasmValueType>::new()),
+            ],
+            true,
+        );
+        let before_operands = state.operand_types.clone();
+        assert!(!validate_br_table(&mut state, &vec![CONTROL_DEPTH_ZERO], CONTROL_DEPTH_ONE));
+        assert!(state.reachable);
+        assert_eq!(state.operand_types, before_operands);
+    }
+
+    // r[verify wasm-validation.br-table]
+    // r[verify wasm-validation.unreachable-stack]
+    #[test]
+    fn test_validate_br_table_unreachable_skips_stack_but_checks_targets() {
+        let mut state = validation_state(
+            Vec::<WasmValueType>::new(),
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+                loop_label(vec![WasmValueType::I32], Vec::<WasmValueType>::new()),
+            ],
+            false,
+        );
+        assert!(validate_br_table(&mut state, &vec![CONTROL_DEPTH_ZERO], CONTROL_DEPTH_ONE));
+        assert!(!state.reachable);
+        assert!(state.operand_types.is_empty());
+
+        let mut mismatch = validation_state(
+            Vec::<WasmValueType>::new(),
+            vec![
+                function_label(Vec::<WasmValueType>::new()),
+                block_label(vec![WasmValueType::I32]),
+                loop_label(vec![WasmValueType::I64], Vec::<WasmValueType>::new()),
+            ],
+            false,
+        );
+        assert!(!validate_br_table(&mut mismatch, &vec![CONTROL_DEPTH_ZERO], CONTROL_DEPTH_ONE));
+        assert!(!mismatch.reachable);
     }
 
     // r[verify wasm-validation.control-transfer]

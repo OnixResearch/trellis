@@ -1,0 +1,49 @@
+== sync dry-run ==
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./cairn/changes/wasm-br-table-validation/specs/wasm/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./cairn/changes/wasm-br-table-validation/specs/wasm/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "wasm-br-table-validation",
+  "delta_specs": [
+    "./cairn/changes/wasm-br-table-validation/specs/wasm/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "73eb8869021a3e3be7031cbf1d556fff8e62357886a7e501a80a4f4af0297347",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "de38e43fb44ffc2ce29344e0a48a6a22628867c0e730d52bbc850f0ad3c90ace",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "7b820c1761d13187271700df0c970f1d3b281ffcf018f8ded0a8f1afa6788fe9"
+}
+== archive dry-run ==
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: wasm-br-table-validation",
+      "kind": "archive_change",
+      "path": "./cairn/changes/wasm-br-table-validation"
+    }
+  ],
+  "blocked": false,
+  "change": "wasm-br-table-validation",
+  "dry_run": true,
+  "input_hash": "73eb8869021a3e3be7031cbf1d556fff8e62357886a7e501a80a4f4af0297347",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "3bbdc17dd4a450f2e77095c45090d3f29687824415e63956d909112eab9cd8e5",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "4d110e55cd9a705ccfdbde0f34ffd2294c94830bdfcdaaf5f15b27a2cb8773e1"
+}

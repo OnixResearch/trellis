@@ -7297,6 +7297,15 @@ suffix and push the expected result types. Successful unreachable validation MUS
 keep operand pops stack-polymorphic but still require a matching table entry and
 synthesize the expected result types.
 
+r[wasm-validation.br-table]
+The Wasm validation model MUST admit modeled `br_table` only when the default
+branch depth is in bounds, every listed branch depth is in bounds, every listed
+target's branch-label types exactly match the default target's branch-label
+types, and, while reachable, the operand-type stack suffix exactly matches the
+default target types followed by an `i32` selector. Successful validation MUST
+mark the current path unreachable. Unreachable validation MUST keep operand pops
+stack-polymorphic but still reject malformed depths or mismatched target types.
+
 ## Loop Detection
 
 r[loop.back-edge]
