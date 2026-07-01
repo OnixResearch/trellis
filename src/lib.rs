@@ -156,6 +156,8 @@
 //! - `gpu_primitives` — finite GPU program shapes, launch/grid/block/thread checks, pitched/tensor
 //!   memory-layout, coalesced memory, and shared-tile admission
 //! - `gossip` — gossip infection bounds and convergence
+//! - `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` — finite HDL IR admission,
+//!   deterministic Verilog/SystemVerilog emission, adapter refinement, and validation evidence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free
@@ -610,6 +612,10 @@ pub mod graph_shortest_path_envelope;
 pub mod graph_topological_order;
 pub mod hash_bucket;
 pub mod hazard_pointer;
+pub mod hdl_adapters;
+pub mod hdl_emit;
+pub mod hdl_ir;
+pub mod hdl_validation;
 pub mod heap_index;
 pub mod heartbeat;
 pub mod hypervisor_dirty_log;
