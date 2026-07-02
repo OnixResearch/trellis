@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `600` public modules, `585` requirement-covered modules, `10` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `601` public modules, `586` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -254,6 +254,7 @@ Summary: `600` public modules, `585` requirement-covered modules, `10` example-b
 | `install_snapshot` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `19`, requirements mentions: `0` | — | [`src/install_snapshot.rs`](../src/install_snapshot.rs) |
 | `instruction_selection` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `8`, verify: `21`, requirements mentions: `0` | — | [`src/instruction_selection.rs`](../src/instruction_selection.rs) |
 | `integer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `35`, requirements mentions: `6` | — | [`src/integer.rs`](../src/integer.rs) |
+| `integration_adapters` | `example-backed`, `requirement-covered`, `runtime-helper`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs) | impl: `4`, verify: `8`, requirements mentions: `0` | — | [`src/integration_adapters.rs`](../src/integration_adapters.rs) |
 | `interval` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `32`, requirements mentions: `16` | — | [`src/interval.rs`](../src/interval.rs) |
 | `job_cancel` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `15`, requirements mentions: `0` | — | [`src/job_cancel.rs`](../src/job_cancel.rs) |
 | `job_dag` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `14`, requirements mentions: `0` | — | [`src/job_dag.rs`](../src/job_dag.rs) |
@@ -329,12 +330,12 @@ Summary: `600` public modules, `585` requirement-covered modules, `10` example-b
 | `nickel_merge_split` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `8`, requirements mentions: `0` | — | [`src/nickel_merge_split.rs`](../src/nickel_merge_split.rs) |
 | `nickel_pattern_coverage` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `11`, requirements mentions: `0` | — | [`src/nickel_pattern_coverage.rs`](../src/nickel_pattern_coverage.rs) |
 | `nickel_polarity` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `14`, requirements mentions: `0` | — | [`src/nickel_polarity.rs`](../src/nickel_polarity.rs) |
-| `nickel_priority` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `12`, requirements mentions: `0` | — | [`src/nickel_priority.rs`](../src/nickel_priority.rs) |
-| `nickel_record_merge` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `11`, requirements mentions: `0` | — | [`src/nickel_record_merge.rs`](../src/nickel_record_merge.rs) |
+| `nickel_priority` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs) | impl: `3`, verify: `12`, requirements mentions: `0` | — | [`src/nickel_priority.rs`](../src/nickel_priority.rs) |
+| `nickel_record_merge` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs) | impl: `4`, verify: `11`, requirements mentions: `0` | — | [`src/nickel_record_merge.rs`](../src/nickel_record_merge.rs) |
 | `nickel_subtype` | `requirement-covered`, `spec-model`, `test-backed` | — | impl: `6`, verify: `16`, requirements mentions: `0` | — | [`src/nickel_subtype.rs`](../src/nickel_subtype.rs) |
 | `nix_attrset` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `13`, requirements mentions: `0` | — | [`src/nix_attrset.rs`](../src/nix_attrset.rs) |
 | `nix_base32` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `12`, requirements mentions: `0` | — | [`src/nix_base32.rs`](../src/nix_base32.rs) |
-| `nix_closure` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `10`, requirements mentions: `0` | — | [`src/nix_closure.rs`](../src/nix_closure.rs) |
+| `nix_closure` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs) | impl: `1`, verify: `10`, requirements mentions: `0` | — | [`src/nix_closure.rs`](../src/nix_closure.rs) |
 | `nix_drv_serialize` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `15`, requirements mentions: `0` | — | [`src/nix_drv_serialize.rs`](../src/nix_drv_serialize.rs) |
 | `nix_eval_closure_policy` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `5`, requirements mentions: `0` | — | [`src/nix_eval_closure_policy.rs`](../src/nix_eval_closure_policy.rs) |
 | `nix_fingerprint` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/nix_fingerprint.rs`](../src/nix_fingerprint.rs) |
@@ -566,7 +567,7 @@ Summary: `600` public modules, `585` requirement-covered modules, `10` example-b
 | `ucan_signature` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed`, `trusted-boundary-adjacent` | — | impl: `35`, verify: `18`, requirements mentions: `1` | [`6`](proof-gap-sites.tsv) | [`src/ucan_signature.rs`](../src/ucan_signature.rs) |
 | `ucan_temporal` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `3`, requirements mentions: `0` | — | [`src/ucan_temporal.rs`](../src/ucan_temporal.rs) |
 | `ucan_temporal_order` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `3`, requirements mentions: `0` | — | [`src/ucan_temporal_order.rs`](../src/ucan_temporal_order.rs) |
-| `ucan_token` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`ucan_web_of_trust`](../examples/ucan_web_of_trust.rs) | impl: `25`, verify: `9`, requirements mentions: `0` | — | [`src/ucan_token.rs`](../src/ucan_token.rs) |
+| `ucan_token` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs), [`ucan_web_of_trust`](../examples/ucan_web_of_trust.rs) | impl: `25`, verify: `9`, requirements mentions: `0` | — | [`src/ucan_token.rs`](../src/ucan_token.rs) |
 | `ucan_verification_stage` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `2`, requirements mentions: `0` | — | [`src/ucan_verification_stage.rs`](../src/ucan_verification_stage.rs) |
 | `vector_clock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `25`, requirements mentions: `0` | — | [`src/vector_clock.rs`](../src/vector_clock.rs) |
 | `verified_compiler_pipeline` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `4`, requirements mentions: `0` | — | [`src/verified_compiler_pipeline.rs`](../src/verified_compiler_pipeline.rs) |

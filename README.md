@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10525 Verus proofs · 4823 tests · 1994 requirements · 600 modules · 16 trusted/proof-gap boundaries**
+**10525 Verus proofs · 4823 tests · 1999 requirements · 601 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -70,6 +70,7 @@ validation commands captured in the change evidence.
 | `sel4_invocation_step` | bounded seL4 invocation transitions preserving invariants | verified |
 | `nix_eval_closure_policy` | Nix/Nickel merge plus reachable closure admission | verified |
 | `chaoscontrol_exploration_core` | deterministic, oracle-checked exploration steps | verified |
+| `integration_adapters` | deterministic user-facing adapters over verified consensus, UCAN, Nix/Nickel, and WAL primitives | adapter |
 
 ### Core arithmetic and data structures
 
@@ -584,6 +585,7 @@ Each runtime example compiles through normal Cargo without invoking Verus. For V
 - [`examples/ucan_web_of_trust.rs`](examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
 - [`examples/r1cs_single_row.rs`](examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
 - [`examples/storage_allocator.rs`](examples/storage_allocator.rs): `cargo run --example storage_allocator`
+- [`examples/integration_adapters.rs`](examples/integration_adapters.rs): `cargo run --example integration_adapters`
 
 ## Development
 

@@ -12316,3 +12316,12 @@ fields, stale BLAKE3 identities, unsupported schema versions, missing requiremen
 coverage, missing proof-gap references, and overbroad claims such as release
 approval, whole-program correctness, certification, third-party conformance, or
 production safety.
+
+## Integration Adapters
+
+r[integration-adapters.user-facing-adapters]
+The system MUST provide deterministic user-facing adapter surfaces only when they
+compose existing verified Trellis primitives or explicit pure cores, reject
+malformed or out-of-subset inputs deterministically, and document supported
+subsets, validation evidence, and non-goals without claiming full external
+ecosystem conformance.

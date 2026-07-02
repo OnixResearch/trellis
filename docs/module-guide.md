@@ -107,6 +107,11 @@ Run runtime examples through normal Cargo; no Verus invocation is required. For 
 - [`ucan_web_of_trust`](../examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
 - [`r1cs_single_row`](../examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
 - [`storage_allocator`](../examples/storage_allocator.rs): `cargo run --example storage_allocator`
+- [`integration_adapters`](../examples/integration_adapters.rs): `cargo run --example integration_adapters`
+
+## Integration adapters
+
+Use [`integration_adapters`](../src/integration_adapters.rs) and [the integration adapter guide](integration-adapters.md) when you need domain-shaped admission APIs over existing verified consensus, UCAN, Nix/Nickel, or WAL primitives. The adapters are finite deterministic shells and do not claim full external ecosystem conformance.
 
 ## Verification and contribution workflow
 

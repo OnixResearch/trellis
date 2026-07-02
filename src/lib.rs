@@ -639,6 +639,7 @@ pub mod index_query_pagination;
 pub mod index_select;
 pub mod install_snapshot;
 pub mod instruction_selection;
+pub mod integration_adapters;
 pub mod integer;
 pub mod interval;
 pub mod job_cancel;
