@@ -100,7 +100,7 @@ exact execution semantics.
 
 ## Runnable examples
 
-Run examples through normal Cargo; no Verus invocation is required:
+Run runtime examples through normal Cargo; no Verus invocation is required. For proof-focused examples that intentionally invoke Verus, see [docs/proof-examples.md](proof-examples.md):
 
 - [`core_basics`](../examples/core_basics.rs): `cargo run --example core_basics`
 - [`consensus_admission`](../examples/consensus_admission.rs): `cargo run --example consensus_admission`

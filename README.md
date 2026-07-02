@@ -577,7 +577,7 @@ evidence records.
 
 ## Runnable examples
 
-Each example compiles through normal Cargo without invoking Verus:
+Each runtime example compiles through normal Cargo without invoking Verus. For Verus-focused spec/exec/ensures walkthroughs, see [docs/proof-examples.md](docs/proof-examples.md).
 
 - [`examples/core_basics.rs`](examples/core_basics.rs): `cargo run --example core_basics`
 - [`examples/consensus_admission.rs`](examples/consensus_admission.rs): `cargo run --example consensus_admission`
@@ -613,6 +613,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-module-index.rs # generated module maturity index drift and fixture self-test
 ./scripts/check-cookbook.rs # cookbook recipe field/link drift and fixture self-test
 ./scripts/check-examples.rs # runnable example link/run-command drift and fixture self-test
+./scripts/check-proof-examples.sh # positive and expected-failure runnable proof examples
 ./scripts/check-runtime-evidence.rs # runtime-cost evidence record metadata and fixture self-test
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest

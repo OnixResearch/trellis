@@ -4,7 +4,7 @@
 
 Schema: `module-index-v1`. This index is generated from local deterministic facts in `src/lib.rs`, `src/*.rs`, `docs/requirements.md`, `docs/proof-gap-sites.tsv`, and `examples/*.rs`. Run `./scripts/check-module-index.rs --write` to refresh and `./scripts/check-module-index.rs` to validate.
 
-Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module.
+Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
 Summary: `600` public modules, `585` requirement-covered modules, `10` example-backed modules, `6` trusted-boundary-adjacent modules.
 

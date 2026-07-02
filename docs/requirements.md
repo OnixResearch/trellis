@@ -12286,3 +12286,17 @@ requires address admission, range admission, formula admission, dependency
 extraction, cycle rejection, recalculation-order admission, dirty-propagation
 admission, and error-envelope determinism before any spreadsheet evaluation
 claim is exposed.
+
+## Runnable Proof Examples
+
+r[runnable-proof-examples.basic]
+The system MUST provide a deterministic proof example that demonstrates the
+Trellis `spec fn` / runtime function / `ensures` refinement pattern through a
+Verus command that succeeds and an isolated negative fixture that fails for the
+expected proof reason.
+
+r[runnable-proof-examples.commands]
+The system MUST document exact positive, negative, wrapper, and opt-in commands
+for runnable proof examples so users can reproduce both passing proof evidence
+and expected failing proof evidence without treating the negative fixture as part
+of the normal passing path.
