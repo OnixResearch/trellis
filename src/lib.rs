@@ -300,7 +300,8 @@
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
 //! - `sel4_invocation` — abstract typed invocation decode over explicit capability contexts
-//! - `sel4_invariants` — composed kernel-state invariants and a preservation matrix over the local seL4 models
+//! - `sel4_invariants` — composed kernel-state invariants and a preservation matrix over the local
+//!   seL4 models
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
@@ -1015,14 +1016,25 @@ pub mod work_stealing;
 pub mod write_buffer;
 pub mod write_policy;
 pub mod zeroize;
+#[path = "zircon/channel.rs"]
 pub mod zircon_channel;
+#[path = "zircon/event.rs"]
 pub mod zircon_event;
+#[path = "zircon/fifo.rs"]
 pub mod zircon_fifo;
+#[path = "zircon/futex.rs"]
 pub mod zircon_futex;
+#[path = "zircon/handle.rs"]
 pub mod zircon_handle;
+#[path = "zircon/job.rs"]
 pub mod zircon_job;
+#[path = "zircon/port.rs"]
 pub mod zircon_port;
+#[path = "zircon/rights.rs"]
 pub mod zircon_rights;
+#[path = "zircon/socket.rs"]
 pub mod zircon_socket;
+#[path = "zircon/timer.rs"]
 pub mod zircon_timer;
+#[path = "zircon/wait.rs"]
 pub mod zircon_wait;
