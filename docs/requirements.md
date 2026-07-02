@@ -5368,6 +5368,26 @@ Applying obligations preserves the position vector length.
 r[settlement.self-settlement]
 Every set of obligations is a valid settlement of itself (reflexivity).
 
+## Verification Frontier
+
+r[verification-frontier.contract-implication]
+Contract implication admission MUST classify a callee precondition under finite caller facts, path facts, and type-bound facts as Proven, Rejected, or Unknown. Proven MUST mean the modeled facts cover the precondition and MAY be used as check-elision evidence inside the finite model. Rejected MUST expose deterministic violation metadata or a directly false precondition. Unknown MUST remain non-proof evidence.
+
+r[verification-frontier.type-bound-facts]
+Type-bound fact extraction MUST expose deterministic range facts for modeled boolean, unsigned integer, and signed integer domains. The extracted facts MUST use named domain constants, distinguish signed from unsigned domains, and compose with caller-provided ranges without widening a stricter caller bound.
+
+r[verification-frontier.slice-access-certificate]
+Slice-access certificate admission MUST accept only finite certificates proving the slice range is within the backing length and every fixed or bounded dynamic offset lies inside that slice. Inverted ranges, out-of-backing ranges, out-of-slice offsets, and unbounded dynamic offsets MUST be rejected or classified as Unknown rather than accepted.
+
+r[verification-frontier.arena-scope-provenance]
+Arena scope-provenance admission MUST track arenas, allocations, allocator wrappers, and containers by scope depth or explicit untracked provenance. A deeper local-scope value MUST NOT escape by return across a shallower boundary or be stored into a shallower-lived destination, while untracked heap-backed values MUST NOT be treated as arena-tainted without an explicit provenance fact.
+
+r[verification-frontier.progress-budget]
+Progress-budget admission MUST classify finite task/control-flow summaries using named operation-cost constants and named budget values. Admission MUST be Proven only when every modeled acyclic path reaches yield or return within budget and no modeled cycle can avoid yield or return indefinitely; over-budget paths and no-yield cycles MUST be rejected with deterministic metadata.
+
+r[verification-frontier.external-reference-boundary]
+Documentation and evidence for Lattice/Salt-inspired verification-frontier primitives MUST label Lattice/Salt as an external design reference only. Trellis MUST NOT treat Lattice code, benchmarks, or solver behavior as trusted validation, and every Trellis claim MUST be backed by repo-local specs, proofs, tests, Tracey coverage, or validation logs.
+
 ## Verification Gap Inventory
 
 16 total trusted/weakened/runtime-only proof-gap boundaries remain: 16

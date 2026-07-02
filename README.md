@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10525 Verus proofs · 4823 tests · 1999 requirements · 601 modules · 16 trusted/proof-gap boundaries**
+**10611 Verus proofs · 4824 tests · 2005 requirements · 602 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -480,6 +480,7 @@ validation commands captured in the change evidence.
 | `choreography_step` | one-step global/local reduction and shared-prefix alignment |
 | `debruijn` | de Bruijn shifting, substitution, beta reduction, and scope preservation |
 | `acid` | atomicity, consistency, isolation, durability over state vectors |
+| `verification_frontier` | finite contract implication, type-bound facts, slice-access certificates, arena provenance, progress budgets, and external-reference admission |
 
 ### Cross-module properties
 
@@ -691,3 +692,7 @@ In addition to `external_body`, the current audit also tracks:
 - `0` placeholder-spec surfaces
 
 All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/spec.md`, and `docs/proof-gap-sites.tsv` is the checked per-site source for exact trusted-boundary rationale.
+
+## References
+
+- Lattice/Salt verification-product patterns — external design reference only; not vendored, executed, or treated as trusted Trellis validation evidence.

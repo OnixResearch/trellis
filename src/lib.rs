@@ -117,8 +117,8 @@
 //! - `ssa_construction` — iterated-dominance-frontier phi placement, SSA renaming, and phi
 //!   elimination
 //! - `spreadsheet_address` / `spreadsheet_formula` / `spreadsheet_dependency` /
-//!   `spreadsheet_recalc` — finite spreadsheet address/range, formula, dependency, cycle,
-//!   recalc, dirty-propagation, and error admission
+//!   `spreadsheet_recalc` — finite spreadsheet address/range, formula, dependency, cycle, recalc,
+//!   dirty-propagation, and error admission
 //! - `ct_select` — branchless constant-time conditional selection for u64/u8
 //! - `conversion` — checked narrowing (u32/u16/u8), sign conversion (i64↔u64)
 //! - `cow` — copy-on-write decision logic, ref counting, snapshot isolation
@@ -160,7 +160,8 @@
 //!   memory-layout, coalesced memory, and shared-tile admission
 //! - `gossip` — gossip infection bounds and convergence
 //! - `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` — finite HDL IR admission,
-//!   deterministic Verilog/SystemVerilog emission, adapter refinement/emission planning, and validation evidence
+//!   deterministic Verilog/SystemVerilog emission, adapter refinement/emission planning, and
+//!   validation evidence
 //! - `expiration` — TTL calculation, lease/key expiration, time remaining
 //! - `hash_bucket` — hash-to-bucket assignment, modular and power-of-two
 //! - `hazard_pointer` — hazard pointer protocol: protect, unprotect, reclaim, no-use-after-free
@@ -332,6 +333,8 @@
 //! - `type_unification` — first-order type syntax, occurs check, substitution application and
 //!   composition
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
+//! - `verification_frontier` — finite contract implication, type facts, slice certificates, arena
+//!   provenance, progress budgets, and external-reference admission
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
@@ -639,8 +642,8 @@ pub mod index_query_pagination;
 pub mod index_select;
 pub mod install_snapshot;
 pub mod instruction_selection;
-pub mod integration_adapters;
 pub mod integer;
+pub mod integration_adapters;
 pub mod interval;
 pub mod job_cancel;
 pub mod job_dag;
@@ -981,6 +984,7 @@ pub mod ucan_temporal_order;
 pub mod ucan_token;
 pub mod ucan_verification_stage;
 pub mod vector_clock;
+pub mod verification_frontier;
 pub mod verified_compiler_pipeline;
 pub mod verified_lsm_ingest;
 pub mod view_change;

@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `601` public modules, `586` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `602` public modules, `587` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -488,7 +488,7 @@ Summary: `601` public modules, `586` requirement-covered modules, `14` example-b
 | `signal_processing` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `7`, verify: `7`, requirements mentions: `0` | — | [`src/signal_processing.rs`](../src/signal_processing.rs) |
 | `size_class` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/size_class.rs`](../src/size_class.rs) |
 | `slab` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `40`, requirements mentions: `7` | — | [`src/slab.rs`](../src/slab.rs) |
-| `slice` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `25`, requirements mentions: `9` | — | [`src/slice.rs`](../src/slice.rs) |
+| `slice` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `25`, requirements mentions: `10` | — | [`src/slice.rs`](../src/slice.rs) |
 | `snapshot_compaction` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `27`, requirements mentions: `0` | — | [`src/snapshot_compaction.rs`](../src/snapshot_compaction.rs) |
 | `snapshot_integrity` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed`, `trusted-boundary-adjacent` | — | impl: `9`, verify: `17`, requirements mentions: `1` | [`2`](proof-gap-sites.tsv) | [`src/snapshot_integrity.rs`](../src/snapshot_integrity.rs) |
 | `snapshot_isolation` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `10`, requirements mentions: `0` | — | [`src/snapshot_isolation.rs`](../src/snapshot_isolation.rs) |
@@ -517,7 +517,7 @@ Summary: `601` public modules, `586` requirement-covered modules, `14` example-b
 | `term_authority` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `12`, requirements mentions: `2` | — | [`src/term_authority.rs`](../src/term_authority.rs) |
 | `text_string` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `8`, verify: `8`, requirements mentions: `0` | — | [`src/text_string.rs`](../src/text_string.rs) |
 | `ticket_lock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `16`, requirements mentions: `0` | — | [`src/ticket_lock.rs`](../src/ticket_lock.rs) |
-| `tier` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `37`, requirements mentions: `5` | — | [`src/tier.rs`](../src/tier.rs) |
+| `tier` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `37`, requirements mentions: `11` | — | [`src/tier.rs`](../src/tier.rs) |
 | `tiered_rate_limit` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `18`, requirements mentions: `0` | — | [`src/tiered_rate_limit.rs`](../src/tiered_rate_limit.rs) |
 | `tiling` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `31`, requirements mentions: `9` | — | [`src/tiling.rs`](../src/tiling.rs) |
 | `timeseries` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `13`, verify: `6`, requirements mentions: `0` | — | [`src/timeseries.rs`](../src/timeseries.rs) |
@@ -570,6 +570,7 @@ Summary: `601` public modules, `586` requirement-covered modules, `14` example-b
 | `ucan_token` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`integration_adapters`](../examples/integration_adapters.rs), [`ucan_web_of_trust`](../examples/ucan_web_of_trust.rs) | impl: `25`, verify: `9`, requirements mentions: `0` | — | [`src/ucan_token.rs`](../src/ucan_token.rs) |
 | `ucan_verification_stage` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `2`, requirements mentions: `0` | — | [`src/ucan_verification_stage.rs`](../src/ucan_verification_stage.rs) |
 | `vector_clock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `25`, requirements mentions: `0` | — | [`src/vector_clock.rs`](../src/vector_clock.rs) |
+| `verification_frontier` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `15`, verify: `8`, requirements mentions: `0` | — | [`src/verification_frontier.rs`](../src/verification_frontier.rs) |
 | `verified_compiler_pipeline` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `4`, requirements mentions: `0` | — | [`src/verified_compiler_pipeline.rs`](../src/verified_compiler_pipeline.rs) |
 | `verified_lsm_ingest` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `2`, requirements mentions: `0` | — | [`src/verified_lsm_ingest.rs`](../src/verified_lsm_ingest.rs) |
 | `view_change` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `19`, requirements mentions: `0` | — | [`src/view_change.rs`](../src/view_change.rs) |

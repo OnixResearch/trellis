@@ -291,14 +291,14 @@ fn main() -> std::process::ExitCode {
     );
     runner.run_status(
         "Proof evidence bundle validation",
-        "cargo",
+        &cargo,
         ["run", "--quiet", "--bin", "proof_evidence", "--", "check"],
         "",
         "",
     );
     runner.run_status(
         "Proof evidence bundle self-test",
-        "cargo",
+        &cargo,
         ["run", "--quiet", "--bin", "proof_evidence", "--", "self-test"],
         "",
         "",
