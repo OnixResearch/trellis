@@ -300,7 +300,7 @@
 //! - `sel4_endpoint` — endpoint sender/receiver rendezvous, queue cancellation, and badge transfer
 //! - `sel4_fault_ipc` — structured fault encode/decode and handler-facing delivery
 //! - `sel4_invocation` — abstract typed invocation decode over explicit capability contexts
-//! - `sel4_invariants` — composed kernel-state invariants over the local seL4 models
+//! - `sel4_invariants` — composed kernel-state invariants and a preservation matrix over the local seL4 models
 //! - `sel4_notification` — badge accumulation, wait/poll consume semantics, and binding wakeups
 //! - `sel4_reply` — reply-cap lifecycle, caller/callee pairing, and invalidate-on-cancel/revoke
 //! - `sel4_irq` — IRQ handler binding, mask-aware delivery, and acknowledge consumption
@@ -334,7 +334,7 @@
 //!   composition
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `verification_frontier` — finite contract implication, type facts, slice certificates, arena
-//!   provenance, progress budgets, and external-reference admission
+//!   provenance, progress budgets, external-reference admission, and outcome invariant bundles
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety

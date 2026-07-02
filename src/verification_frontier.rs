@@ -146,10 +146,47 @@ pub const REASON_EXTERNAL_TRUST: u8 = 17;
 pub const REASON_EXTERNAL_BENCHMARK: u8 = 18;
 pub const REASON_MISSING_LOCAL_EVIDENCE: u8 = 19;
 pub const REASON_REFERENCE_NOT_LABELED: u8 = 20;
+pub const REASON_MAX_NAMED: u8 = REASON_REFERENCE_NOT_LABELED;
 
 // r[depends verification-frontier.contract-implication]
 pub open spec fn outcome_is_proof_spec(outcome: Outcome) -> bool {
     matches!(outcome, Outcome::Proven)
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn stable_outcome_variant_spec(outcome: Outcome) -> bool {
+    outcome == Outcome::Proven || outcome == Outcome::Rejected || outcome == Outcome::Unknown
+}
+
+// r[depends verification-frontier.metadata-stability]
+pub open spec fn named_reason_code_spec(reason: u8) -> bool {
+    reason <= REASON_MAX_NAMED
+}
+
+// r[impl verification-frontier.outcome-invariant-bundle]
+pub open spec fn admission_is_proof_evidence_spec(admission: Admission) -> bool {
+    outcome_is_proof_spec(admission.outcome)
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn contract_admission_is_proof_evidence_spec(admission: ContractAdmission) -> bool {
+    outcome_is_proof_spec(admission.outcome)
+}
+
+// r[impl verification-frontier.metadata-stability]
+pub open spec fn admission_metadata_stable_spec(admission: Admission) -> bool {
+    stable_outcome_variant_spec(admission.outcome)
+        && named_reason_code_spec(admission.reason)
+        && (admission.outcome == Outcome::Proven ==> admission.reason == REASON_NONE)
+        && (admission.outcome != Outcome::Proven ==> admission.reason != REASON_NONE)
+}
+
+// r[depends verification-frontier.metadata-stability]
+pub open spec fn contract_metadata_stable_spec(admission: ContractAdmission) -> bool {
+    stable_outcome_variant_spec(admission.outcome)
+        && named_reason_code_spec(admission.reason)
+        && (admission.outcome == Outcome::Proven ==> admission.reason == REASON_NONE)
+        && (admission.outcome != Outcome::Proven ==> admission.reason != REASON_NONE)
 }
 
 // r[impl verification-frontier.contract-implication]
@@ -648,6 +685,173 @@ pub fn external_reference_boundary_admission(
     Admission { outcome: Outcome::Proven, reason: REASON_NONE, evidence: 0 }
 }
 
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn contract_implication_safety_spec(
+    facts: FiniteFacts,
+    precondition: Precondition,
+) -> bool {
+    let combined = combined_contract_fact_spec(facts, precondition.var);
+    precondition.kind == PREDICATE_RANGE
+        && combined.known
+        && combined.lower <= combined.upper
+        && combined.lower >= precondition.lower
+        && combined.upper <= precondition.upper
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn slice_access_safety_spec(cert: SliceAccessCertificate) -> bool {
+    cert.start <= cert.end
+        && cert.end <= cert.backing_len
+        && ((cert.offset_kind == OFFSET_FIXED && cert.fixed_offset < cert.end - cert.start)
+            || (cert.offset_kind == OFFSET_BOUNDED_DYNAMIC && cert.dynamic_max < cert.end - cert.start))
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn return_escape_safety_spec(value: Provenance, boundary_depth: u8) -> bool {
+    !value.is_tracked || value.depth <= boundary_depth
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn store_escape_safety_spec(source: Provenance, destination: Provenance) -> bool {
+    !source.is_tracked || (destination.is_tracked && source.depth <= destination.depth)
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn progress_budget_safety_spec(summary: ProgressSummary, budget: u64) -> bool {
+    named_progress_budget_spec(budget)
+        && summary.has_yield_or_return
+        && !summary.has_no_yield_cycle
+        && summary.main_path_cost <= budget
+        && summary.alternate_path_cost <= budget
+}
+
+// r[depends verification-frontier.outcome-invariant-bundle]
+pub open spec fn external_reference_safety_spec(claim: ExternalReferenceClaim) -> bool {
+    claim.labels_reference
+        && claim.has_local_evidence
+        && !claim.treats_external_as_trusted
+        && !claim.copies_external_benchmark
+}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn stable_outcome_variant(outcome: Outcome)
+    ensures stable_outcome_variant_spec(outcome)
+{
+    match outcome {
+        Outcome::Proven => {},
+        Outcome::Rejected => {},
+        Outcome::Unknown => {},
+    }
+}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn unknown_outcome_is_not_proof(outcome: Outcome)
+    requires outcome == Outcome::Unknown
+    ensures !outcome_is_proof_spec(outcome)
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn rejected_outcome_is_not_proof(outcome: Outcome)
+    requires outcome == Outcome::Rejected
+    ensures !outcome_is_proof_spec(outcome)
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_contract_admission_implies_safety(
+    facts: FiniteFacts,
+    precondition: Precondition,
+)
+    requires contract_implication_admission_spec(facts, precondition).outcome == Outcome::Proven
+    ensures
+        contract_implication_safety_spec(facts, precondition),
+        contract_admission_is_proof_evidence_spec(contract_implication_admission_spec(facts, precondition)),
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn non_proven_contract_admission_is_not_proof(
+    facts: FiniteFacts,
+    precondition: Precondition,
+)
+    requires contract_implication_admission_spec(facts, precondition).outcome != Outcome::Proven
+    ensures !contract_admission_is_proof_evidence_spec(contract_implication_admission_spec(facts, precondition))
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_slice_access_implies_safety(cert: SliceAccessCertificate)
+    requires slice_access_admission_spec(cert).outcome == Outcome::Proven
+    ensures
+        slice_access_safety_spec(cert),
+        admission_is_proof_evidence_spec(slice_access_admission_spec(cert)),
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn non_proven_slice_access_is_not_proof(cert: SliceAccessCertificate)
+    requires slice_access_admission_spec(cert).outcome != Outcome::Proven
+    ensures !admission_is_proof_evidence_spec(slice_access_admission_spec(cert))
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_return_escape_implies_safety(value: Provenance, boundary_depth: u8)
+    requires return_escape_admission_spec(value, boundary_depth).outcome == Outcome::Proven
+    ensures
+        return_escape_safety_spec(value, boundary_depth),
+        admission_is_proof_evidence_spec(return_escape_admission_spec(value, boundary_depth)),
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_store_escape_implies_safety(source: Provenance, destination: Provenance)
+    requires store_escape_admission_spec(source, destination).outcome == Outcome::Proven
+    ensures
+        store_escape_safety_spec(source, destination),
+        admission_is_proof_evidence_spec(store_escape_admission_spec(source, destination)),
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_progress_budget_implies_safety(summary: ProgressSummary, budget: u64)
+    requires progress_budget_admission_spec(summary, budget).outcome == Outcome::Proven
+    ensures
+        progress_budget_safety_spec(summary, budget),
+        admission_is_proof_evidence_spec(progress_budget_admission_spec(summary, budget)),
+{}
+
+// r[verify verification-frontier.outcome-invariant-bundle]
+pub proof fn proven_external_reference_implies_safety(claim: ExternalReferenceClaim)
+    requires external_reference_boundary_admission_spec(claim).outcome == Outcome::Proven
+    ensures
+        external_reference_safety_spec(claim),
+        admission_is_proof_evidence_spec(external_reference_boundary_admission_spec(claim)),
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn contract_admission_metadata_is_stable(facts: FiniteFacts, precondition: Precondition)
+    ensures contract_metadata_stable_spec(contract_implication_admission_spec(facts, precondition))
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn slice_access_metadata_is_stable(cert: SliceAccessCertificate)
+    ensures admission_metadata_stable_spec(slice_access_admission_spec(cert))
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn return_escape_metadata_is_stable(value: Provenance, boundary_depth: u8)
+    ensures admission_metadata_stable_spec(return_escape_admission_spec(value, boundary_depth))
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn store_escape_metadata_is_stable(source: Provenance, destination: Provenance)
+    ensures admission_metadata_stable_spec(store_escape_admission_spec(source, destination))
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn progress_budget_metadata_is_stable(summary: ProgressSummary, budget: u64)
+    ensures admission_metadata_stable_spec(progress_budget_admission_spec(summary, budget))
+{}
+
+// r[verify verification-frontier.metadata-stability]
+pub proof fn external_reference_metadata_is_stable(claim: ExternalReferenceClaim)
+    ensures admission_metadata_stable_spec(external_reference_boundary_admission_spec(claim))
+{}
+
 // r[verify verification-frontier.contract-implication]
 pub proof fn proven_contract_implication_has_covering_facts(
     facts: FiniteFacts,
@@ -752,6 +956,10 @@ mod tests {
     const BRANCH_OP_COUNT: u8 = 1;
     const MANY_FAST_OPS: u8 = 9;
     const NO_BRANCH_OPS: u8 = 0;
+    const INCONSISTENT_LOWER: i64 = 30;
+    const INCONSISTENT_UPPER: i64 = 20;
+    const UNSUPPORTED_OFFSET_KIND: u8 = 99;
+    const UNNAMED_PROGRESS_BUDGET: u64 = PROGRESS_COST_FAST_OP;
 
     fn fact(var: u8, lower: i64, upper: i64) -> RangeFact {
         RangeFact {
@@ -1021,5 +1229,143 @@ mod tests {
             ..accepted
         };
         assert_eq!(external_reference_boundary_admission(unlabeled).reason, REASON_REFERENCE_NOT_LABELED);
+    }
+
+    // r[verify verification-frontier.outcome-invariant-bundle]
+    #[test]
+    fn outcome_invariant_bundle_accepts_proven_admission_families() {
+        let precondition = range_precondition();
+        let facts = FiniteFacts {
+            caller: fact(VARIABLE_PRIMARY, CALLER_LOWER_STRICT, CALLER_UPPER_STRICT),
+            path: no_fact(VARIABLE_PRIMARY),
+            type_bound: type_bound_fact(DOMAIN_U8, VARIABLE_PRIMARY),
+        };
+        let contract = contract_implication_admission(facts, precondition);
+        assert!(outcome_is_proof(contract.outcome));
+        assert_eq!(contract.reason, REASON_NONE);
+
+        let slice = slice_access_admission(SliceAccessCertificate {
+            backing_len: BACKING_LEN,
+            start: OFFSET_START,
+            end: OFFSET_END,
+            offset_kind: OFFSET_FIXED,
+            fixed_offset: FIXED_OFFSET_SAFE,
+            dynamic_max: 0,
+        });
+        assert!(outcome_is_proof(slice.outcome));
+        assert_eq!(slice.reason, REASON_NONE);
+
+        let caller_value = arena_provenance(SCOPE_DEPTH_CALLER);
+        assert!(outcome_is_proof(return_escape_admission(caller_value, SCOPE_DEPTH_CALLER).outcome));
+        let local_destination = arena_provenance(SCOPE_DEPTH_LOCAL);
+        assert!(outcome_is_proof(store_escape_admission(caller_value, local_destination).outcome));
+
+        let bounded_progress = ProgressSummary {
+            main_path_cost: progress_named_path_cost(FAST_OP_COUNT, BRANCH_OP_COUNT),
+            alternate_path_cost: progress_named_path_cost(FAST_OP_COUNT, NO_BRANCH_OPS),
+            has_yield_or_return: true,
+            has_no_yield_cycle: false,
+        };
+        assert!(outcome_is_proof(progress_budget_admission(bounded_progress, PROGRESS_BUDGET_INTERACTIVE).outcome));
+
+        let local_reference = ExternalReferenceClaim {
+            labels_reference: true,
+            has_local_evidence: true,
+            treats_external_as_trusted: false,
+            copies_external_benchmark: false,
+        };
+        assert!(outcome_is_proof(external_reference_boundary_admission(local_reference).outcome));
+    }
+
+    // r[verify verification-frontier.metadata-stability]
+    #[test]
+    fn metadata_stability_reports_named_reasons_and_input_evidence() {
+        let unsupported = contract_implication_admission(
+            FiniteFacts {
+                caller: fact(VARIABLE_PRIMARY, CALLER_LOWER_STRICT, CALLER_UPPER_STRICT),
+                path: no_fact(VARIABLE_PRIMARY),
+                type_bound: no_fact(VARIABLE_PRIMARY),
+            },
+            Precondition {
+                kind: PREDICATE_UNSUPPORTED,
+                var: VARIABLE_PRIMARY,
+                lower: PRECONDITION_LOWER,
+                upper: PRECONDITION_UPPER,
+            },
+        );
+        assert_eq!(unsupported.outcome, Outcome::Unknown);
+        assert_eq!(unsupported.reason, REASON_UNSUPPORTED_PREDICATE);
+        assert_eq!(unsupported.witness_var, VARIABLE_PRIMARY);
+        assert_eq!(unsupported.witness_value, PRECONDITION_LOWER);
+        assert!(!outcome_is_proof(unsupported.outcome));
+
+        let inconsistent = contract_implication_admission(
+            FiniteFacts {
+                caller: fact(VARIABLE_PRIMARY, INCONSISTENT_LOWER, INCONSISTENT_UPPER),
+                path: no_fact(VARIABLE_PRIMARY),
+                type_bound: no_fact(VARIABLE_PRIMARY),
+            },
+            range_precondition(),
+        );
+        assert_eq!(inconsistent.outcome, Outcome::Rejected);
+        assert_eq!(inconsistent.reason, REASON_INCONSISTENT_FACTS);
+        assert_eq!(inconsistent.witness_value, INCONSISTENT_LOWER);
+        assert!(!outcome_is_proof(inconsistent.outcome));
+
+        let base_cert = SliceAccessCertificate {
+            backing_len: BACKING_LEN,
+            start: OFFSET_START,
+            end: OFFSET_END,
+            offset_kind: OFFSET_FIXED,
+            fixed_offset: FIXED_OFFSET_SAFE,
+            dynamic_max: DYNAMIC_MAX_SAFE,
+        };
+        let unbounded = slice_access_admission(SliceAccessCertificate {
+            offset_kind: OFFSET_UNBOUNDED_DYNAMIC,
+            ..base_cert
+        });
+        assert_eq!(unbounded.outcome, Outcome::Unknown);
+        assert_eq!(unbounded.reason, REASON_UNBOUNDED_OFFSET);
+        assert_eq!(unbounded.evidence, DYNAMIC_MAX_SAFE);
+
+        let unsupported_offset = slice_access_admission(SliceAccessCertificate {
+            offset_kind: UNSUPPORTED_OFFSET_KIND,
+            ..base_cert
+        });
+        assert_eq!(unsupported_offset.outcome, Outcome::Unknown);
+        assert_eq!(unsupported_offset.reason, REASON_UNSUPPORTED_PREDICATE);
+        assert_eq!(unsupported_offset.evidence, u64::from(UNSUPPORTED_OFFSET_KIND));
+
+        let over_budget = ProgressSummary {
+            main_path_cost: progress_named_path_cost(MANY_FAST_OPS, NO_BRANCH_OPS),
+            alternate_path_cost: progress_named_path_cost(FAST_OP_COUNT, NO_BRANCH_OPS),
+            has_yield_or_return: true,
+            has_no_yield_cycle: false,
+        };
+        let unnamed_budget = progress_budget_admission(over_budget, UNNAMED_PROGRESS_BUDGET);
+        assert_eq!(unnamed_budget.outcome, Outcome::Unknown);
+        assert_eq!(unnamed_budget.reason, REASON_UNNAMED_BUDGET);
+        assert_eq!(unnamed_budget.evidence, UNNAMED_PROGRESS_BUDGET);
+
+        let no_yield_cycle = progress_budget_admission(
+            ProgressSummary {
+                has_no_yield_cycle: true,
+                ..over_budget
+            },
+            PROGRESS_BUDGET_BACKGROUND,
+        );
+        assert_eq!(no_yield_cycle.outcome, Outcome::Rejected);
+        assert_eq!(no_yield_cycle.reason, REASON_NO_YIELD_CYCLE);
+        assert_eq!(no_yield_cycle.evidence, over_budget.main_path_cost);
+
+        let trusted_external = external_reference_boundary_admission(ExternalReferenceClaim {
+            labels_reference: true,
+            has_local_evidence: true,
+            treats_external_as_trusted: true,
+            copies_external_benchmark: false,
+        });
+        assert_eq!(trusted_external.outcome, Outcome::Rejected);
+        assert_eq!(trusted_external.reason, REASON_EXTERNAL_TRUST);
+        assert_eq!(trusted_external.evidence, 0);
     }
 }

@@ -278,6 +278,20 @@ fn main() -> std::process::ExitCode {
         "",
         "",
     );
+    runner.run_status(
+        "Invariant surface catalog drift",
+        "./scripts/check-invariant-surface-catalog.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Invariant surface catalog checker self-test",
+        "./scripts/check-invariant-surface-catalog.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
     runner.run_status("Cookbook recipe metadata", "./scripts/check-cookbook.rs", std::iter::empty::<&str>(), "", "");
     runner.run_status("Cookbook checker self-test", "./scripts/check-cookbook.rs", ["--self-test"], "", "");
     runner.run_status("Runnable examples docs", "./scripts/check-examples.rs", std::iter::empty::<&str>(), "", "");

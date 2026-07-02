@@ -1,0 +1,14 @@
+# seL4 Preservation Matrix
+
+This matrix is review evidence for `r[sel4-invariants.preservation-matrix]` and `r[sel4-invariants.step-preservation-expansion]`. It is not a runtime dispatch table.
+
+| Step | Required prestate facts | Mutated fields | Unchanged fields | Consumed sub-invariants | Evidence |
+|---|---|---|---|---|---|
+| `PRESERVATION_STEP_ENDPOINT_SEND_BLOCK` | `kernel_invariant_spec`, valid endpoint and sender indices, running sender, empty receiver queue, endpoint can enqueue sender | sender TCB state, selected endpoint sender queue | ready queues, other TCBs/endpoints, notification/reply counts, CDT, CSpace, untyped list, ASID pool, VSpaces, IRQs | object refs, TCB legality, scheduler consistency, unchanged CDT/CSpace/untyped/ASID/VSpace/IRQ frames | `step_endpoint_send_block_preserves_kernel_invariant`, `step_endpoint_send_block` tests |
+| `PRESERVATION_STEP_ENDPOINT_SEND_RENDEZVOUS` | `kernel_invariant_spec`, valid endpoint/sender/receiver indices, running sender, nonempty receiver queue, head receiver blocked on that endpoint, receiver priority in ready-queue range | receiver TCB state, receiver priority queue, selected endpoint receiver queue | other TCBs/endpoints, notification/reply counts, CDT, CSpace, untyped list, ASID pool, VSpaces, IRQs | object refs, TCB legality, scheduler consistency, unchanged CDT/CSpace/untyped/ASID/VSpace/IRQ frames | `step_endpoint_send_rendezvous_preserves_kernel_invariant`, rendezvous unit/property tests |
+| `PRESERVATION_STEP_UNTYPED_REVOKE` | `kernel_invariant_spec`, valid untyped index | selected untyped child list | TCBs, ready queues, endpoints, notification/reply counts, CDT, CSpace, other untypeds, ASID pool, VSpaces, IRQs | untyped ownership/disjointness plus unchanged object refs, scheduler, CDT/CSpace, ASID/VSpace/IRQ frames | `step_untyped_revoke_preserves_kernel_invariant`, revoke tests |
+| rejected invalid reference | no trusted precondition; request is outside modeled valid references | none | all kernel-state fields | unchanged-state frame | `reject_kernel_step_noop`, `rejected_invalid_reference_request_is_noop` |
+| rejected endpoint/TCB mismatch | no trusted precondition; endpoint and TCB state do not match wrapper admission | none | all kernel-state fields | unchanged-state frame | `reject_kernel_step_noop`, `rejected_mismatched_endpoint_tcb_request_is_noop` |
+| rejected out-of-scope request | no trusted precondition; step is not in the modeled preservation set | none | all kernel-state fields | unchanged-state frame | `reject_kernel_step_noop`, `rejected_out_of_scope_request_is_noop` |
+
+A row is listed as invariant-preserving only when its evidence names a local proof helper or a scoped rejected/no-op boundary. Test-only rows remain rejected/no-op boundaries and are not promoted to accepted primitive-step proofs.

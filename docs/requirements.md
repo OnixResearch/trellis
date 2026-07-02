@@ -5388,6 +5388,12 @@ Progress-budget admission MUST classify finite task/control-flow summaries using
 r[verification-frontier.external-reference-boundary]
 Documentation and evidence for Lattice/Salt-inspired verification-frontier primitives MUST label Lattice/Salt as an external design reference only. Trellis MUST NOT treat Lattice code, benchmarks, or solver behavior as trusted validation, and every Trellis claim MUST be backed by repo-local specs, proofs, tests, Tracey coverage, or validation logs.
 
+r[verification-frontier.outcome-invariant-bundle]
+Verification-frontier admission helpers MUST expose reusable invariant facts for public admission outcomes. For every public admission family, Proven MUST imply the modeled safety predicate for that family, Unknown MUST remain non-proof evidence, and Rejected MUST NOT be accepted as proof or check-elision evidence.
+
+r[verification-frontier.metadata-stability]
+Verification-frontier admission helpers MUST use stable named reason codes and deterministic evidence fields for Rejected and Unknown outcomes. Evidence fields MUST be derived from modeled inputs or named constants and MUST NOT depend on external benchmarks, wall-clock time, process state, or solver behavior outside the Trellis proof surface.
+
 ## Verification Gap Inventory
 
 16 total trusted/weakened/runtime-only proof-gap boundaries remain: 16
@@ -8039,6 +8045,12 @@ hold. The initial set is endpoint send that blocks a running sender on an
 empty receive queue, endpoint send that rendezvous-matches a queued receiver
 and wakes it onto the ready queue, and untyped revoke that clears one untyped
 object's live children.
+
+r[sel4-invariants.preservation-matrix]
+The seL4 invariant layer MUST maintain a local preservation matrix for modeled kernel steps. Each matrix entry MUST identify the step name, required prestate facts, mutated state fields, unchanged state fields, consumed sub-invariants, and proof or test evidence that links the entry back to `kernel_invariant_spec`.
+
+r[sel4-invariants.step-preservation-expansion]
+The seL4 invariant layer SHOULD expand the modeled preservation set around endpoint, TCB, ready-queue, and untyped interactions. Every accepted step in this expanded set MUST preserve `kernel_invariant_spec` whenever its stated preconditions hold, and rejected or out-of-scope requests MUST preserve the prestate without mutating global kernel state.
 
 ## Fetch-and-Add
 

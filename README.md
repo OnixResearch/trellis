@@ -536,7 +536,7 @@ The drift checker treats the compact lists below as README catalog entries for p
 - **rect**: `rect_grid_index`
 - **resource**: `resource_accounting`
 - **scheduling**: `scheduling_calendar`
-- **sel4**: `sel4_asid`, `sel4_cap_rights`, `sel4_cdt`, `sel4_cspace`, `sel4_endpoint`, `sel4_fault_ipc`, `sel4_invariants`, `sel4_invocation`, `sel4_irq`, `sel4_notification`, `sel4_ready_queue`, `sel4_reply`, `sel4_tcb`, `sel4_untyped`, `sel4_vspace`
+- **sel4**: `sel4_asid`, `sel4_cap_rights`, `sel4_cdt`, `sel4_cspace`, `sel4_endpoint`, `sel4_fault_ipc`, `sel4_invariants` (kernel invariant plus preservation matrix), `sel4_invocation`, `sel4_irq`, `sel4_notification`, `sel4_ready_queue`, `sel4_reply`, `sel4_tcb`, `sel4_untyped`, `sel4_vspace`
 - **serialization**: `serialization_codec`
 - **shamir**: `shamir_field`, `shamir_lagrange`, `shamir_poly`, `shamir_reconstruct`, `shamir_split`, `shamir_threshold`
 - **signal**: `signal_processing`
@@ -590,7 +590,7 @@ Each runtime example compiles through normal Cargo without invoking Verus. For V
 
 ## Development
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
 
 ```bash
 nix develop                # enter devshell
