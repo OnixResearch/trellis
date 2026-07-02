@@ -1,0 +1,153 @@
+{
+  "schema_version": "trellis-proof-evidence-v1",
+  "generated_by": "src/bin/proof_evidence.rs",
+  "records": [
+    {
+      "scope": "module:arithmetic",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "arithmetic.abs-diff",
+        "arithmetic.checked-mul",
+        "arithmetic.div-ceil",
+        "arithmetic.gcd",
+        "arithmetic.saturating-add",
+        "arithmetic.saturating-sub"
+      ],
+      "source_paths": [
+        "src/arithmetic.rs"
+      ],
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [
+        "example-backed",
+        "requirement-covered",
+        "runtime-helper",
+        "spec-model",
+        "test-backed"
+      ],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "4aecf0df66b25cfd26f6e04053ca226f7cda048df9bd4cf6dc50465973eb468e"
+        },
+        {
+          "path": "src/arithmetic.rs",
+          "algorithm": "blake3",
+          "digest": "3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    },
+    {
+      "scope": "module:ucan_signature",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "ucan-signature.checked-byte-inputs",
+        "ucan-signature.deterministic",
+        "ucan-signature.key-binding",
+        "ucan-signature.message-binding",
+        "ucan-signature.public-key-length",
+        "ucan-signature.round-trip",
+        "ucan-signature.secret-key-length",
+        "ucan-signature.signature-length"
+      ],
+      "source_paths": [
+        "src/ucan_signature.rs"
+      ],
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [
+        "src/ucan_signature.rs::pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)",
+        "src/ucan_signature.rs::pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)",
+        "src/ucan_signature.rs::pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)",
+        "src/ucan_signature.rs::pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)",
+        "src/ucan_signature.rs::pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)",
+        "src/ucan_signature.rs::pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)"
+      ],
+      "maturity_facts": [
+        "requirement-covered",
+        "runtime-helper",
+        "spec-model",
+        "test-backed",
+        "trusted-boundary-adjacent"
+      ],
+      "content_identities": [
+        {
+          "path": "docs/proof-gap-sites.tsv",
+          "algorithm": "blake3",
+          "digest": "f4857e946924669eef3225e68f48015f14977453ccde26addf0f639b57fd6a94"
+        },
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "4aecf0df66b25cfd26f6e04053ca226f7cda048df9bd4cf6dc50465973eb468e"
+        },
+        {
+          "path": "src/ucan_signature.rs",
+          "algorithm": "blake3",
+          "digest": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    },
+    {
+      "scope": "proof-example:basic_refinement",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "runnable-proof-examples.basic",
+        "runnable-proof-examples.commands"
+      ],
+      "source_paths": [
+        "tests/proof_examples/basic_refinement.rs"
+      ],
+      "proof_command": "./scripts/verus.sh tests/proof_examples/basic_refinement.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [
+        "proof-example"
+      ],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "4aecf0df66b25cfd26f6e04053ca226f7cda048df9bd4cf6dc50465973eb468e"
+        },
+        {
+          "path": "tests/proof_examples/basic_refinement.rs",
+          "algorithm": "blake3",
+          "digest": "0f3fff62c129fb0d9b1e0636faf1a9b406f65168cc8c74fc6ab1899bcd6d4712"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    }
+  ]
+}

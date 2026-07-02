@@ -12300,3 +12300,19 @@ The system MUST document exact positive, negative, wrapper, and opt-in commands
 for runnable proof examples so users can reproduce both passing proof evidence
 and expected failing proof evidence without treating the negative fixture as part
 of the normal passing path.
+
+## Proof-Evidence Bundles
+
+r[proof-evidence-bundles.export]
+The system SHOULD export deterministic proof-evidence bundle records that name
+schema version, scope, requirement IDs, source/proof paths, verifier command,
+proof outcome, Tracey coverage status, proof-gap references, BLAKE3 content
+identities, maturity facts when available, scoped claims, and explicit non-claims.
+A bundle MUST NOT grant release approval by itself.
+
+r[proof-evidence-bundles.validation]
+The system MUST validate proof-evidence bundles fail-closed for missing required
+fields, stale BLAKE3 identities, unsupported schema versions, missing requirement
+coverage, missing proof-gap references, and overbroad claims such as release
+approval, whole-program correctness, certification, third-party conformance, or
+production safety.

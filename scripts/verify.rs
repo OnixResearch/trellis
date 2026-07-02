@@ -290,6 +290,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Proof evidence bundle validation",
+        "cargo",
+        ["run", "--quiet", "--bin", "proof_evidence", "--", "check"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Proof evidence bundle self-test",
+        "cargo",
+        ["run", "--quiet", "--bin", "proof_evidence", "--", "self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Runtime-cost evidence metadata",
         "./scripts/check-runtime-evidence.rs",
         std::iter::empty::<&str>(),
