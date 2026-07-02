@@ -264,6 +264,20 @@ fn main() -> std::process::ExitCode {
     );
     runner.run_status("Module guide link drift", "./scripts/check-module-guide.rs", std::iter::empty::<&str>(), "", "");
     runner.run_status("Module guide checker self-test", "./scripts/check-module-guide.rs", ["--self-test"], "", "");
+    runner.run_status(
+        "Module maturity index drift",
+        "./scripts/check-module-index.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Module maturity index checker self-test",
+        "./scripts/check-module-index.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
     runner.run_status("Cookbook recipe metadata", "./scripts/check-cookbook.rs", std::iter::empty::<&str>(), "", "");
     runner.run_status("Cookbook checker self-test", "./scripts/check-cookbook.rs", ["--self-test"], "", "");
     runner.run_status("Runnable examples docs", "./scripts/check-examples.rs", std::iter::empty::<&str>(), "", "");

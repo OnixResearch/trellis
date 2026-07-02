@@ -2,7 +2,7 @@
 
 Use this guide when you know the job you want to model but not the module name.
 Every module reference below links to the local source file so `scripts/check-module-guide.rs`
-can reject stale links. Runnable example links and commands are checked by
+can reject stale links. Use [the module maturity index](module-index.md) when you need a generated row for every public module, including examples, Tracey markers, and proof-gap adjacency. Runnable example links and commands are checked by
 `scripts/check-examples.rs`.
 
 ## Bounded arithmetic and data-shape checks
@@ -114,5 +114,5 @@ For contribution mechanics, start with [CONTRIBUTING.md](../CONTRIBUTING.md),
 [`docs/module-template.md`](module-template.md), and [the cookbook](cookbook.md).
 For proof-gap adjacency, check
 `docs/proof-gap-sites.tsv` and run `./scripts/check-proof-gap-inventory.rs`.
-For module catalog drift, run `./scripts/check-readme-module-catalog.rs` and
-`./scripts/check-module-guide.rs`.
+For module catalog drift, run `./scripts/check-readme-module-catalog.rs`,
+`./scripts/check-module-guide.rs`, and `./scripts/check-module-index.rs`.

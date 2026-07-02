@@ -587,7 +587,7 @@ Each example compiles through normal Cargo without invoking Verus:
 
 ## Development
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
 
 ```bash
 nix develop                # enter devshell
@@ -610,6 +610,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
 ./scripts/check-crate-metadata.rs # Cargo package metadata discoverability and local path validation
 ./scripts/check-module-guide.rs # task-oriented module guide link drift and fixture self-test
+./scripts/check-module-index.rs # generated module maturity index drift and fixture self-test
 ./scripts/check-cookbook.rs # cookbook recipe field/link drift and fixture self-test
 ./scripts/check-examples.rs # runnable example link/run-command drift and fixture self-test
 ./scripts/check-runtime-evidence.rs # runtime-cost evidence record metadata and fixture self-test
