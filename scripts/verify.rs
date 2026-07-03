@@ -241,6 +241,34 @@ fn main() -> std::process::ExitCode {
         "✗ Aspen evidence index drift detected",
     );
     runner.run_status(
+        "Nickel policy freshness and fixtures",
+        "./scripts/check-verification-policy.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Nickel policy checker self-test",
+        "./scripts/check-verification-policy.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Nickel lifecycle config freshness and fixtures",
+        "./scripts/check-lifecycle-config.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Nickel lifecycle config checker self-test",
+        "./scripts/check-lifecycle-config.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Crate metadata discoverability",
         "./scripts/check-crate-metadata.rs",
         std::iter::empty::<&str>(),
@@ -300,6 +328,20 @@ fn main() -> std::process::ExitCode {
         "Runnable proof examples",
         "./scripts/check-proof-examples.sh",
         std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "JSON artifact contract admission",
+        "./scripts/check-json-artifact-contracts.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "JSON artifact contract checker self-test",
+        "./scripts/check-json-artifact-contracts.rs",
+        ["--self-test"],
         "",
         "",
     );

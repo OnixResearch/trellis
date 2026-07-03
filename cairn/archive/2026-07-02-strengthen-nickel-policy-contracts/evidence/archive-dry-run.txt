@@ -1,0 +1,23 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- archive strengthen-nickel-policy-contracts --root /home/brittonr/git/trellis
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: strengthen-nickel-policy-contracts",
+      "kind": "archive_change",
+      "path": "/home/brittonr/git/trellis/cairn/changes/strengthen-nickel-policy-contracts"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-nickel-policy-contracts",
+  "dry_run": true,
+  "input_hash": "4e5d2db89dbf0f571889c4729aa61f2edd72f970aced625652852f285b1103bf",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "3c45039cd61d64abfd9e8a901ff317edf9202f96dfda9a914135cbb1d597d0a9",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "71c4dfd974a22c9a854db51817ed1d11f89f0aa515b3a4d874916a644b7f36bc"
+}

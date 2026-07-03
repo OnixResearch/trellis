@@ -1,0 +1,32 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- sync validate-json-evidence-contracts --root /home/brittonr/git/trellis
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: /home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/proof-evidence-bundles/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "/home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/proof-evidence-bundles/spec.md"
+    },
+    {
+      "description": "merge delta spec into main specs: /home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/verification-tooling/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "/home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/verification-tooling/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "validate-json-evidence-contracts",
+  "delta_specs": [
+    "/home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/proof-evidence-bundles/spec.md",
+    "/home/brittonr/git/trellis/cairn/changes/validate-json-evidence-contracts/specs/verification-tooling/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "ab05d36a5d0316b0322a6dae587d8c0e55965a5157e739d6096c4d970830adee",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "acff045dd2a9a95ba868952526bf910ac2b8cc4c3768948e3d37c75beef03e6e",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "52814b21b214bcd8642a3d3dc69fcf6af55928d3678e589871a00f1011e907e5"
+}

@@ -1,23 +1,4 @@
-let NonEmptyString = std.contract.from_predicate (fun value => std.is_string value && std.string.length value > 0) in
-let Exemption = {
-  scope | NonEmptyString,
-  owner | NonEmptyString,
-  reason | NonEmptyString,
-  expires | NonEmptyString,
-} in
-let Checker = {
-  name | NonEmptyString,
-  script | NonEmptyString,
-  inputs | Array NonEmptyString,
-  generated_artifact | NonEmptyString,
-  severity | NonEmptyString,
-  exemptions | Array Exemption | default = [],
-} in
-let Policy = {
-  version | NonEmptyString,
-  generated_artifact | NonEmptyString,
-  checkers | Array Checker,
-} in
+let Contracts = import "contracts.ncl" in
 {
   version = "1",
   generated_artifact = "verification-policy/generated/policy.json",
@@ -51,4 +32,4 @@ let Policy = {
       severity = "error",
     },
   ],
-} | Policy
+} | Contracts.Policy | Contracts.PolicyIntegrity

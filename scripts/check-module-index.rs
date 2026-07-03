@@ -22,6 +22,8 @@ const PROOF_GAP_PATH: &str = "docs/proof-gap-sites.tsv";
 const EXAMPLES_DIR: &str = "examples";
 const SRC_DIR: &str = "src";
 const MODULE_DECL_PREFIX: &str = "pub mod ";
+const PATH_ATTR_PREFIX: &str = "#[path = \"";
+const PATH_ATTR_SUFFIX: &str = "\"]";
 const R_IMPL_PREFIX: &str = "r[impl ";
 const R_VERIFY_PREFIX: &str = "r[verify ";
 const SPEC_FN_MARKER: &str = "spec fn";
@@ -40,6 +42,7 @@ const MIN_SUPPORTED_SCHEMA_VERSION: &str = "module-index-v1";
 #[derive(Clone, Debug, Eq, PartialEq)]
 struct SourceFile {
     module: String,
+    path: String,
     content: String,
 }
 
@@ -67,6 +70,7 @@ struct ModuleFacts {
     requirement_mentions: usize,
     examples: BTreeSet<String>,
     proof_gaps: usize,
+    source_path: String,
 }
 
 #[derive(Debug, Eq, PartialEq)]
@@ -79,22 +83,46 @@ fn is_ident(token: &str) -> bool {
     !token.is_empty() && token.chars().all(|ch| ch == '_' || ch.is_ascii_alphanumeric())
 }
 
-fn extract_declared_modules(lib_rs: &str) -> BTreeSet<String> {
-    let mut modules = BTreeSet::new();
+fn extract_path_attr(line: &str) -> Option<String> {
+    line.strip_prefix(PATH_ATTR_PREFIX)
+        .and_then(|rest| rest.strip_suffix(PATH_ATTR_SUFFIX))
+        .filter(|path| !path.starts_with('/') && !path.contains("..") && !path.contains('\\'))
+        .map(str::to_string)
+}
+
+fn extract_declared_module_paths(lib_rs: &str) -> BTreeMap<String, String> {
+    let mut modules = BTreeMap::new();
+    let mut pending_path = None;
     for line in lib_rs.lines() {
         let trimmed = line.trim_start();
+        if let Some(path) = extract_path_attr(trimmed) {
+            pending_path = Some(path);
+            continue;
+        }
         if !trimmed.starts_with(MODULE_DECL_PREFIX) {
+            pending_path = None;
             continue;
         }
         let rest = &trimmed[MODULE_DECL_PREFIX.len()..];
         let Some(name) = rest.strip_suffix(';') else {
+            pending_path = None;
             continue;
         };
         if is_ident(name) {
-            modules.insert(name.to_string());
+            let relative = pending_path
+                .take()
+                .map(|path| format!("{SRC_DIR}/{path}"))
+                .unwrap_or_else(|| format!("{SRC_DIR}/{name}.rs"));
+            modules.insert(name.to_string(), relative);
+        } else {
+            pending_path = None;
         }
     }
     modules
+}
+
+fn extract_declared_modules(lib_rs: &str) -> BTreeSet<String> {
+    extract_declared_module_paths(lib_rs).into_keys().collect()
 }
 
 fn count_occurrences(haystack: &str, needle: &str) -> usize {
@@ -124,8 +152,8 @@ fn proof_gap_counts(proof_gaps: &str) -> BTreeMap<String, usize> {
     counts
 }
 
-fn module_source_map(sources: &[SourceFile]) -> BTreeMap<String, String> {
-    sources.iter().map(|source| (source.module.clone(), source.content.clone())).collect()
+fn module_source_map(sources: &[SourceFile]) -> BTreeMap<String, SourceFile> {
+    sources.iter().map(|source| (source.module.clone(), source.clone())).collect()
 }
 
 fn example_references(module: &str, examples: &[ExampleFile]) -> BTreeSet<String> {
@@ -193,9 +221,10 @@ fn collect_module_facts(inputs: &IndexInputs) -> Result<Vec<ModuleFacts>, String
     let mut facts = Vec::new();
 
     for module in declared {
-        let Some(source) = sources.get(&module) else {
+        let Some(source_file) = sources.get(&module) else {
             return Err(format!("missing source file for public module `{module}`"));
         };
+        let source = &source_file.content;
         let impl_markers = count_occurrences(source, R_IMPL_PREFIX);
         let verify_markers = count_occurrences(source, R_VERIFY_PREFIX);
         let requirement_mentions = count_occurrences(&inputs.requirements, &format!("{module}."));
@@ -210,6 +239,7 @@ fn collect_module_facts(inputs: &IndexInputs) -> Result<Vec<ModuleFacts>, String
             requirement_mentions,
             examples,
             proof_gaps: proof_gap_count,
+            source_path: source_file.path.clone(),
         });
     }
 
@@ -271,14 +301,14 @@ fn render_index(inputs: &IndexInputs) -> Result<String, String> {
     output.push_str("|---|---|---|---|---|---|\n");
     for module in facts {
         output.push_str(&format!(
-            "| `{}` | {} | {} | {} | {} | [`src/{}.rs`](../src/{}.rs) |\n",
+            "| `{}` | {} | {} | {} | {} | [`{}`](../{}) |\n",
             module.name,
             join_backticked(&module.labels),
             example_links(&module.examples),
             tracey_cell(&module),
             proof_gap_cell(&module),
-            module.name,
-            module.name
+            module.source_path,
+            module.source_path
         ));
     }
     Ok(output)
@@ -345,12 +375,12 @@ fn load_inputs(root: &Path) -> Result<IndexInputs, String> {
     let lib_rs = read_to_string(&root.join(LIB_PATH), LIB_PATH)?;
     let requirements = read_to_string(&root.join(REQUIREMENTS_PATH), REQUIREMENTS_PATH)?;
     let proof_gaps = read_to_string(&root.join(PROOF_GAP_PATH), PROOF_GAP_PATH)?;
-    let declared = extract_declared_modules(&lib_rs);
+    let declared = extract_declared_module_paths(&lib_rs);
     let mut sources = Vec::new();
-    for module in declared {
-        let relative = format!("{SRC_DIR}/{module}.rs");
+    for (module, relative) in declared {
         sources.push(SourceFile {
             module,
+            path: relative.clone(),
             content: read_to_string(&root.join(&relative), &relative)?,
         });
     }
@@ -413,10 +443,12 @@ fn fixture_inputs() -> IndexInputs {
         sources: vec![
             SourceFile {
                 module: "alpha".to_string(),
+                path: "src/alpha.rs".to_string(),
                 content: "// r[impl alpha.example]\n// r[verify alpha.example]\npub open spec fn alpha_spec() -> bool { true }\npub fn alpha() -> bool { true }\n#[cfg(test)] mod tests { #[test] fn ok() {} }\n".to_string(),
             },
             SourceFile {
                 module: "beta".to_string(),
+                path: "src/beta.rs".to_string(),
                 content: "//! beta facade\npub fn beta() -> bool { true }\n".to_string(),
             },
         ],

@@ -1,0 +1,151 @@
+$ CAIRN_ARCHIVE_DATE=2026-07-02 nix run path:/home/brittonr/git/cairn#cairn -- archive nickel-own-lifecycle-config --root /home/brittonr/git/trellis --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: nickel-own-lifecycle-config",
+      "kind": "archive_change",
+      "path": "/home/brittonr/git/trellis/cairn/archive/2026-07-02-nickel-own-lifecycle-config"
+    }
+  ],
+  "blocked": false,
+  "change": "nickel-own-lifecycle-config",
+  "dry_run": false,
+  "input_hash": "8464878b06f35fce23608e09764bcac348de6a58581fa4ebaaa09ead6a5302cc",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "b6517262484236e07237ae07edb14156cfc4fb9644d8cac4be28a53563825901",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/design.md"
+        },
+        {
+          "content_hash": "20476ec3ee550b36d20d270f7160d0066cb3e48a022607c9616a3094d4805234",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "a898490f9cdeea69c893a11894e75e75387922917bb83419690a4f58f490f5f8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "aa70b14d4c7aca7c2ca74d4043e3c579ffd4eee892c5e1c742d646079e50e56d",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/lifecycle-config-checks.txt"
+        },
+        {
+          "content_hash": "ad0ef9bf8da7a9720c1d0f43d074efec69fd7ba95a88742fc5b66483013c2b6a",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "f093568299f4e2df02fdcdf5dba9fdb2e8e3091c699ca500078e73e1bfd6a018",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "8b1b0807904bbc0e20e66a4df8dbfcf044c63f538009aa53715f0fca470ecaa3",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/proposal.md"
+        },
+        {
+          "content_hash": "9925ab603e3378ddeac301bd87c84d9d53e76211d5c8908eb2e79bf15750583b",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/specs/verification-policy/spec.md"
+        },
+        {
+          "content_hash": "9748de28b06ab2f311127a714ff5ccc3b17dc3c9fd6038811f8aefc942fd19da",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-nickel-own-lifecycle-config/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/nickel-own-lifecycle-config"
+        }
+      ],
+      "manifest_hash": "61d877b86db01d07760a24ff6bf8c3b7aa82e47d212164da0d976b5e3d5e8d60"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "b6517262484236e07237ae07edb14156cfc4fb9644d8cac4be28a53563825901",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/design.md"
+        },
+        {
+          "content_hash": "20476ec3ee550b36d20d270f7160d0066cb3e48a022607c9616a3094d4805234",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "a898490f9cdeea69c893a11894e75e75387922917bb83419690a4f58f490f5f8",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "aa70b14d4c7aca7c2ca74d4043e3c579ffd4eee892c5e1c742d646079e50e56d",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/lifecycle-config-checks.txt"
+        },
+        {
+          "content_hash": "ad0ef9bf8da7a9720c1d0f43d074efec69fd7ba95a88742fc5b66483013c2b6a",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "f093568299f4e2df02fdcdf5dba9fdb2e8e3091c699ca500078e73e1bfd6a018",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "8b1b0807904bbc0e20e66a4df8dbfcf044c63f538009aa53715f0fca470ecaa3",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/proposal.md"
+        },
+        {
+          "content_hash": "9925ab603e3378ddeac301bd87c84d9d53e76211d5c8908eb2e79bf15750583b",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/specs/verification-policy/spec.md"
+        },
+        {
+          "content_hash": "9748de28b06ab2f311127a714ff5ccc3b17dc3c9fd6038811f8aefc942fd19da",
+          "exists": true,
+          "path": "./cairn/changes/nickel-own-lifecycle-config/tasks.md"
+        }
+      ],
+      "manifest_hash": "c4cb88524f7873cfff2cd19e432ccbe2c35ed6efe690014f78b27e7af21152ea"
+    },
+    "kind": "archive",
+    "manifest_hash": "08ccb9a0c709d54bab234883107272b88f8c3ea44fffc98646277548fc8c24d4"
+  },
+  "plan_hash": "34b2aebb6545207a5a224fa1594a8bf6ed772e34dde43eeee98d1a491a82c8af",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "0bc8f50c26d13d52c27cd11eeb8c0c73343d1a8d93a813071bfeb50bcb9cdbd9"
+}

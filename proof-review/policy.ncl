@@ -1,67 +1,4 @@
-let NonEmptyString = std.contract.from_predicate (fun value => std.is_string value && std.string.length value > 0) in
-let NonNegativeNumber = std.contract.from_predicate (fun value => std.is_number value && value >= 0) in
-let PositiveNumber = std.contract.from_predicate (fun value => std.is_number value && value > 0) in
-let Boolean = std.contract.from_predicate (fun value => std.is_bool value) in
-let StringList = Array NonEmptyString in
-let RuleWeight = {
-  id | NonEmptyString,
-  score | NonNegativeNumber,
-  severity | NonEmptyString,
-  rationale | NonEmptyString,
-} in
-let LoopMode = {
-  name | NonEmptyString,
-  description | NonEmptyString,
-  mutates_lifecycle | Boolean,
-  mutates_source | Boolean,
-  runs_validation | Boolean,
-} in
-let StopCondition = {
-  id | NonEmptyString,
-  severity | NonEmptyString,
-  rationale | NonEmptyString,
-} in
-let ValidationCommand = {
-  id | NonEmptyString,
-  modes | StringList,
-  command | StringList,
-  evidence | NonEmptyString,
-  required | Boolean,
-} in
-let ApplyRecipe = {
-  id | NonEmptyString,
-  rule_id | NonEmptyString,
-  requires_no_trust_markers | Boolean,
-  mutates_source | Boolean,
-  validation_gate | NonEmptyString,
-  rationale | NonEmptyString,
-} in
-let LoopPolicy = {
-  default_mode | NonEmptyString,
-  default_max_iterations | PositiveNumber,
-  max_iterations_limit | PositiveNumber,
-  receipt_dir | NonEmptyString,
-  no_push_default | Boolean,
-  slug_prefix | NonEmptyString,
-  preferred_candidate_rules | StringList,
-  skip_trust_boundary_rules | StringList,
-  modes | Array LoopMode,
-  stop_conditions | Array StopCondition,
-  validation_commands | Array ValidationCommand,
-  apply_recipes | Array ApplyRecipe,
-} in
-let Policy = {
-  version | NonEmptyString,
-  generated_artifact | NonEmptyString,
-  default_report | NonEmptyString,
-  default_packet_dir | NonEmptyString,
-  max_candidates | PositiveNumber,
-  max_packet_findings | PositiveNumber,
-  max_score_findings_per_rule | PositiveNumber,
-  rules | Array RuleWeight,
-  ignored_permanent_markers | StringList,
-  loop | LoopPolicy,
-} in
+let Contracts = import "contracts.ncl" in
 {
   version = "2",
   generated_artifact = "proof-review/generated/policy.json",
@@ -256,4 +193,4 @@ let Policy = {
       rationale = "Proof slices should include sad-path tests for malformed, zero, inactive, or out-of-range cases.",
     },
   ],
-} | Policy
+} | Contracts.Policy | Contracts.PolicyIntegrity

@@ -1,0 +1,151 @@
+$ CAIRN_ARCHIVE_DATE=2026-07-02 nix run path:/home/brittonr/git/cairn#cairn -- archive strengthen-nickel-policy-contracts --root /home/brittonr/git/trellis --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: strengthen-nickel-policy-contracts",
+      "kind": "archive_change",
+      "path": "/home/brittonr/git/trellis/cairn/archive/2026-07-02-strengthen-nickel-policy-contracts"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-nickel-policy-contracts",
+  "dry_run": false,
+  "input_hash": "4e5d2db89dbf0f571889c4729aa61f2edd72f970aced625652852f285b1103bf",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "733a93b2570b28abcebeaa75d292dcbb812a62ebb056fd5b86b1455a2ea1b0ec",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/design.md"
+        },
+        {
+          "content_hash": "7ee5fe27ce461842f949a12452d3d824feaa16b5a0bf7990bf372ff6748799dd",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "138d491efeb0e9a2dbaca534af617995fc59dfbb4091cf393266765fd45b9f41",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "f495446ffb7e0ea38575ad2a4fb6802b334d5ef100a678270142fc4f92bc9034",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/policy-checks.txt"
+        },
+        {
+          "content_hash": "f07fcacc8d9f30103bb34c164952518666a8ab2d3fedbc14570a46945e619dc5",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "3e2b4f5062f69f9b71c17d738d086f5b4241c1bb4624dc6adbbccdc886ba1cdd",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "f68787102cd44a9a3bcfe1ef23b4d300248a243b76df7d9bcabbf0edfe1bbb65",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/proposal.md"
+        },
+        {
+          "content_hash": "bf78f971eea2990e2651ce33b7fe2a167f345df74d982cdac06a937719742a76",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/specs/verification-policy/spec.md"
+        },
+        {
+          "content_hash": "2ed56eaa6ca5244391c525d63cd495e1a3ab15a31002ac8814a800204359e2a2",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-strengthen-nickel-policy-contracts/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts"
+        }
+      ],
+      "manifest_hash": "cd941d43abcb7b5a0984d44ddb623648d5f9e5e36bbf099fede8bbad90945244"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "733a93b2570b28abcebeaa75d292dcbb812a62ebb056fd5b86b1455a2ea1b0ec",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/design.md"
+        },
+        {
+          "content_hash": "7ee5fe27ce461842f949a12452d3d824feaa16b5a0bf7990bf372ff6748799dd",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "138d491efeb0e9a2dbaca534af617995fc59dfbb4091cf393266765fd45b9f41",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "f495446ffb7e0ea38575ad2a4fb6802b334d5ef100a678270142fc4f92bc9034",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/policy-checks.txt"
+        },
+        {
+          "content_hash": "f07fcacc8d9f30103bb34c164952518666a8ab2d3fedbc14570a46945e619dc5",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "3e2b4f5062f69f9b71c17d738d086f5b4241c1bb4624dc6adbbccdc886ba1cdd",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "f68787102cd44a9a3bcfe1ef23b4d300248a243b76df7d9bcabbf0edfe1bbb65",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/proposal.md"
+        },
+        {
+          "content_hash": "bf78f971eea2990e2651ce33b7fe2a167f345df74d982cdac06a937719742a76",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/specs/verification-policy/spec.md"
+        },
+        {
+          "content_hash": "2ed56eaa6ca5244391c525d63cd495e1a3ab15a31002ac8814a800204359e2a2",
+          "exists": true,
+          "path": "./cairn/changes/strengthen-nickel-policy-contracts/tasks.md"
+        }
+      ],
+      "manifest_hash": "e3f52fc2d1613c31427e309161bafd38839624aef8ae7d5213bf7ff0bdda554e"
+    },
+    "kind": "archive",
+    "manifest_hash": "9a2027f7ee2f14976ea820204812cb0e653fe7b5f22cf941da2516d04ecce028"
+  },
+  "plan_hash": "91276c854ad769cb8a377d353347b36dc260d479dbbd531ca4ea75e7649ee611",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "4be6c007e65c48cf55da6205f22f41fc050436bbbb122ba1f27b8cc1afd37ca7"
+}

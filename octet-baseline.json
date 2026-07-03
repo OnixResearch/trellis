@@ -10,7 +10,7 @@
     "profile_hash": "b3:5bffdf8ac69f72b1ada05d8ba1c2cf23994f29e8c099e0365dbbc3dbbfff4d43",
     "config_hash": "b3:714cad9e8e8f9f6ce0d52a40daebc8bc0443527b4e74d48489a1b82e985aef70"
   },
-  "baseline_hash": "b3:18df36e15de90416bde9281f2fb9535b2b9c28b2408af0023af38d83253520d1",
+  "baseline_hash": "b3:cd0bcf5b60639cbbdbfe877f45384ab6f08c5a853d34da4a6d670937d1316bdf",
   "findings": [
     {
       "stable_id": "b3:ab1e11fc27cc3a9a",
@@ -53326,8 +53326,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b78734171248f5ab",
-      "semantic_id": "b3:b78734171248f5ab",
+      "stable_id": "b3:78e85e1eac6e9651",
+      "semantic_id": "b3:78e85e1eac6e9651",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -53335,7 +53335,7 @@
       "file": "src/zircon/job.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 543 lines (limit: 300)",
+      "message": "source file is 564 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {

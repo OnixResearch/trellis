@@ -1,0 +1,20 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root /home/brittonr/git/trellis
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 93,
+  "valid": true
+}
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- change list --root /home/brittonr/git/trellis
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "changes": [],
+  "layout": "cairn",
+  "root": "/home/brittonr/git/trellis"
+}

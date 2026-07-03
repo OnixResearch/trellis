@@ -280,12 +280,33 @@ fn running_in_subtree_from_exec(
     while i > from
         invariant
             from <= i <= running@.len(),
+            job < parents@.len(),
+            owners@.len() == running@.len(),
+            parents_spec == parents_view(parents@),
+            owners_spec == owners_view(owners@),
+            running_spec == running@,
+            job_spec == job as int,
+            forall|idx: int| 0 <= idx < owners@.len() ==> #[trigger] owners@[idx] < parents@.len(),
+            well_formed_jobs_spec(parents_view(parents@)),
             has_running_descendant == running_in_subtree_from_spec(parents_spec, owners_spec, running_spec, job_spec, i as int),
         decreases i - from,
     {
+        let next_i = i;
         i = i - 1;
+        assert(i + 1 == next_i);
+        assert(i < running@.len());
+        assert(i < owners@.len());
+        assert(job < parents@.len());
+        assert(owners@[i as int] < parents@.len());
+        assert(has_running_descendant == running_in_subtree_from_spec(parents_spec, owners_spec, running_spec, job_spec, next_i as int));
         let is_running = running[i];
         let is_child = process_in_subtree_core(parents, owners, job, i);
+        assert(is_running == running_spec[i as int]);
+        assert(is_child == process_in_subtree_spec(parents_spec, owners_spec, job_spec, i as int));
+        assert(next_i as int == i as int + 1);
+        assert(running_in_subtree_from_spec(parents_spec, owners_spec, running_spec, job_spec, i as int)
+            == ((running_spec[i as int] && process_in_subtree_spec(parents_spec, owners_spec, job_spec, i as int))
+                || running_in_subtree_from_spec(parents_spec, owners_spec, running_spec, job_spec, next_i as int)));
         has_running_descendant = (is_running && is_child) || has_running_descendant;
         assert(has_running_descendant == running_in_subtree_from_spec(parents_spec, owners_spec, running_spec, job_spec, i as int));
     }

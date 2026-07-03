@@ -1,67 +1,65 @@
 # Nickel contracts for cairn policy profiles.
 
-let NonEmptyString = std.contract.from_predicate (fun value =>
-  std.is_string value && std.string.length value > 0
-) in
-
-let NonEmptyArray = std.contract.from_predicate (fun value =>
-  std.is_array value && std.array.length value > 0
-) in
-
+let Common = import "../policy-contracts/common.ncl" in
+let NonEmptyString = Common.NonEmptyString in
+let NonEmptyArray = Common.NonEmptyArray in
 let SupportedPolicyVersion = std.contract.from_predicate (fun value =>
   std.is_number value && value == 1
 ) in
-
 let Blake3Algorithm = std.contract.from_predicate (fun value =>
   std.is_string value && value == "BLAKE3"
 ) in
-
 let Canonicalization = std.contract.from_predicate (fun value =>
   std.is_string value && value == "serde_json_compact_sorted_keys"
 ) in
-
-let Blake3Hex = std.contract.from_predicate (fun value =>
-  std.is_string value && std.string.is_match "^[0-9a-fA-F]{64}$" value
-) in
-
-let Stage = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "proposal" || value == "design" || value == "tasks" || value == "implementation" || value == "archive")
-) in
-
-let Strictness = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "strict" || value == "warn" || value == "off")
-) in
-
+let Blake3Hex = Common.Blake3Hex in
+let Stage = Common.enum ["proposal", "design", "tasks", "implementation", "archive"] in
+let Strictness = Common.enum ["strict", "warn", "off"] in
 let MarkerToken = std.contract.from_predicate (fun value =>
   std.is_string value && std.string.is_match "^\\[(parallel|serial|depends:[^\\]]+)\\]$" value
 ) in
-
-let MarkerKind = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "literal" || value == "depends-prefix")
-) in
-
-let Severity = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "low" || value == "medium" || value == "high" || value == "critical")
-) in
-
-let FindingClass = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "omission" || value == "systematic" || value == "incoherent" || value == "preference" || value == "env" || value == "pattern")
-) in
-
-let FindingScope = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "proposal" || value == "spec" || value == "design" || value == "tasks" || value == "review" || value == "tooling")
-) in
-
-let FindingRoute = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "auto-fix" || value == "prompt" || value == "deterministic-check" || value == "spec-rule" || value == "human" || value == "guidance")
-) in
-
-let Promoted = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "yes" || value == "no")
-) in
-
-let SteelProfileMode = std.contract.from_predicate (fun value =>
-  std.is_string value && (value == "disabled" || value == "comparison" || value == "opt_in" || value == "selected_default" || value == "broad_default")
+let MarkerKind = Common.enum ["literal", "depends-prefix"] in
+let Severity = Common.enum ["low", "medium", "high", "critical"] in
+let FindingClass = Common.enum ["omission", "systematic", "incoherent", "preference", "env", "pattern"] in
+let FindingScope = Common.enum ["proposal", "spec", "design", "tasks", "review", "tooling"] in
+let FindingRoute = Common.enum ["auto-fix", "prompt", "deterministic-check", "spec-rule", "human", "guidance"] in
+let Promoted = Common.enum ["yes", "no"] in
+let SteelProfileMode = Common.enum ["disabled", "comparison", "opt_in", "selected_default", "broad_default"] in
+let artifact_schema_integrity = fun schema =>
+  let artifact_ids = Common.ids schema.artifacts in
+  Common.ids_unique schema.artifacts
+  && std.array.all (fun artifact => Common.all_in artifact.requires artifact_ids) schema.artifacts in
+let receipt_schema_integrity = fun schema =>
+  let known_fields = schema.top_level_keys
+    @ schema.action_keys
+    @ schema.issue_keys
+    @ schema.case_keys
+    @ schema.mismatch_keys
+    @ schema.artifact_keys
+    @ schema.replay_evidence_keys in
+  Common.unique schema.top_level_keys
+  && Common.all_in schema.hash_fields known_fields in
+let replay_integrity = fun replay =>
+  let case_ids = Common.ids replay.cases in
+  Common.ids_unique replay.cases
+  && Common.ids_unique replay.groups
+  && std.array.all (fun group => Common.all_in group.cases case_ids) replay.groups in
+let surface_integrity = fun policy =>
+  let case_ids = Common.ids policy.determinism_replay_policy.cases in
+  let group_ids = Common.ids policy.determinism_replay_policy.groups in
+  Common.ids_unique policy.determinism_surface_inventory
+  && std.array.all (fun surface =>
+    Common.all_in surface.required_replay_cases case_ids
+    && Common.all_in surface.required_replay_groups group_ids
+  ) policy.determinism_surface_inventory in
+let policy_integrity_contract = std.contract.from_predicate (fun policy =>
+  Common.ids_unique policy.schemas
+  && std.array.all artifact_schema_integrity policy.schemas
+  && Common.ids_unique policy.task_marker_policy.markers
+  && Common.unique (std.array.map (fun schema => schema.command) policy.receipt_schemas)
+  && std.array.all receipt_schema_integrity policy.receipt_schemas
+  && replay_integrity policy.determinism_replay_policy
+  && surface_integrity policy
 ) in
 
 {
@@ -294,5 +292,6 @@ let SteelProfileMode = std.contract.from_predicate (fun value =>
     exemptions | Array Exemption,
   },
 
+  PolicyIntegrity = policy_integrity_contract,
   Blake3Hex = Blake3Hex,
 }

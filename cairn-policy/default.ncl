@@ -444,4 +444,4 @@ let Contracts = import "contracts.ncl" in
   },
 
   exemptions = [],
-} | Contracts.Policy
+} | Contracts.Policy | Contracts.PolicyIntegrity

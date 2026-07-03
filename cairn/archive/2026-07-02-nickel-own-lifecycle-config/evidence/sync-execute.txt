@@ -1,0 +1,49 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- sync nickel-own-lifecycle-config --root /home/brittonr/git/trellis --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: /home/brittonr/git/trellis/cairn/changes/nickel-own-lifecycle-config/specs/verification-policy/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "/home/brittonr/git/trellis/cairn/changes/nickel-own-lifecycle-config/specs/verification-policy/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "nickel-own-lifecycle-config",
+  "delta_specs": [
+    "/home/brittonr/git/trellis/cairn/changes/nickel-own-lifecycle-config/specs/verification-policy/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "8464878b06f35fce23608e09764bcac348de6a58581fa4ebaaa09ead6a5302cc",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "d0ffbd760cb9a6d92e53ed07bc28d70b7672e8247bbdae933ce1b8e088f3ebef",
+          "exists": true,
+          "path": "./cairn/specs/verification-policy/spec.md"
+        }
+      ],
+      "manifest_hash": "1d627c7e8630d7cf1c5ac6a70c68f3ec412e173edaa81cf6601202d2836931b8"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "4df2569e7278d7b29d27cd9294560d4a3f2b6f14eb56eca0700ea0b6a4939dd0",
+          "exists": true,
+          "path": "./cairn/specs/verification-policy/spec.md"
+        }
+      ],
+      "manifest_hash": "b846c657fd2d92529ad802e8aebeaf4d3d2e0d0964421444f2c37c504cafc1d3"
+    },
+    "kind": "sync",
+    "manifest_hash": "b4e0cc27d364c50e8313ba512f2511def2809aabd72fb1e7e6a436c8628d4441"
+  },
+  "plan_hash": "015663b38ec0e4f4c68a7aa4a569bfa0428e5ec97b4c5f92f572f1ba19c88bee",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "41db3a6df87d0c4642fe6aa44efddfbe4634f0d8fe807eeeaa1cc51c1821253f"
+}
