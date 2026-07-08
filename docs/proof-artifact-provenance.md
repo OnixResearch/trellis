@@ -53,7 +53,7 @@ receipt and states the narrower downstream role in its own evidence bundle.
 
 ## Validation
 
-The pure validation core lives in `src/proof_artifact_provenance.rs`. The runtime
+The pure validation core lives in `src/proof/artifact/provenance.rs`. The runtime
 shell supplies digest-match facts and parsed metadata; the core admits or rejects
 identity, local-property scope, non-claims, and handoff roles without reading
 files, running tools, or computing hashes.

@@ -10,7 +10,7 @@
     "profile_hash": "b3:5bffdf8ac69f72b1ada05d8ba1c2cf23994f29e8c099e0365dbbc3dbbfff4d43",
     "config_hash": "b3:714cad9e8e8f9f6ce0d52a40daebc8bc0443527b4e74d48489a1b82e985aef70"
   },
-  "baseline_hash": "b3:cd0bcf5b60639cbbdbfe877f45384ab6f08c5a853d34da4a6d670937d1316bdf",
+  "baseline_hash": "b3:6d5bdce4bf34e3ca6a25c8cfedafee00bbad8b9df22b983f023bc48cbc04ff82",
   "findings": [
     {
       "stable_id": "b3:ab1e11fc27cc3a9a",
@@ -26,8 +26,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:0c44777852c50d49",
-      "semantic_id": "b3:0c44777852c50d49",
+      "stable_id": "b3:ba94768e2db522e4",
+      "semantic_id": "b3:ba94768e2db522e4",
       "identity_status": "computed",
       "lint": "module_file_count",
       "group": "tigerstyle::structure",
@@ -35,7 +35,7 @@
       "file": "src/ability_effect.rs",
       "line": 1,
       "column": 1,
-      "message": "module directory `src` contains 592 Rust source files (limit: 7)",
+      "message": "module directory `src` contains 594 Rust source files (limit: 7)",
       "crate_name": "verified_logic"
     },
     {
@@ -14456,19 +14456,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:a10ae10e239a0313",
-      "semantic_id": "b3:a10ae10e239a0313",
-      "identity_status": "computed",
-      "lint": "unbounded_loop",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/fast_backtrack.rs",
-      "line": 257,
-      "column": 5,
-      "message": "loop without visible iteration bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:27051db3dedbde0f",
       "semantic_id": "b3:27051db3dedbde0f",
       "identity_status": "computed",
@@ -16468,19 +16455,6 @@
       "line": 398,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:db9dadd745c2d016",
-      "semantic_id": "b3:db9dadd745c2d016",
-      "identity_status": "computed",
-      "lint": "unbounded_loop",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/glob.rs",
-      "line": 438,
-      "column": 5,
-      "message": "loop without visible iteration bound",
       "crate_name": "verified_logic"
     },
     {
@@ -22061,8 +22035,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:1aa68d18d66c94b9",
-      "semantic_id": "b3:1aa68d18d66c94b9",
+      "stable_id": "b3:66a63dcdaae4ae3e",
+      "semantic_id": "b3:66a63dcdaae4ae3e",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -22070,7 +22044,7 @@
       "file": "src/lib.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1040 lines (limit: 300)",
+      "message": "source file is 1046 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
@@ -27869,19 +27843,6 @@
       "line": 763,
       "column": 1,
       "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ec6a54f05565a98e",
-      "semantic_id": "b3:ec6a54f05565a98e",
-      "identity_status": "computed",
-      "lint": "unbounded_loop",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_version.rs",
-      "line": 769,
-      "column": 5,
-      "message": "loop without visible iteration bound",
       "crate_name": "verified_logic"
     },
     {
@@ -46290,19 +46251,6 @@
       "line": 61,
       "column": 1,
       "message": "item name `DidKey` repeats `did` from ancestor path segment `ucan_did`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:14d3c5557ba0b7db",
-      "semantic_id": "b3:14d3c5557ba0b7db",
-      "identity_status": "computed",
-      "lint": "unbounded_loop",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ucan_did.rs",
-      "line": 372,
-      "column": 5,
-      "message": "loop without visible iteration bound",
       "crate_name": "verified_logic"
     },
     {
