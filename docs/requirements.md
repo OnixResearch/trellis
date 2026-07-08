@@ -12349,6 +12349,20 @@ coverage, missing proof-gap references, and overbroad claims such as release
 approval, whole-program correctness, certification, third-party conformance, or
 production safety.
 
+## Proof Artifact Provenance
+
+r[trellis.proof_artifact_provenance.identity]
+Exportable Trellis proof artifacts MUST carry a stable artifact ID, canonical BLAKE3 metadata identity, source/proof input digests, verifier receipt digest, verifier/toolchain identity, normalized invocation, declared local property ID, verification status, and failure reason when the local proof did not pass.
+
+r[trellis.proof_artifact_provenance.boundary]
+Proof artifact provenance MUST state the checked Trellis-local property and exact content scope, MUST include non-claims excluding downstream certification, release eligibility, and whole-stack correctness, and MUST reject unsupported or overclaiming roles fail-closed.
+
+r[trellis.proof_artifact_provenance.handoff]
+Proof artifact handoff metadata MUST identify Trellis exports as downstream manual-review or reference inputs unless the downstream repo records its own verifier receipt; downstream-certified handoff roles without such a receipt MUST be rejected.
+
+r[trellis.proof_artifact_provenance.fixtures]
+The proof artifact provenance surface MUST include positive and negative fixtures covering passing local proof metadata, failing local proof metadata with a failure reason, stale digests, missing property scope, missing verifier identity, missing non-claims, unsupported claim roles, and downstream overclaims.
+
 ## Integration Adapters
 
 r[integration-adapters.user-facing-adapters]

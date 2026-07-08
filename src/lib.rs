@@ -336,6 +336,8 @@
 //! - `token_timestamp` — UCAN token expiration, future rejection, refresh threshold
 //! - `verification_frontier` — finite contract implication, type facts, slice certificates, arena
 //!   provenance, progress budgets, external-reference admission, and outcome invariant bundles
+//! - `proof_artifact_provenance` — finite proof-artifact identity, local-property boundary,
+//!   non-claim, and downstream handoff-role admission
 //! - `transfer` — value transfer validation: conservation, idempotency, status codes
 //! - `trust_level` — trust resolution with block precedence and access control
 //! - `two_phase` — two-phase commit decision: unanimity, abort safety
@@ -799,6 +801,7 @@ pub mod priority_election;
 pub mod priority_inversion;
 pub mod probability_statistics;
 pub mod process_state;
+pub mod proof_artifact_provenance;
 pub mod proof_gap_boundary_audit;
 pub mod properties;
 pub mod query_cost;

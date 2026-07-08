@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10611 Verus proofs · 4824 tests · 2005 requirements · 602 modules · 16 trusted/proof-gap boundaries**
+**10611 Verus proofs · 4824 tests · 2005 requirements · 603 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -531,7 +531,7 @@ The drift checker treats the compact lists below as README catalog entries for p
 - **physics**: `physics_collision_envelope`, `physics_contact_manifold`, `physics_energy_budget`, `physics_integrator_step`, `physics_momentum_budget`, `physics_time_horizon`, `physics_units`, `physics_vector_bounds`
 - **policy**: `policy_action`, `policy_authorization`, `policy_conflict`, `policy_delegation`, `policy_grant_denial`, `policy_principal`, `policy_resource`, `policy_rule`
 - **probability**: `probability_statistics`
-- **proof**: `proof_gap_boundary_audit`
+- **proof**: `proof_artifact_provenance`, `proof_gap_boundary_audit`
 - **raft**: `raft_consensus_core`
 - **rect**: `rect_grid_index`
 - **resource**: `resource_accounting`

@@ -54,5 +54,7 @@ cargo test --quiet --bin proof_evidence
 ## Downstream seam
 
 Trellis owns only the exported local proof facts and boundary references.
-Downstream gates such as Octet own admission policy, artifact provenance,
-release approval, publication, and any product-specific acceptance decision.
+[`docs/proof-artifact-provenance.md`](proof-artifact-provenance.md) defines the
+artifact identity and handoff contract for those local facts. Downstream gates
+such as Octet own admission policy, artifact provenance, release approval,
+publication, and any product-specific acceptance decision.
