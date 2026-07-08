@@ -4,7 +4,8 @@
 
 ## Phase 2: Archive
 
-- [ ] [serial] r[trellis.property_spec] Verify and archive the change.
+- [x] [serial] r[trellis.property_spec] Verify and archive the change.
+  - Evidence 2026-07-08: Cairn gates passed for proposal/design/tasks; `cairn sync executable-property-spec-surface --execute` promoted `cairn/specs/property-spec/spec.md`; `cairn validate --root .` reported `valid: true`; `grep -R "trellis.property_spec" -n cairn/specs docs/requirements.md` found the accepted spec IDs.
 
 ## Verification Coverage
 

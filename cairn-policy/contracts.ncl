@@ -12,7 +12,7 @@ let Blake3Algorithm = std.contract.from_predicate (fun value =>
 let Canonicalization = std.contract.from_predicate (fun value =>
   std.is_string value && value == "serde_json_compact_sorted_keys"
 ) in
-let Blake3Hex = Common.Blake3Hex in
+let Blake3HexContract = Common.Blake3Hex in
 let Stage = Common.enum ["proposal", "design", "tasks", "implementation", "archive"] in
 let Strictness = Common.enum ["strict", "warn", "off"] in
 let MarkerToken = std.contract.from_predicate (fun value =>
@@ -25,6 +25,16 @@ let FindingScope = Common.enum ["proposal", "spec", "design", "tasks", "review",
 let FindingRoute = Common.enum ["auto-fix", "prompt", "deterministic-check", "spec-rule", "human", "guidance"] in
 let Promoted = Common.enum ["yes", "no"] in
 let SteelProfileMode = Common.enum ["disabled", "comparison", "opt_in", "selected_default", "broad_default"] in
+let SafeRelativePath = Common.SafeRelativePath in
+let TraceabilityRequirementSourceKind = Common.enum ["accepted_specs", "requirements_doc"] in
+let TraceabilityEvidenceSourceKind = Common.enum ["rust_source", "nickel_source", "tool_source"] in
+let TraceabilityMarkerVerb = Common.enum ["impl", "verify", "depends", "related"] in
+let TraceabilityExtension = std.contract.from_predicate (fun value =>
+  std.is_string value && std.string.length value > 0 && std.string.is_match "^[A-Za-z0-9_-]+$" value
+) in
+let StackProvenanceGateMode = Common.enum ["disabled", "optional", "required"] in
+let RuntimeCaptureOrigin = Common.enum ["boundary_captured", "ingested_telemetry", "wrapper_asserted", "unknown"] in
+let PositiveNumber = Common.PositiveNumber in
 let artifact_schema_integrity = fun schema =>
   let artifact_ids = Common.ids schema.artifacts in
   Common.ids_unique schema.artifacts
@@ -135,6 +145,45 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
   SteelOrchestrationPolicy = {
     enabled | Bool,
     profiles | Array SteelOrchestrationProfile | default = [],
+  },
+
+  TraceabilityRequirementSource = {
+    root | SafeRelativePath,
+    source_kind | TraceabilityRequirementSourceKind,
+    extensions | NonEmptyArray | Array TraceabilityExtension,
+  },
+
+  TraceabilityEvidenceSource = {
+    root | SafeRelativePath,
+    source_kind | TraceabilityEvidenceSourceKind,
+    extensions | NonEmptyArray | Array TraceabilityExtension,
+  },
+
+  TraceabilityProfile = {
+    id | NonEmptyString,
+    requirement_sources | NonEmptyArray | Array TraceabilityRequirementSource,
+    evidence_sources | NonEmptyArray | Array TraceabilityEvidenceSource,
+    marker_verbs | NonEmptyArray | Array TraceabilityMarkerVerb,
+  },
+
+  TraceabilityPolicy = {
+    default_profile | NonEmptyString,
+    profiles | NonEmptyArray | Array TraceabilityProfile,
+  },
+
+  StackProvenancePolicy = {
+    mode | StackProvenanceGateMode,
+    allowed_claim_scopes | NonEmptyArray | Array NonEmptyString,
+    accepted_valence_policy_hashes | Array Blake3HexContract | default = [],
+    required_boundary | NonEmptyString,
+  },
+
+  RuntimeEvidencePolicy = {
+    allowed_capture_origins | NonEmptyArray | Array RuntimeCaptureOrigin,
+    allowed_hash_algorithms | NonEmptyArray | Array Blake3Algorithm,
+    max_summary_bytes | PositiveNumber,
+    forbidden_summary_fragments | Array NonEmptyString | default = [],
+    aggregation_profiles | Array NonEmptyString | default = [],
   },
 
   ProbeCommandProfile = {
@@ -280,6 +329,9 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     registry_label_policy | RegistryLabelPolicy,
     change_metadata_policy | ChangeMetadataPolicy,
     steel_orchestration_policy | SteelOrchestrationPolicy,
+    traceability_policy | TraceabilityPolicy,
+    stack_provenance_gate | StackProvenancePolicy,
+    runtime_evidence_policy | RuntimeEvidencePolicy,
     probe_policy | ProbePolicy,
     receipt_schemas | NonEmptyArray | Array ReceiptSchema,
     receipt_contracts | Array ReceiptContract | default = [],
@@ -293,5 +345,5 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
   },
 
   PolicyIntegrity = policy_integrity_contract,
-  Blake3Hex = Blake3Hex,
+  Blake3Hex = Blake3HexContract,
 }

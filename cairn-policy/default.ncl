@@ -80,6 +80,50 @@ let Contracts = import "contracts.ncl" in
     }],
   },
 
+  traceability_policy = {
+    default_profile = "trellis-rust",
+    profiles = [
+      {
+        id = "cairn-default",
+        requirement_sources = [
+          { root = "cairn/specs", source_kind = "accepted_specs", extensions = ["md"] },
+        ],
+        evidence_sources = [
+          { root = "src", source_kind = "rust_source", extensions = ["rs"] },
+          { root = "scripts", source_kind = "tool_source", extensions = ["rs", "sh"] },
+          { root = "cairn-policy", source_kind = "nickel_source", extensions = ["ncl"] },
+        ],
+        marker_verbs = ["impl", "verify", "depends", "related"],
+      },
+      {
+        id = "trellis-rust",
+        requirement_sources = [
+          { root = "docs/requirements.md", source_kind = "requirements_doc", extensions = ["md"] },
+        ],
+        evidence_sources = [
+          { root = "src", source_kind = "rust_source", extensions = ["rs"] },
+          { root = "tests", source_kind = "rust_source", extensions = ["rs"] },
+        ],
+        marker_verbs = ["impl", "verify", "depends", "related"],
+      },
+    ],
+  },
+
+  stack_provenance_gate = {
+    mode = "optional",
+    allowed_claim_scopes = ["stack_provenance.v1.lifecycle_policy_conformance"],
+    accepted_valence_policy_hashes = ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+    required_boundary = "Cairn consumed Valence and Mantle stack provenance receipts for lifecycle/release policy conformance only; it did not prove source-code correctness, Valence verifier soundness, Mantle build correctness, or Trellis/Octet proof validity",
+  },
+
+  runtime_evidence_policy = {
+    allowed_capture_origins = ["boundary_captured", "ingested_telemetry", "wrapper_asserted", "unknown"],
+    allowed_hash_algorithms = ["BLAKE3"],
+    max_summary_bytes = 256,
+    forbidden_summary_fragments = ["SECRET=", "token=", "/home/"],
+    aggregation_profiles = [],
+  },
+
   probe_policy = {
     enabled = true,
     inline_gate_execution_enabled = false,
