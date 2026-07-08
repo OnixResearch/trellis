@@ -590,7 +590,7 @@ Each runtime example compiles through normal Cargo without invoking Verus. For V
 
 ## Development
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, [docs/kani-boundary.md](docs/kani-boundary.md) for complementary Kani evidence boundaries, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
 
 ```bash
 nix develop                # enter devshell
@@ -619,6 +619,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-proof-examples.sh # positive and expected-failure runnable proof examples
 cargo run --quiet --bin proof_evidence -- check # deterministic proof-evidence bundle validation
 ./scripts/check-runtime-evidence.rs # runtime-cost evidence record metadata and fixture self-test
+./scripts/check-kani-boundary.rs # Kani external-evidence boundary docs and positive/negative fixtures
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ```
@@ -696,3 +697,4 @@ All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/s
 ## References
 
 - Lattice/Salt verification-product patterns — external design reference only; not vendored, executed, or treated as trusted Trellis validation evidence.
+- [Kani: A Model Checker for Rust](https://arxiv.org/html/2607.01504v1) — external Kani model-checking reference for complementary runtime evidence only; not treated as a Trellis proof artifact.
