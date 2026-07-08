@@ -344,6 +344,8 @@
 //! - `vector_clock` — causality tracking with partial order and merge lattice
 //! - `view_change` — view-based reconfiguration: view monotonicity, leader rotation, quorum-gated
 //!   transitions
+//! - `quepaxa` — finite deterministic QuePaxa safety/admission primitives for proposal ordering,
+//!   ISR transitions, abstract propagation, phase guards, fast path, and hedging metadata
 //! - `quorum_cert` — quorum certificate: vote counting, QC ordering, commit rule via consecutive
 //!   certificates
 //! - `voter_set` — voter set promotion: add learner, replace node, quorum preservation
@@ -805,6 +807,7 @@ pub mod proof_artifact_provenance;
 pub mod proof_gap_boundary_audit;
 pub mod properties;
 pub mod query_cost;
+pub mod quepaxa;
 pub mod quorum;
 pub mod quorum_cert;
 pub mod quota;

@@ -5803,6 +5803,35 @@ accepted ballot when comparing two promise responses. When neither
 has accepted, it MUST return own_value. When exactly one has accepted,
 it MUST return that value.
 
+## QuePaxa
+
+r[consensus.quepaxa.boundary]
+QuePaxa primitives MUST model only finite deterministic crash-stop safety/admission facts and MUST reject overclaims for real network liveness, probabilistic termination, random-number quality, benchmark results, production SMR behavior, adaptive MAB optimality, or Byzantine fault tolerance.
+
+r[consensus.quepaxa.proposal-order]
+QuePaxa proposal helpers MUST expose named constants for nil proposals, phase roles, initial round, phase count, and reserved leader priority; proposal ordering MUST be deterministic by priority, proposer identity, and value identity; reserved leader priority MUST be admitted only for the declared leader in the initial round.
+
+r[consensus.quepaxa.isr]
+QuePaxa interval summary register helpers MUST preserve same-step first values, aggregate same-step proposals by deterministic maximum, return the previous aggregate on immediate step advance, discard stale updates without changing state, and return nil for skipped-step prior aggregates.
+
+r[consensus.quepaxa.tcast]
+QuePaxa propagation admission MUST require quorum facts for existent, common, and universal proposal summaries and MUST establish the modeled universal subset common subset existent relationship.
+
+r[consensus.quepaxa.abstract-round]
+QuePaxa abstract round helpers MUST admit decisions only when the slot is not already decided, a proposed value is known, and the best existent and universal proposals match; divergent best proposals MUST carry forward the best common proposal instead of deciding.
+
+r[consensus.quepaxa.concrete-phases]
+QuePaxa concrete phase helpers MUST admit only named phases, prevent recorder catch-up from moving a proposer backward, allow catch-up to a higher recorder step with the recorder first value, and expose a phase-2 decision only when it refines the abstract decision guard.
+
+r[consensus.quepaxa.fast-path]
+QuePaxa fast-path helpers MUST admit only an initial-round declared-leader reserved-priority proposal first at quorum with a unique reserved priority and an abstract guard; non-leader, non-initial-round, missing-quorum, or non-unique reserved-priority attempts MUST be rejected.
+
+r[consensus.quepaxa.hedging]
+QuePaxa hedging admission MUST require non-decreasing activation delays, leader-first zero-delay placement when a leader is configured, and more scheduled proposers than the crash-fault budget, without claiming real-time recovery or probabilistic liveness.
+
+r[consensus.quepaxa.fixtures]
+QuePaxa validation MUST include positive and negative tests for boundary overclaims, proposal ordering, reserved leader priority, ISR transitions, propagation quorums, abstract decisions, concrete phase/catch-up guards, fast-path admission, and hedging schedules.
+
 ## Lease Mutex
 
 r[lease-mutex.is-available]

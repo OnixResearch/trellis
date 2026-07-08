@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10611 Verus proofs · 4824 tests · 2005 requirements · 603 modules · 16 trusted/proof-gap boundaries**
+**10611 Verus proofs · 4824 tests · 2005 requirements · 604 modules · 16 trusted/proof-gap boundaries**
 
 ## How it works
 
@@ -186,6 +186,7 @@ validation commands captured in the change evidence.
 | Module | What it verifies |
 |---|---|
 | `paxos` | single-decree Paxos acceptor: ballot ordering, prepare/accept, promise safety |
+| `quepaxa` | finite deterministic QuePaxa proposal ordering, ISR transitions, abstract propagation, phase guards, fast path, and hedging metadata |
 | `quorum_cert` | quorum certificate aggregation, vote counting, threshold checks |
 | `view_change` | view-based reconfiguration: consecutive views, leader rotation |
 

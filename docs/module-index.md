@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `603` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `604` public modules, `589` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -412,6 +412,7 @@ Summary: `603` public modules, `588` requirement-covered modules, `14` example-b
 | `proof_artifact_provenance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `15`, verify: `8`, requirements mentions: `4` | — | [`src/proof_artifact_provenance.rs`](../src/proof_artifact_provenance.rs) |
 | `proof_gap_boundary_audit` | `requirement-covered`, `spec-model` | — | impl: `11`, verify: `11`, requirements mentions: `0` | — | [`src/proof_gap_boundary_audit.rs`](../src/proof_gap_boundary_audit.rs) |
 | `properties` | `requirement-covered`, `spec-model`, `test-backed` | — | impl: `244`, verify: `467`, requirements mentions: `234` | — | [`src/properties.rs`](../src/properties.rs) |
+| `quepaxa` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `48`, verify: `21`, requirements mentions: `9` | — | [`src/quepaxa.rs`](../src/quepaxa.rs) |
 | `query_cost` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `7`, requirements mentions: `0` | — | [`src/query_cost.rs`](../src/query_cost.rs) |
 | `quorum` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `6`, verify: `33`, requirements mentions: `25` | — | [`src/quorum.rs`](../src/quorum.rs) |
 | `quorum_cert` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `18`, requirements mentions: `0` | — | [`src/quorum_cert.rs`](../src/quorum_cert.rs) |
