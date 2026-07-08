@@ -33,6 +33,8 @@
             || (builtins.match ".*\\.tsv$" path) != null
             || (builtins.match ".*\\.styx$" path) != null
             || (builtins.match ".*\\.ncl$" path) != null
+            || (builtins.match ".*/tests/fixtures/.*\\.v$" path) != null
+            || (builtins.match ".*/tests/fixtures/.*\\.sv$" path) != null
             || (builtins.baseNameOf path == "dylint.toml")
             || (builtins.baseNameOf path == "octet-baseline.json")
             || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null;
