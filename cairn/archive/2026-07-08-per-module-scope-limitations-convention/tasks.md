@@ -5,7 +5,8 @@
 
 ## Phase 2: Archive
 
-- [ ] [serial] r[trellis.module_scope] Verify and archive the change.
+- [x] [serial] r[trellis.module_scope] Verify and archive the change.
+  - Evidence 2026-07-08: Cairn gates passed for proposal/design/tasks; `cairn sync per-module-scope-limitations-convention --execute` promoted `cairn/specs/module-scope/spec.md`; `cairn validate --root .` reported `valid: true`; `grep -R "trellis.module_scope" -n cairn/specs docs/requirements.md` found the accepted spec IDs.
 
 ## Verification Coverage
 
