@@ -1,0 +1,15 @@
+{
+  "name": "stale-source",
+  "expected_valid": false,
+  "expected_diagnostic": "coverage.source.stale_hash",
+  "primitive_manifest": {
+    "schema_version": "trellis.proof-artifact-manifest.v1",
+    "primitives": [
+      { "primitive_id": "trellis.fixture.primitive", "source": { "path": "src/fixture.rs", "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 12 }, "proof": { "path": "src/fixture.rs", "blake3": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 12 }, "evidence_tier": "formal_proof", "non_claims": ["does not prove UCAN parser correctness", "does not prove resolver truth", "does not prove replay-store durability", "does not prove consumer authorization completeness"] }
+    ]
+  },
+  "coverage_manifest": {
+    "schema_version": "trellis.ucan-bridge-coverage.v1", "producer": "fixture", "boundary": "does not prove UCAN parser correctness; does not prove resolver truth; does not prove replay-store durability; does not prove consumer authorization completeness",
+    "rows": [ { "bridge_id": "trellis.ucan_bridge.fixture", "ucan_helper": "ucan::fixture", "trellis_primitive_id": "trellis.fixture.primitive", "source_blake3": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "proof_blake3": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "expected_vendored_path": "vendor/verified-logic/src/fixture.rs", "evidence_tier": "formal_proof", "claim": "identity coverage for a UCAN bridge helper", "non_claims": ["does not prove UCAN parser correctness", "does not prove resolver truth", "does not prove replay-store durability", "does not prove consumer authorization completeness"] } ]
+  }
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": "trellis.ucan-bridge-coverage.v1",
+  "producer": "Trellis UCAN bridge coverage manifest",
+  "boundary": "does not prove UCAN parser correctness; does not prove resolver truth; does not prove replay-store durability; does not prove consumer authorization completeness",
+  "rows": [
+    {
+      "bridge_id": "trellis.ucan_bridge.did_decode",
+      "ucan_helper": "ucan::did::decode_did_key",
+      "trellis_primitive_id": "trellis.ucan.did.decode_did_key",
+      "source_blake3": "48b6a7d9f3a555bf18053220a1b1e20fa64e5c5f0f3cd68312b1969aec8b2b51",
+      "proof_blake3": "48b6a7d9f3a555bf18053220a1b1e20fa64e5c5f0f3cd68312b1969aec8b2b51",
+      "expected_vendored_path": "vendor/verified-logic/src/ucan_did.rs",
+      "evidence_tier": "formal_proof",
+      "claim": "identity coverage for a UCAN bridge helper",
+      "non_claims": [
+        "does not prove UCAN parser correctness",
+        "does not prove resolver truth",
+        "does not prove replay-store durability",
+        "does not prove consumer authorization completeness"
+      ]
+    },
+    {
+      "bridge_id": "trellis.ucan_bridge.signature_verify",
+      "ucan_helper": "ucan::signature::verify_checked",
+      "trellis_primitive_id": "trellis.ucan.signature.verify_checked",
+      "source_blake3": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9",
+      "proof_blake3": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9",
+      "expected_vendored_path": "vendor/verified-logic/src/ucan_signature.rs",
+      "evidence_tier": "formal_proof",
+      "claim": "identity coverage for a UCAN bridge helper",
+      "non_claims": [
+        "does not prove UCAN parser correctness",
+        "does not prove resolver truth",
+        "does not prove replay-store durability",
+        "does not prove consumer authorization completeness"
+      ]
+    }
+  ]
+}

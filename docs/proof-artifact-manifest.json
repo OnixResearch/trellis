@@ -72,6 +72,81 @@
         "does not prove consumer release eligibility",
         "does not prove verifier soundness outside the declared proof boundary"
       ]
+    },
+    {
+      "primitive_id": "trellis.ucan.did.decode_did_key",
+      "module_path": "src/ucan_did.rs",
+      "public_api": [
+        "decode_did_key_spec",
+        "decode_did_key",
+        "encode_did_key_spec",
+        "encode_did_key"
+      ],
+      "requirement_ids": [
+        "ucan-did.round-trip",
+        "ucan-did.codec-preserved"
+      ],
+      "source": {
+        "path": "src/ucan_did.rs",
+        "blake3": "48b6a7d9f3a555bf18053220a1b1e20fa64e5c5f0f3cd68312b1969aec8b2b51",
+        "bytes": 43362
+      },
+      "proof": {
+        "path": "src/ucan_did.rs",
+        "blake3": "48b6a7d9f3a555bf18053220a1b1e20fa64e5c5f0f3cd68312b1969aec8b2b51",
+        "bytes": 43362
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary"
+      ]
+    },
+    {
+      "primitive_id": "trellis.ucan.signature.verify_checked",
+      "module_path": "src/ucan_signature.rs",
+      "public_api": [
+        "verify_checked",
+        "sign_checked",
+        "public_from_secret_checked"
+      ],
+      "requirement_ids": [
+        "ucan-signature.message-binding",
+        "ucan-signature.checked-byte-inputs"
+      ],
+      "source": {
+        "path": "src/ucan_signature.rs",
+        "blake3": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9",
+        "bytes": 18788
+      },
+      "proof": {
+        "path": "src/ucan_signature.rs",
+        "blake3": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9",
+        "bytes": 18788
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary"
+      ]
     }
   ]
 }

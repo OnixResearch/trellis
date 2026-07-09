@@ -3,22 +3,24 @@
   "producer": "Trellis optional Preserves proof-manifest carrier",
   "source_manifest": {
     "path": "docs/proof-artifact-manifest.json",
-    "blake3": "32b89818c746a310a910c63213d0f4686b94e33665ef18af78cb983c57a64ca4",
-    "bytes": 2492
+    "blake3": "bb8c3527dd1b2170088a3cbf47d53e9e40f9b66d8a4ecbd516e20ef4562498c0",
+    "bytes": 4853
   },
   "envelopes": [
     {
       "envelope_id": "trellis.preserves.proof_artifact_manifest.seed",
       "schema_label": "trellis.proof-artifact-manifest.preserves.v1",
-      "source_manifest_digest": "32b89818c746a310a910c63213d0f4686b94e33665ef18af78cb983c57a64ca4",
+      "source_manifest_digest": "bb8c3527dd1b2170088a3cbf47d53e9e40f9b66d8a4ecbd516e20ef4562498c0",
       "primitive_ids": [
         "trellis.arithmetic.abs_diff",
-        "trellis.quorum.majority"
+        "trellis.quorum.majority",
+        "trellis.ucan.did.decode_did_key",
+        "trellis.ucan.signature.verify_checked"
       ],
       "canonical_preserves": {
         "path": "docs/proof-artifact-manifest.preserves",
-        "blake3": "f7710f6785ef2790396e29f9faa77a9630fcaf74d99dd247055f5c15b4afd013",
-        "bytes": 382
+        "blake3": "8cf7915f7a4f5f06bddc20f0f5c29840b49e93c9db24d9bafd80a4cd1cf568d1",
+        "bytes": 456
       },
       "allowed_consumers": [
         "ucan",

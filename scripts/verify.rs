@@ -388,6 +388,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "UCAN bridge coverage",
+        "./scripts/check-ucan-bridge-coverage.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "UCAN bridge coverage checker self-test",
+        "./scripts/check-ucan-bridge-coverage.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
         std::iter::empty::<&str>(),
