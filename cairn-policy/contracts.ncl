@@ -310,6 +310,13 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     canonicalization | Canonicalization,
   },
 
+  PolicySchemaCompatibility = {
+    schema_version | NonEmptyString,
+    producer | NonEmptyString,
+    field_set_digest | Blake3HexContract,
+    refresh_command | NonEmptyString,
+  },
+
   Exemption = {
     scope | NonEmptyString,
     owner | NonEmptyString,
@@ -320,6 +327,7 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
   Policy = {
     name | NonEmptyString,
     version | SupportedPolicyVersion,
+    policy_schema_compatibility | PolicySchemaCompatibility,
     schemas | NonEmptyArray | Array ArtifactSchema,
     lifecycle_stages | NonEmptyArray | Array Stage,
     task_marker_policy | TaskMarkerPolicy,
