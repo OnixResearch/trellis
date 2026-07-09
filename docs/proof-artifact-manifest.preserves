@@ -1,0 +1,7 @@
+<trellis-proof-artifact-manifest-envelope {
+  schema: "trellis.proof-artifact-manifest.preserves.v1"
+  source-manifest: "docs/proof-artifact-manifest.json"
+  rows: ["trellis.arithmetic.abs_diff" "trellis.quorum.majority"]
+  claim: "carrier for proof-manifest identity only"
+  non-claims: ["not a proof artifact" "not downstream authorization semantics" "not verifier soundness"]
+}>

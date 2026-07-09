@@ -1,0 +1,41 @@
+{
+  "schema_version": "trellis.proof-artifact-manifest.preserves.v1",
+  "producer": "Trellis optional Preserves proof-manifest carrier",
+  "source_manifest": {
+    "path": "docs/proof-artifact-manifest.json",
+    "blake3": "32b89818c746a310a910c63213d0f4686b94e33665ef18af78cb983c57a64ca4",
+    "bytes": 2492
+  },
+  "envelopes": [
+    {
+      "envelope_id": "trellis.preserves.proof_artifact_manifest.seed",
+      "schema_label": "trellis.proof-artifact-manifest.preserves.v1",
+      "source_manifest_digest": "32b89818c746a310a910c63213d0f4686b94e33665ef18af78cb983c57a64ca4",
+      "primitive_ids": [
+        "trellis.arithmetic.abs_diff",
+        "trellis.quorum.majority"
+      ],
+      "canonical_preserves": {
+        "path": "docs/proof-artifact-manifest.preserves",
+        "blake3": "f7710f6785ef2790396e29f9faa77a9630fcaf74d99dd247055f5c15b4afd013",
+        "bytes": 382
+      },
+      "allowed_consumers": [
+        "ucan",
+        "octet",
+        "valence",
+        "mantle",
+        "cairn",
+        "basalt",
+        "aspen",
+        "molten"
+      ],
+      "claim": "carrier for proof-manifest identity only",
+      "non_claims": [
+        "not a proof artifact",
+        "not downstream authorization semantics",
+        "not verifier soundness"
+      ]
+    }
+  ]
+}

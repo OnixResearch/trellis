@@ -21,6 +21,12 @@ let EvidenceTier = std.contract.from_predicate (fun value =>
 let SchemaVersion = std.contract.from_predicate (fun value =>
   std.is_string value && value == "trellis.proof-artifact-manifest.v1"
 ) in
+let PreservesSchemaVersion = std.contract.from_predicate (fun value =>
+  std.is_string value && value == "trellis.proof-artifact-manifest.preserves.v1"
+) in
+let PreservesEnvelopeId = std.contract.from_predicate (fun value =>
+  std.is_string value && std.string.is_match "^trellis\\.preserves\\.[a-z0-9_.-]+$" value
+) in
 rec {
   ArtifactIdentity = {
     path | NonEmptyString,
@@ -51,5 +57,23 @@ rec {
     producer | NonEmptyString,
     boundary | NonEmptyString,
     primitives | Array PrimitiveRow,
+  },
+
+  PreservesEnvelopeRow = {
+    envelope_id | PreservesEnvelopeId,
+    schema_label | PreservesSchemaVersion,
+    source_manifest_digest | Blake3Hex,
+    primitive_ids | Array PrimitiveId,
+    canonical_preserves | ArtifactIdentity,
+    allowed_consumers | Array NonEmptyString,
+    claim | NonEmptyString,
+    non_claims | Array NonEmptyString,
+  },
+
+  PreservesEnvelopeSet = {
+    schema_version | PreservesSchemaVersion,
+    producer | NonEmptyString,
+    source_manifest | ArtifactIdentity,
+    envelopes | Array PreservesEnvelopeRow,
   },
 }

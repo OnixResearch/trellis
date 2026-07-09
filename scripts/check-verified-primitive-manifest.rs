@@ -26,8 +26,12 @@ const SCHEMA_VERSION: &str = "trellis.proof-artifact-manifest.v1";
 const MANIFEST_PATH: &str = "docs/proof-artifact-manifest.json";
 const GUIDE_PATH: &str = "docs/proof-artifact-manifest.md";
 const CONTRACT_PATH: &str = "docs/proof-artifact-manifest.contract.ncl";
+const PRESERVES_ENVELOPE_PATH: &str = "docs/proof-artifact-manifest.preserves-envelope.json";
+const PRESERVES_CARRIER_PATH: &str = "docs/proof-artifact-manifest.preserves";
 const POSITIVE_FIXTURE_DIR: &str = "fixtures/proof-artifact-manifest/positive";
 const NEGATIVE_FIXTURE_DIR: &str = "fixtures/proof-artifact-manifest/negative";
+const POSITIVE_PRESERVES_FIXTURE_DIR: &str = "fixtures/proof-artifact-manifest-preserves/positive";
+const NEGATIVE_PRESERVES_FIXTURE_DIR: &str = "fixtures/proof-artifact-manifest-preserves/negative";
 const README_PATH: &str = "README.md";
 const SELF_TEST_ARG: &str = "--self-test";
 const HELP_ARG: &str = "--help";
@@ -43,6 +47,10 @@ const VERIFIED_MODULE_BOUNDARY: &str = "verified_module";
 const TRUSTED_BOUNDARY_PREFIX: &str = "trusted_";
 const PROOF_GAP_BOUNDARY: &str = "proof_gap_boundary";
 const MANUAL_REVIEW_BOUNDARY: &str = "manual_review_external";
+const PRESERVES_SCHEMA_LABEL: &str = "trellis.proof-artifact-manifest.preserves.v1";
+const PRESERVES_PREFIX: &str = "trellis.preserves.";
+const CARRIER_CLAIM_WORD: &str = "carrier";
+const OVERBROAD_CLAIM_WORDS: &[&str] = &["proves", "certifies", "authorizes", "release eligible"];
 
 const ALLOWED_TIERS: &[&str] = &[FORMAL_PROOF_TIER, "manual_review", "recorded_identity"];
 const ALLOWED_BOUNDARIES: &[&str] = &[
@@ -68,6 +76,14 @@ const REQUIRED_NON_CLAIMS: &[&str] = &[
     "downstream integration correctness",
     "consumer release eligibility",
     "verifier soundness",
+];
+const REQUIRED_PRESERVES_NON_CLAIMS: &[&str] = &[
+    "not a proof artifact",
+    "not downstream authorization semantics",
+    "not verifier soundness",
+];
+const ALLOWED_PRESERVES_CONSUMERS: &[&str] = &[
+    "ucan", "octet", "valence", "mantle", "cairn", "basalt", "aspen", "molten",
 ];
 const PUBLIC_API_PREFIXES: &[&str] = &["pub fn ", "pub open spec fn ", "pub closed spec fn ", "pub proof fn "];
 
@@ -116,6 +132,36 @@ struct FixtureFile {
 }
 
 #[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+struct PreservesFixtureFile {
+    name: String,
+    expected_valid: bool,
+    expected_diagnostic: String,
+    source_manifest: Manifest,
+    envelope_set: PreservesEnvelopeSet,
+    measurements: Vec<MeasurementInput>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+struct PreservesEnvelopeSet {
+    schema_version: String,
+    producer: String,
+    source_manifest: ArtifactIdentity,
+    envelopes: Vec<PreservesEnvelopeRow>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
+struct PreservesEnvelopeRow {
+    envelope_id: String,
+    schema_label: String,
+    source_manifest_digest: String,
+    primitive_ids: Vec<String>,
+    canonical_preserves: ArtifactIdentity,
+    allowed_consumers: Vec<String>,
+    claim: String,
+    non_claims: Vec<String>,
+}
+
+#[derive(Debug, Clone, Deserialize, PartialEq, Eq)]
 struct MeasurementInput {
     path: String,
     blake3: String,
@@ -139,8 +185,15 @@ struct ManifestCheck {
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
+struct PreservesCheck {
+    envelope_count: usize,
+    errors: Vec<String>,
+}
+
+#[derive(Debug, Clone, PartialEq, Eq)]
 struct RepoCheck {
     manifest_primitives: usize,
+    preserves_envelopes: usize,
     fixtures_checked: usize,
     errors: Vec<String>,
 }
@@ -326,6 +379,115 @@ fn require_non_empty_list(errors: &mut Vec<String>, values: &[String], field_nam
     }
 }
 
+fn validate_preserves_envelopes(
+    envelope_set: &PreservesEnvelopeSet,
+    source_manifest: &Manifest,
+    measurements: &BTreeMap<String, Measurement>,
+) -> PreservesCheck {
+    // r[impl trellis.proof_artifact_manifest.preserves_envelope.contract]
+    // r[impl trellis.proof_artifact_manifest.preserves_envelope.validation]
+    // r[impl trellis.proof_artifact_manifest.preserves_envelope.docs]
+    let mut errors = Vec::new();
+    if envelope_set.schema_version != PRESERVES_SCHEMA_LABEL {
+        errors.push(format!(
+            "preserves.schema_version must be {PRESERVES_SCHEMA_LABEL}, got {}",
+            envelope_set.schema_version
+        ));
+    }
+    require_non_empty(&mut errors, &envelope_set.producer, "preserves.producer");
+    validate_identity(&mut errors, &envelope_set.source_manifest, measurements, "preserves.source_manifest");
+
+    let source_ids = source_manifest.primitives.iter().map(|row| row.primitive_id.clone()).collect::<BTreeSet<_>>();
+    if source_ids.is_empty() {
+        errors.push("preserves.source_manifest must contain primitive rows".to_string());
+    }
+    if envelope_set.envelopes.is_empty() {
+        errors.push("preserves.envelopes must not be empty".to_string());
+    }
+
+    let mut envelope_ids = BTreeSet::new();
+    for row in &envelope_set.envelopes {
+        validate_preserves_row(
+            row,
+            &envelope_set.source_manifest,
+            &source_ids,
+            measurements,
+            &mut envelope_ids,
+            &mut errors,
+        );
+    }
+
+    PreservesCheck {
+        envelope_count: envelope_set.envelopes.len(),
+        errors,
+    }
+}
+
+fn validate_preserves_row(
+    row: &PreservesEnvelopeRow,
+    source_manifest_identity: &ArtifactIdentity,
+    source_ids: &BTreeSet<String>,
+    measurements: &BTreeMap<String, Measurement>,
+    envelope_ids: &mut BTreeSet<String>,
+    errors: &mut Vec<String>,
+) {
+    require_non_empty(errors, &row.envelope_id, "preserves.envelope_id");
+    if !row.envelope_id.starts_with(PRESERVES_PREFIX) {
+        errors.push(format!("preserves.envelope_id {} must start with {PRESERVES_PREFIX}", row.envelope_id));
+    }
+    if !row.envelope_id.is_empty() && !envelope_ids.insert(row.envelope_id.clone()) {
+        errors.push(format!("preserves.envelope_id {} must be unique", row.envelope_id));
+    }
+    if row.schema_label != PRESERVES_SCHEMA_LABEL {
+        errors.push(format!("preserves.schema_label must be {PRESERVES_SCHEMA_LABEL}, got {}", row.schema_label));
+    }
+    validate_blake3(errors, &row.source_manifest_digest, "preserves.source_manifest_digest");
+    if row.source_manifest_digest != source_manifest_identity.blake3 {
+        errors.push(format!(
+            "preserves.source_manifest.stale_hash: expected {}, got {}",
+            source_manifest_identity.blake3, row.source_manifest_digest
+        ));
+    }
+    require_non_empty_list(errors, &row.primitive_ids, "preserves.primitive_ids");
+    for primitive_id in &row.primitive_ids {
+        if !source_ids.contains(primitive_id) {
+            errors.push(format!("preserves.primitive_ids.missing: {primitive_id}"));
+        }
+    }
+    validate_identity(errors, &row.canonical_preserves, measurements, "preserves.canonical_preserves");
+    require_non_empty_list(errors, &row.allowed_consumers, "preserves.allowed_consumers");
+    for consumer in &row.allowed_consumers {
+        if !ALLOWED_PRESERVES_CONSUMERS.contains(&consumer.as_str()) {
+            errors.push(format!("preserves.allowed_consumers unsupported `{consumer}`"));
+        }
+    }
+    validate_preserves_claim(errors, &row.claim);
+    validate_preserves_non_claims(errors, &row.non_claims);
+}
+
+fn validate_preserves_claim(errors: &mut Vec<String>, claim: &str) {
+    require_non_empty(errors, claim, "preserves.claim");
+    let lower = claim.to_ascii_lowercase();
+    if !lower.contains(CARRIER_CLAIM_WORD) {
+        errors.push("preserves.claim must describe a carrier boundary".to_string());
+    }
+    for word in OVERBROAD_CLAIM_WORDS {
+        if lower.contains(word) {
+            errors.push(format!("preserves.claim.overbroad must not contain `{word}`"));
+        }
+    }
+}
+
+fn validate_preserves_non_claims(errors: &mut Vec<String>, non_claims: &[String]) {
+    require_non_empty_list(errors, non_claims, "preserves.non_claims");
+    let joined = non_claims.join("; ").to_ascii_lowercase();
+    for required in REQUIRED_PRESERVES_NON_CLAIMS {
+        if !joined.contains(required) {
+            errors.push(format!("preserves.non_claims.required missing `{required}`"));
+        }
+    }
+}
+
 fn check_fixture(fixture: &FixtureFile, path_name: &str) -> Vec<String> {
     // r[verify trellis.proof_artifact_manifest.positive]
     // r[verify trellis.proof_artifact_manifest.negative]
@@ -337,33 +499,59 @@ fn check_fixture(fixture: &FixtureFile, path_name: &str) -> Vec<String> {
     // r[verify trellis.proof_artifact_manifest.validation.fixtures]
     let measurements = measurements_from_inputs(&fixture.measurements);
     let check = validate_manifest(&fixture.manifest, &measurements);
-    let expected = fixture.expected_diagnostic.trim();
-    let mut errors = Vec::new();
+    check_expected_result(
+        fixture.expected_valid,
+        fixture.expected_diagnostic.trim(),
+        &fixture.name,
+        path_name,
+        &check.errors,
+    )
+}
 
-    if fixture.expected_valid {
-        if !check.errors.is_empty() {
+fn check_preserves_fixture(fixture: &PreservesFixtureFile, path_name: &str) -> Vec<String> {
+    // r[verify trellis.proof_artifact_manifest.preserves_envelope.fixtures.positive]
+    // r[verify trellis.proof_artifact_manifest.preserves_envelope.fixtures.negative]
+    // r[verify trellis.proof_artifact_manifest.preserves_envelope.final_validation]
+    // r[verify trellis.proof_artifact_manifest.preserves_envelope.final_validation.fixtures]
+    let measurements = measurements_from_inputs(&fixture.measurements);
+    let check = validate_preserves_envelopes(&fixture.envelope_set, &fixture.source_manifest, &measurements);
+    check_expected_result(
+        fixture.expected_valid,
+        fixture.expected_diagnostic.trim(),
+        &fixture.name,
+        path_name,
+        &check.errors,
+    )
+}
+
+fn check_expected_result(
+    expected_valid: bool,
+    expected_diagnostic: &str,
+    fixture_name: &str,
+    path_name: &str,
+    diagnostics: &[String],
+) -> Vec<String> {
+    let mut errors = Vec::new();
+    if expected_valid {
+        if !diagnostics.is_empty() {
             errors.push(format!(
-                "{path_name}: {} expected valid fixture but got: {}",
-                fixture.name,
-                check.errors.join("; ")
+                "{path_name}: {fixture_name} expected valid fixture but got: {}",
+                diagnostics.join("; ")
             ));
         }
-        if !expected.eq_ignore_ascii_case(EXPECTED_NONE) {
+        if !expected_diagnostic.eq_ignore_ascii_case(EXPECTED_NONE) {
             errors.push(format!(
-                "{path_name}: {} valid fixture must set expected_diagnostic to `{EXPECTED_NONE}`",
-                fixture.name
+                "{path_name}: {fixture_name} valid fixture must set expected_diagnostic to `{EXPECTED_NONE}`"
             ));
         }
-    } else if expected.is_empty() || expected.eq_ignore_ascii_case(EXPECTED_NONE) {
-        errors.push(format!("{path_name}: {} invalid fixture must declare an expected diagnostic", fixture.name));
-    } else if !check.errors.iter().any(|error| error.contains(expected)) {
+    } else if expected_diagnostic.is_empty() || expected_diagnostic.eq_ignore_ascii_case(EXPECTED_NONE) {
+        errors.push(format!("{path_name}: {fixture_name} invalid fixture must declare an expected diagnostic"));
+    } else if !diagnostics.iter().any(|error| error.contains(expected_diagnostic)) {
         errors.push(format!(
-            "{path_name}: {} expected diagnostic `{expected}` but got: {}",
-            fixture.name,
-            check.errors.join("; ")
+            "{path_name}: {fixture_name} expected diagnostic `{expected_diagnostic}` but got: {}",
+            diagnostics.join("; ")
         ));
     }
-
     errors
 }
 
@@ -385,6 +573,12 @@ fn check_docs(root: &Path) -> Result<Vec<String>, String> {
     if !contract.contains(SCHEMA_VERSION) || !contract.contains("PrimitiveRow") {
         errors.push(format!("{CONTRACT_PATH} must define the {SCHEMA_VERSION} PrimitiveRow contract"));
     }
+    if !contract.contains(PRESERVES_SCHEMA_LABEL) || !contract.contains("PreservesEnvelopeRow") {
+        errors.push(format!("{CONTRACT_PATH} must define the {PRESERVES_SCHEMA_LABEL} PreservesEnvelopeRow contract"));
+    }
+    if !guide.contains(PRESERVES_CARRIER_PATH) || !guide.contains("proof ownership") {
+        errors.push(format!("{GUIDE_PATH} must document Preserves carrier proof ownership"));
+    }
     for term in REQUIRED_MANIFEST_GUIDE_TERMS {
         if !guide.contains(term) {
             errors.push(format!("{GUIDE_PATH} must mention `{term}`"));
@@ -402,6 +596,12 @@ fn check_repo(root: &Path) -> Result<RepoCheck, String> {
     let manifest_check = validate_manifest(&manifest, &measurements);
     errors.extend(manifest_check.errors.into_iter().map(|error| format!("{MANIFEST_PATH}: {error}")));
 
+    let preserves_path = root.join(PRESERVES_ENVELOPE_PATH);
+    let preserves: PreservesEnvelopeSet = read_json(&preserves_path)?;
+    let preserves_measurements = measure_preserves_files(root, &preserves)?;
+    let preserves_check = validate_preserves_envelopes(&preserves, &manifest, &preserves_measurements);
+    errors.extend(preserves_check.errors.into_iter().map(|error| format!("{PRESERVES_ENVELOPE_PATH}: {error}")));
+
     let mut fixtures_checked = 0usize;
     for path in fixture_paths(root)? {
         fixtures_checked += ARGS_WITH_ROOT_COUNT;
@@ -409,12 +609,21 @@ fn check_repo(root: &Path) -> Result<RepoCheck, String> {
         let path_name = path.display().to_string();
         errors.extend(check_fixture(&fixture, &path_name));
     }
+    for path in preserves_fixture_paths(root)? {
+        fixtures_checked += ARGS_WITH_ROOT_COUNT;
+        let fixture: PreservesFixtureFile = read_json(&path)?;
+        let path_name = path.display().to_string();
+        errors.extend(check_preserves_fixture(&fixture, &path_name));
+    }
     if fixtures_checked == EMPTY_SLICE_COUNT {
-        errors.push(format!("{POSITIVE_FIXTURE_DIR} and {NEGATIVE_FIXTURE_DIR} must contain fixture JSON"));
+        errors.push(format!(
+            "{POSITIVE_FIXTURE_DIR}, {NEGATIVE_FIXTURE_DIR}, {POSITIVE_PRESERVES_FIXTURE_DIR}, and {NEGATIVE_PRESERVES_FIXTURE_DIR} must contain fixture JSON"
+        ));
     }
 
     Ok(RepoCheck {
         manifest_primitives: manifest_check.primitive_count,
+        preserves_envelopes: preserves_check.envelope_count,
         fixtures_checked,
         errors,
     })
@@ -429,6 +638,22 @@ fn measure_manifest_files(root: &Path, manifest: &Manifest) -> Result<BTreeMap<S
         }
     }
 
+    measure_paths(root, paths)
+}
+
+fn measure_preserves_files(
+    root: &Path,
+    envelope_set: &PreservesEnvelopeSet,
+) -> Result<BTreeMap<String, Measurement>, String> {
+    let mut paths = BTreeSet::new();
+    paths.insert(envelope_set.source_manifest.path.clone());
+    for row in &envelope_set.envelopes {
+        paths.insert(row.canonical_preserves.path.clone());
+    }
+    measure_paths(root, paths)
+}
+
+fn measure_paths(root: &Path, paths: BTreeSet<String>) -> Result<BTreeMap<String, Measurement>, String> {
     let mut measurements = BTreeMap::new();
     for path in paths {
         let measurement = measure_file(root, &path)?;
@@ -466,6 +691,14 @@ fn fixture_paths(root: &Path) -> Result<Vec<PathBuf>, String> {
     let mut paths = Vec::new();
     collect_fixture_paths(root, POSITIVE_FIXTURE_DIR, &mut paths)?;
     collect_fixture_paths(root, NEGATIVE_FIXTURE_DIR, &mut paths)?;
+    paths.sort();
+    Ok(paths)
+}
+
+fn preserves_fixture_paths(root: &Path) -> Result<Vec<PathBuf>, String> {
+    let mut paths = Vec::new();
+    collect_fixture_paths(root, POSITIVE_PRESERVES_FIXTURE_DIR, &mut paths)?;
+    collect_fixture_paths(root, NEGATIVE_PRESERVES_FIXTURE_DIR, &mut paths)?;
     paths.sort();
     Ok(paths)
 }
@@ -565,6 +798,83 @@ fn digest_b() -> String {
     "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb".to_string()
 }
 
+fn preserves_non_claims() -> Vec<String> {
+    vec![
+        "not a proof artifact".to_string(),
+        "not downstream authorization semantics".to_string(),
+        "not verifier soundness".to_string(),
+    ]
+}
+
+fn positive_preserves_self_test_fixture() -> PreservesFixtureFile {
+    PreservesFixtureFile {
+        name: "positive-preserves-self-test".to_string(),
+        expected_valid: true,
+        expected_diagnostic: EXPECTED_NONE.to_string(),
+        source_manifest: Manifest {
+            schema_version: SCHEMA_VERSION.to_string(),
+            producer: "self-test".to_string(),
+            boundary: boundary_text(),
+            primitives: vec![base_row()],
+        },
+        envelope_set: PreservesEnvelopeSet {
+            schema_version: PRESERVES_SCHEMA_LABEL.to_string(),
+            producer: "self-test".to_string(),
+            source_manifest: ArtifactIdentity {
+                path: MANIFEST_PATH.to_string(),
+                blake3: digest_a(),
+                bytes: 12,
+            },
+            envelopes: vec![PreservesEnvelopeRow {
+                envelope_id: "trellis.preserves.self_test".to_string(),
+                schema_label: PRESERVES_SCHEMA_LABEL.to_string(),
+                source_manifest_digest: digest_a(),
+                primitive_ids: vec!["trellis.self_test.example".to_string()],
+                canonical_preserves: ArtifactIdentity {
+                    path: PRESERVES_CARRIER_PATH.to_string(),
+                    blake3: digest_b(),
+                    bytes: 24,
+                },
+                allowed_consumers: vec!["ucan".to_string(), "cairn".to_string()],
+                claim: "carrier for proof-manifest identity only".to_string(),
+                non_claims: preserves_non_claims(),
+            }],
+        },
+        measurements: vec![
+            MeasurementInput {
+                path: MANIFEST_PATH.to_string(),
+                blake3: digest_a(),
+                bytes: 12,
+                text: "manifest".to_string(),
+            },
+            MeasurementInput {
+                path: PRESERVES_CARRIER_PATH.to_string(),
+                blake3: digest_b(),
+                bytes: 24,
+                text: "carrier".to_string(),
+            },
+        ],
+    }
+}
+
+fn stale_preserves_self_test_fixture() -> PreservesFixtureFile {
+    let mut fixture = positive_preserves_self_test_fixture();
+    fixture.name = "stale-preserves-self-test".to_string();
+    fixture.expected_valid = false;
+    fixture.expected_diagnostic = "preserves.source_manifest.stale_hash".to_string();
+    fixture.envelope_set.envelopes[0].source_manifest_digest = digest_b();
+    fixture
+}
+
+fn overbroad_preserves_self_test_fixture() -> PreservesFixtureFile {
+    let mut fixture = positive_preserves_self_test_fixture();
+    fixture.name = "overbroad-preserves-self-test".to_string();
+    fixture.expected_valid = false;
+    fixture.expected_diagnostic = "preserves.claim.overbroad".to_string();
+    fixture.envelope_set.envelopes[0].claim = "carrier proves downstream authorization semantics".to_string();
+    fixture
+}
+
 fn run_self_test() -> Result<(), String> {
     let positive = positive_self_test_fixture();
     let positive_errors = check_fixture(&positive, "positive-self-test");
@@ -593,6 +903,24 @@ fn run_self_test() -> Result<(), String> {
         return Err("negative self-test must fail when expected diagnostic is absent".to_string());
     }
 
+    let preserves_positive = positive_preserves_self_test_fixture();
+    let preserves_positive_errors = check_preserves_fixture(&preserves_positive, "preserves-positive-self-test");
+    if !preserves_positive_errors.is_empty() {
+        return Err(format!("preserves positive self-test failed: {}", preserves_positive_errors.join("; ")));
+    }
+
+    let preserves_stale = stale_preserves_self_test_fixture();
+    let preserves_stale_errors = check_preserves_fixture(&preserves_stale, "preserves-stale-self-test");
+    if !preserves_stale_errors.is_empty() {
+        return Err(format!("preserves stale self-test failed: {}", preserves_stale_errors.join("; ")));
+    }
+
+    let preserves_overbroad = overbroad_preserves_self_test_fixture();
+    let preserves_overbroad_errors = check_preserves_fixture(&preserves_overbroad, "preserves-overbroad-self-test");
+    if !preserves_overbroad_errors.is_empty() {
+        return Err(format!("preserves overbroad self-test failed: {}", preserves_overbroad_errors.join("; ")));
+    }
+
     Ok(())
 }
 
@@ -615,6 +943,7 @@ fn main() -> ExitCode {
     let result = match parse_args(&args) {
         Ok(None) => run_self_test().map(|_| RepoCheck {
             manifest_primitives: ARGS_WITH_ROOT_COUNT,
+            preserves_envelopes: ARGS_WITH_ROOT_COUNT,
             fixtures_checked: ARGS_WITH_ROOT_COUNT,
             errors: Vec::new(),
         }),
@@ -625,8 +954,8 @@ fn main() -> ExitCode {
     match result {
         Ok(check) if check.errors.is_empty() => {
             println!(
-                "verified primitive manifest check passed: {} primitives, {} fixtures checked",
-                check.manifest_primitives, check.fixtures_checked
+                "verified primitive manifest check passed: {} primitives, {} preserves envelopes, {} fixtures checked",
+                check.manifest_primitives, check.preserves_envelopes, check.fixtures_checked
             );
             ExitCode::SUCCESS
         }

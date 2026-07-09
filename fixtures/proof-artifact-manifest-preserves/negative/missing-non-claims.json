@@ -1,0 +1,14 @@
+{
+  "name": "missing-non-claims",
+  "expected_valid": false,
+  "expected_diagnostic": "preserves.non_claims.required",
+  "source_manifest": {
+    "schema_version": "trellis.proof-artifact-manifest.v1", "producer": "fixture", "boundary": "identity only; not downstream integration correctness; not consumer release eligibility; not verifier soundness outside the declared proof boundary",
+    "primitives": [ { "primitive_id": "trellis.fixture.example", "module_path": "src/example.rs", "public_api": ["example"], "requirement_ids": ["fixture.example"], "source": { "path": "src/example.rs", "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 64 }, "proof": { "path": "src/example.rs", "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 64 }, "verifier": { "identity": "Verus fixture", "argv": ["./scripts/verus.sh", "src/lib.rs"] }, "trusted_boundary": "verified_module", "evidence_tier": "formal_proof", "non_claims": ["does not prove downstream integration correctness", "does not prove consumer release eligibility", "does not prove verifier soundness outside the declared proof boundary"] } ]
+  },
+  "envelope_set": {
+    "schema_version": "trellis.proof-artifact-manifest.preserves.v1", "producer": "fixture", "source_manifest": { "path": "docs/proof-artifact-manifest.json", "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 12 },
+    "envelopes": [ { "envelope_id": "trellis.preserves.fixture", "schema_label": "trellis.proof-artifact-manifest.preserves.v1", "source_manifest_digest": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "primitive_ids": ["trellis.fixture.example"], "canonical_preserves": { "path": "docs/proof-artifact-manifest.preserves", "blake3": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 24 }, "allowed_consumers": ["ucan", "cairn"], "claim": "carrier for proof-manifest identity only", "non_claims": ["not a proof artifact"] } ]
+  },
+  "measurements": [ { "path": "docs/proof-artifact-manifest.json", "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa", "bytes": 12 }, { "path": "docs/proof-artifact-manifest.preserves", "blake3": "bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb", "bytes": 24 } ]
+}

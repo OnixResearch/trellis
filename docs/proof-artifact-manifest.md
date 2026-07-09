@@ -17,6 +17,10 @@ Each row must include:
 - evidence-tier recommendation;
 - downstream non-claims.
 
+## Preserves carrier
+
+`docs/proof-artifact-manifest.preserves-envelope.json` records optional Preserves carrier metadata for `docs/proof-artifact-manifest.preserves`. The carrier exists for interchange only: proof ownership stays with Verus/spec artifacts and Trellis manifest rows. The carrier is not a proof artifact, not downstream authorization semantics, and not verifier soundness evidence.
+
 ## Downstream consumption
 
 UCAN vendor sync can record a consumed manifest digest next to vendored `verified-logic` revision metadata. If UCAN does not use the manifest, the sync record should say so explicitly rather than implying proof certification from vendored bytes.
@@ -32,6 +36,8 @@ Basalt, Aspen, and Molten may bind adapter or UCAN-facing evidence to primitive 
 ## Non-claims
 
 A manifest row does not prove downstream integration correctness, consumer release eligibility, or verifier soundness outside the declared proof boundary. Trusted-boundary, proof-gap, manual-review, and recorded-only rows must not be promoted to `formal_proof` unless a downstream-owned verifier receipt supports that exact property.
+
+A Preserves envelope is a carrier for proof-manifest identity only. It does not change proof ownership, replace Verus/spec artifacts, prove downstream authorization semantics, or certify release eligibility.
 
 ## Refresh
 
