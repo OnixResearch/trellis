@@ -1,0 +1,55 @@
+{
+  "name": "exported-primitive",
+  "expected_valid": true,
+  "expected_diagnostic": "none",
+  "manifest": {
+    "schema_version": "trellis.proof-artifact-manifest.v1",
+    "producer": "fixture",
+    "boundary": "identity and local checked proof status only; not downstream integration correctness; not consumer release eligibility; not verifier soundness outside the declared proof boundary",
+    "primitives": [
+      {
+        "primitive_id": "trellis.fixture.example",
+        "module_path": "src/example.rs",
+        "public_api": [
+          "example_spec",
+          "example"
+        ],
+        "requirement_ids": [
+          "fixture.example"
+        ],
+        "source": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "proof": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "verifier": {
+          "identity": "Verus fixture",
+          "argv": [
+            "./scripts/verus.sh",
+            "src/lib.rs"
+          ]
+        },
+        "trusted_boundary": "verified_module",
+        "evidence_tier": "formal_proof",
+        "non_claims": [
+          "does not prove downstream integration correctness",
+          "does not prove consumer release eligibility",
+          "does not prove verifier soundness outside the declared proof boundary"
+        ]
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "path": "src/example.rs",
+      "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 64,
+      "text": "pub open spec fn example_spec() -> bool { true }\npub fn example() {}"
+    }
+  ]
+}

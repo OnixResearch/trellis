@@ -1,0 +1,77 @@
+{
+  "schema_version": "trellis.proof-artifact-manifest.v1",
+  "producer": "Trellis verified-logic proof artifact manifest",
+  "boundary": "Records Trellis artifact identity and local checked proof status only; it does not prove downstream integration correctness, consumer release eligibility, or verifier soundness outside the declared proof boundary.",
+  "primitives": [
+    {
+      "primitive_id": "trellis.arithmetic.abs_diff",
+      "module_path": "src/arithmetic.rs",
+      "public_api": [
+        "abs_diff_spec",
+        "abs_diff"
+      ],
+      "requirement_ids": [
+        "arithmetic.abs-diff"
+      ],
+      "source": {
+        "path": "src/arithmetic.rs",
+        "blake3": "3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4",
+        "bytes": 8458
+      },
+      "proof": {
+        "path": "src/arithmetic.rs",
+        "blake3": "3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4",
+        "bytes": 8458
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary"
+      ]
+    },
+    {
+      "primitive_id": "trellis.quorum.majority",
+      "module_path": "src/quorum.rs",
+      "public_api": [
+        "majority_spec",
+        "majority"
+      ],
+      "requirement_ids": [
+        "quorum.majority"
+      ],
+      "source": {
+        "path": "src/quorum.rs",
+        "blake3": "3255315300a745479798c8affa19e5ab690f64f30832329b422ff5836d36f920",
+        "bytes": 14646
+      },
+      "proof": {
+        "path": "src/quorum.rs",
+        "blake3": "3255315300a745479798c8affa19e5ab690f64f30832329b422ff5836d36f920",
+        "bytes": 14646
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,45 @@
+{
+  "name": "missing-non-claim",
+  "expected_valid": false,
+  "expected_diagnostic": "row.non_claims.required",
+  "manifest": {
+    "schema_version": "trellis.proof-artifact-manifest.v1",
+    "producer": "fixture",
+    "boundary": "identity and local checked proof status only; not downstream integration correctness; not consumer release eligibility; not verifier soundness outside the declared proof boundary",
+    "primitives": [
+      {
+        "primitive_id": "trellis.fixture.missing_non_claim",
+        "module_path": "src/example.rs",
+        "public_api": ["example"],
+        "requirement_ids": ["fixture.missing-non-claim"],
+        "source": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "proof": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "verifier": {
+          "identity": "Verus fixture",
+          "argv": ["./scripts/verus.sh", "src/lib.rs"]
+        },
+        "trusted_boundary": "verified_module",
+        "evidence_tier": "formal_proof",
+        "non_claims": [
+          "does not prove downstream integration correctness"
+        ]
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "path": "src/example.rs",
+      "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 64,
+      "text": "pub fn example() {}"
+    }
+  ]
+}

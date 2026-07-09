@@ -1,0 +1,47 @@
+{
+  "name": "missing-proof-command",
+  "expected_valid": false,
+  "expected_diagnostic": "row.verifier.argv",
+  "manifest": {
+    "schema_version": "trellis.proof-artifact-manifest.v1",
+    "producer": "fixture",
+    "boundary": "identity and local checked proof status only; not downstream integration correctness; not consumer release eligibility; not verifier soundness outside the declared proof boundary",
+    "primitives": [
+      {
+        "primitive_id": "trellis.fixture.no_command",
+        "module_path": "src/example.rs",
+        "public_api": ["example"],
+        "requirement_ids": ["fixture.no-command"],
+        "source": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "proof": {
+          "path": "src/example.rs",
+          "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+          "bytes": 64
+        },
+        "verifier": {
+          "identity": "Verus fixture",
+          "argv": []
+        },
+        "trusted_boundary": "verified_module",
+        "evidence_tier": "formal_proof",
+        "non_claims": [
+          "does not prove downstream integration correctness",
+          "does not prove consumer release eligibility",
+          "does not prove verifier soundness outside the declared proof boundary"
+        ]
+      }
+    ]
+  },
+  "measurements": [
+    {
+      "path": "src/example.rs",
+      "blake3": "aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa",
+      "bytes": 64,
+      "text": "pub fn example() {}"
+    }
+  ]
+}

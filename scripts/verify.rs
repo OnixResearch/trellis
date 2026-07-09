@@ -374,6 +374,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Verified primitive manifest freshness",
+        "./scripts/check-verified-primitive-manifest.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Verified primitive manifest checker self-test",
+        "./scripts/check-verified-primitive-manifest.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
         std::iter::empty::<&str>(),
