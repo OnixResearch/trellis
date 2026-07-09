@@ -49,7 +49,7 @@
     "crane": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
+        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -64,7 +64,7 @@
     "crane_2": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
+        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -79,7 +79,7 @@
     "crane_3": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
+        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -94,7 +94,7 @@
     "crane_4": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
+        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
