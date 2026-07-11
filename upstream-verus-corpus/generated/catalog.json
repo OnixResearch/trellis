@@ -1,0 +1,144 @@
+{
+  "claim_scope": "source-intake-and-regression-selection-only",
+  "entries": [
+    {
+      "execution_policy": "opt-in-pinned",
+      "id": "paper-sosp24-artifact",
+      "license_sentinel": "LICENSE",
+      "license_status": "mixed-reviewed-reference-only",
+      "limitations": [
+        "Reproduction depends on artifact-specific external versions, scripts, and machine resources.",
+        "Adapted programs retain their named upstream MPL-2.0 or Apache-2.0 licensing while other repository scripts and code are MIT-licensed."
+      ],
+      "non_claims": [
+        "Artifact reproduction does not establish soundness for later Verus releases or certify Trellis releases.",
+        "Performance observations do not transfer across machines, solver versions, toolchains, or source revisions."
+      ],
+      "repository_url": "https://github.com/verus-lang/paper-sosp24-artifact",
+      "revision": "b817b036fd9b873a58730af8c2defccb40b7ea83",
+      "role": "reproducibility-benchmark",
+      "sentinels": [
+        "README.md",
+        "LICENSE",
+        "external-repository-versions.md",
+        "ae",
+        "ironkv"
+      ],
+      "source_hash": "sha256-fcvypgzCQVTLjjzhdlZ2bZ8gJJJl1CWxAvrIDKIqamo=",
+      "source_hash_protocol": "nix-sha256-unpacked",
+      "verifier_context": "The artifact records its own external repository versions and reproduces SOSP 2024 evaluation inputs; it is not silently upgraded to the Trellis verifier."
+    },
+    {
+      "execution_policy": "opt-in-pinned",
+      "id": "verified-ironkv",
+      "license_sentinel": "LICENSE",
+      "license_status": "mit-reviewed",
+      "limitations": [
+        "The proof covers the host implementation layer rather than an end-to-end distributed-system refinement.",
+        "Distributed refinement and crash recovery remain outside the imported proof boundary."
+      ],
+      "non_claims": [
+        "A passing host-layer proof does not establish network, persistence, crash-recovery, or whole-system correctness.",
+        "Source intake does not make IronKV a Trellis or downstream runtime dependency."
+      ],
+      "repository_url": "https://github.com/verus-lang/verified-ironkv",
+      "revision": "6b8830a47a2dd5a8ce141438ebb2decb6550298a",
+      "role": "distributed-host-boundary-stress",
+      "sentinels": [
+        "README.md",
+        "LICENSE",
+        "ironsht",
+        "SConstruct"
+      ],
+      "source_hash": "sha256-RQHAD7naPpOw45OQXWzLO6lopz79TXg9GB+pMsokcJQ=",
+      "source_hash_protocol": "nix-sha256-unpacked",
+      "verifier_context": "Use the source's recorded Verus setup when selecting an opt-in verifier run; current Trellis verification requires a separate compatibility receipt."
+    },
+    {
+      "execution_policy": "opt-in-pinned",
+      "id": "verified-memory-allocator",
+      "license_sentinel": "LICENSE",
+      "license_status": "mit-reviewed",
+      "limitations": [
+        "The allocator does not provide realloc, aligned allocation, or thread cleanup.",
+        "The reviewed implementation does not support allocations larger than 128 KiB."
+      ],
+      "non_claims": [
+        "Source or proof intake does not make this allocator production-ready or a supported runtime allocator.",
+        "Allocator-local invariants do not prove application memory safety or host allocator integration correctness."
+      ],
+      "repository_url": "https://github.com/verus-lang/verified-memory-allocator",
+      "revision": "847354efbb51a7999deb3eef0ed2bfc199bccac1",
+      "role": "allocator-proof-stress",
+      "sentinels": [
+        "README.md",
+        "LICENSE",
+        "verus-mimalloc",
+        "build-verus-mimalloc.sh"
+      ],
+      "source_hash": "sha256-Ug0I2zCGxKscsXtnxzhLdn9NYrgkxpO3brJ8lfL0FJA=",
+      "source_hash_protocol": "nix-sha256-unpacked",
+      "verifier_context": "Use as a raw-pointer, arithmetic, and allocator-invariant regression input under its own pinned setup before any Trellis verifier migration claim."
+    },
+    {
+      "execution_policy": "blocked-current-verifier",
+      "id": "verified-node-replication",
+      "license_sentinel": "LICENSE",
+      "license_status": "mit-reviewed",
+      "limitations": [
+        "Node replication is a local multicore and NUMA data-structure technique, not network replication or consensus.",
+        "Trusted theorem and trait markers remain explicit assumptions in the upstream proof boundary."
+      ],
+      "non_claims": [
+        "Source intake does not establish Molten, Aspen, Trellis, distributed-system, or runtime correctness.",
+        "No runtime adoption or benchmark claim is admitted while current-verifier compatibility is blocked."
+      ],
+      "repository_url": "https://github.com/verus-lang/verified-node-replication",
+      "revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
+      "role": "local-numa-proof-stress",
+      "sentinels": [
+        "README.md",
+        "LICENSE",
+        ".gitmodules",
+        "verified-node-replication",
+        "verus"
+      ],
+      "source_hash": "sha256-7y9Sh9oLyZs47BtJqON0DVhD70sa9nG67SIwiX2Yc4g=",
+      "source_hash_protocol": "nix-sha256-unpacked",
+      "verifier_context": "The source pins Verus submodule d8f073f31d72a5df2113b4ab9c011c1a27b38abf and Rust 1.76.0; Octet production Verus currently reaches an internal var_local_id failure with the required new-mut-ref feature."
+    },
+    {
+      "execution_policy": "reference-only",
+      "id": "verus-belt",
+      "license_sentinel": "LICENSE.txt",
+      "license_status": "mit-reviewed",
+      "limitations": [
+        "The mechanization is tied to its recorded Verus snapshot and modeled semantics.",
+        "Release drift, solver integration, compiler behavior, and unmodeled trusted components require separate audits."
+      ],
+      "non_claims": [
+        "VerusBelt does not automatically establish soundness for Trellis's or Octet's later Verus releases.",
+        "Semantic-reference intake is not a proof receipt for Trellis source or downstream runtime code."
+      ],
+      "repository_url": "https://github.com/verus-lang/verus-belt",
+      "revision": "b116e9db550e84896674df781b93570c35a9f0da",
+      "role": "semantic-foundation",
+      "sentinels": [
+        "README.md",
+        "LICENSE.txt",
+        "VERUS-IMPL.md",
+        "src",
+        "verus"
+      ],
+      "source_hash": "sha256-OmRZBYBXzXMHD5tEmFb2KS7b4RkiNR3NXeMbsXsGrVw=",
+      "source_hash_protocol": "nix-sha256-unpacked",
+      "verifier_context": "The modeled snapshot is Verus 0.2026.03.16.b1c2a95; use the semantics and proof assumptions as an audit reference rather than a later-release certificate."
+    }
+  ],
+  "global_non_claims": [
+    "Fixed-output source identity and sentinel presence establish only the selected source snapshot, not proof success or semantic correctness.",
+    "Upstream verification, source formatting, README claims, and copied code do not transfer proof authority to Trellis or downstream repositories.",
+    "Promotion to formal evidence requires an exact local verifier run, recorded assumptions, source and proof bindings, tool identities, and a Trellis-owned receipt."
+  ],
+  "schema_version": "trellis-upstream-verus-corpus/v1"
+}

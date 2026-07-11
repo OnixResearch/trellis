@@ -37,7 +37,9 @@
             || (builtins.match ".*/tests/fixtures/.*\\.sv$" path) != null
             || (builtins.baseNameOf path == "dylint.toml")
             || (builtins.baseNameOf path == "octet-baseline.json")
-            || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null;
+            || (builtins.baseNameOf path == "verusfmt-baseline.txt")
+            || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null
+            || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null;
           combinedFilter = path: type:
             (scriptFilter path type) || (craneLib.filterCargoSources path type);
         in pkgs.lib.cleanSourceWith {
@@ -101,6 +103,186 @@
           '';
         };
 
+        corpusCatalog =
+          builtins.fromJSON (builtins.readFile ./upstream-verus-corpus/generated/catalog.json);
+        corpusSources = builtins.listToAttrs (
+          map (entry: {
+            name = entry.id;
+            value = pkgs.fetchzip {
+              url = "${entry.repository_url}/archive/${entry.revision}.tar.gz";
+              hash = entry.source_hash;
+            };
+          }) corpusCatalog.entries
+        );
+
+        verusfmtPolicyExitCode = 2;
+        pinnedVerusfmtFallback = pkgs.stdenvNoCC.mkDerivation {
+          pname = "octet-verusfmt";
+          version = "0.7.2";
+          src = pkgs.fetchurl {
+            url = "https://github.com/verus-lang/verusfmt/releases/download/v0.7.2/verusfmt-x86_64-unknown-linux-gnu.tar.xz";
+            hash = "sha256-xeCo4HM3BVskadKHjdzFidofS+kTSLsZF84SLqRtQBU=";
+          };
+          nativeBuildInputs = with pkgs; [ autoPatchelfHook b3sum gnutar xz ];
+          buildInputs = [ pkgs.stdenv.cc.cc.lib ];
+          dontUnpack = true;
+          installPhase = ''
+            release_dir="$out/libexec/verusfmt-release"
+            mkdir -p "$release_dir" "$out/bin" "$out/share"
+            tar --extract --xz --file "$src" --strip-components=1 --directory "$release_dir"
+            mv "$release_dir/verusfmt" "$release_dir/verusfmt-real"
+            chmod +x "$release_dir/verusfmt-real"
+            cat > "$out/bin/verusfmt" <<'WRAPPER'
+            #!${pkgs.runtimeShell}
+            set -eu
+            if [ "$#" -gt 0 ] && [ "$1" = "--update" ]; then
+              echo "verusfmt self-update is disabled; update the Octet profile and Trellis pin instead" >&2
+              exit ${toString verusfmtPolicyExitCode}
+            fi
+            exec "@REAL_VERUSFMT@" "$@"
+            WRAPPER
+            substituteInPlace "$out/bin/verusfmt" \
+              --replace-fail "@REAL_VERUSFMT@" "$release_dir/verusfmt-real"
+            chmod +x "$out/bin/verusfmt"
+            formatter_blake3="$(b3sum "$release_dir/verusfmt-real")"
+            formatter_blake3="''${formatter_blake3%% *}"
+            cat > "$out/share/identity.txt" <<EOF
+            formatter-profile: octet-verus-0.2026.04.03.21dfcd2
+            formatter: verusfmt@0.7.2
+            formatter-release-sha256: c5e0a8e07337055b2469d2878ddcc589da1f4be91348bb1917ce122ea46d4015
+            formatter-binary-blake3: $formatter_blake3
+            formatter-self-update: disabled-by-wrapper
+            formatter-package-mode: trellis-fallback-until-octet-input-exposes-package
+            trust-boundary: formatting proves selected source shape only, not proof success or correctness
+            EOF
+            cat > "$out/bin/octet-verusfmt" <<EOF
+            #!${pkgs.runtimeShell}
+            set -eu
+            if [ "\$#" -eq 1 ] && [ "\$1" = "--identity" ]; then
+              cat "$out/share/identity.txt"
+              exit 0
+            fi
+            exec "$out/bin/verusfmt" "\$@"
+            EOF
+            chmod +x "$out/bin/octet-verusfmt"
+          '';
+        };
+        octetPackages = octet.packages.${system};
+        verusfmt =
+          if builtins.hasAttr "octet-verusfmt" octetPackages then
+            builtins.getAttr "octet-verusfmt" octetPackages
+          else
+            pinnedVerusfmtFallback;
+
+        upstreamVerusCorpus = pkgs.runCommand "trellis-upstream-verus-corpus" {
+          nativeBuildInputs = with pkgs; [ b3sum diffutils jq nickel ];
+        } ''
+          corpus_dir=${./upstream-verus-corpus}
+          mkdir -p "$out/share/trellis/upstream-verus-corpus"
+          cd "$corpus_dir"
+          nickel export --format json catalog.ncl > "$TMPDIR/catalog.json"
+          diff --unified generated/catalog.json "$TMPDIR/catalog.json"
+          nickel export --format json fixtures/valid/current_catalog.ncl > /dev/null
+          for invalid_fixture in fixtures/invalid/*.ncl; do
+            if nickel export --format json "$invalid_fixture" > /dev/null 2>&1; then
+              echo "invalid corpus fixture unexpectedly passed: $invalid_fixture" >&2
+              exit 1
+            fi
+          done
+          jq --exit-status '
+            .schema_version == "trellis-upstream-verus-corpus/v1"
+            and .claim_scope == "source-intake-and-regression-selection-only"
+            and (.entries | map(.id) == (map(.id) | sort))
+            and (.entries | map(.id) | length == (unique | length))
+            and (.global_non_claims | length > 0)
+          ' "$TMPDIR/catalog.json" > /dev/null
+          ${pkgs.lib.concatMapStringsSep "\n" (entry:
+            let source = corpusSources.${entry.id};
+            in pkgs.lib.concatMapStringsSep "\n" (sentinel: ''
+              test -e ${source}/${sentinel}
+            '') entry.sentinels
+          ) corpusCatalog.entries}
+          ${pkgs.lib.concatMapStringsSep "\n" (entry:
+            let source = corpusSources.${entry.id};
+            in ''
+              printf '%s\t%s\t%s\n' '${entry.id}' '${entry.revision}' '${source}' >> "$TMPDIR/source-store-paths.tsv"
+            ''
+          ) corpusCatalog.entries}
+          jq '{
+            schema_version: "trellis-corpus-source-intake/v1",
+            claim_scope,
+            sources: [.entries[] | {
+              id,
+              repository_url,
+              revision,
+              source_hash,
+              source_hash_protocol,
+              sentinels,
+              execution_policy
+            }],
+            non_claims: .global_non_claims
+          }' "$TMPDIR/catalog.json" > "$out/share/trellis/upstream-verus-corpus/source-intake.json"
+          cp "$TMPDIR/catalog.json" "$out/share/trellis/upstream-verus-corpus/catalog.json"
+          cp "$TMPDIR/source-store-paths.tsv" "$out/share/trellis/upstream-verus-corpus/source-store-paths.tsv"
+          b3sum "$out/share/trellis/upstream-verus-corpus/source-intake.json" \
+            > "$out/share/trellis/upstream-verus-corpus/source-intake.blake3"
+        '';
+
+        verusfmtRatchetCheck = pkgs.runCommand "trellis-verusfmt-ratchet" {
+          nativeBuildInputs = with pkgs; [ diffutils findutils ] ++ [ verusfmt ];
+        } ''
+          corpus_dir=${./upstream-verus-corpus}
+          source_root=${./src}
+          baseline="$corpus_dir/verusfmt-baseline.txt"
+          actual="$TMPDIR/verusfmt-nonconforming.txt"
+          normalized_baseline="$TMPDIR/verusfmt-baseline-normalized.txt"
+
+          compare_baseline() {
+            diff --unified "$1" "$2"
+          }
+          LC_ALL=C sort --unique "$baseline" > "$normalized_baseline"
+          compare_baseline "$baseline" "$normalized_baseline"
+
+          synthetic_expected="$TMPDIR/synthetic-expected.txt"
+          synthetic_valid="$TMPDIR/synthetic-valid.txt"
+          synthetic_new_drift="$TMPDIR/synthetic-new-drift.txt"
+          synthetic_stale="$TMPDIR/synthetic-stale.txt"
+          printf '%s\n' 'src/existing-unformatted.rs' > "$synthetic_expected"
+          cp "$synthetic_expected" "$synthetic_valid"
+          compare_baseline "$synthetic_expected" "$synthetic_valid"
+          cp "$synthetic_expected" "$synthetic_new_drift"
+          printf '%s\n' 'src/new-unformatted.rs' >> "$synthetic_new_drift"
+          if compare_baseline "$synthetic_expected" "$synthetic_new_drift" > /dev/null; then
+            echo "new formatter drift fixture unexpectedly matched its baseline" >&2
+            exit 1
+          fi
+          : > "$synthetic_stale"
+          if compare_baseline "$synthetic_expected" "$synthetic_stale" > /dev/null; then
+            echo "stale formatter baseline fixture unexpectedly matched" >&2
+            exit 1
+          fi
+
+          verusfmt --check --verus-only "$corpus_dir/fixtures/valid/formatted.rs"
+          if verusfmt --check --verus-only "$corpus_dir/fixtures/invalid/unformatted.rs" > /dev/null 2>&1; then
+            echo "unformatted Verus fixture unexpectedly passed" >&2
+            exit 1
+          fi
+          : > "$actual"
+          while IFS= read -r source_file; do
+            relative_path="src/''${source_file#"$source_root"/}"
+            if ! verusfmt --check --verus-only "$source_file" > /dev/null 2>&1; then
+              printf '%s\n' "$relative_path" >> "$actual"
+            fi
+          done < <(find "$source_root" -type f -name '*.rs' -print | LC_ALL=C sort)
+          compare_baseline "$baseline" "$actual"
+          if verusfmt --update > /dev/null 2>&1; then
+            echo "pinned verusfmt wrapper unexpectedly allowed self-update" >&2
+            exit 1
+          fi
+          octet-verusfmt --identity | grep -F 'formatter: verusfmt@0.7.2' > /dev/null
+          mkdir -p "$out"
+        '';
+
         # Tracey: fetch release binary
         tracey = pkgs.stdenv.mkDerivation {
           pname = "tracey";
@@ -123,6 +305,8 @@
         packages = {
           default = verified-logic;
           verified-logic = verified-logic;
+          verusfmt = verusfmt;
+          upstream-verus-corpus = upstreamVerusCorpus;
         };
 
         checks = {
@@ -261,6 +445,10 @@
             touch $out
           '';
 
+          # Pinned upstream source intake and exact formatter migration ratchet
+          upstream-verus-corpus = upstreamVerusCorpus;
+          verusfmt-ratchet = verusfmtRatchetCheck;
+
           # Verus formal verification
           verus-proofs = pkgs.runCommand "verus-proofs" {
             nativeBuildInputs = [ verus ];
@@ -320,13 +508,14 @@
         devShells.default = craneLib.devShell {
           inherit buildInputs;
 
-          packages = with pkgs; [
+          packages = (with pkgs; [
             cargo-nextest
             cargo-watch
             rust-analyzer
             steel
             pre-commit
-          ];
+            nickel
+          ]) ++ [ verusfmt ];
 
           inputsFrom = [ verified-logic ];
         };

@@ -625,7 +625,22 @@ cargo run --quiet --bin proof_evidence -- check # deterministic proof-evidence b
 ./scripts/check-ucan-bridge-coverage.rs # UCAN bridge coverage manifest and positive/negative fixtures
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
+./scripts/check-upstream-verus-corpus.rs # typed catalog and boundary validation; add --self-test for negative cases
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').upstream-verus-corpus --no-link -L
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verusfmt-ratchet --no-link -L
 ```
+
+`upstream-verus-corpus/catalog.ncl` pins source snapshots for verifier-upgrade
+regression selection. Its source-intake check validates exact fixed-output
+hashes, license files, and sentinels; it does not run or import upstream proofs.
+Promotion to Trellis formal evidence still requires an exact local verifier run,
+assumption account, source/proof/tool bindings, and Trellis-owned receipt.
+
+The pinned `verusfmt` rail uses
+`upstream-verus-corpus/verusfmt-baseline.txt` as an exact migration ratchet rather
+than rewriting the existing proof corpus wholesale. A new nonconforming file or
+a stale baseline entry fails; baseline membership does not claim formatting or
+proof success.
 
 The Octet check uses `octet-baseline.json` to accept current warning-level
 findings while rejecting any new unbaselined stable finding ID. The local
@@ -701,3 +716,10 @@ All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/s
 
 - Lattice/Salt verification-product patterns — external design reference only; not vendored, executed, or treated as trusted Trellis validation evidence.
 - [Kani: A Model Checker for Rust](https://arxiv.org/html/2607.01504v1) — external Kani model-checking reference for complementary runtime evidence only; not treated as a Trellis proof artifact.
+- [verus-lang/verus-belt](https://github.com/verus-lang/verus-belt) — semantic-foundation and assumption-audit corpus tied to its recorded Verus snapshot; not a soundness certificate for later releases.
+- [verus-lang/paper-sosp24-artifact](https://github.com/verus-lang/paper-sosp24-artifact) — pinned reproducibility and verifier-upgrade benchmark corpus with mixed upstream license boundaries.
+- [verus-lang/verified-memory-allocator](https://github.com/verus-lang/verified-memory-allocator) — allocator/raw-pointer proof-pattern corpus only; its feature omissions preclude production allocator adoption here.
+- [verus-lang/verified-ironkv](https://github.com/verus-lang/verified-ironkv) — host-layer proof and distributed-boundary regression corpus; no crash-recovery or whole-distributed-system claim transfers.
+- [verus-lang/verified-node-replication](https://github.com/verus-lang/verified-node-replication) — local multicore/NUMA proof corpus only; not network replication or consensus, and current-verifier compatibility remains blocked.
+- [verus-lang/verusfmt](https://github.com/verus-lang/verusfmt) — pinned source-format ratchet; formatter output is not proof evidence.
+- [Steel](https://github.com/mattwparas/steel) — external Scheme interpreter reference for finite reader, interning, module, contract, bytecode, and value-graph primitive ideas only; not vendored, executed, or treated as trusted Trellis validation evidence.

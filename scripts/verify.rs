@@ -255,6 +255,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Upstream Verus corpus catalog",
+        "./scripts/check-upstream-verus-corpus.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Upstream Verus corpus checker self-test",
+        "./scripts/check-upstream-verus-corpus.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Nickel lifecycle config freshness and fixtures",
         "./scripts/check-lifecycle-config.rs",
         std::iter::empty::<&str>(),
