@@ -637,14 +637,20 @@ hashes, license files, and sentinels; it does not run or import upstream proofs.
 Promotion to Trellis formal evidence still requires an exact local verifier run,
 assumption account, source/proof/tool bindings, and Trellis-owned receipt.
 
-The Octet `0.2026.04.03.21dfcd2` upgrade trial is fail-closed and currently
-blocked. The candidate verifies 10,709 Trellis obligations but fails the
-`serialize_drv_platform_field_differs` postcondition that the current verifier
-accepts, while IronKV and the allocator depend on removed `vstd` APIs and node
-replication reaches its recorded `var_local_id` internal error. The SOSP
-microcases are diagnostic-only and VerusBelt remains a Rocq semantic-reference
-audit. Therefore Trellis keeps `0.2026.03.22.5e66329` and Octet's `local-pin`
-row; source identity, partial runs, and reference audits cannot promote it.
+The fail-closed May 17 trial validates Octet Verus `0.2026.05.17.e479cce`:
+both complete Trellis runs report `10712 verified, 0 errors`; adapted IronKV
+reports `312 verified, 0 errors`; adapted verified-memory-allocator reports
+`732 verified, 0 errors`; and unmodified verified-node-replication reports
+`254 verified, 0 errors`. The two patches are BLAKE3-bound, preserve assumption
+and trusted-marker counts, and are reported only as adapted-source results. The
+SOSP microcases remain diagnostic-only and VerusBelt remains a Rocq
+semantic-reference audit.
+
+That receipt authorizes the compatibility transition but does not make an
+unpublished sibling checkout a durable dependency. Trellis keeps its shipped
+`0.2026.03.22.5e66329` default until Octet revision
+`374bd16b26cee2af34211a29bfa531c016811f51` is published and the flake lock can
+bind it without a workspace-relative override.
 
 The pinned `verusfmt` rail consumes Octet's revision-bound formatter and typed
 profile packages; Trellis does not reconstruct a local release fallback. It uses
@@ -652,7 +658,8 @@ profile packages; Trellis does not reconstruct a local release fallback. It uses
 than rewriting the existing proof corpus wholesale. A new nonconforming file, a
 stale baseline entry, or central-profile drift fails. Trellis retains its own
 reviewed verifier pin until a separate corpus-backed upgrade succeeds; package
-identity and baseline membership do not claim formatting or proof success.
+identity and baseline membership do not claim formatting or proof success. The
+successful May 17 compatibility receipt is a separate evidence class.
 
 The Octet check uses `octet-baseline.json` to accept current warning-level
 findings while rejecting any new unbaselined stable finding ID. The local
@@ -732,6 +739,6 @@ All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/s
 - [verus-lang/paper-sosp24-artifact](https://github.com/verus-lang/paper-sosp24-artifact) — pinned reproducibility and verifier-upgrade benchmark corpus with mixed upstream license boundaries.
 - [verus-lang/verified-memory-allocator](https://github.com/verus-lang/verified-memory-allocator) — allocator/raw-pointer proof-pattern corpus only; its feature omissions preclude production allocator adoption here.
 - [verus-lang/verified-ironkv](https://github.com/verus-lang/verified-ironkv) — host-layer proof and distributed-boundary regression corpus; no crash-recovery or whole-distributed-system claim transfers.
-- [verus-lang/verified-node-replication](https://github.com/verus-lang/verified-node-replication) — local multicore/NUMA proof corpus only; not network replication or consensus, and current-verifier compatibility remains blocked.
+- [verus-lang/verified-node-replication](https://github.com/verus-lang/verified-node-replication) — local multicore/NUMA proof corpus only; May 17 compatibility does not turn it into network replication, consensus, or an admitted runtime dependency.
 - [verus-lang/verusfmt](https://github.com/verus-lang/verusfmt) — pinned source-format ratchet; formatter output is not proof evidence.
 - [Steel](https://github.com/mattwparas/steel) — external Scheme interpreter reference for finite reader, interning, module, contract, bytecode, and value-graph primitive ideas only; not vendored, executed, or treated as trusted Trellis validation evidence.

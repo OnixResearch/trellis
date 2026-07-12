@@ -1,0 +1,86 @@
+--- a/verus-mimalloc/layout.rs
++++ b/verus-mimalloc/layout.rs
+@@ -5,6 +5,8 @@
+ use vstd::raw_ptr::*;
+ use vstd::*;
+ use vstd::layout::*;
++use vstd::arithmetic::div_mod::lemma_fundamental_div_mod;
++use vstd::arithmetic::mul::{lemma_mul_is_associative, lemma_mul_is_commutative};
+ 
+ use crate::types::{SegmentHeader, Page, PagePtr, SegmentPtr, todo, Heap, Tld};
+ use crate::tokens::{PageId, SegmentId, BlockId, HeapId, TldId};
+@@ -556,21 +558,33 @@
+     }
+ }
+ 
+-#[verifier::integer_ring]
+ pub proof fn mod_trans(a: int, b: int, c: int)
+     requires b != 0, c != 0, a % b == 0, b % c == 0,
+     ensures a % c == 0
+ {
++    lemma_fundamental_div_mod(a, b);
++    let quotient = a / b;
++    assert(a == b * quotient);
++    lemma_mul_is_commutative(b, quotient);
++    assert(a == quotient * b);
++    mod_mul(quotient, b, c);
+ }
+ 
+-#[verifier::integer_ring]
+ pub proof fn mod_mul(a: int, b: int, c: int)
+     requires b % c == 0, c != 0
+     ensures (a * b) % c == 0,
+ {
++    lemma_fundamental_div_mod(b, c);
++    let quotient = b / c;
++    assert(b == c * quotient);
++    lemma_mul_is_commutative(c, quotient);
++    assert(b == quotient * c);
++    lemma_mul_is_associative(a, quotient, c);
++    assert(a * b == (a * quotient) * c);
++    mul_mod_right(a * quotient, c);
+ }
+ 
+-#[verifier::integer_ring]
++#[verifier::nonlinear]
+ pub proof fn mul_mod_right(a: int, b: int)
+     requires b != 0,
+     ensures (a * b) % b == 0,
+--- a/verus-mimalloc/os_alloc.rs
++++ b/verus-mimalloc/os_alloc.rs
+@@ -65,6 +65,8 @@
+ {
+     let kib = 1024;
+     let mib = 1024*1024;
++    let segment_size_threshold = 32 * mib;
++    let segment_alignment = 4 * mib;
+ 
+     let align_size = if size < 512 * kib {
+         get_page_size()
+@@ -72,10 +74,10 @@
+         64 * kib
+     } else if size < 8 * mib {
+         256 * kib
+-    } else if size < 32 * mib {
++    } else if size < segment_size_threshold {
+         mib
+     } else {
+-        4 * mib
++        segment_alignment
+     };
+ 
+     if unlikely(size >= usize::MAX - align_size) {
+@@ -84,6 +86,13 @@
+         let x = align_up(size, align_size);
+         proof {
+             const_facts();
++            if size == SEGMENT_SIZE {
++                assert(SEGMENT_SIZE == segment_size_threshold) by(compute);
++                assert(size == segment_size_threshold);
++                assert(align_size == segment_alignment);
++                assert((((segment_size_threshold + segment_alignment - 1) as int) / segment_alignment as int) * segment_alignment as int == segment_size_threshold as int) by(compute);
++                assert(x == size);
++            }
+             mod_trans(x as int, align_size as int, page_size());
+             if size <= SEGMENT_SIZE {
+                 assert((size + page_size() - 1) / page_size() <= 8192);

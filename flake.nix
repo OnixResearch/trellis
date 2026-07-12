@@ -120,6 +120,7 @@
         );
 
         octetPackages = octet.packages.${system};
+        octetSourceRevision = octet.rev or "unversioned";
         octetProductionVerus = builtins.getAttr "octet-production-verus" octetPackages;
         verusfmt = builtins.getAttr "octet-verusfmt" octetPackages;
         verusToolchainProfile = builtins.getAttr "octet-verus-toolchain-profile" octetPackages;
@@ -136,9 +137,11 @@
           hash = "sha256-tGaPsOqGHB3wlBJ6xfHaNAmoIRakunT8ouWO+ScVm7M=";
         };
         allocatorRlimit = 70;
+        upgradeTrialCorpusRowCount = 5;
+        upgradeTrialAdaptedRowCount = 2;
         timeoutExitCode = 124;
         upgradeTrialSavedEvidence =
-          ./cairn/archive/2026-07-11-trial-octet-verus-upgrade/evidence/trial;
+          ./cairn/changes/repair-octet-verus-upgrade/evidence/trial;
 
         upstreamVerusCorpus = pkgs.runCommand "trellis-upstream-verus-corpus" {
           nativeBuildInputs = with pkgs; [ b3sum diffutils jq nickel ];
@@ -210,16 +213,17 @@
           validate_octet_profile() {
             jq --exit-status '
               .schema_version == "octet-verus-toolchain-profile/v1"
-              and .profile_id == "octet-verus-0.2026.04.03.21dfcd2"
+              and .profile_id == "octet-verus-0.2026.05.17.e479cce"
+              and .verifier.source_revision == "e479cce36490b8fa4b0fd7755aa742aec354372c"
               and .formatter.version == "0.7.2"
               and any(.compatibility[];
                 .consumer == "trellis"
-                and .status == "local-pin"
-                and .verifier_release == "0.2026.03.22.5e66329")
+                and .status == "${upgradeTrialProfile.decision.octet_compatibility_status}"
+                and .verifier_release == "${if upgradeTrialProfile.decision.octet_compatibility_status == "native" then "0.2026.05.17.e479cce" else "0.2026.03.22.5e66329"}")
             ' "$1" > /dev/null
           }
           validate_octet_profile "$profile_json"
-          jq '(.compatibility[] | select(.consumer == "trellis")).status = "native"' \
+          jq '(.compatibility[] | select(.consumer == "trellis")).status = "${if upgradeTrialProfile.decision.octet_compatibility_status == "native" then "local-pin" else "native"}"' \
             "$profile_json" > "$TMPDIR/mismatched-profile.json"
           if validate_octet_profile "$TMPDIR/mismatched-profile.json"; then
             echo "mismatched Octet compatibility profile unexpectedly passed" >&2
@@ -265,7 +269,7 @@
             exit 1
           fi
           octet-verusfmt --identity > "$TMPDIR/formatter-identity.txt"
-          grep -F 'formatter-profile: octet-verus-0.2026.04.03.21dfcd2' "$TMPDIR/formatter-identity.txt" > /dev/null
+          grep -F 'formatter-profile: octet-verus-0.2026.05.17.e479cce' "$TMPDIR/formatter-identity.txt" > /dev/null
           grep -F 'formatter: verusfmt@0.7.2' "$TMPDIR/formatter-identity.txt" > /dev/null
           mkdir -p "$out"
         '';
@@ -273,6 +277,7 @@
         verusUpgradeTrial = pkgs.runCommand "trellis-octet-verus-upgrade-trial" {
           nativeBuildInputs = (with pkgs; [
             b3sum
+            clang
             coreutils
             diffutils
             findutils
@@ -283,6 +288,7 @@
             gzip
             jq
             nickel
+            patch
             stdenv.cc
           ]) ++ [ verus octetProductionVerus verusToolchainProfile ];
         } ''
@@ -294,6 +300,8 @@
           allocator_source=${corpusSources.verified-memory-allocator}
           node_source=${corpusSources.verified-node-replication}
           verus_belt_source=${corpusSources.verus-belt}
+          ironkv_patch=${./upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-ironkv.patch}
+          allocator_patch=${./upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-memory-allocator.patch}
           candidate_root=${octetProductionVerus}/libexec/verus
           octet_profile_json=${verusToolchainProfile}/share/octet/verus-toolchain/profile.json
           output_dir="$out/share/trellis/verus-upgrade-trial"
@@ -313,26 +321,34 @@
           done
           jq --exit-status '
             .schema_version == "trellis-octet-verus-upgrade-trial/v1"
-            and .decision.expected == "blocked"
-            and .decision.preserve_current_pin == true
-            and .decision.octet_compatibility_status == "local-pin"
-            and (.rows | length == 5)
+            and .decision.expected == "promote"
+            and .decision.preserve_current_pin == false
+            and .decision.recommended_octet_compatibility_status == "native"
+            and (.decision.blockers | length == 0)
+            and (.rows | length == ${toString upgradeTrialCorpusRowCount})
             and ([.rows[].id] == ([.rows[].id] | sort))
+            and ([.rows[] | select(.promotion_role == "required-native") | .expected_outcome]
+              | all(. == "passed-adapted" or . == "passed-unmodified"))
+            and ([.rows[] | select(.source_variant == "adapted")] | length == ${toString upgradeTrialAdaptedRowCount})
           ' "$TMPDIR/upgrade-trial.json" > /dev/null
+          test '${octetSourceRevision}' = '${upgradeTrialProfile.candidate.provider_revision}'
           jq --exit-status '
-            .profile_id == "octet-verus-0.2026.04.03.21dfcd2"
-            and .verifier.release == "0.2026.04.03.21dfcd2"
+            .profile_id == "octet-verus-0.2026.05.17.e479cce"
+            and .verifier.release == "0.2026.05.17.e479cce"
+            and .verifier.source_revision == "e479cce36490b8fa4b0fd7755aa742aec354372c"
             and any(.compatibility[];
               .consumer == "trellis"
-              and .status == "local-pin"
-              and .verifier_release == "0.2026.03.22.5e66329")
+              and .status == "${upgradeTrialProfile.decision.octet_compatibility_status}")
           ' "$octet_profile_json" > /dev/null
+          cd "$TMPDIR"
+          printf '%s\n' 'upgrade-trial: profile and typed matrix accepted'
 
           normalize_log() {
             input="$1"
             output="$2"
             normalized_log="$TMPDIR/normalized.log"
             sed \
+              -e "s#$TMPDIR#<TRIAL_TMP>#g" \
               -e "s#$trellis_source#<TRELLIS_SOURCE>#g" \
               -e "s#$paper_source#<PAPER_ARTIFACT_SOURCE>#g" \
               -e "s#$ironkv_source#<IRONKV_SOURCE>#g" \
@@ -341,6 +357,9 @@
               -e "s#$verus_belt_source#<VERUS_BELT_SOURCE>#g" \
               -E -e "s/thread 'rustc' \([0-9]+\)/thread 'rustc' (<PID>)/" \
               -E -e 's/[0-9]+ ms/<DURATION_MS>/g' \
+              -E -e 's/: +<DURATION_MS>/: <DURATION_MS>/g' \
+              -E -e 's/in [0-9]+([.][0-9]+)?s/in <DURATION_S>/g' \
+              -E -e 's/[[:space:]]+$//' \
               "$input" | head --bytes "$maximum_saved_log_bytes" > "$normalized_log"
             awk '
               { lines[NR] = $0; if ($0 !~ /^[[:space:]]*$/) last_nonblank = NR }
@@ -350,6 +369,27 @@
           file_blake3() {
             digest="$(b3sum "$1")"
             printf '%s' "''${digest%% *}"
+          }
+          tree_blake3() {
+            root="$1"
+            manifest="$TMPDIR/tree-blake3.manifest"
+            : > "$manifest"
+            find "$root" -type f -print0 | LC_ALL=C sort --zero-terminated | while IFS= read -r -d "" file; do
+              relative="$(realpath --relative-to="$root" "$file")"
+              printf '%s\t%s\n' "$relative" "$(file_blake3 "$file")"
+            done > "$manifest"
+            file_blake3 "$manifest"
+          }
+          marker_count() {
+            root="$1"
+            pattern="$2"
+            (grep --recursive --binary-files=without-match --extended-regexp --only-matching \
+              "$pattern" "$root" 2>/dev/null || true) | wc --lines | tr --delete ' '
+          }
+          require_patch_hash() {
+            patch_path="$1"
+            expected="$2"
+            test "$(file_blake3 "$patch_path")" = "$expected"
           }
 
           baseline_binary_blake3="$(file_blake3 ${verus}/rust_verify)"
@@ -363,10 +403,13 @@
           EOF
           octet-production-verus --identity > "$output_dir/candidate-identity.txt"
           grep -F 'proof-verifier: ${upgradeTrialProfile.candidate.verifier}' "$output_dir/candidate-identity.txt" > /dev/null
+          grep -F 'proof-verifier-source-revision: e479cce36490b8fa4b0fd7755aa742aec354372c' "$output_dir/candidate-identity.txt" > /dev/null
 
+          trellis_rlimit=20
           set +e
           timeout "$probe_timeout_seconds" verus-verify \
             --triggers-mode silent \
+            --rlimit "$trellis_rlimit" \
             --crate-type=lib \
             --extern vstd="${verus}/libvstd.rlib" \
             --extern builtin="${verus}/libverus_builtin.rlib" \
@@ -379,6 +422,7 @@
           baseline_status="$?"
           timeout "$probe_timeout_seconds" octet-production-verus \
             --triggers-mode silent \
+            --rlimit "$trellis_rlimit" \
             --crate-type=lib \
             --extern vstd="$candidate_root/libvstd.rlib" \
             --extern builtin="$candidate_root/libverus_builtin.rlib" \
@@ -391,16 +435,17 @@
           candidate_status="$?"
           set -e
           test "$baseline_status" -eq 0
-          test "$candidate_status" -eq 1
+          test "$candidate_status" -eq 0
           grep -Fx 'verification results:: ${toString upgradeTrialProfile.baseline.expected_verified_count} verified, ${toString upgradeTrialProfile.baseline.expected_error_count} errors' "$TMPDIR/baseline.stdout" > /dev/null
           grep -Fx 'verification results:: ${toString upgradeTrialProfile.candidate.expected_verified_count} verified, ${toString upgradeTrialProfile.candidate.expected_error_count} errors' "$TMPDIR/candidate.stdout" > /dev/null
           ${pkgs.lib.concatMapStringsSep "\n" (anchor: ''
-            grep -F '${anchor}' "$TMPDIR/candidate.stderr" > /dev/null
-          '') upgradeTrialProfile.candidate.diagnostic_anchors}
+            grep -F '${anchor}' "$TMPDIR/candidate.stdout" > /dev/null
+          '') upgradeTrialProfile.candidate.result_anchors}
           normalize_log "$TMPDIR/baseline.stdout" "$output_dir/baseline.stdout"
           normalize_log "$TMPDIR/baseline.stderr" "$output_dir/baseline.stderr"
           normalize_log "$TMPDIR/candidate.stdout" "$output_dir/candidate.stdout"
           normalize_log "$TMPDIR/candidate.stderr" "$output_dir/candidate.stderr"
+          printf '%s\n' 'upgrade-trial: baseline and candidate Trellis proofs passed'
 
           set +e
           timeout "$probe_timeout_seconds" octet-production-verus --crate-type=lib \
@@ -412,11 +457,11 @@
             > "$TMPDIR/paper-doubly.stdout" 2> "$TMPDIR/paper-doubly.stderr"
           paper_doubly_status="$?"
           set -e
-          test "$paper_linked_status" -eq 1
-          test "$paper_doubly_status" -eq 1
+          test "$paper_linked_status" -eq '${toString (builtins.elemAt upgradeTrialRows.paper-sosp24-artifact.expected_exit_codes 0)}'
+          test "$paper_doubly_status" -eq '${toString (builtins.elemAt upgradeTrialRows.paper-sosp24-artifact.expected_exit_codes 1)}'
           ${pkgs.lib.concatMapStringsSep "\n" (anchor: ''
             grep -F '${anchor}' "$TMPDIR/paper-linked.stderr" "$TMPDIR/paper-doubly.stderr" > /dev/null
-          '') upgradeTrialRows.paper-sosp24-artifact.diagnostic_anchors}
+          '') upgradeTrialRows.paper-sosp24-artifact.result_anchors}
           grep -F 'Commit: `097ac7ed283ae60375cd9b2b6017b3c629883b2b`' \
             "$paper_source/external-repository-versions.md" > /dev/null
           {
@@ -427,24 +472,110 @@
           } > "$TMPDIR/paper.stderr"
           normalize_log "$TMPDIR/paper.stdout" "$output_dir/paper-sosp24-artifact.stdout"
           normalize_log "$TMPDIR/paper.stderr" "$output_dir/paper-sosp24-artifact.stderr"
+          printf '%s\n' 'upgrade-trial: diagnostic-only paper microcases classified'
 
+          ironkv_patch_expected='${upgradeTrialRows.verified-ironkv.adaptation.patch_blake3}'
+          allocator_patch_expected='${upgradeTrialRows.verified-memory-allocator.adaptation.patch_blake3}'
+          require_patch_hash "$ironkv_patch" "$ironkv_patch_expected"
+          require_patch_hash "$allocator_patch" "$allocator_patch_expected"
+          if grep --extended-regexp '^\+[^+].*(assume[[:space:]]*\(|admit[[:space:]]*\(|external_body|with_triggers|#\[trigger\])' "$ironkv_patch" "$allocator_patch" > /dev/null; then
+            echo "compatibility patch adds a forbidden assumption, body, or trigger marker" >&2
+            exit 1
+          fi
+          cp "$ironkv_patch" "$TMPDIR/mutated-ironkv.patch"
+          chmod u+w "$TMPDIR/mutated-ironkv.patch"
+          printf '\n' >> "$TMPDIR/mutated-ironkv.patch"
+          if require_patch_hash "$TMPDIR/mutated-ironkv.patch" "$ironkv_patch_expected"; then
+            echo "mutated IronKV patch unexpectedly retained its identity" >&2
+            exit 1
+          fi
+          cat > "$output_dir/patch-hash-negative.txt" <<EOF
+          mutated_patch=verified-ironkv.patch+newline
+          expected_result=rejected
+          identity_algorithm=blake3
+          EOF
+          printf '%s\n' 'upgrade-trial: patch identities and mutation rejection passed'
+
+          ironkv_adapted="$TMPDIR/verified-ironkv-adapted"
+          cp -R "$ironkv_source" "$ironkv_adapted"
+          chmod -R u+w "$ironkv_adapted"
+          ironkv_assume_before="$(marker_count "$ironkv_source/ironsht/src" 'assume[[:space:]]*\(')"
+          ironkv_external_before="$(marker_count "$ironkv_source/ironsht/src" 'external_body')"
+          ironkv_trusted_before="$(marker_count "$ironkv_source/ironsht/src" 'trusted')"
+          patch --batch --forward --silent --directory "$ironkv_adapted/ironsht" --strip 1 < "$ironkv_patch"
+          ironkv_assume_after="$(marker_count "$ironkv_adapted/ironsht/src" 'assume[[:space:]]*\(')"
+          ironkv_external_after="$(marker_count "$ironkv_adapted/ironsht/src" 'external_body')"
+          ironkv_trusted_after="$(marker_count "$ironkv_adapted/ironsht/src" 'trusted')"
+          test "$ironkv_assume_after" -eq "$ironkv_assume_before"
+          test "$ironkv_external_after" -eq "$ironkv_external_before"
+          test "$ironkv_trusted_after" -eq "$ironkv_trusted_before"
+          ironkv_adapted_tree_blake3="$(tree_blake3 "$ironkv_adapted")"
+          printf '%s\n' 'upgrade-trial: IronKV patch applied and trust inventory preserved'
+          cat > "$output_dir/verified-ironkv-adaptation.txt" <<EOF
+          result-scope: adapted-source-only
+          upstream-revision: ${upgradeTrialRows.verified-ironkv.source_revision}
+          patch-blake3: $ironkv_patch_expected
+          adapted-tree-blake3: $ironkv_adapted_tree_blake3
+          assume-sites-before: $ironkv_assume_before
+          assume-sites-after: $ironkv_assume_after
+          external-bodies-before: $ironkv_external_before
+          external-bodies-after: $ironkv_external_after
+          trusted-markers-before: $ironkv_trusted_before
+          trusted-markers-after: $ironkv_trusted_after
+          EOF
           set +e
-          timeout "$probe_timeout_seconds" octet-production-verus \
-            --crate-type=dylib --expand-errors -C opt-level=3 \
-            "$ironkv_source/ironsht/src/lib.rs" \
-            > "$TMPDIR/ironkv.stdout" 2> "$TMPDIR/ironkv.stderr"
+          (
+            cd "$ironkv_adapted/ironsht"
+            timeout "$probe_timeout_seconds" octet-production-verus \
+              --crate-type=dylib --expand-errors -C opt-level=3 src/lib.rs
+          ) > "$TMPDIR/ironkv.stdout" 2> "$TMPDIR/ironkv.stderr"
           ironkv_status="$?"
           set -e
-          test "$ironkv_status" -eq 1
+          if ! test "$ironkv_status" -eq '${toString (builtins.elemAt upgradeTrialRows.verified-ironkv.expected_exit_codes 0)}'; then
+            echo "adapted IronKV exited $ironkv_status" >&2
+            cat "$TMPDIR/ironkv.stdout" >&2
+            cat "$TMPDIR/ironkv.stderr" >&2
+            exit 1
+          fi
+          printf 'upgrade-trial: adapted IronKV exited %s\n' "$ironkv_status"
           ${pkgs.lib.concatMapStringsSep "\n" (anchor: ''
-            grep -F '${anchor}' "$TMPDIR/ironkv.stderr" > /dev/null
-          '') upgradeTrialRows.verified-ironkv.diagnostic_anchors}
+            grep -F '${anchor}' "$TMPDIR/ironkv.stdout" > /dev/null
+          '') upgradeTrialRows.verified-ironkv.result_anchors}
           normalize_log "$TMPDIR/ironkv.stdout" "$output_dir/verified-ironkv.stdout"
           normalize_log "$TMPDIR/ironkv.stderr" "$output_dir/verified-ironkv.stderr"
+          printf '%s\n' 'upgrade-trial: adapted IronKV proof passed'
+
+          allocator_adapted="$TMPDIR/verified-memory-allocator-adapted"
+          cp -R "$allocator_source" "$allocator_adapted"
+          chmod -R u+w "$allocator_adapted"
+          allocator_assume_before="$(marker_count "$allocator_source/verus-mimalloc" 'assume[[:space:]]*\(')"
+          allocator_external_before="$(marker_count "$allocator_source/verus-mimalloc" 'external_body')"
+          allocator_trusted_before="$(marker_count "$allocator_source/verus-mimalloc" 'trusted')"
+          patch --batch --forward --silent --directory "$allocator_adapted" --strip 1 < "$allocator_patch"
+          allocator_assume_after="$(marker_count "$allocator_adapted/verus-mimalloc" 'assume[[:space:]]*\(')"
+          allocator_external_after="$(marker_count "$allocator_adapted/verus-mimalloc" 'external_body')"
+          allocator_trusted_after="$(marker_count "$allocator_adapted/verus-mimalloc" 'trusted')"
+          test "$allocator_assume_after" -eq "$allocator_assume_before"
+          test "$allocator_external_after" -eq "$allocator_external_before"
+          test "$allocator_trusted_after" -eq "$allocator_trusted_before"
+          allocator_adapted_tree_blake3="$(tree_blake3 "$allocator_adapted")"
+          printf '%s\n' 'upgrade-trial: allocator patch applied and trust inventory preserved'
+          cat > "$output_dir/verified-memory-allocator-adaptation.txt" <<EOF
+          result-scope: adapted-source-only
+          upstream-revision: ${upgradeTrialRows.verified-memory-allocator.source_revision}
+          patch-blake3: $allocator_patch_expected
+          adapted-tree-blake3: $allocator_adapted_tree_blake3
+          assume-sites-before: $allocator_assume_before
+          assume-sites-after: $allocator_assume_after
+          external-bodies-before: $allocator_external_before
+          external-bodies-after: $allocator_external_after
+          trusted-markers-before: $allocator_trusted_before
+          trusted-markers-after: $allocator_trusted_after
+          EOF
 
           allocator_work="$TMPDIR/allocator-work"
           mkdir -p "$allocator_work/vendor" "$allocator_work/cargo-home" "$allocator_work/target"
-          cp -R "$allocator_source/test_libc" "$allocator_work/test_libc"
+          cp -R "$allocator_adapted/test_libc" "$allocator_work/test_libc"
           chmod -R u+w "$allocator_work/test_libc"
           tar --extract --gzip --file ${allocatorLibcCrate} --directory "$allocator_work/vendor"
           chmod -R u+w "$allocator_work/vendor"
@@ -468,32 +599,48 @@
           test -n "$allocator_libc_rlib"
           set +e
           (
-            cd "$allocator_source/verus-mimalloc"
+            cd "$allocator_adapted/verus-mimalloc"
             timeout "$probe_timeout_seconds" octet-production-verus \
               --triggers-mode silent --no-auto-recommends-check --rlimit ${toString allocatorRlimit} \
               --extern libc="$allocator_libc_rlib" lib.rs --time -- -Zproc-macro-backtrace
           ) > "$TMPDIR/allocator.stdout" 2> "$TMPDIR/allocator.stderr"
           allocator_status="$?"
           set -e
-          test "$allocator_status" -eq 1
+          if ! test "$allocator_status" -eq '${toString (builtins.elemAt upgradeTrialRows.verified-memory-allocator.expected_exit_codes 0)}'; then
+            echo "adapted allocator exited $allocator_status" >&2
+            cat "$TMPDIR/allocator.stdout" >&2
+            cat "$TMPDIR/allocator.stderr" >&2
+            exit 1
+          fi
+          printf 'upgrade-trial: adapted allocator exited %s\n' "$allocator_status"
           ${pkgs.lib.concatMapStringsSep "\n" (anchor: ''
-            grep -F '${anchor}' "$TMPDIR/allocator.stderr" > /dev/null
-          '') upgradeTrialRows.verified-memory-allocator.diagnostic_anchors}
+            grep -F '${anchor}' "$TMPDIR/allocator.stdout" > /dev/null
+          '') upgradeTrialRows.verified-memory-allocator.result_anchors}
+          normalize_log "$TMPDIR/allocator-cargo.stdout" "$output_dir/verified-memory-allocator-cargo.stdout"
+          normalize_log "$TMPDIR/allocator-cargo.stderr" "$output_dir/verified-memory-allocator-cargo.stderr"
           normalize_log "$TMPDIR/allocator.stdout" "$output_dir/verified-memory-allocator.stdout"
           normalize_log "$TMPDIR/allocator.stderr" "$output_dir/verified-memory-allocator.stderr"
+          printf '%s\n' 'upgrade-trial: adapted allocator proof passed'
 
           set +e
-          timeout "$probe_timeout_seconds" octet-production-verus -V new-mut-ref --crate-type=lib \
+          timeout "$probe_timeout_seconds" octet-production-verus --crate-type=lib \
             "$node_source/verified-node-replication/src/lib.rs" \
             > "$TMPDIR/node.stdout" 2> "$TMPDIR/node.stderr"
           node_status="$?"
           set -e
-          test "$node_status" -eq 1
+          if ! test "$node_status" -eq '${toString (builtins.elemAt upgradeTrialRows.verified-node-replication.expected_exit_codes 0)}'; then
+            echo "unmodified node replication exited $node_status" >&2
+            cat "$TMPDIR/node.stdout" >&2
+            cat "$TMPDIR/node.stderr" >&2
+            exit 1
+          fi
+          printf 'upgrade-trial: unmodified node replication exited %s\n' "$node_status"
           ${pkgs.lib.concatMapStringsSep "\n" (anchor: ''
-            grep -F '${anchor}' "$TMPDIR/node.stderr" > /dev/null
-          '') upgradeTrialRows.verified-node-replication.diagnostic_anchors}
+            grep -F '${anchor}' "$TMPDIR/node.stdout" > /dev/null
+          '') upgradeTrialRows.verified-node-replication.result_anchors}
           normalize_log "$TMPDIR/node.stdout" "$output_dir/verified-node-replication.stdout"
           normalize_log "$TMPDIR/node.stderr" "$output_dir/verified-node-replication.stderr"
+          printf '%s\n' 'upgrade-trial: unmodified node-replication proof passed'
 
           grep -F 'This contains the Rocq development' "$verus_belt_source/README.md" > /dev/null
           grep -F 'Rocq (formerly Coq) 8.20.0' "$verus_belt_source/README.md" > /dev/null
@@ -509,10 +656,13 @@
           trust-boundary=Rocq semantic validation is not a proof receipt for the Octet or Trellis verifier release
           EOF
 
+          mkdir -p "$output_dir/adaptations"
+          cp "$ironkv_patch" "$output_dir/adaptations/verified-ironkv.patch"
+          cp "$allocator_patch" "$output_dir/adaptations/verified-memory-allocator.patch"
           profile_blake3="$(file_blake3 "$octet_profile_json")"
           trial_matrix_blake3="$(file_blake3 "$TMPDIR/upgrade-trial.json")"
           corpus_catalog_blake3="$(file_blake3 "$corpus_dir/generated/catalog.json")"
-          source_blake3="$(file_blake3 "$trellis_source/src/lib.rs")"
+          source_blake3="$(tree_blake3 "$trellis_source/src")"
           baseline_identity_blake3="$(file_blake3 "$output_dir/baseline-identity.txt")"
           candidate_identity_blake3="$(file_blake3 "$output_dir/candidate-identity.txt")"
           baseline_stdout_blake3="$(file_blake3 "$output_dir/baseline.stdout")"
@@ -523,11 +673,16 @@
           paper_stderr_blake3="$(file_blake3 "$output_dir/paper-sosp24-artifact.stderr")"
           ironkv_stdout_blake3="$(file_blake3 "$output_dir/verified-ironkv.stdout")"
           ironkv_stderr_blake3="$(file_blake3 "$output_dir/verified-ironkv.stderr")"
+          ironkv_adaptation_audit_blake3="$(file_blake3 "$output_dir/verified-ironkv-adaptation.txt")"
+          allocator_cargo_stdout_blake3="$(file_blake3 "$output_dir/verified-memory-allocator-cargo.stdout")"
+          allocator_cargo_stderr_blake3="$(file_blake3 "$output_dir/verified-memory-allocator-cargo.stderr")"
           allocator_stdout_blake3="$(file_blake3 "$output_dir/verified-memory-allocator.stdout")"
           allocator_stderr_blake3="$(file_blake3 "$output_dir/verified-memory-allocator.stderr")"
+          allocator_adaptation_audit_blake3="$(file_blake3 "$output_dir/verified-memory-allocator-adaptation.txt")"
           node_stdout_blake3="$(file_blake3 "$output_dir/verified-node-replication.stdout")"
           node_stderr_blake3="$(file_blake3 "$output_dir/verified-node-replication.stderr")"
           verus_belt_audit_blake3="$(file_blake3 "$output_dir/verus-belt-audit.txt")"
+          patch_hash_negative_blake3="$(file_blake3 "$output_dir/patch-hash-negative.txt")"
 
           jq --null-input \
             --slurpfile matrix "$TMPDIR/upgrade-trial.json" \
@@ -542,6 +697,7 @@
             --arg candidate_identity_blake3 "$candidate_identity_blake3" \
             --arg baseline_nix_output '${verus}' \
             --arg candidate_nix_output '${octetProductionVerus}' \
+            --arg provider_source_revision '${octetSourceRevision}' \
             --arg paper_source_nix_output "$paper_source" \
             --arg ironkv_source_nix_output "$ironkv_source" \
             --arg allocator_source_nix_output "$allocator_source" \
@@ -553,13 +709,22 @@
             --arg candidate_stderr_blake3 "$candidate_stderr_blake3" \
             --arg paper_stdout_blake3 "$paper_stdout_blake3" \
             --arg paper_stderr_blake3 "$paper_stderr_blake3" \
+            --arg ironkv_patch_blake3 "$ironkv_patch_expected" \
+            --arg ironkv_adapted_tree_blake3 "$ironkv_adapted_tree_blake3" \
+            --arg ironkv_adaptation_audit_blake3 "$ironkv_adaptation_audit_blake3" \
             --arg ironkv_stdout_blake3 "$ironkv_stdout_blake3" \
             --arg ironkv_stderr_blake3 "$ironkv_stderr_blake3" \
+            --arg allocator_patch_blake3 "$allocator_patch_expected" \
+            --arg allocator_adapted_tree_blake3 "$allocator_adapted_tree_blake3" \
+            --arg allocator_adaptation_audit_blake3 "$allocator_adaptation_audit_blake3" \
+            --arg allocator_cargo_stdout_blake3 "$allocator_cargo_stdout_blake3" \
+            --arg allocator_cargo_stderr_blake3 "$allocator_cargo_stderr_blake3" \
             --arg allocator_stdout_blake3 "$allocator_stdout_blake3" \
             --arg allocator_stderr_blake3 "$allocator_stderr_blake3" \
             --arg node_stdout_blake3 "$node_stdout_blake3" \
             --arg node_stderr_blake3 "$node_stderr_blake3" \
             --arg verus_belt_audit_blake3 "$verus_belt_audit_blake3" \
+            --arg patch_hash_negative_blake3 "$patch_hash_negative_blake3" \
             --argjson baseline_exit "$baseline_status" \
             --argjson candidate_exit "$candidate_status" \
             --argjson paper_linked_exit "$paper_linked_status" \
@@ -567,15 +732,28 @@
             --argjson ironkv_exit "$ironkv_status" \
             --argjson allocator_exit "$allocator_status" \
             --argjson node_exit "$node_status" \
+            --argjson ironkv_assume_before "$ironkv_assume_before" \
+            --argjson ironkv_assume_after "$ironkv_assume_after" \
+            --argjson ironkv_external_before "$ironkv_external_before" \
+            --argjson ironkv_external_after "$ironkv_external_after" \
+            --argjson ironkv_trusted_before "$ironkv_trusted_before" \
+            --argjson ironkv_trusted_after "$ironkv_trusted_after" \
+            --argjson allocator_assume_before "$allocator_assume_before" \
+            --argjson allocator_assume_after "$allocator_assume_after" \
+            --argjson allocator_external_before "$allocator_external_before" \
+            --argjson allocator_external_after "$allocator_external_after" \
+            --argjson allocator_trusted_before "$allocator_trusted_before" \
+            --argjson allocator_trusted_after "$allocator_trusted_after" \
             --argjson timeout_exit_code '${toString timeoutExitCode}' \
             --argjson verus_belt_rocq_files "$verus_belt_rocq_files" \
-            '($baseline_exit == 0
+            'def row($id): $matrix[0].rows[] | select(.id == $id);
+            ($baseline_exit == 0
               and $candidate_exit == 0
               and $ironkv_exit == 0
               and $allocator_exit == 0
               and $node_exit == 0) as $promotion_eligible
             | {
-              payload_schema: "trellis-octet-verus-upgrade-trial-payload-v1",
+              payload_schema: "trellis-octet-verus-upgrade-trial-payload-v2",
               trial_id: $matrix[0].trial_id,
               claim_scope: $matrix[0].claim_scope,
               execution_system: $execution_system,
@@ -584,10 +762,12 @@
               execution_audit: {
                 trellis_source_mutated: false,
                 trellis_source_assumption_drift: "none-by-identical-immutable-source-input",
-                verifier_library_assumption_drift: "not-evaluated",
-                corpus_assumption_drift: "not-evaluated-probes-blocked-before-proof-completion",
+                verifier_library_assumption_drift: "not-claimed",
+                corpus_assumption_drift: "adapted-source-marker-counts-unchanged",
                 verifier_option_drift: false,
                 trigger_changes: [],
+                patch_hash_negative_rejected: true,
+                patch_hash_negative_blake3: $patch_hash_negative_blake3,
                 timeouts_observed: ([
                   $baseline_exit,
                   $candidate_exit,
@@ -603,6 +783,7 @@
               baseline: ($matrix[0].baseline + {
                 exit_code: $baseline_exit,
                 source_blake3: $source_blake3,
+                source_hash_scope: "blake3-of-sorted-relative-path-and-file-blake3-manifest",
                 source_nix_input: $source_nix_input,
                 identity_blake3: $baseline_identity_blake3,
                 nix_output: $baseline_nix_output,
@@ -612,7 +793,9 @@
               candidate: ($matrix[0].candidate + {
                 exit_code: $candidate_exit,
                 profile_blake3: $profile_blake3,
+                provider_source_revision: $provider_source_revision,
                 source_blake3: $source_blake3,
+                source_hash_scope: "blake3-of-sorted-relative-path-and-file-blake3-manifest",
                 source_nix_input: $source_nix_input,
                 identity_blake3: $candidate_identity_blake3,
                 nix_output: $candidate_nix_output,
@@ -622,9 +805,10 @@
               corpus_results: [
                 {
                   id: "paper-sosp24-artifact",
-                  mechanism: "artifact-microcase",
-                  promotion_role: "diagnostic-only",
-                  outcome: "source-api-incompatible",
+                  mechanism: row("paper-sosp24-artifact").mechanism,
+                  promotion_role: row("paper-sosp24-artifact").promotion_role,
+                  source_variant: row("paper-sosp24-artifact").source_variant,
+                  outcome: row("paper-sosp24-artifact").expected_outcome,
                   source: (($catalog[0].entries[] | select(.id == "paper-sosp24-artifact")
                     | {revision, source_hash, source_hash_protocol})
                     + {nix_output: $paper_source_nix_output}),
@@ -635,28 +819,54 @@
                 },
                 {
                   id: "verified-ironkv",
-                  mechanism: "native-verus",
-                  promotion_role: "required-native",
-                  outcome: "source-api-incompatible",
+                  mechanism: row("verified-ironkv").mechanism,
+                  promotion_role: row("verified-ironkv").promotion_role,
+                  source_variant: row("verified-ironkv").source_variant,
+                  outcome: row("verified-ironkv").expected_outcome,
                   source: (($catalog[0].entries[] | select(.id == "verified-ironkv")
                     | {revision, source_hash, source_hash_protocol})
                     + {nix_output: $ironkv_source_nix_output}),
+                  adaptation: (row("verified-ironkv").adaptation + {
+                    result_scope: "adapted-source-only",
+                    patch_blake3: $ironkv_patch_blake3,
+                    adapted_tree_blake3: $ironkv_adapted_tree_blake3,
+                    audit_blake3: $ironkv_adaptation_audit_blake3,
+                    trust_inventory: {
+                      assume_sites: {before: $ironkv_assume_before, after: $ironkv_assume_after},
+                      external_bodies: {before: $ironkv_external_before, after: $ironkv_external_after},
+                      trusted_markers: {before: $ironkv_trusted_before, after: $ironkv_trusted_after}
+                    }
+                  }),
                   exit_code: $ironkv_exit,
                   stdout_blake3: $ironkv_stdout_blake3,
                   stderr_blake3: $ironkv_stderr_blake3
                 },
                 {
                   id: "verified-memory-allocator",
-                  mechanism: "native-verus",
-                  promotion_role: "required-native",
-                  outcome: "source-api-incompatible",
+                  mechanism: row("verified-memory-allocator").mechanism,
+                  promotion_role: row("verified-memory-allocator").promotion_role,
+                  source_variant: row("verified-memory-allocator").source_variant,
+                  outcome: row("verified-memory-allocator").expected_outcome,
                   source: (($catalog[0].entries[] | select(.id == "verified-memory-allocator")
                     | {revision, source_hash, source_hash_protocol})
                     + {nix_output: $allocator_source_nix_output}),
+                  adaptation: (row("verified-memory-allocator").adaptation + {
+                    result_scope: "adapted-source-only",
+                    patch_blake3: $allocator_patch_blake3,
+                    adapted_tree_blake3: $allocator_adapted_tree_blake3,
+                    audit_blake3: $allocator_adaptation_audit_blake3,
+                    trust_inventory: {
+                      assume_sites: {before: $allocator_assume_before, after: $allocator_assume_after},
+                      external_bodies: {before: $allocator_external_before, after: $allocator_external_after},
+                      trusted_markers: {before: $allocator_trusted_before, after: $allocator_trusted_after}
+                    }
+                  }),
                   exit_code: $allocator_exit,
                   stdout_blake3: $allocator_stdout_blake3,
                   stderr_blake3: $allocator_stderr_blake3,
                   candidate_rust_libc_admitted: true,
+                  cargo_stdout_blake3: $allocator_cargo_stdout_blake3,
+                  cargo_stderr_blake3: $allocator_cargo_stderr_blake3,
                   build_dependency: {
                     crate: "libc",
                     version: "0.2.147",
@@ -666,9 +876,10 @@
                 },
                 {
                   id: "verified-node-replication",
-                  mechanism: "native-verus",
-                  promotion_role: "required-native",
-                  outcome: "verifier-internal-error",
+                  mechanism: row("verified-node-replication").mechanism,
+                  promotion_role: row("verified-node-replication").promotion_role,
+                  source_variant: row("verified-node-replication").source_variant,
+                  outcome: row("verified-node-replication").expected_outcome,
                   source: (($catalog[0].entries[] | select(.id == "verified-node-replication")
                     | {revision, source_hash, source_hash_protocol})
                     + {nix_output: $node_source_nix_output}),
@@ -678,9 +889,10 @@
                 },
                 {
                   id: "verus-belt",
-                  mechanism: "semantic-reference",
-                  promotion_role: "audit-only",
-                  outcome: "reference-audit-only",
+                  mechanism: row("verus-belt").mechanism,
+                  promotion_role: row("verus-belt").promotion_role,
+                  source_variant: row("verus-belt").source_variant,
+                  outcome: row("verus-belt").expected_outcome,
                   source: (($catalog[0].entries[] | select(.id == "verus-belt")
                     | {revision, source_hash, source_hash_protocol})
                     + {nix_output: $verus_belt_source_nix_output}),
@@ -693,8 +905,8 @@
                 observed: (if $promotion_eligible then "promote" else "blocked" end),
                 promotion_eligible: $promotion_eligible,
                 terminal_reason: (if $promotion_eligible
-                  then "all-required-native-probes-passed"
-                  else "required-native-probes-blocked"
+                  then "all-complete-and-required-native-proofs-passed"
+                  else "complete-or-required-native-proof-blocked"
                 end)
               }),
               non_claims: $matrix[0].non_claims
@@ -706,7 +918,7 @@
             --slurpfile payload "$output_dir/payload.json" \
             --arg receipt_blake3 "$receipt_blake3" \
             '{
-              schema_version: "trellis-octet-verus-upgrade-trial-receipt-v1",
+              schema_version: "trellis-octet-verus-upgrade-trial-receipt-v2",
               hash_scope: "blake3-of-jq-sorted-compact-payload-json",
               payload: $payload[0],
               receipt_blake3: $receipt_blake3
@@ -715,16 +927,28 @@
           cp "$corpus_dir/generated/catalog.json" "$output_dir/catalog.json"
           cp "$octet_profile_json" "$output_dir/octet-profile.json"
           jq --exit-status '
-            .payload.decision.expected == "blocked"
+            .payload.decision.expected == "promote"
             and .payload.decision.observed == .payload.decision.expected
-            and .payload.decision.promotion_eligible == false
-            and .payload.decision.preserve_current_pin == true
-            and .payload.decision.octet_compatibility_status == "local-pin"
+            and .payload.decision.promotion_eligible == true
+            and .payload.decision.preserve_current_pin == false
+            and .payload.decision.recommended_octet_compatibility_status == "native"
+            and (.payload.decision.blockers | length == 0)
             and .payload.baseline.expected_result == "passed"
-            and .payload.candidate.expected_result == "proof-failure"
+            and .payload.candidate.expected_result == "passed"
+            and .payload.candidate.provider_revision == .payload.candidate.provider_source_revision
             and ([.payload.corpus_results[] | select(.promotion_role == "required-native") | .outcome]
-              | all(. != "passed"))
+              | all(. == "passed-adapted" or . == "passed-unmodified"))
+            and ([.payload.corpus_results[] | select(.source_variant == "adapted")
+              | .adaptation.trust_inventory
+              | (.assume_sites.before == .assume_sites.after)
+                and (.external_bodies.before == .external_bodies.after)
+                and (.trusted_markers.before == .trusted_markers.after)]
+              | all)
+            and .payload.execution_audit.patch_hash_negative_rejected == true
+            and .payload.execution_audit.timeouts_observed == false
+            and .payload.execution_audit.trusted_boundary_transfer == false
           ' "$output_dir/receipt.json" > /dev/null
+          printf '%s\n' 'upgrade-trial: canonical promotion receipt validated'
           ${pkgs.lib.optionalString (upgradeTrialSavedEvidence != null) ''
             diff --recursive --unified ${upgradeTrialSavedEvidence} "$output_dir"
           ''}

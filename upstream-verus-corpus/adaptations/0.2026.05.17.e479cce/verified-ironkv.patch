@@ -1,0 +1,531 @@
+diff --git a/src/app_interface_t.rs b/src/app_interface_t.rs
+index d2cc6cb..3827749 100644
+--- a/src/app_interface_t.rs
++++ b/src/app_interface_t.rs
+@@ -27,8 +27,7 @@ pub open spec fn valid_value(value: AbstractValue) -> bool { value.len() < max_v
+ // Protocol/SHT/Delegations.i.dfy ExtractRange
+ pub open spec fn extract_range(h: Hashtable, kr: KeyRange<AbstractKey>) -> Hashtable
+ {
+-    Map::<AbstractKey, AbstractValue>::new(
+-        h.dom().filter(|k: AbstractKey| kr.contains(k)),
++    h.dom().filter(|k: AbstractKey| kr.contains(k)).mk_map(
+         |k: AbstractKey| h[k]
+     )
+ }
+diff --git a/src/delegation_map_t.rs b/src/delegation_map_t.rs
+index f8b8d98..1643092 100644
+--- a/src/delegation_map_t.rs
++++ b/src/delegation_map_t.rs
+@@ -17,16 +17,16 @@ use crate::network_t::*;
+ verus! {
+ 
+ #[verifier::ext_equal]
+-pub struct AbstractDelegationMap(pub IMap<AbstractKey, AbstractEndPoint>);
++pub struct AbstractDelegationMap(pub Map<AbstractKey, AbstractEndPoint>);
+ 
+ impl AbstractDelegationMap {
+     pub open spec fn init(root_identity: AbstractEndPoint) -> Self
+     {
+-        AbstractDelegationMap(IMap::total(|k: AbstractKey| root_identity))
++        AbstractDelegationMap(Map::total(|k: AbstractKey| root_identity))
+     }
+ 
+     #[verifier(inline)]
+-    pub open spec fn view(self) -> IMap<AbstractKey, AbstractEndPoint> {
++    pub open spec fn view(self) -> Map<AbstractKey, AbstractEndPoint> {
+         self.0
+     }
+ 
+@@ -46,7 +46,7 @@ impl AbstractDelegationMap {
+         recommends
+             self.is_complete(),
+     {
+-        AbstractDelegationMap(self@.union_prefer_right(IMap::new(|k| newkr.contains(k), |k| host)))
++        AbstractDelegationMap(self@.union_prefer_right(Map::new(|k| newkr.contains(k), |k| host)))
+     }
+ 
+     /// Translates Protocol/SHT/Delegations.i.dfy :: DelegateForKeyRangeIsHost
+diff --git a/src/delegation_map_v.rs b/src/delegation_map_v.rs
+index bfa7f86..5d30f48 100644
+--- a/src/delegation_map_v.rs
++++ b/src/delegation_map_v.rs
+@@ -187,7 +187,7 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+                     assert(self@[n-1] == e);  // OBSERVE
+                 }
+             }
+-            assert_isets_equal!(self@.to_iset(), old(self)@.to_iset().remove(k));
++            assert_sets_equal!(self@.to_set(), old(self)@.to_set().remove(k));
+         }
+         k
+     }
+@@ -207,16 +207,16 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+         let mut deleted = 0;
+         let ghost mut deleted_set;
+         proof {
+-            deleted_set = ISet::empty();
++            deleted_set = Set::empty();
+             assert_seqs_equal!(self@,
+                                old(self)@.subrange(0, start as int) +
+                                old(self)@.subrange(start as int + deleted as int,
+                                                    old(self)@.len() as int));
+-            assert_isets_equal!(deleted_set,
++            assert_sets_equal!(deleted_set,
+                                 old(self)@.subrange(start as int,
+-                                                    start as int + deleted as int).to_iset());
+-            assert_isets_equal!(old(self)@.to_iset(),
+-                                self@.to_iset() + deleted_set);
++                                                    start as int + deleted as int).to_set());
++            assert_sets_equal!(old(self)@.to_set(),
++                                self@.to_set() + deleted_set);
+         }
+         while deleted < end - start
+             invariant
+@@ -226,9 +226,9 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+                 old(self).valid(),
+                 self.valid(),
+                 self@ == old(self)@.subrange(0, start as int) + old(self)@.subrange(start as int + deleted as int, old(self)@.len() as int),
+-                deleted_set == old(self)@.subrange(start as int, start as int + deleted as int).to_iset(),
++                deleted_set == old(self)@.subrange(start as int, start as int + deleted as int).to_set(),
+                 deleted_set.len() == deleted,
+-                old(self)@.to_iset() == self@.to_iset() + deleted_set,
++                old(self)@.to_set() == self@.to_set() + deleted_set,
+             decreases
+                 end - start - deleted,
+         {
+@@ -271,10 +271,10 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+                         assert(old_deleted_seq[i] == e);    // OBSERVE
+                     }
+                 }
+-                assert_isets_equal!(deleted_set,
+-                                    deleted_seq.to_iset());
+-                assert_isets_equal!(old(self)@.to_iset(),
+-                                    self@.to_iset() + deleted_set);
++                assert_sets_equal!(deleted_set,
++                                    deleted_seq.to_set());
++                assert_sets_equal!(old(self)@.to_set(),
++                                    self@.to_set() + deleted_set);
+             }
+         }
+ 
+@@ -306,8 +306,8 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+             K::cmp_properties();
+         }
+         assert(self@.to_set() == old(self)@.to_set().insert(k)) by {
+-            let new_s = self@.to_iset();
+-            let old_s = old(self)@.to_iset().insert(k);
++            let new_s = self@.to_set();
++            let old_s = old(self)@.to_set().insert(k);
+             assert(self@[index as int] == k);   // OBSERVE
+             assert forall |e| old_s.contains(e) implies new_s.contains(e) by {
+                 if e == k {
+@@ -320,7 +320,7 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedVec<K> {
+                     }
+                 }
+             };
+-            assert_isets_equal!(new_s, old_s);
++            assert_sets_equal!(new_s, old_s);
+         };
+         return index;
+     }
+@@ -454,18 +454,18 @@ pub fn vec_erase<A>(v: &mut Vec<A>, start: usize, end: usize)
+ struct StrictlyOrderedMap<K: KeyTrait + VerusClone> {
+     keys: StrictlyOrderedVec<K>,
+     vals: Vec<ID>,
+-    m: Ghost<IMap<K, ID>>,
++    m: Ghost<Map<K, ID>>,
+ }
+ 
+ impl<K: KeyTrait + VerusClone> StrictlyOrderedMap<K> {
+-    pub closed spec fn view(self) -> IMap<K,ID> {
++    pub closed spec fn view(self) -> Map<K,ID> {
+         self.m@
+     }
+ 
+     pub closed spec fn map_valid(self) -> bool
+         // recommends self.keys@.len() == self.vals.len()  // error: public function requires cannot refer to private items
+     {
+-        &&& self.keys@.to_set().congruent(self.m@.dom())
++        &&& self.keys@.to_set() =~= self.m@.dom()
+         &&& forall |i| 0 <= i < self.keys@.len() ==> #[trigger] (self.m@[self.keys@.index(i)]) == self.vals@.index(i)
+     }
+ 
+@@ -513,12 +513,12 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedMap<K> {
+     fn new() -> (s: Self)
+         ensures
+             s.valid(),
+-            s@ == IMap::<K,ID>::empty(),
++            s@ == Map::<K,ID>::empty(),
+     {
+         let keys = StrictlyOrderedVec::new();
+-        let m = Ghost(IMap::empty());
++        let m = Ghost(Map::empty());
+         proof {
+-            assert_isets_equal!(m@.dom(), keys@.to_iset());
++            assert_sets_equal!(m@.dom(), keys@.to_set());
+         }
+         StrictlyOrderedMap {
+             keys,
+@@ -699,7 +699,7 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedMap<K> {
+                 self.vals.set(i, v);
+                 self.m = Ghost(self.m@.insert(k, v));
+                 proof {
+-                    assert_isets_equal!(self.m@.dom() == self.keys@.to_iset());
++                    assert_sets_equal!(self.m@.dom() == self.keys@.to_set());
+                 }
+             },
+             None => {
+@@ -915,13 +915,13 @@ impl<K: KeyTrait + VerusClone> StrictlyOrderedMap<K> {
+ 
+         self.keys.erase(start, end);
+         vec_erase(&mut self.vals, start, end);
+-        self.m = Ghost(IMap::new(|k| self.keys@.to_set().contains(k),
++        self.m = Ghost(Map::new(|k| self.keys@.to_set().contains(k),
+                                  |k| { let i = choose |i| 0 <= i < self.keys@.len() && self.keys@[i] == k;
+                                        self.vals@[i]}));
+         proof {
+             let ks = self.keys.to_set();
+-            assert(self.keys@.to_iset() == ks.to_iset());
+-            assert_isets_equal!(self.m@.dom(), ks.to_iset());
++            assert(self.keys@.to_set() == ks);
++            assert_sets_equal!(self.m@.dom(), ks);
+         }
+ 
+         assert forall |k| {
+@@ -1025,12 +1025,12 @@ pub struct DelegationMap<K: KeyTrait + VerusClone> {
+     // Our efficient implementation based on ranges
+     lows: StrictlyOrderedMap<K>,
+     // Our spec version
+-    m: Ghost<IMap<K, AbstractEndPoint>>,
++    m: Ghost<Map<K, AbstractEndPoint>>,
+ 
+ }
+ 
+ impl<K: KeyTrait + VerusClone> DelegationMap<K> {
+-    pub closed spec fn view(self) -> IMap<K,AbstractEndPoint> {
++    pub closed spec fn view(self) -> Map<K,AbstractEndPoint> {
+         self.m@
+     }
+ 
+@@ -1052,11 +1052,11 @@ impl<K: KeyTrait + VerusClone> DelegationMap<K> {
+             id_zero@.valid_physical_address(),
+         ensures
+             s.valid(),
+-            s@ == IMap::total(|k: K| id_zero@),
++            s@ == Map::total(|k: K| id_zero@),
+     {
+         let mut lows = StrictlyOrderedMap::new();
+         lows.set(k_zero, id_zero);
+-        let m = Ghost(IMap::total(|k| id_zero@));
++        let m = Ghost(Map::total(|k| id_zero@));
+         let s = DelegationMap { lows, m };
+         s
+     }
+@@ -1132,10 +1132,10 @@ impl<K: KeyTrait + VerusClone> DelegationMap<K> {
+             let ghost mut erased_vec; proof { erased_vec = self.lows; }
+             self.lows.set(lo.get().clone(), clone_end_point(dst));
+             self.m = Ghost(self.m@.union_prefer_right(
+-                        IMap::new(|k| KeyIterator::between(*lo, KeyIterator::new_spec(k), *hi),
++                        Map::new(|k| KeyIterator::between(*lo, KeyIterator::new_spec(k), *hi),
+                                   |k| dst@)));
+             assert(self@.dom().is_full()) by {
+-                assert_isets_equal!(self@.dom(), ISet::full());
++                assert_sets_equal!(self@.dom(), Set::full());
+             }
+             assert (self.lows@.contains_key(K::zero_spec())) by {
+                 let ki = KeyIterator::new_spec(K::zero_spec());
+diff --git a/src/hashmap_t.rs b/src/hashmap_t.rs
+index f0a7782..ddb72c4 100644
+--- a/src/hashmap_t.rs
++++ b/src/hashmap_t.rs
+@@ -81,10 +81,9 @@ impl CKeyHashMap {
+ 
+     #[verifier(external_body)]
+     pub fn bulk_update(&mut self, kr: &KeyRange::<CKey>, other: &Self)
+-        ensures final(self)@ == Map::<AbstractKey, Seq<u8>>::new(
+-            old(self)@.dom().union(other@.dom()).filter(
+-                |k: AbstractKey| kr.contains(k) ==> other@.dom().contains(k)
+-            ),
++        ensures final(self)@ == old(self)@.dom().union(other@.dom()).filter(
++            |k: AbstractKey| kr.contains(k) ==> other@.dom().contains(k)
++        ).mk_map(
+             |k: AbstractKey| if other@.dom().contains(k) { other@[k] } else { old(self)@[k] }
+         )
+     {
+@@ -94,9 +93,9 @@ impl CKeyHashMap {
+     #[verifier(external_body)]
+     pub fn bulk_remove(&mut self, kr: &KeyRange::<CKey>)
+     ensures
+-        final(self)@ == Map::<AbstractKey, Seq<u8>>::new(
+-            old(self)@.dom().filter(|k: AbstractKey| !kr.contains(k)),
+-            |k: AbstractKey| old(self)@[k])
++        final(self)@ == old(self)@.dom().filter(
++            |k: AbstractKey| !kr.contains(k)
++        ).mk_map(|k: AbstractKey| old(self)@[k])
+     {
+         panic!()
+     }
+@@ -168,8 +167,7 @@ impl CKeyHashMap {
+ 
+     pub open spec fn filter_spec(self, fs: spec_fn(CKey)->bool) -> Map<AbstractKey, Seq<u8>>
+     {
+-        Map::<AbstractKey, Seq<u8>>::new(
+-            self@.dom().filter(|k: AbstractKey| fs(k)),
++        self@.dom().filter(|k: AbstractKey| fs(k)).mk_map(
+             |k: AbstractKey| self@[k]
+         )
+     }
+diff --git a/src/host_impl_v.rs b/src/host_impl_v.rs
+index a1a5418..2f0ae04 100644
+--- a/src/host_impl_v.rs
++++ b/src/host_impl_v.rs
+@@ -28,7 +28,6 @@ use crate::verus_extra::set_lib_ext_v::*;
+ use vstd::assert_by_contradiction;
+ use vstd::bytes::*;
+ use vstd::calc_macro::*;
+-use vstd::imap::*;
+ use vstd::map::*;
+ use vstd::prelude::*;
+ use vstd::seq_lib::*; // TODO: prelude doesn't supply the macros?
+@@ -424,7 +423,7 @@ impl HostState {
+         assert(host_state.invariants(&netc.my_end_point())); // would pass some initial env state?
+         assert(host_state@.delegation_map == AbstractDelegationMap::init(constants.root_identity@)) by {
+             reveal(HostState::view);
+-            assert_imaps_equal!(host_state.delegation_map@, AbstractDelegationMap::init(constants.root_identity@)@);
++            assert_maps_equal!(host_state.delegation_map@, AbstractDelegationMap::init(constants.root_identity@)@);
+             assert(host_state.delegation_map@ == AbstractDelegationMap::init(constants.root_identity@)@);
+         }
+         assert(crate::host_protocol_t::init(host_state@, netc.my_end_point(), abstractify_args(*args)));
+@@ -1350,7 +1349,7 @@ impl HostState {
+     {
+         pre.valid_implies_complete();
+         post.valid_implies_complete();
+-        assert_imaps_equal!(AbstractDelegationMap(post@).0,
++        assert_maps_equal!(AbstractDelegationMap(post@).0,
+                             AbstractDelegationMap(pre@).update(KeyRange::<AbstractKey>{ lo: *lo, hi: *hi }, dst@).0);
+     }
+ 
+@@ -1363,8 +1362,9 @@ impl HostState {
+         requires
+             forall |k| pre@.dom().contains(k) ==> #[trigger] valid_value(pre@[k]),
+             valid_hashtable(other@),
+-            post@ == Map::<AbstractKey, Seq<u8>>::new(
+-                pre@.dom().union(other@.dom()).filter(|k: AbstractKey| kr.contains(k) ==> other@.dom().contains(k)),
++            post@ == pre@.dom().union(other@.dom()).filter(
++                |k: AbstractKey| kr.contains(k) ==> other@.dom().contains(k)
++            ).mk_map(
+                 |k: AbstractKey| if other@.dom().contains(k) { other@[k] } else { pre@[k] }
+             ),
+        ensures
+diff --git a/src/host_protocol_t.rs b/src/host_protocol_t.rs
+index 8ab8b0f..a6c29a3 100644
+--- a/src/host_protocol_t.rs
++++ b/src/host_protocol_t.rs
+@@ -81,8 +81,7 @@ pub open spec(checked) fn bulk_update_domain(h: Hashtable, kr: KeyRange<Abstract
+ // Protocol/SHT/Delegations.i.dfy BulkUpdateHashtable
+ pub open spec /*(checked) because lambdas*/ fn bulk_update_hashtable(h: Hashtable, kr: KeyRange<AbstractKey>, u: Hashtable) -> Hashtable
+ {
+-    Map::<AbstractKey, AbstractValue>::new(
+-        bulk_update_domain(h, kr, u),
++    bulk_update_domain(h, kr, u).mk_map(
+         |k: AbstractKey| if u.dom().contains(k) { u[k] } else { h[k] }
+     )
+ }
+@@ -90,8 +89,7 @@ pub open spec /*(checked) because lambdas*/ fn bulk_update_hashtable(h: Hashtabl
+ // Impl/SHT/HostModel.i.dfy BulkRemoveHashtable
+ pub open spec/*(checked) because lambdas*/ fn bulk_remove_hashtable(h: Hashtable, kr: KeyRange<AbstractKey>) -> Hashtable
+ {
+-    Map::<AbstractKey, AbstractValue>::new(
+-        h.dom().filter(|k: AbstractKey| !kr.contains(k)),
++    h.dom().filter(|k: AbstractKey| !kr.contains(k)).mk_map(
+         |k: AbstractKey| h[k]
+     )
+ }
+@@ -453,7 +451,7 @@ pub open spec(checked) fn process_received_packet_next(pre: AbstractHostState, p
+ }
+ 
+ pub open spec(checked) fn spontaneously_retransmit(pre: AbstractHostState, post: AbstractHostState, out: Set<Packet>) -> bool {
+-    &&& out.congruent(SingleDelivery::un_acked_messages(pre.sd, pre.constants.me))
++    &&& out =~= SingleDelivery::un_acked_messages(pre.sd, pre.constants.me)
+     &&& post == pre
+ }
+ 
+diff --git a/src/single_delivery_model_v.rs b/src/single_delivery_model_v.rs
+index 01c12c9..82502cf 100644
+--- a/src/single_delivery_model_v.rs
++++ b/src/single_delivery_model_v.rs
+@@ -15,7 +15,7 @@ use crate::net_sht_v::*;
+ use crate::network_t::*;
+ use crate::single_message_t::*;
+ use crate::verus_extra::set_lib_ext_v::*;
+-use vstd::iset_lib::*;
++use vstd::set_lib::*;
+ use vstd::map::*;
+ use vstd::prelude::*;
+ use vstd::seq_lib::*;
+@@ -110,16 +110,16 @@ impl CSingleDelivery {
+         Self::packets_are_valid_messages(old(packets)@),
+     ensures
+         cpacket_seq_is_abstractable(final(packets)@),
+-        final(packets)@.map_values(|p: CPacket| p@).to_iset() ==
+-            old(packets)@.map_values(|p: CPacket| p@).to_iset() + self@.un_acked_messages_for_dest(src@, dst@),
++        final(packets)@.map_values(|p: CPacket| p@).to_set() ==
++            old(packets)@.map_values(|p: CPacket| p@).to_set() + self@.un_acked_messages_for_dest(src@, dst@),
+         outbound_packet_seq_is_valid(final(packets)@),
+         outbound_packet_seq_has_correct_srcs(final(packets)@, src@),
+         Self::packets_are_valid_messages(final(packets)@),
+     {
+         proof {
+-            assert_isets_equal!(
+-                packets@.map_values(|p: CPacket| p@).to_iset(),
+-                    old(packets)@.map_values(|p: CPacket| p@).to_iset() + self@.un_acked_messages_for_dest_up_to(src@, dst@, 0 as nat),
++            assert_sets_equal!(
++                packets@.map_values(|p: CPacket| p@).to_set(),
++                    old(packets)@.map_values(|p: CPacket| p@).to_set() + self@.un_acked_messages_for_dest_up_to(src@, dst@, 0 as nat),
+             );
+         }
+ 
+@@ -137,8 +137,8 @@ impl CSingleDelivery {
+                     outbound_packet_seq_has_correct_srcs(packets@, src@),
+                     self.send_state@.contains_key(dst@),
+                     ack_state == self.send_state.epmap[dst],
+-                    packets@.map_values(|p: CPacket| p@).to_iset() ==
+-                        old(packets)@.map_values(|p: CPacket| p@).to_iset() + self@.un_acked_messages_for_dest_up_to(src@, dst@, i as nat),
++                    packets@.map_values(|p: CPacket| p@).to_set() ==
++                        old(packets)@.map_values(|p: CPacket| p@).to_set() + self@.un_acked_messages_for_dest_up_to(src@, dst@, i as nat),
+                     Self::packets_are_valid_messages(packets@),
+                   decreases
+                     ack_state.un_acked.len() - i
+@@ -169,9 +169,9 @@ impl CSingleDelivery {
+                         lemma_seq_push_to_set(packets0_view.map_values(|p: CPacket| p@), cpacket@);
+                         self.un_acked_messages_extend(src@, dst@, (i-1) as nat);
+ 
+-                        assert_isets_equal!(
+-                            packets@.map_values(|p: CPacket| p@).to_iset(),
+-                            old(packets)@.map_values(|p: CPacket| p@).to_iset() + self@.un_acked_messages_for_dest_up_to(src@, dst@, i as nat)
++                        assert_sets_equal!(
++                            packets@.map_values(|p: CPacket| p@).to_set(),
++                            old(packets)@.map_values(|p: CPacket| p@).to_set() + self@.un_acked_messages_for_dest_up_to(src@, dst@, i as nat)
+                         );
+                     }
+                 }
+@@ -538,10 +538,10 @@ impl CSingleDelivery {
+         src.abstractable(),
+     ensures
+         cpacket_seq_is_abstractable(packets@),
+-        abstractify_seq_of_cpackets_to_set_of_sht_packets(packets@).congruent(self@.un_acked_messages(src@)),
++        abstractify_seq_of_cpackets_to_set_of_sht_packets(packets@) =~= self@.un_acked_messages(src@),
+         outbound_packet_seq_is_valid(packets@),
+         outbound_packet_seq_has_correct_srcs(packets@, src@),
+-        self@.un_acked_messages(src@) == packets@.map_values(|p: CPacket| p@).to_iset(),
++        self@.un_acked_messages(src@) == packets@.map_values(|p: CPacket| p@).to_set(),
+         Self::packets_are_valid_messages(packets@),
+     {
+         let mut packets = Vec::new();
+@@ -558,11 +558,11 @@ impl CSingleDelivery {
+ 
+         let ghost completed_dest_seq: Seq<AbstractEndPoint> = Seq::empty();
+         let ghost completed_dest_set: Set<AbstractEndPoint> = completed_dest_seq.to_set();
+-        let ghost completed_un_acked_message_isets: ISet<ISet<Packet>> =
++        let ghost completed_un_acked_message_isets: Set<Set<Packet>> =
+             completed_dest_set.map(
+                 |dst: AbstractEndPoint| self@.un_acked_messages_for_dest(src@, dst)
+-            ).to_iset();
+-        let ghost completed_un_acked_messages: ISet<Packet> = completed_un_acked_message_isets.flatten();
++            );
++        let ghost completed_un_acked_messages: Set<Packet> = completed_un_acked_message_isets.flatten();
+ 
+         while dst_i < dests.len()
+           invariant
+@@ -580,9 +580,9 @@ impl CSingleDelivery {
+             completed_un_acked_message_isets ==
+                 completed_dest_set.map(
+                     |dst: AbstractEndPoint| self@.un_acked_messages_for_dest(src@, dst)
+-                ).to_iset(),
++                ),
+             completed_un_acked_messages == completed_un_acked_message_isets.flatten(),
+-            packets@.map_values(|p: CPacket| p@).to_set().congruent(completed_un_acked_messages),
++            packets@.map_values(|p: CPacket| p@).to_set() =~= completed_un_acked_messages,
+             Self::packets_are_valid_messages(packets@),
+           decreases
+             dests.len() - dst_i
+diff --git a/src/single_delivery_state_v.rs b/src/single_delivery_state_v.rs
+index a016f6b..893002a 100644
+--- a/src/single_delivery_state_v.rs
++++ b/src/single_delivery_state_v.rs
+@@ -16,7 +16,7 @@ use crate::marshal_v::Marshalable;
+ use crate::message_t::*;
+ use crate::network_t::Packet;
+ use crate::single_message_t::SingleMessage;
+-use vstd::iset_lib::*;
++use vstd::set_lib::*;
+ use vstd::map::*;
+ use vstd::prelude::*;
+ use vstd::seq_lib::*;
+@@ -369,7 +369,7 @@ impl CSingleDelivery {
+         assert(CAckState::un_acked_valid(&un_acked[i as int]));
+         // assert(un_acked[i as int]@ == un_acked_at[i as int]);
+         assert(un_acked_at[i as int] is Message);
+-        assert_isets_equal!(
++        assert_sets_equal!(
+             self@.un_acked_messages_for_dest_up_to(src, dst, i+1) ==
+             self@.un_acked_messages_for_dest_up_to(src, dst, i).insert(packet)
+         );
+@@ -379,10 +379,10 @@ impl CSingleDelivery {
+ impl SingleDelivery<Message> {
+     pub proof fn lemma_un_acked_messages_for_dests_empty(&self, src: AbstractEndPoint, dests: Set<AbstractEndPoint>)
+         requires dests == Set::<AbstractEndPoint>::empty()
+-        ensures self.un_acked_messages_for_dests(src, dests) == ISet::<Packet>::empty()
++        ensures self.un_acked_messages_for_dests(src, dests) == Set::<Packet>::empty()
+     {
+         assert_sets_equal!(dests.map(|dst: AbstractEndPoint| self.un_acked_messages_for_dest(src, dst)) == set![]);
+-        assert_isets_equal!(self.un_acked_messages_for_dests(src, dests) == ISet::<Packet>::empty());
++        assert_sets_equal!(self.un_acked_messages_for_dests(src, dests) == Set::<Packet>::empty());
+     }
+ }
+ 
+diff --git a/src/single_delivery_t.rs b/src/single_delivery_t.rs
+index eb4a9d3..f04bcf8 100644
+--- a/src/single_delivery_t.rs
++++ b/src/single_delivery_t.rs
+@@ -197,12 +197,12 @@ impl<MT> SingleDelivery<MT> {
+ }
+ 
+ impl SingleDelivery<Message> {
+-    pub open spec(checked) fn un_acked_messages_for_dest_up_to(self, src: AbstractEndPoint, dst: AbstractEndPoint, count: nat) -> ISet<Packet>
++    pub open spec(checked) fn un_acked_messages_for_dest_up_to(self, src: AbstractEndPoint, dst: AbstractEndPoint, count: nat) -> Set<Packet>
+     recommends
+         self.send_state.contains_key(dst),
+         count <= self.send_state[dst].un_acked.len()
+     {
+-        ISet::new(|p: Packet| {
++        Set::new(|p: Packet| {
+                 &&& p.src == src
+                 &&& exists |i: int| {
+                     &&& 0 <= i < count
+@@ -213,7 +213,7 @@ impl SingleDelivery<Message> {
+         })
+     }
+ 
+-    pub open spec(checked) fn un_acked_messages_for_dest(self, src: AbstractEndPoint, dst: AbstractEndPoint) -> ISet<Packet>
++    pub open spec(checked) fn un_acked_messages_for_dest(self, src: AbstractEndPoint, dst: AbstractEndPoint) -> Set<Packet>
+     recommends
+         self.send_state.contains_key(dst)
+     {
+@@ -226,14 +226,14 @@ impl SingleDelivery<Message> {
+     // as well remember the order and make use of it the whole way through. The
+     // only slight cost is that we will need to implement a
+     // union-of-seq-of-sets, just like in IronFleet.
+-    pub open spec fn un_acked_messages_for_dests(self, src: AbstractEndPoint, dsts: Set<AbstractEndPoint>) -> ISet<Packet>
++    pub open spec fn un_acked_messages_for_dests(self, src: AbstractEndPoint, dsts: Set<AbstractEndPoint>) -> Set<Packet>
+         recommends dsts.subset_of(self.send_state.dom())
+     {
+-        dsts.map(|dst: AbstractEndPoint| self.un_acked_messages_for_dest(src, dst)).to_iset().flatten()
++        dsts.map(|dst: AbstractEndPoint| self.un_acked_messages_for_dest(src, dst)).flatten()
+     }
+ 
+     /// Re-written Protocol/SHT/SingleDelivery.i.dfy UnAckedMessages
+-    pub open spec fn un_acked_messages(self, src: AbstractEndPoint) -> ISet<Packet>
++    pub open spec fn un_acked_messages(self, src: AbstractEndPoint) -> Set<Packet>
+     {
+         self.un_acked_messages_for_dests(src, self.send_state.dom())
+     }

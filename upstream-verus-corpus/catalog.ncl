@@ -75,8 +75,8 @@ let contracts = import "contracts.ncl" in
       license_status = "mit-reviewed",
       license_sentinel = "LICENSE",
       role = "local-numa-proof-stress",
-      execution_policy = "blocked-current-verifier",
-      verifier_context = "The source pins Verus submodule d8f073f31d72a5df2113b4ab9c011c1a27b38abf and Rust 1.76.0; Octet production Verus currently reaches an internal var_local_id failure with the required new-mut-ref feature.",
+      execution_policy = "opt-in-pinned",
+      verifier_context = "The source pins Verus submodule d8f073f31d72a5df2113b4ab9c011c1a27b38abf and Rust 1.76.0; Octet production Verus 0.2026.05.17.e479cce verifies the unmodified proof root under a separate compatibility receipt.",
       sentinels = ["README.md", "LICENSE", ".gitmodules", "verified-node-replication", "verus"],
       limitations = [
         "Node replication is a local multicore and NUMA data-structure technique, not network replication or consensus.",
@@ -84,7 +84,7 @@ let contracts = import "contracts.ncl" in
       ],
       non_claims = [
         "Source intake does not establish Molten, Aspen, Trellis, distributed-system, or runtime correctness.",
-        "No runtime adoption or benchmark claim is admitted while current-verifier compatibility is blocked.",
+        "The passing compatibility probe does not admit runtime adoption or benchmark claims.",
       ],
     },
     {

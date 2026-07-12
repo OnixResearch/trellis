@@ -81,7 +81,7 @@
       "verifier_context": "Use as a raw-pointer, arithmetic, and allocator-invariant regression input under its own pinned setup before any Trellis verifier migration claim."
     },
     {
-      "execution_policy": "blocked-current-verifier",
+      "execution_policy": "opt-in-pinned",
       "id": "verified-node-replication",
       "license_sentinel": "LICENSE",
       "license_status": "mit-reviewed",
@@ -91,7 +91,7 @@
       ],
       "non_claims": [
         "Source intake does not establish Molten, Aspen, Trellis, distributed-system, or runtime correctness.",
-        "No runtime adoption or benchmark claim is admitted while current-verifier compatibility is blocked."
+        "The passing compatibility probe does not admit runtime adoption or benchmark claims."
       ],
       "repository_url": "https://github.com/verus-lang/verified-node-replication",
       "revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
@@ -105,7 +105,7 @@
       ],
       "source_hash": "sha256-7y9Sh9oLyZs47BtJqON0DVhD70sa9nG67SIwiX2Yc4g=",
       "source_hash_protocol": "nix-sha256-unpacked",
-      "verifier_context": "The source pins Verus submodule d8f073f31d72a5df2113b4ab9c011c1a27b38abf and Rust 1.76.0; Octet production Verus currently reaches an internal var_local_id failure with the required new-mut-ref feature."
+      "verifier_context": "The source pins Verus submodule d8f073f31d72a5df2113b4ab9c011c1a27b38abf and Rust 1.76.0; Octet production Verus 0.2026.05.17.e479cce verifies the unmodified proof root under a separate compatibility receipt."
     },
     {
       "execution_policy": "reference-only",
