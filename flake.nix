@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    octet.url = "git+ssh://git@github.com/OnixResearch/octet.git";
+    octet.url = "github:OnixResearch/octet?rev=fc38f59330b626961d166febfdf1a5aa6575460f";
   };
 
   outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, ... }:
@@ -115,64 +115,9 @@
           }) corpusCatalog.entries
         );
 
-        verusfmtPolicyExitCode = 2;
-        pinnedVerusfmtFallback = pkgs.stdenvNoCC.mkDerivation {
-          pname = "octet-verusfmt";
-          version = "0.7.2";
-          src = pkgs.fetchurl {
-            url = "https://github.com/verus-lang/verusfmt/releases/download/v0.7.2/verusfmt-x86_64-unknown-linux-gnu.tar.xz";
-            hash = "sha256-xeCo4HM3BVskadKHjdzFidofS+kTSLsZF84SLqRtQBU=";
-          };
-          nativeBuildInputs = with pkgs; [ autoPatchelfHook b3sum gnutar xz ];
-          buildInputs = [ pkgs.stdenv.cc.cc.lib ];
-          dontUnpack = true;
-          installPhase = ''
-            release_dir="$out/libexec/verusfmt-release"
-            mkdir -p "$release_dir" "$out/bin" "$out/share"
-            tar --extract --xz --file "$src" --strip-components=1 --directory "$release_dir"
-            mv "$release_dir/verusfmt" "$release_dir/verusfmt-real"
-            chmod +x "$release_dir/verusfmt-real"
-            cat > "$out/bin/verusfmt" <<'WRAPPER'
-            #!${pkgs.runtimeShell}
-            set -eu
-            if [ "$#" -gt 0 ] && [ "$1" = "--update" ]; then
-              echo "verusfmt self-update is disabled; update the Octet profile and Trellis pin instead" >&2
-              exit ${toString verusfmtPolicyExitCode}
-            fi
-            exec "@REAL_VERUSFMT@" "$@"
-            WRAPPER
-            substituteInPlace "$out/bin/verusfmt" \
-              --replace-fail "@REAL_VERUSFMT@" "$release_dir/verusfmt-real"
-            chmod +x "$out/bin/verusfmt"
-            formatter_blake3="$(b3sum "$release_dir/verusfmt-real")"
-            formatter_blake3="''${formatter_blake3%% *}"
-            cat > "$out/share/identity.txt" <<EOF
-            formatter-profile: octet-verus-0.2026.04.03.21dfcd2
-            formatter: verusfmt@0.7.2
-            formatter-release-sha256: c5e0a8e07337055b2469d2878ddcc589da1f4be91348bb1917ce122ea46d4015
-            formatter-binary-blake3: $formatter_blake3
-            formatter-self-update: disabled-by-wrapper
-            formatter-package-mode: trellis-fallback-until-octet-input-exposes-package
-            trust-boundary: formatting proves selected source shape only, not proof success or correctness
-            EOF
-            cat > "$out/bin/octet-verusfmt" <<EOF
-            #!${pkgs.runtimeShell}
-            set -eu
-            if [ "\$#" -eq 1 ] && [ "\$1" = "--identity" ]; then
-              cat "$out/share/identity.txt"
-              exit 0
-            fi
-            exec "$out/bin/verusfmt" "\$@"
-            EOF
-            chmod +x "$out/bin/octet-verusfmt"
-          '';
-        };
         octetPackages = octet.packages.${system};
-        verusfmt =
-          if builtins.hasAttr "octet-verusfmt" octetPackages then
-            builtins.getAttr "octet-verusfmt" octetPackages
-          else
-            pinnedVerusfmtFallback;
+        verusfmt = builtins.getAttr "octet-verusfmt" octetPackages;
+        verusToolchainProfile = builtins.getAttr "octet-verus-toolchain-profile" octetPackages;
 
         upstreamVerusCorpus = pkgs.runCommand "trellis-upstream-verus-corpus" {
           nativeBuildInputs = with pkgs; [ b3sum diffutils jq nickel ];
@@ -229,10 +174,11 @@
         '';
 
         verusfmtRatchetCheck = pkgs.runCommand "trellis-verusfmt-ratchet" {
-          nativeBuildInputs = with pkgs; [ diffutils findutils ] ++ [ verusfmt ];
+          nativeBuildInputs = with pkgs; [ diffutils findutils jq ] ++ [ verusfmt verusToolchainProfile ];
         } ''
           corpus_dir=${./upstream-verus-corpus}
           source_root=${./src}
+          profile_json=${verusToolchainProfile}/share/octet/verus-toolchain/profile.json
           baseline="$corpus_dir/verusfmt-baseline.txt"
           actual="$TMPDIR/verusfmt-nonconforming.txt"
           normalized_baseline="$TMPDIR/verusfmt-baseline-normalized.txt"
@@ -240,6 +186,24 @@
           compare_baseline() {
             diff --unified "$1" "$2"
           }
+          validate_octet_profile() {
+            jq --exit-status '
+              .schema_version == "octet-verus-toolchain-profile/v1"
+              and .profile_id == "octet-verus-0.2026.04.03.21dfcd2"
+              and .formatter.version == "0.7.2"
+              and any(.compatibility[];
+                .consumer == "trellis"
+                and .status == "local-pin"
+                and .verifier_release == "0.2026.03.22.5e66329")
+            ' "$1" > /dev/null
+          }
+          validate_octet_profile "$profile_json"
+          jq '(.compatibility[] | select(.consumer == "trellis")).status = "native"' \
+            "$profile_json" > "$TMPDIR/mismatched-profile.json"
+          if validate_octet_profile "$TMPDIR/mismatched-profile.json"; then
+            echo "mismatched Octet compatibility profile unexpectedly passed" >&2
+            exit 1
+          fi
           LC_ALL=C sort --unique "$baseline" > "$normalized_baseline"
           compare_baseline "$baseline" "$normalized_baseline"
 
@@ -279,7 +243,9 @@
             echo "pinned verusfmt wrapper unexpectedly allowed self-update" >&2
             exit 1
           fi
-          octet-verusfmt --identity | grep -F 'formatter: verusfmt@0.7.2' > /dev/null
+          octet-verusfmt --identity > "$TMPDIR/formatter-identity.txt"
+          grep -F 'formatter-profile: octet-verus-0.2026.04.03.21dfcd2' "$TMPDIR/formatter-identity.txt" > /dev/null
+          grep -F 'formatter: verusfmt@0.7.2' "$TMPDIR/formatter-identity.txt" > /dev/null
           mkdir -p "$out"
         '';
 

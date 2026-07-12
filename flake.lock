@@ -64,7 +64,7 @@
     "crane_2": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
+        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -79,7 +79,7 @@
     "crane_3": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
+        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -94,7 +94,7 @@
     "crane_4": {
       "locked": {
         "lastModified": 1773857772,
-        "narHash": "sha256-1lxX8YVe+2dk45B3N3xp1p0VDS3GxXJzsf9ZXLypyp4=",
+        "narHash": "sha256-5xsK26KRHf0WytBtsBnQYC/lTWDhQuT57HJ7SzuqZcM=",
         "owner": "ipetkov",
         "repo": "crane",
         "rev": "b556d7bbae5ff86e378451511873dfd07e4504cd",
@@ -303,17 +303,18 @@
         "rust-overlay": "rust-overlay_3"
       },
       "locked": {
-        "lastModified": 1783451639,
-        "narHash": "sha256-XJOG+iGHnYXxlrHY6WwvOnBaGZc9jLNhOokcPCe/M7c=",
-        "ref": "refs/heads/main",
-        "rev": "09b2d863adf0b88b905f0ca62abf3e297e4988fa",
-        "revCount": 421,
-        "type": "git",
-        "url": "ssh://git@github.com/OnixResearch/octet.git"
+        "lastModified": 1783822227,
+        "narHash": "sha256-O0jnGZ9cr7bsyZqYTmBEUY0TvRnvMalI19b7eGZu42I=",
+        "owner": "OnixResearch",
+        "repo": "octet",
+        "rev": "fc38f59330b626961d166febfdf1a5aa6575460f",
+        "type": "github"
       },
       "original": {
-        "type": "git",
-        "url": "ssh://git@github.com/OnixResearch/octet.git"
+        "owner": "OnixResearch",
+        "repo": "octet",
+        "rev": "fc38f59330b626961d166febfdf1a5aa6575460f",
+        "type": "github"
       }
     },
     "root": {

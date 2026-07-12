@@ -636,11 +636,13 @@ hashes, license files, and sentinels; it does not run or import upstream proofs.
 Promotion to Trellis formal evidence still requires an exact local verifier run,
 assumption account, source/proof/tool bindings, and Trellis-owned receipt.
 
-The pinned `verusfmt` rail uses
+The pinned `verusfmt` rail consumes Octet's revision-bound formatter and typed
+profile packages; Trellis does not reconstruct a local release fallback. It uses
 `upstream-verus-corpus/verusfmt-baseline.txt` as an exact migration ratchet rather
-than rewriting the existing proof corpus wholesale. A new nonconforming file or
-a stale baseline entry fails; baseline membership does not claim formatting or
-proof success.
+than rewriting the existing proof corpus wholesale. A new nonconforming file, a
+stale baseline entry, or central-profile drift fails. Trellis retains its own
+reviewed verifier pin until a separate corpus-backed upgrade succeeds; package
+identity and baseline membership do not claim formatting or proof success.
 
 The Octet check uses `octet-baseline.json` to accept current warning-level
 findings while rejecting any new unbaselined stable finding ID. The local
