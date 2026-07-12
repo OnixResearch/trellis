@@ -1,6 +1,11 @@
-use verified_logic::ucan_token::{validate_envelope, UcanCapability, UcanPayload, ValidationError};
+use verified_logic::ucan_token::UcanCapability;
+use verified_logic::ucan_token::UcanPayload;
+use verified_logic::ucan_token::ValidationError;
+use verified_logic::ucan_token::validate_envelope;
 use verified_logic::web_of_trust_policy::threshold_accepts;
-use verified_logic::web_of_trust_principal::{principal_id_from_digest_bytes, PrincipalId, PRINCIPAL_ID_LEN};
+use verified_logic::web_of_trust_principal::PRINCIPAL_ID_LEN;
+use verified_logic::web_of_trust_principal::PrincipalId;
+use verified_logic::web_of_trust_principal::principal_id_from_digest_bytes;
 
 const NOW: u64 = 100;
 const NOT_BEFORE: u64 = 90;
@@ -46,15 +51,7 @@ fn main() {
     let roots = vec![principal()];
     let attestations = Vec::new();
     let revocations = Vec::new();
-    assert!(!threshold_accepts(
-        &roots,
-        &attestations,
-        &revocations,
-        &subject,
-        TRUST_THRESHOLD,
-        TRUST_DEPTH,
-        NOW,
-    ));
+    assert!(!threshold_accepts(&roots, &attestations, &revocations, &subject, TRUST_THRESHOLD, TRUST_DEPTH, NOW,));
 
     println!("ucan/web-of-trust: valid UCAN accepted, empty trust graph rejected");
 }

@@ -16,19 +16,35 @@ const SUFFICIENT_PROPOSERS: u64 = 4;
 const CRASH_FAULT_BUDGET: u64 = 3;
 
 fn low_proposal() -> QuePaxaProposal {
-    QuePaxaProposal { priority: LOW_PRIORITY, proposer_id: LOW_PROPOSER, value_id: LOW_VALUE }
+    QuePaxaProposal {
+        priority: LOW_PRIORITY,
+        proposer_id: LOW_PROPOSER,
+        value_id: LOW_VALUE,
+    }
 }
 
 fn high_proposal() -> QuePaxaProposal {
-    QuePaxaProposal { priority: HIGH_PRIORITY, proposer_id: HIGH_PROPOSER, value_id: HIGH_VALUE }
+    QuePaxaProposal {
+        priority: HIGH_PRIORITY,
+        proposer_id: HIGH_PROPOSER,
+        value_id: HIGH_VALUE,
+    }
 }
 
 fn leader_proposal() -> QuePaxaProposal {
-    QuePaxaProposal { priority: QUEPAXA_LEADER_PRIORITY, proposer_id: DECLARED_LEADER, value_id: HIGH_VALUE }
+    QuePaxaProposal {
+        priority: QUEPAXA_LEADER_PRIORITY,
+        proposer_id: DECLARED_LEADER,
+        value_id: HIGH_VALUE,
+    }
 }
 
 fn isr_state() -> QuePaxaIsrState {
-    QuePaxaIsrState { step: START_STEP, first: low_proposal(), current: low_proposal() }
+    QuePaxaIsrState {
+        step: START_STEP,
+        first: low_proposal(),
+        current: low_proposal(),
+    }
 }
 
 fn abstract_round_deciding() -> QuePaxaAbstractRound {
@@ -119,7 +135,10 @@ fn propagation_requires_quorum_and_subset_chain() {
         common_subset_existent: true,
     };
     assert!(propagation_admitted(admitted));
-    assert!(!propagation_admitted(QuePaxaPropagationFacts { common_quorum: false, ..admitted }));
+    assert!(!propagation_admitted(QuePaxaPropagationFacts {
+        common_quorum: false,
+        ..admitted
+    }));
 }
 
 #[test]
@@ -128,11 +147,17 @@ fn abstract_round_decides_or_carries_forward() {
     assert!(abstract_decision_guard(deciding));
     assert_eq!(abstract_decision_value(deciding), HIGH_VALUE);
 
-    let divergent = QuePaxaAbstractRound { universal_best: low_proposal(), ..deciding };
+    let divergent = QuePaxaAbstractRound {
+        universal_best: low_proposal(),
+        ..deciding
+    };
     assert!(!abstract_decision_guard(divergent));
     assert_eq!(abstract_next_candidate(divergent), low_proposal());
 
-    let already_decided = QuePaxaAbstractRound { already_decided: true, ..deciding };
+    let already_decided = QuePaxaAbstractRound {
+        already_decided: true,
+        ..deciding
+    };
     assert!(!abstract_decision_guard(already_decided));
 }
 
@@ -160,9 +185,18 @@ fn concrete_phase_and_catch_up_guards() {
 #[test]
 fn fast_path_accepts_leader_and_rejects_invalid_cases() {
     assert!(fast_path_decision_admitted(fast_path_facts()));
-    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts { round: NEXT_STEP, ..fast_path_facts() }));
-    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts { proposer_id: NON_LEADER, ..fast_path_facts() }));
-    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts { reserved_priority_unique: false, ..fast_path_facts() }));
+    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts {
+        round: NEXT_STEP,
+        ..fast_path_facts()
+    }));
+    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts {
+        proposer_id: NON_LEADER,
+        ..fast_path_facts()
+    }));
+    assert!(!fast_path_decision_admitted(QuePaxaFastPathFacts {
+        reserved_priority_unique: false,
+        ..fast_path_facts()
+    }));
 }
 
 // r[verify consensus.quepaxa.fixtures]
@@ -177,6 +211,12 @@ fn hedging_schedule_admits_leader_first_and_rejects_bad_schedules() {
         crash_fault_budget: CRASH_FAULT_BUDGET,
     };
     assert!(hedging_schedule_admitted(admitted));
-    assert!(!hedging_schedule_admitted(QuePaxaHedgingFacts { delays_nondecreasing: false, ..admitted }));
-    assert!(!hedging_schedule_admitted(QuePaxaHedgingFacts { proposer_count: CRASH_FAULT_BUDGET, ..admitted }));
+    assert!(!hedging_schedule_admitted(QuePaxaHedgingFacts {
+        delays_nondecreasing: false,
+        ..admitted
+    }));
+    assert!(!hedging_schedule_admitted(QuePaxaHedgingFacts {
+        proposer_count: CRASH_FAULT_BUDGET,
+        ..admitted
+    }));
 }

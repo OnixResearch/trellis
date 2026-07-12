@@ -1,8 +1,9 @@
 //! QuePaxa interval summary register transition helpers.
 
+use vstd::prelude::*;
+
 use crate::quepaxa::model::*;
 use crate::quepaxa::order::*;
-use vstd::prelude::*;
 
 verus! {
 

@@ -1,7 +1,8 @@
 //! Deterministic QuePaxa proposal ordering and leader-priority admission.
 
-use crate::quepaxa::model::*;
 use vstd::prelude::*;
+
+use crate::quepaxa::model::*;
 
 verus! {
 

@@ -1,4 +1,7 @@
-use verified_logic::r1cs_constraint::{r1cs_row_satisfied, r1cs_row_valid, R1csRow, R1csWitness};
+use verified_logic::r1cs_constraint::R1csRow;
+use verified_logic::r1cs_constraint::R1csWitness;
+use verified_logic::r1cs_constraint::r1cs_row_satisfied;
+use verified_logic::r1cs_constraint::r1cs_row_valid;
 
 const MODULUS: u16 = 17;
 const ROW_LEN: u8 = 3;

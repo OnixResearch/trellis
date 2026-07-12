@@ -1,8 +1,9 @@
 //! QuePaxa propagation, abstract-round, concrete-phase, fast-path, and hedging guards.
 
+use vstd::prelude::*;
+
 use crate::quepaxa::model::*;
 use crate::quepaxa::order::*;
-use vstd::prelude::*;
 
 verus! {
 

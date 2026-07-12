@@ -7,10 +7,10 @@
     "rustc_version": "rustc 1.96.0-nightly (ac7f9ec7d 2026-03-20)",
     "toolchain": "nightly-2026-03-21-x86_64-unknown-linux-gnu",
     "profile_name": "workspace-metadata",
-    "profile_hash": "b3:5bffdf8ac69f72b1ada05d8ba1c2cf23994f29e8c099e0365dbbc3dbbfff4d43",
+    "profile_hash": "b3:f47feb452af6982c2b038a47241a57400dc78e2692ab613a411812e10da6fd23",
     "config_hash": "b3:714cad9e8e8f9f6ce0d52a40daebc8bc0443527b4e74d48489a1b82e985aef70"
   },
-  "baseline_hash": "b3:af06c25462f7cc28d891e1e6af1d5aae76fc56494ce8c13199edf316483e695d",
+  "baseline_hash": "b3:2789e039623d80b6436d296f66ab86543f726b5d7b3a567a3e5c792ce617c8de",
   "findings": [
     {
       "stable_id": "b3:ab1e11fc27cc3a9a",
@@ -4212,8 +4212,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d209729fe36f3170",
-      "semantic_id": "b3:d209729fe36f3170",
+      "stable_id": "b3:ba97e4b18c8b6cf1",
+      "semantic_id": "b3:ba97e4b18c8b6cf1",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -4221,7 +4221,7 @@
       "file": "src/chain.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1406 lines (limit: 300)",
+      "message": "source file is 1405 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
@@ -22035,8 +22035,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:6646cecba0034e06",
-      "semantic_id": "b3:6646cecba0034e06",
+      "stable_id": "b3:65fcdd60e8bf7261",
+      "semantic_id": "b3:65fcdd60e8bf7261",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -32201,8 +32201,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:32103622f40c3d2f",
-      "semantic_id": "b3:32103622f40c3d2f",
+      "stable_id": "b3:325c88ccb4389a53",
+      "semantic_id": "b3:325c88ccb4389a53",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -32214,8 +32214,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:6c1794d484a834f5",
-      "semantic_id": "b3:6c1794d484a834f5",
+      "stable_id": "b3:728225e9c050815d",
+      "semantic_id": "b3:728225e9c050815d",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -32227,6 +32227,19 @@
       "crate_name": "verified_logic"
     },
     {
+      "stable_id": "b3:13252a1dd145e803",
+      "semantic_id": "b3:13252a1dd145e803",
+      "identity_status": "computed",
+      "lint": "non_trait_imports",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/r1cs_bit_decomposition.rs",
+      "line": 11,
+      "column": 1,
+      "message": "non-trait import `R1csBoolean` hides the owner path; prefer the qualified path at the use site",
+      "crate_name": "verified_logic"
+    },
+    {
       "stable_id": "b3:96aa714bfdb8c15c",
       "semantic_id": "b3:96aa714bfdb8c15c",
       "identity_status": "computed",
@@ -32234,7 +32247,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 11,
+      "line": 12,
       "column": 1,
       "message": "non-trait import `r1cs_boolean_modulus_coeff_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
@@ -32247,7 +32260,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 14,
+      "line": 15,
       "column": 1,
       "message": "non-trait import `r1cs_boolean_one_wire_satisfied` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
@@ -32260,22 +32273,22 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 17,
+      "line": 18,
       "column": 1,
       "message": "non-trait import `r1cs_boolean_satisfied` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:13252a1dd145e803",
-      "semantic_id": "b3:13252a1dd145e803",
+      "stable_id": "b3:5975e8991e191577",
+      "semantic_id": "b3:5975e8991e191577",
       "identity_status": "computed",
       "lint": "non_trait_imports",
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 22,
+      "line": 23,
       "column": 1,
-      "message": "non-trait import `R1csBoolean` hides the owner path; prefer the qualified path at the use site",
+      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -32286,7 +32299,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 25,
+      "line": 26,
       "column": 1,
       "message": "non-trait import `r1cs_len_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
@@ -32299,22 +32312,9 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/r1cs_bit_decomposition.rs",
-      "line": 28,
+      "line": 29,
       "column": 1,
       "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:5975e8991e191577",
-      "semantic_id": "b3:5975e8991e191577",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_bit_decomposition.rs",
-      "line": 31,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -33683,8 +33683,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5cddfe2922f0387f",
-      "semantic_id": "b3:5cddfe2922f0387f",
+      "stable_id": "b3:33d1b7eff9ed470a",
+      "semantic_id": "b3:33d1b7eff9ed470a",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -33692,12 +33692,12 @@
       "file": "src/raft_consensus_core.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 4469 lines (limit: 300)",
+      "message": "source file is 4494 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:baeb9c729feb9363",
-      "semantic_id": "b3:baeb9c729feb9363",
+      "stable_id": "b3:a1dd71fcca33835c",
+      "semantic_id": "b3:a1dd71fcca33835c",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",

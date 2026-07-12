@@ -1,6 +1,7 @@
 use verified_logic::arithmetic::abs_diff;
 use verified_logic::bounds::clamp;
-use verified_logic::quorum::{is_quorum, majority};
+use verified_logic::quorum::is_quorum;
+use verified_logic::quorum::majority;
 
 const LEFT_VALUE: u64 = 10;
 const RIGHT_VALUE: u64 = 3;

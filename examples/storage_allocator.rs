@@ -1,5 +1,11 @@
-use verified_logic::buddy::{buddy_of, can_coalesce, is_aligned_to_order, parent_block};
-use verified_logic::wal_recovery::{can_append, needs_recovery, replay_count, replay_range};
+use verified_logic::buddy::buddy_of;
+use verified_logic::buddy::can_coalesce;
+use verified_logic::buddy::is_aligned_to_order;
+use verified_logic::buddy::parent_block;
+use verified_logic::wal_recovery::can_append;
+use verified_logic::wal_recovery::needs_recovery;
+use verified_logic::wal_recovery::replay_count;
+use verified_logic::wal_recovery::replay_range;
 
 const BLOCK_ADDR: u64 = 64;
 const BUDDY_ORDER: u64 = 4;
