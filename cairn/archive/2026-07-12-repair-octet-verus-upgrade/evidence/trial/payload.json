@@ -3,7 +3,7 @@
   "trial_id": "trellis-octet-verus-may17-upgrade-trial",
   "claim_scope": "bounded-verifier-upgrade-compatibility-trial",
   "execution_system": "x86_64-linux",
-  "trial_matrix_blake3": "24b901d0d2e16db934b6909d8ee55a4bc135618d271a91e96a73e49e429c1c01",
+  "trial_matrix_blake3": "fa4e14613bb570ea30f007b52068b7da4d31e76bcee6193ddab369fc97519e40",
   "corpus_catalog_blake3": "5930b59c2a803f1bf8cdb0cde77f7a2823fe84769dc4e0d4e67aa84b7586e31e",
   "execution_audit": {
     "trellis_source_mutated": false,
@@ -24,11 +24,11 @@
     "expected_verified_count": 10712,
     "verifier": "verus@0.2026.03.22.5e66329",
     "exit_code": 0,
-    "source_blake3": "4957788a0bbd0279d3a2fc99728e7af06ab9c0f7ae7272d10730b0b7489a573a",
+    "source_blake3": "3bb2d2c1366e2ff07e948ebfa5f6585e2709556de0c6991ae1c67d558a3e271e",
     "source_hash_scope": "blake3-of-sorted-relative-path-and-file-blake3-manifest",
-    "source_nix_input": "/nix/store/7pkw0alrl5qlwvds791l25hflbxljn31-trellis-verus-proof-source",
-    "identity_blake3": "7d80c5c39be8f1822794b2efd908b073aafaa22cd80fb51ae80da782e4e67441",
-    "nix_output": "/nix/store/940vcfw4pkd9khabcm9wlljbadlmmx5f-verus-0.2026.03.22",
+    "source_nix_input": "/nix/store/ll5h4b0wvv5s2bkc0qpxjjcfgydak659-trellis-verus-proof-source",
+    "identity_blake3": "7dae8de1a53c49381baaf52b84f810a85da24ca40130db24363467452ea85e61",
+    "nix_output": "/nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22",
     "stdout_blake3": "1b586d4ba026599ed10c28079f07a89f4ca36ca664df9bfd212ce9a5668c2552",
     "stderr_blake3": "21d7ef8cdf3b4b035175dd26bcb817902a773c50d63dd19535ed7c6a961b0d8a"
   },
@@ -46,9 +46,9 @@
     "exit_code": 0,
     "profile_blake3": "f09c4dc0ee5481e458753213f9b6b90423777fcc3a69dc77cf8d2201d902dc23",
     "provider_source_revision": "374bd16b26cee2af34211a29bfa531c016811f51",
-    "source_blake3": "4957788a0bbd0279d3a2fc99728e7af06ab9c0f7ae7272d10730b0b7489a573a",
+    "source_blake3": "3bb2d2c1366e2ff07e948ebfa5f6585e2709556de0c6991ae1c67d558a3e271e",
     "source_hash_scope": "blake3-of-sorted-relative-path-and-file-blake3-manifest",
-    "source_nix_input": "/nix/store/7pkw0alrl5qlwvds791l25hflbxljn31-trellis-verus-proof-source",
+    "source_nix_input": "/nix/store/ll5h4b0wvv5s2bkc0qpxjjcfgydak659-trellis-verus-proof-source",
     "identity_blake3": "99ae3afb1e7aecf243dd732ecdf35dd9212674a1a26e89ef67086ed95fcf581d",
     "nix_output": "/nix/store/cb02jr7r1a2k8k2hlahmk8c90421czvq-octet-production-verus-0.2026.05.17.e479cce",
     "stdout_blake3": "1b586d4ba026599ed10c28079f07a89f4ca36ca664df9bfd212ce9a5668c2552",
@@ -214,6 +214,6 @@
     "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
     "Adapted-source passes bind their patches and do not certify the unmodified upstream revisions or authorize production adoption.",
     "Promotion changes only the reviewed Trellis verifier relationship; downstream proof and release authority remain local.",
-    "The exact local Git override binds the committed Octet tree for this trial but does not replace a published flake input."
+    "The exact published Octet GitHub input binds the committed provider tree; package identity still does not transfer proof authority."
   ]
 }

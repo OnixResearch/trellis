@@ -9,7 +9,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    octet.url = "github:OnixResearch/octet?rev=fc38f59330b626961d166febfdf1a5aa6575460f";
+    octet.url = "github:OnixResearch/octet?rev=374bd16b26cee2af34211a29bfa531c016811f51";
   };
 
   outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, ... }:
@@ -39,6 +39,8 @@
             || (builtins.baseNameOf path == "octet-baseline.json")
             || (builtins.baseNameOf path == "verusfmt-baseline.txt")
             || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null
+            || (builtins.match ".*/proof-review/generated/.*\\.json$" path) != null
+            || (builtins.match ".*/cairn-policy/generated/.*\\.json$" path) != null
             || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null;
           combinedFilter = path: type:
             (scriptFilter path type) || (craneLib.filterCargoSources path type);
@@ -79,10 +81,11 @@
 
         # --- Verification tools ---
 
-        # Verus: fetch release binary + rustc 1.93.0 for shared libs
-        rustc-1_94 = pkgs.rust-bin.stable."1.94.0".default;
+        # Historical verifier retained only as the comparison baseline in the
+        # May 17 promotion receipt. Shipped proofs consume Octet's package below.
+        baselineRustToolchain = pkgs.rust-bin.stable."1.94.0".default;
 
-        verus = pkgs.stdenv.mkDerivation {
+        baselineVerus = pkgs.stdenv.mkDerivation {
           pname = "verus";
           version = "0.2026.03.22";
           src = pkgs.fetchzip {
@@ -91,16 +94,15 @@
             stripRoot = true;
           };
           nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-          buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.zlib rustc-1_94 ];
+          buildInputs = [ pkgs.stdenv.cc.cc.lib pkgs.zlib baselineRustToolchain ];
           installPhase = ''
             mkdir -p $out
             cp -r . $out/
-            # Create a wrapper script that sets up the library path
             mkdir -p $out/bin
             cat > $out/bin/verus-verify <<WRAPPER
             #!/usr/bin/env bash
             export VERUS_Z3_PATH="$out/z3"
-            export LD_LIBRARY_PATH="${rustc-1_94}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
+            export LD_LIBRARY_PATH="${baselineRustToolchain}/lib\''${LD_LIBRARY_PATH:+:\$LD_LIBRARY_PATH}"
             exec "$out/rust_verify" "\$@"
             WRAPPER
             chmod +x $out/bin/verus-verify
@@ -137,11 +139,12 @@
           hash = "sha256-tGaPsOqGHB3wlBJ6xfHaNAmoIRakunT8ouWO+ScVm7M=";
         };
         allocatorRlimit = 70;
+        trellisRlimit = 20;
         upgradeTrialCorpusRowCount = 5;
         upgradeTrialAdaptedRowCount = 2;
         timeoutExitCode = 124;
         upgradeTrialSavedEvidence =
-          ./cairn/changes/repair-octet-verus-upgrade/evidence/trial;
+          ./cairn/archive/2026-07-12-repair-octet-verus-upgrade/evidence/trial;
 
         upstreamVerusCorpus = pkgs.runCommand "trellis-upstream-verus-corpus" {
           nativeBuildInputs = with pkgs; [ b3sum diffutils jq nickel ];
@@ -290,7 +293,7 @@
             nickel
             patch
             stdenv.cc
-          ]) ++ [ verus octetProductionVerus verusToolchainProfile ];
+          ]) ++ [ baselineVerus octetProductionVerus verusToolchainProfile ];
         } ''
           set -eu
           corpus_dir=${./upstream-verus-corpus}
@@ -392,30 +395,30 @@
             test "$(file_blake3 "$patch_path")" = "$expected"
           }
 
-          baseline_binary_blake3="$(file_blake3 ${verus}/rust_verify)"
-          baseline_solver_blake3="$(file_blake3 ${verus}/z3)"
+          baseline_binary_blake3="$(file_blake3 ${baselineVerus}/rust_verify)"
+          baseline_solver_blake3="$(file_blake3 ${baselineVerus}/z3)"
           cat > "$output_dir/baseline-identity.txt" <<EOF
           proof-verifier: ${upgradeTrialProfile.baseline.verifier}
           proof-verifier-binary-blake3: $baseline_binary_blake3
           proof-solver-blake3: $baseline_solver_blake3
-          proof-verifier-nix-output: ${verus}
+          proof-verifier-nix-output: ${baselineVerus}
           trust-boundary: baseline identity and execution do not establish verifier or solver soundness
           EOF
           octet-production-verus --identity > "$output_dir/candidate-identity.txt"
           grep -F 'proof-verifier: ${upgradeTrialProfile.candidate.verifier}' "$output_dir/candidate-identity.txt" > /dev/null
           grep -F 'proof-verifier-source-revision: e479cce36490b8fa4b0fd7755aa742aec354372c' "$output_dir/candidate-identity.txt" > /dev/null
 
-          trellis_rlimit=20
+          trellis_rlimit='${toString trellisRlimit}'
           set +e
           timeout "$probe_timeout_seconds" verus-verify \
             --triggers-mode silent \
             --rlimit "$trellis_rlimit" \
             --crate-type=lib \
-            --extern vstd="${verus}/libvstd.rlib" \
-            --extern builtin="${verus}/libverus_builtin.rlib" \
-            --extern builtin_macros="${verus}/libverus_builtin_macros.so" \
-            --extern state_machines_macros="${verus}/libverus_state_machines_macros.so" \
-            -L "${verus}/lib" \
+            --extern vstd="${baselineVerus}/libvstd.rlib" \
+            --extern builtin="${baselineVerus}/libverus_builtin.rlib" \
+            --extern builtin_macros="${baselineVerus}/libverus_builtin_macros.so" \
+            --extern state_machines_macros="${baselineVerus}/libverus_state_machines_macros.so" \
+            -L "${baselineVerus}/lib" \
             --edition 2021 \
             "$trellis_source/src/lib.rs" \
             > "$TMPDIR/baseline.stdout" 2> "$TMPDIR/baseline.stderr"
@@ -695,7 +698,7 @@
             --arg source_nix_input "$trellis_source" \
             --arg baseline_identity_blake3 "$baseline_identity_blake3" \
             --arg candidate_identity_blake3 "$candidate_identity_blake3" \
-            --arg baseline_nix_output '${verus}' \
+            --arg baseline_nix_output '${baselineVerus}' \
             --arg candidate_nix_output '${octetProductionVerus}' \
             --arg provider_source_revision '${octetSourceRevision}' \
             --arg paper_source_nix_output "$paper_source" \
@@ -976,6 +979,8 @@
         packages = {
           default = verified-logic;
           verified-logic = verified-logic;
+          verus = octetProductionVerus;
+          octet-production-verus = octetProductionVerus;
           verusfmt = verusfmt;
           upstream-verus-corpus = upstreamVerusCorpus;
           verus-upgrade-trial = verusUpgradeTrial;
@@ -1122,17 +1127,20 @@
           verusfmt-ratchet = verusfmtRatchetCheck;
           verus-upgrade-trial = verusUpgradeTrial;
 
-          # Verus formal verification
+          # Verus formal verification through Octet's published production package.
           verus-proofs = pkgs.runCommand "verus-proofs" {
-            nativeBuildInputs = [ verus ];
+            nativeBuildInputs = [ octetProductionVerus ];
           } ''
-            verus-verify \
+            candidate_root=${octetProductionVerus}/libexec/verus
+            octet-production-verus \
+              --triggers-mode silent \
+              --rlimit ${toString trellisRlimit} \
               --crate-type=lib \
-              --extern vstd="${verus}/libvstd.rlib" \
-              --extern builtin="${verus}/libverus_builtin.rlib" \
-              --extern builtin_macros="${verus}/libverus_builtin_macros.so" \
-              --extern state_machines_macros="${verus}/libverus_state_machines_macros.so" \
-              -L "${verus}/lib" \
+              --extern vstd="$candidate_root/libvstd.rlib" \
+              --extern builtin="$candidate_root/libverus_builtin.rlib" \
+              --extern builtin_macros="$candidate_root/libverus_builtin_macros.so" \
+              --extern state_machines_macros="$candidate_root/libverus_state_machines_macros.so" \
+              -L "$candidate_root" \
               --edition 2021 \
               ${verusProofSource}/src/lib.rs
             touch $out

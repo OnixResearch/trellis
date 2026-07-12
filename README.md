@@ -646,20 +646,19 @@ and trusted-marker counts, and are reported only as adapted-source results. The
 SOSP microcases remain diagnostic-only and VerusBelt remains a Rocq
 semantic-reference audit.
 
-That receipt authorizes the compatibility transition but does not make an
-unpublished sibling checkout a durable dependency. Trellis keeps its shipped
-`0.2026.03.22.5e66329` default until Octet revision
-`374bd16b26cee2af34211a29bfa531c016811f51` is published and the flake lock can
-bind it without a workspace-relative override.
+Octet revision `374bd16b26cee2af34211a29bfa531c016811f51` is published and
+locked as the exact provider. Trellis's default proof check and wrapper now
+consume Octet Verus `0.2026.05.17.e479cce`; the former
+`0.2026.03.22.5e66329` package remains only as the receipt's historical
+comparison baseline.
 
 The pinned `verusfmt` rail consumes Octet's revision-bound formatter and typed
 profile packages; Trellis does not reconstruct a local release fallback. It uses
 `upstream-verus-corpus/verusfmt-baseline.txt` as an exact migration ratchet rather
 than rewriting the existing proof corpus wholesale. A new nonconforming file, a
-stale baseline entry, or central-profile drift fails. Trellis retains its own
-reviewed verifier pin until a separate corpus-backed upgrade succeeds; package
-identity and baseline membership do not claim formatting or proof success. The
-successful May 17 compatibility receipt is a separate evidence class.
+stale baseline entry, or central-profile drift fails. The promoted verifier is
+admitted by the separate May 17 compatibility receipt; package identity and
+baseline membership alone still do not claim formatting or proof success.
 
 The Octet check uses `octet-baseline.json` to accept current warning-level
 findings while rejecting any new unbaselined stable finding ID. The local
@@ -671,7 +670,7 @@ pre-commit hook delegates to that same pinned Nix check.
 src/lib.rs              ← crate root, 581 public module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
 docs/requirements.md    ← canonical requirement prose and Tracey anchors
-scripts/verus.sh        ← verus wrapper with nix store paths
+scripts/verus.sh        ← Octet production-Verus package resolver
 scripts/verify.rs       ← full verification pipeline
 scripts/check-*.rs      ← annotation enforcement
 ```

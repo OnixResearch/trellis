@@ -173,6 +173,6 @@ let maximum_saved_log_bytes_value = 65536 in
     "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
     "Adapted-source passes bind their patches and do not certify the unmodified upstream revisions or authorize production adoption.",
     "Promotion changes only the reviewed Trellis verifier relationship; downstream proof and release authority remain local.",
-    "The exact local Git override binds the committed Octet tree for this trial but does not replace a published flake input.",
+    "The exact published Octet GitHub input binds the committed provider tree; package identity still does not transfer proof authority.",
   ],
 } | contracts.UpgradeTrial

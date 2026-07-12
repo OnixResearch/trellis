@@ -14,8 +14,8 @@
 
 - [x] [serial] Update the typed observed-result matrix and add missing-patch and forced-promotion negative fixtures r[trellis.upstream_verus_corpus.compatibility_repairs]
 - [x] [serial] Generate and freshness-check a canonical BLAKE3 receipt over sources, patches, tools, transcripts, assumptions, and decision r[trellis.upstream_verus_corpus.compatibility_repairs]
-- [ ] [serial] Bind the exact published Octet revision, then change the verifier pin and compatibility status only while every required proof passes r[trellis.upstream_verus_corpus.compatibility_repairs]
-  - Blocked: Octet revision `374bd16b26cee2af34211a29bfa531c016811f51` is committed locally but is not published; the local Git override is evidence input, not a durable dependency.
-- [ ] [serial] Run focused proofs, corpus, formatter, flake, and Cairn checks r[trellis.upstream_verus_corpus.compatibility_repairs]
-  - Focused proof/corpus/formatter/freshness checks and compatible Cairn gates pass; broad `nix flake check` is blocked by pre-existing rustfmt drift in `src/raft_consensus_core.rs`.
-- [ ] [serial] Sync and archive after the durable provider revision and shipped pin are revalidated r[trellis.upstream_verus_corpus.compatibility_repairs]
+- [x] [serial] Bind the exact published Octet revision, then change the verifier pin and compatibility status only while every required proof passes r[trellis.upstream_verus_corpus.compatibility_repairs]
+  - Octet revision `374bd16b26cee2af34211a29bfa531c016811f51` is published, locked from GitHub, and consumed by the default proof check.
+- [x] [serial] Run focused proofs, corpus, formatter, flake, and Cairn checks r[trellis.upstream_verus_corpus.compatibility_repairs]
+  - Focused proof/corpus/formatter/freshness checks, compatible Cairn gates, and the full `x86_64-linux` flake check pass.
+- [x] [serial] Sync and archive after the durable provider revision and shipped pin are revalidated r[trellis.upstream_verus_corpus.compatibility_repairs]

@@ -1,35 +1,53 @@
 #!/usr/bin/env bash
-# Wrapper around verus rust_verify with correct nix store paths.
+# Run Trellis proofs with Octet's published production Verus package.
 # Usage: ./scripts/verus.sh [file.rs] [extra args...]
 # Default file: src/lib.rs
 set -euo pipefail
 
-VERUS_ROOT=${VERUS_ROOT:-/nix/store/c4zmcsmq6hyy2b7bg79wdrga9a2kszhm-verus-0.2026.03.22.5e66329}
-RUST_TOOLCHAIN=${RUST_TOOLCHAIN:-/nix/store/gbrj4zlys951xy55wqwr74m0kmiz6xr1-rust-default-1.96.0-nightly-2026-03-21}
+COMMAND_NOT_FOUND_EXIT_CODE=127
+VERUS_EDITION=2021
 
-FILE="${1:-src/lib.rs}"
-shift 2>/dev/null || true
+if [ "$#" -gt 0 ]; then
+  FILE="$1"
+  shift
+else
+  FILE="src/lib.rs"
+fi
 
 cd "$(git rev-parse --show-toplevel)"
 
-if [ ! -x "$VERUS_ROOT/rust_verify" ]; then
-  if [ "$FILE" = "src/lib.rs" ] && [ "$#" -eq 0 ]; then
-    SYSTEM="$(nix eval --raw --impure --expr 'builtins.currentSystem')"
-    exec nix build ".#checks.${SYSTEM}.verus-proofs" --no-link -L
-  fi
-  echo "rust_verify not found at $VERUS_ROOT/rust_verify" >&2
-  echo "Set VERUS_ROOT to a live Verus checkout/store path, or run src/lib.rs through the flake verus-proofs check." >&2
-  exit 127
+if [ -z "${VERUS_ROOT:-}" ] && [ "$FILE" = "src/lib.rs" ] && [ "$#" -eq 0 ]; then
+  SYSTEM="$(nix eval --raw --impure --expr 'builtins.currentSystem')"
+  exec nix build ".#checks.${SYSTEM}.verus-proofs" --no-link -L
 fi
 
-VERUS_Z3_PATH="$VERUS_ROOT/z3" \
-LD_LIBRARY_PATH="$RUST_TOOLCHAIN/lib" \
-exec "$VERUS_ROOT/rust_verify" \
+if [ -z "${VERUS_ROOT:-}" ]; then
+  VERUS_ROOT="$(nix build .#verus --no-link --print-out-paths)"
+fi
+
+if [ -x "$VERUS_ROOT/bin/octet-production-verus" ]; then
+  VERUS_BIN="$VERUS_ROOT/bin/octet-production-verus"
+  VERUS_LIB_ROOT="$VERUS_ROOT/libexec/verus"
+elif [ -x "$VERUS_ROOT/rust_verify" ]; then
+  VERUS_BIN="$VERUS_ROOT/rust_verify"
+  VERUS_LIB_ROOT="$VERUS_ROOT"
+else
+  echo "production Verus not found under $VERUS_ROOT" >&2
+  echo "Set VERUS_ROOT to the Octet package or a compatible unpacked Verus root." >&2
+  exit "$COMMAND_NOT_FOUND_EXIT_CODE"
+fi
+
+export VERUS_Z3_PATH="$VERUS_LIB_ROOT/z3"
+if [ -n "${RUST_TOOLCHAIN:-}" ]; then
+  export LD_LIBRARY_PATH="$RUST_TOOLCHAIN/lib${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}"
+fi
+
+exec "$VERUS_BIN" \
   --crate-type=lib \
-  --extern vstd="$VERUS_ROOT/libvstd.rlib" \
-  --extern builtin="$VERUS_ROOT/libverus_builtin.rlib" \
-  --extern builtin_macros="$VERUS_ROOT/libverus_builtin_macros.so" \
-  --extern state_machines_macros="$VERUS_ROOT/libverus_state_machines_macros.so" \
-  -L "$VERUS_ROOT/lib" \
-  --edition 2021 \
+  --extern vstd="$VERUS_LIB_ROOT/libvstd.rlib" \
+  --extern builtin="$VERUS_LIB_ROOT/libverus_builtin.rlib" \
+  --extern builtin_macros="$VERUS_LIB_ROOT/libverus_builtin_macros.so" \
+  --extern state_machines_macros="$VERUS_LIB_ROOT/libverus_state_machines_macros.so" \
+  -L "$VERUS_LIB_ROOT" \
+  --edition "$VERUS_EDITION" \
   "$FILE" "$@"
