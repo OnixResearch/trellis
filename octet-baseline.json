@@ -10,7 +10,7 @@
     "profile_hash": "b3:5bffdf8ac69f72b1ada05d8ba1c2cf23994f29e8c099e0365dbbc3dbbfff4d43",
     "config_hash": "b3:714cad9e8e8f9f6ce0d52a40daebc8bc0443527b4e74d48489a1b82e985aef70"
   },
-  "baseline_hash": "b3:6d5bdce4bf34e3ca6a25c8cfedafee00bbad8b9df22b983f023bc48cbc04ff82",
+  "baseline_hash": "b3:af06c25462f7cc28d891e1e6af1d5aae76fc56494ce8c13199edf316483e695d",
   "findings": [
     {
       "stable_id": "b3:ab1e11fc27cc3a9a",
@@ -19136,8 +19136,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2d790817e9070119",
-      "semantic_id": "b3:2d790817e9070119",
+      "stable_id": "b3:af7a2de35566314b",
+      "semantic_id": "b3:af7a2de35566314b",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -19240,8 +19240,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:adc452e847234066",
-      "semantic_id": "b3:adc452e847234066",
+      "stable_id": "b3:adccfc6147606c9b",
+      "semantic_id": "b3:adccfc6147606c9b",
       "identity_status": "computed",
       "lint": "borrowed_argument_types",
       "group": "tigerstyle::structure",
@@ -19253,8 +19253,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:c4e82e0439372f9e",
-      "semantic_id": "b3:c4e82e0439372f9e",
+      "stable_id": "b3:5ff31ed899e7b4cc",
+      "semantic_id": "b3:5ff31ed899e7b4cc",
       "identity_status": "computed",
       "lint": "path_segment_repetition",
       "group": "tigerstyle::naming",
@@ -19273,7 +19273,7 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/hypervisor_dirty_log.rs",
-      "line": 179,
+      "line": 213,
       "column": 1,
       "message": "parameter uses `&Vec<bool>`; accept `&[bool]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
@@ -19286,7 +19286,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/hypervisor_dirty_log.rs",
-      "line": 179,
+      "line": 213,
       "column": 1,
       "message": "item name `clear_dirty` repeats `dirty` from ancestor path segment `hypervisor_dirty_log`",
       "crate_name": "verified_logic"
@@ -22035,8 +22035,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:66a63dcdaae4ae3e",
-      "semantic_id": "b3:66a63dcdaae4ae3e",
+      "stable_id": "b3:6646cecba0034e06",
+      "semantic_id": "b3:6646cecba0034e06",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -22044,7 +22044,7 @@
       "file": "src/lib.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1046 lines (limit: 300)",
+      "message": "source file is 1048 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
@@ -26377,8 +26377,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:00c8322608932f82",
-      "semantic_id": "b3:00c8322608932f82",
+      "stable_id": "b3:29e16ac0296d6074",
+      "semantic_id": "b3:29e16ac0296d6074",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -26386,12 +26386,12 @@
       "file": "src/nix_drv_serialize.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 991 lines (limit: 300)",
+      "message": "source file is 994 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:024a2ab27eb0b2be",
-      "semantic_id": "b3:024a2ab27eb0b2be",
+      "stable_id": "b3:604f7d7b626f4bfc",
+      "semantic_id": "b3:604f7d7b626f4bfc",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -29900,8 +29900,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7e3ba43dad3bf1fc",
-      "semantic_id": "b3:7e3ba43dad3bf1fc",
+      "stable_id": "b3:28d3e3fb09b1e4b0",
+      "semantic_id": "b3:28d3e3fb09b1e4b0",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -29909,18 +29909,18 @@
       "file": "src/partition.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 343 lines (limit: 300)",
+      "message": "source file is 371 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:04052148138076d0",
-      "semantic_id": "b3:04052148138076d0",
+      "stable_id": "b3:3f618306b2de8728",
+      "semantic_id": "b3:3f618306b2de8728",
       "identity_status": "computed",
       "lint": "path_segment_repetition",
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/partition.rs",
-      "line": 65,
+      "line": 90,
       "column": 1,
       "message": "item name `is_valid_partition` repeats `partition` from ancestor path segment `partition`",
       "crate_name": "verified_logic"
@@ -29933,7 +29933,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/partition.rs",
-      "line": 118,
+      "line": 146,
       "column": 1,
       "message": "item name `partition_span_lo` repeats `partition` from ancestor path segment `partition`",
       "crate_name": "verified_logic"
@@ -29946,7 +29946,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/partition.rs",
-      "line": 137,
+      "line": 165,
       "column": 1,
       "message": "item name `partition_span_hi` repeats `partition` from ancestor path segment `partition`",
       "crate_name": "verified_logic"
@@ -29959,7 +29959,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/partition.rs",
-      "line": 160,
+      "line": 188,
       "column": 1,
       "message": "item name `partition_covers` repeats `partition` from ancestor path segment `partition`",
       "crate_name": "verified_logic"
@@ -39962,8 +39962,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5d05fb3fc806687d",
-      "semantic_id": "b3:5d05fb3fc806687d",
+      "stable_id": "b3:d2962b171c8237ae",
+      "semantic_id": "b3:d2962b171c8237ae",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -39971,12 +39971,12 @@
       "file": "src/shamir_field.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 692 lines (limit: 300)",
+      "message": "source file is 696 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:60c9aa453983e66d",
-      "semantic_id": "b3:60c9aa453983e66d",
+      "stable_id": "b3:cce3776bc84b1b44",
+      "semantic_id": "b3:cce3776bc84b1b44",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -40047,7 +40047,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/shamir_field.rs",
-      "line": 398,
+      "line": 402,
       "column": 1,
       "message": "item name `field_inv` repeats `field` from ancestor path segment `shamir_field`",
       "crate_name": "verified_logic"
@@ -49998,8 +49998,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:4cbe79e39b6b23c3",
-      "semantic_id": "b3:4cbe79e39b6b23c3",
+      "stable_id": "b3:e3e703931a4b756f",
+      "semantic_id": "b3:e3e703931a4b756f",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -50007,12 +50007,12 @@
       "file": "src/wasm_primitives.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 2194 lines (limit: 300)",
+      "message": "source file is 2206 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:ee0791603b4052a0",
-      "semantic_id": "b3:ee0791603b4052a0",
+      "stable_id": "b3:aaf1848a1f4ae7b2",
+      "semantic_id": "b3:aaf1848a1f4ae7b2",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -50531,8 +50531,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:70a0eff310f2b437",
-      "semantic_id": "b3:70a0eff310f2b437",
+      "stable_id": "b3:abb076f3d695ec00",
+      "semantic_id": "b3:abb076f3d695ec00",
       "identity_status": "computed",
       "lint": "usize_in_public_api",
       "group": "tigerstyle::structure",
@@ -50544,19 +50544,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7af6b4f08e25baea",
-      "semantic_id": "b3:7af6b4f08e25baea",
-      "identity_status": "computed",
-      "lint": "catch_all_on_enum",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/wasm_primitives.rs",
-      "line": 1245,
-      "column": 9,
-      "message": "catch-all `_` on enum match returns deny value — new variants will be silently handled",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d2d5964ddc0d5618",
       "semantic_id": "b3:d2d5964ddc0d5618",
       "identity_status": "computed",
@@ -50564,7 +50551,7 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/wasm_primitives.rs",
-      "line": 1250,
+      "line": 1262,
       "column": 1,
       "message": "`usize` in public API — use `u32` or `u64` for cross-platform consistency",
       "crate_name": "verified_logic"
