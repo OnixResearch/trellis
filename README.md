@@ -628,6 +628,7 @@ cargo run --quiet --bin proof_evidence -- check # deterministic proof-evidence b
 ./scripts/check-upstream-verus-corpus.rs # typed catalog and boundary validation; add --self-test for negative cases
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').upstream-verus-corpus --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verusfmt-ratchet --no-link -L
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verus-upgrade-trial --no-link -L
 ```
 
 `upstream-verus-corpus/catalog.ncl` pins source snapshots for verifier-upgrade
@@ -635,6 +636,15 @@ regression selection. Its source-intake check validates exact fixed-output
 hashes, license files, and sentinels; it does not run or import upstream proofs.
 Promotion to Trellis formal evidence still requires an exact local verifier run,
 assumption account, source/proof/tool bindings, and Trellis-owned receipt.
+
+The Octet `0.2026.04.03.21dfcd2` upgrade trial is fail-closed and currently
+blocked. The candidate verifies 10,709 Trellis obligations but fails the
+`serialize_drv_platform_field_differs` postcondition that the current verifier
+accepts, while IronKV and the allocator depend on removed `vstd` APIs and node
+replication reaches its recorded `var_local_id` internal error. The SOSP
+microcases are diagnostic-only and VerusBelt remains a Rocq semantic-reference
+audit. Therefore Trellis keeps `0.2026.03.22.5e66329` and Octet's `local-pin`
+row; source identity, partial runs, and reference audits cannot promote it.
 
 The pinned `verusfmt` rail consumes Octet's revision-bound formatter and typed
 profile packages; Trellis does not reconstruct a local release fallback. It uses

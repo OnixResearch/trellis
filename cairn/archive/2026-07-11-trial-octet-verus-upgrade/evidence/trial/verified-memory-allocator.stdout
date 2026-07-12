@@ -1,0 +1,27 @@
+(use --output-json for machine-readable output)
+verus-build-info
+Verus
+  Version: 0.2026.04.03.21dfcd2
+  Profile: release
+  Platform: linux_x86_64
+  Toolchain: 1.94.0-x86_64-unknown-linux-gnu
+
+total-time:            <DURATION_MS>
+    rust-time:                <DURATION_MS>
+        init-and-types:           <DURATION_MS>
+        trait-conflicts:             <DURATION_MS>
+        compile-time:                <DURATION_MS>
+    verification-time:           <DURATION_MS>
+        vir-time:                    <DURATION_MS>
+            hir-time:                    <DURATION_MS>
+            import-time:                 <DURATION_MS>
+            rust-to-vir:                 <DURATION_MS>
+        verify-crate-time:           <DURATION_MS>
+    unaccounted-time:           <DURATION_MS>
+
+verify-crate-time-breakdown
+    total verify-time:              <DURATION_MS>   (1 threads)
+        total air-time:                 <DURATION_MS>   (1 threads)
+        total smt-time:                 <DURATION_MS>   (1 threads)
+            total smt-init:                 <DURATION_MS>,        0 rlimit (1 threads)
+            total smt-run:                  <DURATION_MS>,        0 rlimit (1 threads)

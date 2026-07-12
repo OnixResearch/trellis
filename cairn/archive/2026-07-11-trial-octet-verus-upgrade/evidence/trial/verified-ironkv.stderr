@@ -1,0 +1,261 @@
+error[E0432]: unresolved import `vstd::imap`
+  --> <IRONKV_SOURCE>/ironsht/src/host_impl_v.rs:31:11
+   |
+31 | use vstd::imap::*;
+   |           ^^^^ could not find `imap` in `vstd`
+
+error[E0432]: unresolved import `vstd::iset_lib`
+  --> <IRONKV_SOURCE>/ironsht/src/single_delivery_model_v.rs:18:11
+   |
+18 | use vstd::iset_lib::*;
+   |           ^^^^^^^^ could not find `iset_lib` in `vstd`
+
+error[E0432]: unresolved import `vstd::iset_lib`
+  --> <IRONKV_SOURCE>/ironsht/src/single_delivery_state_v.rs:19:11
+   |
+19 | use vstd::iset_lib::*;
+   |           ^^^^^^^^ could not find `iset_lib` in `vstd`
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/single_delivery_state_v.rs:385:9
+    |
+385 |         assert_isets_equal!(self.un_acked_messages_for_dests(src, dests) == ISet::<Packet>::empty());
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+385 -         assert_isets_equal!(self.un_acked_messages_for_dests(src, dests) == ISet::<Packet>::empty());
+385 +         assert_sets_equal!(self.un_acked_messages_for_dests(src, dests) == ISet::<Packet>::empty());
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/single_delivery_state_v.rs:372:9
+    |
+372 |         assert_isets_equal!(
+    |         ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+372 -         assert_isets_equal!(
+372 +         assert_sets_equal!(
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/single_delivery_model_v.rs:172:25
+    |
+172 |                         assert_isets_equal!(
+    |                         ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+172 -                         assert_isets_equal!(
+172 +                         assert_sets_equal!(
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/single_delivery_model_v.rs:120:13
+    |
+120 |             assert_isets_equal!(
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+120 -             assert_isets_equal!(
+120 +             assert_sets_equal!(
+    |
+
+error: cannot find macro `assert_imaps_equal` in this scope
+    --> <IRONKV_SOURCE>/ironsht/src/host_impl_v.rs:1353:9
+     |
+1353 |         assert_imaps_equal!(AbstractDelegationMap(post@).0,
+     |         ^^^^^^^^^^^^^^^^^^
+     |
+    --> vstd/map.rs:390:0
+     |
+     = note: similarly named macro `assert_maps_equal` defined here
+help: a macro with a similar name exists
+     |
+1353 -         assert_imaps_equal!(AbstractDelegationMap(post@).0,
+1353 +         assert_maps_equal!(AbstractDelegationMap(post@).0,
+     |
+
+error: cannot find macro `assert_imaps_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/host_impl_v.rs:427:13
+    |
+427 |             assert_imaps_equal!(host_state.delegation_map@, AbstractDelegationMap::init(constants.root_identity@)@);
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/map.rs:390:0
+    |
+    = note: similarly named macro `assert_maps_equal` defined here
+help: a macro with a similar name exists
+    |
+427 -             assert_imaps_equal!(host_state.delegation_map@, AbstractDelegationMap::init(constants.root_identity@)@);
+427 +             assert_maps_equal!(host_state.delegation_map@, AbstractDelegationMap::init(constants.root_identity@)@);
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+    --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:1138:17
+     |
+1138 |                 assert_isets_equal!(self@.dom(), ISet::full());
+     |                 ^^^^^^^^^^^^^^^^^^
+     |
+    --> vstd/set_lib.rs:1517:0
+     |
+     = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+     |
+1138 -                 assert_isets_equal!(self@.dom(), ISet::full());
+1138 +                 assert_sets_equal!(self@.dom(), ISet::full());
+     |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:924:13
+    |
+924 |             assert_isets_equal!(self.m@.dom(), ks.to_iset());
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+924 -             assert_isets_equal!(self.m@.dom(), ks.to_iset());
+924 +             assert_sets_equal!(self.m@.dom(), ks.to_iset());
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:702:21
+    |
+702 |                     assert_isets_equal!(self.m@.dom() == self.keys@.to_iset());
+    |                     ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+702 -                     assert_isets_equal!(self.m@.dom() == self.keys@.to_iset());
+702 +                     assert_sets_equal!(self.m@.dom() == self.keys@.to_iset());
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:521:13
+    |
+521 |             assert_isets_equal!(m@.dom(), keys@.to_iset());
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+521 -             assert_isets_equal!(m@.dom(), keys@.to_iset());
+521 +             assert_sets_equal!(m@.dom(), keys@.to_iset());
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:323:13
+    |
+323 |             assert_isets_equal!(new_s, old_s);
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+323 -             assert_isets_equal!(new_s, old_s);
+323 +             assert_sets_equal!(new_s, old_s);
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:276:17
+    |
+276 |                 assert_isets_equal!(old(self)@.to_iset(),
+    |                 ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+276 -                 assert_isets_equal!(old(self)@.to_iset(),
+276 +                 assert_sets_equal!(old(self)@.to_iset(),
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:274:17
+    |
+274 |                 assert_isets_equal!(deleted_set,
+    |                 ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+274 -                 assert_isets_equal!(deleted_set,
+274 +                 assert_sets_equal!(deleted_set,
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:218:13
+    |
+218 |             assert_isets_equal!(old(self)@.to_iset(),
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+218 -             assert_isets_equal!(old(self)@.to_iset(),
+218 +             assert_sets_equal!(old(self)@.to_iset(),
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:215:13
+    |
+215 |             assert_isets_equal!(deleted_set,
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+215 -             assert_isets_equal!(deleted_set,
+215 +             assert_sets_equal!(deleted_set,
+    |
+
+error: cannot find macro `assert_isets_equal` in this scope
+   --> <IRONKV_SOURCE>/ironsht/src/delegation_map_v.rs:190:13
+    |
+190 |             assert_isets_equal!(self@.to_iset(), old(self)@.to_iset().remove(k));
+    |             ^^^^^^^^^^^^^^^^^^
+    |
+   --> vstd/set_lib.rs:1517:0
+    |
+    = note: similarly named macro `assert_sets_equal` defined here
+help: a macro with a similar name exists
+    |
+190 -             assert_isets_equal!(self@.to_iset(), old(self)@.to_iset().remove(k));
+190 +             assert_sets_equal!(self@.to_iset(), old(self)@.to_iset().remove(k));
+    |
+
+error: aborting due to 19 previous errors
+
+For more information about this error, try `rustc --explain E0432`.

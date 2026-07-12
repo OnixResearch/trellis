@@ -1,0 +1,188 @@
+{
+  "baseline": {
+    "expected_error_count": 0,
+    "expected_result": "passed",
+    "expected_verified_count": 10710,
+    "verifier": "verus@0.2026.03.22.5e66329"
+  },
+  "candidate": {
+    "diagnostic_anchors": [
+      "error: postcondition not satisfied",
+      "src/nix_drv_serialize.rs:761:9"
+    ],
+    "expected_error_count": 1,
+    "expected_result": "proof-failure",
+    "expected_verified_count": 10709,
+    "profile_id": "octet-verus-0.2026.04.03.21dfcd2",
+    "provider": "octet",
+    "provider_revision": "fc38f59330b626961d166febfdf1a5aa6575460f",
+    "verifier": "verus@0.2026.04.03.21dfcd2"
+  },
+  "claim_scope": "bounded-verifier-upgrade-compatibility-trial",
+  "decision": {
+    "blockers": [
+      "trellis-proof-failure",
+      "verified-ironkv-source-api-incompatible",
+      "verified-memory-allocator-source-api-incompatible",
+      "verified-node-replication-verifier-internal-error"
+    ],
+    "expected": "blocked",
+    "octet_compatibility_status": "local-pin",
+    "preserve_current_pin": true
+  },
+  "non_claims": [
+    "The trial does not prove verifier, solver, compiler, Rocq, or upstream soundness.",
+    "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
+    "A blocked trial does not authorize changing Trellis's verifier pin or Octet compatibility status."
+  ],
+  "rows": [
+    {
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=lib",
+            "milli/linked-list/verus.rs"
+          ],
+          "id": "linked-list"
+        },
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=lib",
+            "milli/doubly-linked-list/verus.rs"
+          ],
+          "id": "doubly-linked-list"
+        }
+      ],
+      "diagnostic_anchors": [
+        "loop must have a decreases clause",
+        "unresolved import `vstd::ptr`"
+      ],
+      "expected_outcome": "source-api-incompatible",
+      "id": "paper-sosp24-artifact",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "artifact-microcase",
+      "non_claims": [
+        "The two physically present Verus microcases are not the complete SOSP artifact or its external case studies."
+      ],
+      "promotion_role": "diagnostic-only",
+      "source_revision": "b817b036fd9b873a58730af8c2defccb40b7ea83",
+      "timeout_seconds": 600
+    },
+    {
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=dylib",
+            "--expand-errors",
+            "-C",
+            "opt-level=3",
+            "ironsht/src/lib.rs"
+          ],
+          "id": "host-proof-root"
+        }
+      ],
+      "diagnostic_anchors": [
+        "unresolved import `vstd::imap`",
+        "unresolved import `vstd::iset_lib`"
+      ],
+      "expected_outcome": "source-api-incompatible",
+      "id": "verified-ironkv",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "The probe covers the host proof root only and does not establish distributed refinement or crash recovery."
+      ],
+      "promotion_role": "required-native",
+      "source_revision": "6b8830a47a2dd5a8ce141438ebb2decb6550298a",
+      "timeout_seconds": 600
+    },
+    {
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--extern",
+            "libc=<candidate-rust-rlib>",
+            "verus-mimalloc/lib.rs"
+          ],
+          "id": "allocator-proof-root"
+        }
+      ],
+      "diagnostic_anchors": [
+        "cannot find function `ptr_mut_ref` in this scope",
+        "vstd/raw_ptr.rs"
+      ],
+      "expected_outcome": "source-api-incompatible",
+      "id": "verified-memory-allocator",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "Building the pinned libc rlib admits a verifier dependency only; it does not establish allocator integration or production readiness."
+      ],
+      "promotion_role": "required-native",
+      "source_revision": "847354efbb51a7999deb3eef0ed2bfc199bccac1",
+      "timeout_seconds": 600
+    },
+    {
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "-V",
+            "new-mut-ref",
+            "--crate-type=lib",
+            "verified-node-replication/src/lib.rs"
+          ],
+          "id": "required-new-mut-ref"
+        }
+      ],
+      "diagnostic_anchors": [
+        "Verus Internal Error: var_local_id failed",
+        "verified-node-replication/src/exec/rwlock.rs"
+      ],
+      "expected_outcome": "verifier-internal-error",
+      "id": "verified-node-replication",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "Node replication remains a local NUMA technique and is not network replication or consensus."
+      ],
+      "promotion_role": "required-native",
+      "source_revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
+      "timeout_seconds": 600
+    },
+    {
+      "commands": [
+        {
+          "argv": [
+            "audit",
+            "README.md",
+            "Makefile",
+            "src/**/*.v",
+            "verus/rust-toolchain.toml"
+          ],
+          "id": "rocq-boundary-audit"
+        }
+      ],
+      "diagnostic_anchors": [
+        "This contains the Rocq development",
+        "Rocq (formerly Coq) 8.20.0"
+      ],
+      "expected_outcome": "reference-audit-only",
+      "id": "verus-belt",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "semantic-reference",
+      "non_claims": [
+        "Rocq validation is not candidate Verus execution and cannot certify a later Verus release."
+      ],
+      "promotion_role": "audit-only",
+      "source_revision": "b116e9db550e84896674df781b93570c35a9f0da",
+      "timeout_seconds": 600
+    }
+  ],
+  "schema_version": "trellis-octet-verus-upgrade-trial/v1",
+  "trial_id": "trellis-octet-verus-fc38f593-upgrade-trial"
+}

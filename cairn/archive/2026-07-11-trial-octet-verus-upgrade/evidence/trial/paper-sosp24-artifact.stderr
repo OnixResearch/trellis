@@ -1,0 +1,19 @@
+error: loop must have a decreases clause
+   --> <PAPER_ARTIFACT_SOURCE>/milli/linked-list/verus.rs:119:9
+    |
+119 |         loop
+    |         ^^^^
+    |
+    = help: to disable this check, use #[verifier::exec_allows_no_decreases_clause] on the function
+
+error: aborting due to 1 previous error
+
+error[E0432]: unresolved import `vstd::ptr`
+  --> <PAPER_ARTIFACT_SOURCE>/milli/doubly-linked-list/verus.rs:23:11
+   |
+23 | use vstd::ptr::{PPtr, PointsTo, Dealloc};
+   |           ^^^ could not find `ptr` in `vstd`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0432`.
