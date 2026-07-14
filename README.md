@@ -12,7 +12,48 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10611 Verus proofs · 4824 tests · 2005 requirements · 604 modules · 16 trusted/proof-gap boundaries**
+**10712 Verus proofs · 4849 tests · 2022 requirements · 604 modules · 16 trusted/proof-gap boundaries**
+
+Trellis is an active research library. APIs, proof inventories, and verifier
+pins may evolve; each verification claim remains scoped to the exact source,
+assumptions, trusted boundaries, and toolchain recorded by its evidence.
+
+## Usage
+
+```toml
+[dependencies]
+verified-logic = { git = "https://github.com/OnixResearch/trellis" }
+```
+
+```rust
+use verified_logic::arithmetic::abs_diff;
+use verified_logic::bounds::clamp;
+use verified_logic::drain::can_start_op;
+use verified_logic::quorum::majority;
+
+let d = abs_diff(10, 3);       // 7
+let c = clamp(15, 0, 10);      // 10
+let m = majority(5);           // 3
+let ok = can_start_op(false);  // true (not draining)
+```
+
+For normal `cargo build`, the `vstd` crate erases all ghost code. Specs,
+proofs, preconditions, and postconditions add no runtime cost. See
+[docs/runtime-cost.md](docs/runtime-cost.md) for reproducible normal-build
+evidence records.
+
+## Runnable examples
+
+Each runtime example compiles through normal Cargo without invoking Verus. For
+Verus-focused spec/exec/ensures walkthroughs, see
+[docs/proof-examples.md](docs/proof-examples.md).
+
+- [`examples/core_basics.rs`](examples/core_basics.rs): `cargo run --example core_basics`
+- [`examples/consensus_admission.rs`](examples/consensus_admission.rs): `cargo run --example consensus_admission`
+- [`examples/ucan_web_of_trust.rs`](examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
+- [`examples/r1cs_single_row.rs`](examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
+- [`examples/storage_allocator.rs`](examples/storage_allocator.rs): `cargo run --example storage_allocator`
+- [`examples/integration_adapters.rs`](examples/integration_adapters.rs): `cargo run --example integration_adapters`
 
 ## How it works
 
@@ -554,41 +595,6 @@ The drift checker treats the compact lists below as README catalog entries for p
 - **web**: `web_of_trust_attestation`, `web_of_trust_chain`, `web_of_trust_policy`, `web_of_trust_principal`, `web_of_trust_resolution`, `web_of_trust_revocation`
 - **zircon**: `zircon_channel`, `zircon_event`, `zircon_fifo`, `zircon_futex`, `zircon_handle`, `zircon_job`, `zircon_port`, `zircon_rights`, `zircon_socket`, `zircon_timer`, `zircon_wait`
 
-## Usage
-
-```toml
-[dependencies]
-verified-logic = { git = "https://github.com/OnixResearch/trellis" }
-```
-
-```rust
-use verified_logic::arithmetic::abs_diff;
-use verified_logic::bounds::clamp;
-use verified_logic::quorum::majority;
-use verified_logic::drain::can_start_op;
-
-let d = abs_diff(10, 3);       // 7
-let c = clamp(15, 0, 10);      // 10
-let m = majority(5);           // 3
-let ok = can_start_op(false);  // true (not draining)
-```
-
-For normal `cargo build`, the `vstd` crate erases all ghost code. No
-runtime cost from specs, proofs, requires, or ensures. See
-[docs/runtime-cost.md](docs/runtime-cost.md) for reproducible normal-build
-evidence records.
-
-## Runnable examples
-
-Each runtime example compiles through normal Cargo without invoking Verus. For Verus-focused spec/exec/ensures walkthroughs, see [docs/proof-examples.md](docs/proof-examples.md).
-
-- [`examples/core_basics.rs`](examples/core_basics.rs): `cargo run --example core_basics`
-- [`examples/consensus_admission.rs`](examples/consensus_admission.rs): `cargo run --example consensus_admission`
-- [`examples/ucan_web_of_trust.rs`](examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
-- [`examples/r1cs_single_row.rs`](examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
-- [`examples/storage_allocator.rs`](examples/storage_allocator.rs): `cargo run --example storage_allocator`
-- [`examples/integration_adapters.rs`](examples/integration_adapters.rs): `cargo run --example integration_adapters`
-
 ## Development
 
 Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, [docs/kani-boundary.md](docs/kani-boundary.md) for complementary Kani evidence boundaries, [docs/proof-artifact-manifest.md](docs/proof-artifact-manifest.md) for exported primitive manifest rows, [docs/ucan-bridge-coverage.md](docs/ucan-bridge-coverage.md) for UCAN bridge coverage, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
@@ -597,7 +603,7 @@ Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module te
 nix develop                # enter devshell
 pre-commit install         # install the local Octet pre-commit hook
 cargo check                # compile (ghost code erased)
-cargo test                 # 4617 unit/property + 13 doc tests
+cargo test                 # run runtime unit, property, and doc tests
 cargo clippy --all-targets -- -D warnings
 ```
 
@@ -667,7 +673,7 @@ pre-commit hook delegates to that same pinned Nix check.
 ## Structure
 
 ```
-src/lib.rs              ← crate root, 581 public module declarations
+src/lib.rs              ← crate root, 604 public module declarations
 src/<module>.rs         ← spec fn + exec fn + proof fn + #[cfg(test)] tests
 docs/requirements.md    ← canonical requirement prose and Tracey anchors
 scripts/verus.sh        ← Octet production-Verus package resolver

@@ -7,14 +7,18 @@
 //! refresh command-backed counts for tests, Verus proofs, and Tracey rules.
 
 use std::fs;
-use std::path::{Path, PathBuf};
-use std::process::{Command, ExitCode};
+use std::path::Path;
+use std::path::PathBuf;
+use std::process::Command;
+use std::process::ExitCode;
 
 const README_PATH: &str = "README.md";
 const LIB_PATH: &str = "src/lib.rs";
 const PROOF_GAP_PATH: &str = "docs/proof-gap-sites.tsv";
 const HEADLINE_PREFIX: &str = "**";
 const HEADLINE_SUFFIX: &str = " trusted/proof-gap boundaries**";
+const VERUS_RESOURCE_LIMIT: &str = "20";
+const VERUS_TRIGGERS_MODE: &str = "silent";
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 struct Metrics {
@@ -53,7 +57,10 @@ fn parse_number_prefix(part: &str, suffix: &str) -> Result<u64, String> {
 fn parse_headline(readme: &str) -> Result<Headline, String> {
     for (index, line) in readme.lines().enumerate() {
         let trimmed = line.trim();
-        if trimmed.starts_with(HEADLINE_PREFIX) && trimmed.ends_with(HEADLINE_SUFFIX) && trimmed.contains(" Verus proofs · ") {
+        if trimmed.starts_with(HEADLINE_PREFIX)
+            && trimmed.ends_with(HEADLINE_SUFFIX)
+            && trimmed.contains(" Verus proofs · ")
+        {
             let Some(body) = trimmed.strip_prefix(HEADLINE_PREFIX).and_then(|s| s.strip_suffix("**")) else {
                 return Err(format!("malformed README metrics headline at line {}", index + 1));
             };
@@ -113,9 +120,7 @@ fn command_output(root: &Path, program: &str, args: &[&str]) -> Result<String, S
 }
 
 fn first_number_before(line: &str, suffix: &str) -> Option<u64> {
-    line.trim()
-        .strip_suffix(suffix)
-        .and_then(|n| n.trim().parse::<u64>().ok())
+    line.trim().strip_suffix(suffix).and_then(|n| n.trim().parse::<u64>().ok())
 }
 
 fn count_cargo_tests(root: &Path) -> Result<u64, String> {
@@ -128,25 +133,43 @@ fn count_cargo_tests(root: &Path) -> Result<u64, String> {
     Err("could not parse `cargo test -- --list` test count".to_string())
 }
 
-fn count_verus_proofs(root: &Path) -> Result<u64, String> {
-    let output = command_output(root, "./scripts/verus.sh", &["src/lib.rs"])?;
+fn parse_verus_proof_count(output: &str) -> Result<u64, String> {
     for line in output.lines() {
         let trimmed = line.trim();
-        let Some(rest) = trimmed.strip_prefix("verification results:: ") else { continue };
-        let Some((count, tail)) = rest.split_once(" verified") else { continue };
-        if tail.contains("0 errors") {
+        let Some(rest) = trimmed.strip_prefix("verification results:: ") else {
+            continue;
+        };
+        let Some((count, tail)) = rest.split_once(" verified") else {
+            continue;
+        };
+        if tail.trim() == ", 0 errors" {
             return count.trim().parse::<u64>().map_err(|err| format!("invalid Verus proof count `{count}`: {err}"));
         }
     }
-    Err("could not parse Verus verified proof count".to_string())
+    Err("could not parse successful Verus proof count".to_string())
+}
+
+fn count_verus_proofs(root: &Path) -> Result<u64, String> {
+    let output = command_output(root, "./scripts/verus.sh", &[
+        "src/lib.rs",
+        "--triggers-mode",
+        VERUS_TRIGGERS_MODE,
+        "--rlimit",
+        VERUS_RESOURCE_LIMIT,
+    ])?;
+    parse_verus_proof_count(&output)
 }
 
 fn count_tracey_requirements(root: &Path) -> Result<u64, String> {
     let _ = command_output(root, "tracey", &["query", "status"]);
     let output = command_output(root, "tracey", &["query", "uncovered"])?;
     for line in output.lines() {
-        let Some((_, rest)) = line.split_once(" out of ") else { continue };
-        let Some((count, tail)) = rest.split_once(" rules") else { continue };
+        let Some((_, rest)) = line.split_once(" out of ") else {
+            continue;
+        };
+        let Some((count, tail)) = rest.split_once(" rules") else {
+            continue;
+        };
         if tail.is_empty() || tail.trim().is_empty() {
             return count.trim().parse::<u64>().map_err(|err| format!("invalid Tracey rule count `{count}`: {err}"));
         }
@@ -156,11 +179,16 @@ fn count_tracey_requirements(root: &Path) -> Result<u64, String> {
 
 fn expected_metrics(root: &Path, full: bool) -> Result<Metrics, String> {
     let lib_rs = fs::read_to_string(root.join(LIB_PATH)).map_err(|err| format!("failed to read {LIB_PATH}: {err}"))?;
-    let gaps = fs::read_to_string(root.join(PROOF_GAP_PATH)).map_err(|err| format!("failed to read {PROOF_GAP_PATH}: {err}"))?;
+    let gaps = fs::read_to_string(root.join(PROOF_GAP_PATH))
+        .map_err(|err| format!("failed to read {PROOF_GAP_PATH}: {err}"))?;
     Ok(Metrics {
         verus_proofs: if full { Some(count_verus_proofs(root)?) } else { None },
         tests: if full { Some(count_cargo_tests(root)?) } else { None },
-        requirements: if full { Some(count_tracey_requirements(root)?) } else { None },
+        requirements: if full {
+            Some(count_tracey_requirements(root)?)
+        } else {
+            None
+        },
         modules: count_modules(&lib_rs),
         trusted_boundaries: count_proof_gap_rows(&gaps),
     })
@@ -175,7 +203,8 @@ fn check_metric(name: &str, headline: Option<u64>, expected: Option<u64>, failur
 }
 
 fn run_check(root: &Path, full: bool) -> Result<(), String> {
-    let readme = fs::read_to_string(root.join(README_PATH)).map_err(|err| format!("failed to read {README_PATH}: {err}"))?;
+    let readme =
+        fs::read_to_string(root.join(README_PATH)).map_err(|err| format!("failed to read {README_PATH}: {err}"))?;
     let headline = parse_headline(&readme)?;
     let expected = expected_metrics(root, full)?;
     let mut failures = Vec::new();
@@ -207,9 +236,7 @@ fn run_check(root: &Path, full: bool) -> Result<(), String> {
         } else {
             println!(
                 "✓ README metrics headline static counts are fresh at line {} ({} modules, {} trusted/proof-gap boundaries); use --full for command-backed proof/test/requirement counts",
-                headline.line_number,
-                expected.modules,
-                expected.trusted_boundaries
+                headline.line_number, expected.modules, expected.trusted_boundaries
             );
         }
         Ok(())
@@ -233,6 +260,10 @@ fn run_self_test() -> Result<(), String> {
     assert_eq!(parsed.metrics.trusted_boundaries, 16);
     assert_eq!(count_modules("pub mod alpha;\nmod hidden;\npub mod beta;\n"), 2);
     assert_eq!(count_proof_gap_rows("# header\n\nsrc/a.rs\tf\tpermanent\n"), 1);
+    assert_eq!(parse_verus_proof_count("verification results:: 1 verified, 0 errors\n"), Ok(1));
+    assert!(parse_verus_proof_count("verification results:: 1 verified, 1 errors\n").is_err());
+    assert!(parse_verus_proof_count("verification results:: 1 verified, 10 errors\n").is_err());
+    assert!(parse_verus_proof_count("verification output missing summary\n").is_err());
     assert!(parse_headline("# missing\n").is_err());
     println!("✓ README metrics self-test passed");
     Ok(())
