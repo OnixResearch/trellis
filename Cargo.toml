@@ -2,7 +2,7 @@
 name = "verified-logic"
 version = "0.2.0"
 edition = "2024"
-license = "AGPL-3.0-or-later"
+license = "MPL-2.0"
 description = "Trellis: composable verified-logic building blocks, machine-checked with Verus"
 repository = "https://github.com/OnixResearch/trellis"
 homepage = "https://github.com/OnixResearch/trellis"

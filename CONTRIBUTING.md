@@ -110,5 +110,9 @@ nix run path:/home/brittonr/git/cairn#cairn -- sync <slug> --root . --execute
 CAIRN_ARCHIVE_DATE=$(date +%F) nix run path:/home/brittonr/git/cairn#cairn -- archive <slug> --root . --execute
 ```
 
+## Contribution license
+
+By contributing, you agree that your contribution is licensed under the Mozilla Public License 2.0 (`MPL-2.0`). You must have the authority to make that grant; do not submit employer-, client-, school-, or third-party-owned material without permission. Existing grants for earlier revisions remain valid.
+
 This guide covers local contribution mechanics. It does not require any pull
 request workflow.

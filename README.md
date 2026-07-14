@@ -730,6 +730,12 @@ In addition to `external_body`, the current audit also tracks:
 
 All trusted/proof-gap items remain listed in `openspec/specs/verification-gaps/spec.md`, and `docs/proof-gap-sites.tsv` is the checked per-site source for exact trusted-boundary rationale.
 
+## License
+
+Trellis and the `verified-logic` crate are licensed under `MPL-2.0`; see [LICENSE](LICENSE). Modifications to covered files remain available under MPL terms, while a larger work may keep separate files under other licenses subject to the MPL.
+
+Earlier grants remain valid, and third-party references retain their own terms. Machine-checked properties are bounded to the admitted source, verifier, assumptions, and receipts; MPL metadata does not certify downstream behavior or transfer whole-system proof authority.
+
 ## References
 
 - Lattice/Salt verification-product patterns — external design reference only; not vendored, executed, or treated as trusted Trellis validation evidence.
