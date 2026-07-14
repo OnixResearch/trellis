@@ -125,6 +125,23 @@ let PolicyFieldSetDigest = "c5b71f15de4175d9ff01f7cb4b82eed898a71e55f6d1fa5e24a9
     required_boundary = "Cairn consumed Valence and Mantle stack provenance receipts for lifecycle/release policy conformance only; it did not prove source-code correctness, Valence verifier soundness, Mantle build correctness, or Trellis/Octet proof validity",
   },
 
+  function_address_gate = {
+    mode = "optional",
+    allowed_claim_scopes = ["function_address.v1.lifecycle_policy_conformance"],
+    accepted_valence_policy_hashes = ["aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa"],
+    required_roles = [
+      "function-address-evidence-sidecar",
+      "valence-function-address-evidence-profile",
+      "kamacite-function-address-receipt",
+    ],
+    required_schemas = [
+      "valence.function-address-evidence.v1",
+      "function-address-evidence-v1",
+      "kamacite.function-address-receipt.v1",
+    ],
+    required_boundary = "Cairn consumed Valence, Mantle, and Kamacite function-address evidence for lifecycle/release policy conformance only; it did not prove Rust semantic correctness, compiler correctness, whole-program safety, verifier soundness, or release eligibility",
+  },
+
   runtime_evidence_policy = {
     allowed_capture_origins = ["boundary_captured", "ingested_telemetry", "wrapper_asserted", "unknown"],
     allowed_hash_algorithms = ["BLAKE3"],

@@ -178,6 +178,15 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     required_boundary | NonEmptyString,
   },
 
+  FunctionAddressPolicy = {
+    mode | StackProvenanceGateMode,
+    allowed_claim_scopes | NonEmptyArray | Array NonEmptyString,
+    accepted_valence_policy_hashes | Array Blake3HexContract | default = [],
+    required_roles | NonEmptyArray | Array NonEmptyString,
+    required_schemas | NonEmptyArray | Array NonEmptyString,
+    required_boundary | NonEmptyString,
+  },
+
   RuntimeEvidencePolicy = {
     allowed_capture_origins | NonEmptyArray | Array RuntimeCaptureOrigin,
     allowed_hash_algorithms | NonEmptyArray | Array Blake3Algorithm,
@@ -339,6 +348,7 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     steel_orchestration_policy | SteelOrchestrationPolicy,
     traceability_policy | TraceabilityPolicy,
     stack_provenance_gate | StackProvenancePolicy,
+    function_address_gate | FunctionAddressPolicy,
     runtime_evidence_policy | RuntimeEvidencePolicy,
     probe_policy | ProbePolicy,
     receipt_schemas | NonEmptyArray | Array ReceiptSchema,
