@@ -1,10 +1,6 @@
-# Crate Packaging Specification
+# Crate Packaging Specification Delta
 
-## Purpose
-
-Adds a consumer release profile for Trellis `verified-logic` so downstream repos can consume verified primitives without unreviewed source duplication.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Verified-logic consumer profile
 r[trellis.crate_packaging.verified_logic_consumer_profile] Trellis MUST define a consumer release profile for `verified-logic` that names the supported dependency coordinate, feature set, selected consumer-facing modules, verification evidence boundary, and required non-claims.
