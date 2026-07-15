@@ -1,0 +1,287 @@
+{
+  "artifacts": [
+    {
+      "blake3": "cf0495a0f5204ea0d445bafaea7ae7341932cca7580b90f6c80b1fe511675458",
+      "bytes": 5574,
+      "path": "Cargo.toml"
+    },
+    {
+      "blake3": "7ad11002cb765572342fc15096832825a9071dfc7f4f427d92c6906d83ea9b54",
+      "bytes": 16726,
+      "path": "LICENSE"
+    },
+    {
+      "blake3": "a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde",
+      "bytes": 47826,
+      "path": "src/lib.rs"
+    },
+    {
+      "blake3": "42e09767955c07125d923238950f156d842d316cb66100e81ec658c9612e6170",
+      "bytes": 15960,
+      "path": "src/scope.rs"
+    },
+    {
+      "blake3": "5f2e7f57e27280a22fa6721e5638a4fde989f0c9e8c944549bdb249e4088b621",
+      "bytes": 14119,
+      "path": "src/token_timestamp.rs"
+    },
+    {
+      "blake3": "d10538a8b988bd8f598a54f4d8a24448111f59721ddb62748762338ba35561e7",
+      "bytes": 20719,
+      "path": "src/ucan_ability.rs"
+    },
+    {
+      "blake3": "e3bfdd1fed32d657dc836d2a9b8478225233eff2be916d0e9e4bee3a7e5efe1b",
+      "bytes": 5925,
+      "path": "src/ucan_backend_transcript.rs"
+    },
+    {
+      "blake3": "cc30a243f8de699b3052fc9393c00f12cb7c32c6c4db5b4527639999115d9273",
+      "bytes": 4671,
+      "path": "src/ucan_base64url.rs"
+    },
+    {
+      "blake3": "1f782e134949efaae13837e40a1f529575aebecb2afb91f0af20f764eaa40f9e",
+      "bytes": 12591,
+      "path": "src/ucan_capability_merge.rs"
+    },
+    {
+      "blake3": "b6ae381d6e1792833492453a2f88316548156ef8cb0d71cf63571c3f402a19d6",
+      "bytes": 15715,
+      "path": "src/ucan_caveat.rs"
+    },
+    {
+      "blake3": "09a36cc1294cada5ada76b9d4ca2c8d26f1a6a7873d3fb856f32460aefddd224",
+      "bytes": 5862,
+      "path": "src/ucan_caveat_evaluation.rs"
+    },
+    {
+      "blake3": "cc81b031057d0d0c9a36e799a4f425faf23ef1a8bd64f8d451f758850baac474",
+      "bytes": 5463,
+      "path": "src/ucan_caveat_preservation.rs"
+    },
+    {
+      "blake3": "fd6249ae092fda953a2581a575822a65c6197abbd4084962e3bd6a8fc462f865",
+      "bytes": 25625,
+      "path": "src/ucan_chain.rs"
+    },
+    {
+      "blake3": "9dc873d8d3d60bf2f7c630e29df0835b19e1bdaf8d16a3055d57c4ffdabe91e1",
+      "bytes": 3194,
+      "path": "src/ucan_claims_presence.rs"
+    },
+    {
+      "blake3": "a08aee242d3d363ce75fa93d95639fffb10efa8ae02602bf49e054bb56af69fd",
+      "bytes": 10408,
+      "path": "src/ucan_compact.rs"
+    },
+    {
+      "blake3": "898c20229eaee7bf24839ac20218f0dbc8555d958b48114f315c7b89d5aef528",
+      "bytes": 4801,
+      "path": "src/ucan_delegation_depth.rs"
+    },
+    {
+      "blake3": "48b6a7d9f3a555bf18053220a1b1e20fa64e5c5f0f3cd68312b1969aec8b2b51",
+      "bytes": 43362,
+      "path": "src/ucan_did.rs"
+    },
+    {
+      "blake3": "ac7958ddb700f166c4fa497f7d4ac9a45f313a88819c0172ddaead5a869fb83f",
+      "bytes": 5760,
+      "path": "src/ucan_header.rs"
+    },
+    {
+      "blake3": "f7ee6c8b35dd68db16862916c932e0cbb6e8a622fa9a7cf74dbec2383e45664c",
+      "bytes": 17821,
+      "path": "src/ucan_invocation.rs"
+    },
+    {
+      "blake3": "964e9ac210455ceee8a752022ad1610e0ffe03f48b7a1534df8c584c9a909dda",
+      "bytes": 8983,
+      "path": "src/ucan_json.rs"
+    },
+    {
+      "blake3": "52a22aa749cb226e0b8820af6fc748e9d9a56e8b9fc3c5be810686ffc28137fe",
+      "bytes": 2618,
+      "path": "src/ucan_parsed_capability_shape.rs"
+    },
+    {
+      "blake3": "8bcf022f35a0fc3cd612c7afa9b5706412f299a0b212b81f459a23ac737f1e81",
+      "bytes": 3355,
+      "path": "src/ucan_parsed_caveat_payload.rs"
+    },
+    {
+      "blake3": "c9165e96a57dd09908b4fdc9934f2d1cab3cb0b689c6f3615f800a418a6eae40",
+      "bytes": 2694,
+      "path": "src/ucan_parsed_caveat_shape.rs"
+    },
+    {
+      "blake3": "d6efc20ec22d625de23480fb378d243b769b162b2d42a1eb390da4c26edeab2c",
+      "bytes": 2684,
+      "path": "src/ucan_parsed_did_claim.rs"
+    },
+    {
+      "blake3": "018f0f79e0ef7253a153db0b3fa780beb5df1926e0140144580cc9330e87d72f",
+      "bytes": 3805,
+      "path": "src/ucan_proof_reference.rs"
+    },
+    {
+      "blake3": "c2acf4d4a5b053496b4637140ce09ceae42fe0a72e6566650b04caa2d900e09a",
+      "bytes": 1801,
+      "path": "src/ucan_proof_reference_collection.rs"
+    },
+    {
+      "blake3": "18ee5542c50b55d007835e3829bbaa6166c31c7bb3bf185a5f021fede19124f9",
+      "bytes": 2844,
+      "path": "src/ucan_proof_reference_list_shape.rs"
+    },
+    {
+      "blake3": "1a9f50a5f93e9805d26a9625a2d2658e3789c33120c8323339df28d1b386e052",
+      "bytes": 1596,
+      "path": "src/ucan_proof_store_result.rs"
+    },
+    {
+      "blake3": "9eb9d0286767ac209fe8b73fb3aedc5d7d4512858a50c9295c434f60d7cac066",
+      "bytes": 44516,
+      "path": "src/ucan_proof_traversal.rs"
+    },
+    {
+      "blake3": "b9497dd15baa74607929165c0c8671ba7d2a5d74c3099bc41ec193d4249173f4",
+      "bytes": 6890,
+      "path": "src/ucan_replay_admission.rs"
+    },
+    {
+      "blake3": "44c0d51c7a6fea74cfd287d25c6fa93ccaba8149e9e3ac21389d388ce8413d73",
+      "bytes": 12258,
+      "path": "src/ucan_revocation.rs"
+    },
+    {
+      "blake3": "9d85a22030320ec0ae44edbe6ea22714f1ad5fcab4ae4378c5a7714ac05000b5",
+      "bytes": 1705,
+      "path": "src/ucan_revocation_check.rs"
+    },
+    {
+      "blake3": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9",
+      "bytes": 18788,
+      "path": "src/ucan_signature.rs"
+    },
+    {
+      "blake3": "a3b8d322187f964e1cb54784eda6bfabd55c16ff5468efa9efec18c316065787",
+      "bytes": 9583,
+      "path": "src/ucan_temporal.rs"
+    },
+    {
+      "blake3": "9f15f4220e8d4a0cd66824e226cacc2c5080df34806fc57b6df5aff25d1dfc13",
+      "bytes": 2172,
+      "path": "src/ucan_temporal_order.rs"
+    },
+    {
+      "blake3": "7f6a18a22f5a7e3d435bd4bb92a7d7eb2f07065cf1b4ff04f4fe5d283cf066e8",
+      "bytes": 18892,
+      "path": "src/ucan_token.rs"
+    },
+    {
+      "blake3": "31a433e93dbc05172294eaa86b56acfeb5f93a50d971ffe36b134df155df1870",
+      "bytes": 6077,
+      "path": "src/ucan_verification_stage.rs"
+    },
+    {
+      "blake3": "42c0186db871130e01aa704458a1e2e0c53ec2c559b325d753d66b2d6e8f9e75",
+      "bytes": 31564,
+      "path": "src/web_of_trust_attestation.rs"
+    },
+    {
+      "blake3": "8fd229f162868bf21c9e011dca6df89127609fe43e5dce5b5b76db4114556878",
+      "bytes": 42328,
+      "path": "src/web_of_trust_policy.rs"
+    },
+    {
+      "blake3": "322b124d0c097257da13fecff8de3dedc28f38109f188f34396328be95ccd841",
+      "bytes": 10353,
+      "path": "src/web_of_trust_principal.rs"
+    },
+    {
+      "blake3": "5401086995905268f442c67e407fceb84778a91043631918b0c2a29701c250b1",
+      "bytes": 34526,
+      "path": "src/web_of_trust_revocation.rs"
+    },
+    {
+      "blake3": "a449d32931ca47d34adf45e81f99df1a175774508497dcb9a511ebc18c184f09",
+      "bytes": 13250,
+      "path": "src/web_of_trust_ucan_authorizer.rs"
+    }
+  ],
+  "package": {
+    "default_features": false,
+    "dependency_coordinate": "git+https://github.com/OnixResearch/trellis?rev=1f03111b92cc36aade07359c96773e086908c95f#verified-logic@0.2.0",
+    "name": "verified-logic",
+    "revision": "1f03111b92cc36aade07359c96773e086908c95f",
+    "source_repository": "https://github.com/OnixResearch/trellis",
+    "supported_features": [],
+    "version": "0.2.0"
+  },
+  "release_id": "verified-logic-0.2.0-ucan-profile-1f03111",
+  "report_schema": "trellis-verified-logic-compatibility-report/v1",
+  "required_non_claims": [
+    "Imported Trellis primitives do not prove UCAN token correctness.",
+    "Imported Trellis primitives do not prove downstream authorization policy.",
+    "Imported Trellis primitives do not prove verifier soundness beyond Trellis's stated boundary.",
+    "Imported Trellis primitives do not prove external consumer readiness.",
+    "Imported Trellis primitives do not prove whole-system security."
+  ],
+  "schema_version": "trellis-verified-logic-consumer-profile/v1",
+  "ucan_modules": [
+    "scope",
+    "token_timestamp",
+    "ucan_ability",
+    "ucan_backend_transcript",
+    "ucan_base64url",
+    "ucan_capability_merge",
+    "ucan_caveat",
+    "ucan_caveat_evaluation",
+    "ucan_caveat_preservation",
+    "ucan_chain",
+    "ucan_claims_presence",
+    "ucan_compact",
+    "ucan_delegation_depth",
+    "ucan_did",
+    "ucan_header",
+    "ucan_invocation",
+    "ucan_json",
+    "ucan_parsed_capability_shape",
+    "ucan_parsed_caveat_payload",
+    "ucan_parsed_caveat_shape",
+    "ucan_parsed_did_claim",
+    "ucan_proof_reference",
+    "ucan_proof_reference_collection",
+    "ucan_proof_reference_list_shape",
+    "ucan_proof_store_result",
+    "ucan_proof_traversal",
+    "ucan_replay_admission",
+    "ucan_revocation",
+    "ucan_revocation_check",
+    "ucan_signature",
+    "ucan_temporal",
+    "ucan_temporal_order",
+    "ucan_token",
+    "ucan_verification_stage",
+    "web_of_trust_attestation",
+    "web_of_trust_policy",
+    "web_of_trust_principal",
+    "web_of_trust_revocation",
+    "web_of_trust_ucan_authorizer"
+  ],
+  "vendored_snapshot": {
+    "dirty_state_policy": "deny_unrecorded_changes",
+    "local_patch_policy": "Every local patch or addition requires an approved exception, rationale, verification evidence, and a non-promotion claim boundary.",
+    "snapshot_root": "vendor/verified-logic"
+  },
+  "verification": {
+    "proof_command": "./scripts/verus.sh src/lib.rs",
+    "proof_manifest_blake3": "bb8c3527dd1b2170088a3cbf47d53e9e40f9b66d8a4ecbd516e20ef4562498c0",
+    "proof_manifest_bytes": 4853,
+    "proof_manifest_path": "docs/proof-artifact-manifest.json",
+    "proof_owner": "Trellis",
+    "supported_claim": "Source and profile alignment for imported Trellis verified primitives only."
+  }
+}

@@ -3,16 +3,23 @@
 
   inputs = {
     nixpkgs.url = "github:NixOS/nixpkgs/nixpkgs-unstable";
-    crane.url = "github:ipetkov/crane";
+    crane.url = "github:ipetkov/crane/b556d7bbae5ff86e378451511873dfd07e4504cd";
     rust-overlay = {
       url = "github:oxalica/rust-overlay";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     flake-utils.url = "github:numtide/flake-utils";
-    octet.url = "github:OnixResearch/octet?rev=374bd16b26cee2af34211a29bfa531c016811f51";
+    octet = {
+      url = "github:OnixResearch/octet?rev=374bd16b26cee2af34211a29bfa531c016811f51";
+      inputs.crane.follows = "crane";
+    };
+    trellis-consumer-release-src = {
+      url = "git+ssh://git@github.com/OnixResearch/trellis.git?rev=1f03111b92cc36aade07359c96773e086908c95f";
+      flake = false;
+    };
   };
 
-  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, ... }:
+  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, trellis-consumer-release-src, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
@@ -36,12 +43,15 @@
             || (builtins.match ".*/tests/fixtures/.*\\.v$" path) != null
             || (builtins.match ".*/tests/fixtures/.*\\.sv$" path) != null
             || (builtins.baseNameOf path == "dylint.toml")
+            || (builtins.baseNameOf path == "LICENSE")
             || (builtins.baseNameOf path == "octet-baseline.json")
             || (builtins.baseNameOf path == "verusfmt-baseline.txt")
             || (builtins.match ".*/verification-policy/generated/.*\\.json$" path) != null
             || (builtins.match ".*/proof-review/generated/.*\\.json$" path) != null
             || (builtins.match ".*/cairn-policy/generated/.*\\.json$" path) != null
-            || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null;
+            || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null
+            || (builtins.match ".*/consumer-profile/generated/.*\\.json$" path) != null
+            || (builtins.match ".*/docs/proof-artifact-manifest\\.json$" path) != null;
           combinedFilter = path: type:
             (scriptFilter path type) || (craneLib.filterCargoSources path type);
         in pkgs.lib.cleanSourceWith {
@@ -1072,6 +1082,36 @@
             cp scripts/check-verification-policy.rs "$TMPDIR/check-verification-policy.rs"
             rustc "$TMPDIR/check-verification-policy.rs" -o "$TMPDIR/check-verification-policy"
             "$TMPDIR/check-verification-policy"
+            touch $out
+          '';
+
+          # Trellis-owned direct dependency and vendored snapshot release profile.
+          consumer-release-profile = pkgs.runCommand "consumer-release-profile" {
+            nativeBuildInputs = [ rustToolchain pkgs.clang pkgs.mold pkgs.nickel pkgs.b3sum ];
+          } ''
+            cd ${src}
+            export HOME="$TMPDIR/home"
+            export CARGO_HOME="$TMPDIR/cargo-home"
+            export CARGO_TARGET_DIR="$TMPDIR/cargo-target"
+            mkdir -p "$HOME" "$CARGO_HOME" "$CARGO_TARGET_DIR"
+            cp "${octetConsumerVendorDir}/config.toml" "$CARGO_HOME/config.toml"
+            checker_dir="$TMPDIR/consumer-profile-checker"
+            mkdir -p "$checker_dir/src"
+            cp scripts/check-verified-logic-consumer-profile.rs "$checker_dir/src/main.rs"
+            cat > "$checker_dir/Cargo.toml" <<'EOF'
+            [package]
+            name = "trellis-consumer-profile-checker"
+            version = "0.1.0"
+            edition = "2024"
+
+            [dependencies]
+            serde = { version = "1", features = ["derive"] }
+            serde_json = "1"
+            EOF
+            cargo run --quiet --offline --manifest-path "$checker_dir/Cargo.toml" -- . \
+              --source-root ${trellis-consumer-release-src} \
+              --source-revision ${trellis-consumer-release-src.rev}
+            cargo run --quiet --offline --manifest-path "$checker_dir/Cargo.toml" -- --self-test
             touch $out
           '';
 

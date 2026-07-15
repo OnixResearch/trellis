@@ -416,6 +416,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Verified-logic consumer release profile",
+        "./scripts/check-verified-logic-consumer-profile.rs",
+        std::iter::empty::<&str>(),
+        "",
+        "",
+    );
+    runner.run_status(
+        "Verified-logic consumer release profile self-test",
+        "./scripts/check-verified-logic-consumer-profile.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "README headline metrics drift",
         "./scripts/check-readme-metrics.rs",
         std::iter::empty::<&str>(),
