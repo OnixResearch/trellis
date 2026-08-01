@@ -130,7 +130,7 @@
       "flake": false,
       "locked": {
         "lastModified": 1774225669,
-        "narHash": "sha256-3OkN9IX1ommW6JZlgOOalz8Zx8tQGNgjaM7LVMYFZVg=",
+        "narHash": "sha256-joIBUoE+6MMi/kAn7U/waf1d7/TynvrBSOJRFHMdBAs=",
         "owner": "trailofbits",
         "repo": "dylint",
         "rev": "0e0a71eefe6f01563d11acc6e1d7af1d505934a9",
