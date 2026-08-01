@@ -6,14 +6,17 @@ use regex::Regex;
 use super::model::ExtractedFacts;
 use super::model::HeadingFact;
 use super::model::OpenSpecContext;
+use super::model::RepoPath;
 use super::model::RequirementDefinition;
+use super::model::RequirementId;
 use super::model::RequirementReference;
 use super::model::SymbolFact;
 use super::model::SymbolKind;
 
 type SymbolPattern = (fn() -> &'static Regex, SymbolKind);
 
-pub fn extract_facts(path: &str, bytes: &[u8]) -> ExtractedFacts {
+pub fn extract_facts(path: &RepoPath, bytes: &[u8]) -> ExtractedFacts {
+    let path = path.as_str();
     let text = String::from_utf8_lossy(bytes);
     if path.starts_with("src/") && has_extension(path, "rs") {
         ExtractedFacts {
@@ -46,7 +49,8 @@ pub fn extract_facts(path: &str, bytes: &[u8]) -> ExtractedFacts {
     }
 }
 
-pub fn infer_openspec_context(path: &str) -> Option<OpenSpecContext> {
+pub fn infer_openspec_context(path: &RepoPath) -> Option<OpenSpecContext> {
+    let path = path.as_str();
     if !path.starts_with("openspec/") {
         return None;
     }
@@ -142,9 +146,12 @@ fn extract_rust_requirement_refs(text: &str) -> Vec<RequirementReference> {
             if tokens.len() < 2 {
                 continue;
             }
+            let Ok(id) = RequirementId::new(tokens[1]) else {
+                continue;
+            };
             refs.push(RequirementReference {
                 relation: tokens[0].to_string(),
-                id: tokens[1].to_string(),
+                id,
                 line: line_number(index),
                 snippet: trimmed.to_string(),
             });
@@ -166,9 +173,12 @@ fn extract_requirement_refs(text: &str) -> Vec<RequirementReference> {
             if tokens.len() < 2 {
                 continue;
             }
+            let Ok(id) = RequirementId::new(tokens[1]) else {
+                continue;
+            };
             refs.push(RequirementReference {
                 relation: tokens[0].to_string(),
-                id: tokens[1].to_string(),
+                id,
                 line: line_number(index),
                 snippet: line.trim().to_string(),
             });
@@ -248,9 +258,10 @@ fn tracks_requirement_section(level: u8, heading: &str) -> bool {
     level == 2 || (level == 3 && (heading.starts_with("Requirement:") || heading.starts_with("Requirement ")))
 }
 
-fn requirement_definition_id(line: &str) -> Option<String> {
+fn requirement_definition_id(line: &str) -> Option<RequirementId> {
     let captures = req_line_re().captures(line)?;
-    captures.get(1).map(|value| value.as_str().to_string())
+    let value = captures.get(1)?.as_str();
+    RequirementId::new(value).ok()
 }
 
 fn has_extension(path: &str, extension: &str) -> bool {
@@ -345,11 +356,16 @@ fn fn_re() -> &'static Regex {
 mod tests {
     use super::extract_facts;
     use super::infer_openspec_context;
+    use crate::repo_index::model::RepoPath;
+
+    fn repo_path(value: &str) -> RepoPath {
+        RepoPath::new(value).expect("valid test repo path")
+    }
 
     #[test]
     fn rust_extractor_finds_verus_items_and_refs() {
         let facts = extract_facts(
-            "src/demo.rs",
+            &repo_path("src/demo.rs"),
             br"
 // r[impl repo-index.query]
 pub mod demo;
@@ -362,14 +378,14 @@ pub fn runtime_name() {}
         let names: Vec<String> = facts.symbols.into_iter().map(|symbol| symbol.name).collect();
         assert_eq!(names, vec!["Thing", "demo", "lemma", "runtime_name", "spec_name"]);
         assert_eq!(facts.requirement_refs.len(), 1);
-        assert_eq!(facts.requirement_refs[0].id, "repo-index.query");
+        assert_eq!(facts.requirement_refs[0].id.as_str(), "repo-index.query");
         assert_eq!(facts.requirement_refs[0].relation, "impl");
     }
 
     #[test]
     fn requirements_doc_extractor_collects_definitions() {
         let facts = extract_facts(
-            "docs/requirements.md",
+            &repo_path("docs/requirements.md"),
             br"
 # Root
 
@@ -384,7 +400,7 @@ Refresh MUST commit atomically.
 ",
         );
         assert_eq!(facts.requirement_defs.len(), 2);
-        assert_eq!(facts.requirement_defs[0].id, "repo-index.query");
+        assert_eq!(facts.requirement_defs[0].id.as_str(), "repo-index.query");
         assert_eq!(facts.requirement_defs[0].section.as_deref(), Some("Repository Index"));
         assert_eq!(facts.requirement_defs[0].body, vec![
             "Queries MUST be deterministic.".to_string(),
@@ -395,7 +411,7 @@ Refresh MUST commit atomically.
     #[test]
     fn openspec_extractor_collects_requirement_definitions() {
         let facts = extract_facts(
-            "openspec/changes/demo/specs/web-of-trust/spec.md",
+            &repo_path("openspec/changes/demo/specs/web-of-trust/spec.md"),
             br"
 # Demo
 
@@ -408,7 +424,7 @@ A threshold policy MUST count only distinct introducers.
 ",
         );
         assert_eq!(facts.requirement_defs.len(), 1);
-        assert_eq!(facts.requirement_defs[0].id, "web-of-trust.threshold");
+        assert_eq!(facts.requirement_defs[0].id.as_str(), "web-of-trust.threshold");
         assert_eq!(
             facts.requirement_defs[0].section.as_deref(),
             Some("Requirement: Threshold Policy Counts Distinct Introducers")
@@ -419,8 +435,17 @@ A threshold policy MUST count only distinct introducers.
     }
 
     #[test]
+    fn extractors_skip_invalid_requirement_ids() {
+        let rust_facts = extract_facts(&repo_path("src/demo.rs"), b"// r[impl invalid[id]\n");
+        assert!(rust_facts.requirement_refs.is_empty());
+
+        let requirement_facts = extract_facts(&repo_path("docs/requirements.md"), b"r[invalid[id]\nText\n");
+        assert!(requirement_facts.requirement_defs.is_empty());
+    }
+
+    #[test]
     fn openspec_context_tracks_change_and_domain() {
-        let context = infer_openspec_context("openspec/changes/repo-indexing/specs/repo-index/spec.md")
+        let context = infer_openspec_context(&repo_path("openspec/changes/repo-indexing/specs/repo-index/spec.md"))
             .expect("openspec context");
         assert_eq!(context.change_name.as_deref(), Some("repo-indexing"));
         assert_eq!(context.domain.as_deref(), Some("repo-index"));

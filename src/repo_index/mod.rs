@@ -9,11 +9,17 @@ use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use anyhow::bail;
+pub use model::Blake3DigestHex;
+pub use model::Blake3DigestHexError;
 pub use model::DEFAULT_DB_PATH;
 use model::DigestQueryResult;
 use model::ExtractorKind;
 use model::PathQueryResult;
 use model::RefreshSummary;
+pub use model::RepoPath;
+pub use model::RepoPathError;
+pub use model::RequirementId;
+pub use model::RequirementIdError;
 use model::RequirementQueryResult;
 pub use store::RefreshOptions;
 pub use store::RepoIndex;
@@ -51,12 +57,13 @@ where I: IntoIterator<Item = String> {
             println!("headings: {}", stats.heading_count);
         }
         "path" => {
-            let path = args.next().ok_or_else(|| anyhow!("missing <path> argument\n\n{}", usage()))?;
+            let path_arg = args.next().ok_or_else(|| anyhow!("missing <path> argument\n\n{}", usage()))?;
             if args.next().is_some() {
                 bail!(usage());
             }
+            let path = RepoPath::new(&path_arg).with_context(|| format!("invalid repository path {path_arg:?}"))?;
             let Some(result) = index.query_path(&path)? else {
-                bail!("path not indexed: {}", normalize_user_path(&path));
+                bail!("path not indexed: {path}");
             };
             print_path_result(&result);
         }
@@ -73,18 +80,22 @@ where I: IntoIterator<Item = String> {
             }
         }
         "requirement" => {
-            let requirement = args.next().ok_or_else(|| anyhow!("missing <id> argument\n\n{}", usage()))?;
+            let requirement_arg = args.next().ok_or_else(|| anyhow!("missing <id> argument\n\n{}", usage()))?;
             if args.next().is_some() {
                 bail!(usage());
             }
+            let requirement = RequirementId::new(&requirement_arg)
+                .with_context(|| format!("invalid requirement ID {requirement_arg:?}"))?;
             let result = index.query_requirement(&requirement)?;
             print_requirement_result(&requirement, &result);
         }
         "digest" => {
-            let digest = args.next().ok_or_else(|| anyhow!("missing <hex> argument\n\n{}", usage()))?;
+            let digest_arg = args.next().ok_or_else(|| anyhow!("missing <hex> argument\n\n{}", usage()))?;
             if args.next().is_some() {
                 bail!(usage());
             }
+            let digest =
+                Blake3DigestHex::new(&digest_arg).with_context(|| format!("invalid BLAKE3 digest {digest_arg:?}"))?;
             let result = index.query_digest(&digest)?;
             print_digest_result(&result);
         }
@@ -100,10 +111,6 @@ fn usage() -> &'static str {
 
 fn default_db_path(root: &std::path::Path) -> PathBuf {
     root.join(DEFAULT_DB_PATH)
-}
-
-fn normalize_user_path(path: &str) -> String {
-    path.replace('\\', "/")
 }
 
 fn print_refresh_summary(summary: &RefreshSummary) {
@@ -175,7 +182,7 @@ fn print_requirement_definitions(definitions: &[model::RequirementDefinition]) {
     }
 }
 
-fn print_requirement_result(requirement: &str, result: &RequirementQueryResult) {
+fn print_requirement_result(requirement: &RequirementId, result: &RequirementQueryResult) {
     println!("requirement: {requirement}");
     println!("definitions: {}", result.definitions.len());
     for definition in &result.definitions {

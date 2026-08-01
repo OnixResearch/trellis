@@ -14,6 +14,7 @@ use redb::TableDefinition;
 
 use super::extract::extract_facts;
 use super::extract::infer_openspec_context;
+use super::model::Blake3DigestHex;
 use super::model::CURRENT_SCHEMA_VERSION;
 use super::model::DigestFactsView;
 use super::model::DigestQueryResult;
@@ -21,7 +22,9 @@ use super::model::GenerationStats;
 use super::model::PathQueryResult;
 use super::model::PathRow;
 use super::model::RefreshSummary;
+use super::model::RepoPath;
 use super::model::RequirementDefinitionHit;
+use super::model::RequirementId;
 use super::model::RequirementQueryResult;
 use super::model::RequirementReferenceHit;
 use super::model::SymbolHit;
@@ -39,7 +42,7 @@ pub struct RefreshOptions {
 #[derive(Debug)]
 struct ScannedFile {
     absolute_path: PathBuf,
-    relative_path: String,
+    relative_path: RepoPath,
 }
 
 pub struct RepoIndex {
@@ -114,7 +117,7 @@ impl RepoIndex {
     pub fn refresh_with_options(&self, options: RefreshOptions) -> Result<RefreshSummary> {
         let scanned = scan_tracked_files(&self.root)?;
         let previous_rows = self.active_path_rows()?;
-        let previous_by_path: BTreeMap<String, PathRow> =
+        let previous_by_path: BTreeMap<RepoPath, PathRow> =
             previous_rows.into_iter().map(|row| (row.path.clone(), row)).collect();
         let mut seen_paths = BTreeSet::new();
         let next_generation = self.active_generation()?.unwrap_or(0) + 1;
@@ -139,7 +142,7 @@ impl RepoIndex {
             for scanned_file in scanned {
                 let bytes = fs::read(&scanned_file.absolute_path)
                     .with_context(|| format!("read tracked file {}", scanned_file.absolute_path.display()))?;
-                let digest_hex = blake3::hash(&bytes).to_hex().to_string();
+                let digest_hex = Blake3DigestHex::from_bytes(&bytes);
                 let extractor_kind = super::model::ExtractorKind::from_path(&scanned_file.relative_path);
                 let row = PathRow {
                     path: scanned_file.relative_path.clone(),
@@ -230,14 +233,12 @@ impl RepoIndex {
 
     // r[impl repo-index.cross-reference]
     // r[impl repo-index.query]
-    pub fn query_path(&self, path: &str) -> Result<Option<PathQueryResult>> {
+    pub fn query_path(&self, path: &RepoPath) -> Result<Option<PathQueryResult>> {
         let generation = self.require_active_generation()?;
-        let normalized = normalize_query_path(path);
         let read_txn = self.db.begin_read().context("begin repo-index read transaction")?;
         let path_table = read_txn.open_table(PATH_TABLE).context("open repo-index path table")?;
-        let key = path_key(generation, &normalized);
-        let Some(encoded_row) =
-            path_table.get(key.as_str()).with_context(|| format!("read active path row {normalized}"))?
+        let key = path_key(generation, path);
+        let Some(encoded_row) = path_table.get(key.as_str()).with_context(|| format!("read active path row {path}"))?
         else {
             return Ok(None);
         };
@@ -270,14 +271,14 @@ impl RepoIndex {
 
     // r[impl repo-index.cross-reference]
     // r[impl repo-index.query]
-    pub fn query_requirement(&self, requirement_id: &str) -> Result<RequirementQueryResult> {
+    pub fn query_requirement(&self, requirement_id: &RequirementId) -> Result<RequirementQueryResult> {
         let read_txn = self.db.begin_read().context("begin repo-index read transaction")?;
         let generation = Some(self.require_active_generation()?);
         let mut result = RequirementQueryResult::default();
         for row in Self::active_path_rows_from_txn(&read_txn, generation)? {
             let facts = Self::read_extracted_facts_for_row(&read_txn, &row)?;
             for definition in facts.requirement_defs {
-                if definition.id == requirement_id {
+                if definition.id.as_str() == requirement_id.as_str() {
                     result.definitions.push(RequirementDefinitionHit {
                         path: row.path.clone(),
                         digest_hex: row.digest_hex.clone(),
@@ -286,7 +287,7 @@ impl RepoIndex {
                 }
             }
             for reference in facts.requirement_refs {
-                if reference.id == requirement_id {
+                if reference.id.as_str() == requirement_id.as_str() {
                     result.references.push(RequirementReferenceHit {
                         path: row.path.clone(),
                         digest_hex: row.digest_hex.clone(),
@@ -301,14 +302,13 @@ impl RepoIndex {
     }
 
     // r[impl repo-index.query]
-    pub fn query_digest(&self, digest_hex: &str) -> Result<DigestQueryResult> {
-        validate_digest_hex(digest_hex)?;
+    pub fn query_digest(&self, digest_hex: &Blake3DigestHex) -> Result<DigestQueryResult> {
         let read_txn = self.db.begin_read().context("begin repo-index read transaction")?;
         let generation = Some(self.require_active_generation()?);
         let mut paths = Vec::new();
         let mut extraction_keys = BTreeSet::new();
         for row in Self::active_path_rows_from_txn(&read_txn, generation)? {
-            if row.digest_hex == digest_hex {
+            if row.digest_hex == *digest_hex {
                 extraction_keys.insert(row.extraction_key());
                 paths.push(row);
             }
@@ -337,7 +337,7 @@ impl RepoIndex {
         facts_by_kind.sort_by_key(|facts| facts.extractor_kind);
 
         Ok(DigestQueryResult {
-            digest_hex: digest_hex.to_string(),
+            digest_hex: digest_hex.clone(),
             paths,
             facts_by_kind,
         })
@@ -413,7 +413,7 @@ fn schema_mismatch(error: &anyhow::Error) -> bool {
     error.chain().any(|cause| cause.to_string().starts_with("repo-index schema mismatch:"))
 }
 
-fn path_key(generation: u64, path: &str) -> String {
+fn path_key(generation: u64, path: &RepoPath) -> String {
     format!("{generation:020}:{path}")
 }
 
@@ -425,37 +425,27 @@ fn decode<T: serde::de::DeserializeOwned>(bytes: &[u8]) -> Result<T> {
     serde_json::from_slice(bytes).context("deserialize repo-index row")
 }
 
-fn validate_digest_hex(digest_hex: &str) -> Result<()> {
-    if digest_hex.len() != 64 || !digest_hex.bytes().all(|byte| byte.is_ascii_hexdigit()) {
-        bail!("digest must be a 64-character hex BLAKE3 value");
-    }
-    Ok(())
-}
-
-fn normalize_query_path(path: &str) -> String {
-    path.replace('\\', "/")
-}
-
 fn scan_tracked_files(root: &Path) -> Result<Vec<ScannedFile>> {
     let mut scanned = Vec::new();
     collect_files_with_extension(root, Path::new("src"), "rs", &mut scanned, false)?;
-    push_if_exists(root, Path::new("docs/requirements.md"), &mut scanned);
+    push_if_exists(root, Path::new("docs/requirements.md"), &mut scanned)?;
     collect_files_with_extension(root, Path::new("openspec/specs"), "md", &mut scanned, false)?;
     collect_files_with_extension(root, Path::new("openspec/changes"), "md", &mut scanned, true)?;
-    push_if_exists(root, Path::new("README.md"), &mut scanned);
-    push_if_exists(root, Path::new("AGENTS.md"), &mut scanned);
+    push_if_exists(root, Path::new("README.md"), &mut scanned)?;
+    push_if_exists(root, Path::new("AGENTS.md"), &mut scanned)?;
     scanned.sort_by_key(|file| file.relative_path.clone());
     Ok(scanned)
 }
 
-fn push_if_exists(root: &Path, relative: &Path, scanned: &mut Vec<ScannedFile>) {
+fn push_if_exists(root: &Path, relative: &Path, scanned: &mut Vec<ScannedFile>) -> Result<()> {
     let absolute = root.join(relative);
     if absolute.is_file() {
         scanned.push(ScannedFile {
             absolute_path: absolute,
-            relative_path: normalize_relative_path(relative),
+            relative_path: normalize_relative_path(relative)?,
         });
     }
+    Ok(())
 }
 
 fn collect_files_with_extension(
@@ -490,9 +480,9 @@ fn collect_files_recursive(
         let file_type = entry.file_type().with_context(|| format!("read file type for {}", entry.path().display()))?;
         let file_name = entry.file_name();
         let child_relative = relative_dir.join(&file_name);
-        let child_relative_str = normalize_relative_path(&child_relative);
+        let child_repo_path = normalize_relative_path(&child_relative)?;
         if file_type.is_dir() {
-            if skip_archive && child_relative_str == "openspec/changes/archive" {
+            if skip_archive && child_repo_path.as_str() == "openspec/changes/archive" {
                 continue;
             }
             collect_files_recursive(root, &child_relative, extension, scanned, skip_archive)?;
@@ -500,7 +490,7 @@ fn collect_files_recursive(
         {
             scanned.push(ScannedFile {
                 absolute_path: entry.path(),
-                relative_path: child_relative_str,
+                relative_path: child_repo_path,
             });
         }
     }
@@ -508,8 +498,8 @@ fn collect_files_recursive(
     Ok(())
 }
 
-fn normalize_relative_path(path: &Path) -> String {
-    path.to_string_lossy().replace('\\', "/")
+fn normalize_relative_path(path: &Path) -> Result<RepoPath> {
+    RepoPath::new(path.to_string_lossy()).context("normalize tracked repository path")
 }
 
 #[cfg(test)]
@@ -528,8 +518,19 @@ mod tests {
     use super::RefreshOptions;
     use super::RepoIndex;
     use super::STATS_TABLE;
+    use crate::repo_index::model::Blake3DigestHex;
     use crate::repo_index::model::CURRENT_SCHEMA_VERSION;
     use crate::repo_index::model::DEFAULT_DB_PATH;
+    use crate::repo_index::model::RepoPath;
+    use crate::repo_index::model::RequirementId;
+
+    fn repo_path(value: &str) -> RepoPath {
+        RepoPath::new(value).expect("valid test repo path")
+    }
+
+    fn requirement_id(value: &str) -> RequirementId {
+        RequirementId::new(value).expect("valid test requirement ID")
+    }
 
     struct Fixture {
         root: TempDir,
@@ -670,11 +671,37 @@ mod tests {
         fixture.write("docs/requirements.md", minimal_requirements())?;
         let index = fixture.index()?;
         index.refresh()?;
-        let first = index.query_path("src/sample.rs")?.expect("path query after first refresh").row.digest_hex;
+        let first = index
+            .query_path(&repo_path("src/sample.rs"))?
+            .expect("path query after first refresh")
+            .row
+            .digest_hex;
         drop(index);
         let reopened = fixture.index()?;
-        let second = reopened.query_path("src/sample.rs")?.expect("path query after reopen").row.digest_hex;
+        let second = reopened.query_path(&repo_path("src/sample.rs"))?.expect("path query after reopen").row.digest_hex;
         assert_eq!(first, second);
+        Ok(())
+    }
+
+    // r[verify repo-index.content-digest]
+    // r[verify repo-index.query]
+    #[test]
+    fn digest_query_accepts_canonicalized_uppercase_input() -> Result<()> {
+        let fixture = Fixture::new()?;
+        let contents = "pub fn alpha() {}\n";
+        fixture.write("src/sample.rs", contents)?;
+        fixture.write("docs/requirements.md", minimal_requirements())?;
+        let index = fixture.index()?;
+        index.refresh()?;
+
+        let canonical = Blake3DigestHex::from_bytes(contents.as_bytes());
+        let uppercase = canonical.as_str().to_ascii_uppercase();
+        let query_digest = Blake3DigestHex::new(uppercase)?;
+        let result = index.query_digest(&query_digest)?;
+
+        assert_eq!(result.digest_hex, canonical);
+        assert_eq!(result.paths.len(), 1);
+        assert_eq!(result.paths[0].path.as_str(), "src/sample.rs");
         Ok(())
     }
 
@@ -690,7 +717,7 @@ mod tests {
         let reopened = fixture.index()?;
         let symbol_hits = reopened.query_symbol("alpha")?;
         assert_eq!(symbol_hits.len(), 1);
-        let requirement = reopened.query_requirement("repo-index.query")?;
+        let requirement = reopened.query_requirement(&requirement_id("repo-index.query"))?;
         assert_eq!(requirement.definitions.len(), 1);
         assert_eq!(requirement.references.len(), 1);
         Ok(())
@@ -710,8 +737,8 @@ mod tests {
         });
         assert!(error.is_err());
         assert_eq!(index.active_generation()?, Some(first.generation));
-        let path = index.query_path("src/sample.rs")?.expect("path row after failed refresh");
-        assert_eq!(path.row.digest_hex, blake3::hash(b"pub fn alpha() {}\n").to_hex().to_string());
+        let path = index.query_path(&repo_path("src/sample.rs"))?.expect("path row after failed refresh");
+        assert_eq!(path.row.digest_hex, Blake3DigestHex::from_bytes(b"pub fn alpha() {}\n"));
         Ok(())
     }
 
@@ -738,7 +765,7 @@ mod tests {
         fixture.remove("src/b.rs")?;
         let summary = index.refresh()?;
         assert_eq!(summary.deleted_paths, 1);
-        assert!(index.query_path("src/b.rs")?.is_none());
+        assert!(index.query_path(&repo_path("src/b.rs"))?.is_none());
         Ok(())
     }
 
@@ -756,18 +783,20 @@ mod tests {
         let index = fixture.index()?;
         index.refresh()?;
 
-        let path = index.query_path("openspec/changes/demo/specs/repo-index/spec.md")?.expect("openspec path query");
+        let path = index
+            .query_path(&repo_path("openspec/changes/demo/specs/repo-index/spec.md"))?
+            .expect("openspec path query");
         assert_eq!(path.row.openspec.as_ref().and_then(|ctx| ctx.change_name.as_deref()), Some("demo"));
         assert!(path.facts.headings.iter().any(|heading| heading.text == "Requirement: Query"));
-        assert!(path.facts.requirement_defs.iter().any(|definition| definition.id == "demo.query"));
+        assert!(path.facts.requirement_defs.iter().any(|definition| definition.id.as_str() == "demo.query"));
 
-        let requirement = index.query_requirement("repo-index.query")?;
+        let requirement = index.query_requirement(&requirement_id("repo-index.query"))?;
         assert_eq!(requirement.definitions.len(), 1);
         assert_eq!(requirement.references.len(), 1);
 
-        let openspec_requirement = index.query_requirement("demo.query")?;
+        let openspec_requirement = index.query_requirement(&requirement_id("demo.query"))?;
         assert_eq!(openspec_requirement.definitions.len(), 1);
-        assert_eq!(openspec_requirement.definitions[0].path, "openspec/changes/demo/specs/repo-index/spec.md");
+        assert_eq!(openspec_requirement.definitions[0].path.as_str(), "openspec/changes/demo/specs/repo-index/spec.md");
         assert_eq!(openspec_requirement.references.len(), 0);
         Ok(())
     }
@@ -780,13 +809,13 @@ mod tests {
         fixture.write("docs/requirements.md", minimal_requirements())?;
         let index = fixture.index()?;
         index.refresh()?;
-        let before = index.query_requirement("repo-index.query")?;
+        let before = index.query_requirement(&requirement_id("repo-index.query"))?;
         let stats_before = index.stats()?;
 
         let summary = index.refresh()?;
         assert_eq!(summary.changed_paths, 0);
         assert_eq!(summary.added_paths, 0);
-        let after = index.query_requirement("repo-index.query")?;
+        let after = index.query_requirement(&requirement_id("repo-index.query"))?;
         let stats_after = index.stats()?;
         assert_eq!(before, after);
         assert_eq!(stats_before, stats_after);
