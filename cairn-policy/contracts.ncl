@@ -35,6 +35,7 @@ let TraceabilityExtension = std.contract.from_predicate (fun value =>
 let StackProvenanceGateMode = Common.enum ["disabled", "optional", "required"] in
 let RuntimeCaptureOrigin = Common.enum ["boundary_captured", "ingested_telemetry", "wrapper_asserted", "unknown"] in
 let PositiveNumber = Common.PositiveNumber in
+let DependencyTargetClass = Common.enum ["lifecycle-id"] in
 let artifact_schema_integrity = fun schema =>
   let artifact_ids = Common.ids schema.artifacts in
   Common.ids_unique schema.artifacts
@@ -107,10 +108,22 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     promoted | Promoted,
   },
 
+  ArtifactSubstancePolicy = {
+    proposal_minimum_substantive_lines | PositiveNumber,
+    design_minimum_substantive_lines | PositiveNumber,
+    minimum_requirement_blocks | PositiveNumber,
+    minimum_substantive_tasks | PositiveNumber,
+    placeholder_tokens | NonEmptyArray | Array NonEmptyString,
+    normative_tokens | NonEmptyArray | Array NonEmptyString,
+    dependency_marker_id | NonEmptyString,
+    dependency_target_class | DependencyTargetClass,
+  },
+
   GatePolicy = {
     stages | NonEmptyArray | Array Stage,
     ignore_archives | Bool,
     finding | FindingPolicy,
+    substance | ArtifactSubstancePolicy,
   },
 
   ReportContract = {

@@ -39,9 +39,14 @@ const MARKDOWN_EXTENSION: &str = "md";
 const SOURCE_PATH_PREFIX: &str = "src/";
 const SOURCE_PATH_SUFFIX: &str = ".rs";
 const VIBETHINKER_MAX_TOKENS_HINT: usize = 16_384;
-const VIBETHINKER_BASE_TASK: &str = "Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only; do not suggest adding or hiding trust boundaries.";
-const VIBETHINKER_OUTPUT_CONTRACT: [&str; 9] = [
+const VIBETHINKER_OUTPUT_CONTRACT_LINE_COUNT: usize = 13;
+const VIBETHINKER_BASE_TASK: &str = "Critique this Trellis/Verus proof target without assuming the target or current patch is correct. Return concrete proof/spec/test gaps only; do not suggest adding or hiding trust boundaries.";
+const VIBETHINKER_OUTPUT_CONTRACT: [&str; VIBETHINKER_OUTPUT_CONTRACT_LINE_COUNT] = [
     "Concrete proof postconditions or lemma splits, using existing specs only.",
+    "Group materially different proposals by proof mechanism and collapse paraphrases of the same route.",
+    "For every proposed helper lemma or reduction, classify its gap as simpler, equivalent, stronger, or unknown relative to the target; equivalent or stronger gaps remain blocked, not proof progress.",
+    "For rejected sublemmas, give a concrete counterexample or failed proof obligation when feasible.",
+    "Audit precondition satisfiability, vacuity, quantifier domains, arithmetic and index bounds, decreases, exec/spec correspondence, and trust-boundary expansion.",
     "Executable positive or negative test cases through public/runtime APIs, not tests for proof functions.",
     "Do not propose tests that rely on violating `requires` clauses, panics, or impossible allocations.",
     "Keep boundary suggestions small enough for ordinary unit/property tests; mark infeasible stress cases as non-actionable.",
@@ -1038,6 +1043,11 @@ mod tests {
     if !packet.contains("Requested output:")
         || !packet.contains("For `vacuous-ensures-true`")
         || !packet.contains("For `empty-nontrivial-proof`")
+        || !packet.contains("without assuming the target or current patch is correct")
+        || !packet.contains("Group materially different proposals by proof mechanism")
+        || !packet.contains("equivalent or stronger gaps remain blocked")
+        || !packet.contains("concrete counterexample or failed proof obligation")
+        || !packet.contains("Audit precondition satisfiability")
         || !packet.contains("not tests for proof functions")
         || !packet.contains("violating `requires`")
         || !packet.contains("Separate accepted actionable items")

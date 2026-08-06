@@ -1,0 +1,12 @@
+## Tasks
+
+- [ ] [serial] Define the finite typed configuration expression, schema/type, normal-form, digest-input, and import-edge envelopes. r[domain-primitives.typed-config.expression-envelope] r[domain-primitives.typed-config.type-admission]
+- [ ] [serial] Implement pure type-admission specs and checked exec functions with deterministic first-failure metadata for missing fields, type mismatches, unknown constructors, and unsupported forms. r[domain-primitives.typed-config.type-admission] r[domain-primitives.typed-config.explicit-failure]
+- [ ] [serial] Implement deterministic normalization specs and checked exec functions that produce canonical normal-form metadata only for admitted typed expressions. r[domain-primitives.typed-config.normal-form]
+- [ ] [serial] Implement digest-input selection over canonical normal forms and dependency digest sequences, keeping the hash algorithm implementation as an explicit trusted/runtime boundary. r[domain-primitives.typed-config.semantic-digest] r[domain-primitives.typed-config.non-claims]
+- [ ] [serial] Implement import-closure admission for frozen digest checks, no computed imports, no conditional import leakage, remote import attenuation, and same-origin header forwarding metadata. r[domain-primitives.typed-config.import-closure]
+- [ ] [serial] Add semantic-refactoring bridge predicates for normal-form-digest-preserving refactors and digest-changing refactors that require compatibility or unresolved-dependent metadata. r[domain-primitives.typed-config.semantic-refactoring]
+- [ ] [serial] Add positive tests for typed record normalization, source refactor with stable digest input, matching frozen import, and same-origin relative import header metadata. r[domain-primitives.typed-config.positive]
+- [ ] [serial] Add negative tests for type mismatch, missing required field, forbidden computed import, conditional import leakage, remote-to-local/env import, cross-origin header forwarding, frozen digest mismatch, and digest-changing refactor without compatibility. r[domain-primitives.typed-config.negative]
+- [ ] [serial] Add `docs/requirements.md`, README/module-catalog, and accepted Cairn spec updates for the implemented public module and requirement IDs. r[domain-primitives.typed-config.docs]
+- [ ] [serial] Run focused Cargo tests, Verus verification for the new module/full lib as needed, Tracey uncovered/untested checks, and Cairn validation/gates; archive evidence before closing the change. r[domain-primitives.typed-config.final-validation]
