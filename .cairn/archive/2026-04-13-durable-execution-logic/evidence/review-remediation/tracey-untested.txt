@@ -1,0 +1,7 @@
+$ tracey query untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1400 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+

@@ -1,0 +1,35 @@
+$ jj diff --git src/lib.rs
+
+diff --git a/src/lib.rs b/src/lib.rs
+index a5198438d9..385b37e61f 100644
+--- a/src/lib.rs
++++ b/src/lib.rs
+@@ -280,7 +280,15 @@
+ //! - `free_space_map` — bitmap free-space: alloc/free conservation, first-free, contiguous runs
+ //! - `page_checksum` — Fletcher-style checksum accumulation, pack/unpack roundtrip, torn-write
+ //!   detection
++//! - `web_of_trust_attestation` — exact attestation payload bytes, signature binding, and
++//!   active-window checks over issuer, subject, role, validity window, and sequence metadata
++//! - `web_of_trust_chain` — simple active trust-edge chains over attestation-index witnesses
+ //! - `web_of_trust_principal` — canonical principal IDs as full 32-byte BLAKE3 digests with full-byte equality
++//! - `web_of_trust_resolution` — rooted depth-bounded trust resolution with the empty-chain root base case
++//! - `web_of_trust_policy` — threshold acceptance over distinct rooted-trusted introducers with
++//!   explicit `k = 0` / `d = 0` rejection and repeated-final-hop filtering
++//! - `web_of_trust_revocation` — exact revocation payload bytes, signature binding, same-issuer,
++//!   exact-payload, and family-target matching
+ //! - `witness` — witness replicas: vote without full log, heartbeat acks, role taxonomy
+ //! - `work_stealing` — work-stealing deque: push/pop/steal, size tracking, circular buffer index
+ //! - `zeroize` — verified memory scrubbing: write zero to every byte, idempotence, detection
+@@ -615,7 +623,12 @@
+ pub mod wal_segment;
+ pub mod watermark;
+ pub mod weighted_round_robin;
++pub mod web_of_trust_attestation;
++pub mod web_of_trust_chain;
+ pub mod web_of_trust_principal;
++pub mod web_of_trust_resolution;
++pub mod web_of_trust_policy;
++pub mod web_of_trust_revocation;
+ pub mod witness;
+ pub mod work_stealing;
+ pub mod write_buffer;

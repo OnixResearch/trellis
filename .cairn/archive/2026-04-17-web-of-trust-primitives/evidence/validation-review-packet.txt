@@ -1,0 +1,142 @@
+# Validation Review Packet — web-of-trust-primitives
+
+This file collects the exact small evidence snippets needed to review the checked Phase 4 validation and audit tasks.
+
+## mirror-check.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/mirror-check.txt
+change_spec_ids: 10
+OK web-of-trust.principal-fingerprint
+OK web-of-trust.attestation-signature
+OK web-of-trust.attestation-window
+OK web-of-trust.revocation
+OK web-of-trust.chain-validity
+OK web-of-trust.rooted-resolution
+OK web-of-trust.threshold
+OK properties.web-of-trust.revocation-cuts-trust
+OK properties.web-of-trust.depth-monotone
+OK properties.web-of-trust.threshold-dedup
+
+PASS mirror complete
+
+## anchor-check.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/anchor-check.txt
+OK principal_id_from_bytes -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:108
+OK blake3_digest_bridge -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:98
+OK principal_id_deterministic -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:147
+OK principal_id_full_eq -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:155
+OK principal_id_matches_key_bytes -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:181
+OK attestation_payload_bytes -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:274
+OK attestation_signature_valid -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:321
+OK attestation_signature_verify_bridge -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:308
+OK attestation_signature_binds_payload -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:549
+OK attestation_payload_field_order -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:403
+OK attestation_payload_little_endian -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:434
+OK attestation_payload_tag_encoding -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:492
+OK attestation_payload_overlong_rejected -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:525
+OK attestation_active_at -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:379
+OK attestation_record_ids_match_bytes -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:573
+...
+OK test test_depth_monotone_preserves_chain_resolution @ src/properties.rs:9247
+OK test test_depth_monotone_preserves_root_base_case @ src/properties.rs:9264
+OK test test_threshold_dedup_preserves_count @ src/properties.rs:9277
+OK test test_threshold_dedup_preserves_result @ src/properties.rs:9300
+PASS all named artifacts carry expected requirement anchors
+
+## public-fn-anchor-check.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/public-fn-anchor-check.txt
+OK src/web_of_trust_principal.rs:33 blake3_digest_spec
+OK src/web_of_trust_principal.rs:39 principal_id_bytes_spec
+OK src/web_of_trust_principal.rs:45 principal_id_valid_spec
+OK src/web_of_trust_principal.rs:51 principal_id_equal_prefix_spec
+OK src/web_of_trust_principal.rs:59 principal_id_equal_bytes_spec
+OK src/web_of_trust_principal.rs:98 blake3_digest_bridge
+OK src/web_of_trust_principal.rs:108 principal_id_from_bytes
+OK src/web_of_trust_principal.rs:119 principal_ids_equal
+OK src/web_of_trust_principal.rs:147 principal_id_deterministic
+OK src/web_of_trust_principal.rs:155 principal_id_full_eq
+OK src/web_of_trust_principal.rs:181 principal_id_matches_key_bytes
+OK src/web_of_trust_attestation.rs:64 length_fits_u32_spec
+OK src/web_of_trust_attestation.rs:69 canonical_byte_string_spec
+OK src/web_of_trust_attestation.rs:78 attestation_payload_prefix_spec
+OK src/web_of_trust_attestation.rs:89 attestation_payload_bytes_spec
+...
+OK src/web_of_trust_policy.rs:564 threshold_accepts
+OK src/web_of_trust_policy.rs:797 threshold_accepts_sound
+OK src/web_of_trust_policy.rs:816 threshold_accepts_complete
+OK src/web_of_trust_policy.rs:835 invalid_records_ignored_by_threshold
+PASS all change public functions carry nearby requirement anchors
+
+## bridge-audit.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-audit.txt
+external_body blake3_digest_bridge @ src/web_of_trust_principal.rs:98
+external_body attestation_signature_verify_bridge @ src/web_of_trust_attestation.rs:308
+external_body revocation_signature_verify_bridge @ src/web_of_trust_revocation.rs:380
+PASS only approved trusted bridges appear in change files and no assume_specification bridge is present there
+
+## bridge-contract-audit.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/bridge-contract-audit.txt
+OK blake3_digest_bridge present in review and code with expected contract fragments
+OK attestation_signature_verify_bridge present in review and code with expected contract fragments
+OK revocation_signature_verify_bridge present in review and code with expected contract fragments
+PASS reviewed bridge contracts match implemented bridge contract surfaces
+
+## cargo-test.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/cargo-test.txt
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet
+running 3839 tests
+test result: ok. 3839 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.82s
+running 13 tests
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.03s
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+full raw log: cargo-test.raw.txt
+
+## clippy.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/clippy.txt
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo clippy --all-targets -- -D warnings
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 26.56s
+
+## verus.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verus.txt
+verification results:: 7465 verified, 0 errors
+
+## check-ensures.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/check-ensures.txt
+$ ./scripts/check-ensures.sh
+
+Checked 1492 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
+
+## tracey-uncovered.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-uncovered.txt
+$ tracey query uncovered
+verified-logic/rust: 0 uncovered out of 1542 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+
+## tracey-untested.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/tracey-untested.txt
+$ tracey query untested
+verified-logic/rust: 0 untested (impl but no verify) out of 1542 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+
+## verify.txt
+$ cat openspec/changes/archive/2026-04-17-web-of-trust-primitives/evidence/verify.txt
+Checked 1505 pub fn declarations, 2 exempted
+Checked 1492 pub fn in verus! blocks, 0 exempted
+test result: ok. 3839 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.55s
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 57.80s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+verification results:: 7465 verified, 0 errors
+verified-logic/rust: 0 uncovered out of 1542 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1542 rules
+=== ALL CHECKS PASSED ===

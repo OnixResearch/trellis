@@ -1,0 +1,4 @@
+external_body blake3_digest_bridge @ src/web_of_trust_principal.rs:98
+external_body attestation_signature_verify_bridge @ src/web_of_trust_attestation.rs:308
+external_body revocation_signature_verify_bridge @ src/web_of_trust_revocation.rs:380
+PASS only approved trusted bridges appear in change files and no assume_specification bridge is present there

@@ -1,0 +1,62 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-loop.rs --root target-test/proof-review-loop-assisted --mode assisted --max-iterations 1
+warning: unknown experimental feature 'wasm-builtin'
+PASS proof-review policy fresh proof-review/generated/policy.json
+# Proof Review Candidates
+
+Deterministic prefilter for focused VibeThinker proof critique. VibeThinker output is advisory; validation remains cargo, Verus, Tracey, Cairn, and repo checkers.
+
+## Active Cairn Changes
+
+- none
+
+## Ranked Candidates
+
+| Rank | Score | Path | Top reasons |
+| ---: | ---: | --- | --- |
+| 1 | 100 | `src/weak.rs` | proof `weak_catalogue` has `ensures true` |
+
+## Candidate Details
+
+### `src/weak.rs` — score 100
+
+Showing top 1 of 1 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **vacuous-ensures-true** (+100): `src/weak.rs`:3 — Replace catalogue-only postconditions with concrete implications or document it as Tracey-only metadata.
+
+## VibeThinker Prompt Shape
+
+Use `max_tokens=16384`. Packets include a base task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings.
+wrote report: /home/brittonr/git/trellis/target-test/proof-review-loop-assisted/target/proof-review/loop-receipts/candidates.md
+wrote packets: /home/brittonr/git/trellis/target-test/proof-review-loop-assisted/target/proof-review/packets
+{
+  "status": "planned",
+  "mode": "assisted",
+  "candidate": {
+    "path": "src/weak.rs",
+    "score": 100,
+    "rules": ["vacuous-ensures-true"]
+  },
+  "change_slug": "proof-review-weak",
+  "apply_recipe": null,
+  "validation": [{"id": "scanner", "evidence": "proof-review-candidates.log", "required": true}, {"id": "cairn-gates", "evidence": "cairn-gates.log", "required": true}]
+}
+wrote receipt: /home/brittonr/git/trellis/target-test/proof-review-loop-assisted/target/proof-review/loop-receipts/proof-review-loop.json
+$ grep -E "valid|verdict|issues" target-test/proof-review-loop-assisted/cairn/changes/proof-review-weak/evidence/cairn-gates.log
+$ cairn validate --root .
+  "change_issues": [],
+  "issues": [],
+  "spec_issues": [],
+  "specs_validated": 2,
+  "valid": true
+  "issues": [],
+  "valid": true,
+  "verdict": "PASS"
+  "issues": [],
+  "valid": true,
+  "verdict": "PASS"
+  "issues": [],
+  "valid": true,
+  "verdict": "PASS"
+$ git -C target-test/proof-review-loop-assisted status --short
+?? cairn/changes/
+?? target/

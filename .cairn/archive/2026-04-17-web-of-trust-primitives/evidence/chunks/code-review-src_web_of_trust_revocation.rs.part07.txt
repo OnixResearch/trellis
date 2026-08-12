@@ -1,0 +1,47 @@
++        #[test]
++        fn prop_revocation_signature_oracle(
++            issuer in prop::collection::vec(any::<u8>(), 0..64),
++            subject in prop::collection::vec(any::<u8>(), 0..64),
++            effective_time in any::<u64>(),
++        ) {
++            let rev = signed_family_revocation(issuer.clone(), subject, TRUST_ROLE_TAG, effective_time);
++            let payload = revocation_payload_bytes(&rev).unwrap();
++            let oracle = revocation_signature_bytes_runtime(issuer.as_slice(), payload.as_slice()) == rev.signature;
++            prop_assert_eq!(revocation_signature_valid(&rev), oracle);
++        }
++
++        // r[verify web-of-trust.revocation]
++        #[test]
++        fn prop_revocation_effective_family_oracle(
++            issuer in prop::collection::vec(any::<u8>(), 0..32),
++            subject in prop::collection::vec(any::<u8>(), 0..32),
++            effective_time in any::<u64>(),
++            sample_time in any::<u64>(),
++        ) {
++            let att = signed_attestation(issuer.clone(), subject.clone(), TRUST_ROLE_TAG, 0, u64::MAX, 1);
++            let rev = signed_family_revocation(issuer, subject, TRUST_ROLE_TAG, effective_time);
++            let oracle = revocation_signature_valid(&rev)
++                && rev.issuer.digest == att.issuer.digest
++                && rev.family_subject.digest == att.subject.digest
++                && rev.family_role_tag == att.role_tag
++                && effective_time <= sample_time;
++            prop_assert_eq!(revocation_effective_at(&rev, &att, sample_time), oracle);
++        }
++
++        // r[verify web-of-trust.revocation]
++        #[test]
++        fn prop_revocation_monotone_runtime(
++            issuer in prop::collection::vec(any::<u8>(), 0..32),
++            subject in prop::collection::vec(any::<u8>(), 0..32),
++            effective_time in any::<u64>(),
++            later_delta in any::<u16>(),
++        ) {
++            let att = signed_attestation(issuer.clone(), subject.clone(), TRUST_ROLE_TAG, 0, u64::MAX, 1);
++            let rev = signed_family_revocation(issuer, subject, TRUST_ROLE_TAG, effective_time);
++            let later = effective_time.saturating_add(u64::from(later_delta));
++            if revocation_effective_at(&rev, &att, effective_time) {
++                prop_assert!(revocation_effective_at(&rev, &att, later));
++            }
++        }
++    }
++}

@@ -1,0 +1,10 @@
+$ ./scripts/checker-fixtures.rs
+PASS coverage-valid
+PASS coverage-missing-impl
+PASS ensures-valid
+PASS ensures-missing-clause
+PASS iterative-valid
+PASS iterative-self-cycle
+PASS iterative-mutual-cycle
+PASS iterative-qualified-local-call
+checker fixture self-tests: PASS

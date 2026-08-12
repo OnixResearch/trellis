@@ -1,0 +1,4 @@
+$ ./scripts/check-coverage.sh
+
+Checked 1323 pub fn declarations, 2 exempted
+✓ all pub fns have r[impl] annotations

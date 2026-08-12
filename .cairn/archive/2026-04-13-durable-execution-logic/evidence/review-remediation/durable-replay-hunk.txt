@@ -1,0 +1,87 @@
+$ nl -ba src/durable_replay.rs | sed -n "100,185p"
+100:}
+101:
+102:// r[verify durable-execution.effect-dedup]
+103:/// A matching durable effect marker suppresses fresh execution.
+104:pub proof fn durable_effect_marker_blocks_reexecution(events: Seq<DurableEvent>, seq_num: usize, effect_id: u64)
+105:    requires effect_completed_spec(events, seq_num, effect_id)
+106:    ensures !should_execute_effect_spec(events, seq_num, effect_id)
+107:{
+108:}
+109:
+110:// r[verify durable-execution.effect-dedup]
+111:/// Appending a valid durable marker for one effect id does not change decisions for another id.
+112:pub proof fn unrelated_effect_ids_do_not_block(events: Seq<DurableEvent>, seq_num: usize, completed_id: u64, other_id: u64)
+113:    requires
+114:        events.len() <= usize::MAX as int,
+115:        completed_id != other_id,
+116:        crate::durable_history::history_valid_spec(events),
+117:        crate::durable_history::history_valid_spec(events.push(DurableEvent {
+118:            seq_num: events.len() as usize,
+119:            kind: EVENT_EFFECT_DONE,
+120:            effect_id: completed_id,
+121:        })),
+122:    ensures should_execute_effect_spec(events.push(DurableEvent {
+123:        seq_num: events.len() as usize,
+124:        kind: EVENT_EFFECT_DONE,
+125:        effect_id: completed_id,
+126:    }), seq_num, other_id) == should_execute_effect_spec(events, seq_num, other_id)
+127:{
+128:    let marker = DurableEvent {
+129:        seq_num: events.len() as usize,
+130:        kind: EVENT_EFFECT_DONE,
+131:        effect_id: completed_id,
+132:    };
+133:    let extended = events.push(marker);
+134:    assert(crate::durable_history::durable_prefix_len_spec(events) == events.len());
+135:    assert(crate::durable_history::durable_prefix_len_spec(extended) == extended.len());
+136:
+137:    assert(effect_completed_spec(extended, seq_num, other_id) ==> effect_completed_spec(events, seq_num, other_id)) by {
+138:        if effect_completed_spec(extended, seq_num, other_id) {
+139:            let i = choose|i: int| {
+140:                &&& 0 <= i < crate::durable_history::durable_prefix_len_spec(extended)
+141:                &&& extended[i].seq_num == seq_num
+142:                &&& extended[i].kind == EVENT_EFFECT_DONE
+143:                &&& extended[i].effect_id == other_id
+144:            };
+145:            if i < events.len() {
+146:                assert(0 <= i < crate::durable_history::durable_prefix_len_spec(events));
+147:                assert(extended[i] == events[i]);
+148:                assert(effect_completed_spec(events, seq_num, other_id));
+149:            } else {
+150:                assert(i < extended.len());
+151:                assert(i == events.len());
+152:                assert(extended[i] == marker);
+153:                assert(marker.effect_id == completed_id);
+154:                assert(marker.effect_id != other_id);
+155:                assert(false);
+156:            }
+157:        }
+158:    };
+159:
+160:    assert(effect_completed_spec(events, seq_num, other_id) ==> effect_completed_spec(extended, seq_num, other_id)) by {
+161:        if effect_completed_spec(events, seq_num, other_id) {
+162:            let i = choose|i: int| {
+163:                &&& 0 <= i < crate::durable_history::durable_prefix_len_spec(events)
+164:                &&& events[i].seq_num == seq_num
+165:                &&& events[i].kind == EVENT_EFFECT_DONE
+166:                &&& events[i].effect_id == other_id
+167:            };
+168:            assert(0 <= i < crate::durable_history::durable_prefix_len_spec(extended));
+169:            assert(extended[i] == events[i]);
+170:            assert(effect_completed_spec(extended, seq_num, other_id));
+171:        }
+172:    };
+173:}
+174:
+175:} // verus!
+176:
+177:#[cfg(test)]
+178:mod tests {
+179:    use proptest::prelude::*;
+180:
+181:    use super::*;
+182:    use crate::durable_history::{DurableEvent, EVENT_CANCELLED, EVENT_EFFECT_DONE, EVENT_WORK};
+183:
+184:    fn work(seq_num: usize) -> DurableEvent {
+185:        DurableEvent { seq_num, kind: EVENT_WORK, effect_id: 0 }

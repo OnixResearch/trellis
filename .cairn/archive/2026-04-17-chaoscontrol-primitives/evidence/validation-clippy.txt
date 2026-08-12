@@ -1,0 +1,2 @@
+$ cargo clippy --all-targets -- -D warnings
+(clean — 0 errors, 0 warnings)

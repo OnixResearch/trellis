@@ -1,0 +1,9 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet
+running 3839 tests
+test result: ok. 3839 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.82s
+running 13 tests
+test result: ok. 13 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.03s
+running 0 tests
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+full raw log: cargo-test.raw.txt

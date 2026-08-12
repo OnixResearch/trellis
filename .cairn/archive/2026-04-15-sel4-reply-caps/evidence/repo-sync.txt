@@ -1,0 +1,13 @@
+commit 791561a3e2379e7f6e5b22a3e479c5781bf015b7
+Author:     brittonr <b@robitzs.ch>
+AuthorDate: Wed Apr 15 12:46:07 2026 -0400
+Commit:     brittonr <b@robitzs.ch>
+CommitDate: Wed Apr 15 12:46:07 2026 -0400
+
+    Archive sel4-notification-primitives: land verified `sel4_notification` badge-accumulation and binding model, sync `docs/requirements.md`, `openspec/specs/sel4-notification/spec.md`, README and verification-gap counts, capture targeted and full validation evidence, and move the change under `openspec/changes/archive/2026-04-15-sel4-notification-primitives/` to cut active change count from 28 to 27.
+    
+    Result: {"status":"keep","active_changes":27}
+--- baseline docs/requirements.md sel4-reply hits
+--- baseline src/lib.rs sel4_reply hits
+--- baseline canonical spec presence
+baseline-spec-absent

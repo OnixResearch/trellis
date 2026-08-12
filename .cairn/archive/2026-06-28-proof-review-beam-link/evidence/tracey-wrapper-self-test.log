@@ -1,0 +1,3 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-tracey-coverage.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-tracey-coverage self-test: PASS

@@ -1,0 +1,7 @@
+warning: Failed to simplify expression <<(segment_size_threshold + segment_alignment - 1) / segment_alignment * segment_alignment == segment_size_threshold>> before sending to Z3
+  --> os_alloc.rs:93:24
+   |
+93 | ...rt((((segment_size_threshold + segment_alignment - 1) as int) / segment_alignment as int) * segment_alignment as int == segment_size_threshold as int) b...
+   |       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: 1 warning emitted

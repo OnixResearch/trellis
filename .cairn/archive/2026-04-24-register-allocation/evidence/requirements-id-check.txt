@@ -1,0 +1,11 @@
+$ rg -o "r\[regalloc[^]]*\]" openspec/changes/register-allocation/specs/register-allocation/spec.md | sort -u
+r[regalloc.coloring]
+r[regalloc.completeness]
+r[regalloc.interference]
+r[regalloc.spill-fallback]
+
+$ rg -o "r\[regalloc[^]]*\]" docs/requirements.md | sort -u
+r[regalloc.coloring]
+r[regalloc.completeness]
+r[regalloc.interference]
+r[regalloc.spill-fallback]

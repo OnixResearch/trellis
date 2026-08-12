@@ -1,0 +1,4 @@
+OK blake3_digest_bridge present in review and code with expected contract fragments
+OK attestation_signature_verify_bridge present in review and code with expected contract fragments
+OK revocation_signature_verify_bridge present in review and code with expected contract fragments
+PASS reviewed bridge contracts match implemented bridge contract surfaces

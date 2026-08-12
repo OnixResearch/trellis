@@ -1,0 +1,25 @@
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./cairn/changes/strengthen-r1cs-constraint-proof-coverage/specs/rust-primitives/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./cairn/changes/strengthen-r1cs-constraint-proof-coverage/specs/rust-primitives/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-r1cs-constraint-proof-coverage",
+  "delta_specs": [
+    "./cairn/changes/strengthen-r1cs-constraint-proof-coverage/specs/rust-primitives/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "9267d3f90273c3c1c1dbb6262a0f8859894520bac1688f21945611b8577eac6a",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "84a8d1674f7799f18d062f923b882dabf5b9c427eeb6bad616c5e68134acfd53",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "9a50c6e0b6ce462b3053fb9decf0f8f3075f7080b647b80a204580e1953622f3"
+}

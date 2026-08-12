@@ -1,0 +1,62 @@
+OK principal_id_from_bytes -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:108
+OK blake3_digest_bridge -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:98
+OK principal_id_deterministic -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:147
+OK principal_id_full_eq -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:155
+OK principal_id_matches_key_bytes -> web-of-trust.principal-fingerprint @ src/web_of_trust_principal.rs:181
+OK attestation_payload_bytes -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:274
+OK attestation_signature_valid -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:321
+OK attestation_signature_verify_bridge -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:308
+OK attestation_signature_binds_payload -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:549
+OK attestation_payload_field_order -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:403
+OK attestation_payload_little_endian -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:434
+OK attestation_payload_tag_encoding -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:492
+OK attestation_payload_overlong_rejected -> web-of-trust.attestation-signature @ src/web_of_trust_attestation.rs:525
+OK attestation_active_at -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:379
+OK attestation_record_ids_match_bytes -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:573
+OK invalid_attestation_is_inactive -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:583
+OK attestation_active_requires_signature -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:591
+OK attestation_active_half_open_window -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:599
+OK attestation_active_respects_revocation -> web-of-trust.attestation-window @ src/web_of_trust_attestation.rs:624
+OK revocation_payload_bytes -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:348
+OK revocation_matches -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:425
+OK revocation_effective_at -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:442
+OK revocation_payload_field_order -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:452
+OK revocation_payload_little_endian -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:478
+OK revocation_family_target_encoding -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:503
+OK revocation_exact_payload_target_encoding -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:523
+OK revocation_target_kind_tags -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:531
+OK revocation_record_ids_match_bytes -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:541
+OK invalid_revocation_never_effective -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:551
+OK revocation_signature_verify_bridge -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:380
+OK revocation_signature_binds_payload -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:559
+OK revocation_monotone -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:583
+OK revocation_exact_payload_correct -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:594
+OK revocation_family_target_correct -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:604
+OK revocation_invalid_kind_rejected -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:615
+OK revocation_overlong_rejected -> web-of-trust.revocation @ src/web_of_trust_revocation.rs:623
+OK chain_valid_at -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:386
+OK chain_valid_root_issuer -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:473
+OK chain_valid_adjacency -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:488
+OK chain_valid_simple_path -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:509
+OK chain_valid_role_filtered -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:524
+OK chain_valid_requires_active_edges -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:544
+OK invalid_records_have_no_chain_edge -> web-of-trust.chain-validity @ src/web_of_trust_chain.rs:564
+OK resolves_trusted_at -> web-of-trust.rooted-resolution @ src/web_of_trust_resolution.rs:268
+OK resolves_trusted_at_sound -> web-of-trust.rooted-resolution @ src/web_of_trust_resolution.rs:574
+OK resolves_trusted_at_complete -> web-of-trust.rooted-resolution @ src/web_of_trust_resolution.rs:595
+OK duplicate_roots_ignored -> web-of-trust.rooted-resolution @ src/web_of_trust_resolution.rs:619
+OK invalid_records_ignored_by_resolution -> web-of-trust.rooted-resolution @ src/web_of_trust_resolution.rs:673
+OK threshold_accepts -> web-of-trust.threshold @ src/web_of_trust_policy.rs:564
+OK threshold_accepts_sound -> web-of-trust.threshold @ src/web_of_trust_policy.rs:797
+OK threshold_accepts_complete -> web-of-trust.threshold @ src/web_of_trust_policy.rs:816
+OK invalid_records_ignored_by_threshold -> web-of-trust.threshold @ src/web_of_trust_policy.rs:835
+OK revocation_cuts_trust_witness -> properties.web-of-trust.revocation-cuts-trust @ src/properties.rs:2741
+OK depth_monotone_resolution -> properties.web-of-trust.depth-monotone @ src/properties.rs:2777
+OK threshold_dedup_preserves_result -> properties.web-of-trust.threshold-dedup @ src/properties.rs:2861
+OK threshold_dedup_preserves_count -> properties.web-of-trust.threshold-dedup @ src/properties.rs:2936
+OK test test_revocation_cuts_designated_witness_only @ src/properties.rs:9222
+OK test test_depth_monotone_preserves_chain_resolution @ src/properties.rs:9247
+OK test test_depth_monotone_preserves_root_base_case @ src/properties.rs:9264
+OK test test_threshold_dedup_preserves_count @ src/properties.rs:9277
+OK test test_threshold_dedup_preserves_result @ src/properties.rs:9300
+PASS all named artifacts carry expected requirement anchors

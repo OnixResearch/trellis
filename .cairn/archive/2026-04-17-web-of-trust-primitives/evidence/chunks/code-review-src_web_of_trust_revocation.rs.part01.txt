@@ -1,0 +1,140 @@
+$ jj diff --git src/web_of_trust_revocation.rs
+
+diff --git a/src/web_of_trust_revocation.rs b/src/web_of_trust_revocation.rs
+new file mode 100644
+index 0000000000..9d66bf17f2
+--- /dev/null
++++ b/src/web_of_trust_revocation.rs
+@@ -0,0 +1,879 @@
++//! Verified web-of-trust revocation payloads and matching semantics.
++//!
++//! Models exact canonical payload bytes for revocations over
++//! `(revocation_issuer_bytes, target_kind_tag, target_encoding,
++//! effective_time)` plus same-issuer exact-payload and family-target
++//! matching.
++
++#![allow(clippy::ptr_arg)]
++
++use crate::serialize_inj::encode_u64;
++#[cfg(verus_keep_ghost)]
++use crate::serialize_inj::encode_u64_spec;
++use crate::web_of_trust_attestation::{attestation_payload_bytes, attestation_payload_matches, encode_u32_le, Attestation};
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_attestation::{
++    attestation_payload_of_spec,
++    attestation_record_ids_match_bytes_spec,
++    canonical_byte_string_spec,
++    encode_u32_le_spec,
++    length_fits_u32_spec,
++};
++use crate::web_of_trust_principal::PrincipalId;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_principal::principal_id_bytes_spec;
++use vstd::prelude::*;
++
++#[cfg(verus_keep_ghost)]
++pub(crate) fn revocation_signature_bytes_runtime(_issuer_key_bytes: &[u8], _payload_bytes: &[u8]) -> Vec<u8> {
++    Vec::new()
++}
++
++#[cfg(not(verus_keep_ghost))]
++pub(crate) fn revocation_signature_bytes_runtime(issuer_key_bytes: &[u8], payload_bytes: &[u8]) -> Vec<u8> {
++    let mut out = Vec::new();
++    out.push(0xa2);
++    let issuer_len = u32::try_from(issuer_key_bytes.len()).expect("issuer key bytes must fit u32");
++    out.extend_from_slice(&issuer_len.to_le_bytes());
++    out.extend_from_slice(issuer_key_bytes);
++    out.extend_from_slice(payload_bytes);
++    out
++}
++
++verus! {
++
++pub const EXACT_PAYLOAD_TARGET_KIND_TAG: u8 = 0x01;
++pub const FAMILY_TARGET_KIND_TAG: u8 = 0x02;
++pub const REVOCATION_SIGNATURE_DOMAIN_TAG: u8 = 0xa2;
++
++/// Signed revocation record.
++pub struct Revocation {
++    pub issuer_key_bytes: Vec<u8>,
++    pub issuer: PrincipalId,
++    pub target_kind_tag: u8,
++    pub exact_payload_target: Vec<u8>,
++    pub family_subject_key_bytes: Vec<u8>,
++    pub family_subject: PrincipalId,
++    pub family_role_tag: u8,
++    pub effective_time: u64,
++    pub signature: Vec<u8>,
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn family_target_encoding_spec(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++) -> Option<Seq<u8>> {
++    match (canonical_byte_string_spec(issuer_key_bytes), canonical_byte_string_spec(subject_key_bytes)) {
++        (Some(issuer_enc), Some(subject_enc)) => Some(issuer_enc + subject_enc + seq![role_tag]),
++        _ => None,
++    }
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn exact_payload_target_encoding_spec(exact_payload_target: Seq<u8>) -> Option<Seq<u8>> {
++    canonical_byte_string_spec(exact_payload_target)
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn revocation_target_encoding_spec(rev: Revocation) -> Option<Seq<u8>> {
++    if rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG {
++        exact_payload_target_encoding_spec(rev.exact_payload_target@)
++    } else if rev.target_kind_tag == FAMILY_TARGET_KIND_TAG {
++        family_target_encoding_spec(rev.issuer_key_bytes@, rev.family_subject_key_bytes@, rev.family_role_tag)
++    } else {
++        None
++    }
++}
++
++// r[depends web-of-trust.revocation]
++/// Canonical revocation payload-byte grammar.
++pub open spec fn revocation_payload_bytes_spec(
++    issuer_key_bytes: Seq<u8>,
++    target_kind_tag: u8,
++    target_encoding: Seq<u8>,
++    effective_time: u64,
++) -> Option<Seq<u8>> {
++    match (canonical_byte_string_spec(issuer_key_bytes), canonical_byte_string_spec(target_encoding)) {
++        (Some(issuer_enc), Some(target_enc)) => Some(
++            issuer_enc
++                + seq![target_kind_tag]
++                + target_enc
++                + encode_u64_spec(effective_time),
++        ),
++        _ => None,
++    }
++}
++
++// r[depends web-of-trust.revocation]
++/// Canonical payload for a full revocation record.
++pub open spec fn revocation_payload_of_spec(rev: Revocation) -> Option<Seq<u8>> {
++    match revocation_target_encoding_spec(rev) {
++        Some(target_encoding) => revocation_payload_bytes_spec(
++            rev.issuer_key_bytes@,
++            rev.target_kind_tag,
++            target_encoding,
++            rev.effective_time,
++        ),
++        None => None,
++    }
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn revocation_record_ids_match_bytes_spec(rev: Revocation) -> bool {
++    &&& rev.issuer.digest@ == principal_id_bytes_spec(rev.issuer_key_bytes@)
++    &&& rev.family_subject.digest@ == principal_id_bytes_spec(rev.family_subject_key_bytes@)
++}
++
++// r[impl web-of-trust.revocation]
++pub open spec fn revocation_signature_input_spec(
++    issuer_key_bytes: Seq<u8>,
++    payload_bytes: Seq<u8>,

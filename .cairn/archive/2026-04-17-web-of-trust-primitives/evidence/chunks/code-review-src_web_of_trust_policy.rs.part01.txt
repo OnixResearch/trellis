@@ -1,0 +1,140 @@
+$ jj diff --git src/web_of_trust_policy.rs
+
+diff --git a/src/web_of_trust_policy.rs b/src/web_of_trust_policy.rs
+new file mode 100644
+index 0000000000..afa62af4bf
+--- /dev/null
++++ b/src/web_of_trust_policy.rs
+@@ -0,0 +1,1157 @@
++//! Verified web-of-trust threshold policy.
++//!
++//! Counts distinct rooted-trusted introducers with an active direct final
++//! `trust` edge into the subject. The final hop consumes one depth unit,
++//! so introducers are justified under bound `d - 1`.
++
++#![allow(clippy::ptr_arg)]
++
++use crate::web_of_trust_attestation::Attestation;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_attestation::{attestation_record_ids_match_bytes_spec, invalid_attestation_is_inactive};
++use crate::web_of_trust_chain::chain_valid_at;
++#[cfg(verus_keep_ghost)]
++use crate::web_of_trust_chain::{chain_indices_in_range_from_spec, chain_valid_at_spec, chain_valid_requires_active_edges};
++use crate::web_of_trust_principal::PrincipalId;
++use crate::web_of_trust_revocation::Revocation;
++use vstd::prelude::*;
++
++verus! {
++
++// r[impl web-of-trust.threshold]
++pub open spec fn seen_indices_in_range_from_spec(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++) -> bool
++    decreases if from < seen.len() { seen.len() - from } else { 0 }
++{
++    if from >= seen.len() {
++        true
++    } else {
++        (seen[from] as int) < attestations.len()
++            && seen_indices_in_range_from_spec(seen, attestations, from + 1)
++    }
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn seen_indices_in_range_spec(seen: Seq<usize>, attestations: Seq<Attestation>) -> bool {
++    seen_indices_in_range_from_spec(seen, attestations, 0)
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn seen_introducer_from_spec(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    digest: Seq<u8>,
++    from: int,
++) -> bool
++    recommends seen_indices_in_range_spec(seen, attestations)
++    decreases if from < seen.len() { seen.len() - from } else { 0 }
++{
++    if from >= seen.len() {
++        false
++    } else {
++        attestations[seen[from] as int].issuer.digest@ == digest
++            || seen_introducer_from_spec(seen, attestations, digest, from + 1)
++    }
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn seen_introducer_spec(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    digest: Seq<u8>,
++) -> bool
++    recommends seen_indices_in_range_spec(seen, attestations)
++{
++    seen_introducer_from_spec(seen, attestations, digest, 0)
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn search_chain_with_final_suffix_from_spec(
++    prefix: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    final_idx: nat,
++    remaining: nat,
++    next: nat,
++) -> bool {
++    exists|suffix: Seq<usize>|
++        suffix.len() == remaining as int
++            && chain_valid_at_spec(prefix + suffix + seq![final_idx as usize], roots, attestations, revocations, subject, t)
++            && (
++                remaining == 0
++                    || suffix[0] == next as usize
++                    || next < suffix[0] as nat
++            )
++}
++
++// r[impl web-of-trust.threshold]
++pub open spec fn search_chain_with_final_exact_len_from_spec(
++    prefix: Seq<usize>,
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    t: u64,
++    final_idx: nat,
++    remaining: nat,
++    next: nat,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++    decreases remaining, if next <= attestations.len() { attestations.len() - next } else { 0 }
++{
++    if final_idx >= attestations.len() {
++        false
++    } else if remaining == 0 {
++        chain_valid_at_spec(prefix + seq![final_idx as usize], roots, attestations, revocations, subject, t)
++    } else if next >= attestations.len() {
++        false
++    } else {
++        search_chain_with_final_exact_len_from_spec(
++            prefix + seq![next as usize],
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            final_idx,
++            (remaining - 1) as nat,
++            0,
++        ) || search_chain_with_final_exact_len_from_spec(
++            prefix,
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            final_idx,

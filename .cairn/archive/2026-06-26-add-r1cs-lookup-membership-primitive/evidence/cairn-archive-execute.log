@@ -1,0 +1,254 @@
+$ CAIRN_ARCHIVE_DATE=2026-06-26 cairn archive add-r1cs-lookup-membership-primitive --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-r1cs-lookup-membership-primitive",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive"
+    }
+  ],
+  "blocked": false,
+  "change": "add-r1cs-lookup-membership-primitive",
+  "dry_run": false,
+  "input_hash": "a7b43ffa5a93865e91a4d60fc6bc1a8b22671e1bb48a6c726d19b5a576c407c4",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "83e55548a54c802d1cd1dfc1c8c4f41f5d29e66632087f84dc8ee0657859b53a",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/.openspec.yaml"
+        },
+        {
+          "content_hash": "f03da2b99acc8c775b1dd37a8743653b0e158de72c1d6cc129f73c59ed936eae",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/design.md"
+        },
+        {
+          "content_hash": "24f08c583baf531e8ee58ae251482b3d789d07774b8ecfc5e9cda812477bd851",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "77aa770622dde43441ac64666f6e953e25467a6bfe55a66fe2809ef38f5f879d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "f11b2bdacca9f5b5f795c769420adbb38bad69eabda2621992b8801a9f6958ad",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "47ff7f4b9b8e2fc1f1b23b86516868d52cf0cec3e17f287c2cc90c5a7afebd5d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "175c5d2088c2ec322c1bbc228c21b4b1d44f2d4eeb6af7f8ba77eb2266e8bc54",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cairn-validate.log"
+        },
+        {
+          "content_hash": "c4639a247f55a309f7fb2138140e84295b703fe9731f7ab6c2ad9f1c045f86ac",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cargo-clippy.log"
+        },
+        {
+          "content_hash": "6802321ebd891afc2b2345444b16cd884730884aa095534427afd2ba951f5201",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cargo-test-full.log"
+        },
+        {
+          "content_hash": "5a5c5daa6f05486c2d0945e47732b6aac51e7f68bd96f48ca8678acf184359a3",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/cargo-test-r1cs-lookup.log"
+        },
+        {
+          "content_hash": "8a76e0878a8bc40359b07ce4b9918aeba0f4e78f8abd62682bb8a8081f35644d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/openspec-validate-canonical.log"
+        },
+        {
+          "content_hash": "bfb500a480873d9f5e892aeb17c2b6aaecbc354d7155d8256fe1d160ac6c3d3d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/openspec-validate.log"
+        },
+        {
+          "content_hash": "37f147cd0c68b8501583fff6f488b769bd0d7c2fc3f20939bab7983b61f051b9",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/rustfmt-focused.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "3837a5ba534a34af6636b65c0608b6b39c261309690490544c108b9d278aaa6e",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "6c44a0f1b54b17505462b739506646d02bf2c03542bfb90365e951737646d991",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/evidence/verus-src-lib.log"
+        },
+        {
+          "content_hash": "9268d9b91e210158b97bfda413621f2b59ed7a4c54df0d417fc832ad7cfaa6d9",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/proposal.md"
+        },
+        {
+          "content_hash": "7cd340022ccfcd78b8de9de70713e13f40e325e6e87a32c9d23e133cb93bb24d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/specs/rust-primitives/spec.md"
+        },
+        {
+          "content_hash": "945ee4912dd3ee938c0d10a5d0da6afc90d9f1d73fc229001df3445214f50335",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-add-r1cs-lookup-membership-primitive/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive"
+        }
+      ],
+      "manifest_hash": "2667e8d5297c2da2d091d9412757e79db9e96064d6ca0a20a56ea54ee90a1fca"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "83e55548a54c802d1cd1dfc1c8c4f41f5d29e66632087f84dc8ee0657859b53a",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/.openspec.yaml"
+        },
+        {
+          "content_hash": "f03da2b99acc8c775b1dd37a8743653b0e158de72c1d6cc129f73c59ed936eae",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/design.md"
+        },
+        {
+          "content_hash": "24f08c583baf531e8ee58ae251482b3d789d07774b8ecfc5e9cda812477bd851",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "77aa770622dde43441ac64666f6e953e25467a6bfe55a66fe2809ef38f5f879d",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "f11b2bdacca9f5b5f795c769420adbb38bad69eabda2621992b8801a9f6958ad",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "47ff7f4b9b8e2fc1f1b23b86516868d52cf0cec3e17f287c2cc90c5a7afebd5d",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "175c5d2088c2ec322c1bbc228c21b4b1d44f2d4eeb6af7f8ba77eb2266e8bc54",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cairn-validate.log"
+        },
+        {
+          "content_hash": "c4639a247f55a309f7fb2138140e84295b703fe9731f7ab6c2ad9f1c045f86ac",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cargo-clippy.log"
+        },
+        {
+          "content_hash": "6802321ebd891afc2b2345444b16cd884730884aa095534427afd2ba951f5201",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cargo-test-full.log"
+        },
+        {
+          "content_hash": "5a5c5daa6f05486c2d0945e47732b6aac51e7f68bd96f48ca8678acf184359a3",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/cargo-test-r1cs-lookup.log"
+        },
+        {
+          "content_hash": "8a76e0878a8bc40359b07ce4b9918aeba0f4e78f8abd62682bb8a8081f35644d",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/openspec-validate-canonical.log"
+        },
+        {
+          "content_hash": "bfb500a480873d9f5e892aeb17c2b6aaecbc354d7155d8256fe1d160ac6c3d3d",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/openspec-validate.log"
+        },
+        {
+          "content_hash": "37f147cd0c68b8501583fff6f488b769bd0d7c2fc3f20939bab7983b61f051b9",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/rustfmt-focused.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "3837a5ba534a34af6636b65c0608b6b39c261309690490544c108b9d278aaa6e",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "6c44a0f1b54b17505462b739506646d02bf2c03542bfb90365e951737646d991",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/evidence/verus-src-lib.log"
+        },
+        {
+          "content_hash": "9268d9b91e210158b97bfda413621f2b59ed7a4c54df0d417fc832ad7cfaa6d9",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/proposal.md"
+        },
+        {
+          "content_hash": "7cd340022ccfcd78b8de9de70713e13f40e325e6e87a32c9d23e133cb93bb24d",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/specs/rust-primitives/spec.md"
+        },
+        {
+          "content_hash": "945ee4912dd3ee938c0d10a5d0da6afc90d9f1d73fc229001df3445214f50335",
+          "exists": true,
+          "path": "./cairn/changes/add-r1cs-lookup-membership-primitive/tasks.md"
+        }
+      ],
+      "manifest_hash": "d9a30cb643d7c7a16ef921bb3b3a094065e8a03b3473322a15220a31436a3084"
+    },
+    "kind": "archive",
+    "manifest_hash": "d67008f41f2d2cee19761e1ce1349a39116e87e7fc462a8165c466486bd9ae08"
+  },
+  "plan_hash": "a3e1d0b09e45e5413595a2269bdfe7a91297a167c713c0a569bcc4e30822219f",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "df9e430ee0fd848ba1e14bd30408cf94be12480dd12d5fd0f4504e0f761d36bd"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 85,
+  "valid": true
+}

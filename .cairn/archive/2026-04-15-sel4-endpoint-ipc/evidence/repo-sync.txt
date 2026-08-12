@@ -1,0 +1,8 @@
+Commit ID: 38df23a79fca27ba7b411326321903c83c1188a3
+Change ID: nuyyrrwnywnzqrvntvnrrxmlumlvuwkq
+Author   : brittonr <b@robitzs.ch> (2026-04-15 10:43:44)
+Committer: brittonr <b@robitzs.ch> (2026-04-15 10:43:44)
+--- baseline docs/requirements.md sel4-endpoint hits
+--- baseline src/lib.rs sel4_endpoint hits
+--- baseline canonical spec presence
+baseline-spec-absent

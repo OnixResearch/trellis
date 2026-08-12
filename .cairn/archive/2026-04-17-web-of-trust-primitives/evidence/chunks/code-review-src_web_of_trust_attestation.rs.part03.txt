@@ -1,0 +1,140 @@
++#[allow(clippy::question_mark)]
++pub fn attestation_payload_bytes(att: &Attestation) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => attestation_payload_of_spec(*att) == Some(v@),
++        None => attestation_payload_of_spec(*att).is_none(),
++    }
++{
++    let issuer_enc = canonical_byte_string(&att.issuer_key_bytes);
++    if issuer_enc.is_none() {
++        return None;
++    }
++    let subject_enc = canonical_byte_string(&att.subject_key_bytes);
++    if subject_enc.is_none() {
++        return None;
++    }
++
++    let mut result = issuer_enc.unwrap();
++    let subject_bytes = subject_enc.unwrap();
++    append_vec(&mut result, &subject_bytes);
++    result.push(att.role_tag);
++
++    let not_before = encode_u64(att.not_before);
++    append_vec(&mut result, &not_before);
++    let not_after = encode_u64(att.not_after);
++    append_vec(&mut result, &not_after);
++    let sequence_no = encode_u64(att.sequence_no);
++    append_vec(&mut result, &sequence_no);
++
++    Some(result)
++}
++
++// r[impl web-of-trust.attestation-signature]
++/// Trusted runtime bridge for exact attestation-signature verification.
++/// @verified-logic:permanent-axiom — runtime crypto boundary
++#[verifier::external_body]
++fn attestation_signature_verify_bridge(
++    issuer_key_bytes: &Vec<u8>,
++    payload_bytes: &Vec<u8>,
++    signature: &Vec<u8>,
++) -> (result: bool)
++    ensures result == attestation_signature_valid_bytes_spec(issuer_key_bytes@, payload_bytes@, signature@)
++{
++    let expected = attestation_signature_bytes_runtime(issuer_key_bytes.as_slice(), payload_bytes.as_slice());
++    expected == *signature
++}
++
++// r[impl web-of-trust.attestation-signature]
++/// Check that an attestation signature binds the exact canonical payload.
++pub fn attestation_signature_valid(att: &Attestation) -> (result: bool)
++    ensures result == attestation_signature_valid_spec(*att)
++{
++    match attestation_payload_bytes(att) {
++        Some(payload) => attestation_signature_verify_bridge(&att.issuer_key_bytes, &payload, &att.signature),
++        None => false,
++    }
++}
++
++pub(crate) fn attestation_record_ids_match_bytes_exec(att: &Attestation) -> (result: bool)
++    ensures result == attestation_record_ids_match_bytes_spec(*att)
++{
++    let issuer = crate::web_of_trust_principal::principal_id_from_bytes(&att.issuer_key_bytes);
++    let subject = crate::web_of_trust_principal::principal_id_from_bytes(&att.subject_key_bytes);
++    let result = att.issuer.digest == issuer.digest && att.subject.digest == subject.digest;
++    proof {
++        assert(issuer.digest@ == principal_id_bytes_spec(att.issuer_key_bytes@));
++        assert(subject.digest@ == principal_id_bytes_spec(att.subject_key_bytes@));
++        if result {
++            assert(att.issuer.digest@ == issuer.digest@);
++            assert(att.subject.digest@ == subject.digest@);
++        }
++        if attestation_record_ids_match_bytes_spec(*att) {
++            assert(att.issuer.digest@ == issuer.digest@);
++            assert(att.subject.digest@ == subject.digest@);
++        }
++    }
++    result
++}
++
++pub(crate) fn attestation_payload_matches(att: &Attestation, payload: &Vec<u8>) -> (result: bool)
++    ensures result == (attestation_payload_of_spec(*att) == Some(payload@))
++{
++    match attestation_payload_bytes(att) {
++        Some(actual) => {
++            let result = actual == *payload;
++            proof {
++                assert(attestation_payload_of_spec(*att) == Some(actual@));
++                if result {
++                    assert(actual@ == payload@);
++                }
++                if attestation_payload_of_spec(*att) == Some(payload@) {
++                    assert(actual@ == payload@);
++                }
++            }
++            result
++        }
++        None => {
++            proof {
++                assert(attestation_payload_of_spec(*att).is_none());
++            }
++            false
++        }
++    }
++}
++
++// r[impl web-of-trust.attestation-window]
++/// Check whether an attestation is active at time `t`.
++pub fn attestation_active_at(att: &Attestation, revocations: &Vec<Revocation>, t: u64) -> (result: bool)
++    ensures result == attestation_active_at_spec(*att, revocations@, t)
++{
++    let ids_match = attestation_record_ids_match_bytes_exec(att);
++    let signature_valid = attestation_signature_valid(att);
++    let in_window = att.not_before <= t && t < att.not_after;
++
++    let mut clear = true;
++    let mut i: usize = 0;
++    while i < revocations.len()
++        invariant
++            i <= revocations.len(),
++            clear == no_effective_revocation_prefix_spec(revocations@, *att, t, i as nat),
++        decreases revocations.len() - i,
++    {
++        clear = clear && !revocation_effective_at(&revocations[i], att, t);
++        i += 1;
++    }
++
++    ids_match && signature_valid && in_window && clear
++}
++
++// r[verify web-of-trust.attestation-signature]
++/// Canonical payload bytes use the exact required field order.
++pub proof fn attestation_payload_field_order(
++    issuer_key_bytes: Seq<u8>,
++    subject_key_bytes: Seq<u8>,
++    role_tag: u8,
++    not_before: u64,
++    not_after: u64,
++    sequence_no: u64,
++)
++    requires
++        length_fits_u32_spec(issuer_key_bytes.len()),

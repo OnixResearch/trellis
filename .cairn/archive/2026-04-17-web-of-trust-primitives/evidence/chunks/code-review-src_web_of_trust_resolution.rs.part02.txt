@@ -1,0 +1,140 @@
++/// Exact rooted-resolution decision with the empty-chain root base case.
++pub open spec fn resolves_trusted_at_spec(
++    roots: Seq<PrincipalId>,
++    attestations: Seq<Attestation>,
++    revocations: Seq<Revocation>,
++    subject: PrincipalId,
++    depth: nat,
++    t: u64,
++) -> bool
++    recommends attestations.len() <= usize::MAX as nat
++{
++    &&& root_member_spec(roots, subject)
++        || search_upto_len_from_spec(roots, attestations, revocations, subject, depth, t, 1)
++}
++
++fn digest_equal(left: &Vec<u8>, right: &Vec<u8>) -> (result: bool)
++    ensures result == (left@ =~= right@)
++{
++    if left.len() != right.len() {
++        false
++    } else {
++        let mut i: usize = 0;
++        let mut eq = true;
++        while i < left.len()
++            invariant
++                i <= left.len(),
++                left.len() == right.len(),
++                eq == (forall|j: int| 0 <= j < i as int ==> left@[j] == right@[j]),
++            decreases left.len() - i,
++        {
++            eq = eq && left[i] == right[i];
++            i += 1;
++        }
++        eq
++    }
++}
++
++fn root_member_from(roots: &Vec<PrincipalId>, principal: &PrincipalId, from: usize) -> (result: bool)
++    requires from <= roots.len()
++    ensures result == root_member_from_spec(roots@, *principal, from as int)
++    decreases roots.len() - from
++{
++    if from >= roots.len() {
++        false
++    } else {
++        digest_equal(&roots[from].digest, &principal.digest)
++            || root_member_from(roots, principal, from + 1)
++    }
++}
++
++fn clone_append(prefix: &Vec<usize>, idx: usize) -> (result: Vec<usize>)
++    ensures result@ == prefix@ + seq![idx]
++{
++    let mut result = Vec::new();
++    let mut i: usize = 0;
++    while i < prefix.len()
++        invariant
++            i <= prefix.len(),
++            result@ == prefix@.subrange(0, i as int),
++        decreases prefix.len() - i,
++    {
++        result.push(prefix[i]);
++        i += 1;
++    }
++    result.push(idx);
++    result
++}
++
++fn search_exact_len_from(
++    prefix: &Vec<usize>,
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    t: u64,
++    remaining: usize,
++    next: usize,
++) -> (result: bool)
++    requires next <= attestations.len()
++    ensures result == search_exact_len_from_spec(prefix@, roots@, attestations@, revocations@, *subject, t, remaining as nat, next as nat)
++    decreases remaining, attestations.len() - next
++{
++    if remaining == 0 {
++        chain_valid_at(prefix, roots, attestations, revocations, subject, t)
++    } else if next >= attestations.len() {
++        false
++    } else {
++        let extended = clone_append(prefix, next);
++        search_exact_len_from(&extended, roots, attestations, revocations, subject, t, remaining - 1, 0)
++            || search_exact_len_from(prefix, roots, attestations, revocations, subject, t, remaining, next + 1)
++    }
++}
++
++fn search_upto_len_from(
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,
++    depth: usize,
++    t: u64,
++    current: usize,
++) -> (result: bool)
++    requires
++        current >= 1,
++        attestations@.len() <= usize::MAX as int,
++    ensures result == search_upto_len_from_spec(roots@, attestations@, revocations@, *subject, depth as nat, t, current as nat)
++    decreases if current <= depth { depth - current + 1 } else { 0 }
++{
++    proof {
++        assert(attestations@.len() == attestations.len() as int);
++        assert(attestations.len() as int <= usize::MAX as int);
++    }
++    if current > depth {
++        false
++    } else {
++        let exact = search_exact_len_from(
++            &Vec::new(),
++            roots,
++            attestations,
++            revocations,
++            subject,
++            t,
++            current,
++            0,
++        );
++        if current < depth {
++            exact || search_upto_len_from(roots, attestations, revocations, subject, depth, t, current + 1)
++        } else {
++            exact
++        }
++    }
++}
++
++// r[impl web-of-trust.rooted-resolution]
++/// Resolve whether `subject` is trusted from `roots` at time `t` within `depth`.
++pub fn resolves_trusted_at(
++    roots: &Vec<PrincipalId>,
++    attestations: &Vec<Attestation>,
++    revocations: &Vec<Revocation>,
++    subject: &PrincipalId,

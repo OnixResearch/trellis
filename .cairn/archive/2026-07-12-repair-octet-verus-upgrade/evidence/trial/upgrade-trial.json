@@ -1,0 +1,232 @@
+{
+  "baseline": {
+    "expected_error_count": 0,
+    "expected_result": "passed",
+    "expected_verified_count": 10712,
+    "verifier": "verus@0.2026.03.22.5e66329"
+  },
+  "candidate": {
+    "expected_error_count": 0,
+    "expected_result": "passed",
+    "expected_verified_count": 10712,
+    "profile_id": "octet-verus-0.2026.05.17.e479cce",
+    "provider": "octet",
+    "provider_revision": "374bd16b26cee2af34211a29bfa531c016811f51",
+    "result_anchors": [
+      "verification results:: 10712 verified, 0 errors"
+    ],
+    "verifier": "verus@0.2026.05.17.e479cce"
+  },
+  "claim_scope": "bounded-verifier-upgrade-compatibility-trial",
+  "decision": {
+    "blockers": [],
+    "expected": "promote",
+    "octet_compatibility_status": "native",
+    "preserve_current_pin": false,
+    "recommended_octet_compatibility_status": "native"
+  },
+  "non_claims": [
+    "The trial does not prove verifier, solver, compiler, Vstd, Rocq, or upstream soundness.",
+    "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
+    "Adapted-source passes bind their patches and do not certify the unmodified upstream revisions or authorize production adoption.",
+    "Promotion changes only the reviewed Trellis verifier relationship; downstream proof and release authority remain local.",
+    "The exact published Octet GitHub input binds the committed provider tree; package identity still does not transfer proof authority."
+  ],
+  "rows": [
+    {
+      "adaptation": {
+        "patch_blake3": "none",
+        "patch_path": "none",
+        "semantic_audit": []
+      },
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=lib",
+            "milli/linked-list/verus.rs"
+          ],
+          "id": "linked-list"
+        },
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=lib",
+            "milli/doubly-linked-list/verus.rs"
+          ],
+          "id": "doubly-linked-list"
+        }
+      ],
+      "expected_exit_codes": [
+        1,
+        1
+      ],
+      "expected_outcome": "source-api-incompatible",
+      "id": "paper-sosp24-artifact",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "artifact-microcase",
+      "non_claims": [
+        "The two physically present Verus microcases are not the complete SOSP artifact or its external case studies."
+      ],
+      "promotion_role": "diagnostic-only",
+      "result_anchors": [
+        "to dereference a mutable reference parameter in a postcondition",
+        "unresolved import `vstd::ptr`"
+      ],
+      "source_revision": "b817b036fd9b873a58730af8c2defccb40b7ea83",
+      "source_variant": "unmodified",
+      "timeout_seconds": 600
+    },
+    {
+      "adaptation": {
+        "patch_blake3": "cedf509e48f6e83431f4884521fad46a8cd6be7908f28ef8de9b493a77f57937",
+        "patch_path": "upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-ironkv.patch",
+        "semantic_audit": [
+          "Verus PR 2486 names ISet and IMap as the old possibly-infinite Set and Map semantics introduced after the candidate release.",
+          "The patch maps those post-split names and constructors back to the candidate's generalized extensional collections."
+        ]
+      },
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=dylib",
+            "--expand-errors",
+            "-C",
+            "opt-level=3",
+            "ironsht/src/lib.rs"
+          ],
+          "id": "adapted-host-proof-root"
+        }
+      ],
+      "expected_exit_codes": [
+        0
+      ],
+      "expected_outcome": "passed-adapted",
+      "id": "verified-ironkv",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "The result covers the hash-bound adapted host proof root only and does not certify the unmodified revision, distributed refinement, or crash recovery."
+      ],
+      "promotion_role": "required-native",
+      "result_anchors": [
+        "verification results:: 312 verified, 0 errors"
+      ],
+      "source_revision": "6b8830a47a2dd5a8ce141438ebb2decb6550298a",
+      "source_variant": "adapted",
+      "timeout_seconds": 600
+    },
+    {
+      "adaptation": {
+        "patch_blake3": "399027aba3425050a667a60194767c1bd5e84af7f6c93bc5941b6a34f47b3f5b",
+        "patch_path": "upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-memory-allocator.patch",
+        "semantic_audit": [
+          "The patch preserves arithmetic lemma signatures and contracts while replacing the unavailable optional Singular tactic with explicit proofs.",
+          "The segment-size repair proves the existing postcondition without changing executable behavior or trusted boundaries."
+        ]
+      },
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--extern",
+            "libc=<candidate-rust-rlib>",
+            "verus-mimalloc/lib.rs"
+          ],
+          "id": "adapted-allocator-proof-root"
+        }
+      ],
+      "expected_exit_codes": [
+        0
+      ],
+      "expected_outcome": "passed-adapted",
+      "id": "verified-memory-allocator",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "Building the pinned libc rlib and verifying adapted source do not establish allocator integration or production readiness."
+      ],
+      "promotion_role": "required-native",
+      "result_anchors": [
+        "verification results:: 732 verified, 0 errors"
+      ],
+      "source_revision": "847354efbb51a7999deb3eef0ed2bfc199bccac1",
+      "source_variant": "adapted",
+      "timeout_seconds": 600
+    },
+    {
+      "adaptation": {
+        "patch_blake3": "none",
+        "patch_path": "none",
+        "semantic_audit": []
+      },
+      "commands": [
+        {
+          "argv": [
+            "octet-production-verus",
+            "--crate-type=lib",
+            "verified-node-replication/src/lib.rs"
+          ],
+          "id": "native-proof-root"
+        }
+      ],
+      "expected_exit_codes": [
+        0
+      ],
+      "expected_outcome": "passed-unmodified",
+      "id": "verified-node-replication",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "native-verus",
+      "non_claims": [
+        "Node replication remains a local NUMA technique and is not network replication or consensus."
+      ],
+      "promotion_role": "required-native",
+      "result_anchors": [
+        "verification results:: 254 verified, 0 errors"
+      ],
+      "source_revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
+      "source_variant": "unmodified",
+      "timeout_seconds": 600
+    },
+    {
+      "adaptation": {
+        "patch_blake3": "none",
+        "patch_path": "none",
+        "semantic_audit": []
+      },
+      "commands": [
+        {
+          "argv": [
+            "audit",
+            "README.md",
+            "Makefile",
+            "src/**/*.v",
+            "verus/rust-toolchain.toml"
+          ],
+          "id": "rocq-boundary-audit"
+        }
+      ],
+      "expected_exit_codes": [
+        0
+      ],
+      "expected_outcome": "reference-audit-only",
+      "id": "verus-belt",
+      "maximum_saved_log_bytes": 65536,
+      "mechanism": "semantic-reference",
+      "non_claims": [
+        "Rocq validation is not candidate Verus execution and cannot certify a later Verus release."
+      ],
+      "promotion_role": "audit-only",
+      "result_anchors": [
+        "This contains the Rocq development",
+        "Rocq (formerly Coq) 8.20.0"
+      ],
+      "source_revision": "b116e9db550e84896674df781b93570c35a9f0da",
+      "source_variant": "reference-only",
+      "timeout_seconds": 600
+    }
+  ],
+  "schema_version": "trellis-octet-verus-upgrade-trial/v1",
+  "trial_id": "trellis-octet-verus-may17-upgrade-trial"
+}

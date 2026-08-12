@@ -1,0 +1,65 @@
+$ proof-review-candidates.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-candidates self-test: PASS
+
+$ proof-review-candidates.rs --check-policy --max 3
+warning: unknown experimental feature 'wasm-builtin'
+PASS proof-review policy fresh proof-review/generated/policy.json
+# Proof Review Candidates
+
+Deterministic prefilter for focused VibeThinker proof critique. VibeThinker output is advisory; validation remains cargo, Verus, Tracey, Cairn, and repo checkers.
+
+> Note: legacy `openspec/changes` exists but is ignored by this native Cairn scanner. Native `cairn/changes` is the authoritative lifecycle input; legacy cleanup/migration is explicit.
+
+## Active Cairn Changes
+
+- `specialize-proof-review-vibethinker-prompts`: 5 unchecked task(s); referenced source paths: cairn/changes/specialize-proof-review-vibethinker-prompts
+
+## Ranked Candidates
+
+| Rank | Score | Path | Top reasons |
+| ---: | ---: | --- | --- |
+| 1 | 835 | `src/ucan_signature.rs` | trusted or weakened proof marker; trusted or weakened proof marker; trusted or weakened proof m… |
+| 2 | 635 | `src/ucan_did.rs` | trusted or weakened proof marker; trusted or weakened proof marker; trusted or weakened proof m… |
+| 3 | 300 | `src/r1cs_boolean.rs` | proof `r1cs_boolean_primitive_coverage_catalogued` has `ensures true`; empty proof body for `ma… |
+
+## Candidate Details
+
+### `src/ucan_signature.rs` — score 835
+
+Showing top 6 of 13 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:254 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:263 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:275 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:289 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:303 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:315 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+
+### `src/ucan_did.rs` — score 635
+
+Showing top 6 of 11 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:623 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:631 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:640 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:649 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **empty-nontrivial-proof** (+35): `src/ucan_did.rs`:142 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/ucan_did.rs`:148 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/r1cs_boolean.rs` — score 300
+
+Showing top 6 of 7 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **vacuous-ensures-true** (+100): `src/r1cs_boolean.rs`:199 — Replace catalogue-only postconditions with concrete implications or document it as Tracey-only metadata.
+- **empty-nontrivial-proof** (+35): `src/r1cs_boolean.rs`:164 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_boolean.rs`:170 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_boolean.rs`:176 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_boolean.rs`:182 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/r1cs_boolean.rs`:188 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+## VibeThinker Prompt Shape
+
+Use `max_tokens=16384` and ask: `Critique this Trellis/Verus proof target. Return concrete proof/spec/test gaps only; do not suggest trust boundaries.`
+wrote report: target/proof-review/baseline-candidates.md
+wrote packets: target/proof-review/baseline-packets

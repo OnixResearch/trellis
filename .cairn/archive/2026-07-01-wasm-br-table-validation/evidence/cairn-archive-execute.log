@@ -1,0 +1,150 @@
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: wasm-br-table-validation",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-07-01-wasm-br-table-validation"
+    }
+  ],
+  "blocked": false,
+  "change": "wasm-br-table-validation",
+  "dry_run": false,
+  "input_hash": "73eb8869021a3e3be7031cbf1d556fff8e62357886a7e501a80a4f4af0297347",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "741c13db4746ae63c5709b82f5b94c538d2689622f27786cef764bcbe188479b",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/design.md"
+        },
+        {
+          "content_hash": "578eb013e77774d01586471dbbff514fc5fab84b8ed63d7599ec51aebe0bbb8f",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/baseline-focused-wasm-tests.txt"
+        },
+        {
+          "content_hash": "dd0588498a4fd119b9237273c4cbaee907e1e9afdbc7338ac177f4e80f090f4a",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/cairn-archive-execute.log"
+        },
+        {
+          "content_hash": "1d2eb32593b7da8a4d83d3d754a04686ebb7d43ae9978b6d972cb97bf6b47679",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "3d74b005f500b33da5aa4692cef9d784e6e5f61faa45faf94d00f87483ca09f2",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/cairn-sync-archive-dry-run.log"
+        },
+        {
+          "content_hash": "ce206322806ef1eb40319fbe9a23c417409ba56e73ad4d739fed3ba5bd34e728",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/clippy.txt"
+        },
+        {
+          "content_hash": "ee4d09f2fb1e40bcc0d6b2d2f572052f0bf562fdb0206db3979f4d0543ae9821",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/full-cargo-test.txt"
+        },
+        {
+          "content_hash": "c47c067f85331fabe824d0521e10a173c2a97951cfb197344163a345c0f969b8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/evidence/validation.md"
+        },
+        {
+          "content_hash": "680cb78cfc0e8f4fb2b1b58ab99dcefce17053c2c6bd142122150150224d032d",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/proposal.md"
+        },
+        {
+          "content_hash": "98373ca8e82a6f70a5f42807e69520321c6e49e4bddcbcf54706a5b508ccb0a4",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/specs/wasm/spec.md"
+        },
+        {
+          "content_hash": "40909668345f468a40e5cc5b04c73c14262c760bbcb2366a2cac690de5482738",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-01-wasm-br-table-validation/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/wasm-br-table-validation"
+        }
+      ],
+      "manifest_hash": "16bb28e758f3a02ae3530af42b6288d221562442431205da3329ec14b1979561"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "741c13db4746ae63c5709b82f5b94c538d2689622f27786cef764bcbe188479b",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/design.md"
+        },
+        {
+          "content_hash": "578eb013e77774d01586471dbbff514fc5fab84b8ed63d7599ec51aebe0bbb8f",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/baseline-focused-wasm-tests.txt"
+        },
+        {
+          "content_hash": "dd0588498a4fd119b9237273c4cbaee907e1e9afdbc7338ac177f4e80f090f4a",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/cairn-archive-execute.log"
+        },
+        {
+          "content_hash": "1d2eb32593b7da8a4d83d3d754a04686ebb7d43ae9978b6d972cb97bf6b47679",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "3d74b005f500b33da5aa4692cef9d784e6e5f61faa45faf94d00f87483ca09f2",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/cairn-sync-archive-dry-run.log"
+        },
+        {
+          "content_hash": "ce206322806ef1eb40319fbe9a23c417409ba56e73ad4d739fed3ba5bd34e728",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/clippy.txt"
+        },
+        {
+          "content_hash": "ee4d09f2fb1e40bcc0d6b2d2f572052f0bf562fdb0206db3979f4d0543ae9821",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/full-cargo-test.txt"
+        },
+        {
+          "content_hash": "c47c067f85331fabe824d0521e10a173c2a97951cfb197344163a345c0f969b8",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/evidence/validation.md"
+        },
+        {
+          "content_hash": "680cb78cfc0e8f4fb2b1b58ab99dcefce17053c2c6bd142122150150224d032d",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/proposal.md"
+        },
+        {
+          "content_hash": "98373ca8e82a6f70a5f42807e69520321c6e49e4bddcbcf54706a5b508ccb0a4",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/specs/wasm/spec.md"
+        },
+        {
+          "content_hash": "40909668345f468a40e5cc5b04c73c14262c760bbcb2366a2cac690de5482738",
+          "exists": true,
+          "path": "./cairn/changes/wasm-br-table-validation/tasks.md"
+        }
+      ],
+      "manifest_hash": "8824a060c51b5b96153e1c7a3ee4e96e77e8cd908fa469034a4a4e11c29a2ada"
+    },
+    "kind": "archive",
+    "manifest_hash": "9749385569555d75805ad89ce72b84dc878565637cd94c45485c660771ad9d29"
+  },
+  "plan_hash": "76c5b86c30a822acd0f2fb09d78a8b6c9120b93594863dd5ea670b5da7969661",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "aab4957449aa43e3f2f29d7aa57d59d461aa36d7ab2dba6a68601003edef9f92"
+}

@@ -1,0 +1,140 @@
++    }
++
++    fn signed_family_revocation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        effective_time: u64,
++    ) -> Revocation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let family_subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Revocation {
++            issuer_key_bytes,
++            issuer,
++            target_kind_tag: FAMILY_TARGET_KIND_TAG,
++            exact_payload_target: Vec::new(),
++            family_subject_key_bytes: subject_key_bytes,
++            family_subject,
++            family_role_tag: role_tag,
++            effective_time,
++            signature: Vec::new(),
++        };
++        let payload = revocation_payload_bytes(&unsigned).unwrap();
++        let signature = revocation_signature_bytes_runtime(unsigned.issuer_key_bytes.as_slice(), payload.as_slice());
++        Revocation { signature, ..unsigned }
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_exact_payload_target_disables_one_attestation() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 10, 30, 1);
++        let rev = signed_exact_payload_revocation(&att, 20);
++        assert!(!revocation_effective_at(&rev, &att, 19));
++        assert!(revocation_effective_at(&rev, &att, 20));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_exact_payload_target_disables_identical_payload_copies() {
++        let att1 = signed_attestation(vec![9, 8, 7], vec![1, 2, 3], TRUST_ROLE_TAG, 5, 25, 9);
++        let att2 = signed_attestation(vec![9, 8, 7], vec![1, 2, 3], TRUST_ROLE_TAG, 5, 25, 9);
++        let rev = signed_exact_payload_revocation(&att1, 7);
++        assert!(revocation_effective_at(&rev, &att1, 7));
++        assert!(revocation_effective_at(&rev, &att2, 7));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_family_target_disables_reissued_attestations_in_one_family() {
++        let att1 = signed_attestation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 0, 10, 1);
++        let att2 = signed_attestation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 10, 20, 2);
++        let rev = signed_family_revocation(vec![7, 7, 7], vec![8, 8, 8], TRUST_ROLE_TAG, 3);
++        assert!(revocation_effective_at(&rev, &att1, 3));
++        assert!(revocation_effective_at(&rev, &att2, 3));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_tampered_effective_time_invalidates_revocation_verification() {
++        let att = signed_attestation(vec![1, 1], vec![2, 2], TRUST_ROLE_TAG, 0, 10, 4);
++        let rev = signed_exact_payload_revocation(&att, 8);
++        let tampered = Revocation {
++            effective_time: 9,
++            ..rev
++        };
++        assert!(!revocation_signature_valid(&tampered));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_tampered_issuer_invalidates_revocation_verification() {
++        let rev = signed_family_revocation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 8);
++        let tampered_issuer = vec![9, 2, 3];
++        let tampered = Revocation {
++            issuer_key_bytes: tampered_issuer.clone(),
++            issuer: principal_id_from_bytes(&tampered_issuer),
++            ..rev
++        };
++        assert!(!revocation_signature_valid(&tampered));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_tampered_target_invalidates_revocation_verification() {
++        let rev = signed_family_revocation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 8);
++        let tampered_subject = vec![4, 5, 9];
++        let tampered = Revocation {
++            family_subject_key_bytes: tampered_subject.clone(),
++            family_subject: principal_id_from_bytes(&tampered_subject),
++            ..rev
++        };
++        assert!(!revocation_signature_valid(&tampered));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_invalid_kind_is_rejected() {
++        let rev = Revocation {
++            issuer_key_bytes: vec![1, 2, 3],
++            issuer: principal_id_from_bytes(&[1, 2, 3]),
++            target_kind_tag: 0xff,
++            exact_payload_target: vec![1],
++            family_subject_key_bytes: vec![4, 5, 6],
++            family_subject: principal_id_from_bytes(&[4, 5, 6]),
++            family_role_tag: TRUST_ROLE_TAG,
++            effective_time: 1,
++            signature: vec![1],
++        };
++        assert!(revocation_payload_bytes(&rev).is_none());
++        assert!(!revocation_signature_valid(&rev));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_wrong_issuer_revocation_does_not_disable_target() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 0, 10, 1);
++        let rev = signed_family_revocation(vec![9, 9, 9], vec![4, 5, 6], TRUST_ROLE_TAG, 1);
++        assert!(!revocation_effective_at(&rev, &att, 2));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_unrelated_attestation_stays_unaffected() {
++        let att_a = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 0, 10, 1);
++        let att_b = signed_attestation(vec![1, 2, 3], vec![7, 8, 9], TRUST_ROLE_TAG, 0, 10, 2);
++        let rev = signed_family_revocation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 1);
++        assert!(revocation_effective_at(&rev, &att_a, 1));
++        assert!(!revocation_effective_at(&rev, &att_b, 1));
++    }
++
++    // r[verify web-of-trust.revocation]
++    #[test]
++    fn test_overlong_revocation_fields_are_rejected_as_noncanonical() {
++        if usize::BITS > 32 {
++            let too_long = (u32::MAX as usize) + 1;
++            assert!(!length_fits_u32(too_long));
++        }
++    }
++
++    proptest! {
++        // r[verify web-of-trust.revocation]

@@ -1,0 +1,93 @@
+repo sync check
+src/lib.rs:224://! - `sel4_asid` — finite ASID pool ownership: allocate, release, reuse, exhaustion
+src/lib.rs:515:pub mod sel4_asid;
+docs/requirements.md:6858:r[sel4-asid.uniqueness]
+docs/requirements.md:6864:r[sel4-asid.release-state]
+docs/requirements.md:6870:r[sel4-asid.reuse]
+docs/requirements.md:6874:r[sel4-asid.pool-bounds]
+openspec/changes/sel4-asid-pools/proposal.md:16:- `sel4-asid.uniqueness`: Verified unique live ASID ownership
+openspec/changes/sel4-asid-pools/proposal.md:17:- `sel4-asid.release-state`: Verified release removes live ownership and invalid release leaves state unchanged
+openspec/changes/sel4-asid-pools/proposal.md:18:- `sel4-asid.reuse`: Verified safe reuse only after release
+openspec/changes/sel4-asid-pools/proposal.md:19:- `sel4-asid.pool-bounds`: Verified allocation respects pool capacity
+openspec/changes/sel4-asid-pools/proposal.md:23:- **Files**: New `src/sel4_asid.rs` module, `src/lib.rs` export, `docs/requirements.md`, and this OpenSpec change
+openspec/changes/sel4-asid-pools/proposal.md:26:- **Testing**: Verus proofs, unit tests, proptests, and repo traceability updates for allocate/release/exhaustion scenarios; completion also requires mirrored `r[sel4-asid.*]` entries in `docs/requirements.md`
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2815:test sel4_asid::tests::test_capacity_one_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2817:test sel4_asid::tests::test_allocation_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2819:test sel4_asid::tests::test_distinct_successful_allocations_differ ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2820:test sel4_asid::tests::test_failed_allocation_unchanged_state ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2822:test sel4_asid::tests::test_duplicate_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2823:test sel4_asid::tests::test_out_of_range_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2824:test sel4_asid::tests::test_owner_mismatch_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2825:test sel4_asid::tests::test_release_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2826:test sel4_asid::tests::test_same_owner_can_hold_multiple_live_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2828:test sel4_asid::tests::test_successful_allocation_creates_live_owner ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2829:test sel4_asid::tests::test_successful_release ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2830:test sel4_asid::tests::test_zero_capacity_exhausted ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2847:test sel4_asid::tests::proptest_capacity_one_forced_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2848:test sel4_asid::tests::proptest_release_failures_leave_state ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2850:test sel4_asid::tests::proptest_distinct_allocations ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2851:test sel4_asid::tests::proptest_exhausted_allocation_unchanged ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test.txt:2857:test sel4_asid::tests::proptest_same_owner_multiple_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:2:src/lib.rs:224://! - `sel4_asid` — finite ASID pool ownership: allocate, release, reuse, exhaustion
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:3:src/lib.rs:515:pub mod sel4_asid;
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:4:docs/requirements.md:6858:r[sel4-asid.uniqueness]
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:5:docs/requirements.md:6864:r[sel4-asid.release-state]
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:6:docs/requirements.md:6870:r[sel4-asid.reuse]
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:7:docs/requirements.md:6874:r[sel4-asid.pool-bounds]
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:8:openspec/changes/sel4-asid-pools/proposal.md:16:- `sel4-asid.uniqueness`: Verified unique live ASID ownership
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:9:openspec/changes/sel4-asid-pools/proposal.md:17:- `sel4-asid.release-state`: Verified release removes live ownership and invalid release leaves state unchanged
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:10:openspec/changes/sel4-asid-pools/proposal.md:18:- `sel4-asid.reuse`: Verified safe reuse only after release
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:11:openspec/changes/sel4-asid-pools/proposal.md:19:- `sel4-asid.pool-bounds`: Verified allocation respects pool capacity
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:12:openspec/changes/sel4-asid-pools/proposal.md:23:- **Files**: New `src/sel4_asid.rs` module, `src/lib.rs` export, `docs/requirements.md`, and this OpenSpec change
+openspec/changes/sel4-asid-pools/evidence/repo-sync.txt:13:openspec/changes/sel4-asid-pools/proposal.md:26:- **Testing**: Verus proofs, unit tests, proptests, and repo traceability updates for allocate/release/exhaustion scenarios; completion also requires mirrored `r[sel4-asid.*]` entries in `docs/requirements.md`
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:2:=== cargo test sel4_asid ===
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:7:test sel4_asid::tests::test_allocation_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:8:test sel4_asid::tests::test_capacity_one_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:9:test sel4_asid::tests::test_distinct_successful_allocations_differ ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:10:test sel4_asid::tests::test_failed_allocation_unchanged_state ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:11:test sel4_asid::tests::test_out_of_range_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:12:test sel4_asid::tests::test_duplicate_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:13:test sel4_asid::tests::test_owner_mismatch_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:14:test sel4_asid::tests::test_release_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:15:test sel4_asid::tests::test_same_owner_can_hold_multiple_live_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:16:test sel4_asid::tests::test_successful_allocation_creates_live_owner ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:17:test sel4_asid::tests::test_successful_release ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:18:test sel4_asid::tests::test_zero_capacity_exhausted ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:19:test sel4_asid::tests::proptest_capacity_one_forced_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:20:test sel4_asid::tests::proptest_same_owner_multiple_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:21:test sel4_asid::tests::proptest_release_failures_leave_state ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:22:test sel4_asid::tests::proptest_distinct_allocations ... ok
+openspec/changes/sel4-asid-pools/evidence/cargo-test-sel4-asid.txt:23:test sel4_asid::tests::proptest_exhausted_allocation_unchanged ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2839:test sel4_asid::tests::test_allocation_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2850:test sel4_asid::tests::test_capacity_one_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2851:test sel4_asid::tests::test_distinct_successful_allocations_differ ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2852:test sel4_asid::tests::test_duplicate_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2853:test sel4_asid::tests::test_failed_allocation_unchanged_state ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2854:test sel4_asid::tests::test_out_of_range_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2855:test sel4_asid::tests::test_owner_mismatch_release_fails ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2856:test sel4_asid::tests::test_release_preserves_unrelated_slots ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2857:test sel4_asid::tests::test_same_owner_can_hold_multiple_live_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2858:test sel4_asid::tests::test_successful_allocation_creates_live_owner ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2859:test sel4_asid::tests::test_successful_release ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2860:test sel4_asid::tests::test_zero_capacity_exhausted ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2872:test sel4_asid::tests::proptest_exhausted_allocation_unchanged ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2873:test sel4_asid::tests::proptest_capacity_one_forced_reuse ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2875:test sel4_asid::tests::proptest_release_failures_leave_state ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2881:test sel4_asid::tests::proptest_same_owner_multiple_asids ... ok
+openspec/changes/sel4-asid-pools/evidence/verify.txt:2884:test sel4_asid::tests::proptest_distinct_allocations ... ok
+openspec/changes/sel4-asid-pools/design.md:24:**Implementation:** `src/sel4_asid.rs` will expose `AsidPool::new(capacity: usize)` plus public spec/exec helpers over opaque `u64` owner IDs, with returned runtime ASIDs also typed as `usize` and related to the spec range `0..capacity-1` through `asid as int`. `new(capacity)` initializes `slots.len() == capacity` with every slot `None`. The concrete invariant is `wf() == (self.capacity == self.slots@.len())`. Construction fixes pool length forever; `new` establishes `wf()`, and `allocate` / `release` preserve `wf()` and therefore preserve `slots.len()` / `capacity`.
+openspec/changes/sel4-asid-pools/design.md:47:`src/sel4_asid.rs` will expose these reusable artifacts for later VSpace/invariant work, and `src/lib.rs` will re-export the module:
+openspec/changes/sel4-asid-pools/design.md:57:- `r[sel4-asid.uniqueness]`: prove successful allocation targets a pre-state free slot, creates a live owner binding for the returned ASID, changes no unrelated slot, and that two successful distinct live allocations cannot return the same ASID; cover this with unit tests and proptests for successful allocation, unrelated-slot preservation, same-owner-multiple-ASIDs, and distinct-allocation behavior.
+openspec/changes/sel4-asid-pools/design.md:58:- `r[sel4-asid.release-state]`: prove successful release returns success, clears only the targeted slot, preserves unrelated slots, unsuccessful release preserves state, and cover this with unit tests and proptests for out-of-range, free-slot, owner-mismatch, and duplicate release failures.
+openspec/changes/sel4-asid-pools/design.md:59:- `r[sel4-asid.reuse]`: prove conditional reuse safety (`if` the same numeric ASID is reused after a valid release, the old owner is gone) and cover this with unit tests and proptests that force same-ASID reuse only under deterministic preconditions such as capacity `1`.
+openspec/changes/sel4-asid-pools/design.md:60:- `r[sel4-asid.pool-bounds]`: prove allocation succeeds when some free slot exists, successful allocation returns an in-range ASID, and `None` appears only on a full pool with unchanged state; cover this with unit tests and proptests for both zero-capacity immediate exhaustion and ordinary capacity-sized exhaustion.
+openspec/changes/sel4-asid-pools/tasks.md:5:- [ ] Create `src/sel4_asid.rs` around the chosen single-pool `Seq<Option<u64>>` / `Vec<Option<u64>>` model with public `AsidPool::new(capacity)`, `AsidPool::wf()`, slot-liveness and exact-owner predicates, public exec/proof helpers over opaque `u64` owner IDs, allocation that creates live ownership, exact `(asid, owner)` release semantics where invalid release returns `false` and preserves state, and failed allocation that preserves state.
+openspec/changes/sel4-asid-pools/tasks.md:6:- [ ] Add real `proof fn` artifacts proving `AsidPool::new` establishes `wf()`, `allocate` / `release` preserve `wf()`, `capacity`, and slot length, and `r[sel4-asid.uniqueness]`, `r[sel4-asid.release-state]`, `r[sel4-asid.reuse]`, and `r[sel4-asid.pool-bounds]` with named proofs for allocation-created ownership, allocation-targets-free-slot, allocation-preserves-unrelated-slots, distinct successful allocations, release-success-clears-target, release-preserves-unrelated-slots, unchanged-state invalid release, allocation-failure unchanged-state, safe reuse, allocation-success-when-free, in-range allocation, and exhausted-pool failure.
+openspec/changes/sel4-asid-pools/tasks.md:7:- [ ] Mirror the new `r[sel4-asid.*]` requirements into `docs/requirements.md` and add explicit `r[impl]` / `r[verify]` anchors on the defining helpers, proofs, and tests.
+openspec/changes/sel4-asid-pools/tasks.md:10:- [ ] Run an explicit deterministic test command for the new module (`cargo test sel4_asid`) and confirm it passes.
+openspec/changes/sel4-asid-pools/tasks.md:12:- [ ] On the normal implementation path, sync the landed spec text into `openspec/specs/`, update any related metadata, and archive `openspec/changes/sel4-asid-pools` after validation passes.
+openspec/changes/sel4-asid-pools/specs/sel4-asid/spec.md:5:Defines requirements for verified `sel4_asid` semantics in this repo. Scope is one abstract finite ASID pool instance, not raw ABI details.
+openspec/changes/sel4-asid-pools/specs/sel4-asid/spec.md:19:r[sel4-asid.uniqueness]
+openspec/changes/sel4-asid-pools/specs/sel4-asid/spec.md:42:r[sel4-asid.release-state]
+openspec/changes/sel4-asid-pools/specs/sel4-asid/spec.md:71:r[sel4-asid.reuse]
+openspec/changes/sel4-asid-pools/specs/sel4-asid/spec.md:82:r[sel4-asid.pool-bounds]

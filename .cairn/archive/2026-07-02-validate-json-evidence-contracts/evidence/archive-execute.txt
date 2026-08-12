@@ -1,0 +1,161 @@
+$ CAIRN_ARCHIVE_DATE=2026-07-02 nix run path:/home/brittonr/git/cairn#cairn -- archive validate-json-evidence-contracts --root /home/brittonr/git/trellis --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: validate-json-evidence-contracts",
+      "kind": "archive_change",
+      "path": "/home/brittonr/git/trellis/cairn/archive/2026-07-02-validate-json-evidence-contracts"
+    }
+  ],
+  "blocked": false,
+  "change": "validate-json-evidence-contracts",
+  "dry_run": false,
+  "input_hash": "ab05d36a5d0316b0322a6dae587d8c0e55965a5157e739d6096c4d970830adee",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "ca8267db28b502e3dbd73f9f17242ff6ccf7ed8bdf0deaef05dd946828c87db2",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/design.md"
+        },
+        {
+          "content_hash": "98113be03bb5a2e62c9088503765e8ff1d1442decada7dec78f1f1c47c5ba434",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "3862e495387bdd4ff11bbf1500fd9ca6a85221d5ea5404c61d17c6d12df30ea0",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "98e95555c81f1c13de3194155341a7924f20207d1efd7dec7eabbba8865453df",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/json-artifact-checks.txt"
+        },
+        {
+          "content_hash": "5f692692f5b5abf85bc7ff8734fdc54d55382071cc5677532c73a4ea7021e7e8",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "191e762dd42a95120f2798e43cbd3b0cd5b723ac36bf1c61f7a56af7d88e564a",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "49b3ccbe710fc7c3794c5eef5ace2c4b627e25542cfd3e0f1f9a7f8c73de3899",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/proposal.md"
+        },
+        {
+          "content_hash": "c6741a3a2c2f80327972e5bcae087bde5578315ce88d4484c3525bcd15f7fbda",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/specs/proof-evidence-bundles/spec.md"
+        },
+        {
+          "content_hash": "e2bd5cda176f20800e30a4e8bc9a8aaefd4626dd859e16033ae1e52319ec6cc4",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/specs/verification-tooling/spec.md"
+        },
+        {
+          "content_hash": "65df5681d89432232f9888f09bcc34ba529b135687075431843b152600763283",
+          "exists": true,
+          "path": "./cairn/archive/2026-07-02-validate-json-evidence-contracts/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/validate-json-evidence-contracts"
+        }
+      ],
+      "manifest_hash": "5ab13ae078f8486a75a01413211efc4cef1e4b9ddf3a77e523a10c6290722003"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "ca8267db28b502e3dbd73f9f17242ff6ccf7ed8bdf0deaef05dd946828c87db2",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/design.md"
+        },
+        {
+          "content_hash": "98113be03bb5a2e62c9088503765e8ff1d1442decada7dec78f1f1c47c5ba434",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/archive-dry-run.txt"
+        },
+        {
+          "content_hash": "3862e495387bdd4ff11bbf1500fd9ca6a85221d5ea5404c61d17c6d12df30ea0",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/archive-execute.txt"
+        },
+        {
+          "content_hash": "cc7d2f20f152144f6f3a242a29322d6826c49f061c0cd31eb35b7c189c0cdea8",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/cairn-gates.txt"
+        },
+        {
+          "content_hash": "98e95555c81f1c13de3194155341a7924f20207d1efd7dec7eabbba8865453df",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/json-artifact-checks.txt"
+        },
+        {
+          "content_hash": "5f692692f5b5abf85bc7ff8734fdc54d55382071cc5677532c73a4ea7021e7e8",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/sync-dry-run.txt"
+        },
+        {
+          "content_hash": "191e762dd42a95120f2798e43cbd3b0cd5b723ac36bf1c61f7a56af7d88e564a",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/sync-execute.txt"
+        },
+        {
+          "content_hash": "0de4e80ba03299d3e38f249e0beb8547af5b93d5056c55f7d160cef0750dec27",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/evidence/verify-rs.txt"
+        },
+        {
+          "content_hash": "49b3ccbe710fc7c3794c5eef5ace2c4b627e25542cfd3e0f1f9a7f8c73de3899",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/proposal.md"
+        },
+        {
+          "content_hash": "c6741a3a2c2f80327972e5bcae087bde5578315ce88d4484c3525bcd15f7fbda",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/specs/proof-evidence-bundles/spec.md"
+        },
+        {
+          "content_hash": "e2bd5cda176f20800e30a4e8bc9a8aaefd4626dd859e16033ae1e52319ec6cc4",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/specs/verification-tooling/spec.md"
+        },
+        {
+          "content_hash": "65df5681d89432232f9888f09bcc34ba529b135687075431843b152600763283",
+          "exists": true,
+          "path": "./cairn/changes/validate-json-evidence-contracts/tasks.md"
+        }
+      ],
+      "manifest_hash": "f0a044f11bd7af35cc29f3b1c4a3b39916bad99dc63993b61c4553b9142488f1"
+    },
+    "kind": "archive",
+    "manifest_hash": "20083cb7962e05a9c4022ea2f8182ebed755d2b68cc4150c314f8447555dded0"
+  },
+  "plan_hash": "33f471ea20dd97bd1e89010d4160e61ff99ef6f31939016f13fb24a888dd4145",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "15f1963a2da16dd0c257d683ab37e93cb94bd1c69a78ae2e1b3aa34cba1d4e23"
+}

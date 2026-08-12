@@ -1,0 +1,117 @@
+Current external_body inventory derived from current tree
+
+Total external_body items: 69
+Permanent items: 15
+Closeable items: 54
+Shamir closeable items: 38
+
+Key Shamir sites:
+| `src/shamir_field.rs:23 valid_modulus` | Closeable | Prime-modulus validator is currently a trusted exec/spec bridge; runtime trial division rejects composites. | `src/shamir_field.rs` unit tests cover prime/composite acceptance directly. |
+| `src/shamir_field.rs:102 field_add` | Closeable | Initial Shamir field-add exec/spec bridge is trusted while runtime tests cover modular arithmetic identities. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:115 field_sub` | Closeable | Initial Shamir field-sub exec/spec bridge is trusted while runtime tests cover additive-inverse behavior. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:131 field_mul` | Closeable | Initial Shamir field-mul exec/spec bridge is trusted while runtime tests cover modular multiplication laws. | `src/shamir_field.rs` unit tests + proptest cover closure, identity, commutativity, subtraction, inverse search, and prime-modulus validation. |
+| `src/shamir_field.rs:143 field_inv` | Closeable | Extended-GCD inverse computation is currently a trusted exec/spec bridge. | `src/shamir_field.rs` unit tests + proptest cover inverse witnesses on small primes. |
+| `src/shamir_field.rs:188 field_add_zero` | Closeable | Additive-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover additive identity directly. |
+| `src/shamir_field.rs:199 field_mul_one` | Closeable | Multiplicative-identity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover multiplicative identity directly. |
+| `src/shamir_field.rs:210 field_commutative` | Closeable | Commutativity proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover commutativity directly. |
+| `src/shamir_field.rs:221 field_closed` | Closeable | Closure proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover result range bounds directly. |
+| `src/shamir_field.rs:233 field_sub_add_roundtrip` | Closeable | Subtraction roundtrip proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover `(a-b)+b == a` directly. |
+| `src/shamir_field.rs:242 field_inv_from_spec_correct` | Closeable | Inverse-witness proof helper is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:257 field_inv_spec_correct` | Closeable | Inverse-spec correctness proof is currently trusted. | `src/shamir_field.rs` unit tests + proptest cover returned inverse witnesses directly. |
+| `src/shamir_field.rs:266 zero_has_no_inverse` | Closeable | Zero-inverse proof stub is currently trusted. | `src/shamir_field.rs` unit tests cover `field_inv(0, p) == None`. |
+| `src/shamir_field.rs:275 field_mul_zero` | Closeable | Zero-multiplication proof stub is currently trusted. | `src/shamir_field.rs` unit tests + proptest exercise zero cases. |
+| `src/shamir_poly.rs:39 poly_eval_from` | Closeable | Recursive Horner helper is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
+| `src/shamir_poly.rs:59 poly_eval_horner` | Closeable | Public Horner evaluator is currently a trusted exec/spec bridge. | `src/shamir_poly.rs` unit tests + proptest compare Horner evaluation with direct runtime summation. |
+| `src/shamir_poly.rs:72 poly_degree_bound` | Closeable | Degree-bound proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover degree-vs-length behavior. |
+| `src/shamir_poly.rs:80 constant_poly_eval` | Closeable | Constant-polynomial proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover constant evaluation directly. |
+| `src/shamir_poly.rs:89 linear_poly_eval` | Closeable | Linear-polynomial proof stub is currently trusted. | `src/shamir_poly.rs` unit tests cover linear evaluation directly. |
+| `src/shamir_poly.rs:98 poly_at_zero_is_constant` | Closeable | Constant-term proof stub is currently trusted. | `src/shamir_poly.rs` unit tests + proptest cover evaluation at zero directly. |
+| `src/shamir_lagrange.rs:86 basis_self_at_point` | Closeable | Basis self-evaluation proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:94 basis_self_from` | Closeable | Basis suffix proof helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:104 basis_other_at_point` | Closeable | Basis off-diagonal proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:111 basis_other_from` | Closeable | Basis off-diagonal suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:126 basis_partition_of_unity_at_point` | Closeable | Partition-of-unity proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:149 basis_sum_at_point_from` | Closeable | Partition-of-unity suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:159 lagrange_eval_at_point` | Closeable | Interpolation correctness proof stub is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:170 lagrange_eval_at_point_from` | Closeable | Interpolation suffix helper is currently trusted. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:186 lagrange_polynomials_unique` | Closeable | Polynomial-coefficient uniqueness theorem is currently trusted. | `src/shamir_lagrange.rs` unit tests cover distinct linear polynomials differing on two points. |
+| `src/shamir_lagrange.rs:199 basis_at_zero_from` | Closeable | Runtime basis-at-zero helper is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:230 lagrange_at_zero_from` | Closeable | Runtime interpolation-at-zero helper is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_lagrange.rs:260 lagrange_at_zero` | Closeable | Public interpolation-at-zero evaluator is currently a trusted exec/spec bridge. | `src/shamir_lagrange.rs` unit tests + proptest cover interpolation and reconstruction behavior. |
+| `src/shamir_split.rs:65 split_constant_term_preserved` | Closeable | Split constant-term proof stub is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover secret-at-zero, prime-modulus rejection, and share evaluation. |
+| `src/shamir_split.rs:79 split_count_and_xs` | Closeable | Split count/x-coordinate proof stub is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover output count and x-coordinate preservation. |
+| `src/shamir_split.rs:119 split` | Closeable | Public share-generation exec/spec bridge is currently trusted. | `src/shamir_split.rs` unit tests + proptest cover parameter validation and share generation. |
+| `src/shamir_reconstruct.rs:31 reconstruct` | Closeable | Public reconstruction exec/spec bridge is currently trusted. | `src/shamir_reconstruct.rs` unit tests + proptest cover threshold round-trips and insufficient-share behavior. |
+| `src/shamir_threshold.rs:25 threshold_completion_exists` | Closeable | Threshold-completion existence proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover single-share completion to arbitrary secrets. |
+| `src/shamir_threshold.rs:44 threshold_completion_unique` | Closeable | Threshold uniqueness proof stub is currently trusted. | `src/shamir_threshold.rs` unit tests cover threshold subsets fixing the secret. |
+
+Raw grep of #[verifier::external_body] sites:
+src/chain.rs:42:#[verifier::external_body]
+src/chain.rs:70:#[verifier::external_body]
+src/chain.rs:207:#[verifier::external_body]
+src/log_invariant_inductive.rs:174:#[verifier::external_body]
+src/log_invariant_inductive.rs:223:#[verifier::external_body]
+src/log_invariant_inductive.rs:275:#[verifier::external_body]
+src/nix_store_path.rs:27:#[verifier::external_body]
+src/nix_store_path.rs:33:#[verifier::external_body]
+src/nix_version.rs:207:#[verifier::external_body]
+src/nix_version.rs:267:#[verifier::external_body]
+src/nix_version.rs:300:#[verifier::external_body]
+src/nix_version.rs:365:#[verifier::external_body]
+src/shamir_field.rs:25:#[verifier::external_body]
+src/shamir_field.rs:104:#[verifier::external_body]
+src/shamir_field.rs:117:#[verifier::external_body]
+src/shamir_field.rs:133:#[verifier::external_body]
+src/shamir_field.rs:145:#[verifier::external_body]
+src/shamir_field.rs:190:#[verifier::external_body]
+src/shamir_field.rs:201:#[verifier::external_body]
+src/shamir_field.rs:212:#[verifier::external_body]
+src/shamir_field.rs:223:#[verifier::external_body]
+src/shamir_field.rs:235:#[verifier::external_body]
+src/shamir_field.rs:244:#[verifier::external_body]
+src/shamir_field.rs:259:#[verifier::external_body]
+src/shamir_field.rs:268:#[verifier::external_body]
+src/shamir_field.rs:277:#[verifier::external_body]
+src/shamir_lagrange.rs:86:#[verifier::external_body]
+src/shamir_lagrange.rs:94:#[verifier::external_body]
+src/shamir_lagrange.rs:104:#[verifier::external_body]
+src/shamir_lagrange.rs:111:#[verifier::external_body]
+src/shamir_lagrange.rs:126:#[verifier::external_body]
+src/shamir_lagrange.rs:149:#[verifier::external_body]
+src/shamir_lagrange.rs:159:#[verifier::external_body]
+src/shamir_lagrange.rs:170:#[verifier::external_body]
+src/shamir_lagrange.rs:186:#[verifier::external_body]
+src/shamir_lagrange.rs:199:#[verifier::external_body]
+src/shamir_lagrange.rs:230:#[verifier::external_body]
+src/shamir_lagrange.rs:260:#[verifier::external_body]
+src/shamir_poly.rs:39:#[verifier::external_body]
+src/shamir_poly.rs:59:#[verifier::external_body]
+src/shamir_poly.rs:72:#[verifier::external_body]
+src/shamir_poly.rs:80:#[verifier::external_body]
+src/shamir_poly.rs:89:#[verifier::external_body]
+src/shamir_poly.rs:98:#[verifier::external_body]
+src/shamir_reconstruct.rs:31:#[verifier::external_body]
+src/shamir_split.rs:65:#[verifier::external_body]
+src/shamir_split.rs:79:#[verifier::external_body]
+src/shamir_split.rs:119:#[verifier::external_body]
+src/shamir_threshold.rs:25:#[verifier::external_body]
+src/shamir_threshold.rs:44:#[verifier::external_body]
+src/snapshot_integrity.rs:43:#[verifier::external_body]
+src/snapshot_integrity.rs:54:#[verifier::external_body]
+src/snapshot_integrity.rs:63:#[verifier::external_body]
+src/zircon_channel.rs:64:#[verifier::external_body]
+src/zircon_channel.rs:88:#[verifier::external_body]
+src/zircon_channel.rs:115:#[verifier::external_body]
+src/zircon_channel.rs:139:#[verifier::external_body]
+src/zircon_fifo.rs:38:#[verifier::external_body]
+src/zircon_fifo.rs:56:#[verifier::external_body]
+src/zircon_fifo.rs:80:#[verifier::external_body]
+src/zircon_job.rs:39:#[verifier::external_body]
+src/zircon_job.rs:120:#[verifier::external_body]
+src/zircon_job.rs:141:#[verifier::external_body]
+src/zircon_job.rs:204:#[verifier::external_body]
+src/zircon_port.rs:73:#[verifier::external_body]
+src/zircon_port.rs:93:#[verifier::external_body]
+src/zircon_socket.rs:89:#[verifier::external_body]
+src/zircon_socket.rs:117:#[verifier::external_body]
+src/zircon_socket.rs:138:#[verifier::external_body]

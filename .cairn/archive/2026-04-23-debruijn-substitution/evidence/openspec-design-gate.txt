@@ -1,0 +1,47 @@
+OpenSpec design gate (debruijn-substitution)
+
+Strategy: cross-family
+
+VERDICT: PASS
+
+## Findings
+
+- [low] [class=omission] [scope=design] [route=prompt] [promoted=no] No explicit verification strategy section in design.md
+  - Evidence: `design.md` describes goals (prove shift-zero, shift-compose, scope preservation, etc.) and the ghost/exec split, but never states *how* verification is structured — e.g., that each `r[debruijn.*]` requirement maps to a Verus `proof fn` or `ensures` clause on the corresponding executable wrapper, or that proptests target the `Option`-returning exec API. The proposal mentions "unit tests plus proptests" and the design mentions "proptests over bounded executable terms" in Risks, but there is no single place that says "requirement X is discharged by proof Y and tested by proptest Z." This is a traceability gap, but a minor one given the 1:1 naming convention already visible.
+
+- [info] [class=pattern] [scope=design] [route=guidance] [promoted=no] Napkin identity-substitution note is addressed
+  - Evidence: Napkin entry from 2026-04-23 flagged misleading `subst(0, Var(0), t) == t` wording. The current `r[debruijn.identity-substitution]` in the delta spec correctly states the lift/substitute cancellation law (`shift(1, 0, T)` then `subst(0, Var(0), ...)` recovers `T`), and `design.md` Decision 3 explicitly calls out standard capture-avoiding substitution. The scenario still hard-codes cutoff 0 / index 0 rather than general `c`, but the requirement text uses general `c`. No action needed — the general statement governs.
+
+- [low] [class=omission] [scope=design] [route=prompt] [promoted=no] Overflow surface not connected back to spec requirements
+  - Evidence: `design.md` Decision 2 says `shift`, `subst`, `beta_reduce` return `Option<Term>` with `None` on overflow. The delta spec requirements are stated over the mathematical/spec layer (they say "MUST produce a term" without mentioning `Option`). There is no explicit requirement or scenario for the overflow/`None` case of `shift` or `subst` (only `beta_reduce` has the non-redex `None` scenario). This is acceptable if the intent is that overflow is a runtime-only concern not covered by formal requirements, but worth confirming before tasks are written.
+
+## Stage Check
+
+**Matches:**
+- Design covers every capability and requirement listed in the proposal: well-scopedness, shift-zero, shift-compose, shift-preserves-scope, identity-substitution (lift/sub cancellation), subst-preserves-scope, beta-scope.
+- The ghost `SpecTerm` / exec `Term` split is clearly motivated and consistently described across proposal, design, and delta spec.
+- Non-goals are explicit and consistent with the proposal's scope (no named syntax, no normalization, no multi-substitution).
+- Decisions and trade-offs are stated with rationale. Risks acknowledge bounded generators, deferred named syntax, and `Option` API noise.
+- The delta spec's `r[...]` IDs are present and well-formed for all seven requirements, each with at least one scenario.
+- Napkin guidance on identity-substitution wording is correctly incorporated.
+
+**Missing (minor):**
+- A compact verification-strategy or traceability matrix (which proofs discharge which requirements, which proptests cover which exec APIs).
+- An explicit requirement or scenario for exec-level overflow (`None` from `shift`/`subst`).
+
+**Stage readiness:** The design is complete and internally consistent with the proposal and delta spec. The two low-severity omissions are addressable during task definition and do not block progression.
+
+## Next Actions
+
+1. When writing `tasks.md`, add a task or checklist item that maps each `r[debruijn.*]` to the specific Verus proof obligation and the corresponding proptest/unit-test function name.
+2. Decide whether exec-level overflow deserves its own `r[debruijn.overflow]` requirement or is simply an implementation detail tested by proptests; document the decision in tasks or design addendum.
+
+## Promotion Hints
+- repeated 27x [class=omission] [scope=design] [route=prompt]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec design gate/template to block repeated omission findings. Example trigger: The design does not map each requirement to a concrete proof or test strategy.
+  sources: openspec-gate=27
+- repeated 2x [class=pattern] [scope=design] [route=guidance]
+  suggestion: Promote into OpenSpec rule/template/stage-gate check.
+  task: Strengthen OpenSpec design gate/template to block repeated pattern findings. Example trigger: Napkin identity-substitution correction is properly incorporated
+  sources: openspec-gate=2

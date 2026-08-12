@@ -1,0 +1,40 @@
+OpenSpec proposal gate (instruction-selection)
+
+Strategy: same-family
+
+VERDICT: PASS
+
+## Findings
+- None from supplied evidence.
+
+## Stage Check
+- Matches:
+  - `proposal.md` states why, scope, non-goals, impact, capabilities, and verification expectations.
+  - The proposal’s claimed capability set is represented in `openspec/changes/instruction-selection/specs/instruction-selection/spec.md`:
+    - completeness: `r[isel.completeness]`
+    - soundness: `r[isel.soundness]`
+    - optimality: `r[isel.optimality]`
+    - matching: `r[isel.matching]`
+    - DP recurrence: `r[isel.dp-recurrence]`
+    - determinism: `r[isel.determinism]`
+    - incomplete-tile failure: `r[isel.incomplete-tile-set-failure]`
+  - The proposal’s named normative boundaries are encoded in the delta spec Model section:
+    - pure expression-tree semantics
+    - canonical `NodePath` ordering
+    - canonical ordering of semantic inputs returned by `tile_matches`
+    - deterministic tie-break data (`tie_break_rank`, tile index)
+    - explicit failure behavior and the scope of completeness theorems
+  - The proposal’s verification expectations are concrete and aligned with the spec text.
+
+- Missing:
+  - No napkin entries were supplied, so there is no additional prior guidance to apply or promote.
+  - No design artifact was supplied in this gate scope, so design-stage sufficiency cannot be assessed here.
+
+- Readiness:
+  - For the proposal stage, the supplied artifacts are complete enough and internally consistent enough to proceed to design.
+  - No proposal-stage blocking ambiguity is established by the supplied evidence.
+
+## Next Actions
+- Proceed to design using the current proposal/spec contract.
+- In design, preserve the spec’s exact definitions for `NodePath` canonical order, uncovered-child input order, and equal-cost tie-break behavior.
+- When running later gates, include fresh `openspec_gate` output for proposal/design/tasks as required by `proposal.md`.

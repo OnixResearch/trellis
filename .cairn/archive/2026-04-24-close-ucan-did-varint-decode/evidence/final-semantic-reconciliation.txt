@@ -1,0 +1,31 @@
+$ rg -n 'VARINT_BASE \* tail_value' openspec/changes/close-ucan-did-varint-decode/specs/ucan-did/spec.md
+20:`value = payload(first_byte) + VARINT_BASE * tail_value`, where `tail_value` is
+$ rg -n 'checked u64 operations' openspec/changes/close-ucan-did-varint-decode/specs/ucan-did/spec.md
+22:be checked u64 operations. It MUST return `Some((value, consumed))` only when a
+$ rg -n 'first `MAX_U64_VARINT_BYTES` bytes' openspec/changes/close-ucan-did-varint-decode/specs/ucan-did/spec.md
+29:byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A representable
+$ rg -n 'explicit proof artifacts' openspec/changes/close-ucan-did-varint-decode/specs/ucan-did/spec.md
+33:implementation MUST include explicit proof artifacts for single-continuation
+$ rg -n 'VARINT_BASE \* tail_value' openspec/specs/ucan-did/spec.md
+117:`value = payload(first_byte) + VARINT_BASE * tail_value`, where `tail_value` is
+$ rg -n 'checked u64 operations' openspec/specs/ucan-did/spec.md
+119:be checked u64 operations. It MUST return `Some((value, consumed))` only when a
+$ rg -n 'first `MAX_U64_VARINT_BYTES` bytes' openspec/specs/ucan-did/spec.md
+125:terminating byte appears in the first `MAX_U64_VARINT_BYTES` bytes. A
+$ rg -n 'explicit proof artifacts' openspec/specs/ucan-did/spec.md
+129:include explicit proof artifacts for single-continuation truncation,
+$ rg -n 'checked_mul_u64_spec\(rest_value, VARINT_BASE\)' src/ucan_did.rs
+121:                    match checked_mul_u64_spec(rest_value, VARINT_BASE) {
+474:                        assert(checked_mul_u64_spec(rest_value, VARINT_BASE).is_none());
+489:                        assert(checked_mul_u64_spec(rest_value, VARINT_BASE) == Some(scaled_rest));
+502:                assert(checked_mul_u64_spec(rest_value, VARINT_BASE) == Some(scaled_rest));
+$ rg -n 'checked_add_u64_spec\(low, scaled_rest\)' src/ucan_did.rs
+123:                        Some(scaled_rest) => match checked_add_u64_spec(low, scaled_rest) {
+490:                        assert(checked_add_u64_spec(low, scaled_rest).is_none());
+503:                assert(checked_add_u64_spec(low, scaled_rest) == Some(value));
+$ rg -n 'checked_mul_u64\(rest_value, VARINT_BASE\)' src/ucan_did.rs
+465:            let scaled_rest = match checked_mul_u64(rest_value, VARINT_BASE) {
+$ rg -n 'checked_add_u64\(low, scaled_rest\)' src/ucan_did.rs
+480:            let value = match checked_add_u64(low, scaled_rest) {
+
+result: each UCAN DID spec file carries the checked tail recurrence, checked operations, ten-byte inclusive boundary, and explicit proof artifact requirement; source carries matching checked multiply/add spec and exec calls.

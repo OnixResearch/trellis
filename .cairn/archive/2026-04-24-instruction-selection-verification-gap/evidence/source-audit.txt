@@ -1,0 +1,12 @@
+is_well_formed_tree: line 83, exempt=True, rationale=True, local_r_impl=False
+is_valid_tile_pattern: line 94, exempt=True, rationale=True, local_r_impl=False
+subtree_eval: line 119, exempt=True, rationale=True, local_r_impl=False
+tiling_cost: line 147, exempt=True, rationale=True, local_r_impl=False
+tile_matches: line 155, exempt=True, rationale=True, local_r_impl=False
+optimal_tiling: line 201, exempt=True, rationale=True, local_r_impl=False
+check_coverage: line 211, exempt=True, rationale=True, local_r_impl=False
+check_soundness: line 238, exempt=True, rationale=True, local_r_impl=False
+exempted_public_functions=['check_coverage', 'check_soundness', 'is_valid_tile_pattern', 'is_well_formed_tree', 'optimal_tiling', 'subtree_eval', 'tile_matches', 'tiling_cost']
+RESULT: PASS
+checked_functions=8
+lookback_lines=10

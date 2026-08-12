@@ -1,0 +1,13 @@
+# Tasks Review Packet
+
+## Phase 1: Core hierarchy model
+- `src/cache_hierarchy.rs` landed the `HierarchyPolicy`, `CacheHierarchy`, exact transition helpers, and query surfaces described in the task list.
+- Targeted validation for the landed module is captured in `evidence/cargo-test-cache-hierarchy.txt` and `evidence/verus-cache-hierarchy.txt`.
+
+## Phase 2: Policy semantics and negative cases
+- Inclusive, exclusive, and non-inclusive semantics plus negative regression coverage are part of the landed `src/cache_hierarchy.rs` module and its test/proptest coverage.
+
+## Phase 3: Tests, requirements, and sync
+- Unit tests, proptests, Tracey sync, canonical spec sync, and archive state are all reflected by the archived tree.
+- Repo-wide validation transcripts are listed in `evidence/review-index.md`.
+- Archive review surfaces are indexed in `evidence/review-index.md`.

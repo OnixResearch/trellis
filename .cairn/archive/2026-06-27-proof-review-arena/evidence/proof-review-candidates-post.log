@@ -1,0 +1,165 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-candidates.rs --check-policy --max 12 --write-report target/proof-review/arena-post-candidates.md --write-packets target/proof-review/arena-post-packets
+warning: unknown experimental feature 'wasm-builtin'
+PASS proof-review policy fresh proof-review/generated/policy.json
+# Proof Review Candidates
+
+Deterministic prefilter for focused VibeThinker proof critique. VibeThinker output is advisory; validation remains cargo, Verus, Tracey, Cairn, and repo checkers.
+
+> Note: legacy `openspec/changes` exists but is ignored by this native Cairn scanner. Native `cairn/changes` is the authoritative lifecycle input; legacy cleanup/migration is explicit.
+
+## Active Cairn Changes
+
+- `proof-review-arena`: 5 unchecked task(s); referenced source paths: src/append_entries_build.rs, src/arena.rs, src/beam_link.rs, src/beam_process.rs, src/chain.rs, src/client_session.rs, src/commit_notify.rs, src/concurrent_composition.rs, src/config_change.rs, src/consistency_transactional.rs, src/lib.rs, src/ucan_did.rs, src/ucan_signature.rs
+
+## Ranked Candidates
+
+| Rank | Score | Path | Top reasons |
+| ---: | ---: | --- | --- |
+| 1 | 1560 | `src/ucan_signature.rs` | referenced by active Cairn change `proof-review-arena`; trusted or weakened proof marker; trust… |
+| 2 | 1360 | `src/ucan_did.rs` | referenced by active Cairn change `proof-review-arena`; trusted or weakened proof marker; trust… |
+| 3 | 980 | `src/append_entries_build.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `first_entry_empty… |
+| 4 | 980 | `src/beam_link.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `link_empty_sets_g… |
+| 5 | 980 | `src/beam_process.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `beam_transition_i… |
+| 6 | 980 | `src/chain.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `hash_deterministi… |
+| 7 | 980 | `src/client_session.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `register_advances… |
+| 8 | 980 | `src/commit_notify.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `no_advance_zero` … |
+| 9 | 980 | `src/concurrent_composition.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `rwlock_write_excl… |
+| 10 | 980 | `src/config_change.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `no_change_during_… |
+| 11 | 980 | `src/consistency_transactional.rs` | referenced by active Cairn change `proof-review-arena`; empty proof body for `read_committed_im… |
+| 12 | 975 | `src/arena.rs` | referenced by active Cairn change `proof-review-arena`; source file is changed in the working t… |
+
+## Candidate Details
+
+### `src/ucan_signature.rs` — score 1560
+
+Showing top 6 of 14 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/ucan_signature.rs` — 5 unchecked task(s) remain in the active change.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:254 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:263 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:275 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:289 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:303 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+
+### `src/ucan_did.rs` — score 1360
+
+Showing top 6 of 12 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/ucan_did.rs` — 5 unchecked task(s) remain in the active change.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:623 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:631 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:640 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_did.rs`:649 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **empty-nontrivial-proof** (+35): `src/ucan_did.rs`:142 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/append_entries_build.rs` — score 980
+
+Showing top 6 of 12 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/append_entries_build.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:174 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:180 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:187 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:197 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/append_entries_build.rs`:203 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/beam_link.rs` — score 980
+
+Showing top 6 of 9 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/beam_link.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/beam_link.rs`:249 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_link.rs`:256 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_link.rs`:263 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_link.rs`:269 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_link.rs`:275 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/beam_process.rs` — score 980
+
+Showing top 6 of 10 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/beam_process.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/beam_process.rs`:290 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_process.rs`:300 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_process.rs`:305 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_process.rs`:311 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/beam_process.rs`:317 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/chain.rs` — score 980
+
+Showing top 6 of 19 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/chain.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/chain.rs`:42 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/chain.rs`:111 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/chain.rs`:117 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/chain.rs`:123 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/chain.rs`:129 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/client_session.rs` — score 980
+
+Showing top 6 of 23 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/client_session.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/client_session.rs`:261 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/client_session.rs`:266 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/client_session.rs`:271 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/client_session.rs`:276 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/client_session.rs`:281 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/commit_notify.rs` — score 980
+
+Showing top 6 of 11 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/commit_notify.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/commit_notify.rs`:248 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/commit_notify.rs`:254 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/commit_notify.rs`:261 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/commit_notify.rs`:270 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/commit_notify.rs`:276 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/concurrent_composition.rs` — score 980
+
+Showing top 6 of 27 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/concurrent_composition.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/concurrent_composition.rs`:95 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/concurrent_composition.rs`:107 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/concurrent_composition.rs`:120 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/concurrent_composition.rs`:132 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/concurrent_composition.rs`:143 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/config_change.rs` — score 980
+
+Showing top 6 of 16 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/config_change.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/config_change.rs`:246 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/config_change.rs`:252 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/config_change.rs`:258 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/config_change.rs`:264 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/config_change.rs`:270 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/consistency_transactional.rs` — score 980
+
+Showing top 6 of 11 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/consistency_transactional.rs` — 5 unchecked task(s) remain in the active change.
+- **empty-nontrivial-proof** (+35): `src/consistency_transactional.rs`:235 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/consistency_transactional.rs`:242 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/consistency_transactional.rs`:251 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/consistency_transactional.rs`:260 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+- **empty-nontrivial-proof** (+35): `src/consistency_transactional.rs`:269 — Ask whether this proof is intentionally SMT-trivial, vacuous from preconditions, or missing helper lemmas/tests.
+
+### `src/arena.rs` — score 975
+
+Showing top 2 of 2 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **active-cairn-change** (+725): `src/arena.rs` — 5 unchecked task(s) remain in the active change.
+- **worktree-changed-source** (+250): `src/arena.rs` — Changed verified source is immediately actionable for proof critique.
+
+## VibeThinker Prompt Shape
+
+Use `max_tokens=16384`. Packets include a base task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings.
+wrote report: target/proof-review/arena-post-candidates.md
+wrote packets: target/proof-review/arena-post-packets

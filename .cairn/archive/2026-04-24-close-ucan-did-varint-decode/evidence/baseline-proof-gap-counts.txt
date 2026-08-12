@@ -1,0 +1,15 @@
+$ rg -n "^[[:space:]]*#\[verifier::external_body\]" src | wc -l
+external_body_count=33
+
+$ rg -n "assume_specification\[" src | wc -l
+assume_specification_count=3
+
+$ rg -n "@verified-logic:no-ensures" src | wc -l
+no_ensures_count=1
+
+$ rg -n "@verified-logic:exempt runtime-only instruction-selection surface" src/instruction_selection.rs | wc -l
+instruction_selection_runtime_exempt_count=8
+
+$ rg -n "assume\s*\(" src/ucan_did.rs
+
+formula: total = external_body + assume_specification + instruction_selection_runtime_exempt = 33 + 3 + 8 = 44; no_ensures is co-located and non-additive

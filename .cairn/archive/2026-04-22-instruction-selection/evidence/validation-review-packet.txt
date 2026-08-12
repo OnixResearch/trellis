@@ -1,0 +1,15 @@
+# Validation Review Packet
+
+## Targeted validation
+- `cargo test --quiet instruction_selection` — see `evidence/raw/cargo-test-instruction-selection.txt`
+- `cargo test --quiet --lib` — see `evidence/raw/cargo-test-lib.txt`
+- `./scripts/verus.sh src/lib.rs` — see `evidence/raw/verus-lib.txt`
+
+## OpenSpec gates
+- `openspec_gate proposal instruction-selection` — PASS; see `evidence/raw/openspec-gate-proposal.txt`
+- `openspec_gate design instruction-selection` — PASS/WARN review packet recorded in this session; see `evidence/raw/openspec-gate-design.txt`
+- `openspec_gate tasks instruction-selection` — PASS/WARN review packet recorded in this session; see `evidence/raw/openspec-gate-tasks.txt`
+
+## Notes
+- This packet now points at saved raw validation artifacts created in this session instead of only handwritten summaries.
+- The implementation was corrected so const-tile matching now includes root literal equality and `check_coverage` recomputes coverage from the tree plus selections.

@@ -1,0 +1,2 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic cargo test --quiet
+4129 passed; 13 doc tests passed

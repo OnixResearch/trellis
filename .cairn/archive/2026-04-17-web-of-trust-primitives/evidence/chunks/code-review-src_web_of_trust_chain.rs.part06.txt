@@ -1,0 +1,109 @@
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_wrong_root_issuer_rejects_chain() {
++        let att1 = signed_attestation(vec![1, 1, 1], vec![2, 2, 2], TRUST_ROLE_TAG, 0, 20, 1);
++        let roots = vec![principal_id_from_bytes(&[9, 9, 9])];
++        let subject = principal_id_from_bytes(&[2, 2, 2]);
++        assert!(!chain_valid_at(&vec![0], &roots, &vec![att1], &Vec::new(), &subject, 5));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_broken_adjacency_rejects_chain() {
++        let att1 = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(vec![7, 8, 9], vec![9, 8, 7], TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&[1, 2, 3])];
++        let subject = principal_id_from_bytes(&[9, 8, 7]);
++        assert!(!chain_valid_at(&vec![0, 1], &roots, &vec![att1, att2], &Vec::new(), &subject, 5));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_cycle_makes_chain_invalid() {
++        let root_key = vec![1, 2, 3];
++        let mid_key = vec![4, 5, 6];
++        let att1 = signed_attestation(root_key.clone(), mid_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(mid_key, root_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&root_key);
++        assert!(!chain_valid_at(&vec![0, 1], &roots, &vec![att1, att2], &Vec::new(), &subject, 5));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_non_trust_attestation_is_not_edge() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], 0x55, 0, 20, 1);
++        let roots = vec![principal_id_from_bytes(&[1, 2, 3])];
++        let subject = principal_id_from_bytes(&[4, 5, 6]);
++        assert!(!chain_valid_at(&vec![0], &roots, &vec![att], &Vec::new(), &subject, 5));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_inactive_edge_rejects_chain() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 10, 20, 1);
++        let roots = vec![principal_id_from_bytes(&[1, 2, 3])];
++        let subject = principal_id_from_bytes(&[4, 5, 6]);
++        assert!(!chain_valid_at(&vec![0], &roots, &vec![att], &Vec::new(), &subject, 9));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_revoked_edge_rejects_chain() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let rev = signed_family_revocation(root_key.clone(), subject_key, TRUST_ROLE_TAG, 5);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&[4, 5, 6]);
++        assert!(!chain_valid_at(&vec![0], &roots, &vec![att], &vec![rev], &subject, 5));
++    }
++
++    // r[verify web-of-trust.chain-validity]
++    #[test]
++    fn test_invalid_record_contributes_no_chain_edge() {
++        let att = signed_attestation(vec![1, 2, 3], vec![4, 5, 6], TRUST_ROLE_TAG, 0, 20, 1);
++        let tampered_subject_bytes = vec![4, 5, 9];
++        let bad = Attestation {
++            subject_key_bytes: tampered_subject_bytes,
++            ..att
++        };
++        let roots = vec![principal_id_from_bytes(&[1, 2, 3])];
++        let subject = principal_id_from_bytes(&[4, 5, 6]);
++        assert!(!chain_valid_at(&vec![0], &roots, &vec![bad], &Vec::new(), &subject, 5));
++    }
++
++    proptest! {
++        // r[verify web-of-trust.chain-validity]
++        #[test]
++        fn prop_chain_validity_oracle(
++            witness in prop::collection::vec(0usize..4, 0..5),
++            subject_choice in 0usize..4,
++            time in 0u64..20,
++        ) {
++            let root_key = vec![1, 2, 3];
++            let a_key = vec![4, 5, 6];
++            let b_key = vec![7, 8, 9];
++            let c_key = vec![10, 11, 12];
++
++            let attestations = vec![
++                signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1),
++                signed_attestation(a_key.clone(), b_key.clone(), TRUST_ROLE_TAG, 0, 20, 2),
++                signed_attestation(b_key.clone(), c_key.clone(), TRUST_ROLE_TAG, 0, 20, 3),
++                signed_attestation(a_key.clone(), root_key.clone(), TRUST_ROLE_TAG, 0, 20, 4),
++            ];
++            let roots = vec![principal_id_from_bytes(&root_key)];
++            let subjects = [
++                principal_id_from_bytes(&root_key),
++                principal_id_from_bytes(&a_key),
++                principal_id_from_bytes(&b_key),
++                principal_id_from_bytes(&c_key),
++            ];
++            let subject = &subjects[subject_choice];
++            let revocations = Vec::new();
++
++            let oracle = chain_valid_oracle(&witness, &roots, &attestations, &revocations, subject, time);
++            prop_assert_eq!(chain_valid_at(&witness, &roots, &attestations, &revocations, subject, time), oracle);
++        }
++    }
++}

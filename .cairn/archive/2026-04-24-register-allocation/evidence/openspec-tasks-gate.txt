@@ -1,0 +1,8 @@
+OpenSpec tasks gate (register-allocation)
+
+VERDICT: PASS
+
+Highlights:
+- Phases 1–3 accepted as complete and traceable.
+- Remaining work is Phase 4 repo-level validation + archive.
+- Gate note: repo-level validation should name the exact autoresearch rails, with `./scripts/verify.sh` captured separately because it may be affected by unrelated repo-wide blockers.

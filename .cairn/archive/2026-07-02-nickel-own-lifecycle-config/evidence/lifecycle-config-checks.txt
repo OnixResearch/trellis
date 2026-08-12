@@ -1,0 +1,31 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/check-lifecycle-config.rs
+warning: unknown experimental feature 'wasm-builtin'
+PASS nickel export --format yaml cairn/config.ncl
+PASS lifecycle config fresh cairn/config.yaml
+PASS lifecycle config fresh openspec/config.yaml
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl
+PASS valid lifecycle fixture /home/brittonr/git/trellis/cairn/lifecycle-config-fixtures/valid-minimal.ncl
+lifecycle config check: PASS
+
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/check-lifecycle-config.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+PASS invalid lifecycle fixture rejected /home/brittonr/git/trellis/target-test/lifecycle-config-self-test-903839/invalid-fixture.ncl
+PASS valid lifecycle fixture /home/brittonr/git/trellis/target-test/lifecycle-config-self-test-903839/valid-fixture.ncl
+lifecycle config checker self-test: PASS
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root /home/brittonr/git/trellis
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 3,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 97,
+  "valid": true
+}

@@ -1,0 +1,171 @@
+$ CAIRN_ARCHIVE_DATE=2026-06-27 nix run path:/home/brittonr/git/cairn#cairn -- archive harden-proof-review-loop-triage --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: harden-proof-review-loop-triage",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage"
+    }
+  ],
+  "blocked": false,
+  "change": "harden-proof-review-loop-triage",
+  "dry_run": false,
+  "input_hash": "5b619388eb7e14e8b0015d7a743873e8b5059aea44135bc6c619951ffb30c7a9",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "b81ff5acae332344d986b096976f497b71103a9f6e32de0b182118d11b278160",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/design.md"
+        },
+        {
+          "content_hash": "e03842bbcecfaa450ca549c76685088df72b2849350d83e2a1e57bf84fda62d6",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "53e21aa236f068c9ea3bfc8873f621a1102869e4910f7959f2789f45ca6e2307",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/cairn-archive-execute.log"
+        },
+        {
+          "content_hash": "f1da251e9b9475d5d6b150fd3c54931cc79b8df19a3d0f6abd13224d890d25e4",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/cairn-gates-all-checked.log"
+        },
+        {
+          "content_hash": "c48520554a7b437c6e7403fa4ca63f574adeaa16d5d6e27c3e60b3aca1ab2342",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "0f2ff0c32a55c85a25bf164be5b7dd519da9444b2bba14a7820edcaca038aab8",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "169b5a7808c8ee5b234bd885c82fcde8a11e668cef75f2482cb13569643063ea",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/self-tests-and-policy.log"
+        },
+        {
+          "content_hash": "664556d4ab559eeb666ef57b75e4cdba4efadab081faf5ca270b4628518f859d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/spec-sync.md"
+        },
+        {
+          "content_hash": "a1ad94bcc5da7c01cbeed0444d76ec83608e813d87b942494b75e1e77e572f35",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "9e2e5b560639bd0d40983cd401eb5606dc18453ab55ed284eb5e6d2977fc398c",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "ab590056d15d8db9c3c1076b8d1ce610afa471a83616022ddec17f4cba24eb8d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/proposal.md"
+        },
+        {
+          "content_hash": "dab7cfc60aee84471acf46acbd21d6ddd5cbdd24c0110149d0bb273bfbe2bee9",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "37de1f7e688ac8016b864c611d210db3e4495ff8fd43145397ed71ddc4ae963c",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-27-harden-proof-review-loop-triage/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/harden-proof-review-loop-triage"
+        }
+      ],
+      "manifest_hash": "0dcaa2b266dc5800994da0b4acaff2b51990175f3a44cfa27378183d65cabb80"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "b81ff5acae332344d986b096976f497b71103a9f6e32de0b182118d11b278160",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/design.md"
+        },
+        {
+          "content_hash": "e03842bbcecfaa450ca549c76685088df72b2849350d83e2a1e57bf84fda62d6",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "53e21aa236f068c9ea3bfc8873f621a1102869e4910f7959f2789f45ca6e2307",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/cairn-archive-execute.log"
+        },
+        {
+          "content_hash": "f1da251e9b9475d5d6b150fd3c54931cc79b8df19a3d0f6abd13224d890d25e4",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/cairn-gates-all-checked.log"
+        },
+        {
+          "content_hash": "c48520554a7b437c6e7403fa4ca63f574adeaa16d5d6e27c3e60b3aca1ab2342",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "0f2ff0c32a55c85a25bf164be5b7dd519da9444b2bba14a7820edcaca038aab8",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/cairn-gates.log"
+        },
+        {
+          "content_hash": "169b5a7808c8ee5b234bd885c82fcde8a11e668cef75f2482cb13569643063ea",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/self-tests-and-policy.log"
+        },
+        {
+          "content_hash": "664556d4ab559eeb666ef57b75e4cdba4efadab081faf5ca270b4628518f859d",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/spec-sync.md"
+        },
+        {
+          "content_hash": "a1ad94bcc5da7c01cbeed0444d76ec83608e813d87b942494b75e1e77e572f35",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "9e2e5b560639bd0d40983cd401eb5606dc18453ab55ed284eb5e6d2977fc398c",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "ab590056d15d8db9c3c1076b8d1ce610afa471a83616022ddec17f4cba24eb8d",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/proposal.md"
+        },
+        {
+          "content_hash": "dab7cfc60aee84471acf46acbd21d6ddd5cbdd24c0110149d0bb273bfbe2bee9",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "37de1f7e688ac8016b864c611d210db3e4495ff8fd43145397ed71ddc4ae963c",
+          "exists": true,
+          "path": "./cairn/changes/harden-proof-review-loop-triage/tasks.md"
+        }
+      ],
+      "manifest_hash": "949b9d57013bf6186b4611acbbc488c459713300cba985291daef3afeb3d58c8"
+    },
+    "kind": "archive",
+    "manifest_hash": "8036cd1c582c4e04555c5e6c19f3d1955206e658c03810d0632da4485a747968"
+  },
+  "plan_hash": "b5ba64489127c2c6d2420a1479c68b40085e6eff0e062be0684a520e06bc107f",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "3aae351d63d3a895bcefa0e83c5661a1bee1215994f3c960241f1a56494afec7"
+}

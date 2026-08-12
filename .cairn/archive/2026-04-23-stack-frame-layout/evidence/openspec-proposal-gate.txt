@@ -1,0 +1,9 @@
+OpenSpec proposal gate (stack-frame-layout)
+
+Strategy: cross-family
+
+## Proposal Gate Review: `stack-frame-layout` (round 4)
+
+Artifacts are unchanged from round 3. No blockers were identified in round 3.
+
+**Verdict: Pass.** Proposal is ready for design. The remaining minor items (power-of-two constraint, assign_slot vs reuse boundary) are design-stage decisions, not proposal ambiguities.

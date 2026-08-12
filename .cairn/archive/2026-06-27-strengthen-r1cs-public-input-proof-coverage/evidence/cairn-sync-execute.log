@@ -1,0 +1,62 @@
+$ cairn sync strengthen-r1cs-public-input-proof-coverage --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./cairn/changes/strengthen-r1cs-public-input-proof-coverage/specs/rust-primitives/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./cairn/changes/strengthen-r1cs-public-input-proof-coverage/specs/rust-primitives/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-r1cs-public-input-proof-coverage",
+  "delta_specs": [
+    "./cairn/changes/strengthen-r1cs-public-input-proof-coverage/specs/rust-primitives/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "e1709b96a533fcd9a43e9919e2fd043d9e6cb3fc5c074b3f39ce9b05624b4f23",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "03814b9993cd02903458bab51c5a6dd66f2f49a0fa919ef72a3dd7b173eab777",
+          "exists": true,
+          "path": "./cairn/specs/rust-primitives/spec.md"
+        }
+      ],
+      "manifest_hash": "f7f7bea0c7ba5302c976825a1dbd62546166ec1e9cc95f488f761935f73431ec"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "3624d13fe18aa720a2bf316272fe974b81e2b9999ab931d2d1ab3c99a0c054a6",
+          "exists": true,
+          "path": "./cairn/specs/rust-primitives/spec.md"
+        }
+      ],
+      "manifest_hash": "6666edad2108e5c3c974f503dae73ca72be57db60643b42c876fba7e7ed467d1"
+    },
+    "kind": "sync",
+    "manifest_hash": "01c9818f3aed6e3f8c1e94ddde9745cb95014075f367e78d2aef1dc9e7b2105f"
+  },
+  "plan_hash": "96198cd893a77e7282b07f89b5c50d70b0d7717db508508c431ff3091cfb2178",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "af7b486cb8b94dbf5c211ca6f718d4c17ed53c800e3bea16905893a884b32a8b"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}

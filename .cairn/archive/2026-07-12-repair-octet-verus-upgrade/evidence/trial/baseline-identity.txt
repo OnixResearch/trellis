@@ -1,0 +1,5 @@
+proof-verifier: verus@0.2026.03.22.5e66329
+proof-verifier-binary-blake3: 69dbadb7fbc860bf7a745b307fe08917a8b838cd7b1680275d3b365b6a303fa8
+proof-solver-blake3: 59476fb9fa46ea70160c854c678d4b7adedc18f91dc03d75288dd911f4fe3b3b
+proof-verifier-nix-output: /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22
+trust-boundary: baseline identity and execution do not establish verifier or solver soundness

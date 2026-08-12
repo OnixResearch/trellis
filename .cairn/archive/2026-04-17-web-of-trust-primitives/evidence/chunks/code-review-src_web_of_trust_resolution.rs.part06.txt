@@ -1,0 +1,140 @@
++    }
++}
++
++} // verus!
++
++#[cfg(test)]
++mod tests {
++    use proptest::prelude::*;
++
++    use super::*;
++    use crate::web_of_trust_attestation::{attestation_active_at, attestation_payload_bytes, attestation_signature_bytes_runtime, Attestation, TRUST_ROLE_TAG};
++    use crate::web_of_trust_principal::principal_id_from_bytes;
++    use crate::web_of_trust_revocation::{revocation_payload_bytes, revocation_signature_bytes_runtime, Revocation, FAMILY_TARGET_KIND_TAG};
++
++    fn signed_attestation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        not_before: u64,
++        not_after: u64,
++        sequence_no: u64,
++    ) -> Attestation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Attestation {
++            issuer_key_bytes,
++            issuer,
++            subject_key_bytes,
++            subject,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++            signature: Vec::new(),
++        };
++        let payload = attestation_payload_bytes(&unsigned).unwrap();
++        let signature = attestation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Attestation { signature, ..unsigned }
++    }
++
++    fn signed_family_revocation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        effective_time: u64,
++    ) -> Revocation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let family_subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Revocation {
++            issuer_key_bytes,
++            issuer,
++            target_kind_tag: FAMILY_TARGET_KIND_TAG,
++            exact_payload_target: Vec::new(),
++            family_subject_key_bytes: subject_key_bytes,
++            family_subject,
++            family_role_tag: role_tag,
++            effective_time,
++            signature: Vec::new(),
++        };
++        let payload = revocation_payload_bytes(&unsigned).unwrap();
++        let signature = revocation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Revocation { signature, ..unsigned }
++    }
++
++    fn rooted_resolution_oracle_dfs(
++        current: &PrincipalId,
++        roots: &[PrincipalId],
++        attestations: &[Attestation],
++        revocations: &Vec<Revocation>,
++        depth: usize,
++        t: u64,
++        visited: &mut Vec<Vec<u8>>,
++    ) -> bool {
++        if roots.iter().any(|root| root.digest == current.digest) {
++            return true;
++        }
++        if depth == 0 {
++            return false;
++        }
++
++        for att in attestations {
++            if att.subject.digest != current.digest {
++                continue;
++            }
++            if att.role_tag != TRUST_ROLE_TAG || !attestation_active_at(att, revocations, t) {
++                continue;
++            }
++            if visited.contains(&att.issuer.digest) {
++                continue;
++            }
++            visited.push(att.issuer.digest.clone());
++            if rooted_resolution_oracle_dfs(&att.issuer, roots, attestations, revocations, depth - 1, t, visited) {
++                return true;
++            }
++            visited.pop();
++        }
++        false
++    }
++
++    fn rooted_resolution_oracle(
++        roots: &[PrincipalId],
++        attestations: &[Attestation],
++        revocations: &Vec<Revocation>,
++        subject: &PrincipalId,
++        depth: usize,
++        t: u64,
++    ) -> bool {
++        if roots.iter().any(|root| root.digest == subject.digest) {
++            return true;
++        }
++
++        let mut visited = vec![subject.digest.clone()];
++        rooted_resolution_oracle_dfs(subject, roots, attestations, revocations, depth, t, &mut visited)
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_root_resolves_at_depth_zero() {
++        let root = principal_id_from_bytes(&[1, 2, 3]);
++        let roots = vec![root];
++        assert!(resolves_trusted_at(&roots, &Vec::new(), &Vec::new(), &roots[0], 0, 5));
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_direct_root_cert_resolves_at_depth_one() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(resolves_trusted_at(&roots, &vec![att], &Vec::new(), &subject, 1, 5));
++    }
++

@@ -1,0 +1,18 @@
+# Tasks Review Packet
+
+## Phase 1: Field arithmetic
+- Field operations, inversion, and supporting proof/test evidence are captured in `evidence/shamir-field-evidence.txt`.
+
+## Phase 2: Polynomial evaluation
+- Polynomial-evaluation and Horner-equivalence work is part of the landed Shamir module set and summarized by the archived evidence bundle.
+
+## Phase 3: Lagrange interpolation
+- Lagrange basis, interpolation, uniqueness, and reconstruction-at-zero evidence are captured in `evidence/shamir-lagrange-evidence.txt`.
+
+## Phase 4: Split and reconstruct
+- Share generation, reconstruction, and round-trip behavior are part of the landed Shamir module set and reflected by the archived evidence bundle.
+
+## Phase 5: Threshold security and integration
+- Threshold-completion modeling, `lib.rs` wiring, and repo validation are summarized in `evidence/verification-summary.txt`.
+- Archive state is captured in `evidence/archive-state.txt`.
+- Full validation and review surfaces are indexed in `evidence/review-index.md`.

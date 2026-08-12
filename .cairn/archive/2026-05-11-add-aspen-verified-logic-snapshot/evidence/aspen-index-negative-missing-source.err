@@ -1,0 +1,2 @@
+aspen evidence index drift detected
+git -C ././../aspen rev-parse 1d266aaac5118530b5cfcf8119768b6aaf961128:crates/aspen-coordination/verus/rate_limiter_ops_spec.rs.missing failed: fatal: path 'crates/aspen-coordination/verus/rate_limiter_ops_spec.rs.missing' does not exist in '1d266aaac5118530b5cfcf8119768b6aaf961128'

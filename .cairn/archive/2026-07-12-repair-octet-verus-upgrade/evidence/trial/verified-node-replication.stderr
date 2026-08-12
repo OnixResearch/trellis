@@ -1,0 +1,855 @@
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:71:95
+   |
+71 |         &&& self.batch_perm@@.pcell == replica.contexts[self.thread_id_spec() as int].batch.0.id()
+   |                                                                                               ^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:193:27
+    |
+193 |             res.0.batch.0.id() == res.1@@.pcell,
+    |                           ^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::empty`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:203:43
+    |
+203 |         let (batch, batch_perms) = PCell::empty();
+    |                                           ^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:245:30
+    |
+245 |                 self.batch.0.id(),
+    |                              ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:252:44
+    |
+252 |             res.1@.cell_id == self.batch.0.id(),
+    |                                            ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:264:22
+    |
+264 |         self.batch.0.put(Tracked(&mut batch_perms), PendingOperation::new(op));
+    |                      ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:303:30
+    |
+303 |                 self.batch.0.id(),
+    |                              ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:342:35
+    |
+342 |             let op = self.batch.0.take(Tracked(&mut batch_perms));
+    |                                   ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:459:44
+    |
+459 |             &&& batch_perms@.pcell == cell.id()
+    |                                            ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:476:44
+    |
+476 |             &&& batch_perms@.pcell == cell.id()
+    |                                            ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:161:40
+    |
+161 |             &&& self.slog[i].log_entry.id() == (#[trigger]self.cyclic_buffer_instance@.cell_ids()[i])
+    |                                        ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:279:58
+    |
+279 |                     #[trigger] slog_entries[i]).unwrap().id(),
+    |                                                          ^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:292:41
+    |
+292 |             let (pcell, token) = PCell::new(Option::None);
+    |                                         ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:295:48
+    |
+295 |                 cell_ids = cell_ids.push(pcell.id());
+    |                                                ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:360:47
+    |
+360 |                         &&& slog[i].log_entry.id() == (#[trigger] cell_ids[i])
+    |                                               ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:375:35
+    |
+375 |                         &&& entry.id() == cell_ids[i]
+    |                                   ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::replace`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:994:46
+    |
+994 |                 self.slog[log_idx].log_entry.replace(
+    |                                              ^^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:1486:63
+     |
+1486 |             let log_entry = self.slog[phys_log_idx].log_entry.borrow(
+     |                                                               ^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:240:77
+    |
+240 | ...   &&& (g matches Some(g) ==> g.inv(flat_combiner_instance@, responses.id(), collected_operations.id(), collected_operations_per...
+    |                                                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:240:104
+    |
+240 | ...   &&& (g matches Some(g) ==> g.inv(flat_combiner_instance@, responses.id(), collected_operations.id(), collected_operations_per...
+    |                                                                                                      ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:240:142
+    |
+240 | ...(), collected_operations.id(), collected_operations_per_thread.id()))
+    |                                                                   ^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:296:51
+    |
+296 |         let (responses, responses_token) = PCell::new(Vec::with_capacity(num_threads));
+    |                                                   ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:297:72
+    |
+297 |         let (collected_operations, collected_operations_perm) = PCell::new(
+    |                                                                        ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:300:94
+    |
+300 |         let (collected_operations_per_thread, collected_operations_per_thread_perm) = PCell::new(
+    |                                                                                              ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:378:88
+    |
+378 |                         &&& thread_tokens[i].batch_perm@@.pcell == contexts[i].batch.0.id()
+    |                                                                                        ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:467:32
+    |
+467 |                 self.responses.id(),
+    |                                ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:468:43
+    |
+468 |                 self.collected_operations.id(),
+    |                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:469:54
+    |
+469 |                 self.collected_operations_per_thread.id(),
+    |                                                      ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:523:32
+    |
+523 |                 self.responses.id(),
+    |                                ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:524:43
+    |
+524 |                 self.collected_operations.id(),
+    |                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:525:54
+    |
+525 |                 self.collected_operations_per_thread.id(),
+    |                                                      ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:572:32
+    |
+572 |                 self.responses.id(),
+    |                                ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:573:43
+    |
+573 |                 self.collected_operations.id(),
+    |                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:574:54
+    |
+574 |                 self.collected_operations_per_thread.id(),
+    |                                                      ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:579:32
+    |
+579 |                 self.responses.id(),
+    |                                ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:580:43
+    |
+580 |                 self.collected_operations.id(),
+    |                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:581:54
+    |
+581 |                 self.collected_operations_per_thread.id(),
+    |                                                      ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:592:44
+    |
+592 |         let mut responses = self.responses.take(Tracked(&mut responses_token));
+    |                                            ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:593:56
+    |
+593 |         let mut operations = self.collected_operations.take(
+    |                                                        ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:597:75
+    |
+597 |         let mut num_ops_per_thread = self.collected_operations_per_thread.take(
+    |                                                                           ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:679:24
+    |
+679 |         self.responses.put(Tracked(&mut responses_token), responses);
+    |                        ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:680:35
+    |
+680 |         self.collected_operations.put(Tracked(&mut collected_operations_perm), operations);
+    |                                   ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:681:46
+    |
+681 |         self.collected_operations_per_thread.put(
+    |                                              ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:751:93
+    |
+751 |                         &&& cell_permissions[i]@.pcell === self.contexts@[i as int].batch.0.id()
+    |                                                                                             ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:806:56
+    |
+806 |                     &self.contexts[thread_idx].batch.0.borrow(Tracked(&batch_token_value)).op,
+    |                                                        ^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:901:93
+    |
+901 |                         &&& cell_permissions[i]@.pcell === self.contexts@[i as int].batch.0.id()
+    |                                                                                             ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:957:69
+    |
+957 |                 let mut op_resp = self.contexts[thread_idx].batch.0.take(Tracked(&mut permission));
+    |                                                                     ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:962:51
+    |
+962 |                 self.contexts[thread_idx].batch.0.put(Tracked(&mut permission), op_resp);
+    |                                                   ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1027:90
+     |
+1027 |             tkn.batch_perm@@.pcell == self.contexts[tkn.thread_id_spec() as int].batch.0.id(),
+     |                                                                                          ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1035:76
+     |
+1035 |                 == self.contexts[result.1.thread_id_spec() as int].batch.0.id(),
+     |                                                                            ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1124:90
+     |
+1124 |             tkn.batch_perm@@.pcell == self.contexts[tkn.thread_id_spec() as int].batch.0.id(),
+     |                                                                                          ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1132:76
+     |
+1132 |                 == self.contexts[result.1.thread_id_spec() as int].batch.0.id(),
+     |                                                                            ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1143:79
+     |
+1143 |             cell_id: Ghost(self.contexts[tkn.thread_id_spec() as int].batch.0.id()),
+     |                                                                               ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1189:51
+     |
+1189 |                 self.contexts[tid as int].batch.0.id(),
+     |                                                   ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1216:51
+     |
+1216 |                 self.contexts[tid as int].batch.0.id(),
+     |                                                   ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1238:37
+     |
+1238 |                     context.batch.0.id(),
+     |                                     ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:1367:97
+     |
+1367 |                     &&& self.cell_permissions@[i]@.pcell === replica_contexts[i as int].batch.0.id()
+     |                                                                                                 ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:86:43
+   |
+86 |                 equal(v@.pcell, self.data.id()) && v.mem_contents().is_init()
+   |                                           ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:126:52
+    |
+126 |         &&& read_handle.perms@@.pcell == self.data.id()
+    |                                                    ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:132:58
+    |
+132 |         &&& write_handle.cell_perms@@.pcell == self.data.id()
+    |                                                          ^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:148:61
+    |
+148 |         let (pcell_data, Tracked(mut pcell_token)) = PCell::new(t);
+    |                                                             ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::id`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:154:52
+    |
+154 |                     &&& equal(s@.pcell, pcell_data.id())
+    |                                                    ^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:345:27
+    |
+345 |         let t = self.data.take(Tracked(&mut cell_perms));
+    |                           ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:463:19
+    |
+463 |         self.data.borrow(Tracked(&perm))
+    |                   ^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:474:19
+    |
+474 |         self.data.put(Tracked(&mut cell_perms), val);
+    |                   ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::empty`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:203:36
+    |
+203 |         let (batch, batch_perms) = PCell::empty();
+    |                                    ^^^^^^^^^^^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:292:34
+    |
+292 |             let (pcell, token) = PCell::new(Option::None);
+    |                                  ^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:296:44
+    |
+296 |         let (responses, responses_token) = PCell::new(Vec::with_capacity(num_threads));
+    |                                            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:297:65
+    |
+297 |           let (collected_operations, collected_operations_perm) = PCell::new(
+    |  _________________________________________________________________^
+298 | |             Vec::with_capacity(num_threads),
+299 | |         );
+    | |_________^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:300:87
+    |
+300 |           let (collected_operations_per_thread, collected_operations_per_thread_perm) = PCell::new(
+    |  _______________________________________________________________________________________^
+301 | |             Vec::with_capacity(num_threads),
+302 | |         );
+    | |_________^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:148:54
+    |
+148 |         let (pcell_data, Tracked(mut pcell_token)) = PCell::new(t);
+    |                                                      ^^^^^^^^^^^^^
+
+warning: 71 warnings emitted
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:11:20
+   |
+11 |     cell::{CellId, PCell, PointsTo},
+   |                    ^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:155:47
+    |
+155 |     pub/*REVIEW: (crate)*/ batch: CachePadded<PCell<PendingOperation<DT>>>,
+    |                                               ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:203:36
+    |
+203 |         let (batch, batch_perms) = PCell::empty();
+    |                                    ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:437:53
+    |
+437 | pub open spec fn inv(&self, v: u64, tid: nat, cell: PCell<PendingOperation<DT>>, fc: FlatCombiner::Instance, inst: UnboundedLog::In...
+    |                                                     ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+ --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:8:20
+  |
+8 |     cell::{CellId, PCell},
+  |                    ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:68:20
+   |
+68 |     pub log_entry: PCell<Option<ConcreteLogEntry<DT>>>,
+   |                    ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:262:42
+    |
+262 |         let mut slog_entries: Vec<Option<PCell<Option<ConcreteLogEntry<DT>>>>> = Vec::with_capacity(
+    |                                          ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:292:34
+    |
+292 |             let (pcell, token) = PCell::new(Option::None);
+    |                                  ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:11:20
+   |
+11 |     cell::{CellId, PCell, PointsTo},
+   |                    ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:177:31
+    |
+177 |     pub collected_operations: PCell<Vec<<DT as Dispatch>::WriteOperation>>,
+    |                               ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:182:42
+    |
+182 |     pub collected_operations_per_thread: PCell<Vec<usize>>,
+    |                                          ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:192:20
+    |
+192 |     pub responses: PCell<Vec<<DT as Dispatch>::Response>>,
+    |                    ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:296:44
+    |
+296 |         let (responses, responses_token) = PCell::new(Vec::with_capacity(num_threads));
+    |                                            ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:297:65
+    |
+297 |         let (collected_operations, collected_operations_perm) = PCell::new(
+    |                                                                 ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:300:87
+    |
+300 |         let (collected_operations_per_thread, collected_operations_per_thread_perm) = PCell::new(
+    |                                                                                       ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:10:12
+   |
+10 |     cell::{PCell, PointsTo},
+   |            ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:65:15
+   |
+65 |         data: PCell<T>,
+   |               ^^^^^
+
+warning: use of deprecated struct `vstd::cell::PCell`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:148:54
+    |
+148 |         let (pcell_data, Tracked(mut pcell_token)) = PCell::new(t);
+    |                                                      ^^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::empty`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:203:43
+    |
+203 |         let (batch, batch_perms) = PCell::empty();
+    |                                           ^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:264:22
+    |
+264 |         self.batch.0.put(Tracked(&mut batch_perms), PendingOperation::new(op));
+    |                      ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/context.rs:342:35
+    |
+342 |             let op = self.batch.0.take(Tracked(&mut batch_perms));
+    |                                   ^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:292:41
+    |
+292 |             let (pcell, token) = PCell::new(Option::None);
+    |                                         ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::replace`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:994:46
+    |
+994 |                 self.slog[log_idx].log_entry.replace(
+    |                                              ^^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/log.rs:1486:63
+     |
+1486 |             let log_entry = self.slog[phys_log_idx].log_entry.borrow(
+     |                                                               ^^^^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:296:51
+    |
+296 |         let (responses, responses_token) = PCell::new(Vec::with_capacity(num_threads));
+    |                                                   ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:297:72
+    |
+297 |         let (collected_operations, collected_operations_perm) = PCell::new(
+    |                                                                        ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:300:94
+    |
+300 |         let (collected_operations_per_thread, collected_operations_per_thread_perm) = PCell::new(
+    |                                                                                              ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:592:44
+    |
+592 |         let mut responses = self.responses.take(Tracked(&mut responses_token));
+    |                                            ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:593:56
+    |
+593 |         let mut operations = self.collected_operations.take(
+    |                                                        ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:597:75
+    |
+597 |         let mut num_ops_per_thread = self.collected_operations_per_thread.take(
+    |                                                                           ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:679:24
+    |
+679 |         self.responses.put(Tracked(&mut responses_token), responses);
+    |                        ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:680:35
+    |
+680 |         self.collected_operations.put(Tracked(&mut collected_operations_perm), operations);
+    |                                   ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:681:46
+    |
+681 |         self.collected_operations_per_thread.put(
+    |                                              ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:806:56
+    |
+806 |                     &self.contexts[thread_idx].batch.0.borrow(Tracked(&batch_token_value)).op,
+    |                                                        ^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:957:69
+    |
+957 |                 let mut op_resp = self.contexts[thread_idx].batch.0.take(Tracked(&mut permission));
+    |                                                                     ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/replica.rs:962:51
+    |
+962 |                 self.contexts[thread_idx].batch.0.put(Tracked(&mut permission), op_resp);
+    |                                                   ^^^
+
+warning: use of deprecated associated function `vstd::cell::PCell::<V>::new`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:148:61
+    |
+148 |         let (pcell_data, Tracked(mut pcell_token)) = PCell::new(t);
+    |                                                             ^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::take`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:345:27
+    |
+345 |         let t = self.data.take(Tracked(&mut cell_perms));
+    |                           ^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::borrow`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:463:19
+    |
+463 |         self.data.borrow(Tracked(&perm))
+    |                   ^^^^^^
+
+warning: use of deprecated method `vstd::cell::PCell::<V>::put`: use `vstd::cell::pcell::PCell` or `vstd::cell::pcell_maybe_uninit::PCell` instead
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/exec/rwlock.rs:474:19
+    |
+474 |         self.data.put(Tracked(&mut cell_perms), val);
+    |                   ^^^
+
+warning: function `implements_NodeReplicated` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/lib.rs:320:9
+    |
+320 | spec fn implements_NodeReplicated<DT: Dispatch + Sync, N: NodeReplicatedT<DT>>() -> bool {
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `implements_node_replicated`
+    |
+    = note: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+warning: function `implements_UnboundedLogRefinesSimpleLog` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/lib.rs:515:9
+    |
+515 | spec fn implements_UnboundedLogRefinesSimpleLog<
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `implements_unbounded_log_refines_simple_log`
+
+warning: module `AsynchronousSingleton` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/lib.rs:547:17
+    |
+547 | state_machine!{ AsynchronousSingleton<DT: Dispatch> {           // $line_count$Trusted$
+    |                 ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `asynchronous_singleton`
+
+warning: function `implements_SimpleLogRefinesAsynchronousSingleton` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/lib.rs:714:9
+    |
+714 | spec fn implements_SimpleLogRefinesAsynchronousSingleton<
+    |         ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `implements_simple_log_refines_asynchronous_singleton`
+
+warning: module `SimpleLog` should have a snake case name
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/simple_log.rs:65:5
+   |
+65 |     SimpleLog<DT: Dispatch> {
+   |     ^^^^^^^^^ help: convert the identifier to snake case: `simple_log`
+
+warning: module `UnboundedLog` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:266:1
+    |
+266 | UnboundedLog<DT: Dispatch> {
+    | ^^^^^^^^^^^^ help: convert the identifier to snake case: `unbounded_log`
+
+warning: function `LogContainsEntriesUpToHere` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1364:18
+     |
+1364 | pub open spec fn LogContainsEntriesUpToHere<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_contains_entries_up_to_here`
+
+warning: function `LogNoEntriesFromHere` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1372:18
+     |
+1372 | pub open spec fn LogNoEntriesFromHere<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_no_entries_from_here`
+
+warning: function `LogRangeNoNodeId` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1380:18
+     |
+1380 | pub open spec fn LogRangeNoNodeId<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_no_node_id`
+
+warning: function `LogRangeMatchesQueue` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1396:18
+     |
+1396 | pub open spec fn LogRangeMatchesQueue<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue`
+
+warning: variable `queueIndex` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1399:5
+     |
+1399 |     queueIndex: nat,
+     |     ^^^^^^^^^^ help: convert the identifier to snake case: `queue_index`
+
+warning: variable `logIndexLower` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1400:5
+     |
+1400 |     logIndexLower: LogIdx,
+     |     ^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_index_lower`
+
+warning: variable `logIndexUpper` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1401:5
+     |
+1401 |     logIndexUpper: LogIdx,
+     |     ^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_index_upper`
+
+warning: variable `nodeId` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1402:5
+     |
+1402 |     nodeId: NodeId,
+     |     ^^^^^^ help: convert the identifier to snake case: `node_id`
+
+warning: function `LogRangeMatchesQueue_update_change` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1476:10
+     |
+1476 | proof fn LogRangeMatchesQueue_update_change<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue_update_change`
+
+warning: function `LogRangeMatchesQueue_update_change_2` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1542:10
+     |
+1542 | proof fn LogRangeMatchesQueue_update_change_2<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue_update_change_2`
+
+warning: function `LogRangeMatchesQueue_append` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1607:10
+     |
+1607 | proof fn LogRangeMatchesQueue_append<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue_append`
+
+warning: function `LogRangeMatchesQueue_append_other` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1723:10
+     |
+1723 | proof fn LogRangeMatchesQueue_append_other<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue_append_other`
+
+warning: function `LogRangeMatchesQueue_append_other_augment` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1805:10
+     |
+1805 | proof fn LogRangeMatchesQueue_append_other_augment<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_matches_queue_append_other_augment`
+
+warning: function `LogRangeNoNodeId_append_other` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1909:10
+     |
+1909 | proof fn LogRangeNoNodeId_append_other<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `log_range_no_node_id_append_other`
+
+warning: function `QueueRidsUpdateDone` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1957:18
+     |
+1957 | pub open spec fn QueueRidsUpdateDone<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `queue_rids_update_done`
+
+warning: variable `localUpdates` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1959:5
+     |
+1959 |     localUpdates: Map<ReqId, UpdateState<DT>>,
+     |     ^^^^^^^^^^^^ help: convert the identifier to snake case: `local_updates`
+
+warning: function `QueueRidsUpdatePlaced` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1977:18
+     |
+1977 | pub open spec fn QueueRidsUpdatePlaced<DT: Dispatch>(
+     |                  ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `queue_rids_update_placed`
+
+warning: variable `localUpdates` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1979:5
+     |
+1979 |     localUpdates: Map<ReqId, UpdateState<DT>>,
+     |     ^^^^^^^^^^^^ help: convert the identifier to snake case: `local_updates`
+
+warning: function `concat_LogRangeNoNodeId_LogRangeMatchesQueue` should have a snake case name
+    --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/unbounded_log.rs:1992:10
+     |
+1992 | proof fn concat_LogRangeNoNodeId_LogRangeMatchesQueue<DT: Dispatch>(
+     |          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `concat_log_range_no_node_id_log_range_matches_queue`
+
+warning: module `CyclicBuffer` should have a snake case name
+   --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/cyclicbuffer.rs:129:28
+    |
+129 | tokenized_state_machine! { CyclicBuffer<DT: Dispatch> {
+    |                            ^^^^^^^^^^^^ help: convert the identifier to snake case: `cyclic_buffer`
+
+warning: method `get_ReqId` should have a snake case name
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/flat_combiner.rs:34:22
+   |
+34 |     pub open spec fn get_ReqId(&self) -> ReqId {
+   |                      ^^^^^^^^^ help: convert the identifier to snake case: `get_req_id`
+
+warning: module `FlatCombiner` should have a snake case name
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/flat_combiner.rs:82:1
+   |
+82 | FlatCombiner {
+   | ^^^^^^^^^^^^ help: convert the identifier to snake case: `flat_combiner`
+
+warning: module `RwLockSpec` should have a snake case name
+  --> <NODE_REPLICATION_SOURCE>/verified-node-replication/src/spec/rwlock.rs:14:5
+   |
+14 |     RwLockSpec<T> {
+   |     ^^^^^^^^^^ help: convert the identifier to snake case: `rw_lock_spec`
+
+warning: 69 warnings emitted

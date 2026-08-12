@@ -1,0 +1,546 @@
+$ jj diff --git src/properties.rs
+
+diff --git a/src/properties.rs b/src/properties.rs
+index 0ea6ad7ccd..6204ccaee6 100644
+--- a/src/properties.rs
++++ b/src/properties.rs
+@@ -37,6 +37,12 @@
+         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
+         local_recv_step_spec, local_send_step_spec,
+     };
++    use crate::web_of_trust_attestation::{attestation_active_respects_revocation, Attestation};
++    use crate::web_of_trust_chain::{chain_valid_at_spec, chain_valid_requires_active_edges, root_member_spec};
++    use crate::web_of_trust_policy::{introducer_qualifies_at_spec, seen_indices_in_range_spec, seen_introducer_spec, threshold_accepts_from_spec};
++    use crate::web_of_trust_principal::PrincipalId;
++    use crate::web_of_trust_resolution::{resolves_trusted_at_complete, resolves_trusted_at_sound, resolves_trusted_at_spec};
++    use crate::web_of_trust_revocation::{revocation_effective_at_spec, Revocation};
+ 
+     verus! {
+ 
+@@ -2484,6 +2490,12 @@
+         choice_alignment_spec, first_offer_labels_from_spec, global_choice_step_spec, global_comm_step_spec,
+         local_recv_step_spec, local_send_step_spec,
+     };
++    use crate::web_of_trust_attestation::{attestation_active_respects_revocation, Attestation};
++    use crate::web_of_trust_chain::{chain_valid_at_spec, chain_valid_requires_active_edges, root_member_spec};
++    use crate::web_of_trust_policy::{introducer_qualifies_at_spec, seen_indices_in_range_spec, seen_introducer_spec, threshold_accepts_from_spec};
++    use crate::web_of_trust_principal::PrincipalId;
++    use crate::web_of_trust_resolution::{resolves_trusted_at_complete, resolves_trusted_at_sound, resolves_trusted_at_spec};
++    use crate::web_of_trust_revocation::{revocation_effective_at_spec, Revocation};
+ 
+     verus! {
+ 
+@@ -2722,6 +2734,269 @@
+         }
+     }
+ 
++    // r[impl properties.web-of-trust.revocation-cuts-trust]
++    // r[verify properties.web-of-trust.revocation-cuts-trust]
++    /// If a designated edge on a successful witness chain becomes effectively revoked,
++    /// that same witness can no longer justify trust at the later time.
++    pub proof fn revocation_cuts_trust_witness(
++        witness: Seq<usize>,
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        t_before: u64,
++        t_after: u64,
++        revoked_pos: nat,
++    )
++        requires
++            revoked_pos < witness.len(),
++            (witness[revoked_pos as int] as int) < attestations.len(),
++            chain_valid_at_spec(witness, roots, attestations, revocations, subject, t_before),
++            t_before <= t_after,
++            exists|i: int| 0 <= i < revocations.len()
++                && revocation_effective_at_spec(revocations[i], attestations[witness[revoked_pos as int] as int], t_after),
++        ensures
++            !chain_valid_at_spec(witness, roots, attestations, revocations, subject, t_after),
++    {
++        let att = attestations[witness[revoked_pos as int] as int];
++        assert(exists|i: int| 0 <= i < revocations.len() && revocation_effective_at_spec(revocations[i], att, t_after)) by {
++            let i = choose|i: int| 0 <= i < revocations.len()
++                && revocation_effective_at_spec(revocations[i], attestations[witness[revoked_pos as int] as int], t_after);
++            assert(revocation_effective_at_spec(revocations[i], att, t_after));
++        }
++        if chain_valid_at_spec(witness, roots, attestations, revocations, subject, t_after) {
++            chain_valid_requires_active_edges(witness, roots, attestations, revocations, subject, t_after, revoked_pos);
++            attestation_active_respects_revocation(att, revocations, t_after);
++            assert(false);
++        }
++    }
++
++    // r[impl properties.web-of-trust.depth-monotone]
++    // r[verify properties.web-of-trust.depth-monotone]
++    /// Increasing the depth bound preserves any already-successful rooted resolution.
++    pub proof fn depth_monotone_resolution(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        depth: nat,
++        deeper: nat,
++        t: u64,
++    )
++        requires
++            attestations.len() <= usize::MAX as nat,
++            depth <= deeper,
++            resolves_trusted_at_spec(roots, attestations, revocations, subject, depth, t),
++        ensures
++            resolves_trusted_at_spec(roots, attestations, revocations, subject, deeper, t),
++    {
++        if root_member_spec(roots, subject) {
++        } else {
++            resolves_trusted_at_sound(roots, attestations, revocations, subject, depth, t);
++            let witness = choose|witness: Seq<usize>|
++                0 < witness.len() <= depth as int
++                    && chain_valid_at_spec(witness, roots, attestations, revocations, subject, t);
++            assert(witness.len() <= depth as int);
++            assert(depth as int <= deeper as int);
++            assert(witness.len() <= deeper as int);
++            assert(resolves_trusted_at_spec(roots, attestations, revocations, subject, deeper, t)) by {
++                resolves_trusted_at_complete(roots, attestations, revocations, subject, deeper, t);
++            }
++        }
++    }
++
++    // r[impl properties.web-of-trust.threshold-dedup]
++    /// Count the distinct qualifying introducers remaining in a threshold scan state.
++    pub open spec fn threshold_distinct_count_from_spec(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        depth: nat,
++        t: u64,
++        from: nat,
++        seen: Seq<usize>,
++    ) -> nat
++        recommends
++            attestations.len() <= usize::MAX as nat,
++            seen_indices_in_range_spec(seen, attestations),
++        decreases if from <= attestations.len() { attestations.len() - from } else { 0 }
++    {
++        if from >= attestations.len() {
++            0nat
++        } else {
++            let digest = attestations[from as int].issuer.digest@;
++            if introducer_qualifies_at_spec(roots, attestations, revocations, subject, from, depth, t)
++                && !seen_introducer_spec(seen, attestations, digest)
++            {
++                1nat + threshold_distinct_count_from_spec(
++                    roots,
++                    attestations,
++                    revocations,
++                    subject,
++                    depth,
++                    t,
++                    from + 1,
++                    seen + seq![from as usize],
++                )
++            } else {
++                threshold_distinct_count_from_spec(
++                    roots,
++                    attestations,
++                    revocations,
++                    subject,
++                    depth,
++                    t,
++                    from + 1,
++                    seen,
++                )
++            }
++        }
++    }
++
++    // r[impl properties.web-of-trust.threshold-dedup]
++    // r[verify properties.web-of-trust.threshold-dedup]
++    /// Once an introducer digest is already in the threshold scan state,
++    /// later same-digest edges cannot change the remaining accept/reject result.
++    pub proof fn threshold_dedup_preserves_result(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        k: nat,
++        depth: nat,
++        t: u64,
++        dup_from: nat,
++        seen: Seq<usize>,
++    )
++        requires
++            dup_from < attestations.len(),
++            attestations.len() <= usize::MAX as nat,
++            seen_indices_in_range_spec(seen, attestations),
++            seen_introducer_spec(seen, attestations, attestations[dup_from as int].issuer.digest@),
++        ensures
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            ),
++    {
++        assert(
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            )
++        ) by {
++            if k > 0 {
++                let digest = attestations[dup_from as int].issuer.digest@;
++                assert(seen_introducer_spec(seen, attestations, digest));
++                assert(!(introducer_qualifies_at_spec(roots, attestations, revocations, subject, dup_from, depth, t)
++                    && !seen_introducer_spec(seen, attestations, digest)));
++            }
++        }
++    }
++
++    // r[impl properties.web-of-trust.threshold-dedup]
++    // r[verify properties.web-of-trust.threshold-dedup]
++    /// Once an introducer digest is already in the threshold scan state,
++    /// later same-digest edges do not change the remaining distinct-introducer count.
++    pub proof fn threshold_dedup_preserves_count(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        depth: nat,
++        t: u64,
++        dup_from: nat,
++        seen: Seq<usize>,
++    )
++        requires
++            dup_from < attestations.len(),
++            attestations.len() <= usize::MAX as nat,
++            seen_indices_in_range_spec(seen, attestations),
++            seen_introducer_spec(seen, attestations, attestations[dup_from as int].issuer.digest@),
++        ensures
++            threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            ),
++    {
++        assert(
++            threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            )
++        ) by {
++            let digest = attestations[dup_from as int].issuer.digest@;
++            assert(seen_introducer_spec(seen, attestations, digest));
++            assert(!(introducer_qualifies_at_spec(roots, attestations, revocations, subject, dup_from, depth, t)
++                && !seen_introducer_spec(seen, attestations, digest)));
++        }
++    }
++
+     } // verus!
+ }
+ 
+@@ -8805,3 +9080,243 @@
+         }
+     }
+ }
++
++#[cfg(test)]
++mod web_of_trust_property_tests {
++    use crate::web_of_trust_attestation::{attestation_active_at, attestation_payload_bytes, attestation_signature_bytes_runtime, Attestation, TRUST_ROLE_TAG};
++    use crate::web_of_trust_chain::chain_valid_at;
++    use crate::web_of_trust_policy::threshold_accepts;
++    use crate::web_of_trust_principal::{principal_id_from_bytes, PrincipalId};
++    use crate::web_of_trust_resolution::resolves_trusted_at;
++    use crate::web_of_trust_revocation::{revocation_payload_bytes, revocation_signature_bytes_runtime, Revocation, FAMILY_TARGET_KIND_TAG};
++
++    fn signed_attestation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        not_before: u64,
++        not_after: u64,
++        sequence_no: u64,
++    ) -> Attestation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Attestation {
++            issuer_key_bytes,
++            issuer,
++            subject_key_bytes,
++            subject,
++            role_tag,
++            not_before,
++            not_after,
++            sequence_no,
++            signature: Vec::new(),
++        };
++        let payload = attestation_payload_bytes(&unsigned).unwrap();
++        let signature = attestation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Attestation { signature, ..unsigned }
++    }
++
++    fn signed_family_revocation(
++        issuer_key_bytes: Vec<u8>,
++        subject_key_bytes: Vec<u8>,
++        role_tag: u8,
++        effective_time: u64,
++    ) -> Revocation {
++        let issuer = principal_id_from_bytes(&issuer_key_bytes);
++        let family_subject = principal_id_from_bytes(&subject_key_bytes);
++        let unsigned = Revocation {
++            issuer_key_bytes,
++            issuer,
++            target_kind_tag: FAMILY_TARGET_KIND_TAG,
++            exact_payload_target: Vec::new(),
++            family_subject_key_bytes: subject_key_bytes,
++            family_subject,
++            family_role_tag: role_tag,
++            effective_time,
++            signature: Vec::new(),
++        };
++        let payload = revocation_payload_bytes(&unsigned).unwrap();
++        let signature = revocation_signature_bytes_runtime(
++            unsigned.issuer_key_bytes.as_slice(),
++            payload.as_slice(),
++        );
++        Revocation { signature, ..unsigned }
++    }
++
++    fn rooted_oracle_dfs(
++        current: &PrincipalId,
++        roots: &[PrincipalId],
++        attestations: &[Attestation],
++        revocations: &Vec<Revocation>,
++        depth: usize,
++        t: u64,
++        visited: &mut Vec<Vec<u8>>,
++    ) -> bool {
++        if roots.iter().any(|root| root.digest == current.digest) {
++            return true;
++        }
++        if depth == 0 {
++            return false;
++        }
++
++        for att in attestations {
++            if att.subject.digest != current.digest {
++                continue;
++            }
++            if att.role_tag != TRUST_ROLE_TAG || !attestation_active_at(att, revocations, t) {
++                continue;
++            }
++            if visited.contains(&att.issuer.digest) {
++                continue;
++            }
++            visited.push(att.issuer.digest.clone());
++            if rooted_oracle_dfs(&att.issuer, roots, attestations, revocations, depth - 1, t, visited) {
++                return true;
++            }
++            visited.pop();
++        }
++        false
++    }
++
++    fn threshold_distinct_count_oracle(
++        roots: &[PrincipalId],
++        attestations: &[Attestation],
++        revocations: &Vec<Revocation>,
++        subject: &PrincipalId,
++        depth: usize,
++        t: u64,
++    ) -> usize {
++        if depth == 0 {
++            return 0;
++        }
++
++        let mut seen: Vec<Vec<u8>> = Vec::new();
++        let mut count = 0usize;
++        for att in attestations {
++            if att.subject.digest != subject.digest {
++                continue;
++            }
++            if att.issuer.digest == subject.digest {
++                continue;
++            }
++            if att.role_tag != TRUST_ROLE_TAG || !attestation_active_at(att, revocations, t) {
++                continue;
++            }
++            if seen.contains(&att.issuer.digest) {
++                continue;
++            }
++            let mut visited = vec![subject.digest.clone(), att.issuer.digest.clone()];
++            if rooted_oracle_dfs(&att.issuer, roots, attestations, revocations, depth - 1, t, &mut visited) {
++                seen.push(att.issuer.digest.clone());
++                count += 1;
++            }
++        }
++        count
++    }
++
++    // r[verify properties.web-of-trust.revocation-cuts-trust]
++    #[test]
++    fn test_revocation_cuts_designated_witness_only() {
++        let root_key = vec![1, 2, 3];
++        let a_key = vec![4, 5, 6];
++        let b_key = vec![7, 8, 9];
++        let subject_key = vec![10, 11, 12];
++
++        let att_ra = signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_as = signed_attestation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_rb = signed_attestation(root_key.clone(), b_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let att_bs = signed_attestation(b_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 4);
++        let revoke_as = signed_family_revocation(a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 6);
++
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let attestations = vec![att_ra, att_as, att_rb, att_bs];
++        let revocations = vec![revoke_as];
++        let witness = vec![0usize, 1usize];
++
++        assert!(chain_valid_at(&witness, &roots, &attestations, &Vec::new(), &subject, 5));
++        assert!(!chain_valid_at(&witness, &roots, &attestations, &revocations, &subject, 7));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 2, 7));
++    }
++
++    // r[verify properties.web-of-trust.depth-monotone]
++    #[test]
++    fn test_depth_monotone_preserves_chain_resolution() {
++        let root_key = vec![1, 2, 3];
++        let mid_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_key.clone(), mid_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(mid_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let attestations = vec![att1, att2];
++        let revocations = Vec::new();
++
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 2, 5));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &subject, 4, 5));
++    }
++
++    // r[verify properties.web-of-trust.depth-monotone]
++    #[test]
++    fn test_depth_monotone_preserves_root_base_case() {
++        let root_key = vec![1, 2, 3];
++        let root = principal_id_from_bytes(&root_key);
++        let roots = vec![root];
++        let attestations = Vec::new();
++        let revocations = Vec::new();
++
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &roots[0], 0, 5));
++        assert!(resolves_trusted_at(&roots, &attestations, &revocations, &roots[0], 3, 5));
++    }
++
++    // r[verify properties.web-of-trust.threshold-dedup]
++    #[test]
++    fn test_threshold_dedup_preserves_count() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++
++        let att_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_a2 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let dedup_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let dedup_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let revocations = Vec::new();
++        let with_duplicates = vec![att_a1, att_a2, att_b];
++        let deduped = vec![dedup_a1, dedup_b];
++
++        assert_eq!(threshold_distinct_count_oracle(&roots, &with_duplicates, &revocations, &subject, 1, 5), 2);
++        assert_eq!(threshold_distinct_count_oracle(&roots, &deduped, &revocations, &subject, 1, 5), 2);
++    }
++
++    // r[verify properties.web-of-trust.threshold-dedup]
++    #[test]
++    fn test_threshold_dedup_preserves_result() {
++        let root_a_key = vec![1, 2, 3];
++        let root_b_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++
++        let att_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att_a2 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let dedup_a1 = signed_attestation(root_a_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let dedup_b = signed_attestation(root_b_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++
++        let roots = vec![principal_id_from_bytes(&root_a_key), principal_id_from_bytes(&root_b_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let revocations = Vec::new();
++        let with_duplicates = vec![att_a1, att_a2, att_b];
++        let deduped = vec![dedup_a1, dedup_b];
++
++        assert!(threshold_accepts(&roots, &with_duplicates, &revocations, &subject, 2, 1, 5));
++        assert!(threshold_accepts(&roots, &deduped, &revocations, &subject, 2, 1, 5));
++        assert!(!threshold_accepts(&roots, &with_duplicates, &revocations, &subject, 3, 1, 5));
++        assert!(!threshold_accepts(&roots, &deduped, &revocations, &subject, 3, 1, 5));
++    }
++}

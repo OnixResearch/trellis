@@ -1,0 +1,10 @@
+result-scope: adapted-source-only
+upstream-revision: 6b8830a47a2dd5a8ce141438ebb2decb6550298a
+patch-blake3: cedf509e48f6e83431f4884521fad46a8cd6be7908f28ef8de9b493a77f57937
+adapted-tree-blake3: d51f34c6ed1968e7c693a10c3a9624254e459ef359e358c27f6cdcbdfb5a4a97
+assume-sites-before: 0
+assume-sites-after: 0
+external-bodies-before: 25
+external-bodies-after: 25
+trusted-markers-before: 36
+trusted-markers-after: 36

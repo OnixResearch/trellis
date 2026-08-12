@@ -1,0 +1,42 @@
++                role_tag,
++                not_before,
++                not_after,
++                sequence_no,
++            );
++            if subject.is_empty() {
++                subject.push(0xff);
++            } else {
++                let last = subject.len() - 1;
++                subject[last] ^= 0xff;
++            }
++            let tampered = Attestation {
++                issuer_key_bytes: issuer.clone(),
++                issuer: principal_id_from_bytes(&issuer),
++                subject_key_bytes: subject.clone(),
++                subject: principal_id_from_bytes(&subject),
++                role_tag,
++                not_before,
++                not_after,
++                sequence_no,
++                signature: att.signature.clone(),
++            };
++            prop_assert!(!attestation_signature_valid(&tampered));
++        }
++
++        // r[verify web-of-trust.attestation-window]
++        #[test]
++        fn prop_active_window_oracle(
++            issuer in prop::collection::vec(any::<u8>(), 0..32),
++            subject in prop::collection::vec(any::<u8>(), 0..32),
++            role_tag in any::<u8>(),
++            not_before in any::<u64>(),
++            width in any::<u8>(),
++            sample in any::<u64>(),
++        ) {
++            let not_after = not_before.saturating_add(u64::from(width) + 1);
++            let att = signed_attestation(issuer, subject, role_tag, not_before, not_after, 1);
++            let oracle = att.not_before <= sample && sample < att.not_after;
++            prop_assert_eq!(attestation_active_at(&att, &Vec::new(), sample), oracle);
++        }
++    }
++}

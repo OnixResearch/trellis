@@ -1,0 +1,62 @@
+$ cairn sync strengthen-r1cs-system-proof-coverage --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./cairn/changes/strengthen-r1cs-system-proof-coverage/specs/rust-primitives/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./cairn/changes/strengthen-r1cs-system-proof-coverage/specs/rust-primitives/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-r1cs-system-proof-coverage",
+  "delta_specs": [
+    "./cairn/changes/strengthen-r1cs-system-proof-coverage/specs/rust-primitives/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "34c21808204f9c7c66678b099dfdc36d1db684b7334fbea843be64eb0ab6b2a3",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "3624d13fe18aa720a2bf316272fe974b81e2b9999ab931d2d1ab3c99a0c054a6",
+          "exists": true,
+          "path": "./cairn/specs/rust-primitives/spec.md"
+        }
+      ],
+      "manifest_hash": "6666edad2108e5c3c974f503dae73ca72be57db60643b42c876fba7e7ed467d1"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "c42eb9fa738c45f45bbcff2bdc49b8b90e613db9b04752a875da3963d5d6ac4b",
+          "exists": true,
+          "path": "./cairn/specs/rust-primitives/spec.md"
+        }
+      ],
+      "manifest_hash": "43083873c88c0e4eab926081ae2234efb69c7920d340be4e1b63bea39e6d2061"
+    },
+    "kind": "sync",
+    "manifest_hash": "ada21667d1bd55e56c6438ebedfa3490c9f278db6cf78d732a0230539f9b33e4"
+  },
+  "plan_hash": "70517ae5330eea6b7deb490bf8ebd3785ef1c9326116ae43bfd5b5a5b4ef9ceb",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "48c8be87a64b4d3b76c25313c92c3210b6d06abfc7d23e78158409e5d37750e1"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}

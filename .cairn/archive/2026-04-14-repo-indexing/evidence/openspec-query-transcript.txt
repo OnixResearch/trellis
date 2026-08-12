@@ -1,0 +1,6 @@
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.06s
+     Running `/home/brittonr/.cargo-target/debug/repo-index requirement sel4-invocation.decode-soundness`
+requirement: sel4-invocation.decode-soundness
+definitions: 1
+- openspec/changes/sel4-invocation-decode/specs/sel4-invocation/spec.md:11 digest=5b9686b956bda768ba85438da554ed75f0f43519ec40744c75e6786031cdd017 section=Requirement: Invocation Decode Is Sound Invocation decode MUST return a typed kernel invocation only when the supplied message fields, looked-up capabilities, object types, and rights satisfy that invocation's preconditions.
+references: 0

@@ -1,0 +1,22 @@
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: strengthen-r1cs-gate-proof-coverage",
+      "kind": "archive_change",
+      "path": "./cairn/changes/strengthen-r1cs-gate-proof-coverage"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-r1cs-gate-proof-coverage",
+  "dry_run": true,
+  "input_hash": "4db38e0c96de3af933523755d5a0257ce6a485db2e736ff83d32cab67eae6b6b",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "0ac813a2e06872bd08c8d04b712f03e7036eba6001f29811522807d19bb0e2af",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "1f50969cbc49cf7c3d54f95eeb54fa3f1dac82c5ba4fe128fbc7e986a66b342e"
+}

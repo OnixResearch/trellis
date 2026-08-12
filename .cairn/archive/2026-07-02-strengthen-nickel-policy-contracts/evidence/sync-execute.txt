@@ -1,0 +1,49 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- sync strengthen-nickel-policy-contracts --root /home/brittonr/git/trellis --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: /home/brittonr/git/trellis/cairn/changes/strengthen-nickel-policy-contracts/specs/verification-policy/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "/home/brittonr/git/trellis/cairn/changes/strengthen-nickel-policy-contracts/specs/verification-policy/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "strengthen-nickel-policy-contracts",
+  "delta_specs": [
+    "/home/brittonr/git/trellis/cairn/changes/strengthen-nickel-policy-contracts/specs/verification-policy/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "4e5d2db89dbf0f571889c4729aa61f2edd72f970aced625652852f285b1103bf",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "4df2569e7278d7b29d27cd9294560d4a3f2b6f14eb56eca0700ea0b6a4939dd0",
+          "exists": true,
+          "path": "./cairn/specs/verification-policy/spec.md"
+        }
+      ],
+      "manifest_hash": "b846c657fd2d92529ad802e8aebeaf4d3d2e0d0964421444f2c37c504cafc1d3"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "84e27df8d1e15ea33b355c011fa2e96b0aeac3702924e24bd00eeee6e3623389",
+          "exists": true,
+          "path": "./cairn/specs/verification-policy/spec.md"
+        }
+      ],
+      "manifest_hash": "9d7bbd3bf7f716c5cca3b44f02f01a1693637a062fc4e1533c10e761a3baf46e"
+    },
+    "kind": "sync",
+    "manifest_hash": "13cad49a4a5a932014e555b7d102db3598e63e6a61765ea56b28c68f1a2a3273"
+  },
+  "plan_hash": "308d6f5f166bf0f524fd98ed98e0ed838115ed6f492c0996c6d0c8e391325f55",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "6b52d468759d6fcac54ff17da3a58b482573bb529a4cf08ef2ba5a114bf0ec21"
+}

@@ -1,0 +1,62 @@
+$ cairn sync specialize-proof-review-vibethinker-prompts --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./cairn/changes/specialize-proof-review-vibethinker-prompts/specs/proof-review-automation/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/specs/proof-review-automation/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "specialize-proof-review-vibethinker-prompts",
+  "delta_specs": [
+    "./cairn/changes/specialize-proof-review-vibethinker-prompts/specs/proof-review-automation/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "fa08982eb8ab83bf546a2ccb581460b426c70b411cd2b7ed9ca88460fbab4378",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "7b71163c5c5c65db062125856279fc880d9a14a86a258f779d97f2a9d355a14b",
+          "exists": true,
+          "path": "./cairn/specs/proof-review-automation/spec.md"
+        }
+      ],
+      "manifest_hash": "3ac2a3b42d497a2e6b0dc164bc980a5bf3d192ab2ab76001b68ffb7914cc3f3a"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/specs/proof-review-automation/spec.md"
+        }
+      ],
+      "manifest_hash": "dc878e3887cd02adb7d84feea298ce69cd5dc53e03f3fbac20f0523210bd3c04"
+    },
+    "kind": "sync",
+    "manifest_hash": "70d8adb85a96cb9def5bddb77c5642f3ce98f8fd7607be6c8493616fc39354a7"
+  },
+  "plan_hash": "7a214adca3dcc19a263f9d917fbe8bbaa2d96e7385bf7b6e1eee7dea2d1db893",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "a342973fcb6a22799ffcd2b76f4c804af930a4505259accc1a5ddcbc834875b2"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}

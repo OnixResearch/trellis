@@ -1,0 +1,84 @@
+$ nix run path:/home/brittonr/git/cairn#cairn -- validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- gate proposal harden-proof-review-loop-triage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "harden-proof-review-loop-triage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "2013fa6af647c033d62b99d4d43c9af150ea2792878a253c84bb3a9505b62394",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "df2e3c394ad5d403668d725463edcdd0b0a95c6719de81a8b2e92d5738e653ce",
+  "stage": "proposal",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- gate design harden-proof-review-loop-triage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "harden-proof-review-loop-triage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "b68958a9f69692ff6f25c4ae0606653fb32c6c18aa0ca7b4e3c1fc36b8b98e5e",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "47fc2480c0e31c256d07913f3e607e9d8ccfdfe120391f43b10b784fb9680fb0",
+  "stage": "design",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ nix run path:/home/brittonr/git/cairn#cairn -- gate tasks harden-proof-review-loop-triage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "harden-proof-review-loop-triage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "533a1745a73490eb042c550dd4b37a3418d8170c43efe63a39e4fbb9caaa1691",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "39e5ea6427068a6eaa25322cb2dbb51cce7753862167b44df73f0595754c961a",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}

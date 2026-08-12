@@ -1,0 +1,11 @@
+proof-verifier-mode: production
+proof-verifier: verus@0.2026.05.17.e479cce
+proof-verifier-source-revision: e479cce36490b8fa4b0fd7755aa742aec354372c
+proof-verifier-release-sha256: 2a06101ab5fdcbc32073f1815e86a09c81d1f393c2d3501d35d0a24404d0a8e5
+proof-verifier-binary: verus
+proof-verifier-binary-blake3: 2aafa795a63160e2b262e0d8df00ad237766ed87fcd7fe9a981034207b1367c7
+proof-toolchain: 1.95.0-x86_64-unknown-linux-gnu
+proof-toolchain-blake3: 4b001492d51b266eef82aeb98469d135d60f63d2720d24d9712c1e83fa10c9e3
+proof-solver: z3@verus-0.2026.05.17.e479cce
+proof-solver-blake3: 42e48a26bf3b38ca33d84749f4317cc179791de0d578d4d98a67f51782b54331
+trust-boundary: production Verus binary release verifies the declared proof target only

@@ -1,0 +1,194 @@
+$ CAIRN_ARCHIVE_DATE=2026-06-26 cairn archive specialize-proof-review-vibethinker-prompts --root . --execute
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "actions": [
+    {
+      "description": "move active change to archive: specialize-proof-review-vibethinker-prompts",
+      "kind": "archive_change",
+      "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts"
+    }
+  ],
+  "blocked": false,
+  "change": "specialize-proof-review-vibethinker-prompts",
+  "dry_run": false,
+  "input_hash": "fa08982eb8ab83bf546a2ccb581460b426c70b411cd2b7ed9ca88460fbab4378",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "5b77a2485ccc483bb6bc815e56530d0d7adc1c3419be1d1863e75ecafa51beef",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/design.md"
+        },
+        {
+          "content_hash": "2cf8fa0d0603c01c5b80098108d43e337a7542a23d272d602ff8f0467e470ed6",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/baseline-proof-review-script.log"
+        },
+        {
+          "content_hash": "6b14b2aaf932b10529315ab7729edcbfc0d45fd65c96b94de64f73f2c8ebd4a0",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "7c2667f676d549e1ce9728fd23af1b3c634967b2213179ca9213e77022e6168f",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "021f6678308828144d97dfc80679be9f5aa0e2b3fc80c70192347fbac74e7469",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/cairn-gates-pre-implementation.log"
+        },
+        {
+          "content_hash": "b240364268e1fa2c53571309ed3a7dfe5760499fcdc24681d58d995b5d5063bc",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "ad2ff41916d765054fd92c7f2b8baa9cd7a2197b0b110a283064e989f5a3aa5d",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "b0c3015371cd40a12e8e9c6d2524ac7508a005022b4f4a1d31cabafb211d36a7",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "c72786413ff1e1ec6cd068b198b73429e4fdebb45b0f2e050a6eff06dd1241b8",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/proof-review-self-test.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "0840015437f10349c2c3ea039057c219d397c9932224b981badba4c20e7a4cce",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "2952958f0f58737ba1f14bc162005bb6ff1380040a7faa99a2ab3fe4956937c1",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/proposal.md"
+        },
+        {
+          "content_hash": "3ef65b82aab74a1953b7352af6f55cb0ed4fa536621407c7f0d46f0e4445b761",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "0dfa3cc602d2d8f4e6c15bc22fa766100398c925db3260d40ce800e61862082e",
+          "exists": true,
+          "path": "./cairn/archive/2026-06-26-specialize-proof-review-vibethinker-prompts/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts"
+        }
+      ],
+      "manifest_hash": "66a945bc7f0ff9e830a0dec6bd0a14ef32dd6c9375eaddbd2565bc60f9eb4ce1"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "5b77a2485ccc483bb6bc815e56530d0d7adc1c3419be1d1863e75ecafa51beef",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/design.md"
+        },
+        {
+          "content_hash": "2cf8fa0d0603c01c5b80098108d43e337a7542a23d272d602ff8f0467e470ed6",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/baseline-proof-review-script.log"
+        },
+        {
+          "content_hash": "6b14b2aaf932b10529315ab7729edcbfc0d45fd65c96b94de64f73f2c8ebd4a0",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/cairn-archive-dry-run.log"
+        },
+        {
+          "content_hash": "7c2667f676d549e1ce9728fd23af1b3c634967b2213179ca9213e77022e6168f",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/cairn-gates-final.log"
+        },
+        {
+          "content_hash": "021f6678308828144d97dfc80679be9f5aa0e2b3fc80c70192347fbac74e7469",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/cairn-gates-pre-implementation.log"
+        },
+        {
+          "content_hash": "b240364268e1fa2c53571309ed3a7dfe5760499fcdc24681d58d995b5d5063bc",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/cairn-sync-dry-run.log"
+        },
+        {
+          "content_hash": "ad2ff41916d765054fd92c7f2b8baa9cd7a2197b0b110a283064e989f5a3aa5d",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "b0c3015371cd40a12e8e9c6d2524ac7508a005022b4f4a1d31cabafb211d36a7",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/proof-review-candidates.log"
+        },
+        {
+          "content_hash": "c72786413ff1e1ec6cd068b198b73429e4fdebb45b0f2e050a6eff06dd1241b8",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/proof-review-self-test.log"
+        },
+        {
+          "content_hash": "99a84efa087ecb9b105c2d6d810d35bedb22db461eb5c0e5e4a2e97b33519e34",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/tracey-coverage.log"
+        },
+        {
+          "content_hash": "0840015437f10349c2c3ea039057c219d397c9932224b981badba4c20e7a4cce",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/evidence/verify-rs.log"
+        },
+        {
+          "content_hash": "2952958f0f58737ba1f14bc162005bb6ff1380040a7faa99a2ab3fe4956937c1",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/proposal.md"
+        },
+        {
+          "content_hash": "3ef65b82aab74a1953b7352af6f55cb0ed4fa536621407c7f0d46f0e4445b761",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/specs/proof-review-automation/spec.md"
+        },
+        {
+          "content_hash": "0dfa3cc602d2d8f4e6c15bc22fa766100398c925db3260d40ce800e61862082e",
+          "exists": true,
+          "path": "./cairn/changes/specialize-proof-review-vibethinker-prompts/tasks.md"
+        }
+      ],
+      "manifest_hash": "9f13f95a8fe9971f96e04aa47e7fb0413faeb36b4e025406903fe824e20a55bc"
+    },
+    "kind": "archive",
+    "manifest_hash": "7118de7be509ab605627431b86516b5acc1368e1f144e0fc5ec214f2d4c801b3"
+  },
+  "plan_hash": "414e6b873cc552ae52ad49ec9e374d7fc1074537ec60ef30e25b966505434b30",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "reasons": [],
+  "receipt_hash": "dfe8a7dfe9042c47ad3bfbdb2e455111c67e479c1d4c874eb67907568bfb6433"
+}
+
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 0,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 86,
+  "valid": true
+}

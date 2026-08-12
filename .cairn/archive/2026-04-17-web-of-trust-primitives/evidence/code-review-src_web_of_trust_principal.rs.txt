@@ -1,0 +1,20 @@
+$ jj diff --git src/web_of_trust_principal.rs
+
+diff --git a/src/web_of_trust_principal.rs b/src/web_of_trust_principal.rs
+index ec58e15803..43c9ee951f 100644
+--- a/src/web_of_trust_principal.rs
++++ b/src/web_of_trust_principal.rs
+@@ -41,11 +41,13 @@
+ }
+ 
+ /// Well-formed principal IDs are exactly 32 bytes long.
++// r[impl web-of-trust.principal-fingerprint]
+ pub open spec fn principal_id_valid_spec(id: PrincipalId) -> bool {
+     id.digest.len() == PRINCIPAL_ID_LEN
+ }
+ 
+ /// Prefix equality over the first `upto` digest bytes.
++// r[impl web-of-trust.principal-fingerprint]
+ pub open spec fn principal_id_equal_prefix_spec(a: Seq<u8>, b: Seq<u8>, upto: int) -> bool
+     recommends a.len() == PRINCIPAL_ID_LEN, b.len() == PRINCIPAL_ID_LEN, 0 <= upto <= PRINCIPAL_ID_LEN
+ {

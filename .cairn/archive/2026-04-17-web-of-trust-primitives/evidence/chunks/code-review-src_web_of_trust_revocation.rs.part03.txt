@@ -1,0 +1,140 @@
++        Some(v) => canonical_byte_string_spec(bytes@) == Some(v@),
++        None => canonical_byte_string_spec(bytes@).is_none(),
++    }
++{
++    if !length_fits_u32(bytes.len()) {
++        return None;
++    }
++
++    let len_u32 = bytes.len() as u32;
++    let mut result = encode_u32_le(len_u32);
++    let ghost prefix = encode_u32_le_spec(len_u32);
++    let mut i: usize = 0;
++    while i < bytes.len()
++        invariant
++            i <= bytes.len(),
++            bytes.len() == len_u32 as usize,
++            result@ == prefix + bytes@.subrange(0, i as int),
++        decreases bytes.len() - i,
++    {
++        result.push(bytes[i]);
++        i += 1;
++    }
++    Some(result)
++}
++
++#[allow(clippy::question_mark)]
++fn family_target_encoding(rev: &Revocation) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => family_target_encoding_spec(rev.issuer_key_bytes@, rev.family_subject_key_bytes@, rev.family_role_tag) == Some(v@),
++        None => family_target_encoding_spec(rev.issuer_key_bytes@, rev.family_subject_key_bytes@, rev.family_role_tag).is_none(),
++    }
++{
++    let issuer_enc = canonical_byte_string(&rev.issuer_key_bytes);
++    if issuer_enc.is_none() {
++        return None;
++    }
++    let subject_enc = canonical_byte_string(&rev.family_subject_key_bytes);
++    if subject_enc.is_none() {
++        return None;
++    }
++
++    let mut result = issuer_enc.unwrap();
++    let subject = subject_enc.unwrap();
++    append_vec(&mut result, &subject);
++    result.push(rev.family_role_tag);
++    Some(result)
++}
++
++fn exact_payload_target_encoding(rev: &Revocation) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => exact_payload_target_encoding_spec(rev.exact_payload_target@) == Some(v@),
++        None => exact_payload_target_encoding_spec(rev.exact_payload_target@).is_none(),
++    }
++{
++    canonical_byte_string(&rev.exact_payload_target)
++}
++
++fn revocation_target_encoding(rev: &Revocation) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => revocation_target_encoding_spec(*rev) == Some(v@),
++        None => revocation_target_encoding_spec(*rev).is_none(),
++    }
++{
++    if rev.target_kind_tag == EXACT_PAYLOAD_TARGET_KIND_TAG {
++        exact_payload_target_encoding(rev)
++    } else if rev.target_kind_tag == FAMILY_TARGET_KIND_TAG {
++        family_target_encoding(rev)
++    } else {
++        None
++    }
++}
++
++// r[impl web-of-trust.revocation]
++/// Exact canonical payload-byte builder for a revocation record.
++#[allow(clippy::question_mark)]
++pub fn revocation_payload_bytes(rev: &Revocation) -> (result: Option<Vec<u8>>)
++    ensures match result {
++        Some(v) => revocation_payload_of_spec(*rev) == Some(v@),
++        None => revocation_payload_of_spec(*rev).is_none(),
++    }
++{
++    let issuer_enc = canonical_byte_string(&rev.issuer_key_bytes);
++    if issuer_enc.is_none() {
++        return None;
++    }
++    let target_encoding = revocation_target_encoding(rev);
++    if target_encoding.is_none() {
++        return None;
++    }
++    let target_enc_outer = canonical_byte_string(&target_encoding.unwrap());
++    if target_enc_outer.is_none() {
++        return None;
++    }
++
++    let mut result = issuer_enc.unwrap();
++    result.push(rev.target_kind_tag);
++    let target_bytes = target_enc_outer.unwrap();
++    append_vec(&mut result, &target_bytes);
++    let effective_time = encode_u64(rev.effective_time);
++    append_vec(&mut result, &effective_time);
++    Some(result)
++}
++
++// r[impl web-of-trust.revocation]
++/// Trusted runtime bridge for exact revocation-signature verification.
++/// @verified-logic:permanent-axiom — runtime crypto boundary
++#[verifier::external_body]
++fn revocation_signature_verify_bridge(
++    issuer_key_bytes: &Vec<u8>,
++    payload_bytes: &Vec<u8>,
++    signature: &Vec<u8>,
++) -> (result: bool)
++    ensures result == revocation_signature_valid_bytes_spec(issuer_key_bytes@, payload_bytes@, signature@)
++{
++    let expected = revocation_signature_bytes_runtime(issuer_key_bytes.as_slice(), payload_bytes.as_slice());
++    expected == *signature
++}
++
++// r[impl web-of-trust.revocation]
++/// Check that a revocation signature binds the exact canonical payload.
++pub fn revocation_signature_valid(rev: &Revocation) -> (result: bool)
++    ensures result == revocation_signature_valid_spec(*rev)
++{
++    match revocation_payload_bytes(rev) {
++        Some(payload) => revocation_signature_verify_bridge(&rev.issuer_key_bytes, &payload, &rev.signature),
++        None => false,
++    }
++}
++
++fn revocation_record_ids_match_bytes_exec(rev: &Revocation) -> (result: bool)
++    ensures result == revocation_record_ids_match_bytes_spec(*rev)
++{
++    let issuer = crate::web_of_trust_principal::principal_id_from_bytes(&rev.issuer_key_bytes);
++    let family_subject = crate::web_of_trust_principal::principal_id_from_bytes(&rev.family_subject_key_bytes);
++    let result = rev.issuer.digest == issuer.digest && rev.family_subject.digest == family_subject.digest;
++    proof {
++        assert(issuer.digest@ == principal_id_bytes_spec(rev.issuer_key_bytes@));
++        assert(family_subject.digest@ == principal_id_bytes_spec(rev.family_subject_key_bytes@));
++        if result {
++            assert(rev.issuer.digest@ == issuer.digest@);

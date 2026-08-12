@@ -1,0 +1,5 @@
+test hypervisor_vcpu::tests::test_stopped_is_terminal ... ok
+test hypervisor_vcpu::tests::test_blocked_cannot_enter ... ok
+
+test result: ok. 36 passed; 0 failed; 0 ignored; 0 measured; 3563 filtered out; finished in 0.01s
+

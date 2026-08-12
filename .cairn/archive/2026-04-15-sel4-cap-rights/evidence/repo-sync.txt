@@ -1,0 +1,17 @@
+$ jj st
+Working copy changes:
+M autoresearch.jsonl
+M docs/requirements.md
+A openspec/changes/sel4-cap-rights/evidence/cargo-test-sel4-cap-rights.txt
+A openspec/changes/sel4-cap-rights/evidence/repo-sync.txt
+M src/lib.rs
+A src/sel4_cap_rights.rs
+Working copy  (@) : uuyqkwyn bfb86cd1 (no description set)
+Parent commit (@-): punmvlrw d3ec198a Archive sel4-asid-pools: land verified sel4_asid model, sync sel4-asid spec/requirements, and move change into archive to cut active change count from 34 to 33.
+
+$ bash -lc "rg -n \"sel4_cap_rights|sel4-cap-rights\" src/lib.rs docs/requirements.md openspec/specs openspec/changes/archive || true"
+src/lib.rs:225://! - `sel4_cap_rights` — seL4 rights-mask attenuation, masking laws, and operation gates
+src/lib.rs:517:pub mod sel4_cap_rights;
+docs/requirements.md:6881:r[sel4-cap-rights.attenuation]
+docs/requirements.md:6886:r[sel4-cap-rights.operation-gates]
+docs/requirements.md:6892:r[sel4-cap-rights.masking]

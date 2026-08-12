@@ -1,0 +1,84 @@
+$ cairn validate --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change_issues": [],
+  "changes": 1,
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "spec_issues": [],
+  "specs_validated": 87,
+  "valid": true
+}
+
+$ cairn gate proposal strengthen-r1cs-boolean-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-boolean-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "baa11261a6cfbcee7bbd8cb8048d09d3891e1c61f9bbefc4801d7ae9e9593885",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "035d423584ff60d9c2434588180e929035fe10c1b3345b11cd18016d305bf9e2",
+  "stage": "proposal",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate design strengthen-r1cs-boolean-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-boolean-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "34c2c24c1b029a0851a8f13810045e95ba9b9d66bec9a82f6862ec1f23e59e80",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "6286195f28786a099ce5f23cb6ea4ad8070c8c45fb6961cb63cad3763198089c",
+  "stage": "design",
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn gate tasks strengthen-r1cs-boolean-proof-coverage --root .
+warning: unknown experimental feature 'wasm-builtin'
+{
+  "change": "strengthen-r1cs-boolean-proof-coverage",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "3659db997187ea06062623f98d57261d3b81d55c1527f170232aa7b0b1e8d1ae",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "a210ed841d260e0bf026f3c67ec810216b6409cfe6036f9132b51cc4e3176618",
+  "receipt_hash": "873a2f8432386d0b30bc93927374f4d2bae44e5aa621d2cc61b3cd835a67f07f",
+  "stage": "tasks",
+  "valid": true,
+  "verdict": "PASS"
+}

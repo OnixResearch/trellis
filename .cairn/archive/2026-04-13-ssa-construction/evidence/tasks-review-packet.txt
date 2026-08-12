@@ -1,0 +1,16 @@
+# Tasks Review Packet
+
+## Phase 1: Runtime SSA pipeline
+- Runtime SSA pipeline tasks are checked off in `evidence/final-tasks.md`.
+
+## Phase 2: Verified surface and trust accounting
+- Thin verified wrappers, gated `assume_specification[...]` bridges, and trust accounting tasks are checked off in `evidence/final-tasks.md`.
+- Trust-boundary bookkeeping is summarized in `evidence/ssa-assume-spec-sites.txt` and `evidence/external-body-sites.txt`.
+
+## Phase 3: Docs and spec sync
+- Docs/spec sync, task-scope revision, and README headline sync are checked off in `evidence/final-tasks.md`.
+- Scope correction is summarized in `evidence/task-mapping.md`.
+
+## Phase 4: Executable validation and archive evidence
+- Validation/archive evidence tasks are checked off in `evidence/final-tasks.md`.
+- Repo validation transcripts and archive bookkeeping files are indexed in `evidence/review-index.md`.

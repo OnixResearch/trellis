@@ -1,0 +1,87 @@
+Verification summary from saved raw logs
+
+[cargo-test.txt]
+test zeroize::tests::prop_zeroize_then_is_zeroed ... ok
+test ring_buffer::tests::prop_model_oracle ... ok
+test nix_base32::tests::prop_nix_cli_oracle_sha256 ... ok
+
+test result: ok. 3365 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.01s
+
+   Doc-tests verified_logic
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+[cargo-clippy.txt]
+    Checking verified-logic v0.1.0 (/home/brittonr/git/verified-logic)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 7.70s
+
+[verus.txt]
+    --> src/nix_base32.rs:2537:9
+     |
+2537 |         assert forall|k: int| 0 <= k < len as int implies result@[k] == extend_to_spec(acc@, len as nat)[k] by {
+     |         ^^^^^^
+
+verification results:: 5912 verified, 0 errors
+warning: 5 warnings emitted
+
+
+[verify.txt]
+
+✓ verus proofs pass
+
+=== Tracey coverage ===
+This project tracks requirements for "verified-logic". The requirements are defined in docs/*.md and are referenced in code using r[...] annotations (for example, r[verified-logic.some-requirement]).
+The implementation being checked: rust.
+
+verified-logic/rust: 1318 of 1318 requirements are covered. 1318 of 1318 have a verification reference.
+
+---
+→ Run `tracey query uncovered`
+→ Run `tracey query untested`
+→ Run `tracey query unmapped`
+
+
+verified-logic/rust: 0 uncovered out of 1318 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+✓ no uncovered requirements
+
+verified-logic/rust: 0 untested (impl but no verify) out of 1318 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+✓ no untested requirements
+
+=== ALL CHECKS PASSED ===
+
+[tracey-uncovered.txt]
+verified-logic/rust: 0 uncovered out of 1318 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+
+[tracey-untested.txt]
+verified-logic/rust: 0 untested (impl but no verify) out of 1318 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+
+[check-ensures.txt]
+
+Checked 1223 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
+
+[check-coverage.txt]
+
+Checked 1236 pub fn declarations, 2 exempted
+✓ all pub fns have r[impl] annotations

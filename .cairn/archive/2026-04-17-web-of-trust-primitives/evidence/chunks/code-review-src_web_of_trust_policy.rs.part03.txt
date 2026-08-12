@@ -1,0 +1,140 @@
++{
++    k > 0 && threshold_accepts_from_spec(roots, attestations, revocations, subject, k, depth, t, 0, Seq::empty())
++}
++
++fn digest_equal(left: &Vec<u8>, right: &Vec<u8>) -> (result: bool)
++    ensures result == (left@ =~= right@)
++{
++    if left.len() != right.len() {
++        false
++    } else {
++        let mut i: usize = 0;
++        let mut eq = true;
++        while i < left.len()
++            invariant
++                i <= left.len(),
++                left.len() == right.len(),
++                eq == (forall|j: int| 0 <= j < i as int ==> left@[j] == right@[j]),
++            decreases left.len() - i,
++        {
++            eq = eq && left[i] == right[i];
++            i += 1;
++        }
++        eq
++    }
++}
++
++fn clone_append(prefix: &Vec<usize>, idx: usize) -> (result: Vec<usize>)
++    ensures result@ == prefix@ + seq![idx]
++{
++    let mut result = Vec::new();
++    let mut i: usize = 0;
++    while i < prefix.len()
++        invariant
++            i <= prefix.len(),
++            result@ == prefix@.subrange(0, i as int),
++        decreases prefix.len() - i,
++    {
++        result.push(prefix[i]);
++        i += 1;
++    }
++    result.push(idx);
++    result
++}
++
++proof fn seen_indices_in_range_from_implies_index(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++    idx: int,
++)
++    requires
++        seen_indices_in_range_from_spec(seen, attestations, from),
++        from <= idx < seen.len(),
++    ensures
++        (seen[idx] as int) < attestations.len(),
++    decreases if from <= idx { idx - from + 1 } else { 0 }
++{
++    if from == idx {
++    } else {
++        seen_indices_in_range_from_implies_index(seen, attestations, from + 1, idx);
++    }
++}
++
++proof fn chain_indices_in_range_from_implies_index(
++    witness: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++    idx: int,
++)
++    requires
++        chain_indices_in_range_from_spec(witness, attestations, from),
++        from <= idx < witness.len(),
++    ensures
++        (witness[idx] as int) < attestations.len(),
++    decreases if from <= idx { idx - from + 1 } else { 0 }
++{
++    if from == idx {
++    } else {
++        chain_indices_in_range_from_implies_index(witness, attestations, from + 1, idx);
++    }
++}
++
++proof fn seen_indices_in_range_from_pointwise(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    from: int,
++)
++    requires
++        0 <= from <= seen.len(),
++        forall|i: int| from <= i < seen.len() ==> (seen[i] as int) < attestations.len(),
++    ensures
++        seen_indices_in_range_from_spec(seen, attestations, from),
++    decreases if from < seen.len() { seen.len() - from } else { 0 }
++{
++    if from < seen.len() {
++        seen_indices_in_range_from_pointwise(seen, attestations, from + 1);
++    }
++}
++
++proof fn seen_indices_in_range_append(
++    seen: Seq<usize>,
++    attestations: Seq<Attestation>,
++    idx: usize,
++)
++    requires
++        seen_indices_in_range_spec(seen, attestations),
++        (idx as int) < attestations.len(),
++    ensures
++        seen_indices_in_range_spec(seen + seq![idx], attestations),
++{
++    assert forall|i: int| 0 <= i < (seen + seq![idx]).len() implies ((seen + seq![idx])[i] as int) < attestations.len() by {
++        if i < seen.len() {
++            assert((seen + seq![idx])[i] == seen[i]);
++            seen_indices_in_range_from_implies_index(seen, attestations, 0, i);
++        } else {
++            assert(i == seen.len());
++            assert((seen + seq![idx])[i] == idx);
++        }
++    }
++    seen_indices_in_range_from_pointwise(seen + seq![idx], attestations, 0);
++}
++
++proof fn seq_head_tail_usize(values: Seq<usize>)
++    requires values.len() > 0
++    ensures values == seq![values[0]] + values.subrange(1, values.len() as int)
++{
++    let rebuilt = seq![values[0]] + values.subrange(1, values.len() as int);
++    assert(rebuilt.len() == values.len());
++    assert forall|i: int| 0 <= i < values.len() implies values[i] == rebuilt[i] by {
++        if i == 0 {
++        } else {
++            assert(rebuilt[i] == values.subrange(1, values.len() as int)[i - 1]);
++            assert(values.subrange(1, values.len() as int)[i - 1] == values[i]);
++        }
++    }
++    assert(values =~= rebuilt);
++}
++
++fn seen_introducer_from(
++    seen: &Vec<usize>,

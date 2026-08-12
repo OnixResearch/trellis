@@ -1,0 +1,27 @@
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+  --> <PAPER_ARTIFACT_SOURCE>/milli/linked-list/verus.rs:64:13
+   |
+64 |             self@ == old(self)@.skip(1),
+   |             ^^^^
+   |
+   = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+  --> <PAPER_ARTIFACT_SOURCE>/milli/linked-list/verus.rs:83:13
+   |
+83 |             self@ == seq![v] + old(self)@,
+   |             ^^^^
+   |
+   = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: aborting due to 2 previous errors
+
+error[E0432]: unresolved import `vstd::ptr`
+  --> <PAPER_ARTIFACT_SOURCE>/milli/doubly-linked-list/verus.rs:23:11
+   |
+23 | use vstd::ptr::{PPtr, PointsTo, Dealloc};
+   |           ^^^ could not find `ptr` in `vstd`
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0432`.

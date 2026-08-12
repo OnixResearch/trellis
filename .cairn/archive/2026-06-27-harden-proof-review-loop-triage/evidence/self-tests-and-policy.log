@@ -1,0 +1,49 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-candidates.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-candidates self-test: PASS
+
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-loop.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-loop self-test: PASS
+
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-tracey-coverage.rs --self-test
+warning: unknown experimental feature 'wasm-builtin'
+proof-review-tracey-coverage self-test: PASS
+
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/proof-review-candidates.rs --check-policy --max 1 --write-report target/proof-review/policy-check-candidates.md --write-packets target/proof-review/policy-check-packets
+warning: unknown experimental feature 'wasm-builtin'
+PASS proof-review policy fresh proof-review/generated/policy.json
+# Proof Review Candidates
+
+Deterministic prefilter for focused VibeThinker proof critique. VibeThinker output is advisory; validation remains cargo, Verus, Tracey, Cairn, and repo checkers.
+
+> Note: legacy `openspec/changes` exists but is ignored by this native Cairn scanner. Native `cairn/changes` is the authoritative lifecycle input; legacy cleanup/migration is explicit.
+
+## Active Cairn Changes
+
+- `harden-proof-review-loop-triage`: 3 unchecked task(s); referenced source paths: cairn/changes/harden-proof-review-loop-triage
+
+## Ranked Candidates
+
+| Rank | Score | Path | Top reasons |
+| ---: | ---: | --- | --- |
+| 1 | 835 | `src/ucan_signature.rs` | trusted or weakened proof marker; trusted or weakened proof marker; trusted or weakened proof m… |
+
+## Candidate Details
+
+### `src/ucan_signature.rs` — score 835
+
+Showing top 6 of 13 finding(s); score caps repeated findings for the same rule at 6 occurrence(s).
+
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:254 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:263 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:275 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:289 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:303 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+- **untrusted-boundary-marker** (+100): `src/ucan_signature.rs`:315 — found `#[verifier::external_body]`; confirm classification and avoid expanding trust.
+
+## VibeThinker Prompt Shape
+
+Use `max_tokens=16384`. Packets include a base task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings.
+wrote report: target/proof-review/policy-check-candidates.md
+wrote packets: target/proof-review/policy-check-packets

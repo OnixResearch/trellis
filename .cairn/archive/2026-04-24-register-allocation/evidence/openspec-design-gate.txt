@@ -1,0 +1,8 @@
+OpenSpec design gate (register-allocation)
+
+VERDICT: PASS
+
+Highlights:
+- Design/spec/proposal traceability accepted.
+- Decision set accepted: variable-index order, adjacency-matrix graph, register-or-spill outcomes, fail-closed malformed-input handling.
+- Follow-up note: make validation/archive tasks explicit in evidence.

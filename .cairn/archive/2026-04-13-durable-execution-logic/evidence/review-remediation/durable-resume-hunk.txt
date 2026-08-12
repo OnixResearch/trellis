@@ -1,0 +1,28 @@
+$ nl -ba src/durable_resume.rs | sed -n "255,285p"
+255:            terminal_kind in prop_oneof![Just(EVENT_COMPLETED), Just(EVENT_FAILED), Just(EVENT_CANCELLED)],
+256:            tail in proptest::collection::vec((0usize..12, 0u8..8, 0u64..8), 0..8),
+257:            old in 0usize..20,
+258:        ) {
+259:            let mut events: Vec<DurableEvent> = (0..prefix).map(work).collect();
+260:            events.push(DurableEvent { seq_num: prefix, kind: terminal_kind, effect_id: 0 });
+261:            events.extend(tail.into_iter().map(random_event));
+262:            prop_assert!(is_terminal_execution(&events));
+263:            prop_assert_eq!(resume_step(old, &events), None);
+264:        }
+265:
+266:        // r[verify durable-execution.resume-bounds]
+267:        #[test]
+268:        fn prop_random_histories_invalid_checkpoint_can_survive_nonterminal_resume(
+269:            events in proptest::collection::vec((0usize..20, 0u8..8, 0u64..8), 0..20),
+270:            old_extra in 1usize..10,
+271:        ) {
+272:            let events: Vec<DurableEvent> = events.into_iter().map(random_event).collect();
+273:            if !is_terminal_execution(&events) {
+274:                let prefix = durable_prefix_len(&events);
+275:                let old = prefix + old_extra;
+276:                prop_assert_eq!(advance_checkpoint(old, &events), old);
+277:                prop_assert_eq!(resume_step(old, &events), Some(old));
+278:            }
+279:        }
+280:    }
+281:}

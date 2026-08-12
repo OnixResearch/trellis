@@ -1,0 +1,140 @@
++                )
++            } else {
++                threshold_distinct_count_from_spec(
++                    roots,
++                    attestations,
++                    revocations,
++                    subject,
++                    depth,
++                    t,
++                    from + 1,
++                    seen,
++                )
++            }
++        }
++    }
++
++    // r[impl properties.web-of-trust.threshold-dedup]
++    // r[verify properties.web-of-trust.threshold-dedup]
++    /// Once an introducer digest is already in the threshold scan state,
++    /// later same-digest edges cannot change the remaining accept/reject result.
++    pub proof fn threshold_dedup_preserves_result(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        k: nat,
++        depth: nat,
++        t: u64,
++        dup_from: nat,
++        seen: Seq<usize>,
++    )
++        requires
++            dup_from < attestations.len(),
++            attestations.len() <= usize::MAX as nat,
++            seen_indices_in_range_spec(seen, attestations),
++            seen_introducer_spec(seen, attestations, attestations[dup_from as int].issuer.digest@),
++        ensures
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            ),
++    {
++        assert(
++            threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_accepts_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                k,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            )
++        ) by {
++            if k > 0 {
++                let digest = attestations[dup_from as int].issuer.digest@;
++                assert(seen_introducer_spec(seen, attestations, digest));
++                assert(!(introducer_qualifies_at_spec(roots, attestations, revocations, subject, dup_from, depth, t)
++                    && !seen_introducer_spec(seen, attestations, digest)));
++            }
++        }
++    }
++
++    // r[impl properties.web-of-trust.threshold-dedup]
++    // r[verify properties.web-of-trust.threshold-dedup]
++    /// Once an introducer digest is already in the threshold scan state,
++    /// later same-digest edges do not change the remaining distinct-introducer count.
++    pub proof fn threshold_dedup_preserves_count(
++        roots: Seq<PrincipalId>,
++        attestations: Seq<Attestation>,
++        revocations: Seq<Revocation>,
++        subject: PrincipalId,
++        depth: nat,
++        t: u64,
++        dup_from: nat,
++        seen: Seq<usize>,
++    )
++        requires
++            dup_from < attestations.len(),
++            attestations.len() <= usize::MAX as nat,
++            seen_indices_in_range_spec(seen, attestations),
++            seen_introducer_spec(seen, attestations, attestations[dup_from as int].issuer.digest@),
++        ensures
++            threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from,
++                seen,
++            ) == threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from + 1,
++                seen,
++            ),
++    {
++        assert(
++            threshold_distinct_count_from_spec(
++                roots,
++                attestations,
++                revocations,
++                subject,
++                depth,
++                t,
++                dup_from,

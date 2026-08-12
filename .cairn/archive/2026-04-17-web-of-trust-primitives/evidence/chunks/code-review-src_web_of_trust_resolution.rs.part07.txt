@@ -1,0 +1,115 @@
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_existing_valid_chain_succeeds() {
++        let root_key = vec![1, 2, 3];
++        let mid_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_key.clone(), mid_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(mid_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(resolves_trusted_at(&roots, &vec![att1, att2], &Vec::new(), &subject, 2, 5));
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_too_small_depth_rejects_longer_path() {
++        let root_key = vec![1, 2, 3];
++        let a_key = vec![4, 5, 6];
++        let b_key = vec![7, 8, 9];
++        let subject_key = vec![10, 11, 12];
++        let att1 = signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(a_key, b_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let att3 = signed_attestation(b_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 3);
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!resolves_trusted_at(&roots, &vec![att1, att2, att3], &Vec::new(), &subject, 2, 5));
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_duplicate_roots_are_ignored() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let root = principal_id_from_bytes(&root_key);
++        let roots = vec![root, principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        let attestations = vec![att];
++        assert_eq!(
++            resolves_trusted_at(&roots, &attestations, &Vec::new(), &subject, 1, 5),
++            resolves_trusted_at(&vec![principal_id_from_bytes(&root_key)], &attestations, &Vec::new(), &subject, 1, 5),
++        );
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_invalid_attestation_is_ignored_by_resolution() {
++        let root_key = vec![1, 2, 3];
++        let mid_key = vec![4, 5, 6];
++        let subject_key = vec![7, 8, 9];
++        let att1 = signed_attestation(root_key.clone(), mid_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let att2 = signed_attestation(mid_key, subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 2);
++        let invalid = Attestation {
++            subject_key_bytes: vec![7, 8, 0],
++            ..att2
++        };
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(!resolves_trusted_at(&roots, &vec![att1, invalid], &Vec::new(), &subject, 2, 5));
++    }
++
++    // r[verify web-of-trust.rooted-resolution]
++    #[test]
++    fn test_invalid_revocation_is_ignored_by_resolution() {
++        let root_key = vec![1, 2, 3];
++        let subject_key = vec![4, 5, 6];
++        let att = signed_attestation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 0, 20, 1);
++        let rev = signed_family_revocation(root_key.clone(), subject_key.clone(), TRUST_ROLE_TAG, 5);
++        let invalid = Revocation {
++            family_subject_key_bytes: vec![4, 5, 0],
++            ..rev
++        };
++        let roots = vec![principal_id_from_bytes(&root_key)];
++        let subject = principal_id_from_bytes(&subject_key);
++        assert!(resolves_trusted_at(&roots, &vec![att], &vec![invalid], &subject, 1, 5));
++    }
++
++    proptest! {
++        // r[verify web-of-trust.rooted-resolution]
++        #[test]
++        fn prop_rooted_resolution_oracle(
++            subject_choice in 0usize..4,
++            depth in 0usize..4,
++            time in 0u64..20,
++            duplicate_root in any::<bool>(),
++        ) {
++            let root_key = vec![1, 2, 3];
++            let a_key = vec![4, 5, 6];
++            let b_key = vec![7, 8, 9];
++            let c_key = vec![10, 11, 12];
++
++            let attestations = vec![
++                signed_attestation(root_key.clone(), a_key.clone(), TRUST_ROLE_TAG, 0, 20, 1),
++                signed_attestation(a_key.clone(), b_key.clone(), TRUST_ROLE_TAG, 0, 20, 2),
++                signed_attestation(b_key.clone(), c_key.clone(), TRUST_ROLE_TAG, 0, 20, 3),
++                signed_attestation(a_key.clone(), root_key.clone(), TRUST_ROLE_TAG, 0, 20, 4),
++            ];
++            let mut roots = vec![principal_id_from_bytes(&root_key)];
++            if duplicate_root {
++                roots.push(principal_id_from_bytes(&root_key));
++            }
++            let subjects = [
++                principal_id_from_bytes(&root_key),
++                principal_id_from_bytes(&a_key),
++                principal_id_from_bytes(&b_key),
++                principal_id_from_bytes(&c_key),
++            ];
++            let subject = &subjects[subject_choice];
++            let revocations = Vec::new();
++
++            let oracle = rooted_resolution_oracle(&roots, &attestations, &revocations, subject, depth, time);
++            prop_assert_eq!(resolves_trusted_at(&roots, &attestations, &revocations, subject, depth, time), oracle);
++        }
++    }
++}

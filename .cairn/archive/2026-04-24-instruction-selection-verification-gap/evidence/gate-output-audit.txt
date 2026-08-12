@@ -1,0 +1,8 @@
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/check-coverage.txt: success_marker=True
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/verify.txt: success_marker=True
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/verify.full.txt: raw_error_diagnostics_free=True
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/check-coverage.txt: missing_r_impl_lines=0, named_hits=0
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/verify.txt: missing_r_impl_lines=0, named_hits=0
+openspec/changes/archive/2026-04-24-instruction-selection-verification-gap/evidence/verify.full.txt: missing_r_impl_lines=0, named_hits=0
+RESULT: PASS
+checked_functions=8

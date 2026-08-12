@@ -1,0 +1,6 @@
+=== Proof-gap inventory drift ===
+✓ proof-gap inventory matches expected counts and sites
+verification results:: 9831 verified, 0 errors
+verified-logic/rust: 0 uncovered out of 1872 rules
+verified-logic/rust: 0 untested (impl but no verify) out of 1872 rules
+=== ALL CHECKS PASSED ===

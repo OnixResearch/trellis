@@ -1,0 +1,18 @@
+error[E0425]: cannot find function `ptr_mut_ref` in this scope
+    --> types.rs:1246:9
+     |
+1246 |         ptr_mut_ref(self.tld_ptr, Tracked(&mut local.tld))
+     |         ^^^^^^^^^^^
+     |
+    --> vstd/raw_ptr.rs:602:0
+     |
+     = note: similarly named function `ptr_mut_read` defined here
+help: a function with a similar name exists
+     |
+1246 -         ptr_mut_ref(self.tld_ptr, Tracked(&mut local.tld))
+1246 +         ptr_mut_read(self.tld_ptr, Tracked(&mut local.tld))
+     |
+
+error: aborting due to 1 previous error
+
+For more information about this error, try `rustc --explain E0425`.

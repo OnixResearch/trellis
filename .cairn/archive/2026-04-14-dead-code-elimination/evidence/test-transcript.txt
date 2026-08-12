@@ -1,0 +1,16 @@
+test result::tests::test_map_err ... ok
+test result::tests::test_and_then ... ok
+test result::tests::test_map_ok ... ok
+test result::tests::test_unwrap_or ... ok
+test result::tests::test_or_else ... ok
+test result::tests::prop_and_then_err_propagates ... ok
+test result::tests::prop_map_err_preserves_ok ... ok
+test result::tests::prop_map_ok_map_err_commute ... ok
+test result::tests::prop_map_ok_preserves_err ... ok
+test result::tests::prop_and_then_right_identity ... ok
+test result::tests::prop_or_else_err_uses_fallback ... ok
+test result::tests::prop_or_else_ok_unchanged ... ok
+test result::tests::prop_unwrap_or_ok ... ok
+test result::tests::prop_unwrap_or_err ... ok
+test result: ok. 3563 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 3.39s
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s

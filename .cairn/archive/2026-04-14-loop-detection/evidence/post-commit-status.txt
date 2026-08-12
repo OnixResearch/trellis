@@ -1,0 +1,4 @@
+$ git status --short
+
+Raw command output is stored in `post-commit-status.raw`.
+That file is intentionally empty for this clean-tree snapshot.

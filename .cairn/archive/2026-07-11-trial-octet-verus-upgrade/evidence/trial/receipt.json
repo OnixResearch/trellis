@@ -1,0 +1,165 @@
+{
+  "hash_scope": "blake3-of-jq-sorted-compact-payload-json",
+  "payload": {
+    "baseline": {
+      "exit_code": 0,
+      "expected_error_count": 0,
+      "expected_result": "passed",
+      "expected_verified_count": 10710,
+      "identity_blake3": "7d80c5c39be8f1822794b2efd908b073aafaa22cd80fb51ae80da782e4e67441",
+      "nix_output": "/nix/store/940vcfw4pkd9khabcm9wlljbadlmmx5f-verus-0.2026.03.22",
+      "source_blake3": "b2fdef5f3d9b8c10782ba126fd6d5fe50fe661c38cc2fee6bfba8fc15ff6c93b",
+      "source_nix_input": "/nix/store/7spl5cbkyhv3srh2lx90q0wvrylgj43x-trellis-verus-proof-source",
+      "stderr_blake3": "21d7ef8cdf3b4b035175dd26bcb817902a773c50d63dd19535ed7c6a961b0d8a",
+      "stdout_blake3": "566df6bd8cbf32f004a832d49bd6a4c45e8252f18320cf2e650e4e22b60936b3",
+      "verifier": "verus@0.2026.03.22.5e66329"
+    },
+    "candidate": {
+      "diagnostic_anchors": [
+        "error: postcondition not satisfied",
+        "src/nix_drv_serialize.rs:761:9"
+      ],
+      "exit_code": 1,
+      "expected_error_count": 1,
+      "expected_result": "proof-failure",
+      "expected_verified_count": 10709,
+      "identity_blake3": "d27d4a495c9f399215c6798f465283e7d04137f59cee79316e0ead573d7ca2a4",
+      "nix_output": "/nix/store/ql1i4z1wyyr150vann7b52vckrvgwpms-octet-production-verus-0.2026.04.03.21dfcd2",
+      "profile_blake3": "80bc1c1614e293c3f881a4a656c098a93087fd9f6ddc8f1afeaa9af7f22918c3",
+      "profile_id": "octet-verus-0.2026.04.03.21dfcd2",
+      "provider": "octet",
+      "provider_revision": "fc38f59330b626961d166febfdf1a5aa6575460f",
+      "source_blake3": "b2fdef5f3d9b8c10782ba126fd6d5fe50fe661c38cc2fee6bfba8fc15ff6c93b",
+      "source_nix_input": "/nix/store/7spl5cbkyhv3srh2lx90q0wvrylgj43x-trellis-verus-proof-source",
+      "stderr_blake3": "5f37335da9200037e085fc371c68e3fdeaf079f193d73821fea067b664c80efa",
+      "stdout_blake3": "295fab33867d4f22ed5c7a84a71bebd28766c176b8efaddc151caafcefdccd86",
+      "verifier": "verus@0.2026.04.03.21dfcd2"
+    },
+    "claim_scope": "bounded-verifier-upgrade-compatibility-trial",
+    "corpus_catalog_blake3": "29f76892f5e1921b932876c057313cf1846898138a1e7ac5b1b6ee92d675edfc",
+    "corpus_results": [
+      {
+        "exit_codes": [
+          1,
+          1
+        ],
+        "full_artifact_reproduced": false,
+        "id": "paper-sosp24-artifact",
+        "mechanism": "artifact-microcase",
+        "outcome": "source-api-incompatible",
+        "promotion_role": "diagnostic-only",
+        "source": {
+          "nix_output": "/nix/store/1rrj7rhfrzyzdbs9ln774741b8nkr9ca-source",
+          "revision": "b817b036fd9b873a58730af8c2defccb40b7ea83",
+          "source_hash": "sha256-fcvypgzCQVTLjjzhdlZ2bZ8gJJJl1CWxAvrIDKIqamo=",
+          "source_hash_protocol": "nix-sha256-unpacked"
+        },
+        "stderr_blake3": "c894aeb10fdaf2eb30884d47903242680d1852531d0356088e69afd7fb871ec3",
+        "stdout_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      {
+        "exit_code": 1,
+        "id": "verified-ironkv",
+        "mechanism": "native-verus",
+        "outcome": "source-api-incompatible",
+        "promotion_role": "required-native",
+        "source": {
+          "nix_output": "/nix/store/y9fff1yj06yv37g8v09141sn760qgilc-source",
+          "revision": "6b8830a47a2dd5a8ce141438ebb2decb6550298a",
+          "source_hash": "sha256-RQHAD7naPpOw45OQXWzLO6lopz79TXg9GB+pMsokcJQ=",
+          "source_hash_protocol": "nix-sha256-unpacked"
+        },
+        "stderr_blake3": "0dcfd62579b52709d473d160f9894e9b3b7e3fbbb2c722892d379bd83364ae92",
+        "stdout_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      {
+        "build_dependency": {
+          "crate": "libc",
+          "fixed_output": "/nix/store/3vlj0sy0vfqvskvxvpi046l6dcxpngfm-download",
+          "fixed_output_sha256": "sha256-tGaPsOqGHB3wlBJ6xfHaNAmoIRakunT8ouWO+ScVm7M=",
+          "version": "0.2.147"
+        },
+        "candidate_rust_libc_admitted": true,
+        "exit_code": 1,
+        "id": "verified-memory-allocator",
+        "mechanism": "native-verus",
+        "outcome": "source-api-incompatible",
+        "promotion_role": "required-native",
+        "source": {
+          "nix_output": "/nix/store/3wqb9k44li3srxnjn8caq0z37k3g59pp-source",
+          "revision": "847354efbb51a7999deb3eef0ed2bfc199bccac1",
+          "source_hash": "sha256-Ug0I2zCGxKscsXtnxzhLdn9NYrgkxpO3brJ8lfL0FJA=",
+          "source_hash_protocol": "nix-sha256-unpacked"
+        },
+        "stderr_blake3": "0b43eaca30cc54e7027e321249d87a33d25f73c3518e39bff702ff06396318ad",
+        "stdout_blake3": "0d934545fe9b81669904f1582ae1693fbd14b8a7121c5ed61340efa7ad9b8201"
+      },
+      {
+        "exit_code": 1,
+        "id": "verified-node-replication",
+        "mechanism": "native-verus",
+        "outcome": "verifier-internal-error",
+        "promotion_role": "required-native",
+        "source": {
+          "nix_output": "/nix/store/bpqanfvd8dpg3yz8v9a9j37yrra37k6f-source",
+          "revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
+          "source_hash": "sha256-7y9Sh9oLyZs47BtJqON0DVhD70sa9nG67SIwiX2Yc4g=",
+          "source_hash_protocol": "nix-sha256-unpacked"
+        },
+        "stderr_blake3": "8821b69c0163e8d970ed0e712b0559056c52dbca465d45822fd1047a8ccc7f34",
+        "stdout_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+      },
+      {
+        "audit_blake3": "09bb03384c41951cbfc32acf7679528385e6e96d73050592df6f4c37ac0e12b7",
+        "candidate_verus_executed": false,
+        "id": "verus-belt",
+        "mechanism": "semantic-reference",
+        "outcome": "reference-audit-only",
+        "promotion_role": "audit-only",
+        "rocq_source_files": 385,
+        "source": {
+          "nix_output": "/nix/store/ph3xkm6xlps0246dy6k71hvgz79ndkgj-source",
+          "revision": "b116e9db550e84896674df781b93570c35a9f0da",
+          "source_hash": "sha256-OmRZBYBXzXMHD5tEmFb2KS7b4RkiNR3NXeMbsXsGrVw=",
+          "source_hash_protocol": "nix-sha256-unpacked"
+        }
+      }
+    ],
+    "decision": {
+      "blockers": [
+        "trellis-proof-failure",
+        "verified-ironkv-source-api-incompatible",
+        "verified-memory-allocator-source-api-incompatible",
+        "verified-node-replication-verifier-internal-error"
+      ],
+      "expected": "blocked",
+      "observed": "blocked",
+      "octet_compatibility_status": "local-pin",
+      "preserve_current_pin": true,
+      "promotion_eligible": false,
+      "terminal_reason": "required-native-probes-blocked"
+    },
+    "execution_audit": {
+      "corpus_assumption_drift": "not-evaluated-probes-blocked-before-proof-completion",
+      "timeout_exit_code": 124,
+      "timeouts_observed": false,
+      "trellis_source_assumption_drift": "none-by-identical-immutable-source-input",
+      "trellis_source_mutated": false,
+      "trigger_changes": [],
+      "trusted_boundary_transfer": false,
+      "verifier_library_assumption_drift": "not-evaluated",
+      "verifier_option_drift": false
+    },
+    "execution_system": "x86_64-linux",
+    "non_claims": [
+      "The trial does not prove verifier, solver, compiler, Rocq, or upstream soundness.",
+      "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
+      "A blocked trial does not authorize changing Trellis's verifier pin or Octet compatibility status."
+    ],
+    "payload_schema": "trellis-octet-verus-upgrade-trial-payload-v1",
+    "trial_id": "trellis-octet-verus-fc38f593-upgrade-trial",
+    "trial_matrix_blake3": "ee48d5f9f8b1780e8b36ec020412dab2a777a3fed029514835e9f75528ed0af8"
+  },
+  "receipt_blake3": "5e653411b60f42356d3d6f43b43d477785ac18817e6f9d468a1b36b4157f6c4a",
+  "schema_version": "trellis-octet-verus-upgrade-trial-receipt-v1"
+}

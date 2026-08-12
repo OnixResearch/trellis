@@ -1,0 +1,219 @@
+{
+  "payload_schema": "trellis-octet-verus-upgrade-trial-payload-v2",
+  "trial_id": "trellis-octet-verus-may17-upgrade-trial",
+  "claim_scope": "bounded-verifier-upgrade-compatibility-trial",
+  "execution_system": "x86_64-linux",
+  "trial_matrix_blake3": "fa4e14613bb570ea30f007b52068b7da4d31e76bcee6193ddab369fc97519e40",
+  "corpus_catalog_blake3": "5930b59c2a803f1bf8cdb0cde77f7a2823fe84769dc4e0d4e67aa84b7586e31e",
+  "execution_audit": {
+    "trellis_source_mutated": false,
+    "trellis_source_assumption_drift": "none-by-identical-immutable-source-input",
+    "verifier_library_assumption_drift": "not-claimed",
+    "corpus_assumption_drift": "adapted-source-marker-counts-unchanged",
+    "verifier_option_drift": false,
+    "trigger_changes": [],
+    "patch_hash_negative_rejected": true,
+    "patch_hash_negative_blake3": "a7b664951ec64a216f93a8c6c253754e4b195b91897c2c67d9285cdc502acb94",
+    "timeouts_observed": false,
+    "timeout_exit_code": 124,
+    "trusted_boundary_transfer": false
+  },
+  "baseline": {
+    "expected_error_count": 0,
+    "expected_result": "passed",
+    "expected_verified_count": 10712,
+    "verifier": "verus@0.2026.03.22.5e66329",
+    "exit_code": 0,
+    "source_blake3": "3bb2d2c1366e2ff07e948ebfa5f6585e2709556de0c6991ae1c67d558a3e271e",
+    "source_hash_scope": "blake3-of-sorted-relative-path-and-file-blake3-manifest",
+    "source_nix_input": "/nix/store/ll5h4b0wvv5s2bkc0qpxjjcfgydak659-trellis-verus-proof-source",
+    "identity_blake3": "7dae8de1a53c49381baaf52b84f810a85da24ca40130db24363467452ea85e61",
+    "nix_output": "/nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22",
+    "stdout_blake3": "1b586d4ba026599ed10c28079f07a89f4ca36ca664df9bfd212ce9a5668c2552",
+    "stderr_blake3": "21d7ef8cdf3b4b035175dd26bcb817902a773c50d63dd19535ed7c6a961b0d8a"
+  },
+  "candidate": {
+    "expected_error_count": 0,
+    "expected_result": "passed",
+    "expected_verified_count": 10712,
+    "profile_id": "octet-verus-0.2026.05.17.e479cce",
+    "provider": "octet",
+    "provider_revision": "374bd16b26cee2af34211a29bfa531c016811f51",
+    "result_anchors": [
+      "verification results:: 10712 verified, 0 errors"
+    ],
+    "verifier": "verus@0.2026.05.17.e479cce",
+    "exit_code": 0,
+    "profile_blake3": "f09c4dc0ee5481e458753213f9b6b90423777fcc3a69dc77cf8d2201d902dc23",
+    "provider_source_revision": "374bd16b26cee2af34211a29bfa531c016811f51",
+    "source_blake3": "3bb2d2c1366e2ff07e948ebfa5f6585e2709556de0c6991ae1c67d558a3e271e",
+    "source_hash_scope": "blake3-of-sorted-relative-path-and-file-blake3-manifest",
+    "source_nix_input": "/nix/store/ll5h4b0wvv5s2bkc0qpxjjcfgydak659-trellis-verus-proof-source",
+    "identity_blake3": "99ae3afb1e7aecf243dd732ecdf35dd9212674a1a26e89ef67086ed95fcf581d",
+    "nix_output": "/nix/store/cb02jr7r1a2k8k2hlahmk8c90421czvq-octet-production-verus-0.2026.05.17.e479cce",
+    "stdout_blake3": "1b586d4ba026599ed10c28079f07a89f4ca36ca664df9bfd212ce9a5668c2552",
+    "stderr_blake3": "dd4b0218d72d3b29e6f3d4ae597d9e3ee41deebc33e7ee9d8766da0fe3f12a1b"
+  },
+  "corpus_results": [
+    {
+      "id": "paper-sosp24-artifact",
+      "mechanism": "artifact-microcase",
+      "promotion_role": "diagnostic-only",
+      "source_variant": "unmodified",
+      "outcome": "source-api-incompatible",
+      "source": {
+        "revision": "b817b036fd9b873a58730af8c2defccb40b7ea83",
+        "source_hash": "sha256-fcvypgzCQVTLjjzhdlZ2bZ8gJJJl1CWxAvrIDKIqamo=",
+        "source_hash_protocol": "nix-sha256-unpacked",
+        "nix_output": "/nix/store/1rrj7rhfrzyzdbs9ln774741b8nkr9ca-source"
+      },
+      "exit_codes": [
+        1,
+        1
+      ],
+      "stdout_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "stderr_blake3": "dfe3e2986e58995dc689c0244e3cad8989e19c9c2cfb881b1ec150b4fef48ad7",
+      "full_artifact_reproduced": false
+    },
+    {
+      "id": "verified-ironkv",
+      "mechanism": "native-verus",
+      "promotion_role": "required-native",
+      "source_variant": "adapted",
+      "outcome": "passed-adapted",
+      "source": {
+        "revision": "6b8830a47a2dd5a8ce141438ebb2decb6550298a",
+        "source_hash": "sha256-RQHAD7naPpOw45OQXWzLO6lopz79TXg9GB+pMsokcJQ=",
+        "source_hash_protocol": "nix-sha256-unpacked",
+        "nix_output": "/nix/store/y9fff1yj06yv37g8v09141sn760qgilc-source"
+      },
+      "adaptation": {
+        "patch_blake3": "cedf509e48f6e83431f4884521fad46a8cd6be7908f28ef8de9b493a77f57937",
+        "patch_path": "upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-ironkv.patch",
+        "semantic_audit": [
+          "Verus PR 2486 names ISet and IMap as the old possibly-infinite Set and Map semantics introduced after the candidate release.",
+          "The patch maps those post-split names and constructors back to the candidate's generalized extensional collections."
+        ],
+        "result_scope": "adapted-source-only",
+        "adapted_tree_blake3": "d51f34c6ed1968e7c693a10c3a9624254e459ef359e358c27f6cdcbdfb5a4a97",
+        "audit_blake3": "82b3f29f1c54f440bc3221de2dd8f0587b278cf109ec63f9bfedbc7d6633420e",
+        "trust_inventory": {
+          "assume_sites": {
+            "before": 0,
+            "after": 0
+          },
+          "external_bodies": {
+            "before": 25,
+            "after": 25
+          },
+          "trusted_markers": {
+            "before": 36,
+            "after": 36
+          }
+        }
+      },
+      "exit_code": 0,
+      "stdout_blake3": "4cc43ab1e580e2e20732292ca6a1c4debe8c0c8e6b3deb54241424ab2952ff2d",
+      "stderr_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262"
+    },
+    {
+      "id": "verified-memory-allocator",
+      "mechanism": "native-verus",
+      "promotion_role": "required-native",
+      "source_variant": "adapted",
+      "outcome": "passed-adapted",
+      "source": {
+        "revision": "847354efbb51a7999deb3eef0ed2bfc199bccac1",
+        "source_hash": "sha256-Ug0I2zCGxKscsXtnxzhLdn9NYrgkxpO3brJ8lfL0FJA=",
+        "source_hash_protocol": "nix-sha256-unpacked",
+        "nix_output": "/nix/store/3wqb9k44li3srxnjn8caq0z37k3g59pp-source"
+      },
+      "adaptation": {
+        "patch_blake3": "399027aba3425050a667a60194767c1bd5e84af7f6c93bc5941b6a34f47b3f5b",
+        "patch_path": "upstream-verus-corpus/adaptations/0.2026.05.17.e479cce/verified-memory-allocator.patch",
+        "semantic_audit": [
+          "The patch preserves arithmetic lemma signatures and contracts while replacing the unavailable optional Singular tactic with explicit proofs.",
+          "The segment-size repair proves the existing postcondition without changing executable behavior or trusted boundaries."
+        ],
+        "result_scope": "adapted-source-only",
+        "adapted_tree_blake3": "98f55ac408bab09d478eb20ca15658e9b99e50d8f7a87b73bd89ec3e523f4196",
+        "audit_blake3": "ea0e8f697c40d2c1fae478adedb2a275986cf61c831e9739aa8132e986783cf9",
+        "trust_inventory": {
+          "assume_sites": {
+            "before": 27,
+            "after": 27
+          },
+          "external_bodies": {
+            "before": 19,
+            "after": 19
+          },
+          "trusted_markers": {
+            "before": 47,
+            "after": 47
+          }
+        }
+      },
+      "exit_code": 0,
+      "stdout_blake3": "d4b39079fed5e57ed1180ad665d88ded338e707d5275ef80dce159934331db30",
+      "stderr_blake3": "ca5fa6fb9c40c3459ec8f420c0761f9ca5f151488f824424bec220376fcbd4a7",
+      "candidate_rust_libc_admitted": true,
+      "cargo_stdout_blake3": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+      "cargo_stderr_blake3": "0dfdcc32f28f7b079a4034d810395ce37e3550367d9d67e5f9c3b1dc83716554",
+      "build_dependency": {
+        "crate": "libc",
+        "version": "0.2.147",
+        "fixed_output": "/nix/store/3vlj0sy0vfqvskvxvpi046l6dcxpngfm-download",
+        "fixed_output_sha256": "sha256-tGaPsOqGHB3wlBJ6xfHaNAmoIRakunT8ouWO+ScVm7M="
+      }
+    },
+    {
+      "id": "verified-node-replication",
+      "mechanism": "native-verus",
+      "promotion_role": "required-native",
+      "source_variant": "unmodified",
+      "outcome": "passed-unmodified",
+      "source": {
+        "revision": "eb8e27244a4f1b7714defe55aa495c6173a1c330",
+        "source_hash": "sha256-7y9Sh9oLyZs47BtJqON0DVhD70sa9nG67SIwiX2Yc4g=",
+        "source_hash_protocol": "nix-sha256-unpacked",
+        "nix_output": "/nix/store/bpqanfvd8dpg3yz8v9a9j37yrra37k6f-source"
+      },
+      "exit_code": 0,
+      "stdout_blake3": "17ab7cba3c68bde0c5b444850cb9684ae1a04697e2ad45cf6f61e65146c2c400",
+      "stderr_blake3": "83bb4044d7bee9799008741bd94c3fd5193b5493571ebc23d28ac4b1bf592cdc"
+    },
+    {
+      "id": "verus-belt",
+      "mechanism": "semantic-reference",
+      "promotion_role": "audit-only",
+      "source_variant": "reference-only",
+      "outcome": "reference-audit-only",
+      "source": {
+        "revision": "b116e9db550e84896674df781b93570c35a9f0da",
+        "source_hash": "sha256-OmRZBYBXzXMHD5tEmFb2KS7b4RkiNR3NXeMbsXsGrVw=",
+        "source_hash_protocol": "nix-sha256-unpacked",
+        "nix_output": "/nix/store/ph3xkm6xlps0246dy6k71hvgz79ndkgj-source"
+      },
+      "candidate_verus_executed": false,
+      "rocq_source_files": 385,
+      "audit_blake3": "09bb03384c41951cbfc32acf7679528385e6e96d73050592df6f4c37ac0e12b7"
+    }
+  ],
+  "decision": {
+    "blockers": [],
+    "expected": "promote",
+    "octet_compatibility_status": "native",
+    "preserve_current_pin": false,
+    "recommended_octet_compatibility_status": "native",
+    "observed": "promote",
+    "promotion_eligible": true,
+    "terminal_reason": "all-complete-and-required-native-proofs-passed"
+  },
+  "non_claims": [
+    "The trial does not prove verifier, solver, compiler, Vstd, Rocq, or upstream soundness.",
+    "Source identity, formatting, diagnostic microcases, and reference audits are not proof receipts.",
+    "Adapted-source passes bind their patches and do not certify the unmodified upstream revisions or authorize production adoption.",
+    "Promotion changes only the reviewed Trellis verifier relationship; downstream proof and release authority remain local.",
+    "The exact published Octet GitHub input binds the committed provider tree; package identity still does not transfer proof authority."
+  ]
+}

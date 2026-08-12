@@ -1,0 +1,33 @@
+$ jj diff --git openspec/specs/web-of-trust/spec.md
+
+diff --git a/openspec/changes/web-of-trust-primitives/specs/web-of-trust/spec.md b/openspec/specs/web-of-trust/spec.md
+rename from openspec/changes/web-of-trust-primitives/specs/web-of-trust/spec.md
+rename to openspec/specs/web-of-trust/spec.md
+index d4ccaaccd4..7ead259f33 100644
+--- a/openspec/changes/web-of-trust-primitives/specs/web-of-trust/spec.md
++++ b/openspec/specs/web-of-trust/spec.md
+@@ -239,10 +239,6 @@
+ - there exists a valid trust chain at time `t` from some root in
+   `Roots` to `S` of length at most `d`
+ 
+-Increasing the depth bound MAY admit longer chains but MUST NOT
+-invalidate a subject that already resolved successfully for the same
+-`Roots` and the same `t`.
+-
+ #### Scenario: Root resolves at depth zero
+ 
+ - GIVEN trust root `R`
+@@ -355,7 +351,9 @@
+ 
+ r[properties.web-of-trust.threshold-dedup]
+ For fixed trust roots, evaluation time, depth bound, threshold `k`, and
+-subject `S`, replacing multiple active direct trust edges from one
+-introducer to `S` with a single active direct trust edge from that same
+-introducer to `S` MUST leave both the number of qualifying distinct
+-introducers and the final threshold accept/reject result unchanged.
++subject `S`, once one active direct trust edge from introducer `I` to
++`S` has already been counted, any later active direct trust edge from
++that same introducer to `S` MUST leave both the remaining qualifying
++distinct-introducer count and the final threshold accept/reject result
++unchanged. Equivalently, replacing multiple such same-introducer final
++hops with a single counted edge MUST not change the threshold outcome.
