@@ -61,26 +61,30 @@ r[isel.completeness]
 For complete tile sets, every node in the expression tree MUST be covered
 by exactly one selected tile.
 
-#### Scenario: Full coverage [r[isel.completeness.full-coverage]]
+#### Scenario: Full coverage
+r[r[isel.completeness.full-coverage]]
 
 - GIVEN an expression tree, a tile sequence satisfying `complete_tile_set(tree, tiles)`,
   and a successful tiling
 - WHEN every root-relative node path in the tree is checked
 - THEN it belongs to exactly one selected tile coverage set
 
-#### Scenario: No gaps [r[isel.completeness.no-gaps]]
+#### Scenario: No gaps
+r[r[isel.completeness.no-gaps]]
 
 - GIVEN an expression tree, a tile sequence satisfying `complete_tile_set(tree, tiles)`, and a successful tiling
 - WHEN the union of all selected tile coverage sets is computed
 - THEN it equals the set of all node paths in the tree
 
-#### Scenario: No overlaps [r[isel.completeness.no-overlaps]]
+#### Scenario: No overlaps
+r[r[isel.completeness.no-overlaps]]
 
 - GIVEN two distinct selected tiles in a successful tiling
 - WHEN their covered node-path sets are compared
 - THEN the sets are disjoint
 
-#### Scenario: Complete tile sets succeed [r[isel.completeness.success-on-complete-tile-set]]
+#### Scenario: Complete tile sets succeed
+r[r[isel.completeness.success-on-complete-tile-set]]
 
 - GIVEN an expression tree and an ordered tile sequence satisfying
   `complete_tile_set(tree, tiles)`
@@ -93,13 +97,15 @@ r[isel.incomplete-tile-set-failure]
 If some subtree root has no matching tile, instruction selection MUST
 return an explicit failure result rather than fabricate a tiling.
 
-#### Scenario: Missing tile at root [r[isel.incomplete-tile-set-failure.root]]
+#### Scenario: Missing tile at root
+r[r[isel.incomplete-tile-set-failure.root]]
 
 - GIVEN an expression tree whose root matches no tile in the provided tile sequence
 - WHEN `optimal_tiling` is invoked
 - THEN it returns `SelectionError::NoMatchingTile { root_path = [] }`
 
-#### Scenario: Missing tile below matched parent [r[isel.incomplete-tile-set-failure.child]]
+#### Scenario: Missing tile below matched parent
+r[r[isel.incomplete-tile-set-failure.child]]
 
 - GIVEN a root tile that matches but at least one uncovered child root has no
   matching tile in the provided tile sequence
@@ -107,7 +113,8 @@ return an explicit failure result rather than fabricate a tiling.
 - THEN the overall result is `SelectionError::NoMatchingTile { root_path = P }`
   where `P` is the canonical first unmatched child-root path
 
-#### Scenario: Multiple unmatched roots choose canonical first [r[isel.incomplete-tile-set-failure.global-first]]
+#### Scenario: Multiple unmatched roots choose canonical first
+r[r[isel.incomplete-tile-set-failure.global-first]]
 
 - GIVEN an expression tree with multiple unmatched subtree roots at different
   `NodePath` positions
@@ -120,14 +127,16 @@ r[isel.soundness]
 Each selected tile's pure semantics MUST match the pure evaluation of the
 subtree it replaces.
 
-#### Scenario: Tile produces correct value [r[isel.soundness.tile-value]]
+#### Scenario: Tile produces correct value
+r[r[isel.soundness.tile-value]]
 
 - GIVEN a selected tile `T` covering subtree root `P`, with uncovered child
   roots evaluated in canonical preorder path order
 - WHEN `T.semantics(inputs)` is compared to `subtree_eval(subtree_at(P))`
 - THEN the results are equal
 
-#### Scenario: Composed soundness [r[isel.soundness.composed]]
+#### Scenario: Composed soundness
+r[r[isel.soundness.composed]]
 
 - GIVEN a successful tiling of the full expression tree
 - WHEN the tiled root output is compared to `subtree_eval(root)`
@@ -139,13 +148,15 @@ r[isel.optimality]
 The DP algorithm MUST return a tiling with minimum total cost among all valid
 tilings for the same tree and ordered tile sequence.
 
-#### Scenario: Minimum cost [r[isel.optimality.minimum-cost]]
+#### Scenario: Minimum cost
+r[r[isel.optimality.minimum-cost]]
 
 - GIVEN a successful tiling returned by the DP algorithm with cost `C`
 - WHEN any other valid tiling for the same tree and ordered tile sequence has cost `C'`
 - THEN `C <= C'`
 
-#### Scenario: Leaf node [r[isel.optimality.leaf]]
+#### Scenario: Leaf node
+r[r[isel.optimality.leaf]]
 
 - GIVEN a leaf node and the set of matching leaf tiles
 - WHEN the optimal cost is computed
@@ -157,40 +168,46 @@ r[isel.matching]
 A tile MUST match a subtree iff the tile pattern structurally matches the
 subtree opcode, literal boundary, and child shape.
 
-#### Scenario: Pattern match [r[isel.matching.pattern-match]]
+#### Scenario: Pattern match
+r[r[isel.matching.pattern-match]]
 
 - GIVEN a tile with pattern `Specific { op: Add, children: [Any, Any] }`
   and a subtree `Add(X, Y)`
 - WHEN matching is checked
 - THEN the tile matches and returns uncovered child roots for `X` and `Y`
 
-#### Scenario: Canonical uncovered-root order [r[isel.matching.canonical-uncovered-order]]
+#### Scenario: Canonical uncovered-root order
+r[r[isel.matching.canonical-uncovered-order]]
 
 - GIVEN a matching tile pattern with multiple `Any` leaves at different child-root paths
 - WHEN `tile_matches` returns uncovered child roots
 - THEN those roots are returned in canonical preorder `NodePath` order
 
-#### Scenario: Pattern mismatch [r[isel.matching.pattern-mismatch]]
+#### Scenario: Pattern mismatch
+r[r[isel.matching.pattern-mismatch]]
 
 - GIVEN a tile with pattern `Specific { op: Add, children: [Any, Any] }`
   and a subtree `Mul(X, Y)`
 - WHEN matching is checked
 - THEN the tile does not match
 
-#### Scenario: Const literal mismatch [r[isel.matching.const-literal-mismatch]]
+#### Scenario: Const literal mismatch
+r[r[isel.matching.const-literal-mismatch]]
 
 - GIVEN a const tile modeled for literal `A` and a const subtree with literal `B != A`
 - WHEN matching is checked
 - THEN the tile does not match
 
-#### Scenario: Deep pattern [r[isel.matching.deep-pattern]]
+#### Scenario: Deep pattern
+r[r[isel.matching.deep-pattern]]
 
 - GIVEN a tile with pattern `Specific { op: Add, children: [Specific { op: Mul, children: [Any, Any] }, Any] }`
   and subtree `Add(Mul(A, B), C)`
 - WHEN matching is checked
 - THEN the tile matches with uncovered child roots for `A`, `B`, and `C`
 
-#### Scenario: Wrong arity [r[isel.matching.wrong-arity]]
+#### Scenario: Wrong arity
+r[r[isel.matching.wrong-arity]]
 
 - GIVEN a tile pattern whose `Specific` child count differs from the subtree
   child count
@@ -203,13 +220,15 @@ r[isel.dp-recurrence]
 The optimal cost at each subtree root MUST satisfy the dynamic-programming
 recurrence over matching tiles and uncovered child roots.
 
-#### Scenario: Recurrence [r[isel.dp-recurrence.general]]
+#### Scenario: Recurrence
+r[r[isel.dp-recurrence.general]]
 
 - GIVEN subtree root `P` with matching tiles `T1`, `T2`, ...
 - WHEN the optimal cost is computed
 - THEN it equals the minimum over `Ti.cost + sum(optimal cost at Ti uncovered child roots)`
 
-#### Scenario: Failure has no candidate [r[isel.dp-recurrence.failure]]
+#### Scenario: Failure has no candidate
+r[r[isel.dp-recurrence.failure]]
 
 - GIVEN subtree root `P` with no matching tiles
 - WHEN the DP step for `P` is computed
@@ -221,13 +240,15 @@ r[isel.determinism]
 For a fixed tree and ordered tile sequence, instruction selection MUST produce
  a unique result by using a fixed tie-break rule on equal-cost candidates.
 
-#### Scenario: Same inputs same output [r[isel.determinism.same-inputs]]
+#### Scenario: Same inputs same output
+r[r[isel.determinism.same-inputs]]
 
 - GIVEN the same expression tree and ordered tile sequence
 - WHEN the algorithm runs twice
 - THEN the resulting tilings are identical
 
-#### Scenario: Equal-cost tie break [r[isel.determinism.tie-break]]
+#### Scenario: Equal-cost tie break
+r[r[isel.determinism.tie-break]]
 
 - GIVEN two or more matching candidates with equal total cost at the same
   subtree root in the same ordered tile sequence
