@@ -12378,6 +12378,35 @@ coverage, missing proof-gap references, and overbroad claims such as release
 approval, whole-program correctness, certification, third-party conformance, or
 production safety.
 
+## Proof-Evidence IR Chain
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.contract]
+The system MUST represent proof evidence as linked source envelopes, canonical proof evidence IR, and verifier receipts that bind source identity, proof IR identity, verifier receipt identity, declared property IDs, assumptions, dependencies, result status, and non-claims.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.verifier_receipt]
+The system MUST bind proof result status to verifier identity, toolchain identity, solver identity, command identity, input roots, and result identity, and MUST reject proof evidence with an empty verifier identity, empty input roots, or an unsupported result status using deterministic diagnostics.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.assumptions]
+The system MUST represent assumptions, trusted boundaries, external bodies, proof gaps, dependencies, requirement IDs, and property IDs as typed fields in proof evidence IR, and MUST change the evidence identity or report stale assumption linkage when the assumption set changes.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.handoff]
+The system SHOULD emit a deterministic proof evidence-chain handoff that carries canonical source, proof IR, verifier receipt, and assumption identities plus non-claims so a consumer can canonicalize it without parsing Verus source.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.positive]
+The system MUST accept proof evidence IR documents whose source identities, verifier receipt identities, chain identities, and handoff identities are consistent and BLAKE3-bound.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.negative]
+The system MUST reject proof evidence that claims whole downstream system correctness, compiler correctness, verifier soundness, release eligibility, or properties outside the declared proof scope, and MUST mark recorded-only reference evidence without counting it as a promoted formal proof.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.evidence]
+The implementation MUST include positive and negative evidence covering consistent linked evidence, missing verifier identity, unsupported result status, overbroad claims, stale chain identities, assumption drift, and inconsistent handoff identities.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.docs]
+The system MUST document the proof evidence IR chain surface, commands, claim boundary, and non-claims in repository documentation and accepted Cairn spec text.
+
+r[trellis.proof_evidence_bundles.proof_evidence_ir_chain.validation]
+The change MUST capture validation evidence for focused Cargo tests, Verus verification, Tracey uncovered and untested checks, and Cairn validation and gates before archive.
+
 ## Proof Artifact Provenance
 
 r[trellis.proof_artifact_provenance.identity]

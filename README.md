@@ -597,7 +597,7 @@ The drift checker treats the compact lists below as README catalog entries for p
 
 ## Development
 
-Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, [docs/kani-boundary.md](docs/kani-boundary.md) for complementary Kani evidence boundaries, [docs/proof-artifact-manifest.md](docs/proof-artifact-manifest.md) for exported primitive manifest rows, [docs/ucan-bridge-coverage.md](docs/ucan-bridge-coverage.md) for UCAN bridge coverage, [docs/verified-logic-consumer-profile.md](docs/verified-logic-consumer-profile.md) for direct dependency and audited vendoring metadata, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
+Start with [CONTRIBUTING.md](CONTRIBUTING.md) for the public workflow, module template, Tracey annotation rules, proof-gap policy, and baseline/final validation expectations. Use [docs/module-guide.md](docs/module-guide.md) to choose modules by task or problem domain, [docs/module-index.md](docs/module-index.md) for objective module maturity facts, [docs/invariant-surface-catalog.md](docs/invariant-surface-catalog.md) for invariant evidence rows, [docs/proof-evidence-bundles.md](docs/proof-evidence-bundles.md) for downstream evidence export, [docs/proof-evidence-ir-chain.json](docs/proof-evidence-ir-chain.json) for linked verifier-receipt evidence chains, [docs/kani-boundary.md](docs/kani-boundary.md) for complementary Kani evidence boundaries, [docs/proof-artifact-manifest.md](docs/proof-artifact-manifest.md) for exported primitive manifest rows, [docs/ucan-bridge-coverage.md](docs/ucan-bridge-coverage.md) for UCAN bridge coverage, [docs/verified-logic-consumer-profile.md](docs/verified-logic-consumer-profile.md) for direct dependency and audited vendoring metadata, and [docs/cookbook.md](docs/cookbook.md) for short workflow recipes.
 
 ```bash
 nix develop                # enter devshell
@@ -625,6 +625,7 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-examples.rs # runnable example link/run-command drift and fixture self-test
 ./scripts/check-proof-examples.sh # positive and expected-failure runnable proof examples
 cargo run --quiet --bin proof_evidence -- check # deterministic proof-evidence bundle validation
+cargo run --quiet --bin proof_evidence_ir -- check # deterministic proof-evidence IR chain validation
 ./scripts/check-runtime-evidence.rs # runtime-cost evidence record metadata and fixture self-test
 ./scripts/check-kani-boundary.rs # Kani external-evidence boundary docs and positive/negative fixtures
 ./scripts/check-verified-primitive-manifest.rs # exported primitive manifest freshness and positive/negative fixtures

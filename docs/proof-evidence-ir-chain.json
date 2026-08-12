@@ -1,0 +1,269 @@
+{
+  "schema_version": "trellis-proof-evidence-ir/v1",
+  "generated_by": "src/bin/proof_evidence_ir.rs",
+  "source_bundle_path": "docs/proof-evidence-bundle.json",
+  "records": [
+    {
+      "scope": "module:arithmetic",
+      "requirement_ids": [
+        "arithmetic.abs-diff",
+        "arithmetic.checked-mul",
+        "arithmetic.div-ceil",
+        "arithmetic.gcd",
+        "arithmetic.saturating-add",
+        "arithmetic.saturating-sub"
+      ],
+      "property_ids": [
+        "arithmetic.abs-diff",
+        "arithmetic.checked-mul",
+        "arithmetic.div-ceil",
+        "arithmetic.gcd",
+        "arithmetic.saturating-add",
+        "arithmetic.saturating-sub"
+      ],
+      "source_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "3bc67fb7cf417e492159f7d769567a7f70c36d7932bebc20f5dffdb30e0a8b6b"
+        },
+        {
+          "path": "src/arithmetic.rs",
+          "algorithm": "blake3",
+          "digest": "3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4"
+        }
+      ],
+      "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
+      "verifier_receipt": {
+        "verifier_identity": "verus",
+        "toolchain_identity": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+        "solver_identity": "z3 (declared solver of the pinned Verus toolchain; no version claim)",
+        "command_identity": "33c5e05a51694aff6da5f286e521ed2a78c665a609c604ac434bd1622eaa642d",
+        "input_roots": [
+          "docs/requirements.md",
+          "src/arithmetic.rs"
+        ],
+        "result_identity": "56ff47b5dc9da30a9690745fe04b78fd4d9f1da6b7350f4e95830442f46a2b0c",
+        "result_status": "passed"
+      },
+      "assumptions": {
+        "trusted_boundaries": [],
+        "external_bodies": [],
+        "proof_gaps": [],
+        "dependencies": []
+      },
+      "status": "passed",
+      "recorded_only": false,
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not compiler correctness",
+        "not release approval",
+        "not third-party conformance",
+        "not verifier soundness",
+        "not whole-program correctness"
+      ],
+      "chain_identity": "964502a30c8de961f4d2ef884ca4350cdeceb8027b7b1b1c26dab93033afd353",
+      "handoff": {
+        "schema": "trellis-proof-evidence-kamacite-handoff/v1",
+        "source_identity": "e7f9a77cd61a9cb1002bd47cdb82f21fa45544299f46af20043677c88c938d19",
+        "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
+        "verifier_receipt_identity": "bb18e8c5366f2b6c64357f07abb8ef8324cb70b7cd0b517c711fc315711c6df3",
+        "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
+        "requirement_ids": [
+          "arithmetic.abs-diff",
+          "arithmetic.checked-mul",
+          "arithmetic.div-ceil",
+          "arithmetic.gcd",
+          "arithmetic.saturating-add",
+          "arithmetic.saturating-sub"
+        ],
+        "non_claims": [
+          "not compiler correctness",
+          "not release approval",
+          "not third-party conformance",
+          "not verifier soundness",
+          "not whole-program correctness"
+        ]
+      }
+    },
+    {
+      "scope": "module:ucan_signature",
+      "requirement_ids": [
+        "ucan-signature.checked-byte-inputs",
+        "ucan-signature.deterministic",
+        "ucan-signature.key-binding",
+        "ucan-signature.message-binding",
+        "ucan-signature.public-key-length",
+        "ucan-signature.round-trip",
+        "ucan-signature.secret-key-length",
+        "ucan-signature.signature-length"
+      ],
+      "property_ids": [
+        "ucan-signature.checked-byte-inputs",
+        "ucan-signature.deterministic",
+        "ucan-signature.key-binding",
+        "ucan-signature.message-binding",
+        "ucan-signature.public-key-length",
+        "ucan-signature.round-trip",
+        "ucan-signature.secret-key-length",
+        "ucan-signature.signature-length"
+      ],
+      "source_identities": [
+        {
+          "path": "docs/proof-gap-sites.tsv",
+          "algorithm": "blake3",
+          "digest": "f4857e946924669eef3225e68f48015f14977453ccde26addf0f639b57fd6a94"
+        },
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "3bc67fb7cf417e492159f7d769567a7f70c36d7932bebc20f5dffdb30e0a8b6b"
+        },
+        {
+          "path": "src/ucan_signature.rs",
+          "algorithm": "blake3",
+          "digest": "706f6831b4a38b185c18272c419fb8d785192fdd649945c3016f4fd6f6575ed9"
+        }
+      ],
+      "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
+      "verifier_receipt": {
+        "verifier_identity": "verus",
+        "toolchain_identity": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+        "solver_identity": "z3 (declared solver of the pinned Verus toolchain; no version claim)",
+        "command_identity": "33c5e05a51694aff6da5f286e521ed2a78c665a609c604ac434bd1622eaa642d",
+        "input_roots": [
+          "docs/proof-gap-sites.tsv",
+          "docs/requirements.md",
+          "src/ucan_signature.rs"
+        ],
+        "result_identity": "56ff47b5dc9da30a9690745fe04b78fd4d9f1da6b7350f4e95830442f46a2b0c",
+        "result_status": "passed"
+      },
+      "assumptions": {
+        "trusted_boundaries": [
+          "src/ucan_signature.rs::pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)",
+          "src/ucan_signature.rs::pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)",
+          "src/ucan_signature.rs::pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)",
+          "src/ucan_signature.rs::pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)",
+          "src/ucan_signature.rs::pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)",
+          "src/ucan_signature.rs::pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)"
+        ],
+        "external_bodies": [],
+        "proof_gaps": [],
+        "dependencies": []
+      },
+      "status": "passed",
+      "recorded_only": false,
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not compiler correctness",
+        "not release approval",
+        "not third-party conformance",
+        "not verifier soundness",
+        "not whole-program correctness"
+      ],
+      "chain_identity": "472874963cf9b9589c380140c6f6b627c633078d29db0cbf5f49b0943a4682ed",
+      "handoff": {
+        "schema": "trellis-proof-evidence-kamacite-handoff/v1",
+        "source_identity": "69aa34adcb2387336db42948f7e1c32c84afb0c655d7b86b935cdd4affdbee49",
+        "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
+        "verifier_receipt_identity": "da1af17a0e89acfbc81a89ccc8acb272485e76a7af8c22d0ed4a8903ad3dbae2",
+        "assumption_identity": "f68cf69af180c7783524221814f303141011209ae4af2b8c54cd18145da91a92",
+        "requirement_ids": [
+          "ucan-signature.checked-byte-inputs",
+          "ucan-signature.deterministic",
+          "ucan-signature.key-binding",
+          "ucan-signature.message-binding",
+          "ucan-signature.public-key-length",
+          "ucan-signature.round-trip",
+          "ucan-signature.secret-key-length",
+          "ucan-signature.signature-length"
+        ],
+        "non_claims": [
+          "not compiler correctness",
+          "not release approval",
+          "not third-party conformance",
+          "not verifier soundness",
+          "not whole-program correctness"
+        ]
+      }
+    },
+    {
+      "scope": "proof-example:basic_refinement",
+      "requirement_ids": [
+        "runnable-proof-examples.basic",
+        "runnable-proof-examples.commands"
+      ],
+      "property_ids": [
+        "runnable-proof-examples.basic",
+        "runnable-proof-examples.commands"
+      ],
+      "source_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "3bc67fb7cf417e492159f7d769567a7f70c36d7932bebc20f5dffdb30e0a8b6b"
+        },
+        {
+          "path": "tests/proof_examples/basic_refinement.rs",
+          "algorithm": "blake3",
+          "digest": "0f3fff62c129fb0d9b1e0636faf1a9b406f65168cc8c74fc6ab1899bcd6d4712"
+        }
+      ],
+      "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
+      "verifier_receipt": {
+        "verifier_identity": "verus",
+        "toolchain_identity": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+        "solver_identity": "z3 (declared solver of the pinned Verus toolchain; no version claim)",
+        "command_identity": "db94a9205bae9e372b6b7743393f02ce75541603489afcaea1244b92f58736b3",
+        "input_roots": [
+          "docs/requirements.md",
+          "tests/proof_examples/basic_refinement.rs"
+        ],
+        "result_identity": "56ff47b5dc9da30a9690745fe04b78fd4d9f1da6b7350f4e95830442f46a2b0c",
+        "result_status": "passed"
+      },
+      "assumptions": {
+        "trusted_boundaries": [],
+        "external_bodies": [],
+        "proof_gaps": [],
+        "dependencies": []
+      },
+      "status": "passed",
+      "recorded_only": false,
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not compiler correctness",
+        "not release approval",
+        "not third-party conformance",
+        "not verifier soundness",
+        "not whole-program correctness"
+      ],
+      "chain_identity": "268321efa4352df7e39b14c84cfdb91ef72957bdb5b448e01390be83fb3907f7",
+      "handoff": {
+        "schema": "trellis-proof-evidence-kamacite-handoff/v1",
+        "source_identity": "ed1ed24345b2e1a9c6d67ad977261c31bd821105255e087d71e900cb7c0d771a",
+        "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
+        "verifier_receipt_identity": "ff7b73b93a7f78b7a825769c65b95e9d10272d44420a6c3bb629b0cf2a5cec3c",
+        "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
+        "requirement_ids": [
+          "runnable-proof-examples.basic",
+          "runnable-proof-examples.commands"
+        ],
+        "non_claims": [
+          "not compiler correctness",
+          "not release approval",
+          "not third-party conformance",
+          "not verifier soundness",
+          "not whole-program correctness"
+        ]
+      }
+    }
+  ]
+}

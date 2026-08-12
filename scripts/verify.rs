@@ -374,6 +374,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Proof evidence IR chain validation",
+        &cargo,
+        ["run", "--quiet", "--bin", "proof_evidence_ir", "--", "check"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Proof evidence IR chain self-test",
+        &cargo,
+        ["run", "--quiet", "--bin", "proof_evidence_ir", "--", "self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Runtime-cost evidence metadata",
         "./scripts/check-runtime-evidence.rs",
         std::iter::empty::<&str>(),
