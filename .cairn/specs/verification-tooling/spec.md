@@ -6,9 +6,9 @@ Defines deterministic repository verification tooling and fixture-backed regress
 ## Requirements
 
 ### Requirement: Checker Fixture Regressions
+r[verification-tooling.checker-fixture-regressions]
 Verification checker scripts MUST have fixture-backed self-tests that cover both accepted inputs and representative rejected inputs for their enforced policy.
 
-r[verification-tooling.checker-fixture-regressions]
 
 #### Scenario: Valid fixtures pass
 
@@ -41,10 +41,10 @@ r[verification-tooling.checker-fixture-regressions]
 - THEN the fixture-backed self-tests run deterministically without requiring network access or the full repository test suite
 
 ### Requirement: JSON Artifact Contract Admission
+r[verification-tooling.json-artifact-contract-admission]
 
 Repository-owned JSON artifacts that are checked in for downstream consumption MUST have explicit contract-admission checks for their stable shape when they describe policy, proof evidence, baseline findings, or release/evidence metadata. Nickel contracts MUST validate schema identifiers, required fields, bounded enum values, safe relative paths, digest text formats, and explicit non-claim fields where applicable. Rust generators and semantic validators MUST remain authoritative for repository fact checks that require filesystem, Tracey, Verus, Cargo, or Octet execution.
 
-r[verification-tooling.json-artifact-contract-admission]
 
 #### Scenario: Valid JSON artifact is admitted
 
@@ -71,10 +71,10 @@ r[verification-tooling.json-artifact-contract-admission]
 - THEN validation rejects the fixture before semantic identity checks run
 
 ### Requirement: JSON Artifact Contract Fixtures
+r[verification-tooling.json-artifact-contract-fixtures]
 
 The JSON artifact contract checker MUST include positive and negative fixtures for each covered artifact family. Negative fixtures MUST cover missing required fields, unsupported schema versions, malformed digest fields, unsafe paths, unsupported enum values, overbroad claim fields, and malformed finding records where the artifact family contains findings.
 
-r[verification-tooling.json-artifact-contract-fixtures]
 
 #### Scenario: Proof-evidence fixture passes
 

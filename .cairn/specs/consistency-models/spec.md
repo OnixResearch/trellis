@@ -10,6 +10,7 @@ in asynchronous distributed systems.
 ## Requirements
 
 ### Requirement: Model Hierarchy
+r[consistency-models.model-hierarchy]
 
 The consistency-models domain MUST preserve the implication edges from the
 Jepsen model tree so stronger models refine weaker ones.
@@ -41,6 +42,7 @@ Jepsen model tree so stronger models refine weaker ones.
 - AND PRAM implies monotonic reads, monotonic writes, and read your writes
 
 ### Requirement: Shared History Vocabulary
+r[consistency-models.shared-history-vocabulary]
 
 Future implementations of the consistency-models domain MUST define all
 modeled guarantees over a shared history vocabulary instead of inventing a
@@ -77,6 +79,7 @@ separate event encoding for each model family.
   decisions
 
 ### Requirement: Availability Envelope
+r[consistency-models.availability-envelope]
 
 The specification MUST record the strongest availability envelope associated
 with each modeled level in asynchronous networks.
@@ -108,6 +111,7 @@ with each modeled level in asynchronous networks.
 - THEN it is marked as compatible with total availability
 
 ### Requirement: Strict Serializability
+r[consistency-models.strict-serializability]
 
 Strict serializability MUST admit only histories equivalent to a serial order
 of whole transactions that respects real-time precedence between non-overlapping
@@ -127,6 +131,7 @@ transactions.
   operations with the second transaction's sub-operations
 
 ### Requirement: Serializability
+r[consistency-models.serializability]
 
 Serializability MUST admit only histories equivalent to some serial order of
 whole transactions, and it MAY reorder transactions relative to real-time or
@@ -147,6 +152,7 @@ session order across transaction boundaries.
   both transactions
 
 ### Requirement: Repeatable Read
+r[consistency-models.repeatable-read]
 
 Repeatable read MUST keep each previously read object stable for the duration
 of a transaction, but it MAY allow predicate phantoms.
@@ -165,6 +171,7 @@ of a transaction, but it MAY allow predicate phantoms.
   read
 
 ### Requirement: Snapshot Isolation
+r[consistency-models.snapshot-isolation]
 
 Snapshot isolation MUST execute each transaction against a consistent snapshot,
 must expose its writes atomically at commit, and MUST abort one of two
@@ -185,6 +192,7 @@ transactions that both write the same object after overlapping snapshots.
 - THEN the history may still satisfy snapshot isolation
 
 ### Requirement: Monotonic Atomic View
+r[consistency-models.monotonic-atomic-view]
 
 Monotonic atomic view MUST ensure that once a transaction observes any effect
 of a committed transaction, later reads in that transaction observe all effects
@@ -205,6 +213,7 @@ phantoms.
 - THEN T1 may observe the newer committed value on a later read of x
 
 ### Requirement: Cursor Stability
+r[consistency-models.cursor-stability]
 
 Cursor stability MUST prevent concurrent modification of an object while a
 transaction holds a cursor on that object, but it MAY allow non-repeatable
@@ -224,6 +233,7 @@ reads where no cursor is retained.
 - THEN T1 may observe a different result on a later read
 
 ### Requirement: Read Committed
+r[consistency-models.read-committed]
 
 Read committed MUST prevent reads from observing writes by transactions that
 have not committed, but it MAY allow non-repeatable reads and phantoms.
@@ -241,6 +251,7 @@ have not committed, but it MAY allow non-repeatable reads and phantoms.
 - THEN T1 may observe the new committed value on the second read
 
 ### Requirement: Read Uncommitted
+r[consistency-models.read-uncommitted]
 
 Read uncommitted MUST prevent dirty writes, but it MAY allow dirty reads,
 non-repeatable reads, and phantoms.
@@ -258,6 +269,7 @@ non-repeatable reads, and phantoms.
 - THEN T2 may observe the value later discarded by T1
 
 ### Requirement: Linearizability
+r[consistency-models.linearizability]
 
 Linearizability MUST admit only histories equivalent to a total order of
 single-object operations that respects real-time precedence and the object's
@@ -277,6 +289,7 @@ single-threaded semantics.
   object's single-threaded behavior
 
 ### Requirement: Sequential Consistency
+r[consistency-models.sequential-consistency]
 
 Sequential consistency MUST admit only histories explainable by a total order
 of operations that preserves each process's program order, and it MAY ignore
@@ -296,6 +309,7 @@ real-time order across processes.
   intact and the object semantics still hold
 
 ### Requirement: Causal Consistency
+r[consistency-models.causal-consistency]
 
 Causal consistency MUST preserve the order of causally related operations for
 every process, but it MAY allow different processes to observe concurrent
@@ -316,6 +330,7 @@ operations in different orders.
   w1
 
 ### Requirement: PRAM
+r[consistency-models.pram]
 
 PRAM MUST preserve each process's write order everywhere, but it MAY allow
 different processes to disagree about the relative order of writes from
@@ -334,6 +349,7 @@ different writers.
 - THEN one replica may expose wp before wq while another exposes wq before wp
 
 ### Requirement: Writes Follow Reads
+r[consistency-session.writes-follow-reads]
 
 Writes follow reads MUST ensure that a write performed after reading some value
 cannot be ordered before the write that produced the value that was read.
@@ -352,6 +368,7 @@ cannot be ordered before the write that produced the value that was read.
   writes
 
 ### Requirement: Monotonic Reads
+r[consistency-models.monotonic-reads]
 
 Monotonic reads MUST ensure that a process's later read never observes a state
 older than a state it already observed.
@@ -369,6 +386,7 @@ older than a state it already observed.
 - THEN Q may still observe a state that predates w
 
 ### Requirement: Monotonic Writes
+r[consistency-models.monotonic-writes]
 
 Monotonic writes MUST ensure that writes from the same process are observed in
 program order everywhere.
@@ -387,6 +405,7 @@ program order everywhere.
   writes
 
 ### Requirement: Read Your Writes
+r[consistency-session.read-your-writes]
 
 Read your writes MUST ensure that a process's later read reflects that same
 process's earlier write.

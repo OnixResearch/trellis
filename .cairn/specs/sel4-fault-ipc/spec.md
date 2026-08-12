@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_fault_ipc` semantics in this repo. Scope
 ## Requirements
 
 ### Requirement: Fault IPC Preserves Fault Metadata
-
 r[sel4-fault-ipc.preservation]
+
 Encoding a structured fault into an IPC message and decoding it again MUST recover the same fault class and required payload fields.
 
 #### Scenario: Page fault roundtrip
@@ -18,8 +18,8 @@ Encoding a structured fault into an IPC message and decoding it again MUST recov
 - THEN the decoded fault has address `A` and access kind `K`
 
 ### Requirement: Fault IPC Delivers To The Handler Context
-
 r[sel4-fault-ipc.delivery]
+
 A modeled fault delivery step MUST deliver the encoded fault information to the configured fault-handler context.
 
 #### Scenario: Configured handler receives fault
@@ -29,8 +29,8 @@ A modeled fault delivery step MUST deliver the encoded fault information to the 
 - THEN the handler context receives that fault record
 
 ### Requirement: Fault IPC Payload Fields Are Uncorrupted
-
 r[sel4-fault-ipc.payload]
+
 Fault payload fields preserved by the model MUST not be modified by encode/decode or delivery steps.
 
 #### Scenario: Instruction pointer preserved

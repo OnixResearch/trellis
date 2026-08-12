@@ -9,11 +9,11 @@ isolation, subtree shedding, key rotation, and idempotent destruction.
 ## Requirements
 
 ### Requirement: Tree Well-Formedness
+r[cryptoshedding.tree-well-formedness]
 
 The parent relation MUST form a finite forest: each node has at most one
 parent, and there are no cycles. A root is a node with no parent.
 
-r[cryptoshedding.tree-well-formedness]
 
 #### Scenario: No cycles
 
@@ -36,11 +36,11 @@ r[cryptoshedding.tree-well-formedness]
 - THEN the tree is well-formed
 
 ### Requirement: Shed Definition
+r[cryptoshedding.shed-definition]
 
 Shedding key K MUST produce a new keystore equal to the old keystore with K
 removed. The tree structure is unchanged.
 
-r[cryptoshedding.shed-definition]
 
 #### Scenario: Shed present key
 
@@ -56,13 +56,13 @@ r[cryptoshedding.shed-definition]
 - THEN the keystore is unchanged
 
 ### Requirement: Chain Recoverability
+r[cryptoshedding.chain-recoverability]
 
 Data is encrypted under leaf nodes only (internal nodes protect other
 keys, not data directly). A datum encrypted under leaf key L is
 MUST be recoverable if and only if every key on the chain from L to its root is
 present in the keystore.
 
-r[cryptoshedding.chain-recoverability]
 
 #### Scenario: Full chain present
 
@@ -86,11 +86,11 @@ r[cryptoshedding.chain-recoverability]
 - THEN the datum is not recoverable
 
 ### Requirement: Shed Completeness
+r[cryptoshedding.shed-completeness]
 
 Destroying key K MUST render irrecoverable every datum whose leaf-to-root
 chain passes through K.
 
-r[cryptoshedding.shed-completeness]
 
 #### Scenario: Shed intermediate
 
@@ -105,11 +105,11 @@ r[cryptoshedding.shed-completeness]
 - THEN the datum under L is no longer recoverable
 
 ### Requirement: Shed Isolation
+r[cryptoshedding.shed-isolation]
 
 Destroying key K MUST NOT affect the recoverability of any datum whose
 leaf-to-root chain does not pass through K.
 
-r[cryptoshedding.shed-isolation]
 
 #### Scenario: Sibling subtree unaffected
 
@@ -126,6 +126,7 @@ r[cryptoshedding.shed-isolation]
 - THEN all data under R2 remain recoverable
 
 ### Requirement: Subtree Shedding
+r[cryptoshedding.subtree-shedding]
 
 Destroying an internal key K MUST shed the entire subtree rooted at K:
 every datum bound to a leaf whose chain passes through K or any
@@ -133,7 +134,6 @@ descendant of K becomes irrecoverable. (Derived lemma from
 chain-recoverability and shed-completeness; verified as an explicit
 proof artifact.)
 
-r[cryptoshedding.subtree-shedding]
 
 #### Scenario: Three-level subtree
 
@@ -142,6 +142,7 @@ r[cryptoshedding.subtree-shedding]
 - THEN both L1 and L2 data are irrecoverable
 
 ### Requirement: Rotation Correctness
+r[cryptoshedding.rotation-correctness]
 
 Rotation is an atomic re-parent: `tree'[L] = Some(P_new)`, all other
 entries unchanged. P_new MUST already exist in the tree. Cross-tree
@@ -153,7 +154,6 @@ leaf L from old parent P_old to new parent P_new: the old parent's
 destruction does not affect L's recoverability, and L is recoverable iff
 the new chain (L→P_new→...→root) is fully present.
 
-r[cryptoshedding.rotation-correctness]
 
 #### Scenario: Old parent shed after rotation
 
@@ -168,11 +168,11 @@ r[cryptoshedding.rotation-correctness]
 - THEN the datum under L is not recoverable
 
 ### Requirement: Idempotent Destruction
+r[cryptoshedding.idempotent-destruction]
 
 Destroying an already-destroyed key MUST be a no-op: the keystore and the
 recoverability of all data are unchanged.
 
-r[cryptoshedding.idempotent-destruction]
 
 #### Scenario: Double shed
 

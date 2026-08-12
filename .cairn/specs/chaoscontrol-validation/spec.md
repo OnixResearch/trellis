@@ -8,8 +8,8 @@ contract, not optional review notes.
 ## Requirements
 
 ### Requirement: Scheduler and Fault-Schedule Exec Paths Stay Acyclic
-
 r[chaoscontrol-validation.iterative-exec]
+
 The exec helpers in `src/chaoscontrol_scheduler.rs` and
 `src/chaoscontrol_fault_schedule.rs` MUST remain acyclic. Validation for this
 change uses deterministic command

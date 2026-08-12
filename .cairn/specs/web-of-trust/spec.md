@@ -72,8 +72,8 @@ cryptography internals.
 ## Requirements
 
 ### Requirement: Principal Fingerprint Determinism
-
 r[web-of-trust.principal-fingerprint]
+
 A principal identifier MUST be the full 32-byte BLAKE3 digest of the
 principal's canonical public-key bytes. The same canonical bytes MUST
 always produce the same identifier, and equality checks MUST use all 32
@@ -92,8 +92,8 @@ digest bytes rather than a truncated prefix.
 - THEN the principals are treated as distinct
 
 ### Requirement: Attestation Signature Binds Exact Payload
-
 r[web-of-trust.attestation-signature]
+
 An attestation signature MUST authenticate the issuer's canonical
 public-key bytes, the subject's canonical public-key bytes, trust role,
 validity window, and `sequence_no` exactly, using the canonical
@@ -121,8 +121,8 @@ non-canonical.
 - THEN payload construction rejects the input as non-canonical
 
 ### Requirement: Active Attestation Window
-
 r[web-of-trust.attestation-window]
+
 An attestation MUST be active at time `t` iff its signature is valid,
 `t` is inside the half-open window `[not_before, not_after)`, and no
 effective revocation targets it at or before `t`.
@@ -141,8 +141,8 @@ effective revocation targets it at or before `t`.
 - THEN the attestation is inactive
 
 ### Requirement: Revocation Is Exact and Monotone
-
 r[web-of-trust.revocation]
+
 A revocation record MUST be authenticated over its issuer, target
 reference, and effective time using the canonical revocation
 payload-byte grammar defined above. Tampering with issuer, target
@@ -204,8 +204,8 @@ revocation MUST remain effective for all later times.
 - THEN `B` is unaffected by that revocation
 
 ### Requirement: Trust Chains Compose Active Trust Edges
-
 r[web-of-trust.chain-validity]
+
 A trust chain MUST be valid only when every attestation in the chain is
 an active trust edge at the evaluation time, the first issuer is a
 trust root, each attestation's subject is the next attestation's issuer,
@@ -230,8 +230,8 @@ and no principal repeats in the chain.
 - THEN the chain is rejected because the attestation is non-operational in this change
 
 ### Requirement: Rooted Trust Resolution Is Depth Bounded
-
 r[web-of-trust.rooted-resolution]
+
 For a fixed trust-root set `Roots` and fixed evaluation time `t`, a
 rooted-trust decision for subject `S` under natural-number depth bound
 `d` MUST return trusted iff either:
@@ -264,8 +264,8 @@ rooted-trust decision for subject `S` under natural-number depth bound
 - THEN `S` does not resolve as trusted under that bound
 
 ### Requirement: Threshold Policy Counts Distinct Introducers
-
 r[web-of-trust.threshold]
+
 A threshold policy is parameterized by a natural `k`, an evaluation
 time `t`, and a natural-number depth bound `d`. The policy MUST reject
 when `k = 0`. For `k > 0`, it MUST accept subject `S` iff there exist at
@@ -331,8 +331,8 @@ a root subject is accepted only if the same `k`-introducer rule is met.
 ## Cross-Module Properties
 
 ### Requirement: Revocation Cuts Derived Trust
-
 r[properties.web-of-trust.revocation-cuts-trust]
+
 For fixed trust roots and fixed evaluation times, if a successful
 rooted-trust witness chain `C` for subject `S` includes attestation `A`,
 then once `A` is effectively revoked, that same witness chain `C` MUST
@@ -341,15 +341,15 @@ witness-local and does not forbid a different valid chain from still
 trusting `S`.
 
 ### Requirement: Resolution Is Monotone in Depth
-
 r[properties.web-of-trust.depth-monotone]
+
 For a fixed trust-root set and fixed evaluation time, if a subject
 resolves as trusted under depth bound `d`, then it MUST also resolve as
 trusted under every depth bound `d' >= d`.
 
 ### Requirement: Threshold Deduplicates Introducers
-
 r[properties.web-of-trust.threshold-dedup]
+
 For fixed trust roots, evaluation time, depth bound, threshold `k`, and
 subject `S`, once one active direct trust edge from introducer `I` to
 `S` has already been counted, any later active direct trust edge from

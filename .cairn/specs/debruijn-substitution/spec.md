@@ -9,8 +9,8 @@ reduction with explicit runtime overflow handling.
 ## Requirements
 
 ### Requirement: Well-Scopedness
-
 r[debruijn.well-scoped]
+
 
 A de Bruijn term MUST be well scoped at depth `d` if and only if every
 variable index appearing in the term is strictly smaller than `d` at the
@@ -30,8 +30,8 @@ available depth by one.
 - THEN the term is not well scoped
 
 ### Requirement: Shift Zero Is Identity
-
 r[debruijn.shift-zero]
+
 
 Shifting by zero MUST return the original term for every cutoff.
 
@@ -42,8 +42,8 @@ Shifting by zero MUST return the original term for every cutoff.
 - THEN the result equals `T`
 
 ### Requirement: Shift Composition
-
 r[debruijn.shift-compose]
+
 
 Shifting by `m` and then by `n` at the same cutoff MUST equal a single
 shift by `m + n` at that cutoff.
@@ -55,8 +55,8 @@ shift by `m + n` at that cutoff.
 - THEN the results are equal
 
 ### Requirement: Shift Preserves Scope
-
 r[debruijn.shift-preserves-scope]
+
 
 If a term is well scoped at depth `d` and the cutoff is at most `d`, then
 shifting by `k` MUST produce a term that is well scoped at depth `d + k`.
@@ -68,8 +68,8 @@ shifting by `k` MUST produce a term that is well scoped at depth `d + k`.
 - THEN the result is well scoped at depth `d + 1`
 
 ### Requirement: Lift/Substitute Cancellation
-
 r[debruijn.identity-substitution]
+
 
 Lifting a term by one at cutoff `c` and then substituting the matching
 variable `c` back in MUST recover the original term.
@@ -81,8 +81,8 @@ variable `c` back in MUST recover the original term.
 - THEN the original term `T` is recovered
 
 ### Requirement: Substitution Preserves Scope
-
 r[debruijn.subst-preserves-scope]
+
 
 If a body is well scoped at depth `d + 1` and the replacement term is
 well scoped at depth `d`, then substituting the replacement for variable
@@ -96,8 +96,8 @@ well scoped at depth `d`, then substituting the replacement for variable
 - THEN the result is well scoped at depth `d`
 
 ### Requirement: Beta Reduction Scope Safety
-
 r[debruijn.beta-scope]
+
 
 Beta reduction of a well-scoped redex `App(Abs(body), arg)` MUST produce
 an output term that is well scoped at the original outer depth. Non-redex

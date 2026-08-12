@@ -7,10 +7,10 @@ Defines the `verification-frontier` capability.
 ## Requirements
 
 ### Requirement: Contract Implication Admission
+r[verification-frontier.contract-implication]
 
 The system MUST provide a finite contract-implication model that classifies a callee precondition under caller facts, path facts, and type-bound facts as `Proven`, `Rejected`, or `Unknown`. `Proven` MUST mean every modeled assignment satisfying the available facts satisfies the callee precondition. `Rejected` MUST mean the modeled facts expose a violating assignment or a directly false precondition. `Unknown` MUST remain non-proof evidence and MUST NOT be treated as check-elision evidence by core helpers.
 
-r[verification-frontier.contract-implication]
 
 #### Scenario: Caller facts imply callee precondition
 
@@ -31,10 +31,10 @@ r[verification-frontier.contract-implication]
 - THEN the outcome is `Unknown` and no proof/elision claim is emitted
 
 ### Requirement: Type-Bound Fact Extraction
+r[verification-frontier.type-bound-facts]
 
 The system MUST expose deterministic type-bound fact extraction for modeled integer and boolean domains. Extracted facts MUST use named domain constants, MUST distinguish signed and unsigned domains, and MUST compose with caller facts without widening a caller-provided stricter bound.
 
-r[verification-frontier.type-bound-facts]
 
 #### Scenario: Unsigned type contributes nonnegative lower bound
 
@@ -55,10 +55,10 @@ r[verification-frontier.type-bound-facts]
 - THEN the normalized facts preserve the stricter range rather than widening it
 
 ### Requirement: Slice Access Certificate
+r[verification-frontier.slice-access-certificate]
 
 The system MUST provide a finite slice-access certificate model for a backing length, slice start, slice end, and fixed or bounded dynamic access offset. Admission MUST accept only certificates that prove every modeled access lies within the slice and the slice lies within the backing length. Inverted ranges, out-of-backing ranges, and unbounded dynamic offsets MUST be rejected or classified as `Unknown` rather than accepted.
 
-r[verification-frontier.slice-access-certificate]
 
 #### Scenario: Fixed in-slice offset is admitted
 
@@ -79,10 +79,10 @@ r[verification-frontier.slice-access-certificate]
 - THEN the outcome is `Unknown` or rejected, and it is not accepted as safe access evidence
 
 ### Requirement: Arena Scope Provenance
+r[verification-frontier.arena-scope-provenance]
 
 The system MUST provide an arena scope-provenance model where arenas, allocations, allocator wrappers, and containers carry a scope depth or explicit untracked provenance. A value allocated from a deeper local scope MUST NOT be returned from a shallower boundary or stored into a shallower-lived destination. Values allocated from caller-provided arenas MAY be returned when their provenance is no deeper than the caller boundary. Untracked heap-backed values MUST NOT be treated as arena-tainted unless an explicit provenance fact says so.
 
-r[verification-frontier.arena-scope-provenance]
 
 #### Scenario: Local arena allocation cannot escape by return
 
@@ -109,10 +109,10 @@ r[verification-frontier.arena-scope-provenance]
 - THEN the store is rejected
 
 ### Requirement: Progress Budget Admission
+r[verification-frontier.progress-budget]
 
 The system MUST provide a finite progress-budget admission model over task or control-flow summaries. The model MUST use named operation-cost constants and named budget values. A summary MUST be accepted only when every modeled acyclic path reaches yield or return within the configured budget and no modeled cycle can avoid yield or return indefinitely.
 
-r[verification-frontier.progress-budget]
 
 #### Scenario: All paths stay within budget
 
@@ -133,10 +133,10 @@ r[verification-frontier.progress-budget]
 - THEN the summary is rejected
 
 ### Requirement: External Reference Boundary
+r[verification-frontier.external-reference-boundary]
 
 The system MUST document Lattice/Salt as an external design reference only when explaining these adapted verification-frontier patterns. Documentation and evidence MUST NOT treat Lattice code, benchmarks, or solver behavior as trusted validation for Trellis. Trellis claims MUST be backed by repo-local specs, proofs, tests, Tracey coverage, and validation logs.
 
-r[verification-frontier.external-reference-boundary]
 
 #### Scenario: Reference is labeled as inspiration
 
@@ -157,10 +157,10 @@ r[verification-frontier.external-reference-boundary]
 - THEN the external measurement is not copied as a Trellis guarantee
 
 ### Requirement: Outcome Invariant Bundle
+r[verification-frontier.outcome-invariant-bundle]
 
 The verification-frontier module MUST expose reusable invariant facts for public admission outcomes. For every public admission family, `Proven` MUST imply the modeled safety predicate for that family, `Unknown` MUST remain non-proof evidence, and rejected outcomes MUST NOT be accepted as proof or check-elision evidence.
 
-r[verification-frontier.outcome-invariant-bundle]
 
 #### Scenario: Proven outcome exposes safety fact
 
@@ -181,10 +181,10 @@ r[verification-frontier.outcome-invariant-bundle]
 - THEN the invariant bundle rejects that use and preserves the rejection reason for diagnostics
 
 ### Requirement: Admission Metadata Stability
+r[verification-frontier.metadata-stability]
 
 Verification-frontier admission helpers MUST use stable named reason codes and deterministic evidence fields for rejected and unknown outcomes. Evidence fields MUST be derived from modeled inputs or named constants and MUST NOT depend on external benchmarks, wall-clock time, process state, or solver behavior outside the Trellis proof surface.
 
-r[verification-frontier.metadata-stability]
 
 #### Scenario: Unsupported predicate carries stable reason
 

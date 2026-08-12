@@ -9,7 +9,8 @@ supplied half-open live ranges `LiveRange { start, end }`.
 
 ## Requirements
 
-### Requirement: Non-Overlap [r[stack-frame.non-overlap]]
+### Requirement: Non-Overlap
+r[stack-frame.non-overlap]
 
 Stack slot layouts MUST keep simultaneously-live locals or spills in disjoint
 half-open byte ranges. Two locals or spills whose live ranges do not overlap MAY
@@ -28,7 +29,8 @@ reuse the same byte range.
 - WHEN reuse compatibility is checked
 - THEN the reuse is accepted
 
-### Requirement: Alignment [r[stack-frame.alignment]]
+### Requirement: Alignment
+r[stack-frame.alignment]
 
 Every stack slot MUST start at an offset divisible by its declared alignment,
 and every valid frame MUST keep the final frame size divisible by the stack
@@ -46,7 +48,8 @@ alignment.
 - WHEN the frame size is checked
 - THEN `frame_size % stack_alignment == 0`
 
-### Requirement: Frame Size [r[stack-frame.frame-size]]
+### Requirement: Frame Size
+r[stack-frame.frame-size]
 
 The frame size MUST equal the stack-aligned rounding of the maximum slot end in
 that layout. Invalid or misaligned slot inputs MUST be rejected instead of being
@@ -65,7 +68,8 @@ silently rounded.
 - WHEN frame size computation is requested
 - THEN no frame size is produced
 
-### Requirement: Stack Growth [r[stack-frame.growth]]
+### Requirement: Stack Growth
+r[stack-frame.growth]
 
 Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot

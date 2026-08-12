@@ -5,10 +5,10 @@
 This specification tracks source-derived proof-gap and trusted-boundary inventory requirements. It preserves the closed UCAN DID varint boundary requirement and records the current audit policy for remaining trusted cryptographic, codec, runtime, and solver-limit bridges.
 ## Requirements
 ### Requirement: UCAN DID Varint Decode Boundary Is Closed
+r[verification-gaps.close-ucan-did-varint-decode]
 
 `src/ucan_did.rs::varint_decode` MUST no longer be a trusted or weakened proof boundary. The implementation MUST remove its `#[verifier::external_body]` attribute and MUST NOT replace it with `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, or a runtime-only `@verified-logic:exempt` marker.
 
-r[verification-gaps.close-ucan-did-varint-decode]
 
 #### Scenario: Source audit finds no trusted varint decoder bridge
 
@@ -30,10 +30,10 @@ r[verification-gaps.close-ucan-did-varint-decode]
 - THEN both verifier runs pass without a `varint_decode` external body
 
 ### Requirement: Proof-Gap Inventory Reflects The Closed Boundary
+r[verification-gaps.inventory-after-ucan-did-varint]
 
 The repo-wide verification-gap inventory MUST remove the closeable row for `src/ucan_did.rs::varint_decode` and update all source-derived published totals. With the UCAN attenuation-chain checker, ability-subsumption checker, principal-link DID extraction bridge, SSA runtime-helper wrappers, instruction-selection public API surfaces, equal-input hash determinism / SHA-256 width facts, recursive `cv_fuel` proof lemmas, log-matching leader-append preservation lemmas, CID multibase round-trip bridge, and web-of-trust attestation/revocation signature-input checks verified, the current expected inventory is `16` total trusted/weakened/runtime-only boundaries: `16` `#[verifier::external_body]` sites, `0` `assume_specification[...]` bridges, and `0` instruction-selection runtime-only exemptions. No `@verified-logic:no-ensures` markers remain.
 
-r[verification-gaps.inventory-after-ucan-did-varint]
 
 #### Scenario: Counts are derived from source
 
@@ -49,10 +49,10 @@ r[verification-gaps.inventory-after-ucan-did-varint]
 - THEN both coverage queries report zero missing coverage items
 
 ### Requirement: Source-Derived Proof-Gap Boundary Inventory
+r[verification-gaps.boundary-audit.inventory]
 
 The system MUST maintain a source-derived inventory of remaining trusted or weakened proof boundaries before any proof-gap closeout attempt updates published counts.
 
-r[verification-gaps.boundary-audit.inventory]
 
 #### Scenario: Inventory lists every trusted boundary
 
@@ -62,10 +62,10 @@ r[verification-gaps.boundary-audit.inventory]
 - AND it separately reports counts for `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, and runtime-only exemption markers
 
 ### Requirement: Permanent And Closeable Boundary Classification
+r[verification-gaps.boundary-audit.classification]
 
 The system MUST classify each remaining proof boundary as permanent trust or a closeable structural candidate before implementation work removes, rewrites, or re-counts the boundary.
 
-r[verification-gaps.boundary-audit.classification]
 
 #### Scenario: Cryptographic runtime trust is not overclaimed
 
@@ -80,10 +80,10 @@ r[verification-gaps.boundary-audit.classification]
 - THEN the audit records the finite structural property to prove, the touched module, and the focused Verus/Tracey evidence required for closure
 
 ### Requirement: Bounded Closeout Slice
+r[verification-gaps.boundary-audit.closeout-slice]
 
 The system MUST drain at most one selected closeable boundary family per proof-gap audit closeout slice, and MUST NOT introduce `assume(...)`, `assume_specification[...]`, `@verified-logic:no-ensures`, runtime-only exemption markers, or new `#[verifier::external_body]` sites as replacements.
 
-r[verification-gaps.boundary-audit.closeout-slice]
 
 #### Scenario: Failed closeout is reclassified rather than hidden
 
@@ -93,10 +93,10 @@ r[verification-gaps.boundary-audit.closeout-slice]
 - AND no replacement weakened marker is added
 
 ### Requirement: Published Inventory Synchronization
+r[verification-gaps.boundary-audit.inventory-sync]
 
 The system MUST synchronize README, requirements, and canonical OpenSpec proof-gap totals from source-derived count evidence whenever the trusted-boundary inventory changes.
 
-r[verification-gaps.boundary-audit.inventory-sync]
 
 #### Scenario: Published counts match source audit
 
@@ -106,10 +106,10 @@ r[verification-gaps.boundary-audit.inventory-sync]
 - AND Tracey uncovered and untested queries remain green
 
 ### Requirement: Proof-Gap Inventory Drift Gate
+r[verification-gaps.inventory-drift-gate]
 
 The system MUST provide a Rust-script inventory gate that scans source files for trusted or weakened proof-gap markers and fails when live counts drift from the published expected inventory.
 
-r[verification-gaps.inventory-drift-gate]
 
 #### Scenario: Current source inventory passes
 
@@ -133,10 +133,10 @@ r[verification-gaps.inventory-drift-gate]
 - THEN it invokes the Rust inventory script before cargo, Verus, and Tracey checks claim success
 
 ### Requirement: Proof-Gap Site-List Drift Gate
+r[verification-gaps.inventory-site-list-drift-gate]
 
 The system MUST validate the exact current `#[verifier::external_body]` site list, not only the aggregate count, so same-count proof-gap substitutions fail closed.
 
-r[verification-gaps.inventory-site-list-drift-gate]
 
 #### Scenario: Current external-body site list passes
 
@@ -159,10 +159,10 @@ r[verification-gaps.inventory-site-list-drift-gate]
 - THEN the Rust checker validates both marker counts and the exact external-body site list before full verification can pass
 
 ### Requirement: Proof-Gap Classification Drift Gate
+r[verification-gaps.inventory-classification-drift-gate]
 
 The system MUST validate the classification attached to every expected proof-gap site, so permanent trust and closeable-candidate labels cannot silently drift independently of the exact site list.
 
-r[verification-gaps.inventory-classification-drift-gate]
 
 #### Scenario: Current classifications pass
 
@@ -183,10 +183,10 @@ r[verification-gaps.inventory-classification-drift-gate]
 - THEN classification drift is checked before full verification can pass
 
 ### Requirement: Proof-Gap Site Manifest Source
+r[verification-gaps.inventory-site-manifest-source]
 
 The system MUST load the expected proof-gap external-body site baseline from a checked repository manifest and fail closed when the manifest is malformed, stale, or inconsistent with live source.
 
-r[verification-gaps.inventory-site-manifest-source]
 
 #### Scenario: Manifest and source match
 
@@ -207,9 +207,9 @@ r[verification-gaps.inventory-site-manifest-source]
 - THEN it rejects the drift before full verification can pass
 
 ### Requirement: Nix Version Bridge Decomposition
+r[verification-gaps.nix-version-bridge-decomposition]
 The system MUST provide a bounded structural decomposition of `src/nix_version.rs::compare_versions` that routes admitted finite-model inputs through verified executable comparison helpers while keeping out-of-model inputs on an explicit fallback trusted boundary.
 
-r[verification-gaps.nix-version-bridge-decomposition]
 
 #### Scenario: Finite comparator agrees with modeled cases
 
@@ -230,9 +230,9 @@ r[verification-gaps.nix-version-bridge-decomposition]
 - THEN it uses the verified modeled executable path and the trusted inventory retains only the unmodeled fallback boundary
 
 ### Requirement: Nix Version Modeled Compare Bridge
+r[verification-gaps.nix-version-modeled-compare-bridge]
 The system MUST compute admitted finite-model Nix version comparisons through verified executable helpers for separator skipping, component bounds, numeric parsing, and lexicographic comparison. The modeled wrapper MUST return an ordering matching `compare_versions_spec` for admitted inputs, return no ordering claim for out-of-model inputs, and keep only the unmodeled fallback external-body trusted boundary visible for the broader API.
 
-r[verification-gaps.nix-version-modeled-compare-bridge]
 
 #### Scenario: Admitted modeled comparison is executable evidence
 
@@ -255,9 +255,9 @@ r[verification-gaps.nix-version-modeled-compare-bridge]
 - AND no replacement weakened marker or additional external body is introduced
 
 ### Requirement: Single Trusted Boundary Closure Slice
+r[verification-gaps.single-boundary-closure]
 A trusted-boundary closure change MUST select one tracked proof-gap site or one tightly related site family, justify why it is closeable or narrowable, and update source, inventory, and evidence together.
 
-r[verification-gaps.single-boundary-closure]
 
 #### Scenario: Target is selected from current inventory
 
@@ -284,9 +284,9 @@ r[verification-gaps.single-boundary-closure]
 - THEN the evidence supports the updated trusted-boundary count and no uncovered or untested requirements remain
 
 ### Requirement: Proof-Gap Manifest Rationale Source
+r[verification-gaps.manifest-rationale-source]
 The proof-gap site manifest MUST include a concise rationale for every expected trusted or weakened boundary so the checked inventory explains why each remaining boundary is acceptable.
 
-r[verification-gaps.manifest-rationale-source]
 
 #### Scenario: Manifest rows include rationale
 
@@ -302,9 +302,9 @@ r[verification-gaps.manifest-rationale-source]
 - THEN the rationale is associated with the same path and function signature used for exact-site drift detection
 
 ### Requirement: Proof-Gap Manifest Rationale Drift Gate
+r[verification-gaps.manifest-rationale-drift-gate]
 The proof-gap inventory checker MUST reject rationale manifest drift before full verification can pass.
 
-r[verification-gaps.manifest-rationale-drift-gate]
 
 #### Scenario: Current rationale manifest passes
 
@@ -334,9 +334,9 @@ r[verification-gaps.manifest-rationale-drift-gate]
 - THEN rationale validation runs before full verification can pass
 
 ### Requirement: Published Proof-Gap Rationale Alignment
+r[verification-gaps.manifest-rationale-publication]
 Published proof-gap prose MUST point reviewers to the checked manifest as the authoritative per-site rationale source after rationale fields are introduced.
 
-r[verification-gaps.manifest-rationale-publication]
 
 #### Scenario: README describes the checked rationale source
 

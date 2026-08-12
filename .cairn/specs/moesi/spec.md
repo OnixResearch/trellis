@@ -19,7 +19,8 @@ freshness through cache-vs-memory source selection.
 
 ## Requirements
 
-### Requirement: Single-Writer Invariant [r[moesi.single-writer]]
+### Requirement: Single-Writer Invariant
+r[moesi.single-writer]
 
 At most one cache MUST hold a line in `Modified` or `Owned` at any time.
 
@@ -29,7 +30,8 @@ At most one cache MUST hold a line in `Modified` or `Owned` at any time.
 - WHEN a full read, full write, or eviction transition is applied
 - THEN no pair of caches is simultaneously in `Modified` or `Owned`
 
-### Requirement: Modified Remote Read Enters Owned [r[moesi.owned-entry]]
+### Requirement: Modified Remote Read Enters Owned
+r[moesi.owned-entry]
 
 A remote read against a `Modified` owner MUST move that owner to
 `Owned` while the requester becomes `Shared`.
@@ -40,7 +42,8 @@ A remote read against a `Modified` owner MUST move that owner to
 - WHEN cache B performs a full read
 - THEN cache A becomes `Owned` and cache B becomes `Shared`
 
-### Requirement: Owned Supplies Dirty Data [r[moesi.owned-supply]]
+### Requirement: Owned Supplies Dirty Data
+r[moesi.owned-supply]
 
 When some cache holds a line in `Owned`, reads MUST source dirty data
 from a cache rather than from memory.
@@ -51,7 +54,8 @@ from a cache rather than from memory.
 - WHEN another cache reads the line
 - THEN the read source is `cache`, not `memory`
 
-### Requirement: Owned Eviction Writes Back [r[moesi.writeback]]
+### Requirement: Owned Eviction Writes Back
+r[moesi.writeback]
 
 Evicting an `Owned` line MUST write back before the owner is lost.
 Evicting a `Shared` line MUST NOT require a writeback.
@@ -74,7 +78,8 @@ Evicting a `Shared` line MUST NOT require a writeback.
 - WHEN cache A evicts the line
 - THEN cache A becomes `Invalid` and the writeback flag stays false
 
-### Requirement: Transition Completeness [r[moesi.transitions]]
+### Requirement: Transition Completeness
+r[moesi.transitions]
 
 Every valid processor event and snoop bus action MUST produce a valid
 next state / bus action result.
@@ -85,7 +90,8 @@ next state / bus action result.
 - WHEN a processor event or snoop bus action is applied
 - THEN the resulting state is valid and any returned bus action is valid
 
-### Requirement: MESI Refinement [r[moesi.mesi-refinement]]
+### Requirement: MESI Refinement
+r[moesi.mesi-refinement]
 
 MOESI MUST agree with the existing MESI transition model after mapping
 `Owned -> Shared` for transitions whose source and result both stay within the
@@ -99,7 +105,8 @@ MOESI MUST agree with the existing MESI transition model after mapping
 - THEN the resulting state matches MESI after the `Owned -> Shared`
   mapping
 
-### Requirement: No Stale Reads [r[moesi.no-stale-reads]]
+### Requirement: No Stale Reads
+r[moesi.no-stale-reads]
 
 Under the memory-consistency relation, reads MUST use memory only when
 memory is current; otherwise some cache MUST be the read source.

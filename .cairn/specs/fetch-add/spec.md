@@ -11,6 +11,7 @@ and stores old + addend.
 ## Requirements
 
 ### Requirement: Return Semantics
+r[bounds.in-range]
 
 FAA MUST return the value that was in the cell before the addition and
 store the sum in the cell.
@@ -28,6 +29,7 @@ store the sum in the cell.
 - THEN the returned value is `c` and the new cell content is `min(c + a, u64::MAX)`
 
 ### Requirement: Identity
+r[shamir-field.additive-identity]
 
 FAA with addend zero MUST be a no-op.
 
@@ -44,6 +46,7 @@ FAA with addend zero MUST be a no-op.
 - THEN the returned value is `c` and the new cell content is `c`
 
 ### Requirement: Commutativity
+r[fetch-add.associativity]
 
 Two sequential FAAs MUST produce the same final cell value regardless of
 the order the addends are applied.
@@ -61,6 +64,7 @@ the order the addends are applied.
 - THEN the final cell value equals that of `fetch_add_saturating(c, b)` then `fetch_add_saturating(result, a)`
 
 ### Requirement: Associativity
+r[fetch-add.associativity]
 
 Sequential `faa(a)` then `faa(b)` MUST produce the same final cell value
 as a single `faa(a + b)` for both wrapping and saturating arithmetic.
@@ -78,6 +82,7 @@ as a single `faa(a + b)` for both wrapping and saturating arithmetic.
 - THEN the final cell value equals that of `fetch_add_saturating(c, saturating_add(a, b))`
 
 ### Requirement: Monotonicity
+r[election-jitter.bounded]
 
 When the addend is positive and no overflow occurs, the new cell value
 MUST be strictly greater than the old value.
@@ -95,6 +100,7 @@ MUST be strictly greater than the old value.
 - THEN the new cell value MAY be less than `c` (wrapping occurred)
 
 ### Requirement: CAS Refinement
+r[fetch-add.cas-refinement]
 
 FAA MUST be expressible as a CAS loop where the desired value is
 `current + addend`, and the CAS always succeeds when expected equals
@@ -107,6 +113,7 @@ current.
 - THEN the CAS succeeds and the result matches `fetch_add_wrapping(c, a)`
 
 ### Requirement: Wrapping Arithmetic Correctness
+r[fetch-add.wrapping]
 
 The wrapping add helper MUST satisfy modular arithmetic identities.
 
@@ -129,6 +136,7 @@ The wrapping add helper MUST satisfy modular arithmetic identities.
 - THEN the result is `0`
 
 ### Requirement: Saturating Arithmetic Correctness
+r[fetch-add.saturating]
 
 The saturating add helper MUST clamp at `u64::MAX`.
 
@@ -151,6 +159,7 @@ The saturating add helper MUST clamp at `u64::MAX`.
 - THEN the result is `u64::MAX`
 
 ### Requirement: Fetch-Sub Duality
+r[fetch-add.fetch-sub]
 
 Fetch-sub MUST be equivalent to FAA with the two's complement negation
 of the subtrahend.

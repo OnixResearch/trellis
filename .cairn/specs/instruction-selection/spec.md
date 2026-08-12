@@ -55,7 +55,8 @@ failure on incomplete tile sets.
 
 ## Requirements
 
-### Requirement: Completeness [r[isel.completeness]]
+### Requirement: Completeness
+r[isel.completeness]
 
 For complete tile sets, every node in the expression tree MUST be covered
 by exactly one selected tile.
@@ -86,7 +87,8 @@ by exactly one selected tile.
 - WHEN `optimal_tiling` is invoked
 - THEN it returns a successful tiling instead of a missing-tile failure
 
-### Requirement: Incomplete Tile-Set Failure [r[isel.incomplete-tile-set-failure]]
+### Requirement: Incomplete Tile-Set Failure
+r[isel.incomplete-tile-set-failure]
 
 If some subtree root has no matching tile, instruction selection MUST
 return an explicit failure result rather than fabricate a tiling.
@@ -112,7 +114,8 @@ return an explicit failure result rather than fabricate a tiling.
 - WHEN `optimal_tiling` fails
 - THEN it reports the canonical preorder-minimal unmatched root path
 
-### Requirement: Soundness [r[isel.soundness]]
+### Requirement: Soundness
+r[isel.soundness]
 
 Each selected tile's pure semantics MUST match the pure evaluation of the
 subtree it replaces.
@@ -130,7 +133,8 @@ subtree it replaces.
 - WHEN the tiled root output is compared to `subtree_eval(root)`
 - THEN the results are equal
 
-### Requirement: Optimality [r[isel.optimality]]
+### Requirement: Optimality
+r[isel.optimality]
 
 The DP algorithm MUST return a tiling with minimum total cost among all valid
 tilings for the same tree and ordered tile sequence.
@@ -147,7 +151,8 @@ tilings for the same tree and ordered tile sequence.
 - WHEN the optimal cost is computed
 - THEN it equals the minimum total candidate cost among those leaf tiles
 
-### Requirement: Tile Matching [r[isel.matching]]
+### Requirement: Tile Matching
+r[isel.matching]
 
 A tile MUST match a subtree iff the tile pattern structurally matches the
 subtree opcode, literal boundary, and child shape.
@@ -192,7 +197,8 @@ subtree opcode, literal boundary, and child shape.
 - WHEN matching is checked
 - THEN the tile does not match
 
-### Requirement: DP Recurrence [r[isel.dp-recurrence]]
+### Requirement: DP Recurrence
+r[isel.dp-recurrence]
 
 The optimal cost at each subtree root MUST satisfy the dynamic-programming
 recurrence over matching tiles and uncovered child roots.
@@ -209,7 +215,8 @@ recurrence over matching tiles and uncovered child roots.
 - WHEN the DP step for `P` is computed
 - THEN the result is failure rather than a numeric cost
 
-### Requirement: Determinism [r[isel.determinism]]
+### Requirement: Determinism
+r[isel.determinism]
 
 For a fixed tree and ordered tile sequence, instruction selection MUST produce
  a unique result by using a fixed tie-break rule on equal-cost candidates.

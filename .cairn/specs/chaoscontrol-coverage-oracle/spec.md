@@ -8,8 +8,8 @@ ChaosControl.
 ## Requirements
 
 ### Requirement: Coverage Bitmap Region Layout
-
 r[chaoscontrol-coverage.regions]
+
 A coverage bitmap MUST be a `65536`-byte array partitioned into three exact,
 non-overlapping contiguous regions: code `[0, 32768)`, assertion
 `[32768, 49152)`, and schedule `[49152, 65536)`. Coverage helpers operate on
@@ -32,8 +32,8 @@ regions MUST leave the other two regions unchanged.
 - THEN every index outside that region is unchanged
 
 ### Requirement: Coverage Merge and New-Edge Algebra
-
 r[chaoscontrol-coverage.union]
+
 Coverage merge MUST be exact pointwise `max` over `u8` counters. A new-edge
 query MUST return the exact `u32` count of indices `i` with `branch[i] > 0`
 and `global[i] == 0`.
@@ -51,8 +51,8 @@ and `global[i] == 0`.
 - THEN the result equals the number of indices where `B[i] > 0` and `G[i] == 0`
 
 ### Requirement: Coverage Classification Buckets
-
 r[chaoscontrol-coverage.classify]
+
 Coverage classification MUST use the exact AFL bucket map:
 `0 -> 0`, `1 -> 1`, `2 -> 2`, `3 -> 3`, `4..7 -> 4`, `8..15 -> 8`,
 `16..31 -> 16`, `32..127 -> 32`, and `128..255 -> 128`.
@@ -70,8 +70,8 @@ Coverage classification MUST use the exact AFL bucket map:
 - THEN the bucket value is `128`
 
 ### Requirement: Assertion Oracle Verdict Semantics
-
 r[chaoscontrol-oracle.verdict]
+
 Depends on `r[chaoscontrol-oracle.accounting]`.
 Verdict evaluation applies only to assertion kinds
 `{always, sometimes, reachable, unreachable}` and aggregate records whose
@@ -113,8 +113,8 @@ shapes are outside contract.
 - THEN that record is outside the valid input contract
 
 ### Requirement: Oracle Run Accounting
-
 r[chaoscontrol-oracle.accounting]
+
 Aggregate accounting MUST preserve exact count invariants.
 `runs_satisfied <= runs_hit` and `runs_hit == 0 <=> hit_count == 0` hold for
 all valid records. For boolean kinds, `runs_hit` counts runs in which the

@@ -8,8 +8,8 @@ together.
 ## Requirements
 
 ### Requirement: Schedule Replay Preserves Subset Reproducer Order
-
 r[properties.chaoscontrol-subset-replay]
+
 Depends on `r[chaoscontrol-fault-schedule.replay]` and
 `r[chaoscontrol-fault-schedule.subset]`.
 For normalized schedules, if `subset(source, indices)` is replayed from
@@ -24,8 +24,8 @@ appear in the same relative order as in `source`.
 - THEN delivered faults appear in the same relative order as in the source schedule
 
 ### Requirement: Scheduler Fingerprint Depends Only on Turn Trace
-
 r[properties.chaoscontrol-fingerprint-trace]
+
 Depends on `r[chaoscontrol-scheduler.fingerprint]`.
 For schedulers that start from the same full scheduler state, or from the same
 full post-`apply_variant` reset state, executions with the same post-advance
@@ -42,8 +42,8 @@ same stored `default_quantum`, and the same reset fields `active = 0`,
 - THEN their final fingerprints are equal
 
 ### Requirement: Healthy Quorum Gates Liveness Checks
-
 r[properties.chaoscontrol-quorum-gate]
+
 Depends on `r[chaoscontrol-fault-state.quorum-health]` and
 `r[chaoscontrol-fault-state.liveness-gate]`.
 This is a separate cross-module proof target for `src/properties.rs`, not a

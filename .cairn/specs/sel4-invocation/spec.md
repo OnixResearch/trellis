@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_invocation` semantics in this repo. Scop
 ## Requirements
 
 ### Requirement: Invocation Decode Is Sound
-
 r[sel4-invocation.decode-soundness]
+
 Invocation decode MUST return a typed kernel invocation only when the supplied message fields, looked-up capabilities, object types, and rights satisfy that invocation's preconditions. For this change's starter set, the modeled typed invocations are exactly endpoint send, endpoint receive, frame map, and untyped retype. For frame-map, authority is checked on the primary frame capability; the secondary VSpace capability is a typed root reference in this abstract decode surface.
 
 #### Scenario: Well-typed authorized invocation decodes
@@ -18,8 +18,8 @@ Invocation decode MUST return a typed kernel invocation only when the supplied m
 - THEN a typed invocation is returned
 
 ### Requirement: Malformed Or Under-Authorized Requests Are Rejected
-
 r[sel4-invocation.reject]
+
 Decode MUST fail or produce a fault when the object type is wrong, required rights are absent, or arguments are malformed. Decode-level malformed checks reject zero size / zero alignment in the starter set, while exact alignment and layout validity remain downstream obligations of the modeled operation modules.
 
 #### Scenario: Wrong object type rejected
@@ -35,8 +35,8 @@ Decode MUST fail or produce a fault when the object type is wrong, required righ
 - THEN decode fails
 
 ### Requirement: Decode Never Invents Authority
-
 r[sel4-invocation.no-invented-authority]
+
 Decode MUST NOT introduce authority not reachable from the supplied capability and lookup context. For this abstract decode surface, "reachable from context" means the decoded invocation may mention only object identifiers already carried by the supplied primary/secondary capability records.
 
 #### Scenario: No extra authority appears

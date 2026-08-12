@@ -8,8 +8,8 @@ from ChaosControl.
 ## Requirements
 
 ### Requirement: Frontier Effective Score Ordering
-
 r[chaoscontrol-frontier.selection]
+
 Greedy frontier selection is defined on non-empty, stable-order input
 sequences. Frontier entries use `u32` `base_score` and `u32`
 `times_selected` values. Each frontier input sequence also has a stable
@@ -45,8 +45,8 @@ broken by the lowest input index.
 - THEN the lower input index is chosen first
 
 ### Requirement: Input-Tree Alternatives Respect Budget
-
 r[chaoscontrol-input-tree.alternatives]
+
 Input-tree generation operates on normalized tuples
 `(vm_id: u32, sequence_id: u64, n_options: u32, original_value: u64)` with
 `n_options >= 2`, `original_value < n_options`,

@@ -18,7 +18,8 @@ Drain and fence behavior are modeled explicitly over FIFO order.
 
 ## Requirements
 
-### Requirement: Youngest Match [r[store-buffer.youngest-match]]
+### Requirement: Youngest Match
+r[store-buffer.youngest-match]
 
 Forwarding MUST select the youngest buffered store that matches the load.
 
@@ -35,7 +36,8 @@ Forwarding MUST select the youngest buffered store that matches the load.
 - WHEN the load checks the buffer
 - THEN `S2` is forwarded and `S1` is ignored
 
-### Requirement: Full Coverage [r[store-buffer.full-coverage]]
+### Requirement: Full Coverage
+r[store-buffer.full-coverage]
 
 Forwarding MUST occur only when one buffered store fully covers the load
 byte range.
@@ -52,7 +54,8 @@ byte range.
 - WHEN the load checks the buffer
 - THEN forwarding is denied
 
-### Requirement: Cache Fallback [r[store-buffer.cache-fallback]]
+### Requirement: Cache Fallback
+r[store-buffer.cache-fallback]
 
 When no buffered store matches a load, the load MUST use the cache path.
 
@@ -68,7 +71,8 @@ When no buffered store matches a load, the load MUST use the cache path.
 - WHEN the load checks the buffer
 - THEN the load uses the cache path
 
-### Requirement: Drain Ordering [r[store-buffer.drain-ordering]]
+### Requirement: Drain Ordering
+r[store-buffer.drain-ordering]
 
 Buffered stores MUST drain in FIFO order.
 
@@ -85,7 +89,8 @@ Buffered stores MUST drain in FIFO order.
 - WHEN `drain_all` is observed
 - THEN the drained sequence matches the original buffer order exactly
 
-### Requirement: Store Fence [r[store-buffer.fence]]
+### Requirement: Store Fence
+r[store-buffer.fence]
 
 A completed store fence MUST leave the buffer empty before any post-fence
 store is enqueued.
@@ -102,7 +107,8 @@ store is enqueued.
 - WHEN a new store is enqueued
 - THEN it enters an empty buffer as the only buffered store
 
-### Requirement: Buffer Capacity [r[store-buffer.capacity]]
+### Requirement: Buffer Capacity
+r[store-buffer.capacity]
 
 The buffer MUST NOT silently drop stores when full.
 

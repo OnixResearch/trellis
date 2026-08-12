@@ -10,6 +10,7 @@ correctness.
 ## Requirements
 
 ### Requirement: Lattice Properties
+r[constfold.finite-height]
 
 The constant propagation lattice MUST satisfy bounded lattice axioms.
 
@@ -38,6 +39,7 @@ The constant propagation lattice MUST satisfy bounded lattice axioms.
 - THEN the result is A
 
 ### Requirement: Finite Height
+r[constfold.finite-height]
 
 The lattice MUST have bounded height so iteration terminates.
 
@@ -48,6 +50,7 @@ The lattice MUST have bounded height so iteration terminates.
 - THEN it is at most 2 (Top → Const → Bottom)
 
 ### Requirement: Transfer Function Monotonicity
+r[chain.collision-free]
 
 The transfer function MUST be monotone with respect to the lattice ordering.
 
@@ -58,6 +61,7 @@ The transfer function MUST be monotone with respect to the lattice ordering.
 - THEN `transfer(instr, env1) ≤ transfer(instr, env2)`
 
 ### Requirement: Fixed-Point Convergence
+r[liveness.convergence]
 
 The iterative analysis MUST reach a fixed point.
 
@@ -74,6 +78,7 @@ The iterative analysis MUST reach a fixed point.
 - THEN no environment changes
 
 ### Requirement: Soundness
+r[constant-folding.soundness]
 
 If the analysis classifies a variable as a constant, that classification
 MUST be correct on all execution paths covered by the current fixed-point
@@ -100,6 +105,7 @@ soundness model.
 - THEN V may hold any value (conservative, always sound)
 
 ### Requirement: Fold Correctness
+r[constfold.fold]
 
 Folding a constant expression at compile time MUST produce the same value
 as runtime evaluation.

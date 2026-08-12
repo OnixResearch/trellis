@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_cdt` semantics in this repo. Scope is ca
 ## Requirements
 
 ### Requirement: Capability Derivation Tree Structure
-
 r[sel4-cdt.structure]
+
 Capability derivation MUST form an acyclic parent-child relation over live capabilities. Copy and mint create a new live child of the source capability, the source capability remains live, and every modeled transition MUST preserve the remaining live relation's acyclic parent-child shape.
 
 #### Scenario: Copy creates child
@@ -30,8 +30,8 @@ Capability derivation MUST form an acyclic parent-child relation over live capab
 - THEN this model distinguishes only the new parent-child relation, not rights attenuation
 
 ### Requirement: Move Preserves Ancestry
-
 r[sel4-cdt.move]
+
 Moving a capability to a different slot MUST preserve its derivation ancestry and descendant set.
 
 #### Scenario: Move keeps parent relation
@@ -47,8 +47,8 @@ Moving a capability to a different slot MUST preserve its derivation ancestry an
 - THEN `D` remains in the descendant set of `P`
 
 ### Requirement: Revoke Removes Exactly The Target Subtree
-
 r[sel4-cdt.revoke]
+
 Revoking a capability MUST remove exactly the live target subtree, including the target root itself, while preserving siblings, ancestors outside that subtree, and unrelated branches.
 
 #### Scenario: Sibling preserved
@@ -64,8 +64,8 @@ Revoking a capability MUST remove exactly the live target subtree, including the
 - THEN `P` and every live descendant of `P` are removed
 
 ### Requirement: Recycle Clears Only A Live Leaf
-
 r[sel4-cdt.recycle]
+
 Recycling a capability MUST succeed only for a live leaf capability and MUST clear exactly that capability while preserving all other live nodes.
 
 #### Scenario: Leaf recycle clears one node

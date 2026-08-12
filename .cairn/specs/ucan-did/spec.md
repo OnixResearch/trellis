@@ -9,8 +9,8 @@ primitives. Base58btc remains a separate trusted codec model.
 ## Requirements
 
 ### Requirement: Varint Decode Uses Bounded U64 Semantics
-
 r[ucan-did.varint-bounded-u64]
+
 `varint_decode_spec` and `varint_decode` MUST model the same bounded u64
 LEB128 decoder. The decoder MUST keep the numeric limits named inside the
 `verus!` block instead of raw call-site literals: `VARINT_BASE`,
@@ -69,8 +69,8 @@ and final-payload overflow rejection.
   length and the named u64 varint byte budget
 
 ### Requirement: Multicodec Varint Round-Trip Remains Verified
-
 r[ucan-did.varint-round-trip]
+
 Encoding any `u64` value as LEB128 and then decoding it with the bounded decoder
 MUST recover the original value and the encoded length.
 
@@ -84,8 +84,8 @@ MUST recover the original value and the encoded length.
   the encoded length
 
 ### Requirement: Varint Decode Rejects Empty Or Truncated Input
-
 r[ucan-did.varint-rejects-empty]
+
 Decoding a varint from an empty byte sequence or from a sequence that ends
 before a terminating byte MUST return `None`.
 

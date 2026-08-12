@@ -24,6 +24,7 @@ silent-drop behavior, and captures dirty-victim writeback during replacement.
 ## Requirements
 
 ### Requirement: Invalid Address Is Fault-Free
+r[cache-prefetch.no-fault]
 `r[cache-prefetch.no-fault]`
 
 Prefetching an invalid or inaccessible address MUST be a no-op for the modeled
@@ -46,6 +47,7 @@ cache state and MUST NOT change architectural state.
 - AND the returned cache state equals the input cache state
 
 ### Requirement: Architectural Invisibility
+r[cache-prefetch.invisible]
 `r[cache-prefetch.invisible]`
 
 Prefetch operations MUST leave registers, memory contents, and the program
@@ -66,6 +68,7 @@ counter unchanged. Prefetch only affects modeled cache state.
 - THEN the returned register vector, memory vector, and program counter are unchanged
 
 ### Requirement: Valid Cache Effect
+r[cache-prefetch.cache-effect]
 `r[cache-prefetch.cache-effect]`
 
 A valid prefetch-for-read MUST produce the same single-line cache-state effect
@@ -95,6 +98,7 @@ in `Exclusive` while invalidating all other modeled holders.
 - AND every non-requester cache ends in `Invalid`
 
 ### Requirement: Coherence Bus Compatibility
+r[cache-prefetch-validity.coherence-bus-compatibility]
 `r[cache-prefetch.coherence]`
 
 A valid prefetch MUST issue the same coherence bus action as the matching
@@ -122,6 +126,7 @@ single-line demand access. Invalid-address prefetches MUST issue no bus action.
 - THEN the action is `None`
 
 ### Requirement: Drop Safety
+r[cache-prefetch.drop-safe]
 `r[cache-prefetch.drop-safe]`
 
 Dropping a modeled prefetch step MUST leave both architectural state and cache
@@ -136,6 +141,7 @@ state unchanged.
 - AND the returned cache state equals the input cache state
 
 ### Requirement: Replacement Writeback Safety
+r[cache-prefetch.eviction-safe]
 `r[cache-prefetch.eviction-safe]`
 
 Replacing a prefetched line MUST write back a dirty victim to memory before

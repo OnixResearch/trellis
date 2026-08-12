@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_ready_queue` semantics in this repo. Sco
 ## Requirements
 
 ### Requirement: Ready Queue Consistency
-
 r[sel4-ready-queue.consistency]
+
 A runnable TCB MUST appear in exactly one ready queue at its runnable priority, and a TCB present in a ready queue MUST be runnable.
 
 #### Scenario: Runnable thread enqueued once
@@ -18,8 +18,8 @@ A runnable TCB MUST appear in exactly one ready queue at its runnable priority, 
 - THEN it appears in exactly one ready queue for `P`
 
 ### Requirement: Scheduler Selects Highest Priority Runnable TCB
-
 r[sel4-ready-queue.selection]
+
 Scheduler selection MUST choose a runnable TCB from a highest-priority non-empty ready queue.
 
 #### Scenario: Higher priority wins
@@ -29,8 +29,8 @@ Scheduler selection MUST choose a runnable TCB from a highest-priority non-empty
 - THEN the selected TCB has priority `3`
 
 ### Requirement: Ready Queue Order Is Preserved
-
 r[sel4-ready-queue.order]
+
 Within one priority queue, enqueue, dequeue, and remove operations MUST preserve the relative order of unaffected TCBs.
 
 #### Scenario: Remove preserves remaining order

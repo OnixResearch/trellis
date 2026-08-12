@@ -25,7 +25,8 @@ lists. Builds on the existing UCAN modules.
 
 **Temporal Validity**
 
-### Requirement: Temporal Checks Compose in Envelope [r[ucan-token.temporal-validity]]
+### Requirement: Temporal Checks Compose in Envelope
+r[ucan-token.temporal-validity]
 
 The envelope's temporal validity MUST be exactly the conjunction
 of not-expired (considering tolerance) and not-before-satisfied.
@@ -52,7 +53,8 @@ of not-expired (considering tolerance) and not-before-satisfied.
 
 **Identity Constraints**
 
-### Requirement: Self-Delegation Rejected [r[ucan-token.self-delegation-rejected]]
+### Requirement: Self-Delegation Rejected
+r[ucan-token.self-delegation-rejected]
 
 A UCAN token where issuer equals audience MUST be rejected.
 
@@ -66,7 +68,8 @@ A UCAN token where issuer equals audience MUST be rejected.
 
 **Attenuation**
 
-### Requirement: Attenuation Is Monotone [r[ucan-token.attenuation-monotone]]
+### Requirement: Attenuation Is Monotone
+r[ucan-token.attenuation-monotone]
 
 Attenuation MUST require each child capability to be contained by some parent
 capability for a supplied parent capability list and child capability list. No
@@ -88,7 +91,8 @@ capability in the child may exceed any axis of the parent.
 
 **Validation Pipeline**
 
-### Requirement: Validation Is Sound [r[ucan-token.validation-sound]]
+### Requirement: Validation Is Sound
+r[ucan-token.validation-sound]
 
 Validation success MUST imply that the supplied signature-valid input is true,
 temporal constraints hold, identity constraints hold, and required fields are
@@ -103,7 +107,8 @@ present.
 - AND iss != aud
 - AND required fields are present
 
-### Requirement: Validation Is Complete [r[ucan-token.validation-complete]]
+### Requirement: Validation Is Complete
+r[ucan-token.validation-complete]
 
 If all single-token sub-checks pass individually, validate_envelope MUST succeed.
 
@@ -115,7 +120,8 @@ If all single-token sub-checks pass individually, validate_envelope MUST succeed
 
 **Required Fields**
 
-### Requirement: Issuer Is Always Present [r[ucan-token.issuer-present]]
+### Requirement: Issuer Is Always Present
+r[ucan-token.issuer-present]
 
 A validated UCAN MUST have a non-empty issuer DID.
 
@@ -125,7 +131,8 @@ A validated UCAN MUST have a non-empty issuer DID.
 - WHEN validating the token envelope
 - THEN validation rejects the payload
 
-### Requirement: Audience Is Always Present [r[ucan-token.audience-present]]
+### Requirement: Audience Is Always Present
+r[ucan-token.audience-present]
 
 A validated UCAN MUST have a non-empty audience DID.
 
@@ -135,7 +142,8 @@ A validated UCAN MUST have a non-empty audience DID.
 - WHEN validating the token envelope
 - THEN validation rejects the payload
 
-### Requirement: Attenuations Are Always Present [r[ucan-token.attenuations-present]]
+### Requirement: Attenuations Are Always Present
+r[ucan-token.attenuations-present]
 
 A validated UCAN MUST have at least one capability in att.
 
@@ -147,7 +155,8 @@ A validated UCAN MUST have at least one capability in att.
 
 **Constraints**
 
-### Requirement: Canonical Byte Construction Is Out Of Scope Here [r[ucan-token.canonical-bytes-assumed]]
+### Requirement: Canonical Byte Construction Is Out Of Scope Here
+r[ucan-token.canonical-bytes-assumed]
 
 This change MUST treat canonical payload-byte construction as an external
 assumption. The token validation layer consumes a supplied signature-valid

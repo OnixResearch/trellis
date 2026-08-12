@@ -8,8 +8,8 @@ well-formedness rules, and branch-merge semantics used by endpoint projection.
 ## Requirements
 
 ### Requirement: Participant and Branch Well-Formedness
-
 r[choreography.participants]
+
 Finite choreography primitives operate on exact `u32` role identifiers,
 branch labels, and payload tags. A communication prefix is well formed only if
 `from != to`. A choice is well formed only if its branch list is non-empty and
@@ -36,8 +36,8 @@ communication endpoints or as a branch decider in `choreo`.
 - THEN the result MUST contain exactly `1`, `4`, and `9`
 
 ### Requirement: Communication Prefix Semantics
-
 r[choreography.communication]
+
 A global communication prefix
 `Comm { from, to, label, payload_tag, next }` MUST denote one exact
 point-to-point interaction from `from` to `to` carrying the exact symbolic
@@ -58,8 +58,8 @@ local projection shape is defined separately by `r[choreography.projection]`.
 - THEN the continuation MUST be exactly `next`
 
 ### Requirement: Local Branch Merge Semantics
-
 r[choreography.merge]
+
 For a non-decider role, branch projections over exact local nodes
 `End`, `Send { peer, label, payload_tag, next }`,
 `Recv { peer, label, payload_tag, next }`,
@@ -129,8 +129,8 @@ MUST fail the merge.
 - THEN the merge MUST fail
 
 ### Requirement: Projectability Is Exact
-
 r[choreography.projectability]
+
 A finite choreography MUST be projectable exactly when it is well formed and,
 for every choice and every non-decider role appearing in at least one branch,
 the role's branch projections admit the exact projection-side merge: preserve

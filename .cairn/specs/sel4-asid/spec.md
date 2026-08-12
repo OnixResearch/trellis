@@ -15,8 +15,8 @@ Invalid release attempts — out-of-range ASIDs, free ASIDs, owner mismatch, or 
 ## Requirements
 
 ### Requirement: Allocation Creates Unique Live Ownership
-
 r[sel4-asid.uniqueness]
+
 A successful allocation MUST make the returned ASID live for the allocating owner, change only that returned slot, and each live ASID in the abstract pool MUST be bound to at most one live owner at a time.
 
 #### Scenario: Successful allocation creates live ownership
@@ -38,8 +38,8 @@ A successful allocation MUST make the returned ASID live for the allocating owne
 - THEN the original live ASID keeps its owner
 
 ### Requirement: Release Clears Live Ownership
-
 r[sel4-asid.release-state]
+
 A valid release MUST return success, clear only the released ASID's live ownership, and leave every unrelated live binding unchanged. An invalid release MUST return failure and leave the pool unchanged.
 
 #### Scenario: Valid release clears owner
@@ -67,8 +67,8 @@ A valid release MUST return success, clear only the released ASID's live ownersh
 - THEN the other live ASID keeps its owner
 
 ### Requirement: Released ASIDs May Be Reused Safely
-
 r[sel4-asid.reuse]
+
 A released ASID MAY be reused later, but only after no live owner still owns that numeric ASID.
 
 #### Scenario: Freed ASID reused later
@@ -78,8 +78,8 @@ A released ASID MAY be reused later, but only after no live owner still owns tha
 - THEN no previously live owner still owns it
 
 ### Requirement: ASID Pool Bounds
-
 r[sel4-asid.pool-bounds]
+
 Allocation MUST succeed when some free ASID exists, return only in-range ASIDs on success, and report exhaustion exactly when no free ASIDs remain. Failed allocation MUST leave pool ownership unchanged.
 
 #### Scenario: Free slot allocates

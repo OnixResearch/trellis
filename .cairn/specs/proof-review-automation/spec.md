@@ -7,10 +7,10 @@ Defines the `proof-review-automation` capability.
 ## Requirements
 
 ### Requirement: Bounded Proof Review Agent Loop
+r[proof-review.agent-loop]
 
 The proof-review automation MUST provide a bounded agent loop that deterministically selects proof-review candidates from the scanner, creates or plans one native Cairn change per iteration, preserves VibeThinker as advisory-only input, captures reviewable evidence, and stops unless configured validation succeeds. The loop MUST default to no push, MUST skip permanent trust-boundary findings unless explicitly configured, and MUST fail closed on dirty unrelated files, active Cairn changes, unsupported apply patterns, attempted trust-boundary additions, validation failures, missing evidence, or archive failures. Active-change source extraction MUST ignore historical `evidence/` markdown, Tracey coverage validation MUST retry only documented transient daemon cancellation, and generated proof-review packages MUST require target-cleared scanner evidence plus frozen archive validation logs.
 
-r[proof-review.agent-loop]
 
 #### Scenario: Dry-run plans one safe candidate
 
@@ -55,10 +55,10 @@ r[proof-review.agent-loop]
 - THEN the archived validation logs MUST remain unchanged and the refresh MUST be recorded as separate post-archive evidence
 
 ### Requirement: Bounded Proof Review Iteration for src/arena.rs
+r[proof-review.iteration.proof.review.arena]
 
 The proof-review iteration for `src/arena.rs` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, and MUST archive scanner, advisory packet, validation, sync, archive, and final status evidence before claiming completion.
 
-r[proof-review.iteration.proof.review.arena]
 
 #### Scenario: Iteration archives only after validation
 
@@ -67,10 +67,10 @@ r[proof-review.iteration.proof.review.arena]
 - THEN focused checks, Verus, Tracey, Cairn gates, and repo verification evidence MUST be present and successful
 
 ### Requirement: Bounded Proof Review Iteration for src/append_entries_build.rs
+r[proof-review.iteration.proof.review.append.entries.build]
 
 The proof-review iteration for `src/append_entries_build.rs` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, and MUST archive scanner, advisory packet, validation, sync, archive, and final status evidence before claiming completion.
 
-r[proof-review.iteration.proof.review.append.entries.build]
 
 #### Scenario: Iteration archives only after validation
 
@@ -79,10 +79,10 @@ r[proof-review.iteration.proof.review.append.entries.build]
 - THEN focused checks, Verus, Tracey, Cairn gates, and repo verification evidence MUST be present and successful
 
 ### Requirement: Bounded Proof Review Iteration for src/beam_link.rs
+r[proof-review.iteration.proof.review.beam.link]
 
 The proof-review iteration for `src/beam_link.rs` MUST strengthen the selected target without adding trust boundaries, MUST include positive and negative executable tests when the target has runtime behavior, MUST record target-cleared scanner evidence for the original finding, and MUST archive scanner, advisory packet, frozen validation, sync, archive, and final status evidence before claiming completion.
 
-r[proof-review.iteration.proof.review.beam.link]
 
 #### Scenario: Iteration archives only after validation
 
@@ -97,10 +97,10 @@ r[proof-review.iteration.proof.review.beam.link]
 - THEN the archived validation logs MUST NOT be rewritten and the refresh MUST be saved as post-archive evidence
 
 ### Requirement: Specialized VibeThinker Prompt Packets
+r[proof-review.specialized-vibethinker-prompts]
 
 The proof-review scanner MUST generate deterministic VibeThinker packet guidance that includes a base advisory task, a strict output contract, and rule-specific focus bullets derived from the top scanner findings. These prompts MUST remain advisory-only and MUST NOT replace cargo, Verus, Tracey, Cairn, or repo checker validation. Packet guidance MUST ask for feasible executable tests through public/runtime APIs, MUST reject suggestions that depend on violating proof `requires` clauses or infeasible stress cases, MUST separate accepted actionable items from rejected non-actionable advisory items, MUST group materially different proof proposals by mechanism, and MUST classify proposed helper lemmas or reductions as simpler, equivalent, stronger, or unknown relative to the selected target. Equivalent or stronger missing steps MUST be reported as blocked rather than proof progress. The packet MUST NOT assume that the selected target or current patch is correct.
 
-r[proof-review.specialized-vibethinker-prompts]
 
 #### Scenario: Rule-specific focus is emitted
 

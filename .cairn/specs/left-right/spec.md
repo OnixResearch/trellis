@@ -13,6 +13,7 @@ runtime implementation with atomics or OS scheduling.
 ## Requirements
 
 ### Requirement: Two-Side Toggle Index
+r[left-right.index-toggle]
 
 The model MUST track exactly two sides, LEFT and RIGHT. The toggle operation
 MUST always switch to the other side, and initial state MUST start with both
@@ -34,6 +35,7 @@ copies synchronized.
 - AND RIGHT MUST become LEFT
 
 ### Requirement: Reader Tracking
+r[left-right.reader-tracking]
 
 Reader entry MUST be wait-free and side-local: enter records the current
 active side and increments only that side's reader count. Reader exit MUST
@@ -54,6 +56,7 @@ decrement the count on the ticket side and preserve all other state.
 - THEN the state MUST return to its original reader counts, versions, and active side
 
 ### Requirement: Writer Publish
+r[left-right.writer-publish]
 
 A writer publish step MUST require synchronized copies, write the next version
 onto the inactive side, and then flip the active side to that freshly written
@@ -68,6 +71,7 @@ copy.
 - AND the old active side MUST still store version `v`
 
 ### Requirement: Quiescence Before Catch-Up
+r[left-right.quiescence-before-catch-up]
 
 The writer MUST NOT mutate the now-inactive side again until all readers that
 entered on that side have exited. Catch-up MUST be enabled exactly by
@@ -87,6 +91,7 @@ quiescence of the inactive side.
 - AND the active version MUST be unchanged
 
 ### Requirement: Reader Snapshot Stability
+r[left-right.snapshot-consistency]
 
 A reader ticket obtained before a publish MUST continue to name the old side's
 unchanged version after the publish. Readers MUST therefore observe a stable

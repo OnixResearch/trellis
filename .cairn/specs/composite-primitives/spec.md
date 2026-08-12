@@ -3,7 +3,8 @@
 ## Purpose
 This specification defines composite verified-logic primitives that combine already-verified lower-level domains into higher-level finite facades. It records each facade's composed dependencies, validity boundary, and exported safety obligations so composite behavior remains traceable to reusable primitive contracts.
 ## Requirements
-### Requirement: Durable Job Executor [r[composite-primitives.durable-job-executor]]
+### Requirement: Durable Job Executor
+r[composite-primitives.durable-job-executor]
 
 The system MUST provide a durable job executor primitive for idempotent,
 resume-aware, retry-budgeted job admission.
@@ -25,7 +26,8 @@ resume-aware, retry-budgeted job admission.
 - WHEN execution admission is requested
 - THEN the request is rejected without appending a new accepted-execution event
 
-### Requirement: Fenced Distributed Lock [r[composite-primitives.fenced-distributed-lock]]
+### Requirement: Fenced Distributed Lock
+r[composite-primitives.fenced-distributed-lock]
 
 The system MUST provide a fenced distributed lock primitive for stale-holder-safe
 protected writes.
@@ -47,7 +49,8 @@ protected writes.
 - WHEN the holder attempts a protected write
 - THEN the write decision is rejected as stale
 
-### Requirement: Linearizable Read Gate [r[composite-primitives.linearizable-read-gate]]
+### Requirement: Linearizable Read Gate
+r[composite-primitives.linearizable-read-gate]
 
 The system MUST provide a Raft read gate primitive for one-step linearizable read
 admission.
@@ -69,7 +72,8 @@ admission.
 - WHEN the read gate is evaluated
 - THEN the read is rejected
 
-### Requirement: Safe Snapshot Replication [r[composite-primitives.safe-snapshot-replication]]
+### Requirement: Safe Snapshot Replication
+r[composite-primitives.safe-snapshot-replication]
 
 The system MUST provide a snapshot replication primitive for complete,
 integrity-checked, compaction-safe installation.
@@ -91,7 +95,8 @@ integrity-checked, compaction-safe installation.
 - WHEN installation is requested
 - THEN installation is rejected and log state is unchanged
 
-### Requirement: Crash-Safe Page Cache [r[composite-primitives.crash-safe-page-cache]]
+### Requirement: Crash-Safe Page Cache
+r[composite-primitives.crash-safe-page-cache]
 
 The system MUST provide a crash-safe page-cache primitive for WAL-backed dirty
 page recovery.
@@ -119,7 +124,8 @@ page recovery.
 - WHEN recovery runs
 - THEN recovery is rejected and mutable page-cache state is unchanged
 
-### Requirement: Verified LSM Ingest [r[composite-primitives.verified-lsm-ingest]]
+### Requirement: Verified LSM Ingest
+r[composite-primitives.verified-lsm-ingest]
 
 The system MUST provide an LSM ingest primitive for flush and compaction-safe run
 admission.
@@ -141,7 +147,8 @@ admission.
 - WHEN ingest is requested
 - THEN the ingest is rejected without losing buffered writes
 
-### Requirement: Serializable Transaction Guard [r[composite-primitives.serializable-txn-guard]]
+### Requirement: Serializable Transaction Guard
+r[composite-primitives.serializable-txn-guard]
 
 The system MUST provide a transaction guard for commit admission from isolation,
 dependency, and lock-discipline facts.
@@ -163,7 +170,8 @@ dependency, and lock-discipline facts.
 - WHEN the guard evaluates commit admission
 - THEN commit is rejected
 
-### Requirement: Web-of-Trust UCAN Authorizer [r[composite-primitives.web-of-trust-ucan-authorizer]]
+### Requirement: Web-of-Trust UCAN Authorizer
+r[composite-primitives.web-of-trust-ucan-authorizer]
 
 The system MUST provide a UCAN authorizer that combines token validity,
 attenuation, caveats, DID/CID byte models, and rooted web-of-trust policy.
@@ -185,7 +193,8 @@ attenuation, caveats, DID/CID byte models, and rooted web-of-trust policy.
 - WHEN authorization is evaluated
 - THEN the requested action is denied
 
-### Requirement: Policy Decision Engine [r[composite-primitives.policy-decision-engine]]
+### Requirement: Policy Decision Engine
+r[composite-primitives.policy-decision-engine]
 
 The system MUST provide a policy decision engine for one allow/deny result from
 capability and trust primitives.
@@ -207,7 +216,8 @@ capability and trust primitives.
 - WHEN the policy engine evaluates the request
 - THEN the request is denied
 
-### Requirement: Blocking Bounded Channel [r[composite-primitives.blocking-bounded-channel]]
+### Requirement: Blocking Bounded Channel
+r[composite-primitives.blocking-bounded-channel]
 
 The system MUST provide a blocking bounded channel primitive that combines queue
 capacity with wait/wake and backoff state.
@@ -229,7 +239,8 @@ capacity with wait/wake and backoff state.
 - WHEN a sender attempts to enqueue under blocking mode or non-blocking mode
 - THEN blocking mode enters a valid wait/backoff state and non-blocking mode rejects without changing occupancy
 
-### Requirement: Safe Reclamation Domain [r[composite-primitives.safe-reclamation-domain]]
+### Requirement: Safe Reclamation Domain
+r[composite-primitives.safe-reclamation-domain]
 
 The system MUST provide a safe reclamation domain from RCU, epoch, hazard, and
 reference-count protections.
@@ -251,7 +262,8 @@ reference-count protections.
 - WHEN reclamation is scanned
 - THEN the object is not reclaimed
 
-### Requirement: Cache-Coherent Memory Region [r[composite-primitives.cache-coherent-memory-region]]
+### Requirement: Cache-Coherent Memory Region
+r[composite-primitives.cache-coherent-memory-region]
 
 The system MUST provide a cache-coherent memory-region primitive combining cache
 protocol, directory, store-buffer, prefetch, and write-policy facts.
@@ -273,7 +285,8 @@ protocol, directory, store-buffer, prefetch, and write-policy facts.
 - WHEN the memory-region invariant is checked
 - THEN coherence state and architectural read/write equivalence remain valid
 
-### Requirement: Verified Compiler Pipeline [r[composite-primitives.verified-compiler-pipeline]]
+### Requirement: Verified Compiler Pipeline
+r[composite-primitives.verified-compiler-pipeline]
 
 The system MUST provide a bounded compiler-pipeline primitive for the existing raw
 IR model.
@@ -296,7 +309,8 @@ IR model.
 - WHEN the pipeline is requested
 - THEN the pipeline rejects the input instead of claiming preservation
 
-### Requirement: Backend Frame Allocator [r[composite-primitives.backend-frame-allocator]]
+### Requirement: Backend Frame Allocator
+r[composite-primitives.backend-frame-allocator]
 
 The system MUST provide a backend frame allocator for the existing live-range,
 register, and local/spill stack-slot model.
@@ -318,7 +332,8 @@ register, and local/spill stack-slot model.
 - WHEN allocation is validated
 - THEN the ranges are assigned distinct non-conflicting resources or allocation is rejected
 
-### Requirement: Dependency Scheduler [r[composite-primitives.dependency-scheduler]]
+### Requirement: Dependency Scheduler
+r[composite-primitives.dependency-scheduler]
 
 The system MUST provide a dependency scheduler that admits only ready,
 capacity-safe work from graph and scheduling facts.
@@ -340,7 +355,8 @@ capacity-safe work from graph and scheduling facts.
 - WHEN scheduling chooses the next job
 - THEN the blocked job is not selected
 
-### Requirement: Raft Membership Manager [r[composite-primitives.raft-membership-manager]]
+### Requirement: Raft Membership Manager
+r[composite-primitives.raft-membership-manager]
 
 The system MUST provide a Raft membership manager for safe configuration changes,
 learner promotion, and leadership transfer.
@@ -362,7 +378,8 @@ learner promotion, and leadership transfer.
 - WHEN membership change is requested
 - THEN the change is rejected
 
-### Requirement: Exactly-Once Ledger Transfer [r[composite-primitives.exactly-once-ledger-transfer]]
+### Requirement: Exactly-Once Ledger Transfer
+r[composite-primitives.exactly-once-ledger-transfer]
 
 The system MUST provide an exactly-once ledger transfer primitive for replay-safe
 money movement.
@@ -384,7 +401,8 @@ money movement.
 - WHEN the transfer is applied again
 - THEN no second debit or credit is posted
 
-### Requirement: seL4 Invocation Step [r[composite-primitives.sel4-invocation-step]]
+### Requirement: seL4 Invocation Step
+r[composite-primitives.sel4-invocation-step]
 
 The system MUST provide a seL4 invocation-step primitive that preserves kernel
 invariants across a bounded modeled capability invocation slice: `CopyCap`,
@@ -409,7 +427,8 @@ are out of scope for this composite.
 - WHEN the invocation step is requested
 - THEN the kernel state is unchanged
 
-### Requirement: Nix Eval Closure Policy [r[composite-primitives.nix-eval-closure-policy]]
+### Requirement: Nix Eval Closure Policy
+r[composite-primitives.nix-eval-closure-policy]
 
 The system MUST provide a Nix/Nickel closure-policy primitive for merged config
 and reachable package closure admission.
@@ -431,7 +450,8 @@ and reachable package closure admission.
 - WHEN closure policy is evaluated
 - THEN the policy rejects the result
 
-### Requirement: ChaosControl Exploration Core [r[composite-primitives.chaoscontrol-exploration-core]]
+### Requirement: ChaosControl Exploration Core
+r[composite-primitives.chaoscontrol-exploration-core]
 
 The system MUST provide a ChaosControl exploration core for deterministic,
 coverage-accounted, oracle-checked exploration steps.
@@ -453,7 +473,8 @@ coverage-accounted, oracle-checked exploration steps.
 - WHEN exploration attempts to continue the path
 - THEN that path is rejected and the violation is returned in the reject reason without mutating exploration state
 
-### Requirement: Bounded Graph Query Model [r[composite-primitives.graph-query.model]]
+### Requirement: Bounded Graph Query Model
+r[composite-primitives.graph-query.model]
 The system MUST define a finite graph-query model over admitted graph nodes, edge labels, triples, variable identifiers, literal atoms, query bounds, and explicit validity predicates before any query answer or witness references them.
 
 #### Scenario: Query reference outside the model is rejected [r[composite-primitives.graph-query.model.scenario.out-of-model-reference-rejected]]
@@ -462,7 +483,8 @@ The system MUST define a finite graph-query model over admitted graph nodes, edg
 - WHEN graph-query admission is evaluated
 - THEN the reference is rejected with out-of-model metadata
 
-### Requirement: Triple Pattern Match Predicate [r[composite-primitives.graph-query.triple-pattern]]
+### Requirement: Triple Pattern Match Predicate
+r[composite-primitives.graph-query.triple-pattern]
 The system MUST provide a triple-pattern predicate that admits a graph triple against constants and variables only when every constant equals the corresponding triple field and every repeated variable is assigned consistently.
 
 #### Scenario: Repeated variable must bind consistently [r[composite-primitives.graph-query.triple-pattern.scenario.repeated-variable-consistent]]
@@ -471,7 +493,8 @@ The system MUST provide a triple-pattern predicate that admits a graph triple ag
 - WHEN a candidate triple is matched
 - THEN the match is accepted only if the triple subject and object are equal under the admitted binding
 
-### Requirement: Binding Extension and Compatibility [r[composite-primitives.graph-query.binding-extension]]
+### Requirement: Binding Extension and Compatibility
+r[composite-primitives.graph-query.binding-extension]
 The system MUST define binding-extension predicates that preserve existing variable assignments, add only admitted variable/value pairs, and reject conflicting assignments during pattern matching or joins.
 
 #### Scenario: Conflicting join assignment is rejected [r[composite-primitives.graph-query.binding-extension.scenario.conflicting-join-assignment-rejected]]
@@ -480,7 +503,8 @@ The system MUST define binding-extension predicates that preserve existing varia
 - WHEN graph-query join compatibility is evaluated
 - THEN the joined binding is rejected as conflicting
 
-### Requirement: Path Witness Validity [r[composite-primitives.graph-query.path-witness]]
+### Requirement: Path Witness Validity
+r[composite-primitives.graph-query.path-witness]
 The system MUST admit a path witness only when every consecutive step is backed by an admitted graph triple, the path endpoints match the requested pattern, and the path length stays within the finite query bound.
 
 #### Scenario: Broken path step is rejected [r[composite-primitives.graph-query.path-witness.scenario.broken-step-rejected]]
@@ -489,7 +513,8 @@ The system MUST admit a path witness only when every consecutive step is backed 
 - WHEN path-witness admission is evaluated
 - THEN the witness is rejected with broken-step metadata
 
-### Requirement: Join and Filter Composition [r[composite-primitives.graph-query.join-filter]]
+### Requirement: Join and Filter Composition
+r[composite-primitives.graph-query.join-filter]
 The system MUST compose triple-pattern result rows with table-style joins and filters so accepted rows preserve source-pattern witnesses, binding compatibility, row bounds, and filter predicate truth.
 
 #### Scenario: Accepted joined row preserves source witnesses [r[composite-primitives.graph-query.join-filter.scenario.joined-row-preserves-witnesses]]
@@ -498,7 +523,8 @@ The system MUST compose triple-pattern result rows with table-style joins and fi
 - WHEN the graph-query join is evaluated
 - THEN the accepted joined row carries bindings from both rows and preserves the source witness references
 
-### Requirement: Index Lookup Scan Equivalence [r[composite-primitives.graph-query.index-equivalence]]
+### Requirement: Index Lookup Scan Equivalence
+r[composite-primitives.graph-query.index-equivalence]
 The system MUST admit an index-backed graph-query result only when the index hit set is equivalent to the finite scan result for the same triple-pattern predicate and query bounds.
 
 #### Scenario: Missing scan hit rejects index result [r[composite-primitives.graph-query.index-equivalence.scenario.missing-scan-hit-rejects-index-result]]
@@ -507,7 +533,8 @@ The system MUST admit an index-backed graph-query result only when the index hit
 - WHEN index-backed result admission is evaluated
 - THEN the index-backed result is rejected as not scan-equivalent
 
-### Requirement: Serialized Query Envelope [r[composite-primitives.graph-query.serialized-envelope]]
+### Requirement: Serialized Query Envelope
+r[composite-primitives.graph-query.serialized-envelope]
 The system MUST admit serialized graph-query requests and result windows only when the serialization envelope has an admitted schema version, bounded header/payload/trailer ranges, result-window metadata, and a payload shape that references only admitted finite query-model elements.
 
 #### Scenario: Unsupported query schema is rejected [r[composite-primitives.graph-query.serialized-envelope.scenario.unsupported-schema-rejected]]
@@ -516,7 +543,8 @@ The system MUST admit serialized graph-query requests and result windows only wh
 - WHEN serialized envelope admission is evaluated
 - THEN the envelope is rejected before any query-result witness is accepted
 
-### Requirement: Query Result Soundness Facade [r[composite-primitives.graph-query.result-soundness]]
+### Requirement: Query Result Soundness Facade
+r[composite-primitives.graph-query.result-soundness]
 The system MUST expose a composite graph-query result facade whose accepted result implies finite model validity, pattern-match correctness, binding compatibility, path-witness validity where requested, filter truth, optional index-scan equivalence, and serialized envelope validity where supplied.
 
 #### Scenario: Accepted result carries all required proofs [r[composite-primitives.graph-query.result-soundness.scenario.accepted-result-carries-proofs]]
@@ -524,7 +552,8 @@ The system MUST expose a composite graph-query result facade whose accepted resu
 - GIVEN a graph-query result with pattern witnesses, bindings, optional path witnesses, optional index evidence, and optional serialized envelope metadata
 - WHEN the result facade accepts the result
 - THEN every exported result row is backed by the corresponding finite primitive witnesses and no rejected predicate is bypassed
-### Requirement: Composite Receipt Envelope Semantics [r[composite-primitives.receipt-envelope]]
+### Requirement: Composite Receipt Envelope Semantics
+r[composite-primitives.receipt-envelope]
 
 The system MUST provide bounded composite receipt and evidence-envelope semantics that admit a receipt only when its serialized envelope, artifact references, validation window, and optional query/table evidence are all finite and internally consistent.
 
@@ -549,7 +578,8 @@ The system MUST provide bounded composite receipt and evidence-envelope semantic
 - GIVEN a graph-query or table result witness embedded in a receipt envelope
 - WHEN receipt admission succeeds
 - THEN the accepted receipt implies the underlying finite query/table witness predicates
-### Requirement: Index Query Pagination Semantics [r[composite-primitives.index-query-pagination]]
+### Requirement: Index Query Pagination Semantics
+r[composite-primitives.index-query-pagination]
 
 The system MUST provide bounded index/query pagination semantics where accepted result pages are scan-equivalent for their finite windows, continuation cursors advance monotonically, and repeated pages cannot introduce duplicates outside the checked finite model.
 

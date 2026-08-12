@@ -10,8 +10,8 @@ invariants, not raw syscall ABI details.
 ## Requirements
 
 ### Requirement: Rights Attenuation
-
 r[zircon-rights.attenuation]
+
 A derived handle MUST NOT gain rights that the source handle did not hold.
 `duplicate` and `replace` MAY preserve rights or drop a subset of rights,
 but MUST NOT add new rights.
@@ -35,8 +35,8 @@ but MUST NOT add new rights.
 - THEN the duplication is invalid
 
 ### Requirement: Rights Gate Operations
-
 r[zircon-rights.operation-gates]
+
 Handle operations MUST require the corresponding right on the acting handle.
 At minimum: duplicate requires `DUPLICATE`, transfer requires `TRANSFER`,
 wait requires `WAIT`, object-signal requires `SIGNAL`, and peer-signal
@@ -55,8 +55,8 @@ requires `SIGNAL_PEER`.
 - THEN the operation is invalid
 
 ### Requirement: Stable Object Identity
-
 r[zircon-handle.identity]
+
 Every live kernel object MUST have a stable object identity (`koid`).
 Duplicate, replace, transfer, and receive MUST preserve the underlying
 object `koid`.
@@ -74,8 +74,8 @@ object `koid`.
 - THEN the received handle refers to object `K`
 
 ### Requirement: Handle Ownership State
-
 r[zircon-handle.ownership]
+
 A handle MUST be in exactly one ownership state: bound to a process,
 in transit through the kernel, or closed. Bound handles are visible to the
 owning process. In-transit handles are not visible to user space. Closed
@@ -100,8 +100,8 @@ handles own nothing.
 - THEN the handle enters the closed state
 
 ### Requirement: Object Lifetime Follows Live Handles
-
 r[zircon-handle.lifetime]
+
 An object MUST remain live while any bound or in-transit handle refers to it.
 Closing the last such handle MAY destroy the object or place it into an
 irreversible final state, but the object MUST NOT be considered live after
@@ -120,8 +120,8 @@ all references are gone.
 - THEN the object is no longer live
 
 ### Requirement: Wait Readiness
-
 r[zircon-wait.readiness]
+
 Waiting on a waitable object MUST be driven by its signal mask. A wait is
 ready exactly when the intersection of the observed signals and the requested
 signals is non-empty.
@@ -139,8 +139,8 @@ signals is non-empty.
 - THEN the wait remains unsatisfied
 
 ### Requirement: Wait-Set Evaluation
-
 r[zircon-wait.wait-set]
+
 A wait over multiple watched handles MUST report exactly the watched entries
 whose observed signal masks intersect their requested masks.
 
@@ -157,8 +157,8 @@ whose observed signal masks intersect their requested masks.
 - THEN the wait-set result marks both ready
 
 ### Requirement: Event User Signals
-
 r[zircon-event.user-signals]
+
 An event MUST behave as a pure signal carrier. User-signal set/clear
 operations MUST affect only the named user-signal bits and MUST be idempotent.
 
@@ -175,8 +175,8 @@ operations MUST affect only the named user-signal bits and MUST be idempotent.
 - THEN the event state is unchanged
 
 ### Requirement: Eventpair Peer Closed
-
 r[zircon-event.peer-closed]
+
 For an eventpair, loss of all live handles to one endpoint MUST assert the
 peer-closed signal on the opposite endpoint.
 
@@ -193,8 +193,8 @@ peer-closed signal on the opposite endpoint.
 - THEN `PEER_CLOSED` is not asserted solely from handle state
 
 ### Requirement: Channel Datagram Semantics
-
 r[zircon-channel.datagram]
+
 Channels MUST behave as datagram endpoints. Each write appends one whole
 message. Reads consume one whole message. The model MUST NOT split a single
 message into partial reads or partial writes.
@@ -212,8 +212,8 @@ message into partial reads or partial writes.
 - THEN the channel is not readable
 
 ### Requirement: Channel Handle Transfer
-
 r[zircon-channel.transfer]
+
 Sending handles through a channel MUST preserve object identity and handle
 rights while changing ownership state. After a successful send, transferred
 handles are no longer owned by the sender. After a successful receive, the
@@ -232,8 +232,8 @@ receiver owns fresh handles to the same objects with the same rights.
 - THEN `Q` owns a handle to the same `koid` with the same rights as `H`
 
 ### Requirement: Unread In-Flight Handles Close On Peer Loss
-
 r[zircon-channel.discard]
+
 If a channel endpoint is closed while messages carrying handles are still in
 flight to that endpoint, those unread messages MUST be discarded and the
 transferred handles they contain MUST be closed.
@@ -245,8 +245,8 @@ transferred handles they contain MUST be closed.
 - THEN the queued message is discarded and its transferred handles are closed
 
 ### Requirement: Channel Signals
-
 r[zircon-channel.signals]
+
 Channel signals MUST reflect endpoint state. At minimum, a non-empty receive
 queue asserts `READABLE`, and loss of the peer endpoint asserts
 `PEER_CLOSED`.
@@ -264,8 +264,8 @@ queue asserts `READABLE`, and loss of the peer endpoint asserts
 - THEN `READABLE` becomes inactive
 
 ### Requirement: Futex Wait Compare
-
 r[zircon-futex.wait-compare]
+
 A futex wait MUST block only when the observed futex value still matches the
 expected value supplied by the waiter. If the value differs, the wait does not
 join the waiter set.
@@ -283,8 +283,8 @@ join the waiter set.
 - THEN the waiter does not block on the futex
 
 ### Requirement: Futex Wake Bound
-
 r[zircon-futex.wake-bound]
+
 A futex wake operation MUST release at most the requested number of waiters.
 Waking an empty futex MUST be a no-op.
 
@@ -301,8 +301,8 @@ Waking an empty futex MUST be a no-op.
 - THEN zero waiters are released
 
 ### Requirement: Futex Requeue Conservation
-
 r[zircon-futex.requeue]
+
 A futex requeue operation MUST wake the requested prefix of waiters from the
 source futex and move the remaining requested waiters to the destination
 futex without duplication or loss. Total blocked waiters after the operation
@@ -321,8 +321,8 @@ MUST equal the original blocked waiters minus the explicitly woken waiters.
 - THEN the result is equivalent to wake-only on `A`
 
 ### Requirement: Socket Stream Semantics
-
 r[zircon-socket.stream]
+
 Sockets MUST behave as paired, bidirectional byte streams. Write appends
 bytes to the peer's receive buffer. Read consumes bytes from the local
 receive buffer. Short reads (fewer bytes available than requested) and
@@ -348,8 +348,8 @@ Sockets MUST NOT transfer handles.
 - THEN exactly `k` bytes are returned
 
 ### Requirement: Socket Write Disposition
-
 r[zircon-socket.disposition]
+
 Each socket endpoint's write path MUST be independently enableable and
 disableable. When writing is disabled on an endpoint, writes to that
 endpoint MUST fail and `ZX_SOCKET_WRITE_DISABLED` MUST be asserted.
@@ -375,8 +375,8 @@ MUST NOT discard data already in the buffer.
 - THEN `B` receives the previously written data
 
 ### Requirement: Socket Threshold Signals
-
 r[zircon-socket.thresholds]
+
 A socket MUST support configurable read and write thresholds. When the
 queued byte count meets or exceeds the read threshold,
 `ZX_SOCKET_READ_THRESHOLD` MUST be asserted. When available buffer space
@@ -396,8 +396,8 @@ be asserted. A threshold of zero disables the corresponding signal.
 - THEN `WRITE_THRESHOLD` is asserted
 
 ### Requirement: Socket Peer Closed
-
 r[zircon-socket.peer-closed]
+
 Closing all handles to one socket endpoint MUST assert `PEER_CLOSED` on
 the opposite endpoint, following the same rule as eventpairs.
 
@@ -408,8 +408,8 @@ the opposite endpoint, following the same rule as eventpairs.
 - THEN endpoint `A` observes `PEER_CLOSED`
 
 ### Requirement: Port Async Wait Registration
-
 r[zircon-port.async-wait]
+
 A waitable object MUST be bindable to a port with a signal mask and a
 user-provided key. When the observed signals intersect the registered mask,
 a packet containing the key and observed signals MUST be delivered to the
@@ -428,8 +428,8 @@ port queue.
 - THEN no packet is delivered to `P`
 
 ### Requirement: Port One-Shot vs Repeating
-
 r[zircon-port.one-shot]
+
 An async wait registration MUST be one-shot by default: after one packet
 is delivered the registration is consumed. A repeating registration
 MUST re-arm automatically after each delivery.
@@ -447,8 +447,8 @@ MUST re-arm automatically after each delivery.
 - THEN the registration remains active for future signals
 
 ### Requirement: Port User-Queued Packets
-
 r[zircon-port.user-queue]
+
 A port MUST accept explicitly queued packets via a queue operation.
 User-queued packets MUST be delivered in FIFO order relative to other
 user-queued packets.
@@ -460,8 +460,8 @@ user-queued packets.
 - THEN `p1` is delivered before `p2`
 
 ### Requirement: Timer Set/Cancel/Reset Lifecycle
-
 r[zircon-timer.lifecycle]
+
 A timer MUST support set, cancel, and reset operations.
 `ZX_TIMER_SIGNALED` MUST be asserted when the deadline passes and MUST
 remain asserted until the timer is canceled or reset. Canceling a
@@ -499,8 +499,8 @@ clear the signal and arm a new deadline.
 - THEN the timer is disarmed and no signal change occurs
 
 ### Requirement: FIFO Element-Aligned Semantics
-
 r[zircon-fifo.element-aligned]
+
 FIFOs MUST transfer data in fixed-size elements. Reads and writes MUST
 operate on whole elements only — partial element reads or writes MUST
 NOT occur. A FIFO MUST have a bounded element capacity set at creation.
@@ -518,8 +518,8 @@ NOT occur. A FIFO MUST have a bounded element capacity set at creation.
 - THEN at most `f` elements are accepted
 
 ### Requirement: FIFO Peer Closed
-
 r[zircon-fifo.peer-closed]
+
 Closing all handles to one FIFO endpoint MUST assert `PEER_CLOSED` on the
 opposite endpoint.
 
@@ -530,8 +530,8 @@ opposite endpoint.
 - THEN the other endpoint observes `PEER_CLOSED`
 
 ### Requirement: FIFO Signals
-
 r[zircon-fifo.signals]
+
 A FIFO endpoint MUST assert `READABLE` when its receive queue is non-empty
 and `WRITABLE` when its transmit queue has free element slots.
 
@@ -548,8 +548,8 @@ and `WRITABLE` when its transmit queue has free element slots.
 - THEN `WRITABLE` is asserted
 
 ### Requirement: Job Containment Hierarchy
-
 r[zircon-job.containment]
+
 Jobs MUST form a tree. Every job except the root job MUST have exactly one
 parent job. A job's children are other jobs and member processes. A process
 MUST belong to exactly one job.
@@ -567,8 +567,8 @@ MUST belong to exactly one job.
 - THEN `J` is returned
 
 ### Requirement: Job Kill Propagation
-
 r[zircon-job.kill-propagation]
+
 Killing a job MUST recursively kill all child jobs and all member processes.
 After a kill, no process or child job in the subtree MUST remain in a
 runnable state.
@@ -586,8 +586,8 @@ runnable state.
 - THEN both `P1` and `P2` are terminated
 
 ### Requirement: Job Critical Process
-
 r[zircon-job.critical-process]
+
 A process MAY be designated as critical to a job. If a critical process
 exits abnormally (non-zero return code), the owning job MUST be killed.
 
@@ -604,8 +604,8 @@ exits abnormally (non-zero return code), the owning job MUST be killed.
 - THEN `J` is not killed
 
 ### Requirement: Job Keeps Parents Alive
-
 r[zircon-job.parent-lifetime]
+
 A job with live children (child jobs or running processes) MUST keep its
 parent chain up to the root job alive, even if all handles to intermediate
 jobs are closed.
@@ -619,44 +619,44 @@ jobs are closed.
 ## Cross-Module Properties
 
 ### Requirement: Rights Explain Handle Operations
-
 r[properties.zircon-rights-handle]
+
 Every successful handle operation in the Zircon model MUST be justified by a
 corresponding rights predicate from `zircon_rights`.
 
 ### Requirement: Peered Object Signals Use Signal Algebra
-
 r[properties.zircon-signal-refinement]
+
 Event, eventpair, channel, socket, and FIFO signal computations MUST refine
 the generic set operations from `signal.rs`.
 
 ### Requirement: Channel Transfer Preserves Lifetime
-
 r[properties.zircon-channel-lifetime]
+
 Channel send/receive/peer-close behavior MUST preserve the lifetime invariant
 that objects remain live while any bound or in-transit handle exists.
 
 ### Requirement: Port Delivery Refines Wait Readiness
-
 r[properties.zircon-port-wait]
+
 A port packet delivery from an async wait MUST correspond to a satisfied
 wait-readiness predicate from `zircon_wait`.
 
 ### Requirement: Timer Signaling Respects Deadline Order
-
 r[properties.zircon-timer-deadline]
+
 Timer signaling MUST be consistent with the deadline ordering from
 `deadline_queue`: if timer `A` has an earlier deadline than timer `B`,
 `A` MUST become signaled no later than `B`.
 
 ### Requirement: Job Kill Transitions Process State
-
 r[properties.zircon-job-process-state]
+
 A process terminated by job kill MUST undergo the same state transition
 (`Running -> Terminated`) modeled in `process_state`.
 
 ### Requirement: Futex Wake Unblocks Tasks
-
 r[properties.zircon-futex-process-state]
+
 A waiter released by futex wake or requeue MUST correspond to a
 `Blocked -> Ready` transition in the abstract task-state model.

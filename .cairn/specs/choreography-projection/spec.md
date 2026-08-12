@@ -8,8 +8,8 @@ projectable choreographies.
 ## Requirements
 
 ### Requirement: Endpoint Projection Has Exact Local Shape
-
 r[choreography.projection]
+
 For every projectable finite choreography `g` and role `r`,
 `project_endpoint(r, g) -> LocalChoreo` MUST be a preconditioned-total helper:
 it requires projectability and, on that surface, returns the exact local view
@@ -61,8 +61,8 @@ is equally admissible for roles outside `participants(g)`:
 - AND introduce an `Offer` only at the first branch-dependent point
 
 ### Requirement: One-Step Semantics Preserve Projected Continuations
-
 r[choreography.steps]
+
 A projectable finite choreography has exact one-step global and local semantics.
 `global_comm_step(g) -> Option<GlobalChoreo>` MUST return `Some(next)` exactly
 when `g` has a `Comm` head, and `None` otherwise. `global_choice_step(g, label)

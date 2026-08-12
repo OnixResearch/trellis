@@ -8,8 +8,8 @@ gate.
 ## Requirements
 
 ### Requirement: Fault-State Quorum Health
-
 r[chaoscontrol-fault-state.quorum-health]
+
 Fault-state helpers apply only to states with `2 <= num_nodes <= 64`, an exact
 `num_nodes x num_nodes` directed partition matrix, diagonal-false entries, and
 an `alive_mask` whose bits above `num_nodes - 1` are clear. `alive_mask` MUST
@@ -49,8 +49,8 @@ subgraph notions are out of scope.
 - THEN the result is `true`
 
 ### Requirement: Fault-State Healthy-Period Gate
-
 r[chaoscontrol-fault-state.liveness-gate]
+
 Depends on `r[chaoscontrol-fault-state.quorum-health]`.
 For valid fault states, the derived healthy-period gate MUST report healthy
 exactly when all participants are alive and `quorum_reachable` holds for that

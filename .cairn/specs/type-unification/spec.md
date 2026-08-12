@@ -9,6 +9,7 @@ correctness, direct structural failure cases, and substitution composition.
 ## Requirements
 
 ### Requirement: Unifier Existence
+r[unify.unifier-exists]
 
 If some finite fuel budget makes the equation-list solver succeed, the
 public chooser MUST return a substitution.
@@ -21,6 +22,7 @@ public chooser MUST return a substitution.
 - THEN it returns `Some(...)`
 
 ### Requirement: Returned-Unifier Correctness
+r[unify.unifier-correct]
 
 Applying any returned unifier to both input types MUST yield identical types.
 
@@ -31,6 +33,7 @@ Applying any returned unifier to both input types MUST yield identical types.
 - THEN the results are identical
 
 ### Requirement: Occurs Check
+r[unify.occurs-check]
 
 Unifying a variable with a type containing that variable MUST fail.
 
@@ -47,6 +50,7 @@ Unifying a variable with a type containing that variable MUST fail.
 - THEN it succeeds with `{0 ↦ App(Con(List), Var(1))}`
 
 ### Requirement: Substitution Composition
+r[unify.subst-compose]
 
 Composing substitutions MUST be associative and equivalent to sequential
 application.
@@ -64,6 +68,7 @@ application.
 - THEN the results are identical
 
 ### Requirement: Failure Correctness
+r[unify.failure]
 
 Obvious structural clashes MUST fail.
 

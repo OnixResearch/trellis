@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_untyped` semantics in this repo. Scope i
 ## Requirements
 
 ### Requirement: Untyped Retype Conserves Memory
-
 r[sel4-untyped.retype]
+
 Retyping an untyped region into typed kernel objects MUST conserve address space. Each created child region MUST lie wholly within the source untyped region.
 
 #### Scenario: Aligned children fit within source
@@ -18,8 +18,8 @@ Retyping an untyped region into typed kernel objects MUST conserve address space
 - THEN both child regions are contained within the source region
 
 ### Requirement: Untyped Child Layout Is Aligned And Disjoint
-
 r[sel4-untyped.child-layout]
+
 Live child objects derived from the same untyped source MUST satisfy their required alignment and MUST NOT overlap one another.
 
 #### Scenario: Overlapping child layout rejected
@@ -29,8 +29,8 @@ Live child objects derived from the same untyped source MUST satisfy their requi
 - THEN the operation is invalid
 
 ### Requirement: Untyped Reclaim Restores Parent Coverage
-
 r[sel4-untyped.reclaim]
+
 Revoking or resetting an untyped object MUST remove or invalidate all typed children derived from it and return ownership of the covered region to the parent untyped object.
 
 #### Scenario: Revoke removes typed children

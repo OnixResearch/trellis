@@ -6,9 +6,9 @@ Defines requirements for keeping README module catalogs aligned with public modu
 ## Requirements
 
 ### Requirement: README Module Catalog Drift Detection
+r[documentation-catalog.readme-module-drift]
 The repository SHALL provide a deterministic check that detects drift between public module declarations in `src/lib.rs` and the README module catalog.
 
-r[documentation-catalog.readme-module-drift]
 
 #### Scenario: Declared module is documented
 
@@ -35,10 +35,10 @@ r[documentation-catalog.readme-module-drift]
 - THEN README/catalog drift is detected without requiring full Verus verification
 
 ### Requirement: Contributor Onboarding Guide
+r[documentation-catalog.contributor-onboarding]
 
 The repository MUST provide public contributor onboarding documentation that explains how to add or modify verified logic while preserving requirements coverage, proof obligations, positive and negative tests, and repository validation gates.
 
-r[documentation-catalog.contributor-onboarding]
 
 #### Scenario: New module workflow is documented
 
@@ -59,10 +59,10 @@ r[documentation-catalog.contributor-onboarding]
 - THEN validation fails or the guide directs the contributor to the required inventory/spec update before completion
 
 ### Requirement: Intent-Oriented Module Guide
+r[documentation-catalog.intent-module-guide]
 
 The repository MUST provide a user-facing module guide that maps common implementation and modeling goals to the relevant Trellis modules, examples, and requirement anchors.
 
-r[documentation-catalog.intent-module-guide]
 
 #### Scenario: User goal maps to a starting module
 
@@ -83,10 +83,10 @@ r[documentation-catalog.intent-module-guide]
 - THEN validation fails with a diagnostic identifying the stale reference
 
 ### Requirement: Cookbook Recipes
+r[documentation-catalog.cookbook-recipes]
 
 The repository MUST provide cookbook documentation that describes common user and contributor workflows with clear success criteria, validation commands, and failure-mode guidance.
 
-r[documentation-catalog.cookbook-recipes]
 
 #### Scenario: Recipe states observable success
 
@@ -107,10 +107,10 @@ r[documentation-catalog.cookbook-recipes]
 - THEN the snippet's referenced files and commands are checked or the validation fails with a diagnostic
 
 ### Requirement: Runnable Example Coverage
+r[documentation-catalog.runnable-examples]
 
 The repository MUST provide checked runnable examples that demonstrate representative stable public APIs without requiring users to invoke Verus directly.
 
-r[documentation-catalog.runnable-examples]
 
 #### Scenario: Example compiles through normal cargo
 
@@ -131,10 +131,10 @@ r[documentation-catalog.runnable-examples]
 - THEN every referenced example path exists and is part of the example validation set
 
 ### Requirement: Module Maturity Index
+r[documentation-catalog.module-maturity-index]
 
 The repository MUST provide a deterministic module maturity index that exposes objective local facts about each public module's usage surface, evidence coverage, examples, and trusted-boundary adjacency.
 
-r[documentation-catalog.module-maturity-index]
 
 #### Scenario: Public module appears in index
 
@@ -155,10 +155,10 @@ r[documentation-catalog.module-maturity-index]
 - THEN validation fails with a diagnostic identifying the stale or inconsistent row
 
 ### Requirement: Invariant Surface Catalog
+r[documentation-catalog.invariant-surface-catalog]
 
 The repository MUST provide a deterministic invariant-surface catalog that exposes objective local facts for public invariant predicates, well-formedness checks, preservation lemmas, soundness lemmas, admission-boundary predicates, evidence kind, and trusted-boundary adjacency.
 
-r[documentation-catalog.invariant-surface-catalog]
 
 #### Scenario: Invariant predicate appears in catalog
 

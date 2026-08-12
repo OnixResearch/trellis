@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_vspace` semantics in this repo. Scope is
 ## Requirements
 
 ### Requirement: VSpace Mappings Are Aligned And Non-Overlapping
-
 r[sel4-vspace.map]
+
 Installing a mapping into a VSpace MUST respect object alignment and MUST NOT create overlapping live mappings at the same address-space root.
 
 #### Scenario: Frame maps at aligned address
@@ -24,8 +24,8 @@ Installing a mapping into a VSpace MUST respect object alignment and MUST NOT cr
 - THEN the map operation is invalid
 
 ### Requirement: VSpace Unmap Removes Exactly One Mapping
-
 r[sel4-vspace.unmap]
+
 Unmapping MUST remove exactly the targeted mapping and leave all unrelated mappings unchanged.
 
 #### Scenario: Unmap one mapping preserves others
@@ -35,8 +35,8 @@ Unmapping MUST remove exactly the targeted mapping and leave all unrelated mappi
 - THEN `M2` remains live
 
 ### Requirement: Mapping Rights Are Restricted By Cap Rights
-
 r[sel4-vspace.rights]
+
 Effective mapping rights MUST be no greater than the rights carried by the capability used to install the mapping.
 
 #### Scenario: Read-only cap yields read-only mapping

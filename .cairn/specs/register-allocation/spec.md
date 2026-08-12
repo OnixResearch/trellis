@@ -8,7 +8,8 @@ assignment, total register-or-spill outcomes, and deterministic spill fallback.
 
 ## Requirements
 
-### Requirement: Exact Interference Graph [r[regalloc.interference]]
+### Requirement: Exact Interference Graph
+r[regalloc.interference]
 
 Two variables MUST have an interference edge exactly when their live ranges
 overlap at some program point. The graph MUST be symmetric and MUST NOT contain
@@ -32,7 +33,8 @@ self-loops.
 - WHEN its diagonal graph entry is checked
 - THEN `graph[v][v] == false`
 
-### Requirement: Coloring Validity [r[regalloc.coloring]]
+### Requirement: Coloring Validity
+r[regalloc.coloring]
 
 Any accepted allocation MUST assign distinct physical registers to interfering
 variables. A register assignment MUST use only register IDs strictly less than
@@ -51,7 +53,8 @@ variables. A register assignment MUST use only register IDs strictly less than
 - WHEN a variable is assigned a register
 - THEN that register ID is less than `k`
 
-### Requirement: Total Allocation [r[regalloc.completeness]]
+### Requirement: Total Allocation
+r[regalloc.completeness]
 
 Every variable MUST receive exactly one allocation outcome: either a physical
 register or a spill slot. In this core model, spilled variables MUST use spill
@@ -69,7 +72,8 @@ slot `variable_index`.
 - WHEN allocation is produced
 - THEN the variable has spill slot `variable_index` and no register
 
-### Requirement: Deterministic Spill Fallback [r[regalloc.spill-fallback]]
+### Requirement: Deterministic Spill Fallback
+r[regalloc.spill-fallback]
 
 The greedy allocator MUST process variables in increasing variable-index order,
 scan registers in increasing order, and spill only when none of those registers

@@ -19,8 +19,8 @@ Unless a requirement says otherwise:
 ## Requirements
 
 ### Requirement: Same-Line Predicate
-
 r[false-sharing.same-line]
+
 
 Two addresses MUST be identified as sharing a cache line iff they agree
 on all bits above the offset.
@@ -44,8 +44,8 @@ on all bits above the offset.
 - THEN the result is true
 
 ### Requirement: Distinct-Line Guarantee
-
 r[false-sharing.distinct-line]
+
 
 If two addresses are on different cache lines, they MUST NOT false-share.
 
@@ -56,8 +56,8 @@ If two addresses are on different cache lines, they MUST NOT false-share.
 - THEN no false sharing occurs because one touches line 0x1000 and the other touches line 0x1040
 
 ### Requirement: Alignment Predicate
-
 r[false-sharing.alignment]
+
 
 An address MUST be identified as cache-line-aligned iff its offset bits
 are all zero.
@@ -75,8 +75,8 @@ are all zero.
 - THEN the result is false (0x1004 % 64 == 4)
 
 ### Requirement: Padding Sufficiency
-
 r[false-sharing.padding]
+
 
 If object A occupies bytes `[addr_a, addr_a + size_a)` and object B
 occupies bytes `[addr_b, addr_b + size_b)`, and object B starts at least
@@ -97,8 +97,8 @@ share a cache line.
 - THEN A and B MAY share a line (both touch the line starting at 0x80)
 
 ### Requirement: Object Span
-
 r[false-sharing.object-span]
+
 
 The number of cache lines a positive-size object spans MUST equal
 `ceil((start_offset + size) / line_size)` where `start_offset` is the
@@ -117,8 +117,8 @@ object's offset within its first cache line.
 - THEN the object spans 2 cache lines (bytes 8-63 in line 1, bytes 0-3 in line 2)
 
 ### Requirement: Decomposition Equivalence
-
 r[false-sharing.decomposition-equivalence]
+
 
 For the canonical decomposition in `set_associative_lookup` —
 `extract_tag_spec` and `extract_index_spec` with

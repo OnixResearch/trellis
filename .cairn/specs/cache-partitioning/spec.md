@@ -10,6 +10,7 @@ unpartitioned cache.
 ## Requirements
 
 ### Requirement: Partition Isolation
+r[cache-partition.isolation]
 
 A lookup for partition P MUST NOT hit a line stored in a way assigned to
 partition Q (Q ≠ P).
@@ -33,6 +34,7 @@ partition Q (Q ≠ P).
 - THEN only ways assigned to A are examined
 
 ### Requirement: Eviction Containment
+r[cache-partition.eviction-containment]
 
 Eviction within partition P MUST only select victim ways assigned to P.
 
@@ -49,6 +51,7 @@ Eviction within partition P MUST only select victim ways assigned to P.
 - THEN Q's ways are unchanged
 
 ### Requirement: Capacity Accounting
+r[cache-partition.capacity]
 
 The sum of all partition sizes (in ways) MUST equal the total
 associativity.
@@ -66,6 +69,7 @@ associativity.
 - THEN S_1 + S_2 + ... + S_N equals the total number of ways
 
 ### Requirement: Assignment Validity
+r[cache-partition.assignment]
 
 Every way MUST be assigned to exactly one valid partition.
 
@@ -82,6 +86,7 @@ Every way MUST be assigned to exactly one valid partition.
 - THEN W belongs to exactly one partition
 
 ### Requirement: Resize Correctness
+r[cache-partition.resize]
 
 Resizing a partition MUST invalidate transferred ways before reassignment.
 
@@ -104,6 +109,7 @@ Resizing a partition MUST invalidate transferred ways before reassignment.
 - THEN A's size decreased by K, B's size increased by K, total unchanged
 
 ### Requirement: Full-Cache Equivalence
+r[cache-partition.full-equivalence]
 
 A single partition containing all ways MUST behave identically to an
 unpartitioned cache.

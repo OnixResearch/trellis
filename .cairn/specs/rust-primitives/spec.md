@@ -7,10 +7,10 @@ Specify finite, mechanically checked Rust primitives whose executable admission 
 ## Requirements
 
 ### Requirement: Async Task State Lifecycle
+r[rust-primitives.async-task-state]
 
 The system MUST expose a finite Rust async task-state primitive with explicit pending, ready, completed, cancelled, and terminal states. Admission MUST reject transitions that mutate a terminal completed or cancelled task, and executable helpers MUST refine the spec predicate rather than encoding a separate runtime policy.
 
-r[rust-primitives.async-task-state]
 
 #### Scenario: Ready task can complete
 
@@ -25,10 +25,10 @@ r[rust-primitives.async-task-state]
 - THEN the transition is rejected and the completed state is unchanged
 
 ### Requirement: Task Waker Slot
+r[rust-primitives.task-waker]
 
 The system MUST expose a finite task-waker slot primitive for empty, registered, notified, and taken states. Waker registration MUST replace only the current slot generation, wake MUST be idempotent for an already-notified generation, and taking a notification MUST consume at most one pending notification.
 
-r[rust-primitives.task-waker]
 
 #### Scenario: Wake after registration is observable
 
@@ -49,10 +49,10 @@ r[rust-primitives.task-waker]
 - THEN the stale wake is rejected or leaves the `g2` slot unchanged
 
 ### Requirement: No Lost Wake Bridge
+r[rust-primitives.no-lost-wake]
 
 The system MUST define a no-lost-wake bridge between task readiness and the waker slot: if readiness is admitted after a generation is registered, then either the slot is notified for that generation or the task is already observed as ready by the consumer. The bridge MUST NOT claim callback execution, scheduler fairness, or OS wake delivery.
 
-r[rust-primitives.no-lost-wake]
 
 #### Scenario: Registered waiter observes later readiness
 
@@ -67,10 +67,10 @@ r[rust-primitives.no-lost-wake]
 - THEN the model may accept registration without requiring a new wake notification
 
 ### Requirement: Oneshot Channel State
+r[rust-primitives.oneshot-channel]
 
 The system MUST expose a single-slot oneshot channel primitive with open, sent, received, closed, and cancelled states. Sending MUST succeed at most once, receiving MUST consume at most one sent value, closing MUST reject future sends, and cancellation MUST preserve the no-duplicate-receive invariant.
 
-r[rust-primitives.oneshot-channel]
 
 #### Scenario: Send then receive consumes one value
 
@@ -91,10 +91,10 @@ r[rust-primitives.oneshot-channel]
 - THEN no value is delivered twice and the cancelled terminal state is preserved
 
 ### Requirement: Oneshot Readiness Notification
+r[rust-primitives.oneshot-readiness]
 
 The system MUST compose oneshot send admission with task readiness and waker-slot notification. A successful send to an open channel with a registered receiver waker MUST make the receiver ready and satisfy the no-lost-wake bridge; a failed send MUST NOT create receiver readiness evidence.
 
-r[rust-primitives.oneshot-readiness]
 
 #### Scenario: Successful send wakes registered receiver
 
@@ -109,10 +109,10 @@ r[rust-primitives.oneshot-readiness]
 - THEN no new receiver readiness or wake evidence is produced by that rejected send
 
 ### Requirement: Drop Guard Exactly-Once Cleanup
+r[rust-primitives.drop-guard]
 
 The system MUST expose a Rust RAII-style drop-guard primitive with armed, disarmed, cleaned, and terminal states. Cleanup admission MUST run at most once for an armed guard, disarm MUST prevent later cleanup, and all terminal states MUST be stable under repeated cleanup attempts.
 
-r[rust-primitives.drop-guard]
 
 #### Scenario: Armed guard cleans once
 
@@ -127,10 +127,10 @@ r[rust-primitives.drop-guard]
 - THEN cleanup is not admitted and the disarmed terminal state is preserved
 
 ### Requirement: Rust Primitive Verification Coverage
+r[rust-primitives.verification-coverage]
 
 The system MUST provide `r[impl]` and `r[verify]` coverage for every public helper introduced by this change. Tests MUST include positive and negative cases for each primitive, and proof functions MUST connect executable helper results to the corresponding spec predicates before README/catalog entries claim the module is verified.
 
-r[rust-primitives.verification-coverage]
 
 #### Scenario: Public helper has traceable requirement coverage
 
@@ -145,10 +145,10 @@ r[rust-primitives.verification-coverage]
 - THEN at least one negative test covers the rejected transition behavior
 
 ### Requirement: R1CS Row Shape
+r[rust-primitives.r1cs-row-shape]
 
 The system MUST expose a finite single-row R1CS envelope with explicit row length, witness length, modulus, three coefficient slots for each of `A`, `B`, and `C`, and three witness-value slots. Row and witness admission MUST reject zero lengths, lengths above the finite slot count, moduli outside the bounded field range, and active coefficient or witness values outside the supported element bound.
 
-r[rust-primitives.r1cs-row-shape]
 
 #### Scenario: Valid row and witness shapes are admitted
 
@@ -163,10 +163,10 @@ r[rust-primitives.r1cs-row-shape]
 - THEN the satisfaction helper rejects the pair
 
 ### Requirement: R1CS Dot Product
+r[rust-primitives.r1cs-dot-product]
 
 The system MUST compute a bounded modular dot product for an admitted row coefficient vector and witness over the active length. The executable dot-product helper MUST refine the spec expression and MUST NOT use unchecked arithmetic outside the finite bounds guaranteed by admission.
 
-r[rust-primitives.r1cs-dot-product]
 
 #### Scenario: Active slots contribute to modular dot product
 
@@ -181,10 +181,10 @@ r[rust-primitives.r1cs-dot-product]
 - THEN only active slots contribute to the dot-product result
 
 ### Requirement: R1CS Row Satisfaction
+r[rust-primitives.r1cs-row-satisfaction]
 
 The system MUST expose a one-row R1CS satisfaction helper that returns true exactly when row and witness shapes are admitted, lengths match, and `<A,w> * <B,w> == <C,w>` modulo the row modulus. The helper MUST reject malformed shapes, mismatched lengths, and unsatisfied equations without claiming multi-row constraint-system or proving-system soundness.
 
-r[rust-primitives.r1cs-row-satisfaction]
 
 #### Scenario: Satisfied row is admitted
 
@@ -199,10 +199,10 @@ r[rust-primitives.r1cs-row-satisfaction]
 - THEN the helper returns false
 
 ### Requirement: R1CS System Shape
+r[rust-primitives.r1cs-system-shape]
 
 The system MUST expose a finite multi-row R1CS envelope with explicit system length, shared modulus, and three physical row slots. System admission MUST reject zero lengths, lengths above the finite row-slot count, invalid system moduli, invalid active rows, and active rows whose modulus differs from the system modulus. Inactive rows MUST NOT affect system-shape admission.
 
-r[rust-primitives.r1cs-system-shape]
 
 #### Scenario: Valid active rows are admitted
 
@@ -217,10 +217,10 @@ r[rust-primitives.r1cs-system-shape]
 - THEN the system is rejected
 
 ### Requirement: R1CS System Satisfaction
+r[rust-primitives.r1cs-system-satisfaction]
 
 The system MUST expose a satisfaction helper that returns true exactly when the system shape is admitted, the witness is admitted, and every active row is satisfied by the same witness. The helper MUST reject malformed witnesses, failed active rows, and malformed active rows without claiming proving-system soundness.
 
-r[rust-primitives.r1cs-system-satisfaction]
 
 #### Scenario: All active rows satisfied
 
@@ -235,10 +235,10 @@ r[rust-primitives.r1cs-system-satisfaction]
 - THEN the helper returns false
 
 ### Requirement: R1CS Public Input Binding Shape
+r[rust-primitives.r1cs-public-input-binding-shape]
 
 The system MUST expose a finite public-input binding envelope with explicit active length, witness-index slots, and public-value slots. Binding-shape admission MUST accept only active lengths within the bounded slot count, active indices inside the admitted witness prefix, admitted public values, and an admitted modulus. Inactive binding slots MUST NOT affect binding-shape admission.
 
-r[rust-primitives.r1cs-public-input-binding-shape]
 
 #### Scenario: Matching public inputs are admitted
 
@@ -253,10 +253,10 @@ r[rust-primitives.r1cs-public-input-binding-shape]
 - THEN the binding helper returns false
 
 ### Requirement: R1CS Public Statement Satisfaction
+r[rust-primitives.r1cs-public-statement-satisfaction]
 
 The system MUST expose a public statement satisfaction helper that returns true exactly when the R1CS system is satisfied by the witness and the public-input bindings are satisfied against that same witness and system modulus. The helper MUST reject malformed systems, malformed witnesses, unsatisfied systems, mismatched public values, and out-of-range public-input bindings without claiming proving-system soundness.
 
-r[rust-primitives.r1cs-public-statement-satisfaction]
 
 #### Scenario: Satisfied system with matching public inputs is admitted
 
@@ -271,10 +271,10 @@ r[rust-primitives.r1cs-public-statement-satisfaction]
 - THEN the helper returns false
 
 ### Requirement: R1CS Gate Shape
+r[rust-primitives.r1cs-gate-shape]
 
 A bounded R1CS gate adapter MUST admit only supported finite gate kinds, valid witness lengths, valid moduli, in-range active witness indices, and bounded constant values.
 
-r[rust-primitives.r1cs-gate-shape]
 
 #### Scenario: Malformed gate rejection
 
@@ -283,10 +283,10 @@ r[rust-primitives.r1cs-gate-shape]
 - THEN the gate MUST be rejected before satisfaction is claimed
 
 ### Requirement: R1CS Gate Row Encoding
+r[rust-primitives.r1cs-gate-row-encoding]
 
 A bounded R1CS gate adapter MUST encode multiplication, addition, and constant gates into a single R1CS row with the same witness length and modulus as the admitted gate.
 
-r[rust-primitives.r1cs-gate-row-encoding]
 
 #### Scenario: Multiplication row encoding
 
@@ -301,10 +301,10 @@ r[rust-primitives.r1cs-gate-row-encoding]
 - THEN addition MUST enforce `(w[x] + w[y]) * 1 = w[z]` and constant MUST enforce `w[x] * 1 = c` through the existing R1CS row satisfaction predicate
 
 ### Requirement: R1CS Gate Satisfaction
+r[rust-primitives.r1cs-gate-satisfaction]
 
 A bounded R1CS gate satisfaction helper MUST return true exactly when the gate is admitted, the witness is admitted with the same active length, any required constant-one wire is present, and the encoded R1CS row is satisfied.
 
-r[rust-primitives.r1cs-gate-satisfaction]
 
 #### Scenario: Gate satisfaction and rejection
 
@@ -313,10 +313,10 @@ r[rust-primitives.r1cs-gate-satisfaction]
 - THEN matching witnesses MUST be accepted and mismatched witness values MUST be rejected
 
 ### Requirement: R1CS Boolean Shape
+r[rust-primitives.r1cs-boolean-shape]
 
 A bounded R1CS boolean primitive MUST admit only valid witness lengths, valid moduli whose `modulus - 1` coefficient fits the bounded row model, and a nonzero boolean witness index inside the active witness prefix.
 
-r[rust-primitives.r1cs-boolean-shape]
 
 #### Scenario: Malformed boolean shape rejection
 
@@ -325,10 +325,10 @@ r[rust-primitives.r1cs-boolean-shape]
 - THEN the shape MUST be rejected before satisfaction is claimed
 
 ### Requirement: R1CS Boolean Row Encoding
+r[rust-primitives.r1cs-boolean-row-encoding]
 
 A bounded R1CS boolean primitive MUST encode booleanity as a single R1CS row equivalent to `b * (1 - b) = 0` using the existing constant-one witness slot convention.
 
-r[rust-primitives.r1cs-boolean-row-encoding]
 
 #### Scenario: Boolean row encoding
 
@@ -337,10 +337,10 @@ r[rust-primitives.r1cs-boolean-row-encoding]
 - THEN the row MUST use the active witness length and modulus and MUST be valid under the existing R1CS row-shape predicate
 
 ### Requirement: R1CS Boolean Satisfaction
+r[rust-primitives.r1cs-boolean-satisfaction]
 
 A bounded R1CS boolean satisfaction helper MUST return true exactly when the boolean shape is admitted, the witness is admitted with the same active length, witness slot zero is one, and the encoded row is satisfied.
 
-r[rust-primitives.r1cs-boolean-satisfaction]
 
 #### Scenario: Boolean values accepted and non-boolean values rejected
 
@@ -349,10 +349,10 @@ r[rust-primitives.r1cs-boolean-satisfaction]
 - THEN witness values 0 and 1 at the boolean slot MUST be accepted and non-boolean values MUST be rejected
 
 ### Requirement: R1CS Bit Decomposition Shape
+r[rust-primitives.r1cs-bit-decomposition-shape]
 
 A bounded R1CS bit-decomposition primitive MUST admit only valid witness lengths, valid boolean-compatible moduli, a bounded value below four, and two distinct nonzero bit witness indices inside the active witness prefix.
 
-r[rust-primitives.r1cs-bit-decomposition-shape]
 
 #### Scenario: Malformed bit-decomposition shape rejection
 
@@ -361,10 +361,10 @@ r[rust-primitives.r1cs-bit-decomposition-shape]
 - THEN the shape MUST be rejected before satisfaction is claimed
 
 ### Requirement: R1CS Bit Boolean Composition
+r[rust-primitives.r1cs-bit-decomposition-boolean-composition]
 
 A bounded R1CS bit-decomposition primitive MUST require each active bit witness slot to satisfy the existing R1CS boolean primitive under the same active witness length and modulus.
 
-r[rust-primitives.r1cs-bit-decomposition-boolean-composition]
 
 #### Scenario: Non-boolean bit rejection
 
@@ -373,10 +373,10 @@ r[rust-primitives.r1cs-bit-decomposition-boolean-composition]
 - THEN satisfaction MUST be rejected
 
 ### Requirement: R1CS Bit Recomposition Satisfaction
+r[rust-primitives.r1cs-bit-decomposition-satisfaction]
 
 A bounded R1CS bit-decomposition satisfaction helper MUST return true exactly when the shape and witness are admitted, both bit slots are boolean, witness slot zero is one, and `value = bit0 + 2 * bit1`.
 
-r[rust-primitives.r1cs-bit-decomposition-satisfaction]
 
 #### Scenario: Recomposition accepts matching bits and rejects mismatches
 
@@ -385,10 +385,10 @@ r[rust-primitives.r1cs-bit-decomposition-satisfaction]
 - THEN matching two-bit recompositions MUST be accepted and mismatched recompositions MUST be rejected
 
 ### Requirement: R1CS Bit Decomposition Verification Coverage
+r[rust-primitives.r1cs-bit-decomposition-verification-coverage]
 
 The R1CS bit-decomposition primitive MUST include implementation and verification coverage for shape admission, boolean-bit composition, recomposition satisfaction, malformed shape rejection, non-boolean bit rejection, and mismatched value rejection.
 
-r[rust-primitives.r1cs-bit-decomposition-verification-coverage]
 
 #### Scenario: Bit-decomposition primitive coverage remains catalogued
 
@@ -397,10 +397,10 @@ r[rust-primitives.r1cs-bit-decomposition-verification-coverage]
 - THEN the bit-decomposition requirements MUST have implementation and verification references
 
 ### Requirement: R1CS Lookup Shape
+r[rust-primitives.r1cs-lookup-shape]
 
 A bounded R1CS lookup-membership primitive MUST admit only valid witness lengths, a nonzero lookup witness index inside the active witness prefix, a table length from one to three, and bounded R1CS elements in every active table entry.
 
-r[rust-primitives.r1cs-lookup-shape]
 
 #### Scenario: Malformed lookup shape rejection
 
@@ -409,10 +409,10 @@ r[rust-primitives.r1cs-lookup-shape]
 - THEN the shape MUST be rejected before membership satisfaction is claimed
 
 ### Requirement: R1CS Lookup Active Table Membership
+r[rust-primitives.r1cs-lookup-active-membership]
 
 A bounded R1CS lookup-membership primitive MUST compare the selected witness-slot value only against active table entries and MUST ignore inactive table entries.
 
-r[rust-primitives.r1cs-lookup-active-membership]
 
 #### Scenario: Active table entries determine membership
 
@@ -421,10 +421,10 @@ r[rust-primitives.r1cs-lookup-active-membership]
 - THEN satisfaction MUST hold exactly when the selected value equals at least one active table entry
 
 ### Requirement: R1CS Lookup Satisfaction
+r[rust-primitives.r1cs-lookup-satisfaction]
 
 A bounded R1CS lookup-membership satisfaction helper MUST return true exactly when the lookup shape and witness are admitted, the witness length matches the lookup length, and the selected witness value is a member of the active table prefix.
 
-r[rust-primitives.r1cs-lookup-satisfaction]
 
 #### Scenario: Lookup accepts members and rejects non-members
 
@@ -433,10 +433,10 @@ r[rust-primitives.r1cs-lookup-satisfaction]
 - THEN active-table member values MUST be accepted and non-member values MUST be rejected
 
 ### Requirement: R1CS Lookup Verification Coverage
+r[rust-primitives.r1cs-lookup-verification-coverage]
 
 The R1CS lookup-membership primitive MUST include implementation and verification coverage for shape admission, active table membership, satisfaction, malformed shape rejection, malformed witness rejection, inactive-entry ignoring, and non-member rejection.
 
-r[rust-primitives.r1cs-lookup-verification-coverage]
 
 #### Scenario: Lookup primitive coverage remains catalogued
 
@@ -445,10 +445,10 @@ r[rust-primitives.r1cs-lookup-verification-coverage]
 - THEN the lookup requirements MUST have implementation and verification references
 
 ### Requirement: R1CS Gate Verification Coverage
+r[rust-primitives.r1cs-gate-verification-coverage]
 
 The R1CS gate primitive MUST include non-vacuous verification and runtime coverage for gate admission, row encoding, satisfaction, malformed gate rejection, malformed witness rejection, one-wire rejection, and valid-but-unsatisfied encoded-row rejection.
 
-r[rust-primitives.r1cs-gate-verification-coverage]
 
 #### Scenario: Coverage remains catalogued
 
@@ -463,10 +463,10 @@ r[rust-primitives.r1cs-gate-verification-coverage]
 - THEN the proof postconditions MUST state the corresponding satisfaction rejection implications instead of only `true`
 
 ### Requirement: R1CS Verification Coverage
+r[rust-primitives.r1cs-verification-coverage]
 
 The base R1CS row primitive MUST include non-vacuous implementation, verification, and runtime coverage for length predicates, element predicates, modulus predicates, row/witness shape admission, dot-product helpers, row satisfaction, malformed row rejection, malformed witness rejection, and length mismatch rejection.
 
-r[rust-primitives.r1cs-verification-coverage]
 
 #### Scenario: Coverage remains catalogued
 
@@ -481,10 +481,10 @@ r[rust-primitives.r1cs-verification-coverage]
 - THEN the proof postconditions MUST state the corresponding validity, rejection, or satisfaction-decomposition implications instead of only `true`
 
 ### Requirement: R1CS Boolean Verification Coverage
+r[rust-primitives.r1cs-boolean-verification-coverage]
 
 The R1CS boolean primitive MUST include non-vacuous implementation, verification, and runtime coverage for shape admission, row encoding, satisfaction, malformed shape rejection, malformed witness rejection, missing one-wire rejection, non-boolean witness rejection, and valid-but-unsatisfied encoded-row rejection.
 
-r[rust-primitives.r1cs-boolean-verification-coverage]
 
 #### Scenario: Boolean primitive coverage remains catalogued
 
@@ -499,10 +499,10 @@ r[rust-primitives.r1cs-boolean-verification-coverage]
 - THEN the proof postconditions MUST state the corresponding validity or rejection implications instead of only `true`
 
 ### Requirement: R1CS System Verification Coverage
+r[rust-primitives.r1cs-system-verification-coverage]
 
 The R1CS system primitive MUST provide non-vacuous `r[impl]`, `r[verify]`, and runtime coverage for system length admission, shared-modulus row admission, malformed system rejection, malformed witness rejection, failed active-row rejection, inactive-row irrelevance, and satisfied-system decomposition before README/catalog claims are made.
 
-r[rust-primitives.r1cs-system-verification-coverage]
 
 #### Scenario: Public helper has traceable coverage
 
@@ -517,10 +517,10 @@ r[rust-primitives.r1cs-system-verification-coverage]
 - THEN the proof postconditions MUST state the corresponding validity, rejection, or satisfaction-decomposition implications instead of only `true`
 
 ### Requirement: R1CS Public Input Verification Coverage
+r[rust-primitives.r1cs-public-input-verification-coverage]
 
 The R1CS public-input primitive MUST provide non-vacuous `r[impl]`, `r[verify]`, and runtime coverage for public-input length admission, active binding-index admission, public-value matching, malformed modulus rejection, malformed witness rejection, malformed statement-system rejection, malformed statement-public-input rejection, inactive-slot irrelevance, empty public-input admission, and satisfied-statement decomposition before README/catalog claims are made.
 
-r[rust-primitives.r1cs-public-input-verification-coverage]
 
 #### Scenario: Public helper has traceable coverage
 

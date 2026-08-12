@@ -12,8 +12,8 @@ tables, indirect calls, and binary decoding.
 ## Requirements
 
 ### Requirement: Typed Values
-
 r[wasm-value.types]
+
 Core Wasm values MUST carry exact value-type information. A value tagged `i32`,
 `i64`, `f32`, or `f64` MUST be accepted only when that exact type is required.
 
@@ -30,8 +30,8 @@ Core Wasm values MUST carry exact value-type information. A value tagged `i32`,
 - THEN the value is rejected as a type mismatch
 
 ### Requirement: Operand Stack Discipline
-
 r[wasm-stack.discipline]
+
 The modeled `i32.add` instruction MUST consume exactly two `i32` operands from
 the operand-stack suffix and MUST produce exactly one `i32` result.
 
@@ -48,8 +48,8 @@ the operand-stack suffix and MUST produce exactly one `i32` result.
 - THEN the instruction is rejected and the stack is unchanged
 
 ### Requirement: Local Access Typing
-
 r[wasm-locals.access]
+
 `local.get`, `local.set`, and `local.tee` MUST access only in-bounds local
 indices and MUST preserve the declared type of each local slot.
 
@@ -78,8 +78,8 @@ indices and MUST preserve the declared type of each local slot.
 - THEN the operation is rejected and the frame is unchanged
 
 ### Requirement: Linear Memory Bounds
-
 r[wasm-memory.bounds]
+
 A memory load or store MUST succeed only when every addressed byte lies within
 linear-memory bounds. Out-of-bounds access MUST fail without modifying memory.
 
@@ -96,8 +96,8 @@ linear-memory bounds. Out-of-bounds access MUST fail without modifying memory.
 - THEN the store fails and memory is unchanged
 
 ### Requirement: Memory Growth Preserves Prefix
-
 r[wasm-memory.grow]
+
 `memory.grow` MUST increase linear memory only in whole 64KiB pages. On
 success, old memory contents MUST remain unchanged as a prefix of the grown
 memory and the appended bytes MUST be zero. On failure, memory MUST remain
@@ -122,8 +122,8 @@ unchanged.
 - THEN the page count and byte contents are unchanged
 
 ### Requirement: Control Labels
-
 r[wasm-control.labels]
+
 Wasm control labels MUST distinguish function, block, and loop targets. A
 branch to a block or function label MUST use that label's result types as the
 expected operand suffix. A branch to a loop label MUST use that label's
@@ -142,8 +142,8 @@ parameter types as the expected operand suffix.
 - THEN the expected suffix is `[i64]`
 
 ### Requirement: Branch Arity
-
 r[wasm-control.branch-arity]
+
 A modeled branch MUST be admitted only when its depth names an in-bounds control
 label and the operand-stack suffix exactly matches the target label types. Depth
 `0` MUST name the innermost label, represented by the last control-stack entry.
@@ -167,8 +167,8 @@ label and the operand-stack suffix exactly matches the target label types. Depth
 - THEN the branch is rejected
 
 ### Requirement: Return Arity
-
 r[wasm-control.return-arity]
+
 A modeled return MUST be admitted only when the control stack has a root
 function label and the operand-stack suffix exactly matches that function
 label's result types. Empty control stacks or non-function roots MUST be
@@ -193,8 +193,8 @@ rejected.
 - THEN the return is rejected
 
 ### Requirement: Unreachable Stack Validation State
-
 r[wasm-validation.unreachable-stack]
+
 The Wasm validation model MUST track an operand-type stack, a control-label
 stack, and whether the current path is reachable. When the path is reachable,
 input-pop checks MUST require the operand-type stack suffix to exactly match
@@ -214,8 +214,8 @@ without requiring those suffix types.
 - THEN the input-pop check is admitted
 
 ### Requirement: I32 Add Validation
-
 r[wasm-validation.i32-add]
+
 The Wasm validation model MUST admit `i32.add` only when reachable state has two
 trailing `i32` operand types, or when the current path is unreachable. On
 success, validation MUST record one produced `i32` result type.
@@ -233,8 +233,8 @@ success, validation MUST record one produced `i32` result type.
 - THEN validation succeeds and records one `i32` result type
 
 ### Requirement: Control Transfer Validation
-
 r[wasm-validation.control-transfer]
+
 The Wasm validation model MUST validate `br` and `return` against the existing
 control-label arity rules while the current path is reachable. Successful `br`,
 `return`, and `unreachable` validation MUST mark the current path unreachable.
@@ -260,8 +260,8 @@ reachable suffix mismatches MUST be rejected.
 - THEN validation is rejected and reachability is unchanged
 
 ### Requirement: Control Frame State
-
 r[wasm-validation.control-frame]
+
 The Wasm validation model MUST record structured control frames with label kind,
 parameter types, result types, entry operand-stack height, and entry
 reachability. The control-frame stack MUST stay aligned with the branch-label
@@ -280,8 +280,8 @@ stack for helpers that enter or end modeled blocks and loops.
 - THEN the innermost frame and label are removed
 
 ### Requirement: Block and Loop Entry Validation
-
 r[wasm-validation.block-entry]
+
 The Wasm validation model MUST admit block and loop entry only when reachable
 state has a matching parameter suffix, or when the current path is unreachable.
 Successful entry MUST remove the consumed parameter types, push an aligned
@@ -306,8 +306,8 @@ control frame and branch label, and keep the current reachability unchanged.
 - THEN entry succeeds and records the current stack height
 
 ### Requirement: Block End Validation
-
 r[wasm-validation.block-end]
+
 The Wasm validation model MUST admit ending the innermost frame only when
 reachable state has a result-type suffix matching that frame, or when the current
 path is unreachable. Successful end MUST pop the frame and aligned label,
@@ -333,8 +333,8 @@ types, and restore reachability to the frame's entry reachability.
 - THEN validation succeeds, restores the frame entry height, appends `i32`, and restores entry reachability
 
 ### Requirement: Table Signature Admission
-
 r[wasm-table.signature]
+
 The Wasm table model MUST represent a finite sequence of optional function signatures. A table entry MUST be admitted for indirect-call use only when the selected index is in bounds, initialized, and its parameter and result type sequences exactly match the expected function type.
 
 #### Scenario: Matching initialized table entry is admitted
@@ -350,8 +350,8 @@ The Wasm table model MUST represent a finite sequence of optional function signa
 - THEN admission is rejected without claiming callee execution behavior
 
 ### Requirement: Call Indirect Validation
-
 r[wasm-validation.call-indirect]
+
 The Wasm validation model MUST admit modeled `call_indirect` only when table-entry signature admission succeeds and, while reachable, the operand-type stack suffix exactly matches the expected function parameters followed by an `i32` table-index operand. Successful reachable validation MUST consume that suffix and push the expected result types. Successful unreachable validation MUST keep operand pops stack-polymorphic but still require a matching table entry and synthesize the expected result types.
 
 #### Scenario: Reachable indirect call consumes arguments and index
@@ -373,8 +373,8 @@ The Wasm validation model MUST admit modeled `call_indirect` only when table-ent
 - THEN operand suffix checks are skipped, but out-of-range, uninitialized, or signature-mismatched table entries are still rejected
 
 ### Requirement: Branch Table Validation
-
 r[wasm-validation.br-table]
+
 The Wasm validation model MUST admit modeled `br_table` only when the default branch depth is in bounds, every listed branch depth is in bounds, every listed target's branch-label types exactly match the default target's branch-label types, and, while reachable, the operand-type stack suffix exactly matches the default target types followed by an `i32` selector. Successful validation MUST mark the current path unreachable. Unreachable validation MUST keep operand pops stack-polymorphic but still reject malformed depths or mismatched target types.
 
 #### Scenario: Matching branch table targets are admitted

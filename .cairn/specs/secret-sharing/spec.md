@@ -11,107 +11,114 @@ property.
 
 ### Field Arithmetic
 
-#### Requirement: Prime Modulus Validation
+### Requirement: Prime Modulus Validation
+r[secret-sharing.prime-modulus-validation]
 
 Shamir field arithmetic MUST operate over GF(p) for a prime modulus p.
 Composite moduli MUST be rejected.
 
-##### Scenario: Composite modulus rejected
+#### Scenario: Composite modulus rejected
 
 - GIVEN a composite modulus such as 15
 - WHEN validating the modulus for Shamir field operations
 - THEN the operation MUST reject it as not being a field modulus
 
-#### Requirement: Closure
+### Requirement: Closure
+r[secret-sharing.closure]
 
 Addition and multiplication over GF(p) MUST produce results in the
 range [0, p). No operation may return a value outside the field.
 
-##### Scenario: Addition closure
+#### Scenario: Addition closure
 
 - GIVEN field elements a, b in [0, p)
 - WHEN computing field_add(a, b, p)
 - THEN the result MUST be in [0, p)
 
-##### Scenario: Multiplication closure
+#### Scenario: Multiplication closure
 
 - GIVEN field elements a, b in [0, p)
 - WHEN computing field_mul(a, b, p)
 - THEN the result MUST be in [0, p)
 
-#### Requirement: Additive Identity
+### Requirement: Additive Identity
+r[secret-sharing.additive-identity]
 
 Zero MUST be the additive identity. Adding zero to any element MUST
 return that element unchanged.
 
-##### Scenario: Right identity
+#### Scenario: Right identity
 
 - GIVEN a field element a
 - WHEN computing field_add(a, 0, p)
 - THEN the result MUST equal a
 
-##### Scenario: Left identity
+#### Scenario: Left identity
 
 - GIVEN a field element a
 - WHEN computing field_add(0, a, p)
 - THEN the result MUST equal a
 
-#### Requirement: Multiplicative Identity
+### Requirement: Multiplicative Identity
+r[secret-sharing.multiplicative-identity]
 
 One MUST be the multiplicative identity. Multiplying any element by one
 MUST return that element unchanged.
 
-##### Scenario: Right identity
+#### Scenario: Right identity
 
 - GIVEN a field element a
 - WHEN computing field_mul(a, 1, p)
 - THEN the result MUST equal a
 
-##### Scenario: Left identity
+#### Scenario: Left identity
 
 - GIVEN a field element a
 - WHEN computing field_mul(1, a, p)
 - THEN the result MUST equal a
 
-#### Requirement: Commutativity
+### Requirement: Commutativity
+r[secret-sharing.commutativity]
 
 Both addition and multiplication MUST be commutative.
 
-##### Scenario: Addition commutes
+#### Scenario: Addition commutes
 
 - GIVEN field elements a and b
 - WHEN computing field_add(a, b, p) and field_add(b, a, p)
 - THEN both results MUST be equal
 
-##### Scenario: Multiplication commutes
+#### Scenario: Multiplication commutes
 
 - GIVEN field elements a and b
 - WHEN computing field_mul(a, b, p) and field_mul(b, a, p)
 - THEN both results MUST be equal
 
-#### Requirement: Multiplicative Inverse
+### Requirement: Multiplicative Inverse
+r[secret-sharing.multiplicative-inverse]
 
 Every non-zero element MUST have a multiplicative inverse. The inverse
 MUST satisfy a * inv(a) ≡ 1 (mod p).
 
-##### Scenario: Inverse exists
+#### Scenario: Inverse exists
 
 - GIVEN a non-zero field element a
 - WHEN computing field_inv(a, p)
 - THEN field_mul(a, field_inv(a, p), p) MUST equal 1
 
-##### Scenario: Zero has no inverse
+#### Scenario: Zero has no inverse
 
 - GIVEN the element 0
 - WHEN attempting field_inv(0, p)
 - THEN the operation MUST fail or return None
 
-#### Requirement: Subtraction
+### Requirement: Subtraction
+r[secret-sharing.subtraction]
 
 Field subtraction MUST satisfy a - b ≡ a + (p - b) (mod p). The result
 MUST be in [0, p).
 
-##### Scenario: Subtraction as additive inverse
+#### Scenario: Subtraction as additive inverse
 
 - GIVEN field elements a and b
 - WHEN computing field_sub(a, b, p)
@@ -119,35 +126,37 @@ MUST be in [0, p).
 
 ### Polynomial Evaluation
 
-#### Requirement: Horner Correctness
+### Requirement: Horner Correctness
+r[secret-sharing.horner-correctness]
 
 Evaluating a polynomial via Horner's method MUST produce the same
 result as the summation definition: f(x) = Σ coeffs[i] * x^i (mod p).
 
-##### Scenario: Constant polynomial
+#### Scenario: Constant polynomial
 
 - GIVEN polynomial with coefficients [c]
 - WHEN evaluating at any x
 - THEN the result MUST equal c mod p
 
-##### Scenario: Linear polynomial
+#### Scenario: Linear polynomial
 
 - GIVEN polynomial with coefficients [a0, a1]
 - WHEN evaluating at x
 - THEN the result MUST equal (a0 + a1 * x) mod p
 
-##### Scenario: Equivalence with summation
+#### Scenario: Equivalence with summation
 
 - GIVEN polynomial with coefficients [c0, c1, ..., cn]
 - WHEN evaluating at x using Horner's method
 - THEN the result MUST equal Σ ci * x^i (mod p)
 
-#### Requirement: Degree Bound
+### Requirement: Degree Bound
+r[secret-sharing.degree-bound]
 
 A polynomial with k coefficients MUST have degree at most k-1. The
 leading coefficient (coeffs[k-1]) MAY be zero.
 
-##### Scenario: Degree
+#### Scenario: Degree
 
 - GIVEN a polynomial with 3 coefficients
 - WHEN querying its degree
@@ -155,54 +164,58 @@ leading coefficient (coeffs[k-1]) MAY be zero.
 
 ### Lagrange Interpolation
 
-#### Requirement: Interpolation Correctness
+### Requirement: Interpolation Correctness
+r[secret-sharing.interpolation-correctness]
 
 Given k points (x_i, y_i) with distinct x_i, the Lagrange interpolant
 evaluated at any x_j MUST return y_j. The interpolant passes through
 all given points.
 
-##### Scenario: Passes through all points
+#### Scenario: Passes through all points
 
 - GIVEN k points (x_1, y_1), ..., (x_k, y_k) with distinct x values
 - WHEN computing the Lagrange interpolant L(x)
 - THEN L(x_i) MUST equal y_i for all i in 1..k
 
-#### Requirement: Uniqueness
+### Requirement: Uniqueness
+r[secret-sharing.uniqueness]
 
-For fixed distinct interpolation points, the y-value vector is uniquely
+For fixed distinct interpolation points, the y-value vector MUST be uniquely
 determined by the interpolant values on those points. There is exactly
 one value vector attached to a given interpolant over the chosen x-set.
 
-##### Scenario: Two interpolants agreeing on k points
+#### Scenario: Two interpolants agreeing on k points
 
 - GIVEN fixed distinct x-values x_1, ..., x_k
 - AND value vectors Y and Z of length k
 - WHEN L_Y(x_i) == L_Z(x_i) for all i in 1..k
 - THEN Y and Z MUST be identical
 
-#### Requirement: Basis Partition of Unity
+### Requirement: Basis Partition of Unity
+r[secret-sharing.basis-partition-of-unity]
 
 The Lagrange basis polynomials L_i(x) MUST satisfy Σ L_i(x) = 1 for
 all x, when evaluated at the interpolation points.
 
-##### Scenario: Sum of basis at interpolation point
+#### Scenario: Sum of basis at interpolation point
 
 - GIVEN basis polynomials L_1, ..., L_k for points x_1, ..., x_k
 - WHEN evaluating Σ L_i(x_j) for any j
 - THEN the sum MUST equal 1
 
-#### Requirement: Basis Kronecker Delta
+### Requirement: Basis Kronecker Delta
+r[secret-sharing.basis-kronecker-delta]
 
 Each basis polynomial L_i MUST satisfy L_i(x_j) = δ_{ij}: equals 1
 when i = j, equals 0 otherwise.
 
-##### Scenario: Diagonal
+#### Scenario: Diagonal
 
 - GIVEN basis polynomial L_i for point x_i
 - WHEN evaluating L_i(x_i)
 - THEN the result MUST equal 1
 
-##### Scenario: Off-diagonal
+#### Scenario: Off-diagonal
 
 - GIVEN basis polynomial L_i for point x_i and a different point x_j (j ≠ i)
 - WHEN evaluating L_i(x_j)
@@ -210,54 +223,57 @@ when i = j, equals 0 otherwise.
 
 ### Share Generation
 
-#### Requirement: Share Count
+### Requirement: Share Count
+r[secret-sharing.share-count]
 
 Splitting a secret with parameters (k, n) MUST produce exactly n
 shares. Each share MUST consist of a distinct non-zero x-coordinate
 and a y-coordinate in [0, p).
 
-##### Scenario: Correct count
+#### Scenario: Correct count
 
 - GIVEN threshold k and total n
 - WHEN splitting a secret
 - THEN exactly n shares MUST be produced
 
-##### Scenario: Distinct x-coordinates
+#### Scenario: Distinct x-coordinates
 
 - GIVEN n shares from a split operation
 - WHEN examining x-coordinates
 - THEN all x-coordinates MUST be distinct and non-zero
 
-#### Requirement: Parameter Validation
+### Requirement: Parameter Validation
+r[secret-sharing.parameter-validation]
 
 Split MUST require 2 ≤ k ≤ n. k = 1 is degenerate (every share is the
 secret). k > n makes reconstruction impossible.
 
-##### Scenario: Valid parameters
+#### Scenario: Valid parameters
 
 - GIVEN k = 3 and n = 5
 - WHEN splitting
 - THEN the operation MUST succeed
 
-##### Scenario: k greater than n
+#### Scenario: k greater than n
 
 - GIVEN k = 5 and n = 3
 - WHEN attempting to split
 - THEN the operation MUST fail
 
-##### Scenario: k equals 1
+#### Scenario: k equals 1
 
 - GIVEN k = 1
 - WHEN attempting to split
 - THEN the operation MUST fail (degenerate case)
 
-#### Requirement: Constant Term Preservation
+### Requirement: Constant Term Preservation
+r[secret-sharing.constant-term-preservation]
 
 The polynomial used for share generation MUST have the secret as its
 constant term (coefficient at index 0). Evaluating at x=0 MUST return
 the secret.
 
-##### Scenario: Polynomial at zero
+#### Scenario: Polynomial at zero
 
 - GIVEN a secret s and a polynomial f constructed for splitting
 - WHEN evaluating f(0)
@@ -265,35 +281,37 @@ the secret.
 
 ### Secret Reconstruction
 
-#### Requirement: Reconstruction Correctness
+### Requirement: Reconstruction Correctness
+r[secret-sharing.reconstruction-correctness]
 
 Given any k or more valid shares from the same split operation,
 reconstruction MUST return the original secret.
 
-##### Scenario: Exact threshold
+#### Scenario: Exact threshold
 
 - GIVEN k shares from a (k, n) split of secret s
 - WHEN reconstructing
 - THEN the result MUST equal s
 
-##### Scenario: More than threshold
+#### Scenario: More than threshold
 
 - GIVEN k+1 shares from a (k, n) split of secret s
 - WHEN reconstructing
 - THEN the result MUST equal s
 
-##### Scenario: Any k-subset
+#### Scenario: Any k-subset
 
 - GIVEN any k-element subset of n shares from a split of secret s
 - WHEN reconstructing from that subset
 - THEN the result MUST equal s
 
-#### Requirement: Insufficient Shares
+### Requirement: Insufficient Shares
+r[secret-sharing.insufficient-shares]
 
 Reconstruction with fewer than k shares MUST NOT produce the correct
 secret (except with negligible probability 1/p).
 
-##### Scenario: One share short
+#### Scenario: One share short
 
 - GIVEN k-1 shares from a (k, n) split
 - WHEN attempting reconstruction
@@ -301,31 +319,33 @@ secret (except with negligible probability 1/p).
 
 ### Threshold Security
 
-#### Requirement: Information-Theoretic Security
+### Requirement: Information-Theoretic Security
+r[secret-sharing.information-theoretic-security]
 
 Any set of fewer than k shares MUST be information-theoretically
 independent of the secret. For any secret s' and any k-1 shares,
 there MUST exist a polynomial of degree k-1 with constant term s'
 consistent with those shares.
 
-##### Scenario: Any secret consistent with k-1 shares
+#### Scenario: Any secret consistent with k-1 shares
 
 - GIVEN k-1 shares (x_1, y_1), ..., (x_{k-1}, y_{k-1})
 - WHEN choosing an arbitrary secret s'
 - THEN there MUST exist a polynomial f of degree k-1 such that f(0) = s' and f(x_i) = y_i for all i
 
-##### Scenario: No leakage from single share
+#### Scenario: No leakage from single share
 
 - GIVEN a single share (x, y) from a (k, n) split where k ≥ 2
 - WHEN considering all possible secrets in [0, p)
 - THEN every secret value MUST be equally consistent with that share
 
-#### Requirement: Perfect Reconstruction Threshold
+### Requirement: Perfect Reconstruction Threshold
+r[secret-sharing.perfect-reconstruction-threshold]
 
 Exactly k shares MUST be both necessary and sufficient. Fewer than k
 reveal nothing; k or more uniquely determine the secret.
 
-##### Scenario: Sharp threshold
+#### Scenario: Sharp threshold
 
 - GIVEN a (k, n) split
 - WHEN any k shares are combined

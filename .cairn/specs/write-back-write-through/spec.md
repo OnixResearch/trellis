@@ -9,6 +9,7 @@ guarantees, policy non-interference, and bulk flush correctness.
 ## Requirements
 
 ### Requirement: Write-Back Dirty Invariant
+r[write-policy.write-back-dirty]
 
 Under write-back policy, a line MUST be dirty iff it has been written
 since the last writeback or load.
@@ -32,6 +33,7 @@ since the last writeback or load.
 - THEN the line is clean
 
 ### Requirement: Write-Back Eviction Flush
+r[write-policy.write-back-eviction]
 
 Evicting a dirty line under write-back policy MUST write the data to
 memory. Evicting a clean line MUST NOT write to memory.
@@ -49,6 +51,7 @@ memory. Evicting a clean line MUST NOT write to memory.
 - THEN memory is unchanged
 
 ### Requirement: Write-Through Always-Clean Invariant
+r[write-policy.write-through-clean]
 
 Under write-through policy, no line MUST ever be dirty.
 
@@ -65,6 +68,7 @@ Under write-through policy, no line MUST ever be dirty.
 - THEN the dirty bit is false
 
 ### Requirement: Write-Through Memory Propagation
+r[write-policy.write-through-memory]
 
 Every write under write-through policy MUST update memory immediately.
 
@@ -81,6 +85,7 @@ Every write under write-through policy MUST update memory immediately.
 - THEN `memory[A]` equals the most recent write to address A
 
 ### Requirement: Policy Non-Interference
+r[write-back-write-through.policy-non-interference]
 
 Write-back and write-through lines in the same cache MUST NOT affect
 each other's invariants.
@@ -98,6 +103,7 @@ each other's invariants.
 - THEN line A's state is unchanged
 
 ### Requirement: Flush-All Correctness
+r[write-policy.flush-all]
 
 Flushing all lines MUST make every line clean and make memory match
 the cache for all lines, assuming lines that are already clean already
@@ -116,6 +122,7 @@ match memory before the flush begins.
 - THEN memory is unchanged and all lines remain clean
 
 ### Requirement: Read Equivalence
+r[write-policy.read-equivalence]
 
 A read hit MUST return the same data regardless of write policy.
 

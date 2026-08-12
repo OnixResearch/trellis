@@ -19,8 +19,8 @@ walk semantics.
 ## Requirements
 
 ### Requirement: Post-Shootdown Freshness
-
 r[tlb-shootdown.freshness]
+
 
 After a single-page shootdown completes, every targeted core MUST have the
 stale cached translation removed for the target page.
@@ -40,8 +40,8 @@ stale cached translation removed for the target page.
   stale entry is absent
 
 ### Requirement: Protocol Termination Under Responsiveness
-
 r[tlb-shootdown.termination]
+
 
 Under the responsiveness assumption, acknowledgments MUST make monotone
 progress toward completion and completion MUST hold exactly when all
@@ -66,8 +66,8 @@ required acknowledgments have been recorded.
 - THEN completion is true if and only if all required acknowledgments are present
 
 ### Requirement: Initiator Completion Guard
-
 r[tlb-shootdown.initiator-safety]
+
 
 The module MUST expose completion only after every required acknowledgment
 has been recorded. Callers MAY use completion as the guard for proceeding
@@ -86,8 +86,8 @@ with effects outside this module.
 - THEN the request is complete
 
 ### Requirement: Self-Invalidation
-
 r[tlb-shootdown.self-invalidation]
+
 
 The initiating core MUST invalidate its own cached translation for the
 single target page before waiting on other cores.
@@ -100,8 +100,8 @@ single target page before waiting on other cores.
 - AND `C` is already marked acknowledged in the request state
 
 ### Requirement: Disjoint-Page Isolation
-
 r[tlb-shootdown.isolation]
+
 
 Handling a shootdown for one target page MUST NOT modify cached
 translations for any different page.
@@ -119,8 +119,8 @@ translations for any different page.
 - THEN the other target page's cached translations are unchanged
 
 ### Requirement: Range Invalidation Coverage
-
 r[tlb-shootdown.range]
+
 
 Range invalidation MUST apply the single-page invalidation rule to every
 page in `[start, end)` and preserve pages outside the range.

@@ -7,8 +7,8 @@ Defines requirements for verified `sel4_endpoint` semantics in this repo. Scope 
 ## Requirements
 
 ### Requirement: Endpoint Rendezvous IPC
-
 r[sel4-endpoint.rendezvous]
+
 When a sender and receiver are both available on the same endpoint, the kernel MUST match exactly one sender with exactly one receiver, dequeue the FIFO head waiter from each populated side, and wake both threads. Public send/receive helpers require caller TCB IDs that are not already queued on that endpoint.
 
 #### Scenario: Waiting receiver matches send
@@ -48,8 +48,8 @@ When a sender and receiver are both available on the same endpoint, the kernel M
 - THEN that receiver is queued and remains blocked on `E`
 
 ### Requirement: Endpoint Queue Discipline
-
 r[sel4-endpoint.queue-discipline]
+
 Unmatched waiters on an endpoint MUST preserve queue order under match and cancellation. Cancelling a blocked sender or blocked receiver MUST remove only that waiter from its queue, and cancelling a non-queued waiter MUST leave endpoint queues unchanged.
 
 #### Scenario: Cancel middle sender
@@ -71,8 +71,8 @@ Unmatched waiters on an endpoint MUST preserve queue order under match and cance
 - THEN both endpoint queues are unchanged
 
 ### Requirement: Endpoint Badge Transfer
-
 r[sel4-endpoint.badge]
+
 A successful endpoint send/receive rendezvous MUST deliver the matched sender's caller-provided badge value to the matched receiver.
 
 #### Scenario: Badge delivered on send-to-receive match

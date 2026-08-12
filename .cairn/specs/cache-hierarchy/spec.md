@@ -19,6 +19,7 @@ model with inclusive, exclusive, and non-inclusive policies.
 ## Requirements
 
 ### Requirement: Inclusive Invariant
+r[hierarchy.inclusive-invariant]
 Under the inclusive policy, every line present in L1 MUST also be
 present in L2 after every modeled operation.
 
@@ -53,6 +54,7 @@ present in L2 after every modeled operation.
 - THEN the resulting L1 remains a subset of L2
 
 ### Requirement: Back Invalidation
+r[hierarchy.back-invalidation]
 Under the inclusive policy, evicting a line from L2 MUST also invalidate
 that line from L1.
 
@@ -80,6 +82,7 @@ that line from L1.
 - THEN the inclusive invariant is violated
 
 ### Requirement: Exclusive Invariant
+r[hierarchy.exclusive-invariant]
 Under the exclusive policy, a line MUST NOT be present in both L1 and L2 at
 the same time.
 
@@ -101,6 +104,7 @@ the same time.
 - AND no line is present in both levels
 
 ### Requirement: Exclusive Swap
+r[hierarchy.exclusive-swap]
 Under the exclusive policy, moving a line between levels MUST remove it
 from the source level and install it in the destination level in the
 same abstract step. Demotion is modeled by `l1_evict`; promotion is
@@ -116,6 +120,7 @@ modeled by `l2_to_l1_promote`.
 - THEN `L` is present in L1 and absent from L2
 
 ### Requirement: Non-Inclusive Freedom
+r[hierarchy.non-inclusive]
 Under the non-inclusive policy, the model MUST impose no subset or
 exclusion constraint between L1 and L2.
 
@@ -129,6 +134,7 @@ exclusion constraint between L1 and L2.
 - THEN the state remains valid
 
 ### Requirement: Capacity Accounting
+r[hierarchy.capacity]
 For canonical levels, the inclusive effective capacity MUST equal the
 current unique-line count `|L2|`, and the exclusive effective capacity
 MUST equal the current unique-line count `|L1| + |L2|`.
@@ -151,6 +157,7 @@ MUST equal the current unique-line count `|L1| + |L2|`.
   lines in L2
 
 ### Requirement: Snoop Scope
+r[hierarchy.snoop-scope]
 Under the inclusive policy, an L2 miss MUST imply an L1 miss for the
 same line. Under the exclusive policy, checking L2 alone MUST NOT be
 assumed sufficient.

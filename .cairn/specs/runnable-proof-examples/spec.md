@@ -7,10 +7,10 @@ Defines the `runnable-proof-examples` capability.
 ## Requirements
 
 ### Requirement: Runnable Proof Examples
+r[runnable-proof-examples.basic]
 
 The repository MUST provide runnable proof examples that demonstrate Trellis's `spec fn` / `exec fn` / `ensures` style with command-backed positive and negative evidence.
 
-r[runnable-proof-examples.basic]
 
 #### Scenario: Positive example is command-backed
 
@@ -31,10 +31,10 @@ r[runnable-proof-examples.basic]
 - THEN every introduced requirement ID has `r[impl]` and `r[verify]` coverage or an explicit bounded exemption.
 
 ### Requirement: Example Command Inventory
+r[runnable-proof-examples.commands]
 
 The repository SHOULD document exact commands for positive examples, negative examples, and any opt-in example checks that are not part of the default fast path.
 
-r[runnable-proof-examples.commands]
 
 #### Scenario: Commands are reproducible
 

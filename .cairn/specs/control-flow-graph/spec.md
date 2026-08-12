@@ -10,6 +10,7 @@ properties, well-formedness, and dead block detection.
 ## Requirements
 
 ### Requirement: Instruction Validity
+r[control-flow-graph.leader]
 
 Branch and conditional-branch targets MUST stay within the instruction
 stream and MUST NOT target instruction 0.
@@ -27,6 +28,7 @@ stream and MUST NOT target instruction 0.
 - THEN validation fails
 
 ### Requirement: Instruction Partition
+r[cache-partition.assignment]
 
 Every instruction MUST belong to exactly one basic block, and blocks
 MUST partition the instruction sequence.
@@ -50,6 +52,7 @@ MUST partition the instruction sequence.
 - THEN B_i.end == B_{i+1}.start
 
 ### Requirement: Leader Identification
+r[control-flow-graph.leader-identification]
 
 Block boundaries MUST be placed at leader instructions.
 
@@ -72,6 +75,7 @@ Block boundaries MUST be placed at leader instructions.
 - THEN index I+1 is a leader (if it exists)
 
 ### Requirement: Edge Correctness
+r[control-flow-graph.edge-correctness]
 
 An edge from block A to block B MUST exist iff A's terminator transfers
 control to B's entry.
@@ -95,6 +99,7 @@ control to B's entry.
 - THEN an edge A→B exists
 
 ### Requirement: Entry Block
+r[control-flow-graph.entry-block]
 
 The entry block MUST contain the first instruction and have no
 predecessors from within the function for valid instruction streams.
@@ -112,6 +117,7 @@ predecessors from within the function for valid instruction streams.
 - THEN the list is empty
 
 ### Requirement: Exit Block
+r[liveness.exit]
 
 Exit blocks MUST end with return instructions and have no successors.
 
@@ -128,6 +134,7 @@ Exit blocks MUST end with return instructions and have no successors.
 - THEN the block is an exit block
 
 ### Requirement: Well-Formedness
+r[control-flow-graph.well-formedness]
 
 The CFG MUST satisfy structural invariants that downstream analyses depend on.
 
@@ -144,6 +151,7 @@ The CFG MUST satisfy structural invariants that downstream analyses depend on.
 - THEN B contains at least one instruction
 
 ### Requirement: Reachability
+r[control-flow-graph.exit]
 
 Every reachable block MUST be identified, and unreachable blocks MUST
 be classified as dead.

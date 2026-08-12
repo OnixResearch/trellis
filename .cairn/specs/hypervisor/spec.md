@@ -11,8 +11,8 @@ KVM ioctl ABI details or full device emulation.
 ## Requirements
 
 ### Requirement: Memslot Tables Are Sorted and Disjoint
-
 r[hypervisor-memslot.disjoint]
+
 A memslot table MUST represent guest-frame-number (GFN) ranges as sorted,
 non-overlapping half-open intervals `[base_gfn, base_gfn + npages)`. Adjacent
 memslots MAY touch at a boundary, but no guest frame may belong to two
@@ -31,8 +31,8 @@ memslots at once.
 - THEN the table is rejected as overlapping
 
 ### Requirement: Memslot Lookup Is Unique
-
 r[hypervisor-memslot.lookup]
+
 `lookup_memslot(slots, gfn)` MUST return the unique memslot whose guest-frame
 range contains `gfn`, or `None` if no memslot contains it.
 
@@ -49,8 +49,8 @@ range contains `gfn`, or `None` if no memslot contains it.
 - THEN the result is `None`
 
 ### Requirement: GPA Translation Preserves Offset
-
 r[hypervisor-gpa.translate]
+
 A successful GPA translation MUST preserve the byte offset inside the owning
 memslot. If `gpa` lies in memslot `S`, then the translated host address MUST be
 `S.host_base + (gpa - S.gpa_base)`. The translated host address MUST lie inside
@@ -69,8 +69,8 @@ that memslot's host-backed region.
 - THEN the result is `0x8567`
 
 ### Requirement: GPA Access Faults Are Classified
-
 r[hypervisor-gpa.access]
+
 GPA translation with access mode MUST distinguish at least three outcomes:
 `Translated`, `Unmapped`, and `ReadonlyWrite`. A write into a readonly memslot
 MUST return `ReadonlyWrite`. An address outside all memslots MUST return
@@ -89,8 +89,8 @@ MUST return `ReadonlyWrite`. An address outside all memslots MUST return
 - THEN the result is `ReadonlyWrite`
 
 ### Requirement: Dirty Log Indexing Uses Relative GFN
-
 r[hypervisor-dirty-log.index]
+
 The dirty-log bit index for a guest frame MUST be the frame's offset relative
 to its memslot base. For memslot `S`, `dirty_index(S, gfn)` MUST equal
 `gfn - S.base_gfn` and MUST be in `[0, S.npages)` exactly when `gfn` belongs to
@@ -109,8 +109,8 @@ to its memslot base. For memslot `S`, `dirty_index(S, gfn)` MUST equal
 - THEN the result is `3`
 
 ### Requirement: Dirty Marking Is Idempotent and Bounded
-
 r[hypervisor-dirty-log.mark]
+
 Marking a guest frame dirty MUST set exactly its relative dirty bit and MUST
 leave all other bits unchanged. Marking the same guest frame multiple times
 MUST be idempotent. Guest frames outside the memslot MUST NOT mutate the
@@ -129,8 +129,8 @@ bitmap.
 - THEN bits other than `5` keep their prior values
 
 ### Requirement: Dirty Merge and Clear Follow Bitmap Algebra
-
 r[hypervisor-dirty-log.union]
+
 Merging dirty logs for the same memslot MUST behave as bitwise union. Clearing a
 dirty log MUST reset all tracked bits to zero.
 
@@ -147,8 +147,8 @@ dirty log MUST reset all tracked bits to zero.
 - THEN every tracked bit becomes zero
 
 ### Requirement: vCPU Run Eligibility Matches State
-
 r[hypervisor-vcpu.run-state]
+
 A vCPU MUST be in exactly one of four abstract states: `Runnable`, `Halted`,
 `Blocked`, or `Stopped`. `vcpu_can_enter_guest` MUST return true exactly in the
 `Runnable` state. `Stopped` is terminal and MUST NOT become runnable again.
@@ -166,8 +166,8 @@ A vCPU MUST be in exactly one of four abstract states: `Runnable`, `Halted`,
 - THEN the result is false
 
 ### Requirement: Halt and Wake Transitions Are Explicit
-
 r[hypervisor-vcpu.halt-wakeup]
+
 Executing a halt operation from `Runnable` MUST move the vCPU to `Halted`.
 A deliverable wake event, including an injectible virtual interrupt, MUST move a
 halted vCPU back to `Runnable`. `Blocked` vCPUs MAY resume only through their
@@ -186,8 +186,8 @@ matching unblock condition.
 - THEN the next state is `Runnable`
 
 ### Requirement: Pending Interrupt Set Is Deterministic
-
 r[hypervisor-interrupt.inject]
+
 The pending virtual-interrupt structure MUST support enqueue-or-mark without
 losing prior pending interrupts, and next-interrupt selection MUST be
 deterministic for a given pending set. Re-marking an already pending interrupt
@@ -206,8 +206,8 @@ MUST be idempotent.
 - THEN it returns the same result both times
 
 ### Requirement: Interrupt Delivery Requires Deliverable State
-
 r[hypervisor-interrupt.deliver]
+
 A pending interrupt MUST be delivered only when the guest is interruptible.
 Successful delivery MUST consume the selected pending interrupt. If the guest is
 not interruptible, the pending set MUST remain unchanged.
@@ -225,8 +225,8 @@ not interruptible, the pending set MUST remain unchanged.
 - THEN no interrupt is delivered and vector `32` remains pending
 
 ### Requirement: VM Exit Reasons Are Classified Deterministically
-
 r[hypervisor-exit.classify]
+
 VM-exit classification MUST map raw exit information into stable semantic
 classes including at least `Io`, `Mmio`, `Hypercall`, `Halt`, `InterruptWindow`,
 `Shutdown`, and `InternalError`. The same raw exit input MUST always classify
@@ -245,8 +245,8 @@ to the same semantic class.
 - THEN the result is `InternalError`
 
 ### Requirement: Exit Disposition Maps Class to Action
-
 r[hypervisor-exit.disposition]
+
 A semantic exit class MUST map to exactly one disposition:
 `ResumeGuest`, `UserspaceHandle`, `Block`, or `Terminate`.
 `Io`, `Mmio`, and `Hypercall` MUST map to `UserspaceHandle`.
@@ -269,28 +269,28 @@ A semantic exit class MUST map to exactly one disposition:
 ## Cross-Module Properties
 
 ### Requirement: Translation Stays Inside Memslot Region
-
 r[properties.hypervisor-translation-region]
+
 Every successful GPA translation MUST produce a host address contained in the
 translated memslot's host-backed region. This property refines
 `region::contains_addr` and existing page/offset arithmetic.
 
 ### Requirement: Dirty Logs Refine Bitmap Operations
-
 r[properties.hypervisor-dirty-bitmap]
+
 Dirty-log mark, merge, and clear operations MUST refine the corresponding
 bitmap operations over the memslot-relative dirty-bit index space.
 
 ### Requirement: Deliverable Interrupts Wake Halted vCPUs
-
 r[properties.hypervisor-wakeup]
+
 If a halted vCPU has a pending interrupt and the interrupt-delivery predicate
 holds, then the combined wake evaluation MUST move the vCPU to `Runnable`.
 If delivery is not permitted, the vCPU MUST remain halted.
 
 ### Requirement: Exit Disposition Agrees With vCPU State
-
 r[properties.hypervisor-exit-state]
+
 Exit handling MUST preserve vCPU state consistency: `Block` leaves the vCPU
 non-runnable, `ResumeGuest` leaves it runnable, and `Terminate` moves it to the
 terminal stopped state.

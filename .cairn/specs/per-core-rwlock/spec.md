@@ -10,6 +10,7 @@ refines the global rwlock model from `rwlock.rs`.
 ## Requirements
 
 ### Requirement: Aggregation Correctness
+r[per-core-rwlock.aggregation-correctness]
 
 The mathematical per-core reader sum MUST be exact, and the exec-level
 aggregator MUST compute the same result with `u64` saturation.
@@ -39,6 +40,7 @@ aggregator MUST compute the same result with `u64` saturation.
 - THEN it matches the naive left-to-right `u64::saturating_add` fold
 
 ### Requirement: Per-Core Independence
+r[write-policy.policy-non-interference]
 
 Modifying one core's reader count MUST NOT affect any other core's count.
 
@@ -55,6 +57,7 @@ Modifying one core's reader count MUST NOT affect any other core's count.
 - THEN core j's reader count is unchanged
 
 ### Requirement: Aggregated Mutual Exclusion
+r[per-core-rwlock.aggregated-mutual-exclusion]
 
 The per-core lock MUST expose the same mutual-exclusion surface as the global
 rwlock once reader counts are aggregated.
@@ -78,6 +81,7 @@ rwlock once reader counts are aggregated.
 - THEN the read-acquire gate rejects the attempt
 
 ### Requirement: Writer Drain Safety
+r[per-core-rwlock.writer-drain-safety]
 
 Setting the write flag MUST begin a drain phase in which existing readers can
 release and drain completion is observed exactly at aggregate zero.
@@ -101,6 +105,7 @@ release and drain completion is observed exactly at aggregate zero.
 - THEN it reports true exactly when the aggregate reader count is zero
 
 ### Requirement: Mode Equivalence
+r[per-core-rwlock.mode-equivalence]
 
 The per-core lock's observable mode MUST match the global rwlock mode surface
 when the write flag and aggregate reader count are projected into

@@ -7,8 +7,8 @@ Defines the `hardware-output` capability.
 ## Requirements
 
 ### Requirement: Hardware IR Admission
-
 r[hardware-output.ir]
+
 The system MUST provide a finite hardware IR for synthesizable module shapes. The IR MUST make every fixed-width value, boolean, module port, combinational expression, register, clock, reset, and FSM state explicit. IR admission MUST reject unsupported or malformed shapes before evaluation or emission, and rejection MUST NOT expose partial RTL output.
 
 #### Scenario: Valid combinational IR is admitted
@@ -24,8 +24,8 @@ The system MUST provide a finite hardware IR for synthesizable module shapes. Th
 - THEN the module is rejected before evaluation or emission
 
 ### Requirement: Hardware IR Evaluator
-
 r[hardware-output.evaluator]
+
 The system MUST provide pure deterministic evaluation semantics for admitted hardware IR modules. The evaluator MUST compute combinational outputs from explicit inputs and MUST compute the next registered or FSM state from explicit current state and input values. Evaluation MUST reject missing inputs, invalid states, and malformed admitted-data boundaries without panicking.
 
 #### Scenario: Combinational evaluation is deterministic
@@ -41,8 +41,8 @@ The system MUST provide pure deterministic evaluation semantics for admitted har
 - THEN the evaluator returns an explicit invalid-state rejection
 
 ### Requirement: Adapter Subset Admission
-
 r[hardware-output.adapter-subset]
+
 The system MUST expose explicit adapter eligibility metadata for Trellis primitives that may lower to hardware IR. The first supported adapter subset MUST include finite bitwise operations, bitfield operations, simple arithmetic operations, and small FSM-style admission helpers. The adapter layer MUST reject heap allocation, unbounded vectors, recursion intended as generated hardware, network or file IO, async callbacks, distributed protocol execution, crypto trust-boundary execution, and spec-only existential predicates.
 
 #### Scenario: Bitfield adapter is eligible
@@ -58,8 +58,8 @@ The system MUST expose explicit adapter eligibility metadata for Trellis primiti
 - THEN the helper is rejected before IR lowering
 
 ### Requirement: Adapter Refinement
-
 r[hardware-output.adapter-refinement]
+
 The system MUST ensure each supported Trellis-to-hardware adapter refines the source Trellis semantics over its admitted finite input space. For every emitted adapter, the hardware IR evaluator result MUST match the source spec or executable helper result for the same admitted inputs, and rejected adapter candidates MUST leave the source primitive unchanged.
 
 #### Scenario: Hardware evaluator matches source helper
@@ -75,8 +75,8 @@ The system MUST ensure each supported Trellis-to-hardware adapter refines the so
 - THEN lowering returns explicit rejection and no Verilog or SystemVerilog module is produced
 
 ### Requirement: Adapter Emission Planning
-
 r[hardware-output.adapter-emission]
+
 The system MUST expose a pure adapter-emission planning decision that returns an HDL emission request only when a Trellis adapter candidate is eligible, its finite input refines the source helper through the hardware IR evaluator, the adapter shape is in the currently emitted subset, and the requested Verilog/SystemVerilog mode supports that emitted shape. Planning MUST fail closed for refined adapters without emitted HDL support, unsupported emitter modes, unsupported adapter candidates, out-of-domain adapter inputs, evaluator rejection, and emitter rejection, and MUST NOT expose a partial HDL request on rejection.
 
 #### Scenario: Supported adapter produces emission request
@@ -98,8 +98,8 @@ The system MUST expose a pure adapter-emission planning decision that returns an
 - THEN planning returns an explicit out-of-domain rejection and no HDL request
 
 ### Requirement: Verilog Emission
-
 r[hardware-output.verilog-emission]
+
 The system MUST emit deterministic Verilog text only from admitted hardware IR modules. Verilog emission MUST use canonical module, port, declaration, assignment, and process ordering so repeated emission of the same IR produces byte-identical output. Verilog emission MUST fail closed for unsupported IR constructs.
 
 #### Scenario: Verilog emission is stable
@@ -115,8 +115,8 @@ The system MUST emit deterministic Verilog text only from admitted hardware IR m
 - THEN emission returns an explicit unsupported-construct error and no partial module text is exposed
 
 ### Requirement: SystemVerilog Emission
-
 r[hardware-output.systemverilog-emission]
+
 The system MUST emit deterministic SystemVerilog text from admitted hardware IR modules. SystemVerilog emission SHOULD use `logic`, `always_comb`, and `always_ff` for supported combinational and registered modules, and MAY emit assertion snippets for admitted safety properties. SystemVerilog emission MUST preserve the same IR semantics as the Verilog emitter for shared supported constructs.
 
 #### Scenario: Registered module emits sequential process
@@ -132,8 +132,8 @@ The system MUST emit deterministic SystemVerilog text from admitted hardware IR 
 - THEN both outputs match the hardware IR evaluator results
 
 ### Requirement: Generated Testbench Collateral
-
 r[hardware-output.testbench]
+
 The system MUST generate optional testbench or vector collateral from the hardware IR evaluator for admitted modules. Generated collateral MUST identify the source module, input assignments, expected outputs or next states, and the emitter mode under test. Collateral generation MUST be deterministic and MUST NOT depend on clocks, filesystem order, random seeds, or external tool output.
 
 #### Scenario: Test vector records expected output
@@ -149,8 +149,8 @@ The system MUST generate optional testbench or vector collateral from the hardwa
 - THEN collateral generation returns explicit rejection instead of writing an expected-output fixture
 
 ### Requirement: External HDL Validation
-
 r[hardware-output.validation]
+
 The system MUST provide validation scripts or commands that can run Verilator syntax or simulation checks and Yosys or SymbiYosys syntax/formal checks for generated HDL when those tools are available. If a tool is unavailable, validation evidence MUST record an explicit skipped-tool result; it MUST NOT report success for a check that did not run.
 
 #### Scenario: Available simulator checks generated RTL
@@ -166,8 +166,8 @@ The system MUST provide validation scripts or commands that can run Verilator sy
 - THEN validation records the tool as skipped with an unavailable-tool reason
 
 ### Requirement: Hardware Backend Admission Composition
-
 r[hardware-output.backend-admission]
+
 The system MUST expose a hardware-output backend admission decision that requires IR admission, adapter subset admission, adapter refinement evidence, deterministic emitter support, generated collateral eligibility, and validation-result recording before claiming that a Trellis primitive has HDL output support. Backend admission MUST NOT imply timing closure, vendor implementation quality, downstream synthesis preservation, or support for modules outside the admitted adapter subset.
 
 #### Scenario: Backend admission requires every check
@@ -183,8 +183,8 @@ The system MUST expose a hardware-output backend admission decision that require
 - THEN the result identifies the emitted HDL mode, supported adapter subset, validation evidence, and explicit non-claims for timing closure and downstream synthesis preservation
 
 ### Requirement: Hardware Output Test Matrix
-
 r[hardware-output.testing.matrix]
+
 The system MUST maintain a requirement-linked hardware-output test matrix. Each hardware-output backend requirement MUST map to at least one positive test or proof artifact and at least one negative test or proof artifact, unless the requirement explicitly documents why one side is inapplicable. Each mapped artifact MUST carry a Tracey `r[verify ...]` marker for the covered requirement.
 
 #### Scenario: Every requirement has positive and negative coverage
@@ -200,8 +200,8 @@ The system MUST maintain a requirement-linked hardware-output test matrix. Each 
 - THEN the matrix check fails and names the missing negative coverage
 
 ### Requirement: Hardware Output Fixture Traceability
-
 r[hardware-output.testing.fixtures]
+
 The system MUST use deterministic fixture naming and metadata for hardware-output tests. Source IR fixtures, golden HDL fixtures, generated-vector fixtures, and validation evidence MUST identify the requirement ID, emitted module name, emitter mode, and expected oracle source so reviewers can trace each artifact back to the requirement it verifies.
 
 #### Scenario: Fixture identifies requirement and mode
@@ -217,8 +217,8 @@ The system MUST use deterministic fixture naming and metadata for hardware-outpu
 - THEN the fixture is rejected as untraceable evidence
 
 ### Requirement: Evaluator Oracle Tests
-
 r[hardware-output.testing.evaluator-oracle]
+
 The system MUST test the pure hardware IR evaluator as the semantic oracle for backend validation. Positive tests MUST cover admitted combinational modules, registered modules, and FSM steps. Negative tests MUST cover missing inputs, incompatible widths, invalid current states, malformed admitted-data boundaries, and any evaluator rejection that should block generated collateral.
 
 #### Scenario: Evaluator oracle covers admitted modules
@@ -234,8 +234,8 @@ The system MUST test the pure hardware IR evaluator as the semantic oracle for b
 - THEN the evaluator returns explicit rejection and no expected-output fixture is accepted for that case
 
 ### Requirement: Emitter Golden Tests
-
 r[hardware-output.testing.emitter-golden]
+
 The system MUST test Verilog and SystemVerilog emitters with deterministic golden-output fixtures. Golden tests MUST cover canonical module ordering, port ordering, declaration ordering, expression formatting, combinational assignments, registered update blocks, reset behavior, reserved identifier escaping or rejection, and unsupported-node rejection. Repeated emission of the same admitted IR MUST produce byte-identical output.
 
 #### Scenario: Repeated emission matches golden text
@@ -251,8 +251,8 @@ The system MUST test Verilog and SystemVerilog emitters with deterministic golde
 - THEN it observes an explicit unsupported-node error and no partial HDL text is accepted
 
 ### Requirement: Adapter Property Tests
-
 r[hardware-output.testing.adapter-property]
+
 The system MUST property-test each supported Trellis-to-hardware adapter over finite admitted input domains. Adapter property tests MUST compare the source Trellis helper result with the lowered hardware IR evaluator result, and MUST include edge values for zero, maximum representable values, width boundaries, state boundaries, and rejected out-of-domain candidates.
 
 #### Scenario: Adapter agrees with source helper
@@ -268,8 +268,8 @@ The system MUST property-test each supported Trellis-to-hardware adapter over fi
 - THEN the adapter returns explicit rejection instead of producing an IR result
 
 ### Requirement: Fail-Closed Backend Tests
-
 r[hardware-output.testing.fail-closed]
+
 The system MUST test fail-closed behavior for the hardware-output backend. Unsupported adapters, malformed IR, unsupported emitter constructs, evaluator rejections, invalid validation inputs, and unavailable output destinations MUST produce explicit errors and MUST NOT write partial HDL, partial testbenches, partial vectors, or misleading success evidence.
 
 #### Scenario: Unsupported adapter writes no HDL
@@ -285,8 +285,8 @@ The system MUST test fail-closed behavior for the hardware-output backend. Unsup
 - THEN the result is an explicit validation failure and not a pass or skipped result
 
 ### Requirement: External Tool Evidence Classification
-
 r[hardware-output.testing.tool-evidence]
+
 The system MUST classify external HDL tool validation outcomes as pass, fail, or skipped. Tool evidence MUST name the tool, command or invocation class, input artifact, result classification, and reason for failure or skip. Missing Verilator, Yosys, or SymbiYosys MUST be recorded as skipped with an unavailable-tool reason and MUST NOT be reported as success.
 
 #### Scenario: Available tool records pass or fail
@@ -302,8 +302,8 @@ The system MUST classify external HDL tool validation outcomes as pass, fail, or
 - THEN evidence records a skipped result with an unavailable-tool reason
 
 ### Requirement: Hardware Output Tracey and Cairn Gates
-
 r[hardware-output.testing.tracey-gates]
+
 The system MUST require Tracey and Cairn gate evidence before claiming hardware-output test coverage is complete. Hardware-output test completion MUST include focused backend tests, generated fixture checks, Verus proof checks for touched verified modules, Tracey uncovered and untested queries, Cairn validation, Cairn proposal/design/tasks gates, and cargo/clippy checks as applicable to touched Rust code.
 
 #### Scenario: Tracey untested coverage blocks completion

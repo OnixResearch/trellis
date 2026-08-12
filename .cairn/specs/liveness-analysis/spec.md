@@ -9,6 +9,7 @@ use-def characterization, live range connectivity, and boundary conditions.
 ## Requirements
 
 ### Requirement: Fixed-Point Convergence
+r[liveness-analysis.fixed-point-convergence]
 
 The iterative liveness analysis MUST terminate.
 
@@ -25,6 +26,7 @@ The iterative liveness analysis MUST terminate.
 - THEN every set at K is a subset of or equal to the set at K+1
 
 ### Requirement: Dataflow Equation Satisfaction
+r[liveness.equations]
 
 At fixed point, the live-in and live-out sets MUST satisfy the backward
 dataflow equations.
@@ -42,6 +44,7 @@ dataflow equations.
 - THEN `live_in(B) == U ∪ (live_out(B) \ D)`
 
 ### Requirement: Use-Def Correctness
+r[liveness.use-def]
 
 A variable MUST be live at a point iff there exists a path to a use
 with no intervening definition.
@@ -59,6 +62,7 @@ with no intervening definition.
 - THEN every path passes through a definition of V before reaching the use
 
 ### Requirement: Connected Live Ranges
+r[liveness-analysis.connected-live-ranges]
 
 A liveness witness path MUST stay inside the variable's projected live range.
 
@@ -69,6 +73,7 @@ A liveness witness path MUST stay inside the variable's projected live range.
 - THEN every block on the witness path is in V's live range
 
 ### Requirement: Def Kills Liveness
+r[liveness.def-kills]
 
 If a block defines variable V and does not use V before the definition,
 V MUST NOT be live-in to that block (from this block's contribution).
@@ -80,6 +85,7 @@ V MUST NOT be live-in to that block (from this block's contribution).
 - THEN V is in `live_in(B)` only if V is in `use(B)` (used before the def)
 
 ### Requirement: Exit Block Boundary
+r[liveness.exit]
 
 A block with no CFG successors MUST have empty live-out.
 

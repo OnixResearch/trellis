@@ -6,10 +6,10 @@ Defines typed Nickel policy/configuration requirements for repository verificati
 ## Requirements
 
 ### Requirement: Nickel-Authored Verification Policy
+r[verification-policy.nickel-authored]
 
 Verification checker policy MUST be authored in Nickel when the policy is declarative configuration rather than parser/scanner logic. Nickel contracts MUST validate both field shape and policy-local reference integrity before generated JSON is accepted. Rust MUST remain the owner of source parsing, command execution, file reads, and scanner logic.
 
-r[verification-policy.nickel-authored]
 
 #### Scenario: Nickel policy typechecks
 
@@ -36,10 +36,10 @@ r[verification-policy.nickel-authored]
 - THEN the exemption includes scope, owner, reason, and expiry or equivalent bounded-review metadata
 
 ### Requirement: Reusable Nickel Contract Library
+r[verification-policy.reusable-nickel-contract-library]
 
 The repository MUST provide reusable Nickel contracts for common policy data shapes, including non-empty strings, safe relative paths, supported enum values, non-empty arrays, unique identifiers, and BLAKE3 digest text. Policy-specific Nickel files SHOULD import these contracts instead of redefining equivalent local predicates.
 
-r[verification-policy.reusable-nickel-contract-library]
 
 #### Scenario: Shared contract is accepted
 
@@ -60,10 +60,10 @@ r[verification-policy.reusable-nickel-contract-library]
 - THEN Nickel rejects the fixture with a deterministic contract failure
 
 ### Requirement: Nickel Policy Reference Integrity
+r[verification-policy.nickel-reference-integrity]
 
 Nickel policy contracts MUST reject dangling cross-field references in policy data before export. The proof-review policy MUST validate that rule references, validation-gate references, and command-mode references point at declared entries. The Cairn policy MUST validate that replay groups, determinism surfaces, receipt schemas, and artifact dependencies reference declared entries. The verification-policy checker list MUST validate declared checker scripts, generated artifacts, severities, and exemption metadata against bounded contracts.
 
-r[verification-policy.nickel-reference-integrity]
 
 #### Scenario: Proof-review references are valid
 
@@ -90,10 +90,10 @@ r[verification-policy.nickel-reference-integrity]
 - THEN the fixture is rejected before export
 
 ### Requirement: Nickel Policy Negative Fixtures
+r[verification-policy.nickel-negative-fixtures]
 
 Every repository-owned Nickel policy checker MUST include positive and negative fixtures that demonstrate accepted policy data and representative rejected policy data. Negative fixtures MUST cover malformed shape, missing required fields, empty required arrays, unsupported enum values, unsafe paths, duplicate IDs, and at least one policy-local dangling reference.
 
-r[verification-policy.nickel-negative-fixtures]
 
 #### Scenario: Valid fixture passes
 
@@ -114,10 +114,10 @@ r[verification-policy.nickel-negative-fixtures]
 - THEN the wrapper runs them before claiming full verification success
 
 ### Requirement: Nickel-Owned Lifecycle Configuration
+r[verification-policy.nickel-owned-lifecycle-config]
 
 Trellis lifecycle configuration MUST be authored from a typed Nickel source when the configuration is declarative project metadata or lifecycle guidance. Checked-in YAML or JSON lifecycle config files MAY remain as compatibility artifacts, but they MUST be generated from the Nickel source and freshness-checked before repository verification claims success.
 
-r[verification-policy.nickel-owned-lifecycle-config]
 
 #### Scenario: Nickel lifecycle config typechecks
 
@@ -138,10 +138,10 @@ r[verification-policy.nickel-owned-lifecycle-config]
 - THEN the source edit occurs in Nickel and the YAML artifact is regenerated rather than edited as an independent source of truth
 
 ### Requirement: Lifecycle Config Negative Fixtures
+r[verification-policy.lifecycle-config-negative-fixtures]
 
 The lifecycle config checker MUST include positive and negative fixtures for the Nickel lifecycle config contract. Negative fixtures MUST reject missing project metadata, empty domain lists, empty rule lists, unsupported lifecycle schemas, malformed rule section values, and unsafe generated artifact paths.
 
-r[verification-policy.lifecycle-config-negative-fixtures]
 
 #### Scenario: Valid lifecycle fixture passes
 

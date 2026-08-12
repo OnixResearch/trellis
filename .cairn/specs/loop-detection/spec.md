@@ -11,6 +11,7 @@ loops.
 ## Requirements
 
 ### Requirement: Back Edge Classification
+r[loop.back-edge]
 
 An edge MUST be classified as a back edge iff the target dominates the
 source.
@@ -34,6 +35,7 @@ source.
 - THEN the edge is not a back edge
 
 ### Requirement: Header Dominance
+r[loop.header-dominance]
 
 For reachable non-self loops, the loop header MUST dominate every node in
 the loop body.
@@ -51,6 +53,7 @@ the loop body.
 - THEN H dominates B (by back-edge definition)
 
 ### Requirement: Loop Body Closure
+r[loop.body]
 
 Given a CFG, a reachability bitmap, and a dominance matrix for the same
 graph, the loop body for (B → H) MUST be exactly the seeded backward
@@ -83,6 +86,7 @@ H as an interior successor for non-self loops.
 - THEN they agree for reachable non-self back edges
 
 ### Requirement: Single Entry
+r[loop.single-entry]
 
 Given a reachability bitmap for the CFG entry and a detected non-self loop
 body, the loop header MUST be the only reachable entry point to the loop
@@ -101,6 +105,7 @@ from outside.
 - THEN the list is empty
 
 ### Requirement: Loop Nesting
+r[loop.nesting]
 
 If loop L1 is nested inside loop L2, L1's body MUST be a strict subset
 of L2's body.
@@ -118,6 +123,7 @@ of L2's body.
 - THEN L1.header ∈ L2.body
 
 ### Requirement: Nesting Forest
+r[loop.nesting-forest]
 
 The loop nesting relation MUST form a forest.
 
@@ -134,6 +140,7 @@ The loop nesting relation MUST form a forest.
 - THEN one is nested in the other (strict nesting hierarchy)
 
 ### Requirement: Exit Edges
+r[loop.header-dominance]
 
 All edges from loop body nodes to non-body nodes MUST be identified as
 exit edges.

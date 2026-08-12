@@ -24,6 +24,7 @@ and stays compatible with MESI line states.
 ## Requirements
 
 ### Requirement: Directory Cache Consistency
+r[directory.consistency]
 `r[directory.consistency]`
 
 The directory's owner and sharer bit-vector MUST agree with the actual MESI
@@ -54,6 +55,7 @@ state held by each modeled cache at all times.
 - THEN it reports the entry inconsistent
 
 ### Requirement: Invalidation Completeness
+r[directory.invalidation]
 `r[directory.invalidation]`
 
 Granting a write request MUST emit targeted invalidations to every other cache
@@ -77,6 +79,7 @@ invalid.
 - AND the post-ack state leaves the previous owner `Invalid`
 
 ### Requirement: Single Writer
+r[directory.single-writer]
 `r[directory.single-writer]`
 
 A completed write grant MUST leave exactly one modeled cache with the line in
@@ -91,6 +94,7 @@ A completed write grant MUST leave exactly one modeled cache with the line in
 - AND every other cache holds `Invalid`
 
 ### Requirement: Eviction Notification
+r[directory.eviction-notify]
 `r[directory.eviction-notify]`
 
 Evicting a tracked line MUST clear the corresponding owner or sharer record. A
@@ -115,6 +119,7 @@ uncached.
 - AND the returned writeback flag is true
 
 ### Requirement: Request Serialization
+r[directory.serialization]
 `r[directory.serialization]`
 
 Same-line write requests MUST be serialized by applying them one at a time in a
@@ -135,6 +140,7 @@ single total order. Requests to different lines MUST remain independent.
 - THEN the other line state is unchanged
 
 ### Requirement: MESI Embedding
+r[directory.mesi-embedding]
 `r[directory.mesi-embedding]`
 
 The directory-implied per-cache state MUST always be a valid MESI state, and a

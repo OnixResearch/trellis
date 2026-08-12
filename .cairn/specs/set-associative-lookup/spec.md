@@ -10,6 +10,7 @@ set isolation, and duplicate prevention.
 ## Requirements
 
 ### Requirement: Decomposition Bijection
+r[set-assoc.decomposition]
 
 Decomposing an address into (tag, index, offset) and reconstructing MUST
 yield the original address.
@@ -27,6 +28,7 @@ yield the original address.
 - THEN offset < 64, index < 256, and tag < 2^50
 
 ### Requirement: No Aliasing
+r[set-assoc.no-aliasing]
 
 Two distinct addresses with different tags MUST NOT produce a false hit
 in the same set.
@@ -44,6 +46,7 @@ in the same set.
 - THEN they map to the same cache line (same tag match)
 
 ### Requirement: Hit Correctness
+r[cache-partition.isolation]
 
 A cache hit MUST mean the tag stored in the matched way equals the
 requested tag.
@@ -61,6 +64,7 @@ requested tag.
 - THEN it equals the requested tag and therefore identifies the requested cache line
 
 ### Requirement: Miss Completeness
+r[set-assoc.miss]
 
 A cache miss MUST mean no way in the selected set holds the requested tag.
 
@@ -77,6 +81,7 @@ A cache miss MUST mean no way in the selected set holds the requested tag.
 - THEN no way holds tag T
 
 ### Requirement: Set Isolation
+r[set-associative-lookup.set-isolation]
 
 Addresses with different indices MUST map to different sets, and a lookup
 in one set MUST NOT inspect or modify another set.
@@ -94,6 +99,7 @@ in one set MUST NOT inspect or modify another set.
 - THEN S2 is unchanged
 
 ### Requirement: No Duplicate Tags
+r[set-assoc.no-duplicates]
 
 Within any set, at most one way SHOULD hold a given tag at any time.
 

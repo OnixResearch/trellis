@@ -8,8 +8,8 @@ merge, projection, and one-step semantics.
 ## Requirements
 
 ### Requirement: Communication Projection Is Dual
-
 r[properties.choreography-duality]
+
 Depends on `r[choreography.communication]` and `r[choreography.projection]`.
 For any projectable communication prefix, projection to the sender and receiver
 MUST yield exact dual local heads: the sender sees `Send { peer = receiver, ... }`
@@ -25,8 +25,8 @@ and the receiver sees `Recv { peer = sender, ... }` with the same exact
 - AND both MUST carry the same exact `label` and `payload_tag`
 
 ### Requirement: Choice Labels Agree Across Projected Roles
-
 r[properties.choreography-choice-agreement]
+
 Depends on `r[choreography.merge]`, `r[choreography.projectability]`, and
 `r[choreography.projection]`.
 For any projectable choice with decider `D` and global branch-label set `L`,
@@ -62,8 +62,8 @@ from `D`.
   explicit `Offer`
 
 ### Requirement: Projected Head Steps Preserve Global Reduction
-
 r[properties.choreography-step-correspondence]
+
 Depends on `r[choreography.projection]` and `r[choreography.steps]`.
 If a projectable choreography takes one global head step to `g'`, then the
 projected local views MUST stay exactly aligned with `project_endpoint(_, g')`.

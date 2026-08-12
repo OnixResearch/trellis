@@ -7,6 +7,7 @@ Defines the `upstream-verus-corpus` capability.
 ## Requirements
 
 ### Requirement: Typed upstream corpus catalog
+r[upstream-verus-corpus.typed-upstream-corpus-catalog]
 r[trellis.upstream_verus_corpus.catalog] Trellis MUST maintain a typed catalog for selected upstream Verus repositories with exact repository URL, revision, fixed-output source hash, license-review status, role, execution policy, sentinels, limitations, and explicit non-claims.
 
 #### Scenario: Valid pinned entry is accepted
@@ -15,6 +16,7 @@ r[trellis.upstream_verus_corpus.catalog] Trellis MUST maintain a typed catalog f
 - THEN the entry MUST be accepted in deterministic repository-id order.
 
 ### Requirement: Catalog validation fails closed
+r[upstream-verus-corpus.catalog-validation-fails-closed]
 r[trellis.upstream_verus_corpus.validation] Catalog validation MUST reject duplicate ids, mutable revisions, missing source hashes, empty sentinels, unsupported roles, missing limitations, or proof-transfer overclaims.
 
 #### Scenario: Overclaiming entry is rejected
@@ -23,6 +25,7 @@ r[trellis.upstream_verus_corpus.validation] Catalog validation MUST reject dupli
 - THEN it MUST fail with a deterministic boundary diagnostic.
 
 ### Requirement: Fixed-output source intake
+r[upstream-verus-corpus.fixed-output-source-intake]
 r[trellis.upstream_verus_corpus.source_intake] Trellis SHOULD fetch corpus sources through exact fixed-output identities and MUST validate every declared sentinel before admitting a source snapshot as regression input.
 
 #### Scenario: Missing sentinel blocks intake
@@ -31,6 +34,7 @@ r[trellis.upstream_verus_corpus.source_intake] Trellis SHOULD fetch corpus sourc
 - THEN the entry MUST fail before any verifier or benchmark command is selected.
 
 ### Requirement: Ratcheted Verus formatting
+r[upstream-verus-corpus.ratcheted-verus-formatting]
 r[trellis.upstream_verus_corpus.verusfmt_ratchet] Trellis SHOULD run a pinned `verusfmt --check --verus-only` rail with an exact baseline for pre-existing nonconforming files. New nonconforming files, missing baseline files, duplicate entries, and stale entries that now pass formatting MUST fail.
 
 #### Scenario: New unformatted file fails
@@ -44,6 +48,7 @@ r[trellis.upstream_verus_corpus.verusfmt_ratchet] Trellis SHOULD run a pinned `v
 - THEN the check MUST fail as stale until the baseline entry is removed.
 
 ### Requirement: Corpus integration remains bounded
+r[upstream-verus-corpus.corpus-integration-remains-bounded]
 r[trellis.upstream_verus_corpus.integration] Corpus catalog and formatter checks MUST be deterministic focused checks. External verifier and benchmark execution MUST remain explicitly selected and receipt-bound.
 
 #### Scenario: Default source intake does not claim proof
@@ -52,6 +57,7 @@ r[trellis.upstream_verus_corpus.integration] Corpus catalog and formatter checks
 - THEN the result MUST remain source-intake evidence and MUST NOT be labeled Trellis formal proof.
 
 ### Requirement: Upstream claim boundary
+r[upstream-verus-corpus.upstream-claim-boundary]
 r[trellis.upstream_verus_corpus.boundary] Trellis MUST state that upstream source identity, formatting, README claims, and upstream proof results do not certify Trellis, downstream repositories, verifier soundness, model adequacy, whole-program correctness, or release eligibility.
 
 #### Scenario: Promotion requires local rerun
@@ -60,6 +66,7 @@ r[trellis.upstream_verus_corpus.boundary] Trellis MUST state that upstream sourc
 - THEN an exact local verifier run, assumptions, source/proof bindings, tool identity, and Trellis-owned receipt MUST be present.
 
 ### Requirement: Final validation
+r[upstream-verus-corpus.final-validation]
 r[trellis.upstream_verus_corpus.final_validation] Positive and negative catalog fixtures, source sentinels, formatter fixtures, baseline drift, existing Trellis proof verification, and Cairn validation MUST pass before archive.
 
 #### Scenario: Focused checks complete
@@ -67,7 +74,8 @@ r[trellis.upstream_verus_corpus.final_validation] Positive and negative catalog 
 - WHEN final validation runs
 - THEN declared positive checks MUST pass and declared negative fixtures MUST fail as expected.
 
-### Requirement: Trellis consumes the central Octet formatter profile [r[trellis.upstream_verus_corpus.octet_toolchain_consumption]]
+### Requirement: Trellis consumes the central Octet formatter profile
+r[trellis.upstream_verus_corpus.octet_toolchain_consumption]
 
 Trellis MUST consume its Verus formatter and profile artifacts from an exact published Octet revision and MUST NOT reconstruct those packages through a local release fallback. The formatter rail MUST fail when required Octet outputs are absent or when the selected profile, compatibility row, or formatter identity differs from the reviewed values.
 
@@ -94,7 +102,8 @@ This dependency MUST NOT silently replace Trellis's independent proof-verifier p
 - THEN Trellis MUST retain its reviewed local verifier until a separate corpus-backed upgrade succeeds
 - AND formatter or profile identity MUST NOT be reported as proof evidence
 
-### Requirement: Candidate verifier upgrades use a policy-aware corpus trial [r[trellis.upstream_verus_corpus.octet_verus_upgrade_trial]]
+### Requirement: Candidate verifier upgrades use a policy-aware corpus trial
+r[trellis.upstream_verus_corpus.octet_verus_upgrade_trial]
 
 Trellis MUST decide a verifier upgrade through an exact, bounded, receipt-producing trial over the complete Trellis proof crate and every pinned upstream corpus row. Each row MUST execute or audit according to its actual tool boundary: native Verus workloads MUST use the candidate package, meta-artifact microcases MUST remain bounded to files physically present, and semantic-reference artifacts MUST NOT be mislabeled as Verus proof passes.
 
@@ -121,7 +130,8 @@ Trellis MUST retain its current verifier and `local-pin` compatibility status wh
 - THEN the row MUST record its bounded audit or diagnostic microcase result
 - AND it MUST NOT count that result as a native candidate-Verus proof pass
 
-### Requirement: Compatibility repairs preserve proof authority [r[trellis.upstream_verus_corpus.compatibility_repairs]]
+### Requirement: Compatibility repairs preserve proof authority
+r[trellis.upstream_verus_corpus.compatibility_repairs]
 
 A verifier-upgrade repair MUST preserve the checked theorem, source identity, and trusted-boundary inventory. Adaptations to pinned upstream sources MUST be separately identified and hashed, MUST execute the native candidate verifier boundary, and MUST NOT be reported as proof of the unmodified upstream revision.
 

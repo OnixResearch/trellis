@@ -7,10 +7,10 @@ Defines the `runtime-evidence` capability.
 ## Requirements
 
 ### Requirement: Ghost-Erasure Runtime Evidence
+r[runtime-evidence.ghost-erasure]
 
 The repository MUST provide reproducible runtime-cost evidence that explains how normal Cargo builds erase proof/ghost code and how users can inspect representative artifacts without treating descriptive measurements as universal performance guarantees.
 
-r[runtime-evidence.ghost-erasure]
 
 #### Scenario: Evidence records command context
 

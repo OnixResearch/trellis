@@ -9,6 +9,7 @@ criterion, semantics preservation, and idempotence.
 ## Requirements
 
 ### Requirement: Side-Effect Classification
+r[dead-code-elimination.side-effect-classification]
 
 Any opcode at or above the effectful threshold (128) MUST be treated as
 having an observable side effect.
@@ -26,6 +27,7 @@ having an observable side effect.
 - THEN it returns true
 
 ### Requirement: Dead Instruction Classification
+r[dce.criterion]
 
 An instruction MUST be classified as dead iff it has no side effects,
 defines a variable, and that variable is not live-out at the instruction's
@@ -56,22 +58,26 @@ program point.
 - THEN the instruction is classified as live (conservatively)
 
 ### Requirement: Side-Effecting Instructions Never Dead
+r[dce.side-effect-never-dead]
 
 An instruction with an effectful opcode MUST never be classified as dead,
 regardless of liveness.
 
 ### Requirement: Live Definitions Never Dead
+r[dce.side-effect-never-dead]
 
 An instruction whose defined variable is live-out MUST never be classified
 as dead, regardless of opcode.
 
 ### Requirement: No Live Instruction Removed
+r[dce.no-live-removed]
 
 Dead-code elimination MUST preserve every instruction whose output is
 live at its program point or that has a side effect. Block count and CFG
 edges MUST be preserved.
 
 ### Requirement: Semantics Preservation
+r[dce.semantics]
 
 Under the raw IR's straight-line block-order execution model, dead-code
 elimination MUST preserve the observable trace of stores, calls, and
@@ -84,17 +90,20 @@ returns on any input environment compatible with the chosen live-out rows.
 - THEN the sequence of observable events is identical
 
 ### Requirement: Retained Instruction Identical
+r[dce.retained-identical]
 
 If two executions agree on a kept instruction's entry-live variables,
 that instruction MUST emit the same observable event and produce the same
 live-out values in both executions.
 
 ### Requirement: Removed Instruction No Effect
+r[dce.removed-no-effect]
 
 A removed dead instruction MUST emit no observable event and MUST
 preserve the values of all variables that remain live after it.
 
 ### Requirement: Idempotence
+r[dce.idempotent]
 
 A second elimination pass on the result of DCE MUST keep every
 instruction, producing the same output as the first pass.

@@ -8,8 +8,8 @@ ChaosControl.
 ## Requirements
 
 ### Requirement: Scheduler Turn Semantics
-
 r[chaoscontrol-scheduler.turns]
+
 Scheduler primitives MUST apply only when `num_vcpus >= 1` and valid scheduler
 state. Valid scheduler state means `0 <= active < num_vcpus`, stored
 `default_quantum >= 1`, randomized strategies satisfy `1 <= min_quantum <= max_quantum`,
@@ -67,8 +67,8 @@ Constructor and `apply_variant` consume no RNG word.
 - THEN the `requires` precondition is violated
 
 ### Requirement: Scheduler Fingerprint Semantics
-
 r[chaoscontrol-scheduler.fingerprint]
+
 The rolling schedule fingerprint MUST update by exact wrapping-`u64`
 transition rule:
 `fp' = fp.wrapping_mul(0x517c_c1b7_2722_0a95).bitxor(active as u64).bitxor(assigned_quantum as u64)`,
@@ -101,8 +101,8 @@ and exact `min_quantum` when `min_quantum == max_quantum`; the persisted
 - THEN the fingerprint becomes `0` before later transitions are mixed in
 
 ### Requirement: Fault Schedule Replay Semantics
-
 r[chaoscontrol-fault-schedule.replay]
+
 Replay and subset helpers MUST operate on normalized schedules. A normalized fault
 schedule has unique ordinals, stable `(time_ns, ordinal)` order, and
 `0 <= cursor <= len`. The public `add` helper is defined only on
@@ -138,8 +138,8 @@ never re-delivers an already drained fault.
 - AND `drain_due` never decreases `cursor`
 
 ### Requirement: Fault Schedule Subset Semantics
-
 r[chaoscontrol-fault-schedule.subset]
+
 Subset extraction MUST range over the full normalized source schedule. It clones
 exactly the first occurrence of each selected in-bounds source index, ignores
 out-of-bounds indices, ignores repeated selections after the first, carries

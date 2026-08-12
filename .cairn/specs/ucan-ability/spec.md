@@ -24,7 +24,8 @@ matching inside multi-segment patterns.
 
 **Subsumption Properties**
 
-### Requirement: Ability Subsumption Is Reflexive [r[ucan-ability.subsumption-reflexive]]
+### Requirement: Ability Subsumption Is Reflexive
+r[ucan-ability.subsumption-reflexive]
 
 A concrete non-glob ability MUST subsume itself.
 
@@ -34,7 +35,8 @@ A concrete non-glob ability MUST subsume itself.
 - WHEN checking `ability_subsumes_spec(["crud", "read"], ["crud", "read"])`
 - THEN the result is true
 
-### Requirement: Ability Subsumption Is Transitive [r[ucan-ability.subsumption-transitive]]
+### Requirement: Ability Subsumption Is Transitive
+r[ucan-ability.subsumption-transitive]
 
 Ability subsumption MUST be transitive: if pattern `A` subsumes pattern `B`
 and `B` subsumes ability `C`, then `A` subsumes `C`.
@@ -46,7 +48,8 @@ and `B` subsumes ability `C`, then `A` subsumes `C`.
 - WHEN transitivity is applied
 - THEN `ability_subsumes_spec(["*"], ["crud", "read"])` holds
 
-### Requirement: Top Ability Subsumes All [r[ucan-ability.top-subsumes-all]]
+### Requirement: Top Ability Subsumes All
+r[ucan-ability.top-subsumes-all]
 
 The distinguished top ability `["*"]` MUST subsume every ability,
 regardless of path depth.
@@ -59,7 +62,8 @@ regardless of path depth.
 
 **Namespace Isolation**
 
-### Requirement: Cross-Namespace Never Subsumes [r[ucan-ability.namespace-isolation]]
+### Requirement: Cross-Namespace Never Subsumes
+r[ucan-ability.namespace-isolation]
 
 Two non-top abilities in different top-level namespaces MUST NOT subsume
 each other.
@@ -72,7 +76,8 @@ each other.
 
 **Glob Matching**
 
-### Requirement: Single Glob Matches One Level [r[ucan-ability.glob-one-level]]
+### Requirement: Single Glob Matches One Level
+r[ucan-ability.glob-one-level]
 
 Inside a non-top multi-segment pattern, a single `"*"` MUST match
 exactly one path segment and MUST NOT match deeper nesting.
@@ -91,7 +96,8 @@ exactly one path segment and MUST NOT match deeper nesting.
 
 **Containment**
 
-### Requirement: Ability Containment Is Monotone [r[ucan-ability.containment-monotone]]
+### Requirement: Ability Containment Is Monotone
+r[ucan-ability.containment-monotone]
 
 Ability containment MUST be monotone: if parent ability contains child ability,
 then everything the child subsumes is also subsumed by the parent.

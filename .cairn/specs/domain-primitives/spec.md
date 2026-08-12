@@ -5,7 +5,8 @@ This specification defines reusable finite domain primitive requirements for pro
 
 ## Requirements
 
-### Requirement: Finite Raft Model Envelope [r[domain-primitives.raft-consensus.model]]
+### Requirement: Finite Raft Model Envelope
+r[domain-primitives.raft-consensus.model]
 The system MUST expose finite Raft model envelope predicates over a non-empty
 one-based node universe, term bounds, log-index bounds, command identifiers,
 message kinds, and configuration epochs. Model admission MUST reject unknown
@@ -18,7 +19,8 @@ any higher-level transition predicate relies on those values.
 - WHEN model admission is evaluated
 - THEN the reference is rejected with unknown-node metadata
 
-### Requirement: Node State Envelope [r[domain-primitives.raft-consensus.node-state]]
+### Requirement: Node State Envelope
+r[domain-primitives.raft-consensus.node-state]
 The system MUST expose follower, candidate, and leader state envelopes whose
 node identity, term, role term, vote, log, commit, applied, and configuration
 metadata are admitted by the finite Raft model. Node-state admission MUST reject
@@ -31,7 +33,8 @@ applied/commit/log ordering violations with deterministic metadata.
 - WHEN node-state admission is evaluated
 - THEN the state is rejected with inconsistent-leader-term metadata
 
-### Requirement: Term Monotonicity Predicate [r[domain-primitives.raft-consensus.term]]
+### Requirement: Term Monotonicity Predicate
+r[domain-primitives.raft-consensus.term]
 The system MUST define term predicates that keep current terms monotone across
 admitted local transitions and update a node to a larger observed term before
 processing term-bearing messages.
@@ -42,7 +45,8 @@ processing term-bearing messages.
 - WHEN term update admission is evaluated
 - THEN the admitted successor keeps current term `t` and marks the message stale
 
-### Requirement: Log Entry Envelope [r[domain-primitives.raft-consensus.log-entry]]
+### Requirement: Log Entry Envelope
+r[domain-primitives.raft-consensus.log-entry]
 The system MUST define log-entry envelopes containing a finite index, term,
 command identifier, and optional client metadata without claiming client I/O or
 application semantics.
@@ -53,7 +57,8 @@ application semantics.
 - WHEN log-entry admission is evaluated
 - THEN the entry is rejected with index-bound metadata
 
-### Requirement: Log Prefix and No-Gap Predicate [r[domain-primitives.raft-consensus.log-prefix]]
+### Requirement: Log Prefix and No-Gap Predicate
+r[domain-primitives.raft-consensus.log-prefix]
 The system MUST define log predicates for contiguous index ranges, prefix
 relations, append-only extension, suffix truncation, and no-gap admission.
 
@@ -63,7 +68,8 @@ relations, append-only extension, suffix truncation, and no-gap admission.
 - WHEN log admission is evaluated
 - THEN the log is rejected with gap-index metadata
 
-### Requirement: Persistent State Metadata [r[domain-primitives.raft-consensus.persistent-state]]
+### Requirement: Persistent State Metadata
+r[domain-primitives.raft-consensus.persistent-state]
 The system MUST define persisted-state metadata for current term, voted-for, and
 log contents as an explicit finite state component without claiming storage
 durability, fsync behavior, or crash-proof media.
@@ -74,7 +80,8 @@ durability, fsync behavior, or crash-proof media.
 - WHEN persistent-state admission is evaluated
 - THEN the metadata is rejected with vote-reference metadata
 
-### Requirement: Volatile State Metadata [r[domain-primitives.raft-consensus.volatile-state]]
+### Requirement: Volatile State Metadata
+r[domain-primitives.raft-consensus.volatile-state]
 The system MUST define volatile-state metadata for commit index, last applied,
 leader next-index vectors, and leader match-index vectors using finite bounds and
 admitted node references.
@@ -85,7 +92,8 @@ admitted node references.
 - WHEN volatile-state admission is evaluated
 - THEN the state is rejected with applied-after-commit metadata
 
-### Requirement: Vote Grant Predicate [r[domain-primitives.raft-consensus.vote]]
+### Requirement: Vote Grant Predicate
+r[domain-primitives.raft-consensus.vote]
 The system MUST define deterministic vote-grant predicates that enforce one vote
 per term, admitted candidate identity, monotone term update, and Raft log
 up-to-date comparison over finite log metadata.
@@ -96,7 +104,8 @@ up-to-date comparison over finite log metadata.
 - WHEN a vote request from distinct candidate `b` in term `t` is admitted
 - THEN the request is rejected with already-voted metadata
 
-### Requirement: RequestVote Admission [r[domain-primitives.raft-consensus.request-vote]]
+### Requirement: RequestVote Admission
+r[domain-primitives.raft-consensus.request-vote]
 The system MUST define RequestVote request and response admission envelopes over
 finite term, candidate, last-log-index, last-log-term, voter, and grant metadata.
 
@@ -106,7 +115,8 @@ finite term, candidate, last-log-index, last-log-term, voter, and grant metadata
 - WHEN RequestVote admission is evaluated
 - THEN the request is rejected with stale-log metadata
 
-### Requirement: Election Safety Invariant [r[domain-primitives.raft-consensus.election-safety]]
+### Requirement: Election Safety Invariant
+r[domain-primitives.raft-consensus.election-safety]
 The system MUST define and later prove an election-safety invariant stating that
 at most one leader can be admitted for any finite term under the declared quorum
 intersection and vote-grant predicates.
@@ -117,7 +127,8 @@ intersection and vote-grant predicates.
 - WHEN election-safety admission is evaluated
 - THEN the history is rejected with conflicting-leader metadata
 
-### Requirement: AppendEntries Admission [r[domain-primitives.raft-consensus.append-entries]]
+### Requirement: AppendEntries Admission
+r[domain-primitives.raft-consensus.append-entries]
 The system MUST define AppendEntries request and response admission over finite
 leader identity, term, previous-log index/term, entries, leader-commit metadata,
 and explicit conflict/rejection metadata.
@@ -128,7 +139,8 @@ and explicit conflict/rejection metadata.
 - WHEN AppendEntries admission is evaluated
 - THEN the request is rejected with previous-log-conflict metadata
 
-### Requirement: Follower Log Update Predicate [r[domain-primitives.raft-consensus.follower-log-update]]
+### Requirement: Follower Log Update Predicate
+r[domain-primitives.raft-consensus.follower-log-update]
 
 The system MUST expose a finite follower log-update implementation surface for
 AppendEntries outcomes that leaves the follower log unchanged on rejection,
@@ -154,7 +166,8 @@ conflict/update metadata.
 - WHEN the follower log-update predicate is evaluated
 - THEN the successor log has no index gaps and appended entries begin exactly after the retained prefix
 
-### Requirement: Log Matching Invariant [r[domain-primitives.raft-consensus.log-matching]]
+### Requirement: Log Matching Invariant
+r[domain-primitives.raft-consensus.log-matching]
 The system MUST define and later prove the Raft log-matching invariant: if two
 admitted logs contain entries with the same index and term, then all earlier
 entries in those logs are equal.
@@ -165,7 +178,8 @@ entries in those logs are equal.
 - WHEN log-matching admission is evaluated
 - THEN every admitted earlier index has equal log entries in both logs
 
-### Requirement: Commit Index Predicate [r[domain-primitives.raft-consensus.commit]]
+### Requirement: Commit Index Predicate
+r[domain-primitives.raft-consensus.commit]
 The system MUST define commit-index predicates that admit an index only when a
 quorum of admitted match indexes covers it and the governing leader-term rule is
 satisfied by the finite model.
@@ -176,7 +190,8 @@ satisfied by the finite model.
 - WHEN commit-index admission is evaluated
 - THEN the proposal is rejected with insufficient-quorum metadata
 
-### Requirement: Leader Completeness Invariant [r[domain-primitives.raft-consensus.leader-completeness]]
+### Requirement: Leader Completeness Invariant
+r[domain-primitives.raft-consensus.leader-completeness]
 The system MUST define and later prove leader completeness: every entry committed
 in a term is present in the logs of later admitted leaders according to finite
 quorum, vote, and log up-to-date predicates.
@@ -187,7 +202,8 @@ quorum, vote, and log up-to-date predicates.
 - WHEN leader-completeness admission is evaluated
 - THEN the later leader history is rejected with missing-committed-entry metadata
 
-### Requirement: State Machine Safety Invariant [r[domain-primitives.raft-consensus.state-machine-safety]]
+### Requirement: State Machine Safety Invariant
+r[domain-primitives.raft-consensus.state-machine-safety]
 The system MUST define and later prove state-machine safety: if two nodes apply a
 command at the same log index, then the applied command identifiers at that index
 are equal.
@@ -198,7 +214,8 @@ are equal.
 - WHEN state-machine-safety admission is evaluated
 - THEN the pair is rejected with divergent-command metadata
 
-### Requirement: Applied Prefix Predicate [r[domain-primitives.raft-consensus.applied-prefix]]
+### Requirement: Applied Prefix Predicate
+r[domain-primitives.raft-consensus.applied-prefix]
 The system MUST expose applied-prefix predicates that admit only monotone
 contiguous state-machine application metadata. Non-empty steps MUST start at the
 next unapplied index, the new last-applied index MUST be committed and present
@@ -210,7 +227,8 @@ in the local log, and no-op steps MUST carry no first-applied index.
 - WHEN applied-prefix admission is evaluated
 - THEN the step is rejected with uncommitted-apply metadata before state-machine execution
 
-### Requirement: Snapshot Metadata Predicate [r[domain-primitives.raft-consensus.snapshot]]
+### Requirement: Snapshot Metadata Predicate
+r[domain-primitives.raft-consensus.snapshot]
 The system MUST define finite snapshot metadata containing last-included index,
 last-included term, configuration metadata, and state-machine summary identity
 without claiming file transfer, disk durability, or application snapshot
@@ -222,7 +240,8 @@ correctness.
 - WHEN snapshot admission is evaluated
 - THEN the snapshot is rejected with boundary-mismatch metadata
 
-### Requirement: InstallSnapshot Admission [r[domain-primitives.raft-consensus.install-snapshot]]
+### Requirement: InstallSnapshot Admission
+r[domain-primitives.raft-consensus.install-snapshot]
 The system MUST define InstallSnapshot admission that accepts only term-valid,
 leader-valid, prefix-compatible snapshot metadata and preserves Raft safety
 invariants across finite snapshot installation steps.
@@ -233,7 +252,8 @@ invariants across finite snapshot installation steps.
 - WHEN InstallSnapshot admission is evaluated
 - THEN the request is rejected with stale-snapshot metadata
 
-### Requirement: Membership Epoch Predicate [r[domain-primitives.raft-consensus.membership]]
+### Requirement: Membership Epoch Predicate
+r[domain-primitives.raft-consensus.membership]
 The system MUST define finite membership/configuration epochs, voter sets,
 non-voter metadata, and joint-consensus quorum predicates without claiming dynamic
 service discovery or production reconfiguration behavior.
@@ -244,7 +264,8 @@ service discovery or production reconfiguration behavior.
 - WHEN joint-consensus quorum admission is evaluated
 - THEN the candidate is admitted only if it satisfies quorum predicates for both old and new voter sets
 
-### Requirement: Message Envelope Predicate [r[domain-primitives.raft-consensus.message]]
+### Requirement: Message Envelope Predicate
+r[domain-primitives.raft-consensus.message]
 The system MUST define finite Raft message envelopes for RequestVote,
 RequestVoteResponse, AppendEntries, AppendEntriesResponse, InstallSnapshot, and
 local timeout/client-proposal events as model inputs without claiming network
@@ -256,7 +277,8 @@ transport delivery or ordering.
 - WHEN message admission is evaluated
 - THEN the message is rejected with stale-term metadata and no unsafe state mutation
 
-### Requirement: Client Proposal Envelope [r[domain-primitives.raft-consensus.client-proposal]]
+### Requirement: Client Proposal Envelope
+r[domain-primitives.raft-consensus.client-proposal]
 The system MUST define client-proposal envelopes as finite command identifiers
 accepted only through an admitted leader log-append predicate, without claiming
 client retry semantics, end-to-end linearizability, or external application
@@ -268,7 +290,8 @@ correctness.
 - WHEN client-proposal admission is evaluated
 - THEN the proposal is rejected with not-leader metadata before append eligibility
 
-### Requirement: Transition Trace Predicate [r[domain-primitives.raft-consensus.trace]]
+### Requirement: Transition Trace Predicate
+r[domain-primitives.raft-consensus.trace]
 The system MUST define finite transition traces whose adjacent states are related
 by one admitted Raft transition kind and whose rejected transition attempts carry
 no unsafe mutation.
@@ -279,7 +302,8 @@ no unsafe mutation.
 - WHEN trace admission is evaluated
 - THEN the trace is rejected with invalid-step metadata
 
-### Requirement: Invariant Bundle Preservation [r[domain-primitives.raft-consensus.invariant-bundle]]
+### Requirement: Invariant Bundle Preservation
+r[domain-primitives.raft-consensus.invariant-bundle]
 The system MUST define a Raft invariant bundle that includes model validity, term
 monotonicity, log validity, vote consistency, election safety, log matching,
 commit safety, leader completeness, applied-prefix safety, snapshot compatibility,
@@ -292,7 +316,8 @@ that bundle.
 - WHEN invariant-preservation admission is evaluated
 - THEN the candidate is rejected with the failing invariant identifier
 
-### Requirement: Deterministic Raft Admission [r[domain-primitives.raft-consensus.admission]]
+### Requirement: Deterministic Raft Admission
+r[domain-primitives.raft-consensus.admission]
 The system MUST define deterministic Raft admission and rejection envelopes for
 public exec surfaces that combine finite model, state, message, transition,
 quorum, log, snapshot, membership, and invariant checks.
@@ -303,7 +328,8 @@ quorum, log, snapshot, membership, and invariant checks.
 - WHEN deterministic Raft admission is evaluated
 - THEN the result rejects the candidate with stable failure metadata and does not claim runtime network, clock, storage, or availability behavior
 
-### Requirement: OpenRaft Log Pointer Lattice [r[domain-primitives.raft-consensus.openraft-log-pointers]]
+### Requirement: OpenRaft Log Pointer Lattice
+r[domain-primitives.raft-consensus.openraft-log-pointers]
 The system MUST define finite OpenRaft-inspired log pointer metadata for purged,
 snapshot, applied, committed, flushed, submitted, and accepted indexes, and MUST
 reject pointer regressions that violate the ordered pointer lattice without
@@ -323,7 +349,8 @@ first pointer-order violation in stable lattice order.
 - WHEN log-pointer admission metadata is evaluated
 - THEN the result reports the first violation in deterministic pointer-lattice order
 
-### Requirement: OpenRaft I/O Progress [r[domain-primitives.raft-consensus.openraft-io-progress]]
+### Requirement: OpenRaft I/O Progress
+r[domain-primitives.raft-consensus.openraft-io-progress]
 The system MUST define finite flushed, submitted, and accepted I/O progress
 cursors, require flushed <= submitted <= accepted, and admit progress updates only
 when every cursor moves monotonically. Admission metadata MUST return OK exactly
@@ -343,7 +370,8 @@ crash recovery, or storage durability.
 - WHEN progress-update admission metadata is evaluated
 - THEN invalid old progress is reported before cursor-regression metadata
 
-### Requirement: OpenRaft Vote/Log I/O Ordering [r[domain-primitives.raft-consensus.openraft-vote-log-io]]
+### Requirement: OpenRaft Vote/Log I/O Ordering
+r[domain-primitives.raft-consensus.openraft-vote-log-io]
 The system MUST define finite vote/log I/O ordering predicates that admit a log
 write only when term/vote metadata for that log term has already been ordered
 first. Admission metadata MUST return OK exactly for the ordering predicate and
@@ -355,7 +383,8 @@ MUST NOT claim fsync, crash recovery, or storage durability.
 - WHEN vote/log I/O admission is evaluated
 - THEN the write is rejected with ordering-failure evidence
 
-### Requirement: OpenRaft Effective Membership Rollback [r[domain-primitives.raft-consensus.openraft-effective-membership]]
+### Requirement: OpenRaft Effective Membership Rollback
+r[domain-primitives.raft-consensus.openraft-effective-membership]
 The system MUST define finite committed/effective membership metadata where the
 committed epoch is not newer than the effective epoch, and MUST define rollback
 of conflicting uncommitted effective membership to the committed epoch. Admission
@@ -369,7 +398,8 @@ joint-consensus reconfiguration behavior.
 - WHEN conflicting-log rollback is evaluated
 - THEN the effective epoch is restored to the committed epoch
 
-### Requirement: OpenRaft Replication Session Isolation [r[domain-primitives.raft-consensus.openraft-replication-session]]
+### Requirement: OpenRaft Replication Session Isolation
+r[domain-primitives.raft-consensus.openraft-replication-session]
 The system MUST define finite replication-session identity from leader term,
 leader node, and governing membership log index. Progress updates MUST be
 admitted only for the current session, with monotone matched index bounded by the
@@ -389,7 +419,8 @@ movement or leader-log-bound checks.
 - WHEN replication progress admission metadata is evaluated
 - THEN stale-session metadata is reported before matched-index metadata
 
-### Requirement: OpenRaft Read Linearizer Readiness [r[domain-primitives.raft-consensus.openraft-read-linearizer]]
+### Requirement: OpenRaft Read Linearizer Readiness
+r[domain-primitives.raft-consensus.openraft-read-linearizer]
 The system MUST define finite read-linearizer readiness as local last-applied
 index catching up to the read log index. Admission metadata MUST return OK exactly
 for the local-apply catch-up predicate and MUST NOT claim quorum RPC, lease
@@ -402,7 +433,8 @@ behavior.
 - WHEN read-linearizer readiness is evaluated
 - THEN the read is not ready under the finite predicate
 
-### Requirement: Bounded Interval [r[domain-primitives.bounded-interval]]
+### Requirement: Bounded Interval
+r[domain-primitives.bounded-interval]
 The system MUST provide a reusable bounded-interval primitive for normalized
 closed integer ranges, containment, overlap, and clamping.
 
@@ -426,7 +458,8 @@ closed integer ranges, containment, overlap, and clamping.
 - WHEN the checked interval constructor is evaluated
 - THEN it rejects the interval
 
-### Requirement: Rect Grid Index [r[domain-primitives.rect-grid-index]]
+### Requirement: Rect Grid Index
+r[domain-primitives.rect-grid-index]
 The system MUST provide a reusable rectangular grid-index primitive for bounded
 2D coordinates and flattened offsets.
 
@@ -450,7 +483,8 @@ The system MUST provide a reusable rectangular grid-index primitive for bounded
 - WHEN coordinate admission is checked
 - THEN the coordinate is rejected
 
-### Requirement: GIS Coordinate Envelope [r[domain-primitives.gis-coordinate-envelope]]
+### Requirement: GIS Coordinate Envelope
+r[domain-primitives.gis-coordinate-envelope]
 The system MUST provide a GIS coordinate-envelope primitive for checked scaled
 latitude/longitude and projected-coordinate ranges.
 
@@ -475,7 +509,8 @@ latitude/longitude and projected-coordinate ranges.
 - WHEN the coordinate constructor is evaluated
 - THEN it rejects the coordinate without producing a valid wrapper
 
-### Requirement: GIS Bounding Box [r[domain-primitives.gis-bounding-box]]
+### Requirement: GIS Bounding Box
+r[domain-primitives.gis-bounding-box]
 The system MUST provide a GIS bounding-box primitive for normalized rectangular
 spatial envelopes.
 
@@ -500,7 +535,8 @@ spatial envelopes.
 - WHEN the checked bounding-box constructor is evaluated
 - THEN the constructor rejects the box
 
-### Requirement: GIS Tile Index [r[domain-primitives.gis-tile-index]]
+### Requirement: GIS Tile Index
+r[domain-primitives.gis-tile-index]
 The system MUST provide a GIS tile-index primitive for bounded map-tile
 addressing and parent/child refinement.
 
@@ -523,7 +559,8 @@ addressing and parent/child refinement.
 - WHEN tile admission is checked
 - THEN the tile is rejected
 
-### Requirement: GIS Linestring Topology [r[domain-primitives.gis-linestring-topology]]
+### Requirement: GIS Linestring Topology
+r[domain-primitives.gis-linestring-topology]
 The system MUST provide a GIS linestring-topology primitive for discrete segment
 chains.
 
@@ -547,7 +584,8 @@ chains.
 - WHEN linestring topology is checked
 - THEN the linestring is rejected
 
-### Requirement: ML Tensor Shape [r[domain-primitives.ml-tensor-shape]]
+### Requirement: ML Tensor Shape
+r[domain-primitives.ml-tensor-shape]
 The system MUST provide an ML tensor-shape primitive for exact finite rank-1 dimensions
 and flattened-index safety.
 
@@ -563,7 +601,8 @@ and flattened-index safety.
 - WHEN tensor-shape admission is checked
 - THEN the request is rejected
 
-### Requirement: ML Label Encoding [r[domain-primitives.ml-label-encoding]]
+### Requirement: ML Label Encoding
+r[domain-primitives.ml-label-encoding]
 The system MUST provide an ML label-encoding primitive for declared vocabulary
 membership and class-index roundtrips.
 
@@ -579,7 +618,8 @@ membership and class-index roundtrips.
 - WHEN label encoding is requested
 - THEN the label is rejected
 
-### Requirement: ML Dataset Split [r[domain-primitives.ml-dataset-split]]
+### Requirement: ML Dataset Split
+r[domain-primitives.ml-dataset-split]
 The system MUST provide an ML dataset-split primitive for deterministic disjoint
 train, validation, and test partitions over bounded dataset indices.
 
@@ -595,7 +635,8 @@ train, validation, and test partitions over bounded dataset indices.
 - WHEN split admission is checked
 - THEN the split is rejected
 
-### Requirement: ML Batch Iterator [r[domain-primitives.ml-batch-iterator]]
+### Requirement: ML Batch Iterator
+r[domain-primitives.ml-batch-iterator]
 The system MUST provide an ML batch-iterator primitive for bounded contiguous
 batch ranges over dataset indices.
 
@@ -611,7 +652,8 @@ batch ranges over dataset indices.
 - WHEN batch iteration is requested
 - THEN the request is rejected
 
-### Requirement: ML Feature Normalization [r[domain-primitives.ml-feature-normalization]]
+### Requirement: ML Feature Normalization
+r[domain-primitives.ml-feature-normalization]
 The system MUST provide an ML feature-normalization primitive for bounded feature
 scaling and missing-value rejection.
 
@@ -627,7 +669,8 @@ scaling and missing-value rejection.
 - WHEN normalization is requested
 - THEN the request is rejected
 
-### Requirement: ML Top K [r[domain-primitives.ml-top-k]]
+### Requirement: ML Top K
+r[domain-primitives.ml-top-k]
 The system MUST provide an ML top-k primitive for deterministic bounded selection
 from finite score vectors.
 
@@ -643,7 +686,8 @@ from finite score vectors.
 - WHEN top-k admission is checked
 - THEN the request is rejected
 
-### Requirement: ML Inference Envelope [r[domain-primitives.ml-inference-envelope]]
+### Requirement: ML Inference Envelope
+r[domain-primitives.ml-inference-envelope]
 The system MUST provide an ML inference-envelope primitive for deterministic
 classification or regression result admission bounded by model metadata.
 
@@ -659,7 +703,8 @@ classification or regression result admission bounded by model metadata.
 - WHEN result admission is checked
 - THEN the result is rejected
 
-### Requirement: ML Confusion Matrix [r[domain-primitives.ml-confusion-matrix]]
+### Requirement: ML Confusion Matrix
+r[domain-primitives.ml-confusion-matrix]
 The system MUST provide an ML confusion-matrix primitive for bounded metric counts
 and denominator-safe derived metrics.
 
@@ -675,7 +720,8 @@ and denominator-safe derived metrics.
 - WHEN precision or recall is requested
 - THEN the primitive rejects the numeric metric or returns an explicit empty metric result
 
-### Requirement: Physics Units [r[domain-primitives.physics-units]]
+### Requirement: Physics Units
+r[domain-primitives.physics-units]
 The system MUST provide a physics-units primitive for dimension-safe scalar and
 vector quantities.
 
@@ -691,7 +737,8 @@ vector quantities.
 - WHEN addition or subtraction is requested
 - THEN the operation is rejected
 
-### Requirement: Physics Vector Bounds [r[domain-primitives.physics-vector-bounds]]
+### Requirement: Physics Vector Bounds
+r[domain-primitives.physics-vector-bounds]
 The system MUST provide a physics vector-bounds primitive for component-wise and
 aggregate envelope admission over exact discrete vectors.
 
@@ -707,7 +754,8 @@ aggregate envelope admission over exact discrete vectors.
 - WHEN vector admission is checked
 - THEN the vector is rejected
 
-### Requirement: Physics Time Horizon [r[domain-primitives.physics-time-horizon]]
+### Requirement: Physics Time Horizon
+r[domain-primitives.physics-time-horizon]
 The system MUST provide a physics time-horizon primitive for bounded step-count and positive time-delta admission.
 
 #### Scenario: Valid step count stays inside horizon [r[domain-primitives.physics-time-horizon.scenario.valid-step-count-stays-inside-horizon]]
@@ -722,7 +770,8 @@ The system MUST provide a physics time-horizon primitive for bounded step-count 
 - WHEN horizon admission is checked
 - THEN the horizon is rejected
 
-### Requirement: Physics Integrator Step [r[domain-primitives.physics-integrator-step]]
+### Requirement: Physics Integrator Step
+r[domain-primitives.physics-integrator-step]
 The system MUST provide a physics integrator-step primitive for bounded-time
 state advancement.
 
@@ -738,7 +787,8 @@ state advancement.
 - WHEN integration is requested
 - THEN the step is rejected
 
-### Requirement: Physics Collision Envelope [r[domain-primitives.physics-collision-envelope]]
+### Requirement: Physics Collision Envelope
+r[domain-primitives.physics-collision-envelope]
 The system MUST provide a physics collision-envelope primitive for conservative
 swept-volume overlap checks.
 
@@ -754,7 +804,8 @@ swept-volume overlap checks.
 - WHEN collision admission is checked
 - THEN the pair is rejected as non-colliding for the step
 
-### Requirement: Physics Contact Manifold [r[domain-primitives.physics-contact-manifold]]
+### Requirement: Physics Contact Manifold
+r[domain-primitives.physics-contact-manifold]
 The system MUST provide a physics contact-manifold primitive for bounded contact
 point, normal, and penetration records.
 
@@ -770,7 +821,8 @@ point, normal, and penetration records.
 - WHEN contact admission is checked
 - THEN the contact manifold is rejected
 
-### Requirement: Physics Energy Budget [r[domain-primitives.physics-energy-budget]]
+### Requirement: Physics Energy Budget
+r[domain-primitives.physics-energy-budget]
 The system MUST provide a physics energy-budget primitive for non-negative energy
 accounting and bounded drift.
 
@@ -786,7 +838,8 @@ accounting and bounded drift.
 - WHEN the energy budget is checked
 - THEN the transition is rejected
 
-### Requirement: Physics Momentum Budget [r[domain-primitives.physics-momentum-budget]]
+### Requirement: Physics Momentum Budget
+r[domain-primitives.physics-momentum-budget]
 The system MUST provide a physics momentum-budget primitive for non-negative mass
 and bounded momentum accounting.
 
@@ -802,7 +855,8 @@ and bounded momentum accounting.
 - WHEN momentum admission is checked
 - THEN the update is rejected
 
-### Requirement: Physics Non-Claims [r[domain-primitives.physics-non-claims]]
+### Requirement: Physics Non-Claims
+r[domain-primitives.physics-non-claims]
 The system MUST limit physics primitives to exact discrete admission and budget predicates; it MUST NOT claim floating-point accuracy, continuous dynamics correctness, real-number differential-equation proofs, broad solver completeness, simulator fidelity, collision exactness beyond conservative interval candidates, or production physics-engine correctness.
 
 #### Scenario: Continuous and floating-point claims are excluded [r[domain-primitives.physics-non-claims.scenario.continuous-and-floating-point-claims-are-excluded]]
@@ -811,7 +865,8 @@ The system MUST limit physics primitives to exact discrete admission and budget 
 - WHEN the result is interpreted
 - THEN it is only evidence for the exact finite predicate and not for continuous or floating-point simulator correctness
 
-### Requirement: Vision Image Buffer [r[domain-primitives.vision-image-buffer]]
+### Requirement: Vision Image Buffer
+r[domain-primitives.vision-image-buffer]
 The system MUST provide a machine-vision image-buffer primitive for checked
 width, height, stride, channel, and backing-buffer layout.
 
@@ -827,7 +882,8 @@ width, height, stride, channel, and backing-buffer layout.
 - WHEN the image-buffer constructor is evaluated
 - THEN it rejects the layout
 
-### Requirement: Vision ROI [r[domain-primitives.vision-roi]]
+### Requirement: Vision ROI
+r[domain-primitives.vision-roi]
 The system MUST provide a machine-vision ROI primitive for bounded regions of
 interest and crop-coordinate mapping.
 
@@ -843,7 +899,8 @@ interest and crop-coordinate mapping.
 - WHEN the checked ROI constructor is evaluated
 - THEN the ROI is rejected
 
-### Requirement: Vision Convolution Window [r[domain-primitives.vision-convolution-window]]
+### Requirement: Vision Convolution Window
+r[domain-primitives.vision-convolution-window]
 The system MUST provide a machine-vision convolution-window primitive for safe
 kernel indexing under declared border policy.
 
@@ -859,7 +916,8 @@ kernel indexing under declared border policy.
 - WHEN sampling is requested
 - THEN the window is rejected
 
-### Requirement: Vision Color Layout [r[domain-primitives.vision-color-layout]]
+### Requirement: Vision Color Layout
+r[domain-primitives.vision-color-layout]
 The system MUST provide a machine-vision color-layout primitive for declared
 channel count, order, and per-channel byte offset admission.
 
@@ -875,7 +933,8 @@ channel count, order, and per-channel byte offset admission.
 - WHEN color-layout admission is checked
 - THEN the layout is rejected
 
-### Requirement: Vision Color Transform Envelope [r[domain-primitives.vision-color-transform-envelope]]
+### Requirement: Vision Color Transform Envelope
+r[domain-primitives.vision-color-transform-envelope]
 The system MUST provide a machine-vision color-transform-envelope primitive for
 bounded integer color-space transform outputs.
 
@@ -891,7 +950,8 @@ bounded integer color-space transform outputs.
 - WHEN transform admission is checked
 - THEN the transform is rejected
 
-### Requirement: Vision Image Pyramid [r[domain-primitives.vision-image-pyramid]]
+### Requirement: Vision Image Pyramid
+r[domain-primitives.vision-image-pyramid]
 The system MUST provide a machine-vision image-pyramid primitive for bounded
 multi-level image dimensions and level mapping.
 
@@ -907,7 +967,8 @@ multi-level image dimensions and level mapping.
 - WHEN pyramid admission is checked
 - THEN the pyramid is rejected
 
-### Requirement: Vision Connected Components [r[domain-primitives.vision-connected-components]]
+### Requirement: Vision Connected Components
+r[domain-primitives.vision-connected-components]
 The system MUST provide a machine-vision connected-components primitive for
 bounded component labels and merge/equivalence facts.
 
@@ -923,7 +984,8 @@ bounded component labels and merge/equivalence facts.
 - WHEN component admission is checked
 - THEN the label or merge is rejected
 
-### Requirement: Vision Detection NMS [r[domain-primitives.vision-detection-nms]]
+### Requirement: Vision Detection NMS
+r[domain-primitives.vision-detection-nms]
 The system MUST provide a machine-vision detection/NMS primitive for deterministic
 score thresholding and non-maximum suppression.
 
@@ -939,7 +1001,8 @@ score thresholding and non-maximum suppression.
 - WHEN detection admission is checked
 - THEN the detection is rejected before suppression
 
-### Requirement: Numeric Fixed Point Scale [r[domain-primitives.numeric-fixed-point-scale]]
+### Requirement: Numeric Fixed Point Scale
+r[domain-primitives.numeric-fixed-point-scale]
 The system MUST provide a numeric fixed-point scale primitive for checked scaled
 integer metadata, conversion envelopes, and range preservation.
 
@@ -955,7 +1018,8 @@ integer metadata, conversion envelopes, and range preservation.
 - WHEN fixed-point admission is checked
 - THEN the conversion is rejected
 
-### Requirement: Numeric Checked Arithmetic Envelope [r[domain-primitives.numeric-checked-arithmetic-envelope]]
+### Requirement: Numeric Checked Arithmetic Envelope
+r[domain-primitives.numeric-checked-arithmetic-envelope]
 The system MUST provide a numeric checked-arithmetic-envelope primitive for
 bounded add, subtract, multiply, and safe zero-numerator divide-admission operations.
 
@@ -971,7 +1035,8 @@ bounded add, subtract, multiply, and safe zero-numerator divide-admission operat
 - WHEN checked arithmetic is evaluated
 - THEN the operation is rejected
 
-### Requirement: Numeric Denominator Safe Ratio [r[domain-primitives.numeric-denominator-safe-ratio]]
+### Requirement: Numeric Denominator Safe Ratio
+r[domain-primitives.numeric-denominator-safe-ratio]
 The system MUST provide a numeric denominator-safe-ratio primitive for explicit
 non-zero denominator admission and empty/reject semantics.
 
@@ -987,7 +1052,8 @@ non-zero denominator admission and empty/reject semantics.
 - WHEN ratio derivation is requested
 - THEN the primitive rejects the request or returns an explicit empty result instead of a numeric ratio
 
-### Requirement: Numeric Monotone Sequence [r[domain-primitives.numeric-monotone-sequence]]
+### Requirement: Numeric Monotone Sequence
+r[domain-primitives.numeric-monotone-sequence]
 The system MUST provide a numeric monotone-sequence primitive for sortedness,
 lower-bound search, and range-query safety over finite three-slot sequences.
 
@@ -1003,7 +1069,8 @@ lower-bound search, and range-query safety over finite three-slot sequences.
 - WHEN monotone sequence admission is checked
 - THEN the sequence is rejected
 
-### Requirement: Numeric Histogram Counter [r[domain-primitives.numeric-histogram-counter]]
+### Requirement: Numeric Histogram Counter
+r[domain-primitives.numeric-histogram-counter]
 The system MUST provide a numeric histogram-counter primitive for bounded three-bucket indexing and count-update admission.
 
 #### Scenario: Valid bucket update increments one count [r[domain-primitives.numeric-histogram-counter.scenario.valid-bucket-update-increments-one-count]]
@@ -1018,7 +1085,8 @@ The system MUST provide a numeric histogram-counter primitive for bounded three-
 - WHEN histogram update is requested
 - THEN the update is rejected
 
-### Requirement: Numeric Affine Transform Discrete [r[domain-primitives.numeric-affine-transform-discrete]]
+### Requirement: Numeric Affine Transform Discrete
+r[domain-primitives.numeric-affine-transform-discrete]
 The system MUST provide a numeric affine-transform primitive for bounded integer
 matrix/vector transform envelopes.
 
@@ -1034,7 +1102,8 @@ matrix/vector transform envelopes.
 - WHEN affine transform admission is checked
 - THEN the transform is rejected
 
-### Requirement: Numeric Prefix Sum [r[domain-primitives.numeric-prefix-sum]]
+### Requirement: Numeric Prefix Sum
+r[domain-primitives.numeric-prefix-sum]
 The system MUST provide a numeric prefix-sum primitive for bounded three-slot cumulative sums and range-sum admission.
 
 #### Scenario: Prefix sums decompose range sum [r[domain-primitives.numeric-prefix-sum.scenario.prefix-sums-decompose-range-sum]]
@@ -1049,7 +1118,8 @@ The system MUST provide a numeric prefix-sum primitive for bounded three-slot cu
 - WHEN prefix-sum construction is requested
 - THEN the construction is rejected
 
-### Requirement: Numeric Quantized Threshold [r[domain-primitives.numeric-quantized-threshold]]
+### Requirement: Numeric Quantized Threshold
+r[domain-primitives.numeric-quantized-threshold]
 The system MUST provide a numeric quantized-threshold primitive for deterministic
 threshold and bucket admission over bounded values.
 
@@ -1065,7 +1135,8 @@ threshold and bucket admission over bounded values.
 - WHEN threshold admission is checked
 - THEN the request is rejected
 
-### Requirement: Data Structure Bounded Array [r[domain-primitives.ds-bounded-array]]
+### Requirement: Data Structure Bounded Array
+r[domain-primitives.ds-bounded-array]
 The system MUST provide a bounded-array primitive for finite sequence length,
 capacity, index admission, and point-update preservation.
 
@@ -1081,7 +1152,8 @@ capacity, index admission, and point-update preservation.
 - WHEN a read or point update is requested
 - THEN the request is rejected and the array state is unchanged
 
-### Requirement: Data Structure Key Value Map [r[domain-primitives.ds-key-value-map]]
+### Requirement: Data Structure Key Value Map
+r[domain-primitives.ds-key-value-map]
 The system MUST provide a finite key/value map primitive for unique keys,
 lookup, insertion, replacement, and removal semantics.
 
@@ -1097,7 +1169,8 @@ lookup, insertion, replacement, and removal semantics.
 - WHEN the target key is removed
 - THEN lookup for that key is empty and lookup for every other key is unchanged
 
-### Requirement: Data Structure FIFO Queue [r[domain-primitives.ds-fifo-queue]]
+### Requirement: Data Structure FIFO Queue
+r[domain-primitives.ds-fifo-queue]
 The system MUST provide a bounded FIFO queue primitive for enqueue/dequeue order,
 capacity admission, and empty/full rejection.
 
@@ -1113,7 +1186,8 @@ capacity admission, and empty/full rejection.
 - WHEN the invalid operation is requested
 - THEN the operation is rejected and the queue state is unchanged
 
-### Requirement: Data Structure Ring Buffer [r[domain-primitives.ds-ring-buffer]]
+### Requirement: Data Structure Ring Buffer
+r[domain-primitives.ds-ring-buffer]
 The system MUST provide a ring-buffer primitive for bounded circular indexing,
 occupied-slot validity, and wraparound push/pop behavior.
 
@@ -1129,7 +1203,8 @@ occupied-slot validity, and wraparound push/pop behavior.
 - WHEN the invalid operation is requested
 - THEN the operation is rejected and head, tail, length, and storage are unchanged
 
-### Requirement: Data Structure Priority Queue [r[domain-primitives.ds-priority-queue]]
+### Requirement: Data Structure Priority Queue
+r[domain-primitives.ds-priority-queue]
 The system MUST provide a bounded priority-queue primitive for priority-order
 validity, deterministic tie handling, bounded push, and pop-min behavior.
 
@@ -1145,7 +1220,8 @@ validity, deterministic tie handling, bounded push, and pop-min behavior.
 - WHEN the invalid operation is requested
 - THEN the operation is rejected and the queue state is unchanged
 
-### Requirement: Data Structure Union Find [r[domain-primitives.ds-union-find]]
+### Requirement: Data Structure Union Find
+r[domain-primitives.ds-union-find]
 The system MUST provide a union-find primitive for finite parent/rank arrays,
 root discovery, union connectivity, and invalid-index rejection.
 
@@ -1161,7 +1237,8 @@ root discovery, union connectivity, and invalid-index rejection.
 - WHEN find or union is requested with that index
 - THEN the operation is rejected and the forest state is unchanged
 
-### Requirement: Finite Principal Envelope [r[domain-primitives.access-control-policy.principal]]
+### Requirement: Finite Principal Envelope
+r[domain-primitives.access-control-policy.principal]
 The system MUST define finite principal admission metadata for policy decision
 models.
 
@@ -1171,7 +1248,8 @@ models.
 - WHEN the rule references a principal
 - THEN the principal is admitted by the declared principal envelope
 
-### Requirement: Finite Resource Envelope [r[domain-primitives.access-control-policy.resource]]
+### Requirement: Finite Resource Envelope
+r[domain-primitives.access-control-policy.resource]
 The system MUST define finite resource admission metadata for policy decision
 models.
 
@@ -1181,7 +1259,8 @@ models.
 - WHEN the request references a resource
 - THEN the resource is admitted by the declared resource envelope
 
-### Requirement: Finite Action Envelope [r[domain-primitives.access-control-policy.action]]
+### Requirement: Finite Action Envelope
+r[domain-primitives.access-control-policy.action]
 The system MUST define finite action admission metadata for policy decision
 models.
 
@@ -1191,7 +1270,8 @@ models.
 - WHEN the request references an action
 - THEN the action is admitted by the declared action envelope
 
-### Requirement: Policy Rule Envelope [r[domain-primitives.access-control-policy.rule]]
+### Requirement: Policy Rule Envelope
+r[domain-primitives.access-control-policy.rule]
 The system MUST define policy-rule envelopes over finite principal, resource, and
 action scopes with exact effect metadata.
 
@@ -1201,7 +1281,8 @@ action scopes with exact effect metadata.
 - WHEN the rule scope is evaluated
 - THEN every principal, resource, and action referenced by the rule is admitted by its declared envelope
 
-### Requirement: Grant and Denial Decision Metadata [r[domain-primitives.access-control-policy.grant-denial]]
+### Requirement: Grant and Denial Decision Metadata
+r[domain-primitives.access-control-policy.grant-denial]
 The system MUST define deterministic grant/denial decision metadata for admitted
 authorization requests.
 
@@ -1211,7 +1292,8 @@ authorization requests.
 - WHEN a grant or denial decision is produced
 - THEN the decision metadata identifies the matched admitted rule or the deterministic no-match result
 
-### Requirement: Conflict Resolution Envelope [r[domain-primitives.access-control-policy.conflict]]
+### Requirement: Conflict Resolution Envelope
+r[domain-primitives.access-control-policy.conflict]
 The system MUST define deterministic conflict-resolution envelopes for overlapping
 finite policy rules.
 
@@ -1221,7 +1303,8 @@ finite policy rules.
 - WHEN conflict resolution is evaluated
 - THEN the result follows declared priority or tie-break metadata deterministically
 
-### Requirement: Bounded Delegation Envelope [r[domain-primitives.access-control-policy.delegation]]
+### Requirement: Bounded Delegation Envelope
+r[domain-primitives.access-control-policy.delegation]
 The system MUST define bounded delegation metadata over finite principals,
 resources, actions, scopes, and chain-depth envelopes.
 
@@ -1231,7 +1314,8 @@ resources, actions, scopes, and chain-depth envelopes.
 - WHEN the delegation is used in an authorization model
 - THEN it states the admitted resource/action scope and finite depth or chain bound
 
-### Requirement: Authorization Admission Envelope [r[domain-primitives.access-control-policy.authorization]]
+### Requirement: Authorization Admission Envelope
+r[domain-primitives.access-control-policy.authorization]
 The system MUST define deterministic authorization admission results for policy
 metadata, including invalid principal, resource, action, rule, conflict, and
 delegation shapes.
@@ -1242,7 +1326,8 @@ delegation shapes.
 - WHEN admission is evaluated
 - THEN the metadata is rejected deterministically without claiming cryptographic authentication or whole-system security
 
-### Requirement: Config Key Envelope [r[domain-primitives.configuration-feature-flag.key]]
+### Requirement: Config Key Envelope
+r[domain-primitives.configuration-feature-flag.key]
 The system MUST provide finite config-key envelopes that record key identifiers,
 optional namespaces, and deterministic known/unknown-key admission metadata.
 
@@ -1252,7 +1337,8 @@ optional namespaces, and deterministic known/unknown-key admission metadata.
 - WHEN a candidate key is not in the admitted set
 - THEN the config-key primitive returns an explicit unknown-key decision without consulting an external store
 
-### Requirement: Typed Value Envelope [r[domain-primitives.configuration-feature-flag.typed-value]]
+### Requirement: Typed Value Envelope
+r[domain-primitives.configuration-feature-flag.typed-value]
 The system MUST provide finite typed-value envelopes that bind declared type tags
 to admitted value shapes and reject type/value mismatches deterministically.
 
@@ -1262,7 +1348,8 @@ to admitted value shapes and reject type/value mismatches deterministically.
 - WHEN the candidate value shape does not match the declared type tag
 - THEN the typed-value primitive rejects the value or exposes an explicit type-mismatch decision
 
-### Requirement: Default Value Metadata [r[domain-primitives.configuration-feature-flag.default]]
+### Requirement: Default Value Metadata
+r[domain-primitives.configuration-feature-flag.default]
 The system MUST provide default-value metadata that ties each default to a
 declared finite key envelope and compatible typed-value envelope.
 
@@ -1272,7 +1359,8 @@ declared finite key envelope and compatible typed-value envelope.
 - WHEN the key is unknown or the default value does not match the declared type
 - THEN the default primitive rejects the metadata without mutating the candidate config set
 
-### Requirement: Override Precedence Envelope [r[domain-primitives.configuration-feature-flag.override-precedence]]
+### Requirement: Override Precedence Envelope
+r[domain-primitives.configuration-feature-flag.override-precedence]
 The system MUST provide deterministic finite override-precedence envelopes for
 admitted configuration sources and explicit tie/duplicate-source decisions.
 
@@ -1282,7 +1370,8 @@ admitted configuration sources and explicit tie/duplicate-source decisions.
 - WHEN the precedence envelope orders the candidate sources without ties
 - THEN the override-precedence primitive selects the highest-precedence admitted candidate deterministically
 
-### Requirement: Feature Gate Predicate Envelope [r[domain-primitives.configuration-feature-flag.gate]]
+### Requirement: Feature Gate Predicate Envelope
+r[domain-primitives.configuration-feature-flag.gate]
 The system MUST provide finite feature-gate predicate envelopes that map admitted
 keys, subjects, and typed values to explicit enabled/disabled/rejected decisions.
 
@@ -1292,7 +1381,8 @@ keys, subjects, and typed values to explicit enabled/disabled/rejected decisions
 - WHEN a candidate subject lacks the required admitted metadata
 - THEN the feature-gate primitive returns an explicit rejection decision rather than claiming runtime rollout behavior
 
-### Requirement: Rollout Bucket Envelope [r[domain-primitives.configuration-feature-flag.rollout-bucket]]
+### Requirement: Rollout Bucket Envelope
+r[domain-primitives.configuration-feature-flag.rollout-bucket]
 The system MUST provide deterministic rollout-bucket envelopes over finite
 subject identifiers, bucket ranges, and declared membership predicates without
 claiming randomness quality or distributed rollout consistency.
@@ -1303,7 +1393,8 @@ claiming randomness quality or distributed rollout consistency.
 - WHEN the bucket lies outside the admitted bucket range
 - THEN the rollout-bucket primitive rejects the candidate or exposes an explicit out-of-range decision
 
-### Requirement: Validation Decision Metadata [r[domain-primitives.configuration-feature-flag.validation-decision]]
+### Requirement: Validation Decision Metadata
+r[domain-primitives.configuration-feature-flag.validation-decision]
 The system MUST provide validation decision metadata that records accepted,
 rejected, and reason-coded invalid configuration entries over finite admitted
 keys and typed values.
@@ -1314,7 +1405,8 @@ keys and typed values.
 - WHEN validation is performed by the primitive
 - THEN the validation decision records the rejection reason without mutating the input entry
 
-### Requirement: Config Admission Envelope [r[domain-primitives.configuration-feature-flag.admission]]
+### Requirement: Config Admission Envelope
+r[domain-primitives.configuration-feature-flag.admission]
 The system MUST provide deterministic configuration admission/rejection envelopes
 that compose key, typed-value, default, override, gate, rollout, and validation
 metadata over finite inputs.
@@ -1325,7 +1417,8 @@ metadata over finite inputs.
 - WHEN any required key, type, default, override, gate, rollout, or validation check rejects
 - THEN the config-admission primitive returns an explicit rejection decision before any runtime store or distributed flag-service claim is made
 
-### Requirement: Constraint Variable Envelope [r[domain-primitives.constraint-solver.variable]]
+### Requirement: Constraint Variable Envelope
+r[domain-primitives.constraint-solver.variable]
 The system MUST define finite constraint-variable envelopes for variable
 identifiers, declared domains, and variable membership metadata.
 
@@ -1335,7 +1428,8 @@ identifiers, declared domains, and variable membership metadata.
 - WHEN the variable is admitted by the variable envelope
 - THEN its declared domain identifier exists in the finite domain table
 
-### Requirement: Constraint Domain Predicate [r[domain-primitives.constraint-solver.domain]]
+### Requirement: Constraint Domain Predicate
+r[domain-primitives.constraint-solver.domain]
 The system MUST define finite domain predicates for admitted values, emptiness,
 subset relationships, and membership checks.
 
@@ -1345,7 +1439,8 @@ subset relationships, and membership checks.
 - WHEN the value is not a member of the declared domain set
 - THEN the domain predicate rejects the value without claiming theory reasoning
 
-### Requirement: Constraint Relation Envelope [r[domain-primitives.constraint-solver.relation]]
+### Requirement: Constraint Relation Envelope
+r[domain-primitives.constraint-solver.relation]
 The system MUST define finite constraint-relation envelopes for constraint
 identifiers, variable scopes, tuple arity, and admitted tuple metadata.
 
@@ -1355,7 +1450,8 @@ identifiers, variable scopes, tuple arity, and admitted tuple metadata.
 - WHEN a candidate tuple is checked against the relation
 - THEN the relation envelope admits only tuples whose arity matches the declared scope
 
-### Requirement: Constraint Assignment Shape [r[domain-primitives.constraint-solver.assignment]]
+### Requirement: Constraint Assignment Shape
+r[domain-primitives.constraint-solver.assignment]
 The system MUST define assignment predicates for partial and total assignments,
 variable uniqueness, and value admission against declared domains.
 
@@ -1365,7 +1461,8 @@ variable uniqueness, and value admission against declared domains.
 - WHEN the assigned value is outside the variable's declared finite domain
 - THEN the assignment predicate rejects the assignment
 
-### Requirement: Constraint Consistency Predicate [r[domain-primitives.constraint-solver.consistency]]
+### Requirement: Constraint Consistency Predicate
+r[domain-primitives.constraint-solver.consistency]
 The system MUST define deterministic local consistency predicates for assignments
 against finite constraint relations.
 
@@ -1375,7 +1472,8 @@ against finite constraint relations.
 - WHEN the assigned tuple is not admitted by the relation envelope
 - THEN the consistency predicate reports the assignment as locally inconsistent
 
-### Requirement: Constraint Propagation Envelope [r[domain-primitives.constraint-solver.propagation]]
+### Requirement: Constraint Propagation Envelope
+r[domain-primitives.constraint-solver.propagation]
 The system MUST define monotone propagation envelopes for finite domain narrowing,
 changed-domain metadata, and contradiction detection.
 
@@ -1385,7 +1483,8 @@ changed-domain metadata, and contradiction detection.
 - WHEN propagation metadata is admitted
 - THEN every propagated domain is a subset of its corresponding input domain
 
-### Requirement: Constraint Witness Metadata [r[domain-primitives.constraint-solver.witness]]
+### Requirement: Constraint Witness Metadata
+r[domain-primitives.constraint-solver.witness]
 The system MUST define finite witness metadata for satisfying assignments and
 explicit contradictions in declared finite models.
 
@@ -1395,7 +1494,8 @@ explicit contradictions in declared finite models.
 - WHEN the witness is admitted
 - THEN it carries a total assignment admitted by every variable domain and locally consistent with every declared relation
 
-### Requirement: Constraint Admission Envelope [r[domain-primitives.constraint-solver.admission]]
+### Requirement: Constraint Admission Envelope
+r[domain-primitives.constraint-solver.admission]
 The system MUST define deterministic constraint admission envelopes that return
 admit/reject/unknown metadata from finite variables, domains, relations,
 assignments, propagation, and witness predicates.
@@ -1406,7 +1506,8 @@ assignments, propagation, and witness predicates.
 - WHEN the assignment violates an admitted relation or declared domain
 - THEN the admission envelope rejects it with deterministic metadata and does not claim solver optimality or external-engine completeness
 
-### Requirement: Control Setpoint [r[domain-primitives.control-setpoint]]
+### Requirement: Control Setpoint
+r[domain-primitives.control-setpoint]
 The system MUST provide a control setpoint primitive for bounded target values,
 setpoint update admission, and invalid-bound rejection.
 
@@ -1422,7 +1523,8 @@ setpoint update admission, and invalid-bound rejection.
 - WHEN setpoint admission is checked
 - THEN the update is rejected and the prior setpoint is unchanged
 
-### Requirement: Control Error Signal [r[domain-primitives.control-error-signal]]
+### Requirement: Control Error Signal
+r[domain-primitives.control-error-signal]
 The system MUST provide a control error-signal primitive for checked bounded
 difference between target and measurement values.
 
@@ -1438,7 +1540,8 @@ difference between target and measurement values.
 - WHEN error derivation is requested
 - THEN the request is rejected
 
-### Requirement: Control Actuator Saturation [r[domain-primitives.control-actuator-saturation]]
+### Requirement: Control Actuator Saturation
+r[domain-primitives.control-actuator-saturation]
 The system MUST provide an actuator-saturation primitive for clamp bounds,
 command limiting, and saturation flag semantics.
 
@@ -1454,7 +1557,8 @@ command limiting, and saturation flag semantics.
 - WHEN saturation is requested
 - THEN the request is rejected instead of producing a command
 
-### Requirement: Control Deadband [r[domain-primitives.control-deadband]]
+### Requirement: Control Deadband
+r[domain-primitives.control-deadband]
 The system MUST provide a deadband primitive for deterministic no-action/action
 decisions around a declared threshold interval.
 
@@ -1470,7 +1574,8 @@ decisions around a declared threshold interval.
 - WHEN deadband admission is checked
 - THEN the deadband request is rejected
 
-### Requirement: Control Hysteresis [r[domain-primitives.control-hysteresis]]
+### Requirement: Control Hysteresis
+r[domain-primitives.control-hysteresis]
 The system MUST provide a hysteresis primitive for two-threshold ordering,
 finite-mode transitions, and hold-band state preservation.
 
@@ -1486,7 +1591,8 @@ finite-mode transitions, and hold-band state preservation.
 - WHEN hysteresis admission is checked
 - THEN the request is rejected
 
-### Requirement: Control Rate Limit [r[domain-primitives.control-rate-limit]]
+### Requirement: Control Rate Limit
+r[domain-primitives.control-rate-limit]
 The system MUST provide a rate-limit primitive for bounded step-to-step changes,
 accepted output envelopes, and invalid-rate rejection.
 
@@ -1502,7 +1608,8 @@ accepted output envelopes, and invalid-rate rejection.
 - WHEN rate limiting is requested
 - THEN the request is rejected
 
-### Requirement: Control Safety Envelope [r[domain-primitives.control-safety-envelope]]
+### Requirement: Control Safety Envelope
+r[domain-primitives.control-safety-envelope]
 The system MUST provide a safety-envelope primitive for conservative state/input
 guard decisions over bounded discrete values.
 
@@ -1518,7 +1625,8 @@ guard decisions over bounded discrete values.
 - WHEN the safety envelope guard is evaluated
 - THEN the guard rejects the request and the controlled state is unchanged
 
-### Requirement: Schema Predicate Envelope [r[domain-primitives.data-validation.schema-predicate]]
+### Requirement: Schema Predicate Envelope
+r[domain-primitives.data-validation.schema-predicate]
 The system MUST provide finite schema predicate envelopes that declare admitted
 field identifiers, value-shape predicates, and deterministic predicate IDs over
 finite candidate records.
@@ -1529,7 +1637,8 @@ finite candidate records.
 - WHEN a candidate predicate ID is absent from that set
 - THEN the schema-predicate primitive returns an explicit unknown-predicate decision without invoking an external validator
 
-### Requirement: Field Presence Envelope [r[domain-primitives.data-validation.field-presence]]
+### Requirement: Field Presence Envelope
+r[domain-primitives.data-validation.field-presence]
 The system MUST provide required/optional field-presence envelopes that check
 finite candidate records against declared field metadata and expose explicit
 missing, present, or duplicate-field decisions.
@@ -1540,7 +1649,8 @@ missing, present, or duplicate-field decisions.
 - WHEN a required field is absent
 - THEN the field-presence primitive returns a missing-field decision without mutating the candidate record
 
-### Requirement: Enum Constraint Envelope [r[domain-primitives.data-validation.enum-constraint]]
+### Requirement: Enum Constraint Envelope
+r[domain-primitives.data-validation.enum-constraint]
 The system MUST provide finite enum-constraint envelopes that admit only values
 contained in a declared finite member set and expose explicit out-of-enum
 rejection decisions.
@@ -1551,7 +1661,8 @@ rejection decisions.
 - WHEN the candidate value is not a member of the declared set
 - THEN the enum-constraint primitive rejects the value with explicit out-of-enum metadata
 
-### Requirement: Range Constraint Envelope [r[domain-primitives.data-validation.range-constraint]]
+### Requirement: Range Constraint Envelope
+r[domain-primitives.data-validation.range-constraint]
 The system MUST provide bounded range-constraint envelopes over admitted scalar
 values, inclusive/exclusive bound metadata, and deterministic out-of-range
 rejection decisions.
@@ -1562,7 +1673,8 @@ rejection decisions.
 - WHEN the candidate scalar lies outside the admitted bound envelope
 - THEN the range-constraint primitive rejects the scalar before any downstream validation composition uses it
 
-### Requirement: Cross-Field Predicate Envelope [r[domain-primitives.data-validation.cross-field]]
+### Requirement: Cross-Field Predicate Envelope
+r[domain-primitives.data-validation.cross-field]
 The system MUST provide finite cross-field predicate envelopes that relate a
 bounded set of admitted fields and return explicit satisfied, unsatisfied, or
 inapplicable decisions.
@@ -1573,7 +1685,8 @@ inapplicable decisions.
 - WHEN either required field is absent from the candidate record
 - THEN the cross-field primitive returns an explicit inapplicable or rejected decision rather than claiming business-rule completeness
 
-### Requirement: Error Accumulation Envelope [r[domain-primitives.data-validation.error-accumulation]]
+### Requirement: Error Accumulation Envelope
+r[domain-primitives.data-validation.error-accumulation]
 The system MUST provide deterministic error-accumulation envelopes that collect
 finite validation error codes, field references, and stable ordering metadata.
 
@@ -1583,7 +1696,8 @@ finite validation error codes, field references, and stable ordering metadata.
 - WHEN multiple decisions reject
 - THEN the error-accumulation primitive records the resulting error metadata in a deterministic order declared by the envelope
 
-### Requirement: Normalization Decision Envelope [r[domain-primitives.data-validation.normalization-decision]]
+### Requirement: Normalization Decision Envelope
+r[domain-primitives.data-validation.normalization-decision]
 The system MUST provide normalization decision envelopes that record accepted,
 rejected, unchanged, or transformed shape metadata for deterministic finite
 normalization steps without claiming semantic repair correctness.
@@ -1594,7 +1708,8 @@ normalization steps without claiming semantic repair correctness.
 - WHEN normalization is not admitted
 - THEN the normalization-decision primitive records rejection metadata while preserving the original value envelope
 
-### Requirement: Validation Admission Envelope [r[domain-primitives.data-validation.admission]]
+### Requirement: Validation Admission Envelope
+r[domain-primitives.data-validation.admission]
 The system MUST provide deterministic validation admission/rejection envelopes
 that compose schema predicate, field presence, enum, range, cross-field, error
 accumulation, and normalization decisions over finite candidate records.
@@ -1605,7 +1720,8 @@ accumulation, and normalization decisions over finite candidate records.
 - WHEN any schema predicate, field-presence, enum, range, cross-field, error, or normalization check rejects
 - THEN the validation-admission primitive returns an explicit rejection decision before any external-validator or business-rule claim is made
 
-### Requirement: Finite Objective Envelope [r[domain-primitives.discrete-optimization.objective]]
+### Requirement: Finite Objective Envelope
+r[domain-primitives.discrete-optimization.objective]
 The system MUST define objective metadata over a finite candidate universe and
 exact discrete score representation.
 
@@ -1615,7 +1731,8 @@ exact discrete score representation.
 - WHEN a score is associated with a candidate
 - THEN the candidate is in the declared finite candidate universe
 
-### Requirement: Finite Feasible Set Envelope [r[domain-primitives.discrete-optimization.feasible-set]]
+### Requirement: Finite Feasible Set Envelope
+r[domain-primitives.discrete-optimization.feasible-set]
 The system MUST define finite feasibility predicates that admit or reject
 candidate IDs with deterministic metadata.
 
@@ -1625,7 +1742,8 @@ candidate IDs with deterministic metadata.
 - WHEN a candidate ID is outside the declared candidate universe
 - THEN the candidate is rejected deterministically
 
-### Requirement: Candidate Ranking Envelope [r[domain-primitives.discrete-optimization.ranking]]
+### Requirement: Candidate Ranking Envelope
+r[domain-primitives.discrete-optimization.ranking]
 The system MUST define deterministic candidate-ranking envelopes over admitted
 candidates and exact comparison metadata.
 
@@ -1635,7 +1753,8 @@ candidates and exact comparison metadata.
 - WHEN two candidates are compared
 - THEN both candidates are admitted by the declared feasible-set envelope
 
-### Requirement: Dominance Predicate [r[domain-primitives.discrete-optimization.dominance]]
+### Requirement: Dominance Predicate
+r[domain-primitives.discrete-optimization.dominance]
 The system MUST define pairwise dominance predicates over exact finite candidate
 attributes or objective tuples.
 
@@ -1645,7 +1764,8 @@ attributes or objective tuples.
 - WHEN it returns a dominance decision
 - THEN the decision metadata identifies the admitted candidates and exact attributes used
 
-### Requirement: Objective Bound Metadata [r[domain-primitives.discrete-optimization.bound]]
+### Requirement: Objective Bound Metadata
+r[domain-primitives.discrete-optimization.bound]
 The system MUST define objective-bound metadata with explicit lower/upper bound
 direction and validity predicates.
 
@@ -1655,7 +1775,8 @@ direction and validity predicates.
 - WHEN it is attached to an optimization envelope
 - THEN it states the bound direction, objective scope, and finite candidate universe it applies to
 
-### Requirement: Optimum Witness Envelope [r[domain-primitives.discrete-optimization.witness]]
+### Requirement: Optimum Witness Envelope
+r[domain-primitives.discrete-optimization.witness]
 The system MUST define optimum witness metadata for an admitted candidate that is
 best only relative to a declared finite feasible set and exact objective model.
 
@@ -1665,7 +1786,8 @@ best only relative to a declared finite feasible set and exact objective model.
 - WHEN it claims a candidate is best
 - THEN the witness identifies the declared finite feasible set, exact objective model, and admitted candidate
 
-### Requirement: Frontier Membership Envelope [r[domain-primitives.discrete-optimization.frontier]]
+### Requirement: Frontier Membership Envelope
+r[domain-primitives.discrete-optimization.frontier]
 The system MUST define Pareto/frontier membership metadata over finite candidates
 and exact dominance predicates.
 
@@ -1675,7 +1797,8 @@ and exact dominance predicates.
 - WHEN it marks a candidate as a frontier member
 - THEN the candidate is admitted and the dominance predicate scope is the declared finite candidate set
 
-### Requirement: Optimization Admission Envelope [r[domain-primitives.discrete-optimization.admission]]
+### Requirement: Optimization Admission Envelope
+r[domain-primitives.discrete-optimization.admission]
 The system MUST define deterministic admission results for optimization problem
 metadata, including invalid objective, candidate, bound, witness, and frontier
 shapes.
@@ -1686,7 +1809,8 @@ shapes.
 - WHEN admission is evaluated
 - THEN the metadata is rejected deterministically without claiming external solver correctness
 
-### Requirement: Path Segment Envelope [r[domain-primitives.filesystem-path.segment]]
+### Requirement: Path Segment Envelope
+r[domain-primitives.filesystem-path.segment]
 The system MUST provide finite path-segment envelopes that record segment text or
 bytes, separator policy metadata, empty/current/parent segment classifiers, and
 deterministic segment admission results.
@@ -1697,7 +1821,8 @@ deterministic segment admission results.
 - WHEN a candidate segment is empty, forbidden, or outside the declared segment envelope
 - THEN the path-segment primitive returns an explicit rejected-segment decision without consulting an OS filesystem
 
-### Requirement: Path Form Envelope [r[domain-primitives.filesystem-path.form]]
+### Requirement: Path Form Envelope
+r[domain-primitives.filesystem-path.form]
 The system MUST provide finite path-form envelopes for absolute, relative,
 rooted, empty, and scoped path forms over declared segment sequences.
 
@@ -1707,7 +1832,8 @@ rooted, empty, and scoped path forms over declared segment sequences.
 - WHEN the candidate form is not admitted by the envelope
 - THEN the path-form primitive rejects it before containment or lookup decisions are composed
 
-### Requirement: Path Normalization Decision [r[domain-primitives.filesystem-path.normalization]]
+### Requirement: Path Normalization Decision
+r[domain-primitives.filesystem-path.normalization]
 The system MUST provide deterministic path-normalization decision envelopes that
 record accepted, rejected, unchanged, or rewritten finite segment sequences under
 declared normalization rules.
@@ -1718,7 +1844,8 @@ declared normalization rules.
 - WHEN normalization is not admitted
 - THEN the normalization primitive records rejection metadata while preserving the original segment sequence
 
-### Requirement: Root Scope Containment Predicate [r[domain-primitives.filesystem-path.containment]]
+### Requirement: Root Scope Containment Predicate
+r[domain-primitives.filesystem-path.containment]
 The system MUST provide finite root/scope containment predicates over declared
 root segment prefixes and candidate normalized segment sequences.
 
@@ -1728,7 +1855,8 @@ root segment prefixes and candidate normalized segment sequences.
 - WHEN the candidate does not have the declared root/scope prefix
 - THEN the containment primitive returns an explicit outside-scope decision without claiming sandbox security
 
-### Requirement: Relative Traversal Rejection [r[domain-primitives.filesystem-path.traversal]]
+### Requirement: Relative Traversal Rejection
+r[domain-primitives.filesystem-path.traversal]
 The system MUST provide deterministic relative traversal rejection metadata for
 finite path segments that represent parent/current traversal under declared
 segment classifier rules.
@@ -1739,7 +1867,8 @@ segment classifier rules.
 - WHEN a parent traversal segment appears before normalization or admission completes
 - THEN the traversal primitive returns explicit rejection metadata without claiming exploit prevention beyond the declared finite predicate
 
-### Requirement: Extension Type Metadata [r[domain-primitives.filesystem-path.extension-type]]
+### Requirement: Extension Type Metadata
+r[domain-primitives.filesystem-path.extension-type]
 The system MUST provide finite extension/type metadata envelopes that classify
 admitted final segments by declared suffix, extension, or type tags without
 claiming MIME, content-sniffing, or OS file-type correctness.
@@ -1750,7 +1879,8 @@ claiming MIME, content-sniffing, or OS file-type correctness.
 - WHEN the extension/type primitive classifies the final segment
 - THEN the result records only declared segment metadata and does not claim runtime file contents or MIME correctness
 
-### Requirement: Path Join Split Envelope [r[domain-primitives.filesystem-path.join-split]]
+### Requirement: Path Join Split Envelope
+r[domain-primitives.filesystem-path.join-split]
 The system MUST provide deterministic path join/split shape envelopes over
 finite segment sequences and separator metadata.
 
@@ -1760,7 +1890,8 @@ finite segment sequences and separator metadata.
 - WHEN a path join or split shape operation is modeled by the primitive
 - THEN the resulting envelope records deterministic segment order without consulting host path APIs
 
-### Requirement: Path Admission Envelope [r[domain-primitives.filesystem-path.admission]]
+### Requirement: Path Admission Envelope
+r[domain-primitives.filesystem-path.admission]
 The system MUST provide deterministic path admission/rejection envelopes that
 compose segment, form, normalization, containment, traversal, extension/type, and
 join/split decisions over finite path metadata.
@@ -1771,7 +1902,8 @@ join/split decisions over finite path metadata.
 - WHEN any segment, form, normalization, containment, traversal, extension/type, or join/split check rejects
 - THEN the path-admission primitive returns an explicit rejection decision before any OS filesystem or security claim is made
 
-### Requirement: Point Vector Envelope [r[domain-primitives.geometry-foundation.point-vector]]
+### Requirement: Point Vector Envelope
+r[domain-primitives.geometry-foundation.point-vector]
 The system MUST provide finite point/vector envelopes that record coordinate
 count, coordinate bounds, scale metadata, dimension tags, and deterministic
 point/vector admission results.
@@ -1782,7 +1914,8 @@ point/vector admission results.
 - WHEN a candidate point/vector has a different coordinate count
 - THEN the point/vector primitive returns explicit dimension-mismatch rejection metadata
 
-### Requirement: Axis-Aligned Bounds Envelope [r[domain-primitives.geometry-foundation.bounds]]
+### Requirement: Axis-Aligned Bounds Envelope
+r[domain-primitives.geometry-foundation.bounds]
 The system MUST provide finite axis-aligned bounds and extent envelopes that
 record lower/upper coordinate bounds, emptiness metadata, extent metadata, and
 deterministic bounds admission results.
@@ -1793,7 +1926,8 @@ deterministic bounds admission results.
 - WHEN any lower coordinate is greater than its upper coordinate under the declared order
 - THEN the bounds primitive returns explicit inverted-bound rejection metadata
 
-### Requirement: Orientation Metadata [r[domain-primitives.geometry-foundation.orientation]]
+### Requirement: Orientation Metadata
+r[domain-primitives.geometry-foundation.orientation]
 The system MUST provide finite orientation/ordering metadata for declared point
 or vector tuples under exact finite arithmetic envelopes.
 
@@ -1803,7 +1937,8 @@ or vector tuples under exact finite arithmetic envelopes.
 - WHEN the tuple is degenerate under the exact finite predicate
 - THEN the orientation primitive records explicit degenerate metadata rather than inventing a strict orientation
 
-### Requirement: Containment Predicate Envelope [r[domain-primitives.geometry-foundation.containment]]
+### Requirement: Containment Predicate Envelope
+r[domain-primitives.geometry-foundation.containment]
 The system MUST provide finite containment predicate envelopes for point-in-bounds,
 bounds-in-bounds, and candidate-within-extent checks over admitted finite
 geometry metadata.
@@ -1814,7 +1949,8 @@ geometry metadata.
 - WHEN the point is outside the admitted bounds under declared inclusive/exclusive edge policy
 - THEN the containment primitive returns explicit outside metadata
 
-### Requirement: Intersection Touch Metadata [r[domain-primitives.geometry-foundation.intersection]]
+### Requirement: Intersection Touch Metadata
+r[domain-primitives.geometry-foundation.intersection]
 The system MUST provide finite intersection/touch metadata envelopes for admitted
 axis-aligned bounds and finite primitive shapes without claiming complete
 computational-geometry behavior.
@@ -1825,7 +1961,8 @@ computational-geometry behavior.
 - WHEN the bounds are disjoint under declared edge policy
 - THEN the intersection primitive records explicit no-intersection metadata
 
-### Requirement: Transform Shape Envelope [r[domain-primitives.geometry-foundation.transform]]
+### Requirement: Transform Shape Envelope
+r[domain-primitives.geometry-foundation.transform]
 The system MUST provide finite transform-shape envelopes for translation,
 scaling, permutation, and affine-like metadata under declared exact arithmetic
 bounds.
@@ -1836,7 +1973,8 @@ bounds.
 - WHEN applying the declared transform would exceed the output envelope
 - THEN the transform primitive returns explicit overflow rejection metadata
 
-### Requirement: Grid Cell Envelope [r[domain-primitives.geometry-foundation.grid-cell]]
+### Requirement: Grid Cell Envelope
+r[domain-primitives.geometry-foundation.grid-cell]
 The system MUST provide finite grid-cell and index envelopes that record origin,
 cell size metadata, grid extents, cell coordinates, and deterministic grid-cell
 admission results.
@@ -1847,7 +1985,8 @@ admission results.
 - WHEN a candidate cell index is outside the grid extent
 - THEN the grid-cell primitive returns explicit out-of-grid rejection metadata
 
-### Requirement: Geometry Admission Envelope [r[domain-primitives.geometry-foundation.admission]]
+### Requirement: Geometry Admission Envelope
+r[domain-primitives.geometry-foundation.admission]
 The system MUST provide deterministic geometry admission/rejection envelopes that
 compose point/vector, bounds, orientation, containment, intersection, transform,
 and grid-cell metadata over finite geometry data.
@@ -1858,7 +1997,8 @@ and grid-cell metadata over finite geometry data.
 - WHEN any point/vector, bounds, orientation, containment, intersection, transform, or grid-cell check rejects
 - THEN the geometry-admission primitive returns an explicit rejection before any floating-point, topology, rendering, physics, or external geometry claim is made
 
-### Requirement: Graph Adjacency [r[domain-primitives.graph-adjacency]]
+### Requirement: Graph Adjacency
+r[domain-primitives.graph-adjacency]
 The system MUST provide a finite graph-adjacency primitive for node-count
 validity, edge endpoint admission, and adjacency lookup.
 
@@ -1874,7 +2014,8 @@ validity, edge endpoint admission, and adjacency lookup.
 - WHEN graph adjacency admission is checked
 - THEN the edge is rejected and the graph state is unchanged
 
-### Requirement: Graph Reachability [r[domain-primitives.graph-reachability]]
+### Requirement: Graph Reachability
+r[domain-primitives.graph-reachability]
 The system MUST provide a finite graph-reachability primitive for path-witness
 validity, reachability extension, and explicit unreachable results.
 
@@ -1890,7 +2031,8 @@ validity, reachability extension, and explicit unreachable results.
 - WHEN reachability is checked
 - THEN the primitive rejects the request or returns an explicit unreachable/empty result
 
-### Requirement: Graph Topological Order [r[domain-primitives.graph-topological-order]]
+### Requirement: Graph Topological Order
+r[domain-primitives.graph-topological-order]
 The system MUST provide a graph topological-order primitive for DAG admission,
 permutation validity, and edge-forward ordering.
 
@@ -1906,7 +2048,8 @@ permutation validity, and edge-forward ordering.
 - WHEN topological-order admission is checked
 - THEN the order is rejected
 
-### Requirement: Graph Component Partition [r[domain-primitives.graph-component-partition]]
+### Requirement: Graph Component Partition
+r[domain-primitives.graph-component-partition]
 The system MUST provide an undirected component-partition primitive for complete,
 disjoint grouping of finite graph nodes by connectivity.
 
@@ -1922,7 +2065,8 @@ disjoint grouping of finite graph nodes by connectivity.
 - WHEN component-partition admission is checked
 - THEN the partition is rejected
 
-### Requirement: Graph Shortest Path Envelope [r[domain-primitives.graph-shortest-path-envelope]]
+### Requirement: Graph Shortest Path Envelope
+r[domain-primitives.graph-shortest-path-envelope]
 The system MUST provide a bounded shortest-path-envelope primitive for
 non-negative weights, path-cost accumulation, and candidate-cost comparison.
 
@@ -1938,7 +2082,8 @@ non-negative weights, path-cost accumulation, and candidate-cost comparison.
 - WHEN path-cost admission is checked
 - THEN the cost request is rejected
 
-### Requirement: Graph Frontier Cut [r[domain-primitives.graph-frontier-cut]]
+### Requirement: Graph Frontier Cut
+r[domain-primitives.graph-frontier-cut]
 The system MUST provide a graph frontier/cut primitive for traversal state,
 visited/frontier disjointness, and expansion preservation.
 
@@ -1954,7 +2099,8 @@ visited/frontier disjointness, and expansion preservation.
 - WHEN expansion is requested
 - THEN the operation is rejected and the traversal state is unchanged
 
-### Requirement: Identifier Envelope [r[domain-primitives.identifier-namespace.identifier]]
+### Requirement: Identifier Envelope
+r[domain-primitives.identifier-namespace.identifier]
 The system MUST provide finite identifier envelopes that record identifier bytes
 or symbols, declared kind metadata, and deterministic ID-shape admission results.
 
@@ -1964,7 +2110,8 @@ or symbols, declared kind metadata, and deterministic ID-shape admission results
 - WHEN a candidate identifier does not match the admitted shape
 - THEN the identifier primitive returns an explicit malformed-ID decision without consulting an external identity service
 
-### Requirement: Namespace Scope Envelope [r[domain-primitives.identifier-namespace.namespace]]
+### Requirement: Namespace Scope Envelope
+r[domain-primitives.identifier-namespace.namespace]
 The system MUST provide finite namespace scope envelopes that define admitted
 scope identifiers, parent/child scope metadata, and deterministic namespace
 membership decisions.
@@ -1975,7 +2122,8 @@ membership decisions.
 - WHEN a candidate namespace is absent from that set
 - THEN the namespace primitive rejects the namespace before any lookup or registration decision is made
 
-### Requirement: Scoped Uniqueness Predicate [r[domain-primitives.identifier-namespace.scoped-uniqueness]]
+### Requirement: Scoped Uniqueness Predicate
+r[domain-primitives.identifier-namespace.scoped-uniqueness]
 The system MUST provide scoped uniqueness predicates over finite registry
 snapshots and declared namespace scopes, returning explicit unique or duplicate
 decisions.
@@ -1986,7 +2134,8 @@ decisions.
 - WHEN the entries share an identifier inside that same scope
 - THEN the scoped-uniqueness primitive returns a duplicate decision for that scope without claiming global uniqueness
 
-### Requirement: Alias Map Envelope [r[domain-primitives.identifier-namespace.alias-map]]
+### Requirement: Alias Map Envelope
+r[domain-primitives.identifier-namespace.alias-map]
 The system MUST provide finite alias-map envelopes that map admitted aliases to
 admitted canonical identifiers and expose explicit missing-target or cycle
 metadata.
@@ -1997,7 +2146,8 @@ metadata.
 - WHEN an alias points to a target outside the admitted identifier set
 - THEN the alias-map primitive rejects the alias or records explicit missing-target metadata
 
-### Requirement: Canonicalization Decision Envelope [r[domain-primitives.identifier-namespace.canonicalization]]
+### Requirement: Canonicalization Decision Envelope
+r[domain-primitives.identifier-namespace.canonicalization]
 The system MUST provide canonicalization decision envelopes that record accepted,
 rejected, unchanged, or mapped identifier forms without claiming semantic
 equivalence beyond the declared finite map.
@@ -2008,7 +2158,8 @@ equivalence beyond the declared finite map.
 - WHEN canonicalization maps or rejects the identifier
 - THEN the canonicalization primitive records the original identifier and explicit decision metadata
 
-### Requirement: Collision Metadata Envelope [r[domain-primitives.identifier-namespace.collision]]
+### Requirement: Collision Metadata Envelope
+r[domain-primitives.identifier-namespace.collision]
 The system MUST provide deterministic collision metadata for finite registry
 snapshots, candidate identifiers, and declared namespace scopes without claiming
 hash collision resistance or randomness quality.
@@ -2019,7 +2170,8 @@ hash collision resistance or randomness quality.
 - WHEN collision metadata is computed by the primitive
 - THEN the primitive returns the same collision or no-collision decision metadata
 
-### Requirement: Lookup Result Envelope [r[domain-primitives.identifier-namespace.lookup]]
+### Requirement: Lookup Result Envelope
+r[domain-primitives.identifier-namespace.lookup]
 The system MUST provide deterministic lookup result envelopes over finite
 namespace scopes, admitted identifiers, aliases, and registry snapshots.
 
@@ -2029,7 +2181,8 @@ namespace scopes, admitted identifiers, aliases, and registry snapshots.
 - WHEN the identifier is malformed, outside the namespace, or absent from the registry
 - THEN the lookup primitive returns distinct explicit decision metadata for the corresponding case
 
-### Requirement: Registration Admission Envelope [r[domain-primitives.identifier-namespace.registration]]
+### Requirement: Registration Admission Envelope
+r[domain-primitives.identifier-namespace.registration]
 The system MUST provide deterministic registration admission/rejection envelopes
 that compose identifier-shape, namespace, uniqueness, alias, canonicalization,
 collision, and lookup decisions over finite registry snapshots.
@@ -2040,7 +2193,8 @@ collision, and lookup decisions over finite registry snapshots.
 - WHEN any identifier-shape, namespace, uniqueness, alias, collision, or lookup check rejects
 - THEN the registration primitive returns an explicit rejection decision before any distributed-identity or security claim is made
 
-### Requirement: Endpoint Address Metadata [r[domain-primitives.network-protocol.endpoint-address]]
+### Requirement: Endpoint Address Metadata
+r[domain-primitives.network-protocol.endpoint-address]
 The system MUST provide finite endpoint/address metadata envelopes that record
 address-family tags, host/address identifiers, port/service metadata, scope tags,
 and deterministic endpoint admission results without consulting DNS, sockets, or
@@ -2052,7 +2206,8 @@ network interfaces.
 - WHEN a candidate endpoint uses an unknown address-family tag
 - THEN the endpoint primitive returns an explicit rejection without consulting DNS or the OS network stack
 
-### Requirement: Packet Frame Envelope [r[domain-primitives.network-protocol.packet-frame]]
+### Requirement: Packet Frame Envelope
+r[domain-primitives.network-protocol.packet-frame]
 The system MUST provide finite packet/frame envelopes that record byte-span
 bounds, frame-kind tags, declared header ranges, payload ranges, and deterministic
 frame admission results.
@@ -2063,7 +2218,8 @@ frame admission results.
 - WHEN the payload range is outside the declared frame bounds
 - THEN the packet-frame primitive rejects the envelope before parser admission is composed
 
-### Requirement: Header Field Metadata [r[domain-primitives.network-protocol.header-field]]
+### Requirement: Header Field Metadata
+r[domain-primitives.network-protocol.header-field]
 The system MUST provide finite header-field metadata envelopes for field names or
 IDs, field ranges, required/optional status, duplicate policy, and deterministic
 header admission results.
@@ -2074,7 +2230,8 @@ header admission results.
 - WHEN a required header field is absent
 - THEN the header-field primitive returns explicit missing-header metadata
 
-### Requirement: State-Free Parser Admission [r[domain-primitives.network-protocol.parser-admission]]
+### Requirement: State-Free Parser Admission
+r[domain-primitives.network-protocol.parser-admission]
 The system MUST provide deterministic state-free parser admission envelopes over
 one finite packet, frame, or message under declared endpoint, header, payload,
 and checksum-shape metadata.
@@ -2085,7 +2242,8 @@ and checksum-shape metadata.
 - WHEN parser admission accepts the envelope under declared finite rules
 - THEN the result admits only that envelope and does not claim streaming parser completeness, reassembly, delivery, or session correctness
 
-### Requirement: Message Sequencing Metadata [r[domain-primitives.network-protocol.sequence]]
+### Requirement: Message Sequencing Metadata
+r[domain-primitives.network-protocol.sequence]
 The system MUST provide finite message sequencing metadata for declared sequence
 numbers, acknowledgement-like fields, monotone/window bounds, duplicate markers,
 and deterministic sequencing admission results.
@@ -2096,7 +2254,8 @@ and deterministic sequencing admission results.
 - WHEN a candidate sequence field is admitted
 - THEN the sequencing primitive records only declared metadata and does not claim transport delivery, ordering, replay protection, or liveness
 
-### Requirement: Checksum Shape Metadata [r[domain-primitives.network-protocol.checksum-shape]]
+### Requirement: Checksum Shape Metadata
+r[domain-primitives.network-protocol.checksum-shape]
 The system MUST provide finite checksum-shape metadata envelopes for checksum
 field location, width, covered ranges, stored value shape, and deterministic
 shape admission without claiming checksum strength or corruption detection.
@@ -2107,7 +2266,8 @@ shape admission without claiming checksum strength or corruption detection.
 - WHEN the checksum field shape is admitted
 - THEN the checksum-shape primitive records field-shape metadata only and does not claim integrity, authentication, or corruption detection
 
-### Requirement: Payload Bound Metadata [r[domain-primitives.network-protocol.payload-bound]]
+### Requirement: Payload Bound Metadata
+r[domain-primitives.network-protocol.payload-bound]
 The system MUST provide finite payload-bound metadata for payload byte ranges,
 length-prefix agreement, payload-kind tags, empty-payload policy, and
 deterministic payload admission results.
@@ -2118,7 +2278,8 @@ deterministic payload admission results.
 - WHEN the payload range length does not match the declared payload length
 - THEN the payload-bound primitive returns explicit length-mismatch rejection metadata
 
-### Requirement: Protocol Admission Envelope [r[domain-primitives.network-protocol.admission]]
+### Requirement: Protocol Admission Envelope
+r[domain-primitives.network-protocol.admission]
 The system MUST provide deterministic protocol admission/rejection envelopes that
 compose endpoint/address metadata, packet/frame envelopes, header fields,
 state-free parser admission, sequencing metadata, checksum-shape metadata, and
@@ -2130,7 +2291,8 @@ payload bounds over finite protocol metadata.
 - WHEN any endpoint, frame, header, parser, sequence, checksum-shape, or payload-bound check rejects
 - THEN the protocol-admission primitive returns an explicit rejection decision before any transport, security, delivery, or external protocol claim is made
 
-### Requirement: Knowledge Graph Term Metadata [r[domain-primitives.knowledge-graph.term]]
+### Requirement: Knowledge Graph Term Metadata
+r[domain-primitives.knowledge-graph.term]
 The system MUST provide finite knowledge-graph term metadata envelopes for entity
 identifiers, relation identifiers, literal values, blank-node-like local
 identifiers, labels, property keys, namespace scopes, and deterministic term
@@ -2142,7 +2304,8 @@ admission results.
 - WHEN term admission is evaluated
 - THEN the term primitive returns explicit unknown-predicate rejection metadata
 
-### Requirement: RDF-Like Fact Triple Envelope [r[domain-primitives.knowledge-graph.triple]]
+### Requirement: RDF-Like Fact Triple Envelope
+r[domain-primitives.knowledge-graph.triple]
 The system MUST provide finite subject/predicate/object fact triple envelopes
 that admit only declared subject terms, predicate terms, and object terms or
 literal envelopes.
@@ -2153,7 +2316,8 @@ literal envelopes.
 - WHEN the subject or object is outside the admitted term set
 - THEN the triple primitive rejects the fact with endpoint metadata before any RDF semantics claim is made
 
-### Requirement: Property Graph Metadata Envelope [r[domain-primitives.knowledge-graph.property]]
+### Requirement: Property Graph Metadata Envelope
+r[domain-primitives.knowledge-graph.property]
 The system MUST provide finite property-graph metadata envelopes for node labels,
 edge labels, node properties, edge properties, property key admission, and
 property value envelopes.
@@ -2164,7 +2328,8 @@ property value envelopes.
 - WHEN the property key is outside the declared property-key envelope
 - THEN the property primitive rejects the edge property with unknown-property-key metadata
 
-### Requirement: Ontology Constraint Envelope [r[domain-primitives.knowledge-graph.ontology]]
+### Requirement: Ontology Constraint Envelope
+r[domain-primitives.knowledge-graph.ontology]
 The system MUST provide finite ontology/schema constraint envelopes for classes,
 relations, domains, ranges, subtype edges, cardinality metadata, and deterministic
 constraint admission results.
@@ -2175,7 +2340,8 @@ constraint admission results.
 - WHEN a fact uses an object term outside the admitted range envelope
 - THEN the ontology primitive rejects the fact with range-violation metadata
 
-### Requirement: Provenance Metadata Envelope [r[domain-primitives.knowledge-graph.provenance]]
+### Requirement: Provenance Metadata Envelope
+r[domain-primitives.knowledge-graph.provenance]
 The system MUST provide finite provenance metadata envelopes for source
 identifiers, extraction method identifiers, confidence envelopes, timestamps or
 version counters, derivation links, and deterministic provenance admission.
@@ -2186,7 +2352,8 @@ version counters, derivation links, and deterministic provenance admission.
 - WHEN a candidate fact lacks admitted source metadata
 - THEN the provenance primitive rejects the fact with missing-source metadata
 
-### Requirement: Entity Alignment Envelope [r[domain-primitives.knowledge-graph.alignment]]
+### Requirement: Entity Alignment Envelope
+r[domain-primitives.knowledge-graph.alignment]
 The system MUST provide deterministic entity-alignment envelopes for aliases,
 equivalence candidates, merge witnesses, canonical-term selection, conflict
 metadata, and non-merge decisions.
@@ -2197,7 +2364,8 @@ metadata, and non-merge decisions.
 - WHEN entity alignment is evaluated
 - THEN the alignment primitive rejects the merge and returns explicit conflict metadata
 
-### Requirement: Traversal and Query Shape Envelope [r[domain-primitives.knowledge-graph.query-shape]]
+### Requirement: Traversal and Query Shape Envelope
+r[domain-primitives.knowledge-graph.query-shape]
 The system MUST provide finite traversal and graph-pattern query-shape envelopes
 for start terms, edge or predicate filters, path-length bounds, variable slots,
 projection slots, and deterministic query-shape admission.
@@ -2208,7 +2376,8 @@ projection slots, and deterministic query-shape admission.
 - WHEN a candidate graph pattern contains an unbounded path expression
 - THEN the query-shape primitive rejects the pattern before any query-engine or SPARQL/Cypher claim is made
 
-### Requirement: Bounded Inference Witness Envelope [r[domain-primitives.knowledge-graph.inference]]
+### Requirement: Bounded Inference Witness Envelope
+r[domain-primitives.knowledge-graph.inference]
 The system MUST provide bounded inference-witness envelopes for declared rules,
 input fact identifiers, derived fact identifiers, closure-depth bounds, and
 explicit inferred-fact admission metadata.
@@ -2219,7 +2388,8 @@ explicit inferred-fact admission metadata.
 - WHEN the inferred fact lacks an admitted rule witness or exceeds the declared closure-depth bound
 - THEN the inference primitive rejects the fact with missing-or-overbound witness metadata
 
-### Requirement: Embedding Index Metadata Envelope [r[domain-primitives.knowledge-graph.embedding-index]]
+### Requirement: Embedding Index Metadata Envelope
+r[domain-primitives.knowledge-graph.embedding-index]
 The system MUST provide finite embedding-index metadata envelopes for embedding
 identifiers, vector dimension bounds, indexed term or fact identifiers, distance
 metric identifiers, version metadata, and deterministic index admission without
@@ -2231,7 +2401,8 @@ claiming vector-search quality.
 - WHEN a candidate embedding vector envelope has a different dimension
 - THEN the embedding-index primitive rejects the vector with dimension-mismatch metadata
 
-### Requirement: Knowledge Graph Admission Envelope [r[domain-primitives.knowledge-graph.admission]]
+### Requirement: Knowledge Graph Admission Envelope
+r[domain-primitives.knowledge-graph.admission]
 The system MUST provide deterministic knowledge-graph admission/rejection
 envelopes that compose term, triple, property, ontology, provenance, alignment,
 query-shape, inference-witness, and embedding-index metadata over finite
@@ -2243,7 +2414,8 @@ knowledge-graph data.
 - WHEN any term, triple, property, ontology, provenance, alignment, query-shape, inference, or embedding-index check rejects
 - THEN the knowledge-graph-admission primitive returns explicit rejection before any graph database, standards-conformance, reasoning-completeness, LLM, RAG, or vector-search claim is made
 
-### Requirement: Time-Series Timestamp Index [r[domain-primitives.timeseries-timestamp-index]]
+### Requirement: Time-Series Timestamp Index
+r[domain-primitives.timeseries-timestamp-index]
 The system MUST provide a time-series timestamp-index primitive for finite
 integer timestamps, monotone ordering, duplicate policy, and lookup/partition
 bounds.
@@ -2260,7 +2432,8 @@ bounds.
 - WHEN timestamp-index admission is checked
 - THEN the index is rejected
 
-### Requirement: Time-Series Sample Series [r[domain-primitives.timeseries-sample-series]]
+### Requirement: Time-Series Sample Series
+r[domain-primitives.timeseries-sample-series]
 The system MUST provide a time-series sample-series primitive for aligned
 timestamp/value sequences, length preservation, point updates, and invalid-sample
 rejection.
@@ -2277,7 +2450,8 @@ rejection.
 - WHEN sample-series admission or update is requested
 - THEN the request is rejected and the series state is unchanged
 
-### Requirement: Time-Series Window [r[domain-primitives.timeseries-window]]
+### Requirement: Time-Series Window
+r[domain-primitives.timeseries-window]
 The system MUST provide a time-series window primitive for declared boundary
 semantics, selected-index bounds, and complete finite in-window coverage.
 
@@ -2293,7 +2467,8 @@ semantics, selected-index bounds, and complete finite in-window coverage.
 - WHEN window admission is checked
 - THEN the window request is rejected
 
-### Requirement: Time-Series Resample Envelope [r[domain-primitives.timeseries-resample-envelope]]
+### Requirement: Time-Series Resample Envelope
+r[domain-primitives.timeseries-resample-envelope]
 The system MUST provide a time-series resample-envelope primitive for
 deterministic bucket assignment over finite monotone timestamps.
 
@@ -2309,7 +2484,8 @@ deterministic bucket assignment over finite monotone timestamps.
 - WHEN resample-envelope admission is checked
 - THEN the request is rejected
 
-### Requirement: Time-Series Rolling Aggregate [r[domain-primitives.timeseries-rolling-aggregate]]
+### Requirement: Time-Series Rolling Aggregate
+r[domain-primitives.timeseries-rolling-aggregate]
 The system MUST provide a time-series rolling-aggregate primitive for bounded
 count, sum, minimum, and maximum envelopes over finite windows.
 
@@ -2325,7 +2501,8 @@ count, sum, minimum, and maximum envelopes over finite windows.
 - WHEN rolling aggregation is requested
 - THEN the aggregate request is rejected
 
-### Requirement: Time-Series Gap Detection [r[domain-primitives.timeseries-gap-detection]]
+### Requirement: Time-Series Gap Detection
+r[domain-primitives.timeseries-gap-detection]
 The system MUST provide a time-series gap-detection primitive for finite monotone
 indexes, maximum-gap thresholds, and missing-interval reporting.
 
@@ -2341,7 +2518,8 @@ indexes, maximum-gap thresholds, and missing-interval reporting.
 - WHEN gap detection is requested
 - THEN the request is rejected
 
-### Requirement: Byte Buffer Envelope [r[domain-primitives.serialization-codec.byte-buffer]]
+### Requirement: Byte Buffer Envelope
+r[domain-primitives.serialization-codec.byte-buffer]
 The system MUST provide a finite byte-buffer envelope that records byte length,
 capacity bounds, and admitted byte ranges without claiming ownership of any
 external buffer implementation.
@@ -2352,7 +2530,8 @@ external buffer implementation.
 - WHEN the range end exceeds the admitted buffer length
 - THEN the byte-buffer primitive rejects the range or requires a proven bound before use
 
-### Requirement: Framed Record Envelope [r[domain-primitives.serialization-codec.frame]]
+### Requirement: Framed Record Envelope
+r[domain-primitives.serialization-codec.frame]
 The system MUST provide framed-record envelopes whose header, payload, and
 optional trailer ranges are finite, nonnegative, and contained within the
 admitted byte-buffer envelope.
@@ -2363,7 +2542,8 @@ admitted byte-buffer envelope.
 - WHEN any section range falls outside the admitted buffer length
 - THEN the frame primitive rejects the envelope or requires a proof that the section is in bounds
 
-### Requirement: Length Prefix Envelope [r[domain-primitives.serialization-codec.length-prefix]]
+### Requirement: Length Prefix Envelope
+r[domain-primitives.serialization-codec.length-prefix]
 The system MUST provide checked length-prefix metadata that ties a declared
 finite payload length to the remaining admitted byte window.
 
@@ -2373,7 +2553,8 @@ finite payload length to the remaining admitted byte window.
 - WHEN the declared length is greater than the remaining window length
 - THEN the length-prefix primitive rejects the envelope or exposes an explicit invalid-length decision
 
-### Requirement: Schema Version Admission [r[domain-primitives.serialization-codec.schema-version]]
+### Requirement: Schema Version Admission
+r[domain-primitives.serialization-codec.schema-version]
 The system MUST provide deterministic schema/version admission metadata that
 records finite schema identifiers, supported version ranges, and explicit
 unknown-version rejection.
@@ -2384,7 +2565,8 @@ unknown-version rejection.
 - WHEN a record declares an unknown schema or unsupported version
 - THEN the schema-version primitive returns an explicit rejection decision without mutating the input envelope
 
-### Requirement: Checksum Shape Metadata [r[domain-primitives.serialization-codec.checksum-shape]]
+### Requirement: Checksum Shape Metadata
+r[domain-primitives.serialization-codec.checksum-shape]
 The system MUST provide checksum shape metadata for algorithm identifiers,
 checksum byte ranges, and covered byte ranges without claiming checksum
 integrity, corruption detection, collision resistance, or cryptographic
@@ -2396,7 +2578,8 @@ security.
 - WHEN the checksum field range or covered range is outside the buffer
 - THEN the checksum-shape primitive rejects the metadata without claiming whether any checksum value is correct
 
-### Requirement: Encoder Shape Predicate [r[domain-primitives.serialization-codec.encoder-shape]]
+### Requirement: Encoder Shape Predicate
+r[domain-primitives.serialization-codec.encoder-shape]
 The system MUST provide deterministic encoder shape predicates that relate an
 admitted finite model value to finite output-buffer shape metadata.
 
@@ -2406,7 +2589,8 @@ admitted finite model value to finite output-buffer shape metadata.
 - WHEN an encoder output length or section layout violates the declared shape
 - THEN the encoder-shape primitive rejects the output metadata or requires a proof of shape preservation
 
-### Requirement: Decoder Shape Predicate [r[domain-primitives.serialization-codec.decoder-shape]]
+### Requirement: Decoder Shape Predicate
+r[domain-primitives.serialization-codec.decoder-shape]
 The system MUST provide deterministic decoder shape predicates that accept or
 reject finite byte buffers based on declared byte-level envelopes before any
 format-specific semantic claim is made.
@@ -2417,7 +2601,8 @@ format-specific semantic claim is made.
 - WHEN required frame, length, schema, or section metadata is malformed
 - THEN the decoder-shape primitive returns an explicit rejection decision without claiming external format conformance
 
-### Requirement: Bounded Round-Trip Envelope [r[domain-primitives.serialization-codec.round-trip]]
+### Requirement: Bounded Round-Trip Envelope
+r[domain-primitives.serialization-codec.round-trip]
 The system MUST provide bounded round-trip envelopes only for explicitly
 admitted finite model values, schemas, versions, output buffers, and decoder
 shape predicates.
@@ -2428,7 +2613,8 @@ shape predicates.
 - WHEN the value, schema, version, or output shape is not admitted by the finite model
 - THEN the round-trip primitive rejects the claim or requires the missing admission proof before asserting a bounded round trip
 
-### Requirement: Grammar Symbol Admission [r[domain-primitives.parsing-format.grammar-symbol]]
+### Requirement: Grammar Symbol Admission
+r[domain-primitives.parsing-format.grammar-symbol]
 The system MUST define finite grammar-symbol admission for terminal and
 nonterminal identifiers without claiming grammar completeness or recognition of
 an external language.
@@ -2439,7 +2625,8 @@ an external language.
 - WHEN the kind tag or identifier bounds are invalid
 - THEN the checked admission predicate rejects the symbol without mutating caller-owned token or grammar state
 
-### Requirement: Token Stream Shape [r[domain-primitives.parsing-format.token-stream]]
+### Requirement: Token Stream Shape
+r[domain-primitives.parsing-format.token-stream]
 The system MUST define finite token-stream shape checks for token kinds, source
 spans, and monotone ordering over a finite token sequence.
 
@@ -2449,7 +2636,8 @@ spans, and monotone ordering over a finite token sequence.
 - WHEN every token span is valid and ordered after the prior token span
 - THEN the stream shape predicate admits the sequence as structurally well-formed
 
-### Requirement: Source Span Predicate [r[domain-primitives.parsing-format.source-span]]
+### Requirement: Source Span Predicate
+r[domain-primitives.parsing-format.source-span]
 The system MUST define half-open source span predicates for bounded start/end
 offsets, containment, overlap, and disjointness over a finite source length.
 
@@ -2459,7 +2647,8 @@ offsets, containment, overlap, and disjointness over a finite source length.
 - WHEN the start is greater than the end or the end exceeds the source length
 - THEN the span predicate rejects the candidate
 
-### Requirement: AST Shape Envelope [r[domain-primitives.parsing-format.ast-shape]]
+### Requirement: AST Shape Envelope
+r[domain-primitives.parsing-format.ast-shape]
 The system MUST define finite AST shape envelopes for node kind metadata, child
 range bounds, arity limits, root admission, and acyclic child references.
 
@@ -2469,7 +2658,8 @@ range bounds, arity limits, root admission, and acyclic child references.
 - WHEN the child range exceeds the node table bounds or violates the arity limit
 - THEN the AST shape envelope rejects the node table
 
-### Requirement: Parse Error Envelope [r[domain-primitives.parsing-format.error-envelope]]
+### Requirement: Parse Error Envelope
+r[domain-primitives.parsing-format.error-envelope]
 The system MUST define deterministic parse-error metadata envelopes containing a
 bounded source position, error kind, and optional expected-symbol metadata.
 
@@ -2479,7 +2669,8 @@ bounded source position, error kind, and optional expected-symbol metadata.
 - WHEN the error position is within bounds and the error kind is admitted
 - THEN the error envelope admits the diagnostic metadata without claiming user-facing message quality
 
-### Requirement: Format Version Admission [r[domain-primitives.parsing-format.version-admission]]
+### Requirement: Format Version Admission
+r[domain-primitives.parsing-format.version-admission]
 The system MUST define exact format-version admission for finite version tags,
 accepted version sets, and closed-open supported version ranges.
 
@@ -2489,7 +2680,8 @@ accepted version sets, and closed-open supported version ranges.
 - WHEN an input version is outside the accepted metadata
 - THEN the version admission predicate rejects the input before format-specific decoding proceeds
 
-### Requirement: Serializer Shape Envelope [r[domain-primitives.parsing-format.serialize-shape]]
+### Requirement: Serializer Shape Envelope
+r[domain-primitives.parsing-format.serialize-shape]
 The system MUST define serializer output-shape envelopes for finite emitted
 segments, length bounds, ordering metadata, and deterministic failure admission.
 
@@ -2499,7 +2691,8 @@ segments, length bounds, ordering metadata, and deterministic failure admission.
 - WHEN the segment metadata is admitted
 - THEN the output-shape envelope states that segment offsets are monotone and within the declared output length
 
-### Requirement: Deserializer Shape Envelope [r[domain-primitives.parsing-format.deserialize-shape]]
+### Requirement: Deserializer Shape Envelope
+r[domain-primitives.parsing-format.deserialize-shape]
 The system MUST define deserializer input-shape and structural result envelopes
 for finite fields, consumed ranges, remaining ranges, and deterministic
 admission or rejection.
@@ -2510,7 +2703,8 @@ admission or rejection.
 - WHEN the result is admitted
 - THEN the consumed range and remaining range are bounded, non-overlapping, and cover only admitted portions of the input
 
-### Requirement: Bounded Round-Trip Envelope [r[domain-primitives.parsing-format.roundtrip-envelope]]
+### Requirement: Bounded Round-Trip Envelope
+r[domain-primitives.parsing-format.roundtrip-envelope]
 The system MUST define bounded canonical round-trip predicates only for
 explicitly admitted finite values, versions, and shape envelopes.
 
@@ -2520,7 +2714,8 @@ explicitly admitted finite values, versions, and shape envelopes.
 - WHEN a later implementation claims round-trip preservation
 - THEN the claim is scoped to the admitted canonical value set and does not imply arbitrary external-format compatibility
 
-### Requirement: Statistics Count Table [r[domain-primitives.stats-count-table]]
+### Requirement: Statistics Count Table
+r[domain-primitives.stats-count-table]
 The system MUST provide a statistics count-table primitive for finite category
 admission, bounded count updates, and overflow rejection.
 
@@ -2536,7 +2731,8 @@ admission, bounded count updates, and overflow rejection.
 - WHEN a count update is requested
 - THEN the update is rejected and the table state is unchanged
 
-### Requirement: Statistics Frequency Table [r[domain-primitives.stats-frequency-table]]
+### Requirement: Statistics Frequency Table
+r[domain-primitives.stats-frequency-table]
 The system MUST provide a frequency-table primitive for denominator-safe
 count-to-frequency derivation over finite non-negative counts.
 
@@ -2552,7 +2748,8 @@ count-to-frequency derivation over finite non-negative counts.
 - WHEN frequency derivation is requested
 - THEN the request is rejected or returns an explicit empty result instead of numeric frequencies
 
-### Requirement: Statistics Discrete Distribution [r[domain-primitives.stats-discrete-distribution]]
+### Requirement: Statistics Discrete Distribution
+r[domain-primitives.stats-discrete-distribution]
 The system MUST provide a discrete-distribution primitive for finite
 non-negative weights, positive total weight admission, and normalization
 envelopes.
@@ -2569,7 +2766,8 @@ envelopes.
 - WHEN distribution admission is checked
 - THEN the distribution is rejected
 
-### Requirement: Statistics CDF Quantile [r[domain-primitives.stats-cdf-quantile]]
+### Requirement: Statistics CDF Quantile
+r[domain-primitives.stats-cdf-quantile]
 The system MUST provide a CDF/quantile primitive for monotone cumulative weights,
 partition lookup, and deterministic tie policy.
 
@@ -2585,7 +2783,8 @@ partition lookup, and deterministic tie policy.
 - WHEN CDF or quantile admission is checked
 - THEN the request is rejected
 
-### Requirement: Statistics Bounded Moments [r[domain-primitives.stats-bounded-moments]]
+### Requirement: Statistics Bounded Moments
+r[domain-primitives.stats-bounded-moments]
 The system MUST provide a bounded-moments primitive for finite count, sum, mean,
 and variance-envelope derivation with checked accumulators.
 
@@ -2601,7 +2800,8 @@ and variance-envelope derivation with checked accumulators.
 - WHEN moment derivation is requested
 - THEN the request is rejected or returns an explicit empty result instead of numeric moments
 
-### Requirement: Statistics Deterministic Sampler [r[domain-primitives.stats-deterministic-sampler]]
+### Requirement: Statistics Deterministic Sampler
+r[domain-primitives.stats-deterministic-sampler]
 The system MUST provide a deterministic sampler-admission primitive for mapping
 admitted integer thresholds or sample indices into finite distribution buckets.
 
@@ -2617,7 +2817,8 @@ admitted integer thresholds or sample indices into finite distribution buckets.
 - WHEN deterministic sample admission is checked
 - THEN the sample request is rejected
 
-### Requirement: Statistics Confidence Interval Envelope [r[domain-primitives.stats-confidence-interval-envelope]]
+### Requirement: Statistics Confidence Interval Envelope
+r[domain-primitives.stats-confidence-interval-envelope]
 The system MUST provide a confidence-interval-envelope primitive for ordered
 interval endpoints and bounded confidence metadata without coverage-probability
 claims.
@@ -2634,7 +2835,8 @@ claims.
 - WHEN confidence-interval envelope admission is checked
 - THEN the interval metadata is rejected
 
-### Requirement: Resource Budget Envelope [r[domain-primitives.resource-accounting.budget]]
+### Requirement: Resource Budget Envelope
+r[domain-primitives.resource-accounting.budget]
 The system MUST define finite resource-budget envelopes for unit metadata,
 limits, consumed amounts, remaining amounts, and no-overflow arithmetic.
 
@@ -2644,7 +2846,8 @@ limits, consumed amounts, remaining amounts, and no-overflow arithmetic.
 - WHEN a candidate consumed amount exceeds the declared limit
 - THEN the budget envelope rejects the state without claiming runtime enforcement
 
-### Requirement: Resource Counter Predicate [r[domain-primitives.resource-accounting.counter]]
+### Requirement: Resource Counter Predicate
+r[domain-primitives.resource-accounting.counter]
 The system MUST define bounded usage-counter predicates for finite counter
 values, monotone increments, reset metadata, and maximum bounds.
 
@@ -2654,7 +2857,8 @@ values, monotone increments, reset metadata, and maximum bounds.
 - WHEN the increment result is inside the declared maximum bound
 - THEN the counter predicate admits the increment and records deterministic usage metadata
 
-### Requirement: Resource Quota Envelope [r[domain-primitives.resource-accounting.quota]]
+### Requirement: Resource Quota Envelope
+r[domain-primitives.resource-accounting.quota]
 The system MUST define quota envelopes for finite subjects, scopes, limits,
 current usage, and deterministic admission metadata.
 
@@ -2664,7 +2868,8 @@ current usage, and deterministic admission metadata.
 - WHEN a candidate usage amount would exceed the quota limit for that subject and scope
 - THEN the quota envelope rejects the candidate with deterministic overage metadata
 
-### Requirement: Resource Lease Envelope [r[domain-primitives.resource-accounting.lease]]
+### Requirement: Resource Lease Envelope
+r[domain-primitives.resource-accounting.lease]
 The system MUST define finite lease envelopes for holders, resource identifiers,
 half-open validity intervals, renewal metadata, and expiry predicates.
 
@@ -2674,7 +2879,8 @@ half-open validity intervals, renewal metadata, and expiry predicates.
 - WHEN a candidate bucket is outside the lease interval
 - THEN the lease envelope treats the lease as expired for that bucket
 
-### Requirement: Resource Usage Window [r[domain-primitives.resource-accounting.usage-window]]
+### Requirement: Resource Usage Window
+r[domain-primitives.resource-accounting.usage-window]
 The system MUST define bounded usage-window predicates for finite aggregation
 windows, admitted samples, sum/count metadata, and no-overflow envelopes.
 
@@ -2684,7 +2890,8 @@ windows, admitted samples, sum/count metadata, and no-overflow envelopes.
 - WHEN the aggregate amount is computed in the declared bounded domain
 - THEN the usage-window predicate admits only aggregate metadata that stays within the no-overflow envelope
 
-### Requirement: Resource Reservation Envelope [r[domain-primitives.resource-accounting.reservation]]
+### Requirement: Resource Reservation Envelope
+r[domain-primitives.resource-accounting.reservation]
 The system MUST define reservation envelopes for finite resource identifiers,
 reserved amounts, capacity limits, and admitted reservation sets.
 
@@ -2694,7 +2901,8 @@ reserved amounts, capacity limits, and admitted reservation sets.
 - WHEN adding a candidate reservation would make the reserved amount exceed capacity
 - THEN the reservation envelope rejects the candidate without claiming scheduling optimality
 
-### Requirement: Resource Overage Classification [r[domain-primitives.resource-accounting.overage]]
+### Requirement: Resource Overage Classification
+r[domain-primitives.resource-accounting.overage]
 The system MUST define deterministic overage classifications for finite limits,
 usage amounts, margins, and severity metadata.
 
@@ -2704,7 +2912,8 @@ usage amounts, margins, and severity metadata.
 - WHEN usage exceeds the limit
 - THEN the overage classification records the exact finite margin and deterministic severity metadata
 
-### Requirement: Resource Admission Envelope [r[domain-primitives.resource-accounting.admission]]
+### Requirement: Resource Admission Envelope
+r[domain-primitives.resource-accounting.admission]
 The system MUST define deterministic resource-admission envelopes that return
 admit/reject metadata from finite budgets, quotas, leases, usage windows,
 reservations, and overage predicates.
@@ -2715,7 +2924,8 @@ reservations, and overage predicates.
 - WHEN the request would exceed an admitted budget, quota, lease, usage-window, or reservation predicate
 - THEN the admission envelope rejects the request with deterministic metadata and does not claim fairness or runtime enforcement
 
-### Requirement: Calendar Field Admission [r[domain-primitives.scheduling-calendar.calendar-field]]
+### Requirement: Calendar Field Admission
+r[domain-primitives.scheduling-calendar.calendar-field]
 The system MUST define bounded calendar-field admission for finite field kinds,
 minimum/maximum values, and closed or closed-open value ranges.
 
@@ -2725,7 +2935,8 @@ minimum/maximum values, and closed or closed-open value ranges.
 - WHEN a candidate value falls outside the declared bounds
 - THEN the field admission predicate rejects the value without claiming timezone or locale-calendar correctness
 
-### Requirement: Time Bucket Metadata [r[domain-primitives.scheduling-calendar.time-bucket]]
+### Requirement: Time Bucket Metadata
+r[domain-primitives.scheduling-calendar.time-bucket]
 The system MUST define discrete time-bucket metadata for finite bucket indexes,
 positive bucket durations, and bounded bucket ranges.
 
@@ -2735,7 +2946,8 @@ positive bucket durations, and bounded bucket ranges.
 - WHEN the duration is positive and the index is inside the finite bucket range
 - THEN the bucket metadata predicate admits the bucket
 
-### Requirement: Schedule Interval Predicate [r[domain-primitives.scheduling-calendar.interval]]
+### Requirement: Schedule Interval Predicate
+r[domain-primitives.scheduling-calendar.interval]
 The system MUST define half-open schedule interval predicates for bounded start
 and end buckets, containment, overlap, and disjointness.
 
@@ -2745,7 +2957,8 @@ and end buckets, containment, overlap, and disjointness.
 - WHEN the first interval end equals the second interval start
 - THEN the interval predicate treats the intervals as non-overlapping
 
-### Requirement: Recurrence Window Envelope [r[domain-primitives.scheduling-calendar.recurrence-window]]
+### Requirement: Recurrence Window Envelope
+r[domain-primitives.scheduling-calendar.recurrence-window]
 The system MUST define finite recurrence-window envelopes for candidate schedule
 buckets, horizon bounds, stride metadata, and deterministic enumeration limits.
 
@@ -2755,7 +2968,8 @@ buckets, horizon bounds, stride metadata, and deterministic enumeration limits.
 - WHEN candidate buckets are admitted by the recurrence envelope
 - THEN every candidate bucket is within the horizon and respects the declared stride metadata
 
-### Requirement: Deadline Order Predicate [r[domain-primitives.scheduling-calendar.deadline-order]]
+### Requirement: Deadline Order Predicate
+r[domain-primitives.scheduling-calendar.deadline-order]
 The system MUST define deterministic deadline and priority ordering predicates
 for finite jobs or reservations.
 
@@ -2765,7 +2979,8 @@ for finite jobs or reservations.
 - WHEN the ordering predicate compares them
 - THEN the predicate uses declared stable tie-break metadata rather than nondeterministic runtime order
 
-### Requirement: Schedule Conflict Predicate [r[domain-primitives.scheduling-calendar.conflict]]
+### Requirement: Schedule Conflict Predicate
+r[domain-primitives.scheduling-calendar.conflict]
 The system MUST define conflict predicates over admitted schedule intervals and
 finite resource identifiers.
 
@@ -2775,7 +2990,8 @@ finite resource identifiers.
 - WHEN the reservations use different resources or non-overlapping intervals
 - THEN the conflict predicate reports no conflict
 
-### Requirement: Resource Slot Envelope [r[domain-primitives.scheduling-calendar.resource-slot]]
+### Requirement: Resource Slot Envelope
+r[domain-primitives.scheduling-calendar.resource-slot]
 The system MUST define finite resource-slot envelopes for resource identifiers,
 capacity bounds, reservation counts, and admitted occupancy.
 
@@ -2785,7 +3001,8 @@ capacity bounds, reservation counts, and admitted occupancy.
 - WHEN the reservation count or declared occupancy exceeds capacity
 - THEN the resource-slot envelope rejects the slot
 
-### Requirement: Schedule Admission Envelope [r[domain-primitives.scheduling-calendar.admission]]
+### Requirement: Schedule Admission Envelope
+r[domain-primitives.scheduling-calendar.admission]
 The system MUST define deterministic schedule admission envelopes that return
 admit/reject metadata from finite intervals, deadlines, priorities, resources,
 and conflict predicates.
@@ -2796,7 +3013,8 @@ and conflict predicates.
 - WHEN the candidate conflicts with an admitted reservation under the declared resource and interval predicates
 - THEN the admission envelope rejects the candidate with deterministic conflict metadata and does not claim optimal rescheduling
 
-### Requirement: Finite Sample Sequence [r[signal.finite-sample-sequence]]
+### Requirement: Finite Sample Sequence
+r[signal.finite-sample-sequence]
 The system MUST define a finite sample sequence primitive with explicit length,
 channel/layout metadata, sample-domain bounds, and valid index admission.
 
@@ -2812,7 +3030,8 @@ channel/layout metadata, sample-domain bounds, and valid index admission.
 - WHEN a public checked operation receives invalid length, channel, layout, or sample-domain metadata
 - THEN it rejects the input explicitly and leaves the previously valid value unchanged
 
-### Requirement: FIR Filter Envelope [r[signal.fir-filter-envelope]]
+### Requirement: FIR Filter Envelope
+r[signal.fir-filter-envelope]
 The system MUST define a finite FIR filter envelope primitive for kernel length,
 coefficient bounds, input sample bounds, and conservative accumulator/output
 bounds over exact discrete values.
@@ -2829,7 +3048,8 @@ bounds over exact discrete values.
 - WHEN it states exported guarantees
 - THEN it does not claim floating-point filter accuracy, frequency response, phase response, or runtime DSP-library correctness
 
-### Requirement: Discrete Convolution Window [r[signal.convolution-window]]
+### Requirement: Discrete Convolution Window
+r[signal.convolution-window]
 The system MUST define a discrete convolution window primitive that maps finite
 input length, finite kernel length, padding/admission policy, and output index to
 an exact support interval and conservative output envelope.
@@ -2846,7 +3066,8 @@ an exact support interval and conservative output envelope.
 - WHEN a checked convolution-window operation evaluates those dimensions
 - THEN it rejects the dimensions without constructing an invalid support mapping
 
-### Requirement: Decimation Admission [r[signal.decimation-admission]]
+### Requirement: Decimation Admission
+r[signal.decimation-admission]
 The system MUST define a decimation admission primitive for finite input length,
 positive down-sampling factor, phase/offset, output length, and deterministic
 output-to-input index mapping.
@@ -2863,7 +3084,8 @@ output-to-input index mapping.
 - WHEN a checked decimation operation evaluates the metadata
 - THEN it rejects the metadata and does not expose an output index mapping
 
-### Requirement: Interpolation Admission [r[signal.interpolation-admission]]
+### Requirement: Interpolation Admission
+r[signal.interpolation-admission]
 The system MUST define an interpolation admission primitive for finite input
 length, positive up-sampling factor, output length, gap-fill policy, and
 deterministic output/input correspondence metadata.
@@ -2880,7 +3102,8 @@ deterministic output/input correspondence metadata.
 - WHEN a checked interpolation operation evaluates the metadata
 - THEN it rejects the metadata without exposing inconsistent output/input correspondence
 
-### Requirement: Peak Candidate Detection [r[signal.peak-candidate]]
+### Requirement: Peak Candidate Detection
+r[signal.peak-candidate]
 The system MUST define a peak-candidate primitive over finite sequences using a
 bounded neighborhood, threshold/envelope metadata, and deterministic tie handling.
 
@@ -2896,7 +3119,8 @@ bounded neighborhood, threshold/envelope metadata, and deterministic tie handlin
 - WHEN the peak-candidate primitive evaluates candidates under the declared tie policy
 - THEN it admits candidates according to that deterministic policy rather than relying on iteration-order ambiguity
 
-### Requirement: Spectral Bin Metadata [r[signal.spectral-bin-metadata]]
+### Requirement: Spectral Bin Metadata
+r[signal.spectral-bin-metadata]
 The system MUST define spectral-bin metadata primitives for finite bin count,
 bin index admission, range metadata, and bounded magnitude/energy envelopes over
 exact discrete or fixed-point values.
@@ -2913,7 +3137,8 @@ exact discrete or fixed-point values.
 - WHEN it states exported guarantees
 - THEN it does not claim FFT algorithm correctness, floating-point spectral accuracy, leakage/noise behavior, or runtime DSP-library correctness
 
-### Requirement: State Set Envelope [r[domain-primitives.state-machine-workflow.state]]
+### Requirement: State Set Envelope
+r[domain-primitives.state-machine-workflow.state]
 The system MUST define finite state-set envelopes that admit declared states and
 record initial and terminal-state metadata before transitions or traces reference
 them.
@@ -2924,7 +3149,8 @@ them.
 - WHEN state-set admission is evaluated
 - THEN the declaration is admitted only if the initial state belongs to the finite declared state set
 
-### Requirement: Transition Relation Envelope [r[domain-primitives.state-machine-workflow.transition]]
+### Requirement: Transition Relation Envelope
+r[domain-primitives.state-machine-workflow.transition]
 The system MUST define transition relation envelopes over finite source state,
 event, target state, and optional guard metadata.
 
@@ -2934,7 +3160,8 @@ event, target state, and optional guard metadata.
 - WHEN transition admission is evaluated
 - THEN the transition is rejected with endpoint metadata
 
-### Requirement: Event Envelope [r[domain-primitives.state-machine-workflow.event]]
+### Requirement: Event Envelope
+r[domain-primitives.state-machine-workflow.event]
 The system MUST define finite event envelopes that admit declared event symbols
 before transitions or workflow steps reference them.
 
@@ -2944,7 +3171,8 @@ before transitions or workflow steps reference them.
 - WHEN event admission is evaluated
 - THEN the event reference is rejected with unknown-event metadata
 
-### Requirement: Guard Predicate Envelope [r[domain-primitives.state-machine-workflow.guard]]
+### Requirement: Guard Predicate Envelope
+r[domain-primitives.state-machine-workflow.guard]
 The system MUST define deterministic guard predicate envelopes over admitted
 transition context without claiming external side effects or runtime execution.
 
@@ -2954,7 +3182,8 @@ transition context without claiming external side effects or runtime execution.
 - WHEN the guard predicate evaluates to false in the finite transition context
 - THEN transition admission rejects the guarded transition with failed-guard metadata
 
-### Requirement: Transition Admission Envelope [r[domain-primitives.state-machine-workflow.admission]]
+### Requirement: Transition Admission Envelope
+r[domain-primitives.state-machine-workflow.admission]
 The system MUST define deterministic transition admission and rejection envelopes
 for public exec surfaces that combine state, transition, event, and guard checks.
 
@@ -2964,7 +3193,8 @@ for public exec surfaces that combine state, transition, event, and guard checks
 - WHEN transition admission is evaluated
 - THEN the request is rejected with undeclared-transition metadata
 
-### Requirement: Workflow Step Envelope [r[domain-primitives.state-machine-workflow.step]]
+### Requirement: Workflow Step Envelope
+r[domain-primitives.state-machine-workflow.step]
 The system MUST define finite workflow step envelopes that reference declared
 states, events, and transition metadata without claiming runtime step execution.
 
@@ -2974,7 +3204,8 @@ states, events, and transition metadata without claiming runtime step execution.
 - WHEN workflow step admission is evaluated
 - THEN the step is admitted only if those references match declared transition metadata
 
-### Requirement: Workflow Dependency Envelope [r[domain-primitives.state-machine-workflow.dependency]]
+### Requirement: Workflow Dependency Envelope
+r[domain-primitives.state-machine-workflow.dependency]
 The system MUST define finite workflow dependency envelopes over declared steps
 with deterministic dependency-shape admission metadata.
 
@@ -2984,7 +3215,8 @@ with deterministic dependency-shape admission metadata.
 - WHEN dependency admission is evaluated
 - THEN the dependency is admitted only if both step identifiers are declared in the finite workflow step set
 
-### Requirement: Reachability Path Envelope [r[domain-primitives.state-machine-workflow.reachability]]
+### Requirement: Reachability Path Envelope
+r[domain-primitives.state-machine-workflow.reachability]
 The system MUST define bounded reachability/path envelopes over finite admitted
 transition systems and explicit path-witness metadata.
 
@@ -2994,7 +3226,8 @@ transition systems and explicit path-witness metadata.
 - WHEN reachability admission is evaluated
 - THEN each adjacent state pair in the witness follows an admitted transition relation entry
 
-### Requirement: Terminal State Predicate Envelope [r[domain-primitives.state-machine-workflow.terminal]]
+### Requirement: Terminal State Predicate Envelope
+r[domain-primitives.state-machine-workflow.terminal]
 The system MUST define terminal-state predicate envelopes over finite declared
 states without claiming liveness, eventual completion, or runtime scheduling.
 
@@ -3004,7 +3237,8 @@ states without claiming liveness, eventual completion, or runtime scheduling.
 - WHEN terminal-state predicate evaluation is performed
 - THEN the predicate matches only if the candidate is declared as terminal in the finite state metadata
 
-### Requirement: Transition Trace Envelope [r[domain-primitives.state-machine-workflow.trace]]
+### Requirement: Transition Trace Envelope
+r[domain-primitives.state-machine-workflow.trace]
 The system MUST define finite transition trace envelopes whose consecutive trace
 items are stepwise admitted by the transition relation and guard metadata.
 
@@ -3014,7 +3248,8 @@ items are stepwise admitted by the transition relation and guard metadata.
 - WHEN trace admission is evaluated
 - THEN the trace is rejected with the invalid step index and transition metadata
 
-### Requirement: Page Range [r[storage.page-range]]
+### Requirement: Page Range
+r[storage.page-range]
 The system MUST define a finite page-range primitive with checked page
 identifier bounds, span length metadata, and half-open page interval admission.
 
@@ -3030,7 +3265,8 @@ identifier bounds, span length metadata, and half-open page interval admission.
 - WHEN a public checked operation receives overflowing, reversed, or out-of-bounds page metadata
 - THEN it rejects the input explicitly and leaves the previously valid value unchanged
 
-### Requirement: Record Slot Table [r[storage.record-slot-table]]
+### Requirement: Record Slot Table
+r[storage.record-slot-table]
 The system MUST define a finite record-slot table primitive with slot-count
 bounds, occupied/free state metadata, and valid slot-index admission.
 
@@ -3046,7 +3282,8 @@ bounds, occupied/free state metadata, and valid slot-index admission.
 - WHEN the slot-state primitive evaluates that slot
 - THEN it exposes the free state explicitly rather than treating the slot as an occupied record
 
-### Requirement: Key Range [r[storage.key-range]]
+### Requirement: Key Range
+r[storage.key-range]
 The system MUST define an ordered finite key-range primitive with lower and upper
 bounds, half-open membership, and overlap/disjointness metadata.
 
@@ -3062,7 +3299,8 @@ bounds, half-open membership, and overlap/disjointness metadata.
 - WHEN a checked key-range operation evaluates the bounds
 - THEN it rejects them without exposing inconsistent membership metadata
 
-### Requirement: Cursor Bounds [r[storage.cursor-bounds]]
+### Requirement: Cursor Bounds
+r[storage.cursor-bounds]
 The system MUST define a cursor-bounds primitive for finite scan ranges, current
 cursor position, end state, and monotone cursor movement.
 
@@ -3078,7 +3316,8 @@ cursor position, end state, and monotone cursor movement.
 - WHEN a checked cursor operation evaluates the position
 - THEN it rejects the operation without constructing an invalid next cursor
 
-### Requirement: Segment Map [r[storage.segment-map]]
+### Requirement: Segment Map
+r[storage.segment-map]
 The system MUST define a finite segment-map primitive from logical key/page
 ranges to physical segment/page spans with explicit coverage and disjointness
 metadata.
@@ -3095,7 +3334,8 @@ metadata.
 - WHEN a checked segment-map constructor evaluates the metadata
 - THEN it rejects the map instead of exposing ambiguous logical-to-physical lookup metadata
 
-### Requirement: Lookup Result Admission [r[storage.lookup-result]]
+### Requirement: Lookup Result Admission
+r[storage.lookup-result]
 The system MUST define a lookup-result primitive that admits present, absent, and
 out-of-range outcomes according to finite table/range metadata and deterministic
 decision rules.
@@ -3112,7 +3352,8 @@ decision rules.
 - WHEN the lookup-result primitive validates an unsuccessful result
 - THEN it distinguishes an in-range absent result from an out-of-range rejected result according to the declared bounds
 
-### Requirement: Compaction Envelope [r[storage.compaction-envelope]]
+### Requirement: Compaction Envelope
+r[storage.compaction-envelope]
 The system MUST define a finite compaction envelope primitive that preserves live
 logical records and admitted key/slot membership while allowing physical page or
 segment spans to be remapped.
@@ -3129,7 +3370,8 @@ segment spans to be remapped.
 - WHEN the compaction envelope omits that record from post-compaction metadata
 - THEN the omission is valid only when the declared compaction policy explicitly allows dropping non-live records
 
-### Requirement: Versioned Slot [r[storage.versioned-slot]]
+### Requirement: Versioned Slot
+r[storage.versioned-slot]
 The system MUST define a versioned-slot primitive over finite version metadata,
 slot state, visibility bounds, and deterministic latest-visible selection.
 
@@ -3145,7 +3387,8 @@ slot state, visibility bounds, and deterministic latest-visible selection.
 - WHEN a checked versioned-slot operation evaluates latest-visible selection
 - THEN it rejects the metadata instead of exposing an ambiguous latest-visible result
 
-### Requirement: Table Schema Metadata [r[domain-primitives.table-relational.table-schema]]
+### Requirement: Table Schema Metadata
+r[domain-primitives.table-relational.table-schema]
 The system MUST provide finite table/schema metadata envelopes that record table
 identifiers, declared columns, row-count bounds, schema-version metadata, and
 deterministic table admission results.
@@ -3156,7 +3399,8 @@ deterministic table admission results.
 - WHEN a candidate table references an unknown schema identifier
 - THEN the table-schema primitive returns explicit rejection metadata without consulting a database engine
 
-### Requirement: Column Metadata Envelope [r[domain-primitives.table-relational.column]]
+### Requirement: Column Metadata Envelope
+r[domain-primitives.table-relational.column]
 The system MUST provide finite column metadata envelopes for column identifiers,
 declared value envelopes, nullability or presence policy, ordering position, and
 deterministic column admission results.
@@ -3167,7 +3411,8 @@ deterministic column admission results.
 - WHEN the value envelope does not match the declared column envelope
 - THEN the column primitive rejects the cell before row admission is composed
 
-### Requirement: Row Shape Envelope [r[domain-primitives.table-relational.row]]
+### Requirement: Row Shape Envelope
+r[domain-primitives.table-relational.row]
 The system MUST provide finite row shape envelopes that record row identifiers,
 cell positions, required/optional cell presence, and deterministic row admission
 results.
@@ -3178,7 +3423,8 @@ results.
 - WHEN a required cell is absent
 - THEN the row primitive returns explicit missing-cell metadata
 
-### Requirement: Key Metadata Envelope [r[domain-primitives.table-relational.key]]
+### Requirement: Key Metadata Envelope
+r[domain-primitives.table-relational.key]
 The system MUST provide finite key metadata envelopes for primary-key-like,
 foreign-key-like, compound-key, and uniqueness predicates over declared row and
 column metadata without claiming database enforcement.
@@ -3189,7 +3435,8 @@ column metadata without claiming database enforcement.
 - WHEN two rows violate a declared finite uniqueness predicate
 - THEN the key primitive returns explicit duplicate-key metadata without claiming database uniqueness enforcement
 
-### Requirement: Projection Filter Shape [r[domain-primitives.table-relational.projection-filter]]
+### Requirement: Projection Filter Shape
+r[domain-primitives.table-relational.projection-filter]
 The system MUST provide deterministic projection/filter shape envelopes over
 finite column sets, row predicates, and admitted table metadata.
 
@@ -3199,7 +3446,8 @@ finite column sets, row predicates, and admitted table metadata.
 - WHEN the projection references a column outside the admitted schema
 - THEN the projection/filter primitive rejects the operation shape
 
-### Requirement: Join Shape Metadata [r[domain-primitives.table-relational.join]]
+### Requirement: Join Shape Metadata
+r[domain-primitives.table-relational.join]
 The system MUST provide finite join-shape metadata for declared input tables,
 join-key metadata, cardinality bounds, unmatched-row policy, and deterministic
 join-shape admission results.
@@ -3210,7 +3458,8 @@ join-shape admission results.
 - WHEN a declared join key is absent from either input schema
 - THEN the join primitive returns explicit join-key rejection metadata
 
-### Requirement: Grouping Metadata Envelope [r[domain-primitives.table-relational.grouping]]
+### Requirement: Grouping Metadata Envelope
+r[domain-primitives.table-relational.grouping]
 The system MUST provide finite grouping/aggregate-shape metadata for group keys,
 aggregate input columns, aggregate result metadata, and deterministic grouping
 admission without claiming aggregate numeric accuracy beyond declared exact
@@ -3222,7 +3471,8 @@ models.
 - WHEN a group key or aggregate input references an unknown column
 - THEN the grouping primitive returns explicit unknown-column rejection metadata
 
-### Requirement: Relational Admission Envelope [r[domain-primitives.table-relational.admission]]
+### Requirement: Relational Admission Envelope
+r[domain-primitives.table-relational.admission]
 The system MUST provide deterministic relational admission/rejection envelopes
 that compose table/schema, column, row, key, projection/filter, join, and grouping
 metadata over finite relational data.
@@ -3233,7 +3483,8 @@ metadata over finite relational data.
 - WHEN any schema, column, row, key, projection/filter, join, or grouping check rejects
 - THEN the relational-admission primitive returns an explicit rejection before any database engine, SQL, transaction, or query-planner claim is made
 
-### Requirement: Finite Byte String [r[text.finite-byte-string]]
+### Requirement: Finite Byte String
+r[text.finite-byte-string]
 The system MUST define a finite byte-string primitive with explicit length
 bounds, valid byte-index admission, and no-mutation rejection semantics for
 checked public operations.
@@ -3250,7 +3501,8 @@ checked public operations.
 - WHEN a public checked operation receives overflowing length, invalid slice, or out-of-bounds index metadata
 - THEN it rejects the input explicitly and leaves the previously valid value unchanged
 
-### Requirement: UTF-8 Boundary Range [r[text.utf8-boundary-range]]
+### Requirement: UTF-8 Boundary Range
+r[text.utf8-boundary-range]
 The system MUST define UTF-8 boundary/range metadata over finite byte strings for
 admitted character-boundary indices and half-open character/byte spans.
 
@@ -3266,7 +3518,8 @@ admitted character-boundary indices and half-open character/byte spans.
 - WHEN a checked UTF-8 range operation evaluates the range
 - THEN it rejects the range without exposing character-index metadata for it
 
-### Requirement: Token Span [r[text.token-span]]
+### Requirement: Token Span
+r[text.token-span]
 The system MUST define token-span metadata over finite text with token index,
 byte span, optional character span, and deterministic span-order constraints.
 
@@ -3282,7 +3535,8 @@ byte span, optional character span, and deterministic span-order constraints.
 - WHEN the token-span metadata declares a non-overlap policy
 - THEN each later token span starts at or after the previous token span end
 
-### Requirement: Prefix and Suffix Predicate [r[text.prefix-suffix]]
+### Requirement: Prefix and Suffix Predicate
+r[text.prefix-suffix]
 The system MUST define finite prefix and suffix predicates with length bounds,
 byte/character layer declaration, and exact sequence equality over admitted
 positions.
@@ -3299,7 +3553,8 @@ positions.
 - WHEN the suffix predicate accepts the suffix
 - THEN the suffix length is less than or equal to the haystack length and every admitted suffix position equals the corresponding haystack position at the declared offset
 
-### Requirement: Substring Span [r[text.substring-span]]
+### Requirement: Substring Span
+r[text.substring-span]
 The system MUST define substring containment and match-span admission over finite
 text with deterministic span metadata for accepted matches.
 
@@ -3315,7 +3570,8 @@ text with deterministic span metadata for accepted matches.
 - WHEN the substring-span primitive reports no admitted match
 - THEN it exposes absence metadata without constructing an out-of-bounds or inconsistent match span
 
-### Requirement: Edit Distance Envelope [r[text.edit-distance-envelope]]
+### Requirement: Edit Distance Envelope
+r[text.edit-distance-envelope]
 The system MUST define a bounded edit-distance envelope primitive for finite
 source/target lengths, operation-budget metadata, and conservative lower/upper
 bounds on accepted edit operations.
@@ -3332,7 +3588,8 @@ bounds on accepted edit operations.
 - WHEN it states exported guarantees
 - THEN it does not claim algorithmic optimality or Levenshtein distance equality unless a dedicated proof for that algorithm is also specified
 
-### Requirement: Normalization Envelope [r[text.normalization-envelope]]
+### Requirement: Normalization Envelope
+r[text.normalization-envelope]
 The system MUST define normalization envelope metadata for finite source/output
 spans, length-growth bounds, supported normalization form tags, and explicit
 unsupported-form rejection.
@@ -3349,7 +3606,8 @@ unsupported-form rejection.
 - WHEN it states exported guarantees
 - THEN it does not claim full Unicode normalization table correctness, locale collation, or semantic text equivalence unless a dedicated model owns those claims
 
-### Requirement: Delimiter Split Join Shape [r[text.delimiter-split-join]]
+### Requirement: Delimiter Split Join Shape
+r[text.delimiter-split-join]
 The system MUST define delimiter split/join shape metadata over finite text,
 finite delimiter spans, segment bounds, and deterministic empty-segment policy.
 
@@ -3365,7 +3623,8 @@ finite delimiter spans, segment bounds, and deterministic empty-segment policy.
 - WHEN the delimiter join-shape primitive computes or validates output length metadata
 - THEN the output length envelope accounts for every segment and every inserted delimiter between adjacent segments without overflow
 
-### Requirement: Content-Addressed Definition Identity [r[domain-primitives.content-addressed-code.definition-identity]]
+### Requirement: Content-Addressed Definition Identity
+r[domain-primitives.content-addressed-code.definition-identity]
 The system MUST define finite content-addressed definition identity envelopes where a definition hash is admitted only for a declared normalized definition kind, dependency-hash sequence, and metadata boundary, while names remain separate aliases and do not affect definition identity.
 
 #### Scenario: Name change preserves definition identity
@@ -3386,7 +3645,8 @@ The system MUST define finite content-addressed definition identity envelopes wh
 - WHEN name-binding admission is evaluated
 - THEN the binding is rejected with missing-definition metadata
 
-### Requirement: Dependency Closure Admission [r[domain-primitives.content-addressed-code.dependency-closure]]
+### Requirement: Dependency Closure Admission
+r[domain-primitives.content-addressed-code.dependency-closure]
 The system MUST define finite dependency-closure admission for a root definition hash, reporting whether every transitively referenced dependency hash is present in the declared codebase and producing deterministic missing-dependency metadata without claiming runtime linking or execution.
 
 #### Scenario: Complete closure is admitted
@@ -3407,7 +3667,8 @@ The system MUST define finite dependency-closure admission for a root definition
 - WHEN dependency-closure admission is reevaluated
 - THEN the root is admitted as closure-complete
 
-### Requirement: Recursive Definition Group Canonical Envelope [r[domain-primitives.content-addressed-code.recursive-group]]
+### Requirement: Recursive Definition Group Canonical Envelope
+r[domain-primitives.content-addressed-code.recursive-group]
 The system MUST define finite recursive definition group envelopes whose members are ordered canonically by declared member identity, whose intra-group references use stable member positions, and whose group hash metadata is independent of source-file order.
 
 #### Scenario: Source order does not affect group envelope
@@ -3422,7 +3683,8 @@ The system MUST define finite recursive definition group envelopes whose members
 - WHEN group admission is evaluated
 - THEN the group is rejected with out-of-range-recursive-reference metadata
 
-### Requirement: Ability Requirement Set Admission [r[domain-primitives.ability-effect.requirement-set]]
+### Requirement: Ability Requirement Set Admission
+r[domain-primitives.ability-effect.requirement-set]
 The system MUST define finite ability requirement sets where a computation is admitted in a context only when every required ability is provided by that context, and an empty requirement set is treated as pure without claiming runtime side-effect absence beyond the finite model.
 
 #### Scenario: Provided context admits requirements
@@ -3443,7 +3705,8 @@ The system MUST define finite ability requirement sets where a computation is ad
 - WHEN ability admission is evaluated against any context
 - THEN the computation is admitted as requiring no modeled abilities
 
-### Requirement: Ability Handler Discharge [r[domain-primitives.ability-effect.handler-discharge]]
+### Requirement: Ability Handler Discharge
+r[domain-primitives.ability-effect.handler-discharge]
 The system MUST define finite ability handler discharge where a handler for an ability removes exactly the handled ability from the required set when the handler is declared available, leaving all unhandled abilities explicit in the resulting requirement set.
 
 #### Scenario: Handler removes declared ability
@@ -3458,7 +3721,8 @@ The system MUST define finite ability handler discharge where a handler for an a
 - WHEN a handler declaration does not include `Remote`
 - THEN the handler discharge check does not remove `Remote`
 
-### Requirement: Ability Sandbox Attenuation [r[domain-primitives.ability-effect.sandbox-attenuation]]
+### Requirement: Ability Sandbox Attenuation
+r[domain-primitives.ability-effect.sandbox-attenuation]
 The system MUST define sandbox ability attenuation where a sandboxed context can provide only a subset of its parent context and remote or untrusted computations are rejected when their requirements exceed the sandbox-provided ability set.
 
 #### Scenario: Sandbox subset is admitted
@@ -3479,7 +3743,8 @@ The system MUST define sandbox ability attenuation where a sandboxed context can
 - WHEN a computation requiring `IO` is evaluated for sandbox admission
 - THEN the computation is rejected with missing-ability metadata
 
-### Requirement: Algebraic Effect Signature Admission [r[domain-primitives.algebraic-effect.signature]]
+### Requirement: Algebraic Effect Signature Admission
+r[domain-primitives.algebraic-effect.signature]
 The system MUST define finite algebraic-effect signatures whose operation declarations admit calls only by exact `(effect, operation)` identity, without claiming runtime stack capture, typechecker correctness, or handler execution semantics.
 
 #### Scenario: Declared operation is admitted
@@ -3494,7 +3759,8 @@ The system MUST define finite algebraic-effect signatures whose operation declar
 - WHEN a call references `(Store, Write)` or `(Console, Read)` without a matching declaration
 - THEN signature admission rejects the call
 
-### Requirement: Algebraic Effect Invocation Arity [r[domain-primitives.algebraic-effect.arity]]
+### Requirement: Algebraic Effect Invocation Arity
+r[domain-primitives.algebraic-effect.arity]
 The system MUST define finite invocation admission where an invocation is accepted only when the signature declares the same `(effect, operation)` identity and the declared input and output arities exactly match the invocation counts, while preserving a separate call-identity projection and without claiming runtime argument typechecking.
 
 #### Scenario: Matching arity is admitted
@@ -3509,7 +3775,8 @@ The system MUST define finite invocation admission where an invocation is accept
 - WHEN an invocation references `State.Put` with one input or two expected outputs
 - THEN invocation admission rejects the invocation
 
-### Requirement: Algebraic Effect Row [r[domain-primitives.algebraic-effect.effect-row]]
+### Requirement: Algebraic Effect Row
+r[domain-primitives.algebraic-effect.effect-row]
 The system MUST define finite effect rows as permitted effect identifiers, admit calls only when their effect is present in the row, admit handlers only when they are available and target a row effect, and remove handled effects while preserving the order of remaining row entries without claiming type inference or runtime effect tracking.
 
 #### Scenario: Row admits permitted calls
@@ -3530,7 +3797,8 @@ The system MUST define finite effect rows as permitted effect identifiers, admit
 - WHEN `State` is removed as handled
 - THEN the residual row preserves only the non-`State` effects in their original order
 
-### Requirement: Algebraic Effect Summary [r[domain-primitives.algebraic-effect.effect-summary]]
+### Requirement: Algebraic Effect Summary
+r[domain-primitives.algebraic-effect.effect-summary]
 The system MUST define finite effect summaries with required and residual rows, admit summaries only when every required effect is present in the ambient row, and admit sequential summary composition only when the left residual row admits the right summary requirements, producing the left required row and right residual row without claiming full effect inference.
 
 #### Scenario: Summary requires ambient effects
@@ -3557,7 +3825,8 @@ The system MUST define finite effect summaries with required and residual rows, 
 - WHEN summary composition is evaluated
 - THEN composition is rejected
 
-### Requirement: Algebraic Effect Summary Handler Application [r[domain-primitives.algebraic-effect.summary-handler-application]]
+### Requirement: Algebraic Effect Summary Handler Application
+r[domain-primitives.algebraic-effect.summary-handler-application]
 The system MUST define finite summary handler application that admits only available handlers whose handled effect appears in the summary required row, and applying an admitted handler MUST preserve the summary required row while removing that handled effect from the residual row without claiming handler execution semantics.
 
 #### Scenario: Available required handler applies to summary
@@ -3572,7 +3841,8 @@ The system MUST define finite summary handler application that admits only avail
 - WHEN an unavailable `State` handler or an available `Async` handler is checked
 - THEN summary handler admission rejects the handler
 
-### Requirement: Algebraic Effect Handler Coverage [r[domain-primitives.algebraic-effect.handler-coverage]]
+### Requirement: Algebraic Effect Handler Coverage
+r[domain-primitives.algebraic-effect.handler-coverage]
 The system MUST define finite handler coverage where an available handler for one effect covers exactly the declared operations for that effect that have matching handler clauses, leaving other effects outside the coverage claim.
 
 #### Scenario: Complete handler covers its handled effect
@@ -3587,7 +3857,8 @@ The system MUST define finite handler coverage where an available handler for on
 - WHEN a handler for `Log` lacks a `Tell` clause
 - THEN handler coverage rejects the handler for that effect
 
-### Requirement: Algebraic Effect Handler Discharge [r[domain-primitives.algebraic-effect.handler-discharge]]
+### Requirement: Algebraic Effect Handler Discharge
+r[domain-primitives.algebraic-effect.handler-discharge]
 The system MUST define finite residual-call discharge where a handler removes only calls for its handled effect and declared operation clauses, preserving calls for other effects or missing clauses in order.
 
 #### Scenario: Matching calls are discharged
@@ -3602,7 +3873,8 @@ The system MUST define finite residual-call discharge where a handler removes on
 - WHEN a `State` handler lacks a `Put` clause
 - THEN `State.Put` remains in the residual call sequence
 
-### Requirement: Algebraic Effect Handler Composition [r[domain-primitives.algebraic-effect.handler-composition]]
+### Requirement: Algebraic Effect Handler Composition
+r[domain-primitives.algebraic-effect.handler-composition]
 The system MUST define finite handler composition that admits only available handlers for the same effect with disjoint operation clauses, rejects duplicate cross-handler clauses as ambiguous, and produces a composed handler whose clauses are the left handler clauses followed by the right handler clauses while preserving the handled effect.
 
 #### Scenario: Disjoint handlers compose
@@ -3623,7 +3895,8 @@ The system MUST define finite handler composition that admits only available han
 - WHEN handler composition is evaluated
 - THEN composition is rejected without producing a combined handler
 
-### Requirement: Algebraic Effect Continuation Token [r[domain-primitives.algebraic-effect.continuation-token]]
+### Requirement: Algebraic Effect Continuation Token
+r[domain-primitives.algebraic-effect.continuation-token]
 The system MUST define finite continuation tokens that can be resumed only by an available handler for the token's effect and become unusable after consumption, without claiming runtime continuation capture or re-entry semantics.
 
 #### Scenario: Matching unused token can resume
@@ -3638,7 +3911,8 @@ The system MUST define finite continuation tokens that can be resumed only by an
 - WHEN any handler checks resume admission
 - THEN the token is rejected as already used
 
-### Requirement: Algebraic Effect Continuation Resume Mode [r[domain-primitives.algebraic-effect.continuation-resume-mode]]
+### Requirement: Algebraic Effect Continuation Resume Mode
+r[domain-primitives.algebraic-effect.continuation-resume-mode]
 The system MUST define finite operation resume modes that distinguish resumable from non-resumable operations, admit continuation resume only when the token and handler match an explicitly resumable operation mode, and reject handler clauses that attempt to resume non-resumable operations without claiming runtime continuation capture or re-entry semantics.
 
 #### Scenario: Resumable operation admits matching continuation resume
@@ -3659,7 +3933,8 @@ The system MUST define finite operation resume modes that distinguish resumable 
 - WHEN it is checked against a non-resumable `State.Get` operation mode or a different operation mode
 - THEN the clause is rejected as incompatible
 
-### Requirement: Typed Durable Reference Envelope [r[domain-primitives.typed-durable-reference.envelope]]
+### Requirement: Typed Durable Reference Envelope
+r[domain-primitives.typed-durable-reference.envelope]
 The system MUST define finite typed durable reference envelopes containing value identity, expected type identity, schema/version metadata, and dependency-closure identity, and MUST reject references whose declared metadata is inconsistent or outside finite model bounds.
 
 #### Scenario: Well-formed typed reference is admitted
@@ -3674,7 +3949,8 @@ The system MUST define finite typed durable reference envelopes containing value
 - WHEN typed durable reference admission is evaluated
 - THEN the reference is rejected with missing-closure metadata
 
-### Requirement: Unpersist Type Match Admission [r[domain-primitives.typed-durable-reference.unpersist-type-match]]
+### Requirement: Unpersist Type Match Admission
+r[domain-primitives.typed-durable-reference.unpersist-type-match]
 The system MUST define unpersist admission that succeeds only when the caller's expected type identity equals the persisted reference's declared type identity and the referenced dependency closure is available, without claiming runtime byte decoding or storage retrieval correctness.
 
 #### Scenario: Matching type identity admits unpersist
@@ -3695,7 +3971,8 @@ The system MUST define unpersist admission that succeeds only when the caller's 
 - WHEN unpersist admission is evaluated
 - THEN the request is rejected with missing-closure metadata
 
-### Requirement: Explicit Durable Reference Migration Boundary [r[domain-primitives.typed-durable-reference.migration-boundary]]
+### Requirement: Explicit Durable Reference Migration Boundary
+r[domain-primitives.typed-durable-reference.migration-boundary]
 The system MUST define schema/type migration admission as an explicit conversion witness from an old typed durable reference identity to a new typed durable reference identity, and MUST reject implicit migration when no conversion witness is declared.
 
 #### Scenario: Explicit conversion admits migration
@@ -3710,7 +3987,8 @@ The system MUST define schema/type migration admission as an explicit conversion
 - WHEN no conversion witness is declared
 - THEN migration admission rejects the request
 
-### Requirement: Remote Computation Envelope [r[domain-primitives.remote-computation.envelope]]
+### Requirement: Remote Computation Envelope
+r[domain-primitives.remote-computation.envelope]
 The system MUST define finite remote computation envelopes containing computation identity, dependency-closure requirements, ability requirement sets, target node identity, and declared resource bounds, and MUST reject unknown targets or malformed bounds without claiming real network transport or execution.
 
 #### Scenario: Well-formed envelope is admitted
@@ -3731,7 +4009,8 @@ The system MUST define finite remote computation envelopes containing computatio
 - WHEN envelope admission is evaluated
 - THEN the envelope is rejected with malformed-bound metadata
 
-### Requirement: Remote Dependency Availability Admission [r[domain-primitives.remote-computation.dependency-availability]]
+### Requirement: Remote Dependency Availability Admission
+r[domain-primitives.remote-computation.dependency-availability]
 The system MUST define remote dependency availability admission that accepts a computation only when every dependency hash is already present on the target node or is declared fetchable, and MUST deterministically report ready, fetch-pending, or rejected state with the first missing dependency hash.
 
 #### Scenario: Present closure admits dependency availability
@@ -3752,7 +4031,8 @@ The system MUST define remote dependency availability admission that accepts a c
 - WHEN dependency availability is evaluated
 - THEN remote admission rejects the computation with unfetchable-dependency metadata
 
-### Requirement: Remote Ability And Resource Admission [r[domain-primitives.remote-computation.ability-resource]]
+### Requirement: Remote Ability And Resource Admission
+r[domain-primitives.remote-computation.ability-resource]
 The system MUST define remote ability and resource admission where a target node may run a computation only when dependencies are ready, the sandbox-provided abilities cover the computation's required abilities, and declared resource bounds fit within the target's finite resource limits.
 
 #### Scenario: Ability and resource bounds admit execution eligibility
@@ -3773,7 +4053,8 @@ The system MUST define remote ability and resource admission where a target node
 - WHEN remote execution eligibility is evaluated
 - THEN the computation is rejected with resource-bound metadata
 
-### Requirement: Immutable Definition Binding Refactor [r[domain-primitives.semantic-refactoring.immutable-binding]]
+### Requirement: Immutable Definition Binding Refactor
+r[domain-primitives.semantic-refactoring.immutable-binding]
 The system MUST define finite refactoring-session metadata where moving a name from an old definition hash to a new definition hash never mutates the old definition identity and always records both old and new bindings explicitly.
 
 #### Scenario: Rename does not mutate old definition
@@ -3788,7 +4069,8 @@ The system MUST define finite refactoring-session metadata where moving a name f
 - WHEN refactoring admission is evaluated
 - THEN the step is rejected with missing-new-definition metadata
 
-### Requirement: Compatible Replacement Propagation [r[domain-primitives.semantic-refactoring.compatible-propagation]]
+### Requirement: Compatible Replacement Propagation
+r[domain-primitives.semantic-refactoring.compatible-propagation]
 The system MUST define compatible replacement propagation where dependents of an old definition may be moved to a new definition only when declared type/interface compatibility metadata admits the replacement, and propagation preserves dependent validity in the finite model.
 
 #### Scenario: Compatible replacement propagates to dependent
@@ -3804,6 +4086,7 @@ The system MUST define compatible replacement propagation where dependents of an
 - THEN the dependent is not rewritten and is recorded as unresolved
 
 ### Requirement: Refactoring Session Validity [r[domain-primitives.semantic-refactoring.session-validity]]
+r[gpu.block-dim]
 The system MUST define finite refactoring session validity where every step either preserves admitted bindings/dependents or records unresolved dependents explicitly, so the codebase model remains queryable and no name points to an absent definition.
 
 #### Scenario: Session with unresolved dependent remains explicit
@@ -3826,7 +4109,6 @@ The system MUST define finite refactoring session validity where every step eith
 
 **GPU Programming Primitives**
 
-r[gpu.block-dim]
 GPU block dimension admission MUST require positive x/y/z dimensions and MUST reject blocks whose finite thread product exceeds the declared maximum threads per block.
 
 r[gpu.grid-dim]
@@ -3872,10 +4154,10 @@ r[gpu.block-reduction-program]
 GPU block-reduction-program admission MUST require positive input, thread, per-thread, block, and element sizes, MUST require finite work capacity to cover the input, and MUST require per-block shared-memory bytes to fit the declared shared capacity.
 
 ### Requirement: GPU Reduction Tree Program Semantics
+r[domain-primitives.gpu.reduction-tree-program]
 
 The system MUST define finite GPU reduction-tree program semantics where admitted reduction stages have positive input cardinality, bounded active lanes, monotonically non-increasing output cardinality, and a final stage that produces the declared finite number of reduction outputs without claiming operator algebra or numerical accuracy.
 
-r[domain-primitives.gpu.reduction-tree-program]
 
 #### Scenario: Stage reduces active cardinality
 
@@ -3896,10 +4178,10 @@ r[domain-primitives.gpu.reduction-tree-program]
 - THEN the stage is rejected
 
 ### Requirement: GPU Stencil Boundary Program Semantics
+r[domain-primitives.gpu.stencil-boundary-program]
 
 The system MUST define finite GPU stencil-program boundary semantics where admitted output coordinates, stencil radii, and read windows guarantee that every modeled input read remains inside the declared finite input domain before any kernel computation claim is made.
 
-r[domain-primitives.gpu.stencil-boundary-program]
 
 #### Scenario: Interior stencil reads are admitted
 
@@ -3920,10 +4202,10 @@ r[domain-primitives.gpu.stencil-boundary-program]
 - THEN only in-domain read coordinates are admitted and no out-of-domain read is claimed
 
 ### Requirement: GPU Write-Disjoint Program Semantics
+r[domain-primitives.gpu.write-disjoint-program]
 
 The system MUST define finite GPU program write-region semantics where admitted output writes have positive byte spans, remain inside the declared output buffer, and pairwise distinct writes in the modeled program domain are disjoint unless explicitly admitted as the same logical output element.
 
-r[domain-primitives.gpu.write-disjoint-program]
 
 #### Scenario: Elementwise writes are disjoint
 
@@ -3944,10 +4226,10 @@ r[domain-primitives.gpu.write-disjoint-program]
 - THEN the pair is rejected with no CUDA scheduling or ordering claim
 
 ### Requirement: Parking-Lot Core Queue Validity
+r[domain-primitives.parking-lot-core.queue-validity]
 
 The system MUST define a finite parking-lot core model where lock keys map to waiter queues, each waiter appears at most once across all queues, each queued waiter records the key it is parked on, and table/bucket metadata remains valid across queue operations.
 
-r[domain-primitives.parking-lot-core.queue-validity]
 
 #### Scenario: Distinct waiters form a valid queue
 
@@ -3968,10 +4250,10 @@ r[domain-primitives.parking-lot-core.queue-validity]
 - THEN the table is rejected with key-mismatch evidence
 
 ### Requirement: Parking-Lot Core Operations
+r[domain-primitives.parking-lot-core.operations]
 
 The system MUST define finite park, unpark-one, unpark-all, and requeue operations that preserve queue validity, preserve waiter identity except for explicit removal/wake results, and never lose a waiter during key-to-key transfer.
 
-r[domain-primitives.parking-lot-core.operations]
 
 #### Scenario: Park inserts one waiter
 
@@ -3998,10 +4280,10 @@ r[domain-primitives.parking-lot-core.operations]
 - THEN the woken waiter is removed, every non-woken source waiter appears under `TO`, and no waiter is lost or duplicated
 
 ### Requirement: Raw Mutex Parking Bits
+r[domain-primitives.parking-lot-raw-mutex.state-machine]
 
 The system MUST define a compact raw-mutex state machine with locked and parked bits where uncontended acquisition uses a direct free-to-locked transition, contended acquisition sets the parked bit before sleeping, and unlocking preserves the invariant that queued waiters are represented by the parked bit until they are woken, handed off, or proven absent.
 
-r[domain-primitives.parking-lot-raw-mutex.state-machine]
 
 #### Scenario: Uncontended lock takes fast path
 
@@ -4028,10 +4310,10 @@ r[domain-primitives.parking-lot-raw-mutex.state-machine]
 - THEN a state with parked bit clear is rejected unless an explicit wake, timeout, abort, or handoff result accounts for every waiter
 
 ### Requirement: Condition Variable Requeue Without Spurious Wakeup
+r[domain-primitives.parking-lot-condvar.requeue-no-spurious]
 
 The system MUST define condition-variable semantics where a condvar is associated with at most one mutex while waiters are present, notify-one wakes or transfers at most one waiter, notify-all wakes at most one waiter and requeues the rest to the associated mutex, and non-timeout wake results are produced only by explicit notifications.
 
-r[domain-primitives.parking-lot-condvar.requeue-no-spurious]
 
 #### Scenario: Condvar binds to one mutex while waiting
 
@@ -4058,10 +4340,10 @@ r[domain-primitives.parking-lot-condvar.requeue-no-spurious]
 - THEN the result is accepted only if a matching notify-one or notify-all event exists
 
 ### Requirement: Packed Fair RwLock State
+r[domain-primitives.parking-lot-rwlock.packed-fair-state]
 
 The system MUST define a parking-lot-style RwLock state model with packed parked, writer-parked, upgradable, writer, and reader-count fields, admitting readers and writers only when mutual exclusion, writer waiting, downgrade, and upgradable-to-writer constraints are preserved.
 
-r[domain-primitives.parking-lot-rwlock.packed-fair-state]
 
 #### Scenario: Multiple readers without writer are admitted
 
@@ -4088,10 +4370,10 @@ r[domain-primitives.parking-lot-rwlock.packed-fair-state]
 - THEN the acquisition is rejected or queued so at most one upgradable reader is active
 
 ### Requirement: Fair Unlock and Direct Handoff
+r[domain-primitives.parking-lot-fairness.eventual-handoff]
 
 The system MUST define fair unlock and direct handoff semantics where normal unlock may clear ownership before waking a waiter, fair unlock selects an eligible queued waiter, and handoff transfers ownership to that waiter without exposing an unowned-but-stealable interval in the finite model.
 
-r[domain-primitives.parking-lot-fairness.eventual-handoff]
 
 #### Scenario: Fair unlock selects queued waiter
 
@@ -4112,10 +4394,10 @@ r[domain-primitives.parking-lot-fairness.eventual-handoff]
 - THEN the result matches normal unlock and does not fabricate a waiter
 
 ### Requirement: Timed Wait and Timeout Admission
+r[domain-primitives.parking-lot-timeout.timed-wait]
 
 The system MUST define timed wait semantics where deadlines and timeout results are explicit, timeout cannot be reported before the modeled deadline, a notify result cannot be fabricated without a matching wake event, and timeout/notify races resolve to exactly one accepted outcome.
 
-r[domain-primitives.parking-lot-timeout.timed-wait]
 
 #### Scenario: Deadline not reached cannot time out
 
@@ -4136,10 +4418,10 @@ r[domain-primitives.parking-lot-timeout.timed-wait]
 - THEN exactly one outcome is selected and the waiter is not both woken and timed out
 
 ### Requirement: Reentrant Mutex Owner Count
+r[domain-primitives.parking-lot-reentrant-mutex.owner-count]
 
 The system MUST define reentrant mutex semantics with explicit owner identity and recursion count where the owner may reacquire, non-owners are excluded while the mutex is owned, only the owner may release, and ownership clears exactly when the recursion count returns to zero.
 
-r[domain-primitives.parking-lot-reentrant-mutex.owner-count]
 
 #### Scenario: Owner reacquires
 
@@ -4166,10 +4448,10 @@ r[domain-primitives.parking-lot-reentrant-mutex.owner-count]
 - THEN the release is rejected and owner/count state is unchanged
 
 ### Requirement: Once and OnceLock Exactly-Once Initialization
+r[domain-primitives.parking-lot-once.exactly-once]
 
 The system MUST define Once and OnceLock initialization states where at most one initializer runs at a time, completion publishes exactly one initialized value or completion marker, readers observe values only after completion, and retry/poison behavior is represented explicitly when initialization fails.
 
-r[domain-primitives.parking-lot-once.exactly-once]
 
 #### Scenario: First initializer enters running state
 
@@ -4196,10 +4478,10 @@ r[domain-primitives.parking-lot-once.exactly-once]
 - THEN the next state explicitly records whether retry is permitted or future callers observe poison
 
 ### Requirement: Raw Lock Trait Contracts
+r[domain-primitives.parking-lot-raw-lock-contracts.contracts]
 
 The system MUST define reusable raw-lock contract predicates for mutex and RwLock surfaces, including timed, fair, downgrade, and upgrade extensions, so higher-level lock facades can require contracts instead of relying on implementation-specific state assumptions.
 
-r[domain-primitives.parking-lot-raw-lock-contracts.contracts]
 
 #### Scenario: Raw mutex contract preserves mutual exclusion
 
@@ -4226,10 +4508,10 @@ r[domain-primitives.parking-lot-raw-lock-contracts.contracts]
 - THEN packed-state mutual exclusion, reader count, writer bit, and upgradable uniqueness invariants remain valid
 
 ### Requirement: Deadlock Detector Cycle Soundness
+r[domain-primitives.parking-lot-deadlock-detector.cycle-soundness]
 
 The system MUST define a wait-for graph detector where reported deadlocks correspond to real nontrivial cycles in the finite graph, acyclic graphs produce no deadlock reports, and detected cycles include enough thread/resource identities for reviewable evidence.
 
-r[domain-primitives.parking-lot-deadlock-detector.cycle-soundness]
 
 #### Scenario: Three-thread cycle is reported
 
@@ -4256,8 +4538,8 @@ r[domain-primitives.parking-lot-deadlock-detector.cycle-soundness]
 - THEN the behavior is accepted only if the self-cycle policy explicitly classifies it as reportable or ignored
 
 ### Requirement: Spreadsheet Address Envelope
-
 r[domain-primitives.spreadsheet.address]
+
 The system MUST provide finite spreadsheet sheet-bound and cell-address envelopes that record row bounds, column bounds, cell coordinates, and deterministic address-admission results. A checked cell address MUST be admitted only when both coordinates are inside the declared finite sheet bounds, and rejected address admission MUST leave the prior admitted sheet metadata unchanged.
 
 #### Scenario: Cell address must fit sheet bounds
@@ -4273,8 +4555,8 @@ The system MUST provide finite spreadsheet sheet-bound and cell-address envelope
 - THEN the same admitted cell-address metadata is returned each time
 
 ### Requirement: Spreadsheet Range Envelope
-
 r[domain-primitives.spreadsheet.range]
+
 The system MUST provide finite rectangular-range envelopes that normalize two admitted endpoint addresses into a canonical rectangle, expose deterministic range membership, and expand only to admitted cell coordinates inside the declared sheet bounds.
 
 #### Scenario: Reversed range endpoints normalize to the same rectangle
@@ -4290,8 +4572,8 @@ The system MUST provide finite rectangular-range envelopes that normalize two ad
 - THEN the range primitive rejects the range before any membership or expansion result is exposed
 
 ### Requirement: Spreadsheet Formula Envelope
-
 r[domain-primitives.spreadsheet.formula]
+
 The system MUST provide a finite spreadsheet formula and value model covering blank values, exact numeric values, booleans, text, explicit errors, constants, cell references, rectangular ranges, arithmetic operations, and basic finite aggregates over admitted ranges. Formula admission MUST reject syntactically or structurally invalid formulas before dependency extraction or evaluation.
 
 #### Scenario: Formula references admitted cells and ranges only
@@ -4307,8 +4589,8 @@ The system MUST provide a finite spreadsheet formula and value model covering bl
 - THEN the formula primitive returns explicit rejection metadata without attempting dependency extraction or evaluation
 
 ### Requirement: Spreadsheet Dependency Extraction
-
 r[domain-primitives.spreadsheet.dependency]
+
 The system MUST provide deterministic dependency-extraction predicates that return exactly the finite set of precedent cell coordinates named by an admitted formula, including all cells contained in admitted referenced ranges. Dependency extraction MUST be pure over formula structure and declared sheet bounds, and MUST NOT depend on current formatted values, cached results, external workbook files, clocks, or volatile runtime state.
 
 #### Scenario: Range dependency expands to contained cells
@@ -4324,8 +4606,8 @@ The system MUST provide deterministic dependency-extraction predicates that retu
 - THEN the precedent set is empty
 
 ### Requirement: Spreadsheet Cycle Rejection
-
 r[domain-primitives.spreadsheet.cycle]
+
 The system MUST reject spreadsheet formula sets whose dependency graph contains a cycle before formula evaluation begins. An admitted formula set MUST have an acyclic dependency graph over the finite formula-cell coordinates and their extracted precedents.
 
 #### Scenario: Direct circular reference is rejected
@@ -4341,8 +4623,8 @@ The system MUST reject spreadsheet formula sets whose dependency graph contains 
 - THEN admission returns explicit cycle rejection metadata before any formula value is evaluated
 
 ### Requirement: Spreadsheet Recalculation Order
-
 r[domain-primitives.spreadsheet.recalc]
+
 The system MUST provide recalculation-order predicates that admit only finite orders where each selected formula cell appears after every selected formula precedent required by its extracted dependency set. Successful recalculation-order admission MUST refine the acyclic dependency graph and MUST NOT introduce formula cells outside the declared finite sheet metadata.
 
 #### Scenario: Topological recalculation order is admitted
@@ -4358,8 +4640,8 @@ The system MUST provide recalculation-order predicates that admit only finite or
 - THEN the order is rejected and no evaluation result is exposed for that order
 
 ### Requirement: Spreadsheet Dirty Propagation
-
 r[domain-primitives.spreadsheet.dirty-propagation]
+
 The system MUST provide dirty-cell propagation predicates that include each changed cell and every formula cell reachable from the changed cells through reverse spreadsheet dependencies, while excluding formula cells that are not reachable dependents under the admitted finite dependency graph.
 
 #### Scenario: Dependent formulas become dirty
@@ -4375,8 +4657,8 @@ The system MUST provide dirty-cell propagation predicates that include each chan
 - THEN the unrelated formula cell is not included in the dirty set
 
 ### Requirement: Spreadsheet Error Envelope
-
 r[domain-primitives.spreadsheet.error]
+
 The system MUST provide explicit deterministic spreadsheet error envelopes for bad references, division by zero, value-shape mismatches, and cycle rejection. Error-producing checks MUST return the same error metadata for the same admitted inputs, MUST NOT panic, and MUST NOT mutate admitted sheet, formula, dependency, or recalculation metadata.
 
 #### Scenario: Division by zero returns explicit error
@@ -4392,8 +4674,8 @@ The system MUST provide explicit deterministic spreadsheet error envelopes for b
 - THEN the result is the explicit bad-reference rejection or error envelope
 
 ### Requirement: Spreadsheet Admission Composition
-
 r[domain-primitives.spreadsheet.admission]
+
 The system MUST provide a deterministic spreadsheet-admission composition that requires address admission, range admission, formula admission, dependency extraction, cycle rejection, recalculation-order admission, dirty-propagation admission, and error-envelope determinism before any spreadsheet evaluation claim is exposed.
 
 #### Scenario: Admission requires every spreadsheet check

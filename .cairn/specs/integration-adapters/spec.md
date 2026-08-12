@@ -7,10 +7,10 @@ Defines the `integration-adapters` capability.
 ## Requirements
 
 ### Requirement: User-Facing Integration Adapters
+r[integration-adapters.user-facing-adapters]
 
 The system MUST provide deterministic adapter surfaces only when they compose existing verified Trellis primitives and state their supported subset, validation evidence, and non-goals.
 
-r[integration-adapters.user-facing-adapters]
 
 #### Scenario: Adapter delegates to verified primitives
 

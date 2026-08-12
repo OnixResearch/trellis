@@ -11,6 +11,7 @@ without reparsing the whole tree for every lookup.
 ## Requirements
 
 ### Requirement: repo-index.content-digest
+r[repo-index.content-digest]
 
 The index MUST compute a BLAKE3 digest from the raw bytes of each tracked
 file and use that digest as the content identity key for extracted facts.
@@ -34,6 +35,7 @@ file and use that digest as the content identity key for extracted facts.
 - THEN the active path record points at the digest computed from the new bytes
 
 ### Requirement: repo-index.persistent-store
+r[repo-index.repo-index-persistent-store]
 
 The index MUST persist committed rows in redb so a later process can reopen
 the database and answer queries from the last successful refresh.
@@ -51,6 +53,7 @@ the database and answer queries from the last successful refresh.
 - THEN it is answered from the committed rows already in the database
 
 ### Requirement: repo-index.atomic-refresh
+r[repo-index.repo-index-atomic-refresh]
 
 A refresh MUST become visible as one committed generation. Readers MUST
 never observe a mix of old and new generation rows.
@@ -68,6 +71,7 @@ never observe a mix of old and new generation rows.
 - THEN queries still observe the prior committed generation
 
 ### Requirement: repo-index.incremental-refresh
+r[repo-index.incremental-refresh]
 
 The index MUST update the active path view for added, changed, unchanged,
 and deleted files without re-extracting facts for unchanged digests.
@@ -91,6 +95,7 @@ and deleted files without re-extracting facts for unchanged digests.
 - THEN the file appears in path and corpus-stat queries
 
 ### Requirement: repo-index.cross-reference
+r[repo-index.cross-reference]
 
 The index MUST extract cross-reference facts needed to navigate
 `verified-logic` code and specs.
@@ -114,6 +119,7 @@ The index MUST extract cross-reference facts needed to navigate
 - THEN the result includes its change name, domain, requirement headings, and requirement definitions
 
 ### Requirement: repo-index.query
+r[repo-index.query]
 
 The index MUST support deterministic local queries over committed index
 state.

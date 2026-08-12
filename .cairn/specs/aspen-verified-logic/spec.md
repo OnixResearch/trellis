@@ -5,7 +5,8 @@
 This specification defines how verified-logic records, validates, and optionally snapshots Aspen verified-logic evidence while keeping Aspen crate-local proofs as the source of truth unless a local snapshot is explicitly imported and verified.
 
 ## Requirements
-### Requirement: Aspen Verified Logic Evidence Index [r[aspen-verified-logic.evidence-index]]
+### Requirement: Aspen Verified Logic Evidence Index
+r[aspen-verified-logic.evidence-index]
 
 The system MUST provide a local evidence index for Aspen verified-logic slices before this repository relies on Aspen proofs for planning, composition, or operator-facing claims.
 
@@ -22,7 +23,8 @@ The system MUST provide a local evidence index for Aspen verified-logic slices b
 - THEN the row is treated as evidence metadata only
 - AND Aspen's `crates/*/verus/` proof remains the source of truth
 
-### Requirement: Opt-In Aspen Proof Snapshots [r[aspen-verified-logic.opt-in-snapshots]]
+### Requirement: Opt-In Aspen Proof Snapshots
+r[aspen-verified-logic.opt-in-snapshots]
 
 The system MUST import Aspen proof code into this repository only through an explicit manifest-backed snapshot selected for local composition or independent verification.
 
@@ -39,7 +41,8 @@ The system MUST import Aspen proof code into this repository only through an exp
 - THEN the module is not copied solely to mirror Aspen
 - AND the local index remains the durable artifact
 
-### Requirement: Aspen Evidence Drift Gate [r[aspen-verified-logic.drift-gate]]
+### Requirement: Aspen Evidence Drift Gate
+r[aspen-verified-logic.drift-gate]
 
 The system MUST fail closed when the local Aspen verified-logic index or optional snapshot manifest is malformed, stale, or inconsistent with the recorded source commit/path contract.
 
@@ -56,7 +59,8 @@ The system MUST fail closed when the local Aspen verified-logic index or optiona
 - WHEN the drift checker runs
 - THEN it exits non-zero with a diagnostic identifying the invalid row
 
-### Requirement: Aspen Boundary Non-Overclaiming [r[aspen-verified-logic.boundary-non-overclaiming]]
+### Requirement: Aspen Boundary Non-Overclaiming
+r[aspen-verified-logic.boundary-non-overclaiming]
 
 The system MUST distinguish verified finite logic from Aspen runtime shell, networking, serialization, storage engine, crypto, and external-system behavior in every local index or snapshot claim.
 

@@ -17,6 +17,7 @@ every property is already internalized as an end-to-end Verus proof.
 ## Requirements
 
 ### Requirement: Single Assignment
+r[ssa-construction.single-assignment]
 
 In SSA form, every explicit variable version MUST have exactly one
 instruction or phi definition point.
@@ -34,6 +35,7 @@ instruction or phi definition point.
 - THEN a violation is reported
 
 ### Requirement: Dominance of Uses
+r[ssa.dominance-of-uses]
 
 Every SSA use of a variable version MUST be dominated by its definition.
 
@@ -56,6 +58,7 @@ Every SSA use of a variable version MUST be dominated by its definition.
 - THEN V's definition dominates the end of P
 
 ### Requirement: Phi Placement Correctness
+r[ssa.phi-placement]
 
 Phi functions MUST appear exactly at the iterated dominance frontiers of
 each variable's definition set.
@@ -79,6 +82,7 @@ each variable's definition set.
 - THEN every distinct predecessor of B has exactly one entry
 
 ### Requirement: Phi Semantics
+r[ssa.phi-semantics]
 
 A phi function MUST select the value from the predecessor edge that was
 actually taken.
@@ -97,6 +101,7 @@ actually taken.
 - THEN no source version is returned
 
 ### Requirement: SSA Destruction
+r[ssa-construction.ssa-destruction]
 
 Replacing phi functions with per-edge parallel copies MUST preserve the
 path-by-path SSA environment semantics.
@@ -116,6 +121,7 @@ path-by-path SSA environment semantics.
 - THEN they produce the same versioned environment at each block boundary
 
 ### Requirement: IDF Convergence
+r[ssa.idf-convergence]
 
 The iterated dominance frontier computation MUST terminate.
 

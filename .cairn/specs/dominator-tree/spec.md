@@ -9,6 +9,7 @@ iterative algorithm convergence, and dominance frontier computation.
 ## Requirements
 
 ### Requirement: Entry Dominates All
+r[dominator-tree.entry-dominates]
 
 The entry node MUST dominate every reachable node in the CFG.
 
@@ -25,6 +26,7 @@ The entry node MUST dominate every reachable node in the CFG.
 - THEN U has no dominator (undefined)
 
 ### Requirement: Dominance Partial Order
+r[dominator-tree.partial-order]
 
 The dominance relation MUST be a partial order: reflexive, transitive,
 and antisymmetric.
@@ -48,6 +50,7 @@ and antisymmetric.
 - THEN A == B
 
 ### Requirement: Immediate Dominator Uniqueness
+r[dominator-tree.idom-unique]
 
 Each non-entry reachable node MUST have exactly one immediate dominator.
 
@@ -65,6 +68,7 @@ Each non-entry reachable node MUST have exactly one immediate dominator.
 - THEN no immediate dominator exists (entry is the root)
 
 ### Requirement: Tree Structure
+r[dominator-tree.tree-structure]
 
 The immediate dominator relation MUST form a rooted tree with the entry
 as root.
@@ -83,6 +87,7 @@ as root.
 - THEN it appears in the tree
 
 ### Requirement: Algorithm Convergence
+r[dominator-tree.convergence]
 
 The iterative dominator algorithm MUST terminate and produce the correct
 dominator tree.
@@ -100,6 +105,7 @@ dominator tree.
 - THEN the output matches: `idom[N] == M` iff M is the immediate dominator of N
 
 ### Requirement: Dominance Frontier
+r[dominator-tree.dominance-frontier]
 
 The dominance frontier of a node MUST contain exactly the nodes where
 the node's dominance ends.
