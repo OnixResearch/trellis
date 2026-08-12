@@ -1,10 +1,10 @@
-# Durable Reference Identity Separation Specification
+# Domain Primitives Specification
 
 ## Purpose
 
-Defines distinct finite identity types for typed durable references. The requirements preserve malformed-input admission, existing Verus semantics, and the current storage and cryptographic non-claim boundaries.
+Define distinct finite identity types for typed durable references. The requirements preserve malformed-input admission, existing Verus semantics, and the current storage and cryptographic non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Distinct Durable Reference Identity Types
 r[newtypes.durable-identities.types] The typed durable reference model MUST use distinct structures for reference, value, type, codec, closure, and schema identities in every envelope, request, catalog, result, and conversion witness.

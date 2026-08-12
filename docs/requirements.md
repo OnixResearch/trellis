@@ -12429,3 +12429,26 @@ compose existing verified Trellis primitives or explicit pure cores, reject
 malformed or out-of-subset inputs deterministically, and document supported
 subsets, validation evidence, and non-goals without claiming full external
 ecosystem conformance.
+
+## Durable Reference Identity Separation
+
+r[newtypes.durable-identities.types]
+The typed durable reference model MUST use distinct structures for reference, value, type, codec, closure, and schema identities in every envelope, request, catalog, result, and conversion witness, so that cross-domain substitution fails to compile.
+
+r[newtypes.durable-identities.invalid-inputs]
+Each identity structure MUST retain the complete raw u64 value domain, including zero, so malformed finite metadata remains expressible and rejectable by explicit admission predicates; construction alone MUST NOT imply validity.
+
+r[newtypes.durable-identities.preservation]
+For equivalent raw field values, the typed implementation MUST preserve finite metadata, closure availability, missing-closure reporting, unpersist type matching, and conversion-witness admission results.
+
+r[newtypes.durable-identities.evidence]
+The change MUST include positive semantic tests, negative malformed-input tests, and compile-fail evidence for representative cross-domain substitutions.
+
+r[newtypes.durable-identities.docs]
+The change MUST update canonical requirements, source and test annotations, public documentation, and accepted Cairn text for every new identity boundary.
+
+r[newtypes.durable-identities.validation]
+The migration MUST pass focused and full Cargo tests, compile-fail checks, Clippy, full-library Verus, Tracey, proof-gap inventory, and Cairn validation without adding trusted proof boundaries.
+
+r[newtypes.durable-identities.non-claims]
+Identity wrappers MUST NOT be presented as cryptographic digests, collision-resistance evidence, persistence evidence, codec correctness, type-checker correctness, dependency retrieval, or migration execution; they provide domain separation and preserved finite-model admission behavior only.
