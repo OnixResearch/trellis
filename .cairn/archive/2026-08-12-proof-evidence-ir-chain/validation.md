@@ -29,6 +29,18 @@ $ cargo test --quiet
 (full workspace suite exits 0; bin and lib targets pass)
 ```
 
+Heavy rails (run locally against the merged tree; the pre-commit hook's
+remote-builder hash mismatch is avoided with `--builders ''`):
+
+```text
+$ nix build --builders '' .#checks.x86_64-linux.verus-proofs --no-link -L
+PASS (exit 0; full-library Verus verification, pre-existing
+type_lattice snake_case style warnings only)
+
+$ nix build --builders '' .#checks.x86_64-linux.octet --no-link
+PASS (exit 0)
+```
+
 Tracey (current tree):
 
 ```text
