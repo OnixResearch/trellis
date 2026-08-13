@@ -8165,10 +8165,47 @@ r[newtypes.choreography-payload.scope]
 The pilot MUST NOT migrate `RoleId` or `LabelId`, add payload validation, alter
 choreography semantics, or require newtypes for all verified identifiers.
 
+r[choreography.value_ownership.identity]
+Owned choreography values MUST use a distinct `ValueId` structure over the
+complete `u32` domain. Roles, labels, and payload tags MUST NOT enter a value
+identity position without explicit `ValueId` construction.
+
+r[choreography.value_ownership.state]
+An admitted finite ownership state MUST list represented values in strict
+`ValueId` order. Each represented value MUST have exactly one owner entry.
+Admission MUST reject duplicate and out-of-order values.
+
+r[choreography.value_ownership.transfer]
+An owned-transfer step MUST succeed only when source and destination differ and
+the source owns the selected value. Success MUST advance to the stored
+continuation and atomically replace that value's owner with the destination.
+Failure MUST return no replacement choreography or ownership state.
+
+r[choreography.value_ownership.conservation]
+A successful owned-transfer step MUST preserve ownership-state normalization
+and entry count. It MUST change only the selected owner, exclude the former
+owner, and preserve every unrelated value owner.
+
+r[choreography.value_ownership.boundary]
+Owned-transfer evidence MUST describe only an atomic semantic owner change over
+supplied finite facts. It MUST NOT claim transport delivery, persistence,
+memory reclamation, authorization, exactly-once execution, or liveness.
+
+r[choreography.value_ownership.evidence]
+The ownership core MUST include positive, negative, compile-fail, and property
+evidence for identity separation, admission, transfer, conservation, and stale
+source rejection.
+
+r[choreography.value_ownership.validation]
+Ownership proofs MUST constrain the production admission and transfer
+implementations. Full-library verification MUST preserve prior choreography
+theorems without a new trusted bridge, assumption, or proof gap.
+
 r[choreography.participants]
 Finite choreography primitives MUST operate on exact `u32` role identifiers
-and branch labels plus typed `PayloadTag` metadata. A communication prefix is
-well formed only if `from != to`. A choice is well formed only if its branch
+and branch labels plus typed `PayloadTag` metadata. A communication or owned-
+transfer prefix is well formed only if `from != to`. A choice is well formed
+only if its branch
 list is non-empty and its branch labels are pairwise distinct in strict
 increasing order. `participants(choreo)` MUST contain exactly the roles that
 appear as communication endpoints or as a branch decider in `choreo`.
@@ -8178,14 +8215,18 @@ A global communication prefix
 `Comm { from, to, label, payload_tag, next }` MUST denote one exact
 point-to-point interaction from `from` to `to` carrying the exact symbolic
 message metadata `(label, payload_tag)` and continuing with the exact stored
-continuation `next`.
+continuation `next`. An `OwnedTransfer` prefix MUST additionally preserve one
+exact `ValueId`; its ownership effect is defined only by the ownership step.
 
 r[choreography.merge]
 For a non-decider role, local branch projections over exact local nodes
-`End`, `Send`, `Recv`, `InternalChoice`, and `Offer` MUST merge by a total
-helper `merge_local(decider, left, right) -> Option<LocalChoreo>`.
-Identical `Send` or `Recv` heads merge only when peer, label, and payload tag
-all match, keeping that exact head and recursively merging continuations.
+`End`, `Send`, `Recv`, `SendOwned`, `RecvOwned`, `InternalChoice`, and `Offer`
+MUST merge by a total helper
+`merge_local(decider, left, right) -> Option<LocalChoreo>`.
+Identical communication heads merge only when direction, peer, label, and
+payload tag all match. Owned heads MUST also match the exact value identity.
+A successful prefix merge keeps that exact head and recursively merges its
+continuations.
 Distinct `Recv` heads from the decider with distinct labels MUST merge into one
 normalized `Offer` from that decider whose branch labels stay in strict
 increasing order. `Offer` heads from the same decider MUST merge by sorted
@@ -8198,8 +8239,9 @@ r[choreography.projectability]
 A finite choreography MUST be projectable exactly when it is well formed and,
 for every choice and every non-decider role appearing in at least one branch,
 that role's branch projections admit the exact projection-side merge: preserve
-any shared local `Send` / `Recv` prefix common to every branch in stored order,
-and when behavior first diverges, expose an `Offer` from the decider keyed by
+any shared local communication or owned-transfer prefix common to every branch
+in stored order, and when behavior first diverges, expose an `Offer` from the
+decider keyed by
 the stored global branch labels for the remaining branch-local continuations.
 If a projectable choreography takes one global head step, the post-step
 choreography MUST remain projectable.
@@ -8209,6 +8251,8 @@ For every projectable finite choreography `g` and role `r`,
 `project_endpoint(r, g)` MUST be a preconditioned-total helper that returns the
 exact local view implied by `g`: `End -> End`; a communication prefix projects
 to `Send` for the sender, `Recv` for the receiver, and the projected
+continuation for every uninvolved role; an owned-transfer prefix projects to
+`SendOwned` for the source, `RecvOwned` for the destination, and the projected
 continuation for every uninvolved role; a choice projects to a normalized
 `InternalChoice` for the decider; and a choice projects for every non-decider
 role to the exact outer-label-preserving merge of the per-branch projections,
@@ -8222,6 +8266,9 @@ semantics. `global_comm_step` returns `Some(next)` exactly on a global `Comm`
 head. `global_choice_step(g, label)` returns `Some(branch_l)` exactly when the
 head is a `Choice` carrying branch label `label`. `local_send_step` and
 `local_recv_step` return `Some(next)` exactly on `Send` and `Recv` heads.
+`owned_transfer_step` also requires current ownership and returns the exact
+continuation plus the updated ownership state. `local_send_owned_step` and
+`local_recv_owned_step` return `Some(next)` only on their matching owned heads.
 `local_internal_choice_step` and `local_offer_step` return `Some(branch_l)`
 exactly when the head is `InternalChoice` or `Offer` carrying label `label`.
 Missing labels or wrong-head calls MUST return `None`. Sender and receiver
@@ -8230,6 +8277,16 @@ aligned with the exact endpoint projection of the post-step choreography.
 Roles hidden behind shared prefixes MUST stay aligned without fabricating a
 spurious local head step.
 
+r[choreography.value_transfer_projection.shape]
+A projectable owned-transfer prefix MUST project to an exact `SendOwned` head
+for its source and an exact `RecvOwned` head for its destination. Both heads
+MUST preserve the peers, label, payload tag, value identity, and continuation.
+Every uninvolved role MUST project through to the continuation.
+
+r[choreography.value_transfer_projection.merge]
+Owned local heads MUST merge only when direction, peer, label, payload tag, and
+value identity match exactly. Every owned-head mismatch MUST fail merge.
+
 ## Choreography Cross-Module Properties
 
 r[properties.choreography-duality]
@@ -8237,6 +8294,17 @@ For any projectable communication prefix, projection to the sender and
 receiver MUST yield exact dual local heads: the sender sees
 `Send { peer = receiver, ... }` and the receiver sees
 `Recv { peer = sender, ... }` with the same exact `label` and `payload_tag`.
+
+r[properties.choreography_transfer_correspondence]
+For every projectable owned-transfer prefix admitted by a normalized ownership
+state, the production global step and matching projected local steps MUST agree
+on source, destination, label, payload tag, value identity, and continuation.
+The global result MUST satisfy ownership conservation.
+
+r[properties.choreography_transfer_exclusion]
+After a successful transfer moves one value from source to destination, a later
+step over the unchanged result MUST reject the former source for that value and
+MUST return no fabricated ownership state.
 
 r[properties.choreography-choice-agreement]
 For any projectable choice with decider `D` and global branch-label set `L`,

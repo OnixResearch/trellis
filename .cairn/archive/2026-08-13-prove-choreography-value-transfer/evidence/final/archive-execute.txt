@@ -1,0 +1,317 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: prove-choreography-value-transfer",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer"
+    }
+  ],
+  "blocked": false,
+  "change": "prove-choreography-value-transfer",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "6257b816429affcf069f5d34e8b294e724dcd2122f86761c365410b3df14a2c2",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "f1799683f3d5168ee088e641664480046fb488c157197f17ef514bf82965aa52",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/design.md"
+        },
+        {
+          "content_hash": "d12931948907d3fc406328ebbbb4ed542fb30a7160d33e69941d03e3ef2a8b7a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/baseline/summary.md"
+        },
+        {
+          "content_hash": "aceb5da7809918baad957875ac75765f60ae8937c10a3871d4fdf08b7c62fc79",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/claim-boundary.md"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/archive-execute.txt"
+        },
+        {
+          "content_hash": "e22c0a766351f33d8fc2a5641b3bd609e293bc2029daa388e61a1f2d8e3ff9b2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/archive-plan.txt"
+        },
+        {
+          "content_hash": "73050cd0c1e2308ff74302fcad554be809a72c7617cb4048d2d012ea9abaaa0a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/cairn-gates-sync-validate.txt"
+        },
+        {
+          "content_hash": "7d8885362a66acdcd6d20e1f034252149d89833c1e7f0dbdbebe7afa6189ff03",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/cargo-clippy.txt"
+        },
+        {
+          "content_hash": "5b9feaf535d5da2748ed89c1919d206227e4194e91490029321ede77cba47267",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/cargo-test-workspace-all-targets.txt"
+        },
+        {
+          "content_hash": "d4a193ba2883dff5594a24c3e5300cbc0d35d8b03a474aff241bb8be7e0362b1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/check-coverage.txt"
+        },
+        {
+          "content_hash": "56657adc02e9d8f4f94caba3bf73a6267ba05f8c5fdaa359bea52f45b0ecb77b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/check-ensures.txt"
+        },
+        {
+          "content_hash": "150067680d3d96377a9ed8180b0a0129fcf546cabb2f93dc702c762ea070f390",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/compile-fail-doctests.txt"
+        },
+        {
+          "content_hash": "748ac365ff21671cd7edbca9fa38225856565c5badf5569c813f0da3f03b3794",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/focused-choreography-tests.txt"
+        },
+        {
+          "content_hash": "5295049bd0614fef7b4f764ffe4716d0746ac9bd5700bc130b870ef2d2f84f24",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/full-library-verus.txt"
+        },
+        {
+          "content_hash": "2f0865876c8454d2dddb49f7daf4040d2311a4033c71a99e12b1e44423b3711c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/octet-pre-refresh-review.txt"
+        },
+        {
+          "content_hash": "b4bf5b93925b8ef45d601ac477c9c33eef1ffd69da5ef214b6ef1bf454a86a8c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/octet-review.md"
+        },
+        {
+          "content_hash": "6dd4fe02d53e4e155e10a31f96edee16405571449df5fed497af94273170ee71",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/pre-commit-octet.txt"
+        },
+        {
+          "content_hash": "ab880c946ad1193d2af80dca9aad2041470a62fe110866448337676d4008ee93",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/proof-gap-inventory.txt"
+        },
+        {
+          "content_hash": "1cccfa83cc9e06fe2cf3d735ee2cefae2cf484bdb6f0f8b72422cbf1aa3ad1b4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/readme-metrics.txt"
+        },
+        {
+          "content_hash": "aa866d5f545c1aaa03dcc707bb181ac9d3b4af5967a0dbd8feb43ffb6c02f142",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/final/tracey.txt"
+        },
+        {
+          "content_hash": "432a0a9c09f7af0c7ca717b57d811ae731c64478480a60c6b59d62208a912c47",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/reference-review.md"
+        },
+        {
+          "content_hash": "caf6f7996c095bd2e3d8183f1e82f633b54c32926b42522c777b2b685dc12e6b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/evidence/representation.md"
+        },
+        {
+          "content_hash": "01b0f81afa53e62f5be8edb93ef46d0767a4767341b120c8bbaab78f5c3188de",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/proposal.md"
+        },
+        {
+          "content_hash": "f8e27fe1bed7fbc4e3db4b8ceadc25f7dd877a1a1c2e2eae5f0c869443965330",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/specs/choreography-core/spec.md"
+        },
+        {
+          "content_hash": "912105ac213c80391d2dee50f419498bd8a63e56645580638c085745c4d5910e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/specs/choreography-projection/spec.md"
+        },
+        {
+          "content_hash": "2894024539ab4316c1698b317019599f728a981d121532a023bfe02863c99f76",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/specs/choreography-properties/spec.md"
+        },
+        {
+          "content_hash": "06fbd0b875db6b3ce97caa48505c1bb0278548db520111eef5419d46bf6a01d9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-08-13-prove-choreography-value-transfer/tasks.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/prove-choreography-value-transfer"
+        }
+      ],
+      "manifest_hash": "7db47e2c89d31ed4d971179fa6cc7f03716e2c609eecf351b19159e786ac02af"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "f1799683f3d5168ee088e641664480046fb488c157197f17ef514bf82965aa52",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/design.md"
+        },
+        {
+          "content_hash": "d12931948907d3fc406328ebbbb4ed542fb30a7160d33e69941d03e3ef2a8b7a",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/baseline/summary.md"
+        },
+        {
+          "content_hash": "aceb5da7809918baad957875ac75765f60ae8937c10a3871d4fdf08b7c62fc79",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/claim-boundary.md"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/archive-execute.txt"
+        },
+        {
+          "content_hash": "e22c0a766351f33d8fc2a5641b3bd609e293bc2029daa388e61a1f2d8e3ff9b2",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/archive-plan.txt"
+        },
+        {
+          "content_hash": "73050cd0c1e2308ff74302fcad554be809a72c7617cb4048d2d012ea9abaaa0a",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/cairn-gates-sync-validate.txt"
+        },
+        {
+          "content_hash": "7d8885362a66acdcd6d20e1f034252149d89833c1e7f0dbdbebe7afa6189ff03",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/cargo-clippy.txt"
+        },
+        {
+          "content_hash": "5b9feaf535d5da2748ed89c1919d206227e4194e91490029321ede77cba47267",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/cargo-test-workspace-all-targets.txt"
+        },
+        {
+          "content_hash": "d4a193ba2883dff5594a24c3e5300cbc0d35d8b03a474aff241bb8be7e0362b1",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/check-coverage.txt"
+        },
+        {
+          "content_hash": "56657adc02e9d8f4f94caba3bf73a6267ba05f8c5fdaa359bea52f45b0ecb77b",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/check-ensures.txt"
+        },
+        {
+          "content_hash": "150067680d3d96377a9ed8180b0a0129fcf546cabb2f93dc702c762ea070f390",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/compile-fail-doctests.txt"
+        },
+        {
+          "content_hash": "748ac365ff21671cd7edbca9fa38225856565c5badf5569c813f0da3f03b3794",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/focused-choreography-tests.txt"
+        },
+        {
+          "content_hash": "5295049bd0614fef7b4f764ffe4716d0746ac9bd5700bc130b870ef2d2f84f24",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/full-library-verus.txt"
+        },
+        {
+          "content_hash": "2f0865876c8454d2dddb49f7daf4040d2311a4033c71a99e12b1e44423b3711c",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/octet-pre-refresh-review.txt"
+        },
+        {
+          "content_hash": "b4bf5b93925b8ef45d601ac477c9c33eef1ffd69da5ef214b6ef1bf454a86a8c",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/octet-review.md"
+        },
+        {
+          "content_hash": "6dd4fe02d53e4e155e10a31f96edee16405571449df5fed497af94273170ee71",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/pre-commit-octet.txt"
+        },
+        {
+          "content_hash": "ab880c946ad1193d2af80dca9aad2041470a62fe110866448337676d4008ee93",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/proof-gap-inventory.txt"
+        },
+        {
+          "content_hash": "1cccfa83cc9e06fe2cf3d735ee2cefae2cf484bdb6f0f8b72422cbf1aa3ad1b4",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/readme-metrics.txt"
+        },
+        {
+          "content_hash": "aa866d5f545c1aaa03dcc707bb181ac9d3b4af5967a0dbd8feb43ffb6c02f142",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/final/tracey.txt"
+        },
+        {
+          "content_hash": "432a0a9c09f7af0c7ca717b57d811ae731c64478480a60c6b59d62208a912c47",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/reference-review.md"
+        },
+        {
+          "content_hash": "caf6f7996c095bd2e3d8183f1e82f633b54c32926b42522c777b2b685dc12e6b",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/evidence/representation.md"
+        },
+        {
+          "content_hash": "01b0f81afa53e62f5be8edb93ef46d0767a4767341b120c8bbaab78f5c3188de",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/proposal.md"
+        },
+        {
+          "content_hash": "f8e27fe1bed7fbc4e3db4b8ceadc25f7dd877a1a1c2e2eae5f0c869443965330",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md"
+        },
+        {
+          "content_hash": "912105ac213c80391d2dee50f419498bd8a63e56645580638c085745c4d5910e",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md"
+        },
+        {
+          "content_hash": "2894024539ab4316c1698b317019599f728a981d121532a023bfe02863c99f76",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md"
+        },
+        {
+          "content_hash": "06fbd0b875db6b3ce97caa48505c1bb0278548db520111eef5419d46bf6a01d9",
+          "exists": true,
+          "path": "./.cairn/changes/prove-choreography-value-transfer/tasks.md"
+        }
+      ],
+      "manifest_hash": "152e2c588cdcccc89bc7a4a0b2c0390e68297143384a4dc4466a059d0be74bc0"
+    },
+    "kind": "archive",
+    "manifest_hash": "7ab8097630cd1f0c15ec0c3a76ec6999d9e5661613ee2edfb8b5f21e20ed661d"
+  },
+  "plan_hash": "34e736706577d477aa624774cb9ee43616202662b46a73cf345422f00492d62d",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "f3b6b1ae8cf9614cba06ded6fd52bba4cd4e2b26b101aa71357a82b759da095d"
+}

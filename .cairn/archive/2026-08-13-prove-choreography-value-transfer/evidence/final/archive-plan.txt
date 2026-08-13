@@ -1,0 +1,2489 @@
+$ cairn gate tasks prove-choreography-value-transfer
+{
+  "change": "prove-choreography-value-transfer",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "f419589f3353867623b54b466b3ddad9c868085c726d47f534531568bbfd48e9",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "probe_evidence": {
+    "declarations_present": false,
+    "probes": []
+  },
+  "receipt_hash": "faf8dbeb74ad18256eb80fd1e7b0912efd350b91a1981514203f3ca517ae93e2",
+  "stage": "tasks",
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 48,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 30,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 11,
+      "substantive_lines": 44,
+      "substantive_requirement_blocks": 7,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 5,
+      "substantive_lines": 20,
+      "substantive_requirement_blocks": 2,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 3,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 2,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 19,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 19,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 19,
+      "task_done": 19,
+      "task_in_progress": 0,
+      "task_todo": 0
+    }
+  ],
+  "task_ordering": {
+    "active": false,
+    "edges": [],
+    "issues": [],
+    "nodes": [],
+    "order": [],
+    "ready_tasks": [],
+    "valid": true
+  },
+  "valid": true,
+  "verdict": "PASS"
+}
+
+$ cairn sync prove-choreography-value-transfer
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md"
+    },
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md"
+    },
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "prove-choreography-value-transfer",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md",
+    "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md",
+    "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "9b21008b8e57bd0c86e0e43a27268bac821b430bf624e27834ff85e66282a1f5",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "2078e3f499bf5aa7ae13f523c9f38c43bc53022afb94af3ed20f9e77c3c986cf",
+        "blocked": false,
+        "changed": false,
+        "delta_hash": "f8e27fe1bed7fbc4e3db4b8ceadc25f7dd877a1a1c2e2eae5f0c869443965330",
+        "destination": ".cairn/specs/choreography-core/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "2078e3f499bf5aa7ae13f523c9f38c43bc53022afb94af3ed20f9e77c3c986cf",
+        "operations": [
+          {
+            "block_hash": "c2c455bc2661d0dc5e6cfde9b293ca9942e0159af07ead971684828230fcf8df",
+            "heading": "### Requirement: Choreography value identities are distinct",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.identity"
+          },
+          {
+            "block_hash": "f3873270c6169e9affe60931997139013fb466e154c86003c30d58be22b2e767",
+            "heading": "### Requirement: Ownership states are normalized and unique",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.state"
+          },
+          {
+            "block_hash": "de1db8782aec3abaf3b0c0a33fc91f5718b1fa5a93d5f2a4c18e425c4c7a304b",
+            "heading": "### Requirement: Owned transfer changes one exact owner",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.transfer"
+          },
+          {
+            "block_hash": "59a66d05a807ace22da6061f16343d44d045798dfc2bb49d76fa8d27c570d87d",
+            "heading": "### Requirement: Owned transfer preserves unrelated ownership",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.conservation"
+          },
+          {
+            "block_hash": "a81aa45788c1eb2e27fe445e5c41ae0a6247beef3f32ed5d111b8163689e7d5a",
+            "heading": "### Requirement: Value ownership claims remain semantic and bounded",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.boundary"
+          },
+          {
+            "block_hash": "ffa7c3e0700d4865d6511b0b236d639be44209f3e771f7e29a7be6f99d541b0e",
+            "heading": "### Requirement: Value ownership has positive and negative evidence",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.evidence"
+          },
+          {
+            "block_hash": "1adc8fc655f4530f2c280217b39d6ecdc5cb1ff9488b53872c6b6aeb0a211764",
+            "heading": "### Requirement: Value ownership verification remains production linked",
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.identity",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.state",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.transfer",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.conservation",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.boundary",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.evidence",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_ownership.validation",
+            "state": "already_applied"
+          }
+        ],
+        "source": ".cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md"
+      },
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "61728b388fdb2920d67751106b2b39b073741dda9db0c2b71a1e5d0a3db76df4",
+        "blocked": false,
+        "changed": false,
+        "delta_hash": "912105ac213c80391d2dee50f419498bd8a63e56645580638c085745c4d5910e",
+        "destination": ".cairn/specs/choreography-projection/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "61728b388fdb2920d67751106b2b39b073741dda9db0c2b71a1e5d0a3db76df4",
+        "operations": [
+          {
+            "block_hash": "0dc51a36a83d8f6dac314742c73a7133320128ef7dc09f5a30aca09ee29e1864",
+            "heading": "### Requirement: Owned transfers project to exact local heads",
+            "kind": "added",
+            "requirement_id": "choreography.value_transfer_projection.shape"
+          },
+          {
+            "block_hash": "0367326fc88c280cbec858b5b656bccc7095129b8ea66acdcea171299102537b",
+            "heading": "### Requirement: Owned-transfer merge is exact",
+            "kind": "added",
+            "requirement_id": "choreography.value_transfer_projection.merge"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_transfer_projection.shape",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "choreography.value_transfer_projection.merge",
+            "state": "already_applied"
+          }
+        ],
+        "source": ".cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md"
+      },
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "6146bdf4afdbba0e7e6f883a0296041a47fbdf99386ff8ce8a497d080c8a0906",
+        "blocked": false,
+        "changed": false,
+        "delta_hash": "2894024539ab4316c1698b317019599f728a981d121532a023bfe02863c99f76",
+        "destination": ".cairn/specs/choreography-properties/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "6146bdf4afdbba0e7e6f883a0296041a47fbdf99386ff8ce8a497d080c8a0906",
+        "operations": [
+          {
+            "block_hash": "183a9482f9af2099ed5a296cedcd73e2d89a48a3fa6e6fa57331679a40a25bca",
+            "heading": "### Requirement: Owned-transfer projection and steps correspond",
+            "kind": "added",
+            "requirement_id": "properties.choreography_transfer_correspondence"
+          },
+          {
+            "block_hash": "df233ddec78f7e0d255e996868fc06eac7de0e5ae815a59768fcb3b300abc614",
+            "heading": "### Requirement: Successful transfer excludes stale source reuse",
+            "kind": "added",
+            "requirement_id": "properties.choreography_transfer_exclusion"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "properties.choreography_transfer_correspondence",
+            "state": "already_applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "properties.choreography_transfer_exclusion",
+            "state": "already_applied"
+          }
+        ],
+        "source": ".cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "90394202515f0fa957f1c03b22c2c4b1b62851ca0c09db60e82ddf018eb7d972",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "47edae9d888eb4935cde9e8a1b98d0eb38c4b7db0a8d96e5b21c08c12d135396"
+}
+
+$ cairn validate
+{
+  "change_issues": [],
+  "changes": 23,
+  "cross_repo_dependencies": [],
+  "cross_repo_evidence_issues": [],
+  "findings": [],
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "resolution": {
+    "diagnostics": [],
+    "locator_consulted": false,
+    "registry_lookup": "local_locator_only",
+    "selected": {
+      "project_identity": null,
+      "root": ".",
+      "source": "explicit_root",
+      "store_id": null,
+      "store_identity": null
+    },
+    "valid": true
+  },
+  "spec_findings": [],
+  "spec_issues": [],
+  "spec_substance": [
+    {
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 25,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 13
+    },
+    {
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 28,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 25,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/specs/repo-index/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 19,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md",
+      "requirement_blocks": 9,
+      "scenario_blocks": 18,
+      "substantive_requirement_blocks": 9
+    },
+    {
+      "path": "./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 17,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 21,
+      "substantive_requirement_blocks": 13
+    },
+    {
+      "path": "./.cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 21,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 20,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 18,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 17,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 5,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 19,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 18,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 23,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/changes/separate-parking-lot-identities/specs/domain-primitives/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 32,
+      "substantive_requirement_blocks": 13
+    },
+    {
+      "path": "./.cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 20,
+      "substantive_requirement_blocks": 12
+    },
+    {
+      "path": "./.cairn/specs/aspen-verified-logic/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 7,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/beam/spec.md",
+      "requirement_blocks": 22,
+      "scenario_blocks": 37,
+      "substantive_requirement_blocks": 22
+    },
+    {
+      "path": "./.cairn/specs/cache-hierarchy/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 15,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/cache-partitioning/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/cache-prefetch-validity/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/capability-auth/spec.md",
+      "requirement_blocks": 43,
+      "scenario_blocks": 25,
+      "substantive_requirement_blocks": 43
+    },
+    {
+      "path": "./.cairn/specs/chain/spec.md",
+      "requirement_blocks": 18,
+      "scenario_blocks": 28,
+      "substantive_requirement_blocks": 18
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-coverage-oracle/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-fault-state/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 6,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-heuristics/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 7,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-properties/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-scheduler/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/chaoscontrol-validation/spec.md",
+      "requirement_blocks": 1,
+      "scenario_blocks": 2,
+      "substantive_requirement_blocks": 1
+    },
+    {
+      "path": "./.cairn/specs/choreography-core/spec.md",
+      "requirement_blocks": 17,
+      "scenario_blocks": 33,
+      "substantive_requirement_blocks": 17
+    },
+    {
+      "path": "./.cairn/specs/choreography-projection/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 15,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/choreography-properties/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/composite-primitives/spec.md",
+      "requirement_blocks": 30,
+      "scenario_blocks": 55,
+      "substantive_requirement_blocks": 30
+    },
+    {
+      "path": "./.cairn/specs/consensus/spec.md",
+      "requirement_blocks": 20,
+      "scenario_blocks": 30,
+      "substantive_requirement_blocks": 20
+    },
+    {
+      "path": "./.cairn/specs/consistency-models/spec.md",
+      "requirement_blocks": 19,
+      "scenario_blocks": 42,
+      "substantive_requirement_blocks": 19
+    },
+    {
+      "path": "./.cairn/specs/constant-folding/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/control-flow-graph/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 19,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/crate-packaging/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/specs/cryptoshedding/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/dead-code-elimination/spec.md",
+      "requirement_blocks": 9,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 9
+    },
+    {
+      "path": "./.cairn/specs/debruijn-substitution/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/directory-coherence/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/distributed/spec.md",
+      "requirement_blocks": 34,
+      "scenario_blocks": 61,
+      "substantive_requirement_blocks": 34
+    },
+    {
+      "path": "./.cairn/specs/documentation-catalog/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 23,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/domain-primitives/spec.md",
+      "requirement_blocks": 313,
+      "scenario_blocks": 497,
+      "substantive_requirement_blocks": 313
+    },
+    {
+      "path": "./.cairn/specs/dominator-tree/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/durable-execution/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/specs/false-sharing-detection/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 11,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/fetch-add/spec.md",
+      "requirement_blocks": 9,
+      "scenario_blocks": 20,
+      "substantive_requirement_blocks": 9
+    },
+    {
+      "path": "./.cairn/specs/financial-accounting/spec.md",
+      "requirement_blocks": 25,
+      "scenario_blocks": 41,
+      "substantive_requirement_blocks": 25
+    },
+    {
+      "path": "./.cairn/specs/hardware-output/spec.md",
+      "requirement_blocks": 18,
+      "scenario_blocks": 37,
+      "substantive_requirement_blocks": 18
+    },
+    {
+      "path": "./.cairn/specs/hypervisor/spec.md",
+      "requirement_blocks": 17,
+      "scenario_blocks": 26,
+      "substantive_requirement_blocks": 17
+    },
+    {
+      "path": "./.cairn/specs/instruction-selection/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 21,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/integration-adapters/spec.md",
+      "requirement_blocks": 1,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 1
+    },
+    {
+      "path": "./.cairn/specs/job-runner/spec.md",
+      "requirement_blocks": 23,
+      "scenario_blocks": 43,
+      "substantive_requirement_blocks": 23
+    },
+    {
+      "path": "./.cairn/specs/kani-boundary/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/left-right/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/liveness-analysis/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/loop-detection/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 17,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/mmu/spec.md",
+      "requirement_blocks": 87,
+      "scenario_blocks": 54,
+      "substantive_requirement_blocks": 87
+    },
+    {
+      "path": "./.cairn/specs/module-scope/spec.md",
+      "requirement_blocks": 1,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 1
+    },
+    {
+      "path": "./.cairn/specs/moesi/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/nickel/spec.md",
+      "requirement_blocks": 27,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 27
+    },
+    {
+      "path": "./.cairn/specs/nix-derivation/spec.md",
+      "requirement_blocks": 24,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 24
+    },
+    {
+      "path": "./.cairn/specs/nix/spec.md",
+      "requirement_blocks": 37,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 37
+    },
+    {
+      "path": "./.cairn/specs/per-core-rwlock/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/proof-artifact-manifest/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/proof-artifact-provenance/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/proof-evidence-bundles/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 20,
+      "substantive_requirement_blocks": 11
+    },
+    {
+      "path": "./.cairn/specs/proof-review-automation/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/property-spec/spec.md",
+      "requirement_blocks": 1,
+      "scenario_blocks": 2,
+      "substantive_requirement_blocks": 1
+    },
+    {
+      "path": "./.cairn/specs/raft-replication/spec.md",
+      "requirement_blocks": 46,
+      "scenario_blocks": 58,
+      "substantive_requirement_blocks": 46
+    },
+    {
+      "path": "./.cairn/specs/register-allocation/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/repo-index/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 16,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/runnable-proof-examples/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 5,
+      "substantive_requirement_blocks": 2
+    },
+    {
+      "path": "./.cairn/specs/runtime-evidence/spec.md",
+      "requirement_blocks": 1,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 1
+    },
+    {
+      "path": "./.cairn/specs/rust-primitives/spec.md",
+      "requirement_blocks": 33,
+      "scenario_blocks": 55,
+      "substantive_requirement_blocks": 33
+    },
+    {
+      "path": "./.cairn/specs/secret-sharing/spec.md",
+      "requirement_blocks": 20,
+      "scenario_blocks": 34,
+      "substantive_requirement_blocks": 20
+    },
+    {
+      "path": "./.cairn/specs/sel4-asid/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/sel4-cap-rights/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 6,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-cdt/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/sel4-cspace/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-endpoint/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-fault-ipc/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-invariants/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 10,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/sel4-invocation/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-irq/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-notification/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-ready-queue/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-reply/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-tcb/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-untyped/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 3,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/sel4-vspace/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/set-associative-lookup/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/ssa-construction/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/stack-frame-layout/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/store-buffer/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/surelock/spec.md",
+      "requirement_blocks": 16,
+      "scenario_blocks": 22,
+      "substantive_requirement_blocks": 16
+    },
+    {
+      "path": "./.cairn/specs/time/spec.md",
+      "requirement_blocks": 16,
+      "scenario_blocks": 46,
+      "substantive_requirement_blocks": 16
+    },
+    {
+      "path": "./.cairn/specs/tlb-shootdown/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 13,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/type-unification/spec.md",
+      "requirement_blocks": 5,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 5
+    },
+    {
+      "path": "./.cairn/specs/ucan-ability/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 7,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/ucan-bridge-coverage/spec.md",
+      "requirement_blocks": 4,
+      "scenario_blocks": 5,
+      "substantive_requirement_blocks": 4
+    },
+    {
+      "path": "./.cairn/specs/ucan-caveat/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/ucan-cid/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 9,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/ucan-did/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 8,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/ucan-token/spec.md",
+      "requirement_blocks": 9,
+      "scenario_blocks": 12,
+      "substantive_requirement_blocks": 9
+    },
+    {
+      "path": "./.cairn/specs/upstream-verus-corpus/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 18,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/specs/verification-frontier/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 25,
+      "substantive_requirement_blocks": 8
+    },
+    {
+      "path": "./.cairn/specs/verification-gaps/spec.md",
+      "requirement_blocks": 16,
+      "scenario_blocks": 40,
+      "substantive_requirement_blocks": 16
+    },
+    {
+      "path": "./.cairn/specs/verification-policy/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 21,
+      "substantive_requirement_blocks": 6
+    },
+    {
+      "path": "./.cairn/specs/verification-tooling/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 14,
+      "substantive_requirement_blocks": 3
+    },
+    {
+      "path": "./.cairn/specs/wasm/spec.md",
+      "requirement_blocks": 17,
+      "scenario_blocks": 44,
+      "substantive_requirement_blocks": 17
+    },
+    {
+      "path": "./.cairn/specs/web-of-trust/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 28,
+      "substantive_requirement_blocks": 10
+    },
+    {
+      "path": "./.cairn/specs/write-back-write-through/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 15,
+      "substantive_requirement_blocks": 7
+    },
+    {
+      "path": "./.cairn/specs/zircon-kernel/spec.md",
+      "requirement_blocks": 38,
+      "scenario_blocks": 64,
+      "substantive_requirement_blocks": 38
+    }
+  ],
+  "specs_validated": 125,
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 34,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 25,
+      "substantive_lines": 87,
+      "substantive_requirement_blocks": 12,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 14,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 14,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 14
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 44,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 26,
+      "substantive_lines": 92,
+      "substantive_requirement_blocks": 13,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 20,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 20,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 20,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 20
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 70,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 28,
+      "substantive_lines": 108,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 25,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 31,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 25,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 25
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 37,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 16,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md",
+      "requirement_blocks": 8,
+      "scenario_blocks": 14,
+      "substantive_lines": 63,
+      "substantive_requirement_blocks": 8,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 18,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 18,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 18,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 18
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 21,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 25,
+      "substantive_lines": 87,
+      "substantive_requirement_blocks": 11,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 16,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 16,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 16,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 16
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 4,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 8,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/specs/repo-index/spec.md",
+      "requirement_blocks": 3,
+      "scenario_blocks": 4,
+      "substantive_lines": 16,
+      "substantive_requirement_blocks": 3,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 7,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 7,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 7,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 7
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md",
+      "requirement_blocks": 6,
+      "scenario_blocks": 12,
+      "substantive_lines": 43,
+      "substantive_requirement_blocks": 6,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 9,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 9,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 9
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/backend-codegen-trace/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/backend-codegen-trace/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 19,
+      "substantive_lines": 69,
+      "substantive_requirement_blocks": 11,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/backend-codegen-trace/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/dhall-style-total-config/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 30,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/dhall-style-total-config/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 26,
+      "substantive_lines": 91,
+      "substantive_requirement_blocks": 12,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 10,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/dhall-style-total-config/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 10,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 10
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-attribute-parsing/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-attribute-parsing/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md",
+      "requirement_blocks": 9,
+      "scenario_blocks": 18,
+      "substantive_lines": 64,
+      "substantive_requirement_blocks": 9,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 10,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-attribute-parsing/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 10,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 10
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-id-lowering/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-id-lowering/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 17,
+      "substantive_lines": 62,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 10,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/hir-id-lowering/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 10,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 10
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-core-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 17,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-core-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 21,
+      "substantive_lines": 77,
+      "substantive_requirement_blocks": 13,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 12,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-core-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 12,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 12,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 12
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-dataflow-framework/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 16,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-dataflow-framework/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 21,
+      "substantive_lines": 76,
+      "substantive_requirement_blocks": 12,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-dataflow-framework/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-drop-elaboration/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 17,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-drop-elaboration/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 20,
+      "substantive_lines": 72,
+      "substantive_requirement_blocks": 11,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 12,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-drop-elaboration/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 12,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 12,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 12
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-pass-pipeline/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-pass-pipeline/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 18,
+      "substantive_lines": 66,
+      "substantive_requirement_blocks": 11,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-pass-pipeline/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 13,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 17,
+      "substantive_lines": 62,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 48,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 30,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-core/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 11,
+      "substantive_lines": 44,
+      "substantive_requirement_blocks": 7,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-projection/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 5,
+      "substantive_lines": 20,
+      "substantive_requirement_blocks": 2,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/specs/choreography-properties/spec.md",
+      "requirement_blocks": 2,
+      "scenario_blocks": 3,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 2,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 19,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/prove-choreography-value-transfer/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 19,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 19,
+      "task_done": 19,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-metadata-identity/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-metadata-identity/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 19,
+      "substantive_lines": 68,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 10,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-metadata-identity/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 10,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 10
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-monomorphization/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-monomorphization/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 18,
+      "substantive_lines": 65,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/rustc-monomorphization/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/s-expression-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 19,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/s-expression-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md",
+      "requirement_blocks": 11,
+      "scenario_blocks": 23,
+      "substantive_lines": 81,
+      "substantive_requirement_blocks": 11,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 16,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/s-expression-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 16,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 16,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 16
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/separate-parking-lot-identities/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 25,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/separate-parking-lot-identities/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/separate-parking-lot-identities/specs/domain-primitives/spec.md",
+      "requirement_blocks": 7,
+      "scenario_blocks": 10,
+      "substantive_lines": 38,
+      "substantive_requirement_blocks": 7,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/separate-parking-lot-identities/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 36,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 10,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 32,
+      "substantive_lines": 110,
+      "substantive_requirement_blocks": 13,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 12,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 12,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 12,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 12
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/track-caller-abi/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 14,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/track-caller-abi/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md",
+      "requirement_blocks": 12,
+      "scenario_blocks": 20,
+      "substantive_lines": 73,
+      "substantive_requirement_blocks": 12,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/track-caller-abi/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 11
+    }
+  ],
+  "substance_findings": [],
+  "substance_issues": [],
+  "valid": true
+}
+
+$ cairn archive prove-choreography-value-transfer
+{
+  "actions": [
+    {
+      "description": "move active change to archive: prove-choreography-value-transfer",
+      "kind": "archive_change",
+      "path": "./.cairn/changes/prove-choreography-value-transfer"
+    }
+  ],
+  "blocked": false,
+  "change": "prove-choreography-value-transfer",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": true,
+  "input_hash": "6257b816429affcf069f5d34e8b294e724dcd2122f86761c365410b3df14a2c2",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "f31e29e4b4d3199cafcfa435e8853133cdf5e41ed428c0e0a986c6d0063d6aee",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "a9cba269762170ee372508102dc2ecf44c83cacb5cf8197c88c224db9f55676c"
+}

@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10712 Verus proofs · 4849 tests · 2022 requirements · 604 modules · 16 trusted/proof-gap boundaries**
+**10752 Verus proofs · 4865 tests · 2055 requirements · 605 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,

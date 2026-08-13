@@ -72,6 +72,7 @@
 //!   retry bounds
 //! - `chain` — chain hash integrity with append-preserves proof
 //! - `choreography_global` — finite global choreography syntax, participants, and well-formedness
+//! - `choreography_ownership` — normalized finite value ownership and atomic owner transfer
 //! - `choreography_local` — finite local choreography syntax, branch lookup, and merge
 //! - `choreography_projection` — projectability checks and endpoint projection
 //! - `choreography_step` — one-step global/local reduction and projection alignment helpers
@@ -483,6 +484,7 @@ pub mod chaoscontrol_scheduler;
 pub mod check_quorum;
 pub mod choreography_global;
 pub mod choreography_local;
+pub mod choreography_ownership;
 pub mod choreography_projection;
 pub mod choreography_step;
 pub mod chunk;

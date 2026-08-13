@@ -10,7 +10,7 @@
     "profile_hash": "b3:9685f42b9289dca49520062ad1ed548be1bfc92ac9a1cef93d784b60dcdbe772",
     "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
   },
-  "baseline_hash": "b3:39d6cb06e4c79a7907dc2d6463cb29b056c040b145a2282a87b3f6cbec54ea0a",
+  "baseline_hash": "b3:d9323b657fc87a9273b8c768ba2afd06991302ca778f3d77e0db08407f3f04b1",
   "findings": [
     {
       "stable_id": "b3:291545489b06a30a",
@@ -23,19 +23,6 @@
       "line": 1,
       "column": 1,
       "message": "source file is 426 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1ee39d78a63af54c",
-      "semantic_id": "b3:1ee39d78a63af54c",
-      "identity_status": "computed",
-      "lint": "module_file_count",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ability_effect.rs",
-      "line": 1,
-      "column": 1,
-      "message": "module directory `src` contains 594 Rust source files (limit: 7)",
       "crate_name": "verified_logic"
     },
     {
@@ -658,19 +645,6 @@
       "severity": "warning",
       "file": "src/alloc_bitmap.rs",
       "line": 111,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:63195cf2be0abcc6",
-      "semantic_id": "b3:63195cf2be0abcc6",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/alloc_bitmap.rs",
-      "line": 131,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -1794,19 +1768,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b43bb254bdefe45f",
-      "semantic_id": "b3:b43bb254bdefe45f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_link.rs",
-      "line": 151,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d1b65b8f4da516dc",
       "semantic_id": "b3:d1b65b8f4da516dc",
       "identity_status": "computed",
@@ -1885,19 +1846,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:de727ef544d49bc4",
-      "semantic_id": "b3:de727ef544d49bc4",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_mailbox.rs",
-      "line": 121,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:5c89bda213ef4685",
       "semantic_id": "b3:5c89bda213ef4685",
       "identity_status": "computed",
@@ -1908,19 +1856,6 @@
       "line": 129,
       "column": 1,
       "message": "item name `mailbox_append` repeats `mailbox` from ancestor path segment `beam_mailbox`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:de727ef544d49bc4",
-      "semantic_id": "b3:de727ef544d49bc4",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_mailbox.rs",
-      "line": 187,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -1963,19 +1898,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:8ee40ed2d07c1137",
-      "semantic_id": "b3:8ee40ed2d07c1137",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_monitor.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `BeamMessage` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:0c0c8c635584d5f3",
       "semantic_id": "b3:0c0c8c635584d5f3",
       "identity_status": "computed",
@@ -1999,19 +1921,6 @@
       "line": 12,
       "column": 1,
       "message": "non-trait import `BEAM_DEAD` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:af72945963f1cbee",
-      "semantic_id": "b3:af72945963f1cbee",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_monitor.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `BeamProcess` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -2051,19 +1960,6 @@
       "line": 151,
       "column": 1,
       "message": "item name `create_monitor` repeats `monitor` from ancestor path segment `beam_monitor`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:de727ef544d49bc4",
-      "semantic_id": "b3:de727ef544d49bc4",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_monitor.rs",
-      "line": 227,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -2171,32 +2067,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:05c18e9d2cd35730",
-      "semantic_id": "b3:05c18e9d2cd35730",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_registry.rs",
-      "line": 170,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:05c18e9d2cd35730",
-      "semantic_id": "b3:05c18e9d2cd35730",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_registry.rs",
-      "line": 200,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b43828284d5938b8",
       "semantic_id": "b3:b43828284d5938b8",
       "identity_status": "computed",
@@ -2207,19 +2077,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `beam_scheduler.rs` contains an underscore; prefer `beam/scheduler.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a1a134bb1cec38c9",
-      "semantic_id": "b3:a1a134bb1cec38c9",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_scheduler.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `BEAM_ALIVE` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -2259,58 +2116,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `beam_send.rs` contains an underscore; prefer `beam/send.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:8ee40ed2d07c1137",
-      "semantic_id": "b3:8ee40ed2d07c1137",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_send.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `BeamMessage` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dc9e02ae76a5b47f",
-      "semantic_id": "b3:dc9e02ae76a5b47f",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_send.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `mailbox_append` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:19b76eec43d2c3bf",
-      "semantic_id": "b3:19b76eec43d2c3bf",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/beam_send.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `BEAM_DEAD` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:de727ef544d49bc4",
-      "semantic_id": "b3:de727ef544d49bc4",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/beam_send.rs",
-      "line": 28,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -3224,19 +3029,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:87133dc5ed90d49f",
-      "semantic_id": "b3:87133dc5ed90d49f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/btree_delete.rs",
-      "line": 261,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:ba3f353bce484de5",
       "semantic_id": "b3:ba3f353bce484de5",
       "identity_status": "computed",
@@ -3325,32 +3117,6 @@
       "line": 127,
       "column": 1,
       "message": "`usize` in public API — use `u32` or `u64` for cross-platform consistency",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:e0e1b23bc634edd1",
-      "semantic_id": "b3:e0e1b23bc634edd1",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/btree_insert.rs",
-      "line": 141,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b5518f644ce21489",
-      "semantic_id": "b3:b5518f644ce21489",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/btree_insert.rs",
-      "line": 155,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -3588,19 +3354,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:69f5ba08afc15790",
-      "semantic_id": "b3:69f5ba08afc15790",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/cache_hierarchy.rs",
-      "line": 492,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b55fcb4b54167e78",
       "semantic_id": "b3:b55fcb4b54167e78",
       "identity_status": "computed",
@@ -3830,19 +3583,6 @@
       "severity": "warning",
       "file": "src/cache_prefetch.rs",
       "line": 163,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3cb6f277b22db9b3",
-      "semantic_id": "b3:3cb6f277b22db9b3",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/cache_prefetch.rs",
-      "line": 180,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5395,19 +5135,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:a67e60940a7f1ff6",
-      "semantic_id": "b3:a67e60940a7f1ff6",
-      "identity_status": "computed",
-      "lint": "unchecked_division",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/chaoscontrol_scheduler.rs",
-      "line": 216,
-      "column": 16,
-      "message": "division by `expression` without zero check",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:5e4dc617adee57fa",
       "semantic_id": "b3:5e4dc617adee57fa",
       "identity_status": "computed",
@@ -5447,32 +5174,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d023b622c4f1da43",
-      "semantic_id": "b3:d023b622c4f1da43",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/choreography_global.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 1278 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:780947ee78bf3138",
-      "semantic_id": "b3:780947ee78bf3138",
-      "identity_status": "computed",
-      "lint": "underscore_in_module_filename",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_global.rs",
-      "line": 1,
-      "column": 1,
-      "message": "module filename `choreography_global.rs` contains an underscore; prefer `choreography/global.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:97fb86221fd7f9ff",
       "semantic_id": "b3:97fb86221fd7f9ff",
       "identity_status": "computed",
@@ -5483,19 +5184,6 @@
       "line": 50,
       "column": 1,
       "message": "item name `GlobalBranch` repeats `global` from ancestor path segment `choreography_global`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:60744443d14f35c8",
-      "semantic_id": "b3:60744443d14f35c8",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_global.rs",
-      "line": 57,
-      "column": 1,
-      "message": "item name `GlobalChoreo` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
     },
     {
@@ -5564,19 +5252,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:e12860705cd79319",
-      "semantic_id": "b3:e12860705cd79319",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_global.rs",
-      "line": 784,
-      "column": 1,
-      "message": "item name `clone_global` repeats `global` from ancestor path segment `choreography_global`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e958d951f1777617",
       "semantic_id": "b3:e958d951f1777617",
       "identity_status": "computed",
@@ -5629,19 +5304,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:4a74d3a59b49a030",
-      "semantic_id": "b3:4a74d3a59b49a030",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_global.rs",
-      "line": 1088,
-      "column": 1,
-      "message": "item name `well_formed_global` repeats `global` from ancestor path segment `choreography_global`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b6f24c79dd2191ed",
       "semantic_id": "b3:b6f24c79dd2191ed",
       "identity_status": "computed",
@@ -5678,32 +5340,6 @@
       "line": 1102,
       "column": 17,
       "message": "boolean binding `result` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:977c243ab8a5fd7c",
-      "semantic_id": "b3:977c243ab8a5fd7c",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 1743 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:370f8c01472ee0d1",
-      "semantic_id": "b3:370f8c01472ee0d1",
-      "identity_status": "computed",
-      "lint": "underscore_in_module_filename",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1,
-      "column": 1,
-      "message": "module filename `choreography_local.rs` contains an underscore; prefer `choreography/local.rs`",
       "crate_name": "verified_logic"
     },
     {
@@ -5759,19 +5395,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3800df8464e8a329",
-      "semantic_id": "b3:3800df8464e8a329",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 22,
-      "column": 1,
-      "message": "item name `LocalChoreo` repeats `local` from ancestor path segment `choreography_local`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:23f308914b6ade05",
       "semantic_id": "b3:23f308914b6ade05",
       "identity_status": "computed",
@@ -5798,32 +5421,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:cb80a46144a8a9b4",
-      "semantic_id": "b3:cb80a46144a8a9b4",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1294,
-      "column": 1,
-      "message": "item name `clone_local_branch` repeats `local` from ancestor path segment `choreography_local`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:2da540d7b0e52ff0",
-      "semantic_id": "b3:2da540d7b0e52ff0",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1300,
-      "column": 1,
-      "message": "item name `clone_local` repeats `local` from ancestor path segment `choreography_local`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:8444814b7dc1cb04",
       "semantic_id": "b3:8444814b7dc1cb04",
       "identity_status": "computed",
@@ -5845,19 +5442,6 @@
       "severity": "warning",
       "file": "src/choreography_local.rs",
       "line": 1322,
-      "column": 17,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3ef68ad47852c22d",
-      "semantic_id": "b3:3ef68ad47852c22d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1333,
       "column": 17,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5941,19 +5525,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:247518d89fe1d183",
-      "semantic_id": "b3:247518d89fe1d183",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1494,
-      "column": 1,
-      "message": "item name `well_formed_local` repeats `local` from ancestor path segment `choreography_local`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:41fc6ef8249e191d",
       "semantic_id": "b3:41fc6ef8249e191d",
       "identity_status": "computed",
@@ -6019,32 +5590,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:ec6192bc79d2682b",
-      "semantic_id": "b3:ec6192bc79d2682b",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 1893 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:578626893487e621",
-      "semantic_id": "b3:578626893487e621",
-      "identity_status": "computed",
-      "lint": "underscore_in_module_filename",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 1,
-      "column": 1,
-      "message": "module filename `choreography_projection.rs` contains an underscore; prefer `choreography/projection.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:4b6e0be881500917",
       "semantic_id": "b3:4b6e0be881500917",
       "identity_status": "computed",
@@ -6068,45 +5613,6 @@
       "line": 12,
       "column": 1,
       "message": "non-trait import `GlobalChoreo` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:915a7ff0686da1dc",
-      "semantic_id": "b3:915a7ff0686da1dc",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `LabelId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:098f707cc8b1a955",
-      "semantic_id": "b3:098f707cc8b1a955",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `PayloadTag` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dfce0d4ca2b8a5bb",
-      "semantic_id": "b3:dfce0d4ca2b8a5bb",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `RoleId` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -6183,19 +5689,6 @@
       "severity": "warning",
       "file": "src/choreography_projection.rs",
       "line": 1443,
-      "column": 17,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:8f4ad357e84fc0d5",
-      "semantic_id": "b3:8f4ad357e84fc0d5",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/choreography_projection.rs",
-      "line": 1468,
       "column": 17,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -6279,97 +5772,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2c5d9fabc827aef7",
-      "semantic_id": "b3:2c5d9fabc827aef7",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 746 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:708098e83b236927",
-      "semantic_id": "b3:708098e83b236927",
-      "identity_status": "computed",
-      "lint": "underscore_in_module_filename",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 1,
-      "column": 1,
-      "message": "module filename `choreography_step.rs` contains an underscore; prefer `choreography/step.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:4b6e0be881500917",
-      "semantic_id": "b3:4b6e0be881500917",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `GlobalBranch` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dc1bb0c90e7339aa",
-      "semantic_id": "b3:dc1bb0c90e7339aa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `GlobalChoreo` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:915a7ff0686da1dc",
-      "semantic_id": "b3:915a7ff0686da1dc",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `LabelId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:098f707cc8b1a955",
-      "semantic_id": "b3:098f707cc8b1a955",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `PayloadTag` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dfce0d4ca2b8a5bb",
-      "semantic_id": "b3:dfce0d4ca2b8a5bb",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `RoleId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:a550d2bedb5ca584",
       "semantic_id": "b3:a550d2bedb5ca584",
       "identity_status": "computed",
@@ -6380,45 +5782,6 @@
       "line": 16,
       "column": 1,
       "message": "non-trait import `clone_global` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ccdfca1da263f924",
-      "semantic_id": "b3:ccdfca1da263f924",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 31,
-      "column": 1,
-      "message": "non-trait import `LocalBranch` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:cf05f2abf82fa630",
-      "semantic_id": "b3:cf05f2abf82fa630",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 32,
-      "column": 1,
-      "message": "non-trait import `LocalChoreo` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:cd290e48b40fd482",
-      "semantic_id": "b3:cd290e48b40fd482",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_step.rs",
-      "line": 33,
-      "column": 1,
-      "message": "non-trait import `clone_local` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -8099,45 +7462,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9315023d9d4c8299",
-      "semantic_id": "b3:9315023d9d4c8299",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/consistency_relations.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `HistoryOp` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:f781d434c206d1ae",
-      "semantic_id": "b3:f781d434c206d1ae",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/consistency_relations.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `OP_READ` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:daccee4ac9442eb3",
-      "semantic_id": "b3:daccee4ac9442eb3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/consistency_relations.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `OP_WRITE` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f7543d24cdbb7432",
       "semantic_id": "b3:f7543d24cdbb7432",
       "identity_status": "computed",
@@ -8333,19 +7657,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9675203ebc5d49c9",
-      "semantic_id": "b3:9675203ebc5d49c9",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/consistent_snapshot.rs",
-      "line": 185,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d4f15ddac4bc69a3",
       "semantic_id": "b3:d4f15ddac4bc69a3",
       "identity_status": "computed",
@@ -8432,19 +7743,6 @@
       "severity": "warning",
       "file": "src/constant_folding.rs",
       "line": 429,
-      "column": 25,
-      "message": "`.expect()` in production code will panic on failure",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ef4b6aac041393b7",
-      "semantic_id": "b3:ef4b6aac041393b7",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/constant_folding.rs",
-      "line": 436,
       "column": 25,
       "message": "`.expect()` in production code will panic on failure",
       "crate_name": "verified_logic"
@@ -8641,19 +7939,6 @@
       "file": "src/constant_time_eq.rs",
       "line": 69,
       "column": 24,
-      "message": "`as usize` from `u64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:40f26acc65d3f2ee",
-      "semantic_id": "b3:40f26acc65d3f2ee",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/constant_time_eq.rs",
-      "line": 69,
-      "column": 40,
       "message": "`as usize` from `u64` is platform-dependent",
       "crate_name": "verified_logic"
     },
@@ -9009,19 +8294,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:135324c5a76b352f",
-      "semantic_id": "b3:135324c5a76b352f",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/constraint_propagation.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `ConstraintDomain` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:c6fbb886e613ef2f",
       "semantic_id": "b3:c6fbb886e613ef2f",
       "identity_status": "computed",
@@ -9152,19 +8424,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:135324c5a76b352f",
-      "semantic_id": "b3:135324c5a76b352f",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/constraint_variable.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `ConstraintDomain` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:9d7129d5388162b8",
       "semantic_id": "b3:9d7129d5388162b8",
       "identity_status": "computed",
@@ -9217,19 +8476,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:550a2bcae1b7e21a",
-      "semantic_id": "b3:550a2bcae1b7e21a",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/constraint_witness.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `ConstraintAssignment` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:c92b36d825706e9f",
       "semantic_id": "b3:c92b36d825706e9f",
       "identity_status": "computed",
@@ -9240,19 +8486,6 @@
       "line": 5,
       "column": 1,
       "message": "non-trait import `constraint_consistent` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:f09464f2e9e84c93",
-      "semantic_id": "b3:f09464f2e9e84c93",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/constraint_witness.rs",
-      "line": 6,
-      "column": 1,
-      "message": "non-trait import `ConstraintRelation` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -9292,45 +8525,6 @@
       "line": 1,
       "column": 1,
       "message": "source file is 354 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:981ff04210e160d9",
-      "semantic_id": "b3:981ff04210e160d9",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/containment.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `access_mode` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:55e0ccff647c21bf",
-      "semantic_id": "b3:55e0ccff647c21bf",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/containment.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `scope` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dd1982f03a2e2d4e",
-      "semantic_id": "b3:dd1982f03a2e2d4e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/containment.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `subsumption` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -10296,19 +9490,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:6bdac9b3c08c0c6b",
-      "semantic_id": "b3:6bdac9b3c08c0c6b",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/crdt.rs",
-      "line": 48,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:a4be90e686524622",
       "semantic_id": "b3:a4be90e686524622",
       "identity_status": "computed",
@@ -10707,19 +9888,6 @@
       "severity": "warning",
       "file": "src/cryptoshedding.rs",
       "line": 528,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a9877753614c07ae",
-      "semantic_id": "b3:a9877753614c07ae",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/cryptoshedding.rs",
-      "line": 545,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -11284,32 +10452,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:6cfe38438d3b7cd0",
-      "semantic_id": "b3:6cfe38438d3b7cd0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/dead_code_elimination.rs",
-      "line": 16,
-      "column": 1,
-      "message": "non-trait import `RawInstr` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:863a7c95397ae8fa",
-      "semantic_id": "b3:863a7c95397ae8fa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/dead_code_elimination.rs",
-      "line": 17,
-      "column": 1,
-      "message": "non-trait import `RawProgram` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:11a8631f4c02e21c",
       "semantic_id": "b3:11a8631f4c02e21c",
       "identity_status": "computed",
@@ -11349,19 +10491,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9aae70c8ed7c911d",
-      "semantic_id": "b3:9aae70c8ed7c911d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/dead_code_elimination.rs",
-      "line": 1084,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:4a09d94043b3c45a",
       "semantic_id": "b3:4a09d94043b3c45a",
       "identity_status": "computed",
@@ -11372,19 +10501,6 @@
       "line": 1107,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a5accea8baa39809",
-      "semantic_id": "b3:a5accea8baa39809",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/dead_code_elimination.rs",
-      "line": 1121,
-      "column": 19,
-      "message": "`as usize` from `u32` is platform-dependent",
       "crate_name": "verified_logic"
     },
     {
@@ -11713,19 +10829,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:f242c31546dd3124",
-      "semantic_id": "b3:f242c31546dd3124",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/directory_coherence.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `mesi` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:6b29ad80d37bf46b",
       "semantic_id": "b3:6b29ad80d37bf46b",
       "identity_status": "computed",
@@ -11749,32 +10852,6 @@
       "line": 61,
       "column": 1,
       "message": "item name `valid_directory_state` repeats `directory` from ancestor path segment `directory_coherence`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3cb6f277b22db9b3",
-      "semantic_id": "b3:3cb6f277b22db9b3",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/directory_coherence.rs",
-      "line": 325,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3cb6f277b22db9b3",
-      "semantic_id": "b3:3cb6f277b22db9b3",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/directory_coherence.rs",
-      "line": 342,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -11903,19 +10980,6 @@
       "severity": "warning",
       "file": "src/directory_coherence.rs",
       "line": 590,
-      "column": 13,
-      "message": "boolean binding `same` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:45b8de0b77abe6f7",
-      "semantic_id": "b3:45b8de0b77abe6f7",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/directory_coherence.rs",
-      "line": 595,
       "column": 13,
       "message": "boolean binding `same` should have a predicate prefix",
       "crate_name": "verified_logic"
@@ -13169,19 +12233,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:822be33118fa2ad0",
-      "semantic_id": "b3:822be33118fa2ad0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/durable_replay.rs",
-      "line": 8,
-      "column": 1,
-      "message": "non-trait import `DurableEvent` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:bb37c8d8a7a952cd",
       "semantic_id": "b3:bb37c8d8a7a952cd",
       "identity_status": "computed",
@@ -13247,32 +12298,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:822be33118fa2ad0",
-      "semantic_id": "b3:822be33118fa2ad0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/durable_resume.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `DurableEvent` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c355ff389d19c4e3",
-      "semantic_id": "b3:c355ff389d19c4e3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/durable_resume.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `durable_prefix_len` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:3521f8d0209d5e0f",
       "semantic_id": "b3:3521f8d0209d5e0f",
       "identity_status": "computed",
@@ -13325,19 +12350,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:822be33118fa2ad0",
-      "semantic_id": "b3:822be33118fa2ad0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/durable_terminal.rs",
-      "line": 8,
-      "column": 1,
-      "message": "non-trait import `DurableEvent` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:16ded389911f7c92",
       "semantic_id": "b3:16ded389911f7c92",
       "identity_status": "computed",
@@ -13374,19 +12386,6 @@
       "line": 11,
       "column": 1,
       "message": "non-trait import `EVENT_FAILED` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c355ff389d19c4e3",
-      "semantic_id": "b3:c355ff389d19c4e3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/durable_terminal.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `durable_prefix_len` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -14092,19 +13091,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:822be33118fa2ad0",
-      "semantic_id": "b3:822be33118fa2ad0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/exactly_once_ledger_transfer.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `DurableEvent` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f37b3e62d41d1aac",
       "semantic_id": "b3:f37b3e62d41d1aac",
       "identity_status": "computed",
@@ -14391,19 +13377,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2a8d61e915171c84",
-      "semantic_id": "b3:2a8d61e915171c84",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/fast_backtrack.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `LogEntry` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:61c8c6890d297220",
       "semantic_id": "b3:61c8c6890d297220",
       "identity_status": "computed",
@@ -14440,32 +13413,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `feature_flag_gate.rs` contains an underscore; prefer `feature/flag/gate.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:cba065cd6f3e1a65",
-      "semantic_id": "b3:cba065cd6f3e1a65",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/feature_flag_gate.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `ConfigKeySet` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dcc58d3bd50b3fa0",
-      "semantic_id": "b3:dcc58d3bd50b3fa0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/feature_flag_gate.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `config_key_known` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -14963,19 +13910,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d3f9130c43dcb296",
-      "semantic_id": "b3:d3f9130c43dcb296",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/forest.rs",
-      "line": 601,
-      "column": 17,
-      "message": "`.unwrap()` in production code will panic on failure",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e89b562f7c41eb49",
       "semantic_id": "b3:e89b562f7c41eb49",
       "identity_status": "computed",
@@ -15041,19 +13975,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:152b3830e2e1b98f",
-      "semantic_id": "b3:152b3830e2e1b98f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/forest.rs",
-      "line": 993,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e00ff25394675507",
       "semantic_id": "b3:e00ff25394675507",
       "identity_status": "computed",
@@ -15076,19 +13997,6 @@
       "file": "src/forest.rs",
       "line": 1200,
       "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:152b3830e2e1b98f",
-      "semantic_id": "b3:152b3830e2e1b98f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/forest.rs",
-      "line": 1203,
-      "column": 13,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
@@ -15197,19 +14105,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:289f3a980cae937d",
-      "semantic_id": "b3:289f3a980cae937d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/free_list.rs",
-      "line": 121,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b89c91b912a6c736",
       "semantic_id": "b3:b89c91b912a6c736",
       "identity_status": "computed",
@@ -15233,19 +14128,6 @@
       "line": 184,
       "column": 1,
       "message": "item name `free_list_remove` repeats `free` from ancestor path segment `free_list`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:289f3a980cae937d",
-      "semantic_id": "b3:289f3a980cae937d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/free_list.rs",
-      "line": 197,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -16185,19 +15067,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d8c338f580b1c490",
-      "semantic_id": "b3:d8c338f580b1c490",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/gis_coordinate_envelope.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `BoundedInterval` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f243ae5642285696",
       "semantic_id": "b3:f243ae5642285696",
       "identity_status": "computed",
@@ -16260,19 +15129,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `gis_linestring_topology.rs` contains an underscore; prefer `gis/linestring/topology.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:4f927adb0d49ea14",
-      "semantic_id": "b3:4f927adb0d49ea14",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/gis_linestring_topology.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `GisCoordinate` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -16494,19 +15350,6 @@
       "line": 1,
       "column": 1,
       "message": "source file is 406 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ce38892ffb2efcab",
-      "semantic_id": "b3:ce38892ffb2efcab",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/gossip.rs",
-      "line": 64,
-      "column": 13,
-      "message": "boolean binding `overflowed` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -18382,19 +17225,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:616e99d7225c8aae",
-      "semantic_id": "b3:616e99d7225c8aae",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/hdl_emit.rs",
-      "line": 6,
-      "column": 1,
-      "message": "non-trait import `HdlModuleShape` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e7609de842b2d6fe",
       "semantic_id": "b3:e7609de842b2d6fe",
       "identity_status": "computed",
@@ -18772,19 +17602,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:dc93f9523ced3559",
-      "semantic_id": "b3:dc93f9523ced3559",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/hdl_validation.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `HdlEmitterMode` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:c9dbd2b4d18066a5",
       "semantic_id": "b3:c9dbd2b4d18066a5",
       "identity_status": "computed",
@@ -18795,45 +17612,6 @@
       "line": 10,
       "column": 1,
       "message": "non-trait import `hdl_mode_label` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ac9177d80218eed2",
-      "semantic_id": "b3:ac9177d80218eed2",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/hdl_validation.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `HdlEvalCase` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:deda9efdb9578bf7",
-      "semantic_id": "b3:deda9efdb9578bf7",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/hdl_validation.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `HdlEvalError` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:002cd92a1187ceb5",
-      "semantic_id": "b3:002cd92a1187ceb5",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/hdl_validation.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `hdl_eval_step` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -20137,19 +18915,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2a8d61e915171c84",
-      "semantic_id": "b3:2a8d61e915171c84",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/install_snapshot.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `LogEntry` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:91f623387763ffdc",
       "semantic_id": "b3:91f623387763ffdc",
       "identity_status": "computed",
@@ -20199,19 +18964,6 @@
       "line": 178,
       "column": 1,
       "message": "item name `apply_snapshot_to_log` repeats `snapshot` from ancestor path segment `install_snapshot`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:87c366f2dba6f131",
-      "semantic_id": "b3:87c366f2dba6f131",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/install_snapshot.rs",
-      "line": 188,
-      "column": 19,
-      "message": "`as usize` from `u64` is platform-dependent",
       "crate_name": "verified_logic"
     },
     {
@@ -20862,32 +19614,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `job_dag.rs` contains an underscore; prefer `job/dag.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/job_dag.rs",
-      "line": 53,
-      "column": 17,
-      "message": "boolean binding `found` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/job_dag.rs",
-      "line": 151,
-      "column": 17,
-      "message": "boolean binding `found` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -22009,19 +20735,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5c3d1c42db50cf32",
-      "semantic_id": "b3:5c3d1c42db50cf32",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/lib.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 1050 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:fbd5368e7c884232",
       "semantic_id": "b3:fbd5368e7c884232",
       "identity_status": "computed",
@@ -22711,19 +21424,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2a8d61e915171c84",
-      "semantic_id": "b3:2a8d61e915171c84",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/log_compaction.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `LogEntry` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:759cf705b5a8324a",
       "semantic_id": "b3:759cf705b5a8324a",
       "identity_status": "computed",
@@ -22747,19 +21447,6 @@
       "line": 73,
       "column": 14,
       "message": "`as usize` from `u64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dcb7f7efdb908e68",
-      "semantic_id": "b3:dcb7f7efdb908e68",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/log_compaction.rs",
-      "line": 87,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -23085,19 +21772,6 @@
       "line": 513,
       "column": 1,
       "message": "`usize` in public API — use `u32` or `u64` for cross-platform consistency",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:afd58e3284920565",
-      "semantic_id": "b3:afd58e3284920565",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/loop_detection.rs",
-      "line": 529,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -25207,32 +23881,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7deae12d93122a2f",
-      "semantic_id": "b3:7deae12d93122a2f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nickel_merge_split.rs",
-      "line": 378,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:4e5d8b9359aeff51",
-      "semantic_id": "b3:4e5d8b9359aeff51",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nickel_merge_split.rs",
-      "line": 416,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e8fd2d7cd8614f35",
       "semantic_id": "b3:e8fd2d7cd8614f35",
       "identity_status": "computed",
@@ -25337,19 +23985,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nickel_pattern_coverage.rs",
-      "line": 156,
-      "column": 17,
-      "message": "boolean binding `found` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:a58404585c4e2500",
       "semantic_id": "b3:a58404585c4e2500",
       "identity_status": "computed",
@@ -25386,32 +24021,6 @@
       "line": 217,
       "column": 1,
       "message": "parameter uses `&Vec<Pattern>`; accept `&[Pattern]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nickel_pattern_coverage.rs",
-      "line": 255,
-      "column": 17,
-      "message": "boolean binding `found` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a58404585c4e2500",
-      "semantic_id": "b3:a58404585c4e2500",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nickel_pattern_coverage.rs",
-      "line": 268,
-      "column": 17,
-      "message": "boolean binding `matched` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -25597,19 +24206,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:291df7dddd3b7ef3",
-      "semantic_id": "b3:291df7dddd3b7ef3",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/nickel_record_merge.rs",
-      "line": 391,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:8ba5c008d1eb16d4",
       "semantic_id": "b3:8ba5c008d1eb16d4",
       "identity_status": "computed",
@@ -25658,32 +24254,6 @@
       "file": "src/nickel_record_merge.rs",
       "line": 503,
       "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ed3bbe30eab20ed2",
-      "semantic_id": "b3:ed3bbe30eab20ed2",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nickel_record_merge.rs",
-      "line": 547,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ed3bbe30eab20ed2",
-      "semantic_id": "b3:ed3bbe30eab20ed2",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nickel_record_merge.rs",
-      "line": 576,
-      "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
@@ -25896,32 +24466,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:1a9cff76286a0a52",
-      "semantic_id": "b3:1a9cff76286a0a52",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_attrset.rs",
-      "line": 430,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1a9cff76286a0a52",
-      "semantic_id": "b3:1a9cff76286a0a52",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_attrset.rs",
-      "line": 462,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:48b0b8eae3dbcaae",
       "semantic_id": "b3:48b0b8eae3dbcaae",
       "identity_status": "computed",
@@ -25961,19 +24505,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:1a9cff76286a0a52",
-      "semantic_id": "b3:1a9cff76286a0a52",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_attrset.rs",
-      "line": 579,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:47e3d739cbcf6e32",
       "semantic_id": "b3:47e3d739cbcf6e32",
       "identity_status": "computed",
@@ -25997,19 +24528,6 @@
       "line": 667,
       "column": 13,
       "message": "boolean binding `found` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1a9cff76286a0a52",
-      "semantic_id": "b3:1a9cff76286a0a52",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_attrset.rs",
-      "line": 673,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -26598,45 +25116,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:ae85705eadcbdb7f",
-      "semantic_id": "b3:ae85705eadcbdb7f",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nix_eval_closure_policy.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `HashSet` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:2f0972893a9bbef5",
-      "semantic_id": "b3:2f0972893a9bbef5",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nix_eval_closure_policy.rs",
-      "line": 16,
-      "column": 1,
-      "message": "non-trait import `ExecField` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3fd70e2cd241a2f7",
-      "semantic_id": "b3:3fd70e2cd241a2f7",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/nix_eval_closure_policy.rs",
-      "line": 17,
-      "column": 1,
-      "message": "non-trait import `ClosureItem` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:32dd05922f9b9cd4",
       "semantic_id": "b3:32dd05922f9b9cd4",
       "identity_status": "computed",
@@ -27050,19 +25529,6 @@
       "line": 81,
       "column": 1,
       "message": "parameter uses `&Vec<u64>`; accept `&[u64]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:289f3a980cae937d",
-      "semantic_id": "b3:289f3a980cae937d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/nix_list.rs",
-      "line": 95,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -28821,19 +27287,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5bd8e35bf2c469fc",
-      "semantic_id": "b3:5bd8e35bf2c469fc",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/opt_frontier.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `OptFeasibleSet` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:588972c7489fe2a1",
       "semantic_id": "b3:588972c7489fe2a1",
       "identity_status": "computed",
@@ -28873,19 +27326,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5bd8e35bf2c469fc",
-      "semantic_id": "b3:5bd8e35bf2c469fc",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/opt_objective.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `OptFeasibleSet` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:859b15027b30b9e8",
       "semantic_id": "b3:859b15027b30b9e8",
       "identity_status": "computed",
@@ -28922,19 +27362,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `opt_optimum_witness.rs` contains an underscore; prefer `opt/optimum/witness.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:5bd8e35bf2c469fc",
-      "semantic_id": "b3:5bd8e35bf2c469fc",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/opt_optimum_witness.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `OptFeasibleSet` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -29549,19 +27976,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3c7b959f1587f991",
-      "semantic_id": "b3:3c7b959f1587f991",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/parking_lot_raw_mutex.rs",
-      "line": 67,
-      "column": 9,
-      "message": "boolean binding `waiter_present` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:19ae1b76fb9b528a",
       "semantic_id": "b3:19ae1b76fb9b528a",
       "identity_status": "computed",
@@ -29978,19 +28392,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/pattern.rs",
-      "line": 147,
-      "column": 17,
-      "message": "boolean binding `found` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:57783810be6e828a",
       "semantic_id": "b3:57783810be6e828a",
       "identity_status": "computed",
@@ -30248,45 +28649,6 @@
       "line": 1,
       "column": 1,
       "message": "source file is 406 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:195ea5c4a9ef793d",
-      "semantic_id": "b3:195ea5c4a9ef793d",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/permission.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `bit_at` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1db3d88ee71bd78e",
-      "semantic_id": "b3:1db3d88ee71bd78e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/permission.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `clear_bit` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:8e0685e1a36b70bb",
-      "semantic_id": "b3:8e0685e1a36b70bb",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/permission.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `set_bit` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -30979,19 +29341,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7005234723d32e0e",
-      "semantic_id": "b3:7005234723d32e0e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/policy_conflict.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `PolicyRule` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b762853889f5cb40",
       "semantic_id": "b3:b762853889f5cb40",
       "identity_status": "computed",
@@ -31158,32 +29507,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `policy_grant_denial.rs` contains an underscore; prefer `policy/grant/denial.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:7005234723d32e0e",
-      "semantic_id": "b3:7005234723d32e0e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/policy_grant_denial.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `PolicyRule` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b80a8497bdd1c64",
-      "semantic_id": "b3:3b80a8497bdd1c64",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/policy_grant_denial.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `policy_rule_matches` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -31980,19 +30303,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:bbc03a77b4b51a5f",
-      "semantic_id": "b3:bbc03a77b4b51a5f",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/properties.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 9378 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:7c54650151a27222",
       "semantic_id": "b3:7c54650151a27222",
       "identity_status": "computed",
@@ -32448,32 +30758,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:52b7c2c24f674dfa",
-      "semantic_id": "b3:52b7c2c24f674dfa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_boolean.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dd9f4e10c2a507ed",
-      "semantic_id": "b3:dd9f4e10c2a507ed",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_boolean.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `r1cs_len_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:b4309a401864a303",
       "semantic_id": "b3:b4309a401864a303",
       "identity_status": "computed",
@@ -32497,19 +30781,6 @@
       "line": 20,
       "column": 1,
       "message": "non-trait import `r1cs_row_satisfied` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b951fdfcffb0b70",
-      "semantic_id": "b3:3b951fdfcffb0b70",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_boolean.rs",
-      "line": 25,
-      "column": 1,
-      "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -32773,19 +31044,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b60b81717e7bcc43",
-      "semantic_id": "b3:b60b81717e7bcc43",
-      "identity_status": "computed",
-      "lint": "unchecked_division",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/r1cs_constraint.rs",
-      "line": 206,
-      "column": 5,
-      "message": "division by `expression` without zero check",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d0f5d832c73aa014",
       "semantic_id": "b3:d0f5d832c73aa014",
       "identity_status": "computed",
@@ -32796,19 +31054,6 @@
       "line": 210,
       "column": 1,
       "message": "item name `r1cs_dot_c` repeats `r1cs` from ancestor path segment `r1cs_constraint`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b60b81717e7bcc43",
-      "semantic_id": "b3:b60b81717e7bcc43",
-      "identity_status": "computed",
-      "lint": "unchecked_division",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/r1cs_constraint.rs",
-      "line": 231,
-      "column": 5,
-      "message": "division by `expression` without zero check",
       "crate_name": "verified_logic"
     },
     {
@@ -32864,32 +31109,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3e43b2951e58731c",
-      "semantic_id": "b3:3e43b2951e58731c",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `R1csRow` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:52b7c2c24f674dfa",
-      "semantic_id": "b3:52b7c2c24f674dfa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:0aa1acc424c45442",
       "semantic_id": "b3:0aa1acc424c45442",
       "identity_status": "computed",
@@ -32900,58 +31119,6 @@
       "line": 12,
       "column": 1,
       "message": "non-trait import `r1cs_element_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dd9f4e10c2a507ed",
-      "semantic_id": "b3:dd9f4e10c2a507ed",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `r1cs_len_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b4309a401864a303",
-      "semantic_id": "b3:b4309a401864a303",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 18,
-      "column": 1,
-      "message": "non-trait import `r1cs_modulus_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:31fc251a06dcdb51",
-      "semantic_id": "b3:31fc251a06dcdb51",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 21,
-      "column": 1,
-      "message": "non-trait import `r1cs_row_satisfied` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b951fdfcffb0b70",
-      "semantic_id": "b3:3b951fdfcffb0b70",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_gates.rs",
-      "line": 26,
-      "column": 1,
-      "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -33111,58 +31278,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:52b7c2c24f674dfa",
-      "semantic_id": "b3:52b7c2c24f674dfa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_lookup.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:0aa1acc424c45442",
-      "semantic_id": "b3:0aa1acc424c45442",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_lookup.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `r1cs_element_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dd9f4e10c2a507ed",
-      "semantic_id": "b3:dd9f4e10c2a507ed",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_lookup.rs",
-      "line": 14,
-      "column": 1,
-      "message": "non-trait import `r1cs_len_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b951fdfcffb0b70",
-      "semantic_id": "b3:3b951fdfcffb0b70",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_lookup.rs",
-      "line": 17,
-      "column": 1,
-      "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:98e46b709e736f1f",
       "semantic_id": "b3:98e46b709e736f1f",
       "identity_status": "computed",
@@ -33290,71 +31405,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `r1cs_public_inputs.rs` contains an underscore; prefer `r1cs/public/inputs.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3e43b2951e58731c",
-      "semantic_id": "b3:3e43b2951e58731c",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_public_inputs.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `R1csRow` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:52b7c2c24f674dfa",
-      "semantic_id": "b3:52b7c2c24f674dfa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_public_inputs.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:0aa1acc424c45442",
-      "semantic_id": "b3:0aa1acc424c45442",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_public_inputs.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `r1cs_element_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b4309a401864a303",
-      "semantic_id": "b3:b4309a401864a303",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_public_inputs.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `r1cs_modulus_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b951fdfcffb0b70",
-      "semantic_id": "b3:3b951fdfcffb0b70",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_public_inputs.rs",
-      "line": 18,
-      "column": 1,
-      "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -33514,58 +31564,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3e43b2951e58731c",
-      "semantic_id": "b3:3e43b2951e58731c",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_system.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `R1csRow` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:52b7c2c24f674dfa",
-      "semantic_id": "b3:52b7c2c24f674dfa",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_system.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `R1csWitness` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b4309a401864a303",
-      "semantic_id": "b3:b4309a401864a303",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_system.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `r1cs_modulus_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:31fc251a06dcdb51",
-      "semantic_id": "b3:31fc251a06dcdb51",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_system.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `r1cs_row_satisfied` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:db4deaae5da689e2",
       "semantic_id": "b3:db4deaae5da689e2",
       "identity_status": "computed",
@@ -33576,19 +31574,6 @@
       "line": 18,
       "column": 1,
       "message": "non-trait import `r1cs_row_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3b951fdfcffb0b70",
-      "semantic_id": "b3:3b951fdfcffb0b70",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/r1cs_system.rs",
-      "line": 21,
-      "column": 1,
-      "message": "non-trait import `r1cs_witness_valid` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -35503,19 +33488,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:a64479f7d744022e",
-      "semantic_id": "b3:a64479f7d744022e",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/register_allocation.rs",
-      "line": 207,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f63036a70f7ed79f",
       "semantic_id": "b3:f63036a70f7ed79f",
       "identity_status": "computed",
@@ -36608,19 +34580,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:289f3a980cae937d",
-      "semantic_id": "b3:289f3a980cae937d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/segregated_free.rs",
-      "line": 219,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:2a9eb1b64d4ab806",
       "semantic_id": "b3:2a9eb1b64d4ab806",
       "identity_status": "computed",
@@ -37201,19 +35160,6 @@
       "severity": "warning",
       "file": "src/sel4_endpoint.rs",
       "line": 186,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c7f51277211f017e",
-      "semantic_id": "b3:c7f51277211f017e",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/sel4_endpoint.rs",
-      "line": 215,
       "column": 13,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -38051,19 +35997,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:f5299bf75619ee95",
-      "semantic_id": "b3:f5299bf75619ee95",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/sel4_invocation_step.rs",
-      "line": 17,
-      "column": 1,
-      "message": "non-trait import `TcbState` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:8d8bfae3bc029137",
       "semantic_id": "b3:8d8bfae3bc029137",
       "identity_status": "computed",
@@ -38324,32 +36257,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:56c4d94047d7d0b9",
-      "semantic_id": "b3:56c4d94047d7d0b9",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/sel4_ready_queue.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `Tcb` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:f5299bf75619ee95",
-      "semantic_id": "b3:f5299bf75619ee95",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/sel4_ready_queue.rs",
-      "line": 10,
-      "column": 1,
-      "message": "non-trait import `TcbState` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:51eb6356c344b0f6",
       "semantic_id": "b3:51eb6356c344b0f6",
       "identity_status": "computed",
@@ -38360,32 +36267,6 @@
       "line": 17,
       "column": 1,
       "message": "item name `ReadyQueues` repeats `ready` from ancestor path segment `sel4_ready_queue`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c7f51277211f017e",
-      "semantic_id": "b3:c7f51277211f017e",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/sel4_ready_queue.rs",
-      "line": 246,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c7f51277211f017e",
-      "semantic_id": "b3:c7f51277211f017e",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/sel4_ready_queue.rs",
-      "line": 264,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -38857,19 +36738,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:5183fe970ff67a5b",
-      "semantic_id": "b3:5183fe970ff67a5b",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/sel4_vspace.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `regions_disjoint` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:0ef59a5c00d2933a",
       "semantic_id": "b3:0ef59a5c00d2933a",
       "identity_status": "computed",
@@ -38945,19 +36813,6 @@
       "line": 306,
       "column": 13,
       "message": "boolean binding `present` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:767a20a591a3b291",
-      "semantic_id": "b3:767a20a591a3b291",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/sel4_vspace.rs",
-      "line": 320,
-      "column": 13,
-      "message": "boolean binding `found` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -39049,19 +36904,6 @@
       "line": 274,
       "column": 1,
       "message": "parameter uses `&Vec<ReplacementCompatibility>`; accept `&[ReplacementCompatibility]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:ef4b807cc29be200",
-      "semantic_id": "b3:ef4b807cc29be200",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/semantic_refactoring.rs",
-      "line": 310,
-      "column": 1,
-      "message": "parameter uses `&Vec<u64>`; accept `&[u64]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
     },
     {
@@ -39260,32 +37102,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:ad471c0d8ae8c4a2",
-      "semantic_id": "b3:ad471c0d8ae8c4a2",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 340,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:59fb72573884bfaf",
-      "semantic_id": "b3:59fb72573884bfaf",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 357,
-      "column": 18,
-      "message": "`as usize` from `i64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:722e539b22818a6b",
       "semantic_id": "b3:722e539b22818a6b",
       "identity_status": "computed",
@@ -39296,19 +37112,6 @@
       "line": 380,
       "column": 17,
       "message": "`as usize` from `i64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:d1dc75e3a1cccbfe",
-      "semantic_id": "b3:d1dc75e3a1cccbfe",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 387,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -39338,45 +37141,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:ad471c0d8ae8c4a2",
-      "semantic_id": "b3:ad471c0d8ae8c4a2",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 478,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:59fb72573884bfaf",
-      "semantic_id": "b3:59fb72573884bfaf",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 495,
-      "column": 18,
-      "message": "`as usize` from `i64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:42bd06d5c7d4b406",
-      "semantic_id": "b3:42bd06d5c7d4b406",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 516,
-      "column": 18,
-      "message": "`as usize` from `i64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:3b30b4937fc46689",
       "semantic_id": "b3:3b30b4937fc46689",
       "identity_status": "computed",
@@ -39387,19 +37151,6 @@
       "line": 578,
       "column": 1,
       "message": "`usize` in public API — use `u32` or `u64` for cross-platform consistency",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:380f4a0adb422829",
-      "semantic_id": "b3:380f4a0adb422829",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/seq_set.rs",
-      "line": 596,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -40144,19 +37895,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:98b3dd91c79eee6c",
-      "semantic_id": "b3:98b3dd91c79eee6c",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/shamir_poly.rs",
-      "line": 8,
-      "column": 1,
-      "message": "non-trait import `shamir_field` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d11863497041c03d",
       "semantic_id": "b3:d11863497041c03d",
       "identity_status": "computed",
@@ -40297,19 +38035,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `shamir_split.rs` contains an underscore; prefer `shamir/split.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:98b3dd91c79eee6c",
-      "semantic_id": "b3:98b3dd91c79eee6c",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/shamir_split.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `shamir_field` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -40729,32 +38454,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:aad6c449be26c8f1",
-      "semantic_id": "b3:aad6c449be26c8f1",
-      "identity_status": "computed",
-      "lint": "unchecked_narrowing",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/slab.rs",
-      "line": 370,
-      "column": 5,
-      "message": "narrowing cast from `u64` to `u32` without bounds check",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1591832ed4cb0519",
-      "semantic_id": "b3:1591832ed4cb0519",
-      "identity_status": "computed",
-      "lint": "unchecked_narrowing",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/slab.rs",
-      "line": 384,
-      "column": 5,
-      "message": "narrowing cast from `u64` to `u32` without bounds check",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f4f44795488360c1",
       "semantic_id": "b3:f4f44795488360c1",
       "identity_status": "computed",
@@ -40846,19 +38545,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:2a8d61e915171c84",
-      "semantic_id": "b3:2a8d61e915171c84",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/snapshot_compaction.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `LogEntry` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:a7b7037b89ab2582",
       "semantic_id": "b3:a7b7037b89ab2582",
       "identity_status": "computed",
@@ -40921,19 +38607,6 @@
       "line": 176,
       "column": 17,
       "message": "`as usize` from `u64` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dcb7f7efdb908e68",
-      "semantic_id": "b3:dcb7f7efdb908e68",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/snapshot_compaction.rs",
-      "line": 193,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -41064,19 +38737,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `snapshot_transfer.rs` contains an underscore; prefer `snapshot/transfer.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:1971d36dac8ec45b",
-      "semantic_id": "b3:1971d36dac8ec45b",
-      "identity_status": "computed",
-      "lint": "unchecked_division",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/snapshot_transfer.rs",
-      "line": 144,
-      "column": 9,
-      "message": "division by `chunk_size` without zero check",
       "crate_name": "verified_logic"
     },
     {
@@ -41652,32 +39312,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:24ff8cdf1b56d444",
-      "semantic_id": "b3:24ff8cdf1b56d444",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/spreadsheet_formula.rs",
-      "line": 3,
-      "column": 1,
-      "message": "non-trait import `CellAddress` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:910449b7412b2ca3",
-      "semantic_id": "b3:910449b7412b2ca3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/spreadsheet_formula.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `SheetBounds` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:9c5cb157d3f58087",
       "semantic_id": "b3:9c5cb157d3f58087",
       "identity_status": "computed",
@@ -41714,19 +39348,6 @@
       "line": 7,
       "column": 1,
       "message": "non-trait import `spreadsheet_range_admit` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b43dd25378901651",
-      "semantic_id": "b3:b43dd25378901651",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/spreadsheet_formula.rs",
-      "line": 8,
-      "column": 1,
-      "message": "non-trait import `spreadsheet_range_expand` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -41977,19 +39598,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:24ff8cdf1b56d444",
-      "semantic_id": "b3:24ff8cdf1b56d444",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/spreadsheet_recalc.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `CellAddress` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:fb07c0d4807aad20",
       "semantic_id": "b3:fb07c0d4807aad20",
       "identity_status": "computed",
@@ -42026,19 +39634,6 @@
       "line": 10,
       "column": 1,
       "message": "item name `SpreadsheetAdmissionChecks` repeats `spreadsheet` from ancestor path segment `spreadsheet_recalc`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:00093e953808d3dc",
-      "semantic_id": "b3:00093e953808d3dc",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/spreadsheet_recalc.rs",
-      "line": 21,
-      "column": 1,
-      "message": "parameter uses `&Vec<CellAddress>`; accept `&[CellAddress]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
     },
     {
@@ -42211,19 +39806,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:32054fde94e53c35",
-      "semantic_id": "b3:32054fde94e53c35",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ssa_construction.rs",
-      "line": 211,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:7607b77917530646",
       "semantic_id": "b3:7607b77917530646",
       "identity_status": "computed",
@@ -42232,45 +39814,6 @@
       "severity": "warning",
       "file": "src/ssa_construction.rs",
       "line": 228,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:8ea09323ec614bc2",
-      "semantic_id": "b3:8ea09323ec614bc2",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ssa_construction.rs",
-      "line": 248,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:63195cf2be0abcc6",
-      "semantic_id": "b3:63195cf2be0abcc6",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ssa_construction.rs",
-      "line": 265,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:63195cf2be0abcc6",
-      "semantic_id": "b3:63195cf2be0abcc6",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ssa_construction.rs",
-      "line": 282,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -42562,19 +40105,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b77967b5fb4938dc",
-      "semantic_id": "b3:b77967b5fb4938dc",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ssa_construction.rs",
-      "line": 954,
-      "column": 18,
-      "message": "`as usize` from `u32` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:ea2cb2280b06228b",
       "semantic_id": "b3:ea2cb2280b06228b",
       "identity_status": "computed",
@@ -42835,19 +40365,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:40e70d4f8eab928d",
-      "semantic_id": "b3:40e70d4f8eab928d",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/stack_frame_layout.rs",
-      "line": 440,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:d73d932deda4dac7",
       "semantic_id": "b3:d73d932deda4dac7",
       "identity_status": "computed",
@@ -43095,19 +40612,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:129a64bbb92279ba",
-      "semantic_id": "b3:129a64bbb92279ba",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/store_buffer.rs",
-      "line": 233,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:7d6f016b2640267e",
       "semantic_id": "b3:7d6f016b2640267e",
       "identity_status": "computed",
@@ -43186,19 +40690,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:e29a448232d0e681",
-      "semantic_id": "b3:e29a448232d0e681",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/surelock_key.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `SureLock` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:3e13bf3c52e19687",
       "semantic_id": "b3:3e13bf3c52e19687",
       "identity_status": "computed",
@@ -43261,19 +40752,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `surelock_lockset.rs` contains an underscore; prefer `surelock/lockset.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:e29a448232d0e681",
-      "semantic_id": "b3:e29a448232d0e681",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/surelock_lockset.rs",
-      "line": 9,
-      "column": 1,
-      "message": "non-trait import `SureLock` hides the owner path; prefer the qualified path at the use site",
       "crate_name": "verified_logic"
     },
     {
@@ -43927,32 +41405,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3cb6f277b22db9b3",
-      "semantic_id": "b3:3cb6f277b22db9b3",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/tlb_shootdown.rs",
-      "line": 272,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3cb6f277b22db9b3",
-      "semantic_id": "b3:3cb6f277b22db9b3",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/tlb_shootdown.rs",
-      "line": 289,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:3677d8bd55a6e79f",
       "semantic_id": "b3:3677d8bd55a6e79f",
       "identity_status": "computed",
@@ -44197,19 +41649,6 @@
       "line": 211,
       "column": 1,
       "message": "function `is_topo_order` is 129 lines (limit: 70)",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:380f4a0adb422829",
-      "semantic_id": "b3:380f4a0adb422829",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/topo_sort.rs",
-      "line": 242,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -45682,32 +43121,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:f0192f299d9eca6d",
-      "semantic_id": "b3:f0192f299d9eca6d",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_chain.rs",
-      "line": 259,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:13bf286db419e0d3",
-      "semantic_id": "b3:13bf286db419e0d3",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_chain.rs",
-      "line": 286,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:6fb4573203bce80a",
       "semantic_id": "b3:6fb4573203bce80a",
       "identity_status": "computed",
@@ -46488,19 +43901,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d4d748c2ea838d39",
-      "semantic_id": "b3:d4d748c2ea838d39",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_header.rs",
-      "line": 36,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:595c4ccfd788608d",
       "semantic_id": "b3:595c4ccfd788608d",
       "identity_status": "computed",
@@ -46667,19 +44067,6 @@
       "line": 160,
       "column": 9,
       "message": "boolean binding `ts_ok` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:13bf286db419e0d3",
-      "semantic_id": "b3:13bf286db419e0d3",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_invocation.rs",
-      "line": 167,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
     },
     {
@@ -47619,32 +45006,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:f3db53860cd8790f",
-      "semantic_id": "b3:f3db53860cd8790f",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_proof_traversal.rs",
-      "line": 259,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:13bf286db419e0d3",
-      "semantic_id": "b3:13bf286db419e0d3",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/ucan_proof_traversal.rs",
-      "line": 285,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:3d6d8e1a2b69098e",
       "semantic_id": "b3:3d6d8e1a2b69098e",
       "identity_status": "computed",
@@ -47996,19 +45357,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d4783ea366f62c2e",
-      "semantic_id": "b3:d4783ea366f62c2e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/ucan_revocation.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `ChainEntry` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:e96dfa6d4d09767d",
       "semantic_id": "b3:e96dfa6d4d09767d",
       "identity_status": "computed",
@@ -48201,32 +45549,6 @@
       "line": 33,
       "column": 5,
       "message": "non-trait import `VerifyingKey` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:86b69938f508929b",
-      "semantic_id": "b3:86b69938f508929b",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/ucan_signature.rs",
-      "line": 55,
-      "column": 5,
-      "message": "non-trait import `SigningKey` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:44652f7cecd4f395",
-      "semantic_id": "b3:44652f7cecd4f395",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/ucan_signature.rs",
-      "line": 56,
-      "column": 30,
-      "message": "`.expect()` in production code will panic on failure",
       "crate_name": "verified_logic"
     },
     {
@@ -48877,19 +46199,6 @@
       "line": 116,
       "column": 1,
       "message": "parameter uses `&Vec<u64>`; accept `&[u64]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:6bdac9b3c08c0c6b",
-      "semantic_id": "b3:6bdac9b3c08c0c6b",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/vector_clock.rs",
-      "line": 130,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -49569,32 +46878,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9591bb52d9a9626e",
-      "semantic_id": "b3:9591bb52d9a9626e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/vision_roi.rs",
-      "line": 4,
-      "column": 1,
-      "message": "non-trait import `VisionImageBuffer` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:e4db736847f14648",
-      "semantic_id": "b3:e4db736847f14648",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/vision_roi.rs",
-      "line": 5,
-      "column": 1,
-      "message": "non-trait import `vision_image_buffer_valid` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:18f2d1fc76c1924f",
       "semantic_id": "b3:18f2d1fc76c1924f",
       "identity_status": "computed",
@@ -49673,19 +46956,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:e2bfef4ea2189fc8",
-      "semantic_id": "b3:e2bfef4ea2189fc8",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/vote_tally.rs",
-      "line": 13,
-      "column": 1,
-      "message": "non-trait import `is_quorum` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:354abffffa5db94b",
       "semantic_id": "b3:354abffffa5db94b",
       "identity_status": "computed",
@@ -49699,19 +46969,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:c06cdcce79dc8e0f",
-      "semantic_id": "b3:c06cdcce79dc8e0f",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/vote_tally.rs",
-      "line": 44,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f34ab59b38360364",
       "semantic_id": "b3:f34ab59b38360364",
       "identity_status": "computed",
@@ -49722,19 +46979,6 @@
       "line": 63,
       "column": 1,
       "message": "item name `init_with_self_vote` repeats `vote` from ancestor path segment `vote_tally`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dc06f4203d0f5cf4",
-      "semantic_id": "b3:dc06f4203d0f5cf4",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/vote_tally.rs",
-      "line": 73,
-      "column": 11,
-      "message": "`as usize` from `u64` is platform-dependent",
       "crate_name": "verified_logic"
     },
     {
@@ -49826,19 +47070,6 @@
       "line": 116,
       "column": 13,
       "message": "boolean binding `skip` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:9675203ebc5d49c9",
-      "semantic_id": "b3:9675203ebc5d49c9",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/voter_set.rs",
-      "line": 121,
-      "column": 13,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -50383,19 +47614,6 @@
       "severity": "warning",
       "file": "src/wasm_primitives.rs",
       "line": 1066,
-      "column": 9,
-      "message": "boolean binding `entry_reachable` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:43ceaea58737016e",
-      "semantic_id": "b3:43ceaea58737016e",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/wasm_primitives.rs",
-      "line": 1097,
       "column": 9,
       "message": "boolean binding `entry_reachable` should have a predicate prefix",
       "crate_name": "verified_logic"
@@ -51116,32 +48334,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7dee67d13e9770f0",
-      "semantic_id": "b3:7dee67d13e9770f0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_chain.rs",
-      "line": 17,
-      "column": 1,
-      "message": "non-trait import `PrincipalId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dfad9a71a4908b29",
-      "semantic_id": "b3:dfad9a71a4908b29",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_chain.rs",
-      "line": 18,
-      "column": 1,
-      "message": "non-trait import `Revocation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:6a51564dc9186ede",
       "semantic_id": "b3:6a51564dc9186ede",
       "identity_status": "computed",
@@ -51152,19 +48344,6 @@
       "line": 183,
       "column": 1,
       "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:9a4954f65562e709",
-      "semantic_id": "b3:9a4954f65562e709",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_chain.rs",
-      "line": 190,
-      "column": 17,
-      "message": "boolean binding `eq` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -51480,19 +48659,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:a9791d49e0ed0cb3",
-      "semantic_id": "b3:a9791d49e0ed0cb3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_policy.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `Attestation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:2121f2f081e58ddf",
       "semantic_id": "b3:2121f2f081e58ddf",
       "identity_status": "computed",
@@ -51503,58 +48669,6 @@
       "line": 18,
       "column": 1,
       "message": "non-trait import `chain_valid_at` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:7dee67d13e9770f0",
-      "semantic_id": "b3:7dee67d13e9770f0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_policy.rs",
-      "line": 23,
-      "column": 1,
-      "message": "non-trait import `PrincipalId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dfad9a71a4908b29",
-      "semantic_id": "b3:dfad9a71a4908b29",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_policy.rs",
-      "line": 24,
-      "column": 1,
-      "message": "non-trait import `Revocation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:6a51564dc9186ede",
-      "semantic_id": "b3:6a51564dc9186ede",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_policy.rs",
-      "line": 284,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:9a4954f65562e709",
-      "semantic_id": "b3:9a4954f65562e709",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_policy.rs",
-      "line": 291,
-      "column": 17,
-      "message": "boolean binding `eq` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
@@ -51883,19 +48997,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9a4954f65562e709",
-      "semantic_id": "b3:9a4954f65562e709",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_principal.rs",
-      "line": 147,
-      "column": 13,
-      "message": "boolean binding `eq` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:a37aa3678caa437d",
       "semantic_id": "b3:a37aa3678caa437d",
       "identity_status": "computed",
@@ -51919,136 +49020,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `web_of_trust_resolution.rs` contains an underscore; prefer `web/of/trust/resolution.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a9791d49e0ed0cb3",
-      "semantic_id": "b3:a9791d49e0ed0cb3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 11,
-      "column": 1,
-      "message": "non-trait import `Attestation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:2121f2f081e58ddf",
-      "semantic_id": "b3:2121f2f081e58ddf",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 20,
-      "column": 1,
-      "message": "non-trait import `chain_valid_at` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:7dee67d13e9770f0",
-      "semantic_id": "b3:7dee67d13e9770f0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 29,
-      "column": 1,
-      "message": "non-trait import `PrincipalId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:dfad9a71a4908b29",
-      "semantic_id": "b3:dfad9a71a4908b29",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 30,
-      "column": 1,
-      "message": "non-trait import `Revocation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:6a51564dc9186ede",
-      "semantic_id": "b3:6a51564dc9186ede",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 154,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:9a4954f65562e709",
-      "semantic_id": "b3:9a4954f65562e709",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 161,
-      "column": 17,
-      "message": "boolean binding `eq` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:b085adb76d49a871",
-      "semantic_id": "b3:b085adb76d49a871",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 176,
-      "column": 1,
-      "message": "parameter uses `&Vec<PrincipalId>`; accept `&[PrincipalId]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:09675e8ccdc6149b",
-      "semantic_id": "b3:09675e8ccdc6149b",
-      "identity_status": "computed",
-      "lint": "no_recursion",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 185,
-      "column": 16,
-      "message": "function calls itself recursively",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:d7d6fa3a76c91fe0",
-      "semantic_id": "b3:d7d6fa3a76c91fe0",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 189,
-      "column": 1,
-      "message": "parameter uses `&Vec<usize>`; accept `&[usize]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:cd4e2bacaf2b77b6",
-      "semantic_id": "b3:cd4e2bacaf2b77b6",
-      "identity_status": "computed",
-      "lint": "unbounded_collection_growth",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_resolution.rs",
-      "line": 200,
-      "column": 9,
-      "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
     },
     {
@@ -52208,32 +49179,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:34fec66d14d7770e",
-      "semantic_id": "b3:34fec66d14d7770e",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 12,
-      "column": 1,
-      "message": "non-trait import `encode_u64` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:a9791d49e0ed0cb3",
-      "semantic_id": "b3:a9791d49e0ed0cb3",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 15,
-      "column": 1,
-      "message": "non-trait import `Attestation` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:dbe34087935573f2",
       "semantic_id": "b3:dbe34087935573f2",
       "identity_status": "computed",
@@ -52273,19 +49218,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7dee67d13e9770f0",
-      "semantic_id": "b3:7dee67d13e9770f0",
-      "identity_status": "computed",
-      "lint": "non_trait_imports",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 29,
-      "column": 1,
-      "message": "non-trait import `PrincipalId` hides the owner path; prefer the qualified path at the use site",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:7a8fa370100a2e09",
       "semantic_id": "b3:7a8fa370100a2e09",
       "identity_status": "computed",
@@ -52299,19 +49231,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:0f5824a209352001",
-      "semantic_id": "b3:0f5824a209352001",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 43,
-      "column": 22,
-      "message": "`.expect()` in production code will panic on failure",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:f7f88a6e6a155bb1",
       "semantic_id": "b3:f7f88a6e6a155bb1",
       "identity_status": "computed",
@@ -52322,84 +49241,6 @@
       "line": 57,
       "column": 1,
       "message": "item name `Revocation` repeats `revocation` from ancestor path segment `web_of_trust_revocation`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:2b289da514be5587",
-      "semantic_id": "b3:2b289da514be5587",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 232,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3087f3e226f2c9f2",
-      "semantic_id": "b3:3087f3e226f2c9f2",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 248,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:9a4954f65562e709",
-      "semantic_id": "b3:9a4954f65562e709",
-      "identity_status": "computed",
-      "lint": "bool_naming",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 255,
-      "column": 17,
-      "message": "boolean binding `eq` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:f45c3fb6b6913835",
-      "semantic_id": "b3:f45c3fb6b6913835",
-      "identity_status": "computed",
-      "lint": "platform_dependent_cast",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 274,
-      "column": 12,
-      "message": "`as usize` from `u32` is platform-dependent",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:f24884d418375cc3",
-      "semantic_id": "b3:f24884d418375cc3",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 278,
-      "column": 1,
-      "message": "parameter uses `&Vec<u8>`; accept `&[u8]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:8558dc30d4ea9e18",
-      "semantic_id": "b3:8558dc30d4ea9e18",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 321,
-      "column": 22,
-      "message": "`.unwrap()` in production code will panic on failure",
       "crate_name": "verified_logic"
     },
     {
@@ -52455,19 +49296,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:8558dc30d4ea9e18",
-      "semantic_id": "b3:8558dc30d4ea9e18",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 374,
-      "column": 22,
-      "message": "`.unwrap()` in production code will panic on failure",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:5ffb141994c9e8f7",
       "semantic_id": "b3:5ffb141994c9e8f7",
       "identity_status": "computed",
@@ -52504,19 +49332,6 @@
       "line": 384,
       "column": 1,
       "message": "item name `revocation_signature_input_bytes` repeats `revocation` from ancestor path segment `web_of_trust_revocation`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:c54f5e2181123a0d",
-      "semantic_id": "b3:c54f5e2181123a0d",
-      "identity_status": "computed",
-      "lint": "no_unwrap",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/web_of_trust_revocation.rs",
-      "line": 402,
-      "column": 24,
-      "message": "`.unwrap()` in production code will panic on failure",
       "crate_name": "verified_logic"
     },
     {
@@ -52803,19 +49618,6 @@
       "line": 1,
       "column": 1,
       "message": "module filename `work_stealing.rs` contains an underscore; prefer `work/stealing.rs`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:6c3e4c7d1de2ab49",
-      "semantic_id": "b3:6c3e4c7d1de2ab49",
-      "identity_status": "computed",
-      "lint": "unchecked_division",
-      "group": "tigerstyle::safety",
-      "severity": "warning",
-      "file": "src/work_stealing.rs",
-      "line": 152,
-      "column": 5,
-      "message": "division by `capacity` without zero check",
       "crate_name": "verified_logic"
     },
     {
@@ -53235,16 +50037,510 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:c01e0f6ac5a3adc5",
-      "semantic_id": "b3:c01e0f6ac5a3adc5",
+      "stable_id": "b3:0527075a36f6de47",
+      "semantic_id": "b3:0527075a36f6de47",
       "identity_status": "computed",
-      "lint": "no_unwrap",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 1894,
+      "column": 1,
+      "message": "item name `well_formed_local` repeats `local` from ancestor path segment `choreography_local`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:0908a1aa4a7870ce",
+      "semantic_id": "b3:0908a1aa4a7870ce",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_global.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 1326 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:0f9004f5e90a81ba",
+      "semantic_id": "b3:0f9004f5e90a81ba",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 1125 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:106b9d362f413a27",
+      "semantic_id": "b3:106b9d362f413a27",
+      "identity_status": "computed",
+      "lint": "non_trait_imports",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_global.rs",
+      "line": 16,
+      "column": 1,
+      "message": "non-trait import `ValueId` hides the owner path; prefer the qualified path at the use site",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:154179f5aca926d2",
+      "semantic_id": "b3:154179f5aca926d2",
+      "identity_status": "computed",
+      "lint": "underscore_in_module_filename",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module filename `choreography_local.rs` contains an underscore; prefer `choreography/local.rs`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:2de56177f05ab905",
+      "semantic_id": "b3:2de56177f05ab905",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 1536,
+      "column": 1,
+      "message": "item name `clone_local` repeats `local` from ancestor path segment `choreography_local`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:348690734bbcb5cc",
+      "semantic_id": "b3:348690734bbcb5cc",
+      "identity_status": "computed",
+      "lint": "usize_in_public_api",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 193,
+      "column": 1,
+      "message": "`usize` in public API — use `u32` or `u64` for cross-platform consistency",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:3bc06af902a1e428",
+      "semantic_id": "b3:3bc06af902a1e428",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 792,
+      "column": 1,
+      "message": "item name `local_send_owned_step` repeats `step` from ancestor path segment `choreography_step`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:3ef11603d156ef18",
+      "semantic_id": "b3:3ef11603d156ef18",
+      "identity_status": "computed",
+      "lint": "borrowed_argument_types",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 161,
+      "column": 1,
+      "message": "parameter uses `&Vec<OwnershipEntry>`; accept `&[OwnershipEntry]` unless ownership, capacity, or exact owned type identity is required",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:4181ce9f59f98c63",
+      "semantic_id": "b3:4181ce9f59f98c63",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_projection.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 2129 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:47e733aa14f8b48b",
+      "semantic_id": "b3:47e733aa14f8b48b",
+      "identity_status": "computed",
+      "lint": "borrowed_argument_types",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 111,
+      "column": 1,
+      "message": "parameter uses `&Vec<OwnershipEntry>`; accept `&[OwnershipEntry]` unless ownership, capacity, or exact owned type identity is required",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:6300058619212f2f",
+      "semantic_id": "b3:6300058619212f2f",
+      "identity_status": "computed",
+      "lint": "no_recursion",
       "group": "tigerstyle::safety",
       "severity": "warning",
-      "file": "src/zircon/socket.rs",
-      "line": 264,
-      "column": 5,
-      "message": "`.expect()` in production code will panic on failure",
+      "file": "src/choreography_ownership.rs",
+      "line": 187,
+      "column": 9,
+      "message": "function calls itself recursively",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:644af5b3acfa7b8f",
+      "semantic_id": "b3:644af5b3acfa7b8f",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/lib.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 1052 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:67e5280832ee483e",
+      "semantic_id": "b3:67e5280832ee483e",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 74,
+      "column": 1,
+      "message": "item name `OwnershipState` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:6ef4bcbb53955d79",
+      "semantic_id": "b3:6ef4bcbb53955d79",
+      "identity_status": "computed",
+      "lint": "underscore_in_module_filename",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_global.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module filename `choreography_global.rs` contains an underscore; prefer `choreography/global.rs`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:805b3384b66eef3e",
+      "semantic_id": "b3:805b3384b66eef3e",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 663,
+      "column": 1,
+      "message": "item name `owned_transfer_step` repeats `step` from ancestor path segment `choreography_step`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:81987aac28794f6b",
+      "semantic_id": "b3:81987aac28794f6b",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 193,
+      "column": 1,
+      "message": "item name `ownership_entry_count` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:821ea18110cf6f4c",
+      "semantic_id": "b3:821ea18110cf6f4c",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 161,
+      "column": 1,
+      "message": "item name `admit_ownership` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:82693c70575882e7",
+      "semantic_id": "b3:82693c70575882e7",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 1527,
+      "column": 1,
+      "message": "item name `clone_local_branch` repeats `local` from ancestor path segment `choreography_local`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:987bb6039ca4b11a",
+      "semantic_id": "b3:987bb6039ca4b11a",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 66,
+      "column": 1,
+      "message": "item name `OwnershipEntry` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:a84eb26cab3c7a1b",
+      "semantic_id": "b3:a84eb26cab3c7a1b",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_global.rs",
+      "line": 822,
+      "column": 1,
+      "message": "item name `clone_global` repeats `global` from ancestor path segment `choreography_global`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:b744726796923739",
+      "semantic_id": "b3:b744726796923739",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 142,
+      "column": 1,
+      "message": "item name `clone_ownership_entries` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:c7e5ccb85f9ec60f",
+      "semantic_id": "b3:c7e5ccb85f9ec60f",
+      "identity_status": "computed",
+      "lint": "non_trait_imports",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 48,
+      "column": 1,
+      "message": "non-trait import `OwnershipState` hides the owner path; prefer the qualified path at the use site",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:cb2bbfd0bbdba237",
+      "semantic_id": "b3:cb2bbfd0bbdba237",
+      "identity_status": "computed",
+      "lint": "module_file_count",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/ability_effect.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module directory `src` contains 595 Rust source files (limit: 7)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:ce750c7e739fcc49",
+      "semantic_id": "b3:ce750c7e739fcc49",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 2322 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:cf567cb8ab068065",
+      "semantic_id": "b3:cf567cb8ab068065",
+      "identity_status": "computed",
+      "lint": "borrowed_argument_types",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 173,
+      "column": 1,
+      "message": "parameter uses `&Vec<OwnershipEntry>`; accept `&[OwnershipEntry]` unless ownership, capacity, or exact owned type identity is required",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:d003c112af8a9c5a",
+      "semantic_id": "b3:d003c112af8a9c5a",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 111,
+      "column": 1,
+      "message": "item name `ownership_is_normalized` repeats `ownership` from ancestor path segment `choreography_ownership`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:d4a4be9907885de5",
+      "semantic_id": "b3:d4a4be9907885de5",
+      "identity_status": "computed",
+      "lint": "borrowed_argument_types",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 142,
+      "column": 1,
+      "message": "parameter uses `&Vec<OwnershipEntry>`; accept `&[OwnershipEntry]` unless ownership, capacity, or exact owned type identity is required",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:dbc790ea678ff2da",
+      "semantic_id": "b3:dbc790ea678ff2da",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 668 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:dc3587cd39147af0",
+      "semantic_id": "b3:dc3587cd39147af0",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_local.rs",
+      "line": 23,
+      "column": 1,
+      "message": "item name `LocalChoreo` repeats `local` from ancestor path segment `choreography_local`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:e8eb131242a3860a",
+      "semantic_id": "b3:e8eb131242a3860a",
+      "identity_status": "computed",
+      "lint": "non_trait_imports",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 59,
+      "column": 1,
+      "message": "non-trait import `transfer_owner` hides the owner path; prefer the qualified path at the use site",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:eff13cc95f0f93dd",
+      "semantic_id": "b3:eff13cc95f0f93dd",
+      "identity_status": "computed",
+      "lint": "underscore_in_module_filename",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_projection.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module filename `choreography_projection.rs` contains an underscore; prefer `choreography/projection.rs`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:f136d50bded8bebe",
+      "semantic_id": "b3:f136d50bded8bebe",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/properties.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 9456 lines (limit: 300)",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:f1a71c4c960c0910",
+      "semantic_id": "b3:f1a71c4c960c0910",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 814,
+      "column": 1,
+      "message": "item name `local_recv_owned_step` repeats `step` from ancestor path segment `choreography_step`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:f2a3b0e027df807e",
+      "semantic_id": "b3:f2a3b0e027df807e",
+      "identity_status": "computed",
+      "lint": "underscore_in_module_filename",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module filename `choreography_step.rs` contains an underscore; prefer `choreography/step.rs`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:f2fca70d04b111ab",
+      "semantic_id": "b3:f2fca70d04b111ab",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_step.rs",
+      "line": 96,
+      "column": 1,
+      "message": "item name `OwnedTransferStep` repeats `step` from ancestor path segment `choreography_step`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:f8c48f99e493d729",
+      "semantic_id": "b3:f8c48f99e493d729",
+      "identity_status": "computed",
+      "lint": "borrowed_argument_types",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 207,
+      "column": 1,
+      "message": "parameter uses `&Vec<OwnershipEntry>`; accept `&[OwnershipEntry]` unless ownership, capacity, or exact owned type identity is required",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:fa303099a8e3afd3",
+      "semantic_id": "b3:fa303099a8e3afd3",
+      "identity_status": "computed",
+      "lint": "path_segment_repetition",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_global.rs",
+      "line": 1135,
+      "column": 1,
+      "message": "item name `well_formed_global` repeats `global` from ancestor path segment `choreography_global`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:fea1efc6e64960fa",
+      "semantic_id": "b3:fea1efc6e64960fa",
+      "identity_status": "computed",
+      "lint": "underscore_in_module_filename",
+      "group": "tigerstyle::naming",
+      "severity": "warning",
+      "file": "src/choreography_ownership.rs",
+      "line": 1,
+      "column": 1,
+      "message": "module filename `choreography_ownership.rs` contains an underscore; prefer `choreography/ownership.rs`",
       "crate_name": "verified_logic"
     }
   ]

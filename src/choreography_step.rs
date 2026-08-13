@@ -44,6 +44,22 @@ use crate::choreography_local::lookup_branch_spec;
 #[cfg(verus_keep_ghost)]
 use crate::choreography_local::option_local_view;
 #[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::OwnershipEntry;
+use crate::choreography_ownership::OwnershipState;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::ValueId;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::owner_of_spec;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::ownership_entries_spec;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::ownership_normalized_spec;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::successful_transfer_conserves_ownership;
+use crate::choreography_ownership::transfer_owner;
+#[cfg(verus_keep_ghost)]
+use crate::choreography_ownership::transfer_owner_post_spec;
+#[cfg(verus_keep_ghost)]
 use crate::choreography_projection::absent_from_branches_excludes_each;
 #[cfg(verus_keep_ghost)]
 use crate::choreography_projection::absent_role_projects_to_end;
@@ -73,6 +89,14 @@ use crate::choreography_projection::project_local_spec;
 use crate::choreography_projection::projectable_spec;
 
 verus! {
+
+/// Result of one successful atomic owned-transfer step.
+#[cfg_attr(not(verus_keep_ghost), derive(Clone))]
+#[derive(Debug, PartialEq, Eq)]
+pub struct OwnedTransferStep {
+    pub next: GlobalChoreo,
+    pub ownership: OwnershipState,
+}
 
 pub(crate) open spec fn option_global_view(opt: Option<GlobalChoreo>) -> Option<GChoreo> {
     match opt {
@@ -145,6 +169,16 @@ pub(crate) open spec fn local_send_step_spec(local: LChoreo) -> Option<LChoreo>
     }
 }
 
+// r[impl choreography.value_transfer_projection.shape]
+pub(crate) open spec fn local_send_owned_step_spec(local: LChoreo) -> Option<LChoreo>
+    decreases local
+{
+    match local {
+        LChoreo::SendOwned { next, .. } => Some(*next),
+        _ => None,
+    }
+}
+
 // r[depends choreography.steps]
 // r[impl choreography.steps]
 pub(crate) open spec fn local_recv_step_spec(local: LChoreo) -> Option<LChoreo>
@@ -152,6 +186,16 @@ pub(crate) open spec fn local_recv_step_spec(local: LChoreo) -> Option<LChoreo>
 {
     match local {
         LChoreo::Recv { next, .. } => Some(*next),
+        _ => None,
+    }
+}
+
+// r[impl choreography.value_transfer_projection.shape]
+pub(crate) open spec fn local_recv_owned_step_spec(local: LChoreo) -> Option<LChoreo>
+    decreases local
+{
+    match local {
+        LChoreo::RecvOwned { next, .. } => Some(*next),
         _ => None,
     }
 }
@@ -183,8 +227,10 @@ pub(crate) open spec fn first_offer_labels_from_spec(local: LChoreo, from: RoleI
 {
     match local {
         LChoreo::End => None,
-        LChoreo::Send { next, .. } => first_offer_labels_from_spec(*next, from),
-        LChoreo::Recv { next, .. } => first_offer_labels_from_spec(*next, from),
+        LChoreo::Send { next, .. } | LChoreo::SendOwned { next, .. } =>
+            first_offer_labels_from_spec(*next, from),
+        LChoreo::Recv { next, .. } | LChoreo::RecvOwned { next, .. } =>
+            first_offer_labels_from_spec(*next, from),
         LChoreo::InternalChoice { .. } => None,
         LChoreo::Offer { from: offer_from, branches } => {
             if offer_from == from {
@@ -224,9 +270,71 @@ pub(crate) open spec fn choice_alignment_spec(before: LChoreo, label: LabelId, a
                     _ => false,
                 }
             }
+            LChoreo::SendOwned { peer, label: msg_label, payload_tag, value, next } => {
+                match after {
+                    LChoreo::SendOwned {
+                        peer: after_peer,
+                        label: after_label,
+                        payload_tag: after_payload,
+                        value: after_value,
+                        next: after_next,
+                    } => {
+                        peer == after_peer
+                            && msg_label == after_label
+                            && payload_tag == after_payload
+                            && value == after_value
+                            && choice_alignment_spec(*next, label, *after_next)
+                    }
+                    _ => false,
+                }
+            }
+            LChoreo::RecvOwned { peer, label: msg_label, payload_tag, value, next } => {
+                match after {
+                    LChoreo::RecvOwned {
+                        peer: after_peer,
+                        label: after_label,
+                        payload_tag: after_payload,
+                        value: after_value,
+                        next: after_next,
+                    } => {
+                        peer == after_peer
+                            && msg_label == after_label
+                            && payload_tag == after_payload
+                            && value == after_value
+                            && choice_alignment_spec(*next, label, *after_next)
+                    }
+                    _ => false,
+                }
+            }
             LChoreo::InternalChoice { branches } => lookup_branch_spec(branches, label) == Some(after),
             LChoreo::Offer { branches, .. } => lookup_branch_spec(branches, label) == Some(after),
         }
+}
+
+// r[impl choreography.value_ownership.transfer]
+pub closed spec fn owned_transfer_step_post_spec(
+    global: GlobalChoreo,
+    old_entries: Seq<crate::choreography_ownership::OwnershipEntry>,
+    result: Option<OwnedTransferStep>,
+) -> bool {
+    match global {
+        GlobalChoreo::OwnedTransfer { from, to, value, next, .. } => {
+            match result {
+                Some(step) => {
+                    global_view(step.next) == global_view(*next)
+                        && transfer_owner_post_spec(
+                            old_entries,
+                            from,
+                            to,
+                            value,
+                            Some(step.ownership),
+                        )
+                }
+                None => transfer_owner_post_spec(old_entries, from, to, value, None),
+            }
+        }
+        _ => result.is_none(),
+    }
 }
 
 // r[impl choreography.steps]
@@ -247,6 +355,22 @@ pub closed spec fn local_send_step_post_spec(local: LocalChoreo, result: Option<
 // r[impl choreography.steps]
 pub closed spec fn local_recv_step_post_spec(local: LocalChoreo, result: Option<LocalChoreo>) -> bool {
     true
+}
+
+// r[impl choreography.value_transfer_projection.shape]
+pub closed spec fn local_send_owned_step_post_spec(
+    local: LocalChoreo,
+    result: Option<LocalChoreo>,
+) -> bool {
+    option_local_view(result) == local_send_owned_step_spec(local_view(local))
+}
+
+// r[impl choreography.value_transfer_projection.shape]
+pub closed spec fn local_recv_owned_step_post_spec(
+    local: LocalChoreo,
+    result: Option<LocalChoreo>,
+) -> bool {
+    option_local_view(result) == local_recv_owned_step_spec(local_view(local))
 }
 
 // r[impl choreography.steps]
@@ -315,7 +439,7 @@ proof fn successful_global_step_preserves_projectable(global: GChoreo, label: La
 {
     match global {
         GChoreo::End => {}
-        GChoreo::Comm { next, .. } => {
+        GChoreo::Comm { .. } | GChoreo::OwnedTransfer { .. } => {
         }
         GChoreo::Choice { branches, .. } => {
             if global_choice_step_spec(global, label).is_some() {
@@ -347,6 +471,59 @@ pub(crate) proof fn communication_projection_step_shape(
 {
     crate::choreography_projection::sender_projection_shape(from, to, label, payload_tag, next);
     crate::choreography_projection::receiver_projection_shape(from, to, label, payload_tag, next);
+}
+
+// r[verify properties.choreography_transfer_correspondence]
+pub(crate) proof fn owned_transfer_projection_step_shape(
+    from: RoleId,
+    to: RoleId,
+    label: LabelId,
+    payload_tag: PayloadTag,
+    value: ValueId,
+    next: GChoreo,
+)
+    requires projectable_spec(GChoreo::OwnedTransfer {
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(next),
+    })
+    ensures
+        local_send_owned_step_spec(project_endpoint_spec(from, GChoreo::OwnedTransfer {
+            from,
+            to,
+            label,
+            payload_tag,
+            value,
+            next: Box::new(next),
+        })) == Some(project_endpoint_spec(from, next)),
+        local_recv_owned_step_spec(project_endpoint_spec(to, GChoreo::OwnedTransfer {
+            from,
+            to,
+            label,
+            payload_tag,
+            value,
+            next: Box::new(next),
+        })) == Some(project_endpoint_spec(to, next))
+{
+    crate::choreography_projection::owned_sender_projection_shape(
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next,
+    );
+    crate::choreography_projection::owned_receiver_projection_shape(
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next,
+    );
 }
 
 // r[verify choreography.steps]
@@ -478,6 +655,107 @@ fn lookup_local_branch(branches: &[LocalBranch], label: LabelId) -> (result: Opt
     lookup_local_branch_from(branches, label, 0)
 }
 
+// r[impl choreography.value_ownership.transfer]
+// r[verify choreography.value_ownership.transfer]
+/// Advance one owned-transfer head and replace its selected value owner.
+///
+/// Non-transfer heads and rejected ownership changes return `None`.
+pub fn owned_transfer_step(
+    global: &GlobalChoreo,
+    ownership: &OwnershipState,
+) -> (result: Option<OwnedTransferStep>)
+    ensures owned_transfer_step_post_spec(
+        *global,
+        ownership_entries_spec(*ownership),
+        result,
+    )
+{
+    match global {
+        GlobalChoreo::OwnedTransfer { from, to, value, next, .. } => {
+            let transferred = transfer_owner(ownership, *from, *to, *value);
+            match transferred {
+                Some(next_ownership) => {
+                    let next_global = clone_global(next);
+                    let step = OwnedTransferStep {
+                        next: next_global,
+                        ownership: next_ownership,
+                    };
+                    proof {
+                        assert(transfer_owner_post_spec(
+                            ownership_entries_spec(*ownership),
+                            *from,
+                            *to,
+                            *value,
+                            transferred,
+                        ));
+                        assert(transferred == Some(step.ownership));
+                        assert(global_view(step.next) == global_view(**next));
+                        reveal(owned_transfer_step_post_spec);
+                    }
+                    Some(step)
+                }
+                None => {
+                    proof {
+                        assert(transfer_owner_post_spec(
+                            ownership_entries_spec(*ownership),
+                            *from,
+                            *to,
+                            *value,
+                            transferred,
+                        ));
+                        assert(transferred.is_none());
+                        reveal(owned_transfer_step_post_spec);
+                    }
+                    None
+                }
+            }
+        }
+        _ => {
+            proof { reveal(owned_transfer_step_post_spec); }
+            None
+        },
+    }
+}
+
+// r[verify choreography.value_ownership.conservation]
+// r[verify properties.choreography_transfer_correspondence]
+pub(crate) proof fn successful_owned_transfer_step_conserves(
+    global: GlobalChoreo,
+    old_entries: Seq<OwnershipEntry>,
+    step: OwnedTransferStep,
+)
+    requires
+        ownership_normalized_spec(old_entries),
+        owned_transfer_step_post_spec(global, old_entries, Some(step)),
+    ensures match global {
+        GlobalChoreo::OwnedTransfer { from, to, value, next, .. } => {
+            global_view(step.next) == global_view(*next)
+                && ownership_normalized_spec(ownership_entries_spec(step.ownership))
+                && ownership_entries_spec(step.ownership).len() == old_entries.len()
+                && owner_of_spec(ownership_entries_spec(step.ownership), value) == Some(to)
+                && owner_of_spec(ownership_entries_spec(step.ownership), value) != Some(from)
+                && forall|unrelated: ValueId| unrelated != value
+                    ==> owner_of_spec(ownership_entries_spec(step.ownership), unrelated)
+                        == owner_of_spec(old_entries, unrelated)
+        }
+        _ => false,
+    }
+{
+    reveal(owned_transfer_step_post_spec);
+    match global {
+        GlobalChoreo::OwnedTransfer { from, to, value, .. } => {
+            successful_transfer_conserves_ownership(
+                old_entries,
+                from,
+                to,
+                value,
+                step.ownership,
+            );
+        }
+        _ => {},
+    }
+}
+
 // r[impl choreography.steps]
 // r[impl newtypes.choreography-payload.preservation]
 pub fn global_comm_step(global: &GlobalChoreo) -> (result: Option<GlobalChoreo>)
@@ -509,12 +787,36 @@ pub fn local_send_step(local: &LocalChoreo) -> (result: Option<LocalChoreo>)
     }
 }
 
+// r[impl choreography.value_transfer_projection.shape]
+/// Remove one projected `SendOwned` head and return its continuation.
+pub fn local_send_owned_step(local: &LocalChoreo) -> (result: Option<LocalChoreo>)
+    ensures local_send_owned_step_post_spec(*local, result)
+{
+    proof { reveal(local_send_owned_step_post_spec); }
+    match local {
+        LocalChoreo::SendOwned { next, .. } => Some(clone_local(next)),
+        _ => None,
+    }
+}
+
 // r[impl choreography.steps]
 pub fn local_recv_step(local: &LocalChoreo) -> (result: Option<LocalChoreo>)
     ensures local_recv_step_post_spec(*local, result)
 {
     match local {
         LocalChoreo::Recv { next, .. } => Some(clone_local(next)),
+        _ => None,
+    }
+}
+
+// r[impl choreography.value_transfer_projection.shape]
+/// Remove one projected `RecvOwned` head and return its continuation.
+pub fn local_recv_owned_step(local: &LocalChoreo) -> (result: Option<LocalChoreo>)
+    ensures local_recv_owned_step_post_spec(*local, result)
+{
+    proof { reveal(local_recv_owned_step_post_spec); }
+    match local {
+        LocalChoreo::RecvOwned { next, .. } => Some(clone_local(next)),
         _ => None,
     }
 }
@@ -548,6 +850,10 @@ mod tests {
     use crate::choreography_global::GlobalChoreo;
     use crate::choreography_local::LocalBranch;
     use crate::choreography_local::LocalChoreo;
+    use crate::choreography_ownership::OwnershipEntry;
+    use crate::choreography_ownership::ValueId;
+    use crate::choreography_ownership::admit_ownership;
+    use crate::choreography_ownership::owner_of;
     use crate::choreography_projection::project_endpoint;
 
     fn branch(label: LabelId, body: GlobalChoreo) -> GlobalBranch {
@@ -556,6 +862,10 @@ mod tests {
 
     fn payload(raw: u32) -> PayloadTag {
         PayloadTag { raw }
+    }
+
+    fn value(raw: u32) -> ValueId {
+        ValueId { raw }
     }
 
     fn send(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
@@ -742,5 +1052,74 @@ mod tests {
             },
             _ => panic!("expected shared-prefix send"),
         }
+    }
+
+    // r[verify choreography.value_ownership.transfer]
+    // r[verify choreography.value_ownership.conservation]
+    // r[verify properties.choreography_transfer_exclusion]
+    #[test]
+    fn test_owned_transfer_step_updates_owner_and_rejects_stale_source() {
+        const SOURCE: RoleId = 1;
+        const DESTINATION: RoleId = 2;
+        const THIRD_ROLE: RoleId = 3;
+        const VALUE_RAW: u32 = 40;
+        const LABEL: LabelId = 7;
+        const PAYLOAD_RAW: u32 = 9;
+
+        let entries = vec![OwnershipEntry {
+            value: value(VALUE_RAW),
+            owner: SOURCE,
+        }];
+        let ownership = match admit_ownership(&entries) {
+            Some(state) => state,
+            None => panic!("ownership fixture must be admitted"),
+        };
+        let global = GlobalChoreo::OwnedTransfer {
+            from: SOURCE,
+            to: DESTINATION,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(GlobalChoreo::End),
+        };
+        let moved = match owned_transfer_step(&global, &ownership) {
+            Some(step) => step,
+            None => panic!("current owner transfer must succeed"),
+        };
+        assert_eq!(moved.next, GlobalChoreo::End);
+        assert_eq!(owner_of(&moved.ownership, value(VALUE_RAW)), Some(DESTINATION));
+
+        let stale = GlobalChoreo::OwnedTransfer {
+            from: SOURCE,
+            to: THIRD_ROLE,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(GlobalChoreo::End),
+        };
+        assert_eq!(owned_transfer_step(&stale, &moved.ownership), None);
+    }
+
+    // r[verify properties.choreography_transfer_correspondence]
+    #[test]
+    fn test_owned_transfer_local_heads_reach_projected_continuations() {
+        const SOURCE: RoleId = 1;
+        const DESTINATION: RoleId = 2;
+        const VALUE_RAW: u32 = 40;
+        const LABEL: LabelId = 7;
+        const PAYLOAD_RAW: u32 = 9;
+
+        let global = GlobalChoreo::OwnedTransfer {
+            from: SOURCE,
+            to: DESTINATION,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(GlobalChoreo::End),
+        };
+        let sender = project_endpoint(SOURCE, &global);
+        let receiver = project_endpoint(DESTINATION, &global);
+        assert_eq!(local_send_owned_step(&sender), Some(LocalChoreo::End));
+        assert_eq!(local_recv_owned_step(&receiver), Some(LocalChoreo::End));
     }
 }

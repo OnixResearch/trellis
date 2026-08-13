@@ -1,0 +1,2 @@
+    Checking verified-logic v0.2.0 (/home/brittonr/git/OnixResearch/trellis-worktrees/drain-value-transfer-20260812)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 21.40s

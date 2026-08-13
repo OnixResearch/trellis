@@ -1,0 +1,14 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.03s
+   Doc-tests verified_logic
+
+running 7 tests
+test src/choreography_global.rs - choreography_global::PayloadTag (line 31) - compile fail ... ok
+test src/choreography_ownership.rs - choreography_ownership::ValueId (line 30) - compile fail ... ok
+test src/choreography_ownership.rs - choreography_ownership::ValueId (line 38) - compile fail ... ok
+test src/choreography_ownership.rs - choreography_ownership::ValueId (line 46) - compile fail ... ok
+test src/typed_durable_reference.rs - typed_durable_reference::ReferenceHash (line 32) - compile fail ... ok
+test src/typed_durable_reference.rs - typed_durable_reference::TypeHash (line 57) - compile fail ... ok
+test src/typed_durable_reference.rs - typed_durable_reference::SchemaVersion (line 85) - compile fail ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.09s
+

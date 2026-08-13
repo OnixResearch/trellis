@@ -13,6 +13,8 @@
 
 use vstd::prelude::*;
 
+use crate::choreography_ownership::ValueId;
+
 verus! {
 
 pub type RoleId = u32;
@@ -63,6 +65,18 @@ pub enum GlobalChoreo {
         payload_tag: PayloadTag,
         next: Box<GlobalChoreo>,
     },
+    // r[impl choreography.value_ownership.transfer]
+    /// Atomically transfer one symbolic value during an ownership-aware step.
+    ///
+    /// This node does not claim transport, persistence, or external effects.
+    OwnedTransfer {
+        from: RoleId,
+        to: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
+        next: Box<GlobalChoreo>,
+    },
     Choice {
         decider: RoleId,
         branches: Vec<GlobalBranch>,
@@ -81,6 +95,14 @@ pub(crate) enum GChoreo {
         to: RoleId,
         label: LabelId,
         payload_tag: PayloadTag,
+        next: Box<GChoreo>,
+    },
+    OwnedTransfer {
+        from: RoleId,
+        to: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
         next: Box<GChoreo>,
     },
     Choice {
@@ -150,6 +172,14 @@ pub(crate) open spec fn global_view(global: GlobalChoreo) -> GChoreo
             payload_tag,
             next: Box::new(global_view(*next)),
         },
+        GlobalChoreo::OwnedTransfer { from, to, label, payload_tag, value, next } => GChoreo::OwnedTransfer {
+            from,
+            to,
+            label,
+            payload_tag,
+            value,
+            next: Box::new(global_view(*next)),
+        },
         GlobalChoreo::Choice { decider, .. } => GChoreo::Choice {
             decider,
             branches: global_choice_branches_view(global, 0),
@@ -184,7 +214,7 @@ pub(crate) open spec fn global_size(global: GChoreo) -> nat
 {
     match global {
         GChoreo::End => 1,
-        GChoreo::Comm { next, .. } => 1 + global_size(*next),
+        GChoreo::Comm { next, .. } | GChoreo::OwnedTransfer { next, .. } => 1 + global_size(*next),
         GChoreo::Choice { .. } => 1 + global_choice_branch_size(global, 0),
     }
 }
@@ -241,7 +271,9 @@ pub(crate) open spec fn role_in_global_spec(role: RoleId, global: GChoreo) -> bo
 {
     match global {
         GChoreo::End => false,
-        GChoreo::Comm { from, to, next, .. } => role == from || role == to || role_in_global_spec(role, *next),
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } =>
+            role == from || role == to || role_in_global_spec(role, *next),
         GChoreo::Choice { decider, branches } => {
             role == decider || role_in_choice_branches_prefix_spec(role, global, branches.len() as int)
         }
@@ -303,7 +335,8 @@ pub(crate) open spec fn participants_spec(global: GChoreo) -> Seq<RoleId>
 {
     match global {
         GChoreo::End => seq![],
-        GChoreo::Comm { from, to, next, .. } => {
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } => {
             insert_role_spec(insert_role_spec(participants_spec(*next), from), to)
         }
         GChoreo::Choice { decider, branches } => {
@@ -357,7 +390,9 @@ pub(crate) open spec fn well_formed_global_spec(global: GChoreo) -> bool
 {
     match global {
         GChoreo::End => true,
-        GChoreo::Comm { from, to, next, .. } => from != to && well_formed_global_spec(*next),
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } =>
+            from != to && well_formed_global_spec(*next),
         GChoreo::Choice { branches, .. } => {
             branches.len() > 0
                 && global_branch_labels_strict_spec(branches)
@@ -430,7 +465,9 @@ pub open spec fn well_formed_global_runtime_spec(global: GlobalChoreo) -> bool
 {
     match global {
         GlobalChoreo::End => true,
-        GlobalChoreo::Comm { from, to, next, .. } => from != to && well_formed_global_runtime_spec(*next),
+        GlobalChoreo::Comm { from, to, next, .. }
+        | GlobalChoreo::OwnedTransfer { from, to, next, .. } =>
+            from != to && well_formed_global_runtime_spec(*next),
         GlobalChoreo::Choice { branches, .. } =>
             branches.len() > 0
                 && global_exec_branch_labels_strict_spec(branches@)
@@ -681,7 +718,8 @@ proof fn participants_membership_exact(role: RoleId, global: GChoreo)
 {
     match global {
         GChoreo::End => {}
-        GChoreo::Comm { from, to, next, .. } => {
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } => {
             participants_membership_exact(role, *next);
             insert_role_membership(participants_spec(*next), from, role);
             insert_role_membership(insert_role_spec(participants_spec(*next), from), to, role);
@@ -791,6 +829,14 @@ pub(crate) fn clone_global(global: &GlobalChoreo) -> (result: GlobalChoreo)
             to: *to,
             label: *label,
             payload_tag: *payload_tag,
+            next: Box::new(clone_global(next)),
+        },
+        GlobalChoreo::OwnedTransfer { from, to, label, payload_tag, value, next } => GlobalChoreo::OwnedTransfer {
+            from: *from,
+            to: *to,
+            label: *label,
+            payload_tag: *payload_tag,
+            value: *value,
             next: Box::new(clone_global(next)),
         },
         GlobalChoreo::Choice { decider, branches } => {
@@ -984,7 +1030,8 @@ pub fn participants(global: &GlobalChoreo) -> (result: Vec<RoleId>)
             }
             Vec::new()
         }
-        GlobalChoreo::Comm { from, to, next, .. } => {
+        GlobalChoreo::Comm { from, to, next, .. }
+        | GlobalChoreo::OwnedTransfer { from, to, next, .. } => {
             let mut roles = participants(next);
             push_unique(&mut roles, *from);
             push_unique(&mut roles, *to);
@@ -1093,7 +1140,8 @@ pub fn well_formed_global(global: &GlobalChoreo) -> (result: bool)
             proof { reveal(well_formed_global_runtime_spec); }
             true
         }
-        GlobalChoreo::Comm { from, to, next, .. } => {
+        GlobalChoreo::Comm { from, to, next, .. }
+        | GlobalChoreo::OwnedTransfer { from, to, next, .. } => {
             let result = *from != *to && well_formed_global(next);
             proof { reveal(well_formed_global_runtime_spec); }
             result
@@ -1131,7 +1179,7 @@ mod tests {
     fn brute_participants(global: &GlobalChoreo) -> Vec<RoleId> {
         match global {
             GlobalChoreo::End => vec![],
-            GlobalChoreo::Comm { from, to, next, .. } => {
+            GlobalChoreo::Comm { from, to, next, .. } | GlobalChoreo::OwnedTransfer { from, to, next, .. } => {
                 let mut roles = brute_participants(next);
                 roles.push(*from);
                 roles.push(*to);

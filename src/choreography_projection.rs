@@ -52,6 +52,7 @@ use crate::choreography_local::lookup_branch_spec;
 use crate::choreography_local::option_branches_view;
 #[cfg(verus_keep_ghost)]
 use crate::choreography_local::option_local_view;
+use crate::choreography_ownership::ValueId;
 
 verus! {
 
@@ -104,7 +105,7 @@ pub(crate) open spec fn same_projected_bodies_spec(branches: Seq<LBranch>) -> bo
 
 pub(crate) open spec fn decider_guarded_local_spec(decider: RoleId, local: LChoreo) -> bool {
     match local {
-        LChoreo::Recv { peer, .. } => peer == decider,
+        LChoreo::Recv { peer, .. } | LChoreo::RecvOwned { peer, .. } => peer == decider,
         LChoreo::Offer { from, .. } => from == decider,
         _ => false,
     }
@@ -285,6 +286,33 @@ pub(crate) open spec fn project_local_spec(role: RoleId, global: GChoreo) -> Opt
                 project_local_spec(role, *next)
             }
         }
+        GChoreo::OwnedTransfer { from, to, label, payload_tag, value, next } => {
+            if role == from {
+                match project_local_spec(role, *next) {
+                    Some(next_local) => Some(LChoreo::SendOwned {
+                        peer: to,
+                        label,
+                        payload_tag,
+                        value,
+                        next: Box::new(next_local),
+                    }),
+                    None => None,
+                }
+            } else if role == to {
+                match project_local_spec(role, *next) {
+                    Some(next_local) => Some(LChoreo::RecvOwned {
+                        peer: from,
+                        label,
+                        payload_tag,
+                        value,
+                        next: Box::new(next_local),
+                    }),
+                    None => None,
+                }
+            } else {
+                project_local_spec(role, *next)
+            }
+        }
         GChoreo::Choice { decider, branches } => {
             if branches.len() == 0 {
                 None
@@ -307,7 +335,9 @@ pub(crate) open spec fn projectable_spec(global: GChoreo) -> bool
 {
     match global {
         GChoreo::End => true,
-        GChoreo::Comm { from, to, next, .. } => from != to && projectable_spec(*next),
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } =>
+            from != to && projectable_spec(*next),
         GChoreo::Choice { decider, branches } => {
             branches.len() > 0
                 && global_branch_labels_strict_spec(branches)
@@ -1032,7 +1062,7 @@ proof fn projectable_implies_projection_some(role: RoleId, global: GChoreo)
 {
     match global {
         GChoreo::End => {}
-        GChoreo::Comm { from, to, next, .. } => {
+        GChoreo::Comm { next, .. } | GChoreo::OwnedTransfer { next, .. } => {
             projectable_implies_projection_some(role, *next);
         }
         GChoreo::Choice { decider, branches } => {
@@ -1080,6 +1110,33 @@ pub closed spec fn project_endpoint_shape_post_spec(role: RoleId, global: Global
                     LocalChoreo::Recv { peer, label: out_label, payload_tag: out_tag, .. } => {
                         peer == from && out_label == label && out_tag == payload_tag
                     }
+                    _ => false,
+                }
+            } else {
+                true
+            }
+        }
+        GlobalChoreo::OwnedTransfer { from, to, label, payload_tag, value, .. } => {
+            if role == from {
+                match result {
+                    LocalChoreo::SendOwned {
+                        peer,
+                        label: out_label,
+                        payload_tag: out_tag,
+                        value: out_value,
+                        ..
+                    } => peer == to && out_label == label && out_tag == payload_tag && out_value == value,
+                    _ => false,
+                }
+            } else if role == to {
+                match result {
+                    LocalChoreo::RecvOwned {
+                        peer,
+                        label: out_label,
+                        payload_tag: out_tag,
+                        value: out_value,
+                        ..
+                    } => peer == from && out_label == label && out_tag == payload_tag && out_value == value,
                     _ => false,
                 }
             } else {
@@ -1307,6 +1364,76 @@ pub(crate) proof fn receiver_projection_shape(from: RoleId, to: RoleId, label: L
     projectable_implies_projection_some(to, next);
 }
 
+// r[verify choreography.value_transfer_projection.shape]
+pub(crate) proof fn owned_sender_projection_shape(
+    from: RoleId,
+    to: RoleId,
+    label: LabelId,
+    payload_tag: PayloadTag,
+    value: ValueId,
+    next: GChoreo,
+)
+    requires projectable_spec(GChoreo::OwnedTransfer {
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(next),
+    })
+    ensures project_endpoint_spec(from, GChoreo::OwnedTransfer {
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(next),
+    }) == (LChoreo::SendOwned {
+        peer: to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(project_endpoint_spec(from, next)),
+    })
+{
+    projectable_implies_projection_some(from, next);
+}
+
+// r[verify choreography.value_transfer_projection.shape]
+pub(crate) proof fn owned_receiver_projection_shape(
+    from: RoleId,
+    to: RoleId,
+    label: LabelId,
+    payload_tag: PayloadTag,
+    value: ValueId,
+    next: GChoreo,
+)
+    requires projectable_spec(GChoreo::OwnedTransfer {
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(next),
+    })
+    ensures project_endpoint_spec(to, GChoreo::OwnedTransfer {
+        from,
+        to,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(next),
+    }) == (LChoreo::RecvOwned {
+        peer: from,
+        label,
+        payload_tag,
+        value,
+        next: Box::new(project_endpoint_spec(to, next)),
+    })
+{
+    projectable_implies_projection_some(to, next);
+}
+
 // r[verify choreography.projection]
 pub(crate) proof fn decider_choice_projects_to_internal_choice(decider: RoleId, branches: Seq<GBranch>)
     requires
@@ -1334,7 +1461,8 @@ pub(crate) proof fn absent_role_projects_to_end(role: RoleId, global: GChoreo)
 {
     match global {
         GChoreo::End => {}
-        GChoreo::Comm { from, to, next, .. } => {
+        GChoreo::Comm { from, to, next, .. }
+        | GChoreo::OwnedTransfer { from, to, next, .. } => {
             assert(role != from);
             assert(role != to);
             assert(!role_in_global_spec(role, *next));
@@ -1562,6 +1690,33 @@ fn project_local(role: RoleId, global: &GlobalChoreo) -> (result: Option<LocalCh
                 project_local(role, next)
             }
         }
+        GlobalChoreo::OwnedTransfer { from, to, label, payload_tag, value, next } => {
+            if role == *from {
+                match project_local(role, next) {
+                    Some(next_local) => Some(LocalChoreo::SendOwned {
+                        peer: *to,
+                        label: *label,
+                        payload_tag: *payload_tag,
+                        value: *value,
+                        next: Box::new(next_local),
+                    }),
+                    None => None,
+                }
+            } else if role == *to {
+                match project_local(role, next) {
+                    Some(next_local) => Some(LocalChoreo::RecvOwned {
+                        peer: *from,
+                        label: *label,
+                        payload_tag: *payload_tag,
+                        value: *value,
+                        next: Box::new(next_local),
+                    }),
+                    None => None,
+                }
+            } else {
+                project_local(role, next)
+            }
+        }
         GlobalChoreo::Choice { decider, branches } => {
             if branches.is_empty() {
                 None
@@ -1610,7 +1765,8 @@ pub fn projectable(global: &GlobalChoreo) -> (result: bool)
             }
             true
         }
-        GlobalChoreo::Comm { from, to, next, .. } => {
+        GlobalChoreo::Comm { from, to, next, .. }
+        | GlobalChoreo::OwnedTransfer { from, to, next, .. } => {
             let result = *from != *to && projectable(next);
             proof {
                 reveal(crate::choreography_global::well_formed_global_runtime_spec);
@@ -1686,6 +1842,30 @@ pub fn project_endpoint(role: RoleId, global: &GlobalChoreo) -> (result: LocalCh
                 project_endpoint(role, next)
             }
         }
+        GlobalChoreo::OwnedTransfer { from, to, label, payload_tag, value, next } => {
+            proof {
+                reveal(projectable_exec_spec);
+            }
+            if role == *from {
+                LocalChoreo::SendOwned {
+                    peer: *to,
+                    label: *label,
+                    payload_tag: *payload_tag,
+                    value: *value,
+                    next: Box::new(project_endpoint(role, next)),
+                }
+            } else if role == *to {
+                LocalChoreo::RecvOwned {
+                    peer: *from,
+                    label: *label,
+                    payload_tag: *payload_tag,
+                    value: *value,
+                    next: Box::new(project_endpoint(role, next)),
+                }
+            } else {
+                project_endpoint(role, next)
+            }
+        }
         GlobalChoreo::Choice { decider, branches } => {
             if role == *decider {
                 match project_decider_branches(role, branches) {
@@ -1711,6 +1891,7 @@ mod tests {
     use crate::choreography_global::GlobalChoreo;
     use crate::choreography_local::LocalBranch;
     use crate::choreography_local::LocalChoreo;
+    use crate::choreography_ownership::ValueId;
 
     fn branch(label: LabelId, body: GlobalChoreo) -> GlobalBranch {
         GlobalBranch { label, body }
@@ -1718,6 +1899,10 @@ mod tests {
 
     fn payload(raw: u32) -> PayloadTag {
         PayloadTag { raw }
+    }
+
+    fn value(raw: u32) -> ValueId {
+        ValueId { raw }
     }
 
     fn send(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
@@ -1790,6 +1975,57 @@ mod tests {
         };
         let projected = project_endpoint(2, &global);
         assert_eq!(projected, recv(1, 7, payload(9), LocalChoreo::End));
+    }
+
+    // r[verify choreography.value_transfer_projection.shape]
+    #[test]
+    fn test_owned_transfer_projection_is_exact_for_all_roles() {
+        const SOURCE: RoleId = 1;
+        const DESTINATION: RoleId = 2;
+        const UNINVOLVED: RoleId = 3;
+        const LABEL: LabelId = 7;
+        const PAYLOAD_RAW: u32 = 9;
+        const VALUE_RAW: u32 = 40;
+
+        let global = GlobalChoreo::OwnedTransfer {
+            from: SOURCE,
+            to: DESTINATION,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(GlobalChoreo::End),
+        };
+        assert!(projectable(&global));
+        assert_eq!(project_endpoint(SOURCE, &global), LocalChoreo::SendOwned {
+            peer: DESTINATION,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        },);
+        assert_eq!(project_endpoint(DESTINATION, &global), LocalChoreo::RecvOwned {
+            peer: SOURCE,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        },);
+        assert_eq!(project_endpoint(UNINVOLVED, &global), LocalChoreo::End);
+    }
+
+    // r[verify choreography.value_transfer_projection.shape]
+    #[test]
+    fn test_owned_self_transfer_is_not_projectable() {
+        const ROLE: RoleId = 1;
+        let global = GlobalChoreo::OwnedTransfer {
+            from: ROLE,
+            to: ROLE,
+            label: 0,
+            payload_tag: payload(0),
+            value: value(0),
+            next: Box::new(GlobalChoreo::End),
+        };
+        assert!(!projectable(&global));
     }
 
     // r[verify choreography.projection]

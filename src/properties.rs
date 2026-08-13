@@ -2504,6 +2504,14 @@ mod retry_proofs {
     use crate::choreography_local::LBranch;
     use crate::choreography_local::LChoreo;
     use crate::choreography_local::branch_labels_spec;
+    use crate::choreography_ownership::OwnershipEntry;
+    use crate::choreography_ownership::OwnershipState;
+    use crate::choreography_ownership::ValueId;
+    use crate::choreography_ownership::owner_of_spec;
+    use crate::choreography_ownership::ownership_entries_spec;
+    use crate::choreography_ownership::ownership_normalized_spec;
+    use crate::choreography_ownership::successful_transfer_conserves_ownership;
+    use crate::choreography_ownership::transfer_owner_post_spec;
     use crate::choreography_projection::all_decider_guarded_spec;
     use crate::choreography_projection::common_recv_tails_spec;
     use crate::choreography_projection::common_send_tails_spec;
@@ -2518,7 +2526,9 @@ mod retry_proofs {
     use crate::choreography_step::first_offer_labels_from_spec;
     use crate::choreography_step::global_choice_step_spec;
     use crate::choreography_step::global_comm_step_spec;
+    use crate::choreography_step::local_recv_owned_step_spec;
     use crate::choreography_step::local_recv_step_spec;
+    use crate::choreography_step::local_send_owned_step_spec;
     use crate::choreography_step::local_send_step_spec;
     use crate::circuit_breaker::CLOSED;
     use crate::circuit_breaker::allow_request_spec;
@@ -2593,6 +2603,71 @@ mod retry_proofs {
     {
         crate::choreography_projection::sender_projection_shape(from, to, label, payload_tag, next);
         crate::choreography_projection::receiver_projection_shape(from, to, label, payload_tag, next);
+    }
+
+    // r[impl properties.choreography_transfer_correspondence]
+    // r[verify properties.choreography_transfer_correspondence]
+    proof fn choreography_owned_transfer_projection_correspondence(
+        from: RoleId,
+        to: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
+        next: GChoreo,
+        old_entries: Seq<OwnershipEntry>,
+        moved: OwnershipState,
+    )
+        requires
+            projectable_spec(GChoreo::OwnedTransfer {
+            from,
+            to,
+            label,
+            payload_tag,
+            value,
+            next: Box::new(next),
+        }),
+            ownership_normalized_spec(old_entries),
+            transfer_owner_post_spec(old_entries, from, to, value, Some(moved)),
+        ensures
+            local_send_owned_step_spec(project_endpoint_spec(from, GChoreo::OwnedTransfer {
+                from,
+                to,
+                label,
+                payload_tag,
+                value,
+                next: Box::new(next),
+            })) == Some(project_endpoint_spec(from, next)),
+            local_recv_owned_step_spec(project_endpoint_spec(to, GChoreo::OwnedTransfer {
+                from,
+                to,
+                label,
+                payload_tag,
+                value,
+                next: Box::new(next),
+            })) == Some(project_endpoint_spec(to, next)),
+            ownership_normalized_spec(ownership_entries_spec(moved)),
+            ownership_entries_spec(moved).len() == old_entries.len(),
+            owner_of_spec(ownership_entries_spec(moved), value) == Some(to),
+            owner_of_spec(ownership_entries_spec(moved), value) != Some(from),
+            forall|unrelated: ValueId| unrelated != value
+                ==> owner_of_spec(ownership_entries_spec(moved), unrelated)
+                    == owner_of_spec(old_entries, unrelated)
+    {
+        crate::choreography_step::owned_transfer_projection_step_shape(
+            from,
+            to,
+            label,
+            payload_tag,
+            value,
+            next,
+        );
+        successful_transfer_conserves_ownership(
+            old_entries,
+            from,
+            to,
+            value,
+            moved,
+        );
     }
 
     pub(crate) open spec fn first_branch_dependent_offer_labels_fuel_spec(
@@ -9003,7 +9078,10 @@ mod choreography_property_tests {
 
     fn first_offer_labels(local: &LocalChoreo, from: u32) -> Option<Vec<u32>> {
         match local {
-            LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => first_offer_labels(next, from),
+            LocalChoreo::Send { next, .. }
+            | LocalChoreo::Recv { next, .. }
+            | LocalChoreo::SendOwned { next, .. }
+            | LocalChoreo::RecvOwned { next, .. } => first_offer_labels(next, from),
             LocalChoreo::End | LocalChoreo::InternalChoice { .. } => None,
             LocalChoreo::Offer {
                 from: offer_from,

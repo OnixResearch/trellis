@@ -7,6 +7,7 @@ use vstd::prelude::*;
 use crate::choreography_global::LabelId;
 use crate::choreography_global::PayloadTag;
 use crate::choreography_global::RoleId;
+use crate::choreography_ownership::ValueId;
 
 verus! {
 
@@ -31,6 +32,24 @@ pub enum LocalChoreo {
         peer: RoleId,
         label: LabelId,
         payload_tag: PayloadTag,
+        next: Box<LocalChoreo>,
+    },
+    // r[impl choreography.value_transfer_projection.shape]
+    /// Send the exact owned value identified by this projected head.
+    SendOwned {
+        peer: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
+        next: Box<LocalChoreo>,
+    },
+    // r[impl choreography.value_transfer_projection.shape]
+    /// Receive the exact owned value identified by this projected head.
+    RecvOwned {
+        peer: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
         next: Box<LocalChoreo>,
     },
     InternalChoice {
@@ -59,6 +78,20 @@ pub(crate) enum LChoreo {
         peer: RoleId,
         label: LabelId,
         payload_tag: PayloadTag,
+        next: Box<LChoreo>,
+    },
+    SendOwned {
+        peer: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
+        next: Box<LChoreo>,
+    },
+    RecvOwned {
+        peer: RoleId,
+        label: LabelId,
+        payload_tag: PayloadTag,
+        value: ValueId,
         next: Box<LChoreo>,
     },
     InternalChoice {
@@ -124,6 +157,20 @@ pub(crate) open spec fn local_view(local: LocalChoreo) -> LChoreo
             peer,
             label,
             payload_tag,
+            next: Box::new(local_view(*next)),
+        },
+        LocalChoreo::SendOwned { peer, label, payload_tag, value, next } => LChoreo::SendOwned {
+            peer,
+            label,
+            payload_tag,
+            value,
+            next: Box::new(local_view(*next)),
+        },
+        LocalChoreo::RecvOwned { peer, label, payload_tag, value, next } => LChoreo::RecvOwned {
+            peer,
+            label,
+            payload_tag,
+            value,
             next: Box::new(local_view(*next)),
         },
         LocalChoreo::InternalChoice { .. } => LChoreo::InternalChoice {
@@ -202,8 +249,8 @@ pub(crate) open spec fn local_size(local: LChoreo) -> nat
 {
     match local {
         LChoreo::End => 1,
-        LChoreo::Send { next, .. } => 1 + local_size(*next),
-        LChoreo::Recv { next, .. } => 1 + local_size(*next),
+        LChoreo::Send { next, .. } | LChoreo::SendOwned { next, .. } => 1 + local_size(*next),
+        LChoreo::Recv { next, .. } | LChoreo::RecvOwned { next, .. } => 1 + local_size(*next),
         LChoreo::InternalChoice { .. } => 1 + local_choice_branch_size(local, 0),
         LChoreo::Offer { .. } => 1 + local_choice_branch_size(local, 0),
     }
@@ -258,8 +305,8 @@ pub(crate) open spec fn well_formed_local_spec(local: LChoreo) -> bool
 {
     match local {
         LChoreo::End => true,
-        LChoreo::Send { next, .. } => well_formed_local_spec(*next),
-        LChoreo::Recv { next, .. } => well_formed_local_spec(*next),
+        LChoreo::Send { next, .. } | LChoreo::SendOwned { next, .. } => well_formed_local_spec(*next),
+        LChoreo::Recv { next, .. } | LChoreo::RecvOwned { next, .. } => well_formed_local_spec(*next),
         LChoreo::InternalChoice { branches } => {
             branches.len() > 0
                 && branch_labels_strict_spec(branches)
@@ -445,6 +492,68 @@ pub(crate) open spec fn merge_local_spec(decider: RoleId, left: LChoreo, right: 
                 None
             }
         }
+        (
+            LChoreo::SendOwned {
+                peer: l_peer,
+                label: l_label,
+                payload_tag: l_payload,
+                value: l_value,
+                next: l_next,
+            },
+            LChoreo::SendOwned {
+                peer: r_peer,
+                label: r_label,
+                payload_tag: r_payload,
+                value: r_value,
+                next: r_next,
+            },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload && l_value == r_value {
+                match merge_local_spec(decider, *l_next, *r_next) {
+                    Some(next) => Some(LChoreo::SendOwned {
+                        peer: l_peer,
+                        label: l_label,
+                        payload_tag: l_payload,
+                        value: l_value,
+                        next: Box::new(next),
+                    }),
+                    None => None,
+                }
+            } else {
+                None
+            }
+        }
+        (
+            LChoreo::RecvOwned {
+                peer: l_peer,
+                label: l_label,
+                payload_tag: l_payload,
+                value: l_value,
+                next: l_next,
+            },
+            LChoreo::RecvOwned {
+                peer: r_peer,
+                label: r_label,
+                payload_tag: r_payload,
+                value: r_value,
+                next: r_next,
+            },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload && l_value == r_value {
+                match merge_local_spec(decider, *l_next, *r_next) {
+                    Some(next) => Some(LChoreo::RecvOwned {
+                        peer: l_peer,
+                        label: l_label,
+                        payload_tag: l_payload,
+                        value: l_value,
+                        next: Box::new(next),
+                    }),
+                    None => None,
+                }
+            } else {
+                None
+            }
+        }
         (LChoreo::InternalChoice { branches: left_branches }, LChoreo::InternalChoice { branches: right_branches }) => {
             match merge_choice_branches_from_spec(
                 decider,
@@ -500,8 +609,8 @@ pub open spec fn well_formed_local_result_spec(local: LocalChoreo) -> bool
 {
     match local {
         LocalChoreo::End => true,
-        LocalChoreo::Send { next, .. } => well_formed_local_result_spec(*next),
-        LocalChoreo::Recv { next, .. } => well_formed_local_result_spec(*next),
+        LocalChoreo::Send { next, .. } | LocalChoreo::SendOwned { next, .. } => well_formed_local_result_spec(*next),
+        LocalChoreo::Recv { next, .. } | LocalChoreo::RecvOwned { next, .. } => well_formed_local_result_spec(*next),
         LocalChoreo::InternalChoice { branches } =>
             branches.len() > 0
                 && local_exec_branch_labels_strict_spec(branches@)
@@ -520,8 +629,8 @@ pub open spec fn well_formed_local_runtime_spec(local: LocalChoreo) -> bool
 {
     match local {
         LocalChoreo::End => true,
-        LocalChoreo::Send { next, .. } => well_formed_local_runtime_spec(*next),
-        LocalChoreo::Recv { next, .. } => well_formed_local_runtime_spec(*next),
+        LocalChoreo::Send { next, .. } | LocalChoreo::SendOwned { next, .. } => well_formed_local_runtime_spec(*next),
+        LocalChoreo::Recv { next, .. } | LocalChoreo::RecvOwned { next, .. } => well_formed_local_runtime_spec(*next),
         LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
             branches.len() > 0
                 && local_exec_branch_labels_strict_spec(branches@)
@@ -533,8 +642,10 @@ pub open spec fn well_formed_local_runtime_spec(local: LocalChoreo) -> bool
 pub closed spec fn well_formed_local_post_spec(local: LocalChoreo, result: bool) -> bool {
     match local {
         LocalChoreo::End => result == true,
-        LocalChoreo::Send { next, .. } => result == well_formed_local_runtime_spec(*next),
-        LocalChoreo::Recv { next, .. } => result == well_formed_local_runtime_spec(*next),
+        LocalChoreo::Send { next, .. } | LocalChoreo::SendOwned { next, .. } =>
+            result == well_formed_local_runtime_spec(*next),
+        LocalChoreo::Recv { next, .. } | LocalChoreo::RecvOwned { next, .. } =>
+            result == well_formed_local_runtime_spec(*next),
         LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
             result == (branches.len() > 0
                 && local_exec_branch_labels_strict_spec(branches@)
@@ -633,6 +744,66 @@ pub closed spec fn merge_local_post_spec(
                     } else {
                         false
                     }
+                }
+                (
+                    LocalChoreo::SendOwned {
+                        peer: left_peer,
+                        label: left_label,
+                        payload_tag: left_payload,
+                        value: left_value,
+                        ..
+                    },
+                    LocalChoreo::SendOwned {
+                        peer: right_peer,
+                        label: right_label,
+                        payload_tag: right_payload,
+                        value: right_value,
+                        ..
+                    },
+                ) => {
+                    left_peer == right_peer
+                        && left_label == right_label
+                        && left_payload == right_payload
+                        && left_value == right_value
+                        && match local {
+                            LocalChoreo::SendOwned { peer, label, payload_tag, value, .. } => {
+                                peer == left_peer
+                                    && label == left_label
+                                    && payload_tag == left_payload
+                                    && value == left_value
+                            }
+                            _ => false,
+                        }
+                }
+                (
+                    LocalChoreo::RecvOwned {
+                        peer: left_peer,
+                        label: left_label,
+                        payload_tag: left_payload,
+                        value: left_value,
+                        ..
+                    },
+                    LocalChoreo::RecvOwned {
+                        peer: right_peer,
+                        label: right_label,
+                        payload_tag: right_payload,
+                        value: right_value,
+                        ..
+                    },
+                ) => {
+                    left_peer == right_peer
+                        && left_label == right_label
+                        && left_payload == right_payload
+                        && left_value == right_value
+                        && match local {
+                            LocalChoreo::RecvOwned { peer, label, payload_tag, value, .. } => {
+                                peer == left_peer
+                                    && label == left_label
+                                    && payload_tag == left_payload
+                                    && value == left_value
+                            }
+                            _ => false,
+                        }
                 }
                 (LocalChoreo::InternalChoice { .. }, LocalChoreo::InternalChoice { .. }) => {
                     match local {
@@ -1245,6 +1416,68 @@ proof fn merge_preserves_well_formed_local(decider: RoleId, left: LChoreo, right
                 }
             }
         }
+        (
+            LChoreo::SendOwned {
+                peer: l_peer,
+                label: l_label,
+                payload_tag: l_payload,
+                value: l_value,
+                next: l_next,
+            },
+            LChoreo::SendOwned {
+                peer: r_peer,
+                label: r_label,
+                payload_tag: r_payload,
+                value: r_value,
+                next: r_next,
+            },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload && l_value == r_value {
+                merge_preserves_well_formed_local(decider, *l_next, *r_next);
+                assert(merge_local_spec(decider, left, right)
+                    == match merge_local_spec(decider, *l_next, *r_next) {
+                        Some(next) => Some(LChoreo::SendOwned {
+                            peer: l_peer,
+                            label: l_label,
+                            payload_tag: l_payload,
+                            value: l_value,
+                            next: Box::new(next),
+                        }),
+                        None => None,
+                    });
+            }
+        }
+        (
+            LChoreo::RecvOwned {
+                peer: l_peer,
+                label: l_label,
+                payload_tag: l_payload,
+                value: l_value,
+                next: l_next,
+            },
+            LChoreo::RecvOwned {
+                peer: r_peer,
+                label: r_label,
+                payload_tag: r_payload,
+                value: r_value,
+                next: r_next,
+            },
+        ) => {
+            if l_peer == r_peer && l_label == r_label && l_payload == r_payload && l_value == r_value {
+                merge_preserves_well_formed_local(decider, *l_next, *r_next);
+                assert(merge_local_spec(decider, left, right)
+                    == match merge_local_spec(decider, *l_next, *r_next) {
+                        Some(next) => Some(LChoreo::RecvOwned {
+                            peer: l_peer,
+                            label: l_label,
+                            payload_tag: l_payload,
+                            value: l_value,
+                            next: Box::new(next),
+                        }),
+                        None => None,
+                    });
+            }
+        }
         (LChoreo::InternalChoice { branches: left_branches }, LChoreo::InternalChoice { branches: right_branches }) => {
             merge_choice_branches_well_formed(
                 decider,
@@ -1292,12 +1525,16 @@ proof fn merge_preserves_well_formed_local(decider: RoleId, left: LChoreo, right
 
 #[verifier::exec_allows_no_decreases_clause]
 fn clone_local_branch(branch: &LocalBranch) -> (result: LocalBranch)
+    ensures
+        result.label == branch.label,
+        local_view(result.body) == local_view(branch.body)
 {
     LocalBranch { label: branch.label, body: clone_local(&branch.body) }
 }
 
 #[verifier::exec_allows_no_decreases_clause]
 pub(crate) fn clone_local(local: &LocalChoreo) -> (result: LocalChoreo)
+    ensures local_view(result) == local_view(*local)
 {
     match local {
         LocalChoreo::End => LocalChoreo::End,
@@ -1313,28 +1550,191 @@ pub(crate) fn clone_local(local: &LocalChoreo) -> (result: LocalChoreo)
             payload_tag: *payload_tag,
             next: Box::new(clone_local(next)),
         },
+        LocalChoreo::SendOwned { peer, label, payload_tag, value, next } => LocalChoreo::SendOwned {
+            peer: *peer,
+            label: *label,
+            payload_tag: *payload_tag,
+            value: *value,
+            next: Box::new(clone_local(next)),
+        },
+        LocalChoreo::RecvOwned { peer, label, payload_tag, value, next } => LocalChoreo::RecvOwned {
+            peer: *peer,
+            label: *label,
+            payload_tag: *payload_tag,
+            value: *value,
+            next: Box::new(clone_local(next)),
+        },
         LocalChoreo::InternalChoice { branches } => {
             let mut out: Vec<LocalBranch> = Vec::new();
             let mut i: usize = 0;
             while i < branches.len()
+                invariant
+                    0 <= i <= branches@.len(),
+                    out@.len() == i as int,
+                    forall|j: int| #![trigger out@[j], branches@[j]]
+                        0 <= j < i as int ==> out@[j].label == branches@[j].label
+                            && local_view(out@[j].body) == local_view(branches@[j].body),
                 decreases branches@.len() - i,
             {
                 out.push(clone_local_branch(&branches[i]));
                 i += 1;
             }
-            LocalChoreo::InternalChoice { branches: out }
+            let result = LocalChoreo::InternalChoice { branches: out };
+            proof { cloned_local_branches_have_same_view(*local, result); }
+            result
         }
         LocalChoreo::Offer { from, branches } => {
             let mut out: Vec<LocalBranch> = Vec::new();
             let mut i: usize = 0;
             while i < branches.len()
+                invariant
+                    0 <= i <= branches@.len(),
+                    out@.len() == i as int,
+                    forall|j: int| #![trigger out@[j], branches@[j]]
+                        0 <= j < i as int ==> out@[j].label == branches@[j].label
+                            && local_view(out@[j].body) == local_view(branches@[j].body),
                 decreases branches@.len() - i,
             {
                 out.push(clone_local_branch(&branches[i]));
                 i += 1;
             }
-            LocalChoreo::Offer { from: *from, branches: out }
+            let result = LocalChoreo::Offer { from: *from, branches: out };
+            proof { cloned_local_branches_have_same_view(*local, result); }
+            result
         }
+    }
+}
+
+proof fn local_exec_branch_view_len(local: LocalChoreo, from: int)
+    requires
+        match local {
+            LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+                0 <= from <= branches@.len(),
+            _ => false,
+        },
+    ensures
+        match local {
+            LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+                local_exec_branch_view(local, from).len() == branches@.len() - from,
+            _ => false,
+        }
+    decreases match local {
+        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+            branches@.len() - from,
+        _ => 0int,
+    }
+{
+    match local {
+        LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } => {
+            if from < branches@.len() {
+                local_exec_branch_view_len(local, from + 1);
+            }
+        }
+        _ => {},
+    }
+}
+
+proof fn local_exec_branch_view_nth(local: LocalChoreo, from: int, index: int)
+    requires
+        match local {
+            LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } =>
+                0 <= from <= index < branches@.len(),
+            _ => false,
+        },
+    ensures ({
+        let viewed = local_exec_branch_view(local, from);
+        match local {
+            LocalChoreo::InternalChoice { branches } | LocalChoreo::Offer { branches, .. } => {
+                &&& viewed.len() == branches@.len() - from
+                &&& viewed[index - from].label == branches@[index].label
+                &&& viewed[index - from].body == local_view(branches@[index].body)
+            }
+            _ => false,
+        }
+    })
+    decreases index - from
+{
+    match local {
+        LocalChoreo::InternalChoice { .. } | LocalChoreo::Offer { .. } => {
+            if from == index {
+                local_exec_branch_view_len(local, from);
+            } else {
+                local_exec_branch_view_nth(local, from + 1, index);
+                local_exec_branch_view_len(local, from);
+            }
+        }
+        _ => {},
+    }
+}
+
+proof fn cloned_local_branches_have_same_view(original: LocalChoreo, cloned: LocalChoreo)
+    requires
+        match (original, cloned) {
+            (
+                LocalChoreo::InternalChoice { branches: original_branches },
+                LocalChoreo::InternalChoice { branches: cloned_branches },
+            ) => {
+                &&& original_branches@.len() == cloned_branches@.len()
+                &&& forall|index: int| #![trigger cloned_branches@[index], original_branches@[index]]
+                    0 <= index < original_branches@.len()
+                        ==> cloned_branches@[index].label == original_branches@[index].label
+                            && local_view(cloned_branches@[index].body)
+                                == local_view(original_branches@[index].body)
+            }
+            (
+                LocalChoreo::Offer { from: original_from, branches: original_branches },
+                LocalChoreo::Offer { from: cloned_from, branches: cloned_branches },
+            ) => {
+                &&& original_from == cloned_from
+                &&& original_branches@.len() == cloned_branches@.len()
+                &&& forall|index: int| #![trigger cloned_branches@[index], original_branches@[index]]
+                    0 <= index < original_branches@.len()
+                        ==> cloned_branches@[index].label == original_branches@[index].label
+                            && local_view(cloned_branches@[index].body)
+                                == local_view(original_branches@[index].body)
+            }
+            _ => false,
+        },
+    ensures local_view(cloned) == local_view(original)
+{
+    local_exec_branch_view_len(original, 0);
+    local_exec_branch_view_len(cloned, 0);
+    match (original, cloned) {
+        (
+            LocalChoreo::InternalChoice { branches: original_branches },
+            LocalChoreo::InternalChoice { branches: cloned_branches },
+        ) => {
+            assert forall|index: int| #![trigger local_exec_branch_view(cloned, 0)[index], local_exec_branch_view(original, 0)[index]]
+                0 <= index < original_branches@.len()
+                implies local_exec_branch_view(cloned, 0)[index]
+                    == local_exec_branch_view(original, 0)[index]
+            by {
+                local_exec_branch_view_nth(cloned, 0, index);
+                local_exec_branch_view_nth(original, 0, index);
+                assert(cloned_branches@[index].label == original_branches@[index].label);
+                assert(local_view(cloned_branches@[index].body)
+                    == local_view(original_branches@[index].body));
+            }
+            assert(local_exec_branch_view(cloned, 0) == local_exec_branch_view(original, 0));
+        }
+        (
+            LocalChoreo::Offer { branches: original_branches, .. },
+            LocalChoreo::Offer { branches: cloned_branches, .. },
+        ) => {
+            assert forall|index: int| #![trigger local_exec_branch_view(cloned, 0)[index], local_exec_branch_view(original, 0)[index]]
+                0 <= index < original_branches@.len()
+                implies local_exec_branch_view(cloned, 0)[index]
+                    == local_exec_branch_view(original, 0)[index]
+            by {
+                local_exec_branch_view_nth(cloned, 0, index);
+                local_exec_branch_view_nth(original, 0, index);
+                assert(cloned_branches@[index].label == original_branches@[index].label);
+                assert(local_view(cloned_branches@[index].body)
+                    == local_view(original_branches@[index].body));
+            }
+            assert(local_exec_branch_view(cloned, 0) == local_exec_branch_view(original, 0));
+        }
+        _ => {},
     }
 }
 
@@ -1499,7 +1899,10 @@ pub fn well_formed_local(local: &LocalChoreo) -> (result: bool)
             proof { reveal(well_formed_local_result_spec); }
             true
         }
-        LocalChoreo::Send { next, .. } | LocalChoreo::Recv { next, .. } => {
+        LocalChoreo::Send { next, .. }
+        | LocalChoreo::Recv { next, .. }
+        | LocalChoreo::SendOwned { next, .. }
+        | LocalChoreo::RecvOwned { next, .. } => {
             let result = well_formed_local(next);
             proof { reveal(well_formed_local_result_spec); }
             result
@@ -1513,6 +1916,7 @@ pub fn well_formed_local(local: &LocalChoreo) -> (result: bool)
 }
 
 // r[impl choreography.merge]
+// r[impl choreography.value_transfer_projection.merge]
 #[allow(
     tigerstyle::function_length,
     tigerstyle::path_segment_repetition,
@@ -1590,6 +1994,76 @@ pub fn merge_local(decider: RoleId, left: &LocalChoreo, right: &LocalChoreo) -> 
                 None
             }
         }
+        (
+            LocalChoreo::SendOwned {
+                peer: left_peer,
+                label: left_label,
+                payload_tag: left_payload,
+                value: left_value,
+                next: left_next,
+            },
+            LocalChoreo::SendOwned {
+                peer: right_peer,
+                label: right_label,
+                payload_tag: right_payload,
+                value: right_value,
+                next: right_next,
+            },
+        ) => {
+            if left_peer == right_peer
+                && left_label == right_label
+                && crate::choreography_global::payload_tags_equal(*left_payload, *right_payload)
+                && crate::choreography_ownership::value_ids_equal(*left_value, *right_value)
+            {
+                match merge_local(decider, left_next, right_next) {
+                    Some(next) => Some(LocalChoreo::SendOwned {
+                        peer: *left_peer,
+                        label: *left_label,
+                        payload_tag: *left_payload,
+                        value: *left_value,
+                        next: Box::new(next),
+                    }),
+                    None => None,
+                }
+            } else {
+                None
+            }
+        }
+        (
+            LocalChoreo::RecvOwned {
+                peer: left_peer,
+                label: left_label,
+                payload_tag: left_payload,
+                value: left_value,
+                next: left_next,
+            },
+            LocalChoreo::RecvOwned {
+                peer: right_peer,
+                label: right_label,
+                payload_tag: right_payload,
+                value: right_value,
+                next: right_next,
+            },
+        ) => {
+            if left_peer == right_peer
+                && left_label == right_label
+                && crate::choreography_global::payload_tags_equal(*left_payload, *right_payload)
+                && crate::choreography_ownership::value_ids_equal(*left_value, *right_value)
+            {
+                match merge_local(decider, left_next, right_next) {
+                    Some(next) => Some(LocalChoreo::RecvOwned {
+                        peer: *left_peer,
+                        label: *left_label,
+                        payload_tag: *left_payload,
+                        value: *left_value,
+                        next: Box::new(next),
+                    }),
+                    None => None,
+                }
+            } else {
+                None
+            }
+        }
         (LocalChoreo::InternalChoice { branches: left_branches }, LocalChoreo::InternalChoice { branches: right_branches }) => {
             match merge_choice_branches_from(decider, left_branches, right_branches, 0) {
                 Some(branches) => Some(LocalChoreo::InternalChoice { branches }),
@@ -1623,6 +2097,10 @@ mod tests {
 
     fn payload(raw: u32) -> PayloadTag {
         PayloadTag { raw }
+    }
+
+    fn value(raw: u32) -> ValueId {
+        ValueId { raw }
     }
 
     fn recv(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
@@ -1714,6 +2192,107 @@ mod tests {
         let left = recv(1, 2, payload(3), LocalChoreo::End);
         let right = recv(1, 2, payload(4), LocalChoreo::End);
         assert!(merge_local(9, &left, &right).is_none());
+    }
+
+    // r[verify choreography.value_transfer_projection.merge]
+    #[test]
+    fn test_owned_transfer_heads_merge_only_on_exact_identity() {
+        const PEER: RoleId = 2;
+        const OTHER_PEER: RoleId = 3;
+        const LABEL: LabelId = 7;
+        const OTHER_LABEL: LabelId = 8;
+        const PAYLOAD_RAW: u32 = 9;
+        const VALUE_RAW: u32 = 40;
+        const OTHER_VALUE_RAW: u32 = 41;
+
+        let left = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let exact = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let wrong_value = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(OTHER_VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let wrong_peer = LocalChoreo::SendOwned {
+            peer: OTHER_PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let wrong_label = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: OTHER_LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let recv_left = LocalChoreo::RecvOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let recv_exact = LocalChoreo::RecvOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        assert_eq!(merge_local(PEER, &left, &exact), Some(exact));
+        assert_eq!(merge_local(PEER, &recv_left, &recv_exact), Some(recv_exact));
+        assert_eq!(merge_local(PEER, &left, &wrong_value), None);
+        assert_eq!(merge_local(PEER, &left, &wrong_peer), None);
+        assert_eq!(merge_local(PEER, &left, &wrong_label), None);
+    }
+
+    // r[verify choreography.value_transfer_projection.merge]
+    #[test]
+    fn test_owned_transfer_direction_and_payload_mismatches_fail_merge() {
+        const PEER: RoleId = 2;
+        const LABEL: LabelId = 7;
+        const PAYLOAD_RAW: u32 = 9;
+        const OTHER_PAYLOAD_RAW: u32 = 10;
+        const VALUE_RAW: u32 = 40;
+
+        let send_owned = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let recv_owned = LocalChoreo::RecvOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        let wrong_payload = LocalChoreo::SendOwned {
+            peer: PEER,
+            label: LABEL,
+            payload_tag: payload(OTHER_PAYLOAD_RAW),
+            value: value(VALUE_RAW),
+            next: Box::new(LocalChoreo::End),
+        };
+        assert_eq!(merge_local(PEER, &send_owned, &recv_owned), None);
+        assert_eq!(merge_local(PEER, &send_owned, &wrong_payload), None);
     }
 
     // r[verify choreography.merge]
