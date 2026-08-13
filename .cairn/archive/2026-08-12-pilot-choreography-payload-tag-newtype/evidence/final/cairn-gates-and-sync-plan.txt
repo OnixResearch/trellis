@@ -1,0 +1,22 @@
+Pilot lifecycle evidence
+
+Policy:
+/home/brittonr/git/OnixResearch/cairn/cairn-policy/generated/cairn-policy.json
+
+Fresh final checks:
+- cairn gate proposal pilot-choreography-payload-tag-newtype: PASS
+- cairn gate design pilot-choreography-payload-tag-newtype: PASS
+- cairn gate tasks pilot-choreography-payload-tag-newtype: PASS
+- cairn sync pilot-choreography-payload-tag-newtype --execute: PASS; accepted choreography-core spec updated
+- cairn sync pilot-choreography-payload-tag-newtype: PASS; no blocked action remained
+- cairn validate: PASS; valid=true; 126 accepted specs validated
+- cairn archive pilot-choreography-payload-tag-newtype: PASS; dry-run blocked=false
+
+Task state at final gate:
+- complete: 13
+- in progress: 0
+- incomplete: 0
+
+Archive dry-run receipt:
+- plan_hash: a30578541c9eb1180c745568f9f55a61e29ea743db78c33beb7a7b43ca981e03
+- receipt_hash: d16fcf6104c58cee8ac4d97cbc85c664d87ce871363bd3b9b97f92e2b18fa8a7

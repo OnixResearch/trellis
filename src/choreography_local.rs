@@ -379,6 +379,7 @@ pub(crate) open spec fn merge_offer_branches_from_spec(
 
 // r[depends choreography.merge]
 // r[impl choreography.merge]
+// r[impl newtypes.choreography-payload.preservation]
 pub(crate) open spec fn merge_local_spec(decider: RoleId, left: LChoreo, right: LChoreo) -> Option<LChoreo>
     decreases left, 1int, right, 1int, 0nat
 {
@@ -1512,6 +1513,11 @@ pub fn well_formed_local(local: &LocalChoreo) -> (result: bool)
 }
 
 // r[impl choreography.merge]
+#[allow(
+    tigerstyle::function_length,
+    tigerstyle::path_segment_repetition,
+    reason = "the reviewed merge API keeps its proof-aligned match in one production transition"
+)]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn merge_local(decider: RoleId, left: &LocalChoreo, right: &LocalChoreo) -> (result: Option<LocalChoreo>)
     ensures merge_local_post_spec(decider, *left, *right, result)
@@ -1522,7 +1528,10 @@ pub fn merge_local(decider: RoleId, left: &LocalChoreo, right: &LocalChoreo) -> 
             LocalChoreo::Send { peer: left_peer, label: left_label, payload_tag: left_payload, next: left_next },
             LocalChoreo::Send { peer: right_peer, label: right_label, payload_tag: right_payload, next: right_next },
         ) => {
-            if left_peer == right_peer && left_label == right_label && left_payload == right_payload {
+            if left_peer == right_peer
+                && left_label == right_label
+                && crate::choreography_global::payload_tags_equal(*left_payload, *right_payload)
+            {
                 match merge_local(decider, left_next, right_next) {
                     Some(next) => Some(LocalChoreo::Send {
                         peer: *left_peer,
@@ -1540,7 +1549,10 @@ pub fn merge_local(decider: RoleId, left: &LocalChoreo, right: &LocalChoreo) -> 
             LocalChoreo::Recv { peer: left_peer, label: left_label, payload_tag: left_payload, next: left_next },
             LocalChoreo::Recv { peer: right_peer, label: right_label, payload_tag: right_payload, next: right_next },
         ) => {
-            if left_peer == right_peer && left_label == right_label && left_payload == right_payload {
+            if left_peer == right_peer
+                && left_label == right_label
+                && crate::choreography_global::payload_tags_equal(*left_payload, *right_payload)
+            {
                 match merge_local(decider, left_next, right_next) {
                     Some(next) => Some(LocalChoreo::Recv {
                         peer: *left_peer,
@@ -1609,6 +1621,10 @@ mod tests {
 
     use super::*;
 
+    fn payload(raw: u32) -> PayloadTag {
+        PayloadTag { raw }
+    }
+
     fn recv(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
         LocalChoreo::Recv {
             peer,
@@ -1630,17 +1646,17 @@ mod tests {
     // r[verify choreography.merge]
     #[test]
     fn test_identical_prefix_merge() {
-        let left = recv(3, 7, 1, LocalChoreo::End);
-        let right = recv(3, 7, 1, LocalChoreo::End);
+        let left = recv(3, 7, payload(1), LocalChoreo::End);
+        let right = recv(3, 7, payload(1), LocalChoreo::End);
         let merged = merge_local(9, &left, &right);
-        assert_eq!(merged, Some(recv(3, 7, 1, LocalChoreo::End)));
+        assert_eq!(merged, Some(recv(3, 7, payload(1), LocalChoreo::End)));
     }
 
     // r[verify choreography.merge]
     #[test]
     fn test_decider_recvs_form_offer() {
-        let left = recv(5, 1, 9, LocalChoreo::End);
-        let right = recv(5, 4, 11, LocalChoreo::End);
+        let left = recv(5, 1, payload(9), LocalChoreo::End);
+        let right = recv(5, 4, payload(11), LocalChoreo::End);
         let merged = merge_local(5, &left, &right).unwrap();
         match merged {
             LocalChoreo::Offer { from, branches } => {
@@ -1665,7 +1681,7 @@ mod tests {
                 },
                 LocalBranch {
                     label: 3,
-                    body: send(8, 9, 0, LocalChoreo::End),
+                    body: send(8, 9, payload(0), LocalChoreo::End),
                 },
             ],
         };
@@ -1678,7 +1694,7 @@ mod tests {
                 },
                 LocalBranch {
                     label: 3,
-                    body: send(8, 9, 0, LocalChoreo::End),
+                    body: send(8, 9, payload(0), LocalChoreo::End),
                 },
             ],
         };
@@ -1692,10 +1708,19 @@ mod tests {
     }
 
     // r[verify choreography.merge]
+    // r[verify newtypes.choreography-payload.evidence]
+    #[test]
+    fn test_mismatched_payload_tags_fail_merge() {
+        let left = recv(1, 2, payload(3), LocalChoreo::End);
+        let right = recv(1, 2, payload(4), LocalChoreo::End);
+        assert!(merge_local(9, &left, &right).is_none());
+    }
+
+    // r[verify choreography.merge]
     #[test]
     fn test_conflicting_heads_fail_merge() {
-        let left = send(1, 2, 3, LocalChoreo::End);
-        let right = recv(1, 2, 3, LocalChoreo::End);
+        let left = send(1, 2, payload(3), LocalChoreo::End);
+        let right = recv(1, 2, payload(3), LocalChoreo::End);
         assert!(merge_local(1, &left, &right).is_none());
     }
 
@@ -1704,8 +1729,8 @@ mod tests {
         #[test]
         fn prop_offer_labels_stay_sorted(l1 in 0u32..8, l2 in 0u32..8) {
             prop_assume!(l1 != l2);
-            let left = recv(6, l1, 0, LocalChoreo::End);
-            let right = recv(6, l2, 1, LocalChoreo::End);
+            let left = recv(6, l1, payload(0), LocalChoreo::End);
+            let right = recv(6, l2, payload(1), LocalChoreo::End);
             let merged = merge_local(6, &left, &right).unwrap();
             match merged {
                 LocalChoreo::Offer { branches, .. } => {

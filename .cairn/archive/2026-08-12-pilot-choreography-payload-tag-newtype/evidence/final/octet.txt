@@ -1,0 +1,39 @@
+# Final Octet evidence
+
+## Reviewed baseline refresh
+
+The payload-tag migration changed normalized source content in existing files. Octet stable IDs for existing file-level findings include that content. The change therefore made reviewed findings appear new or stale without adding a new lint class.
+
+Broad crate and module allowances were rejected. The final source keeps only narrow, reasoned allowances on published APIs. The baseline was then refreshed against the reviewed tree.
+
+## Exact baseline check
+
+Command:
+
+```text
+cargo-octet check --baseline octet-baseline.json -p verified-logic -- --lib
+```
+
+Result:
+
+```text
+Status: warning-only
+Findings: 4095
+Warnings: 4095
+Errors: 0
+Autofixable: 131
+Baseline hash: b3:39d6cb06e4c79a7907dc2d6463cb29b056c040b145a2282a87b3f6cbec54ea0a
+Baseline: 3866 accepted, 3866 current accepted, 0 new, 0 stale
+```
+
+## Canonical gate
+
+Command:
+
+```text
+NIX_CONFIG='builders =' scripts/pre-commit-octet.sh
+```
+
+Result: exit status 0 on the final reviewed tree.
+
+The warning-only result is accepted only through the repository's existing reviewed baseline contract. It does not claim that the accepted findings are absent.

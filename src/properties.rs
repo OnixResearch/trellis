@@ -8984,6 +8984,7 @@ mod chaoscontrol_property_tests {
 mod choreography_property_tests {
     use crate::choreography_global::GlobalBranch;
     use crate::choreography_global::GlobalChoreo;
+    use crate::choreography_global::PayloadTag;
     use crate::choreography_local::LocalBranch;
     use crate::choreography_local::LocalChoreo;
     use crate::choreography_projection::project_endpoint;
@@ -8994,6 +8995,10 @@ mod choreography_property_tests {
 
     fn branch(label: u32, body: GlobalChoreo) -> GlobalBranch {
         GlobalBranch { label, body }
+    }
+
+    fn payload(raw: u32) -> PayloadTag {
+        PayloadTag { raw }
     }
 
     fn first_offer_labels(local: &LocalChoreo, from: u32) -> Option<Vec<u32>> {
@@ -9020,7 +9025,7 @@ mod choreography_property_tests {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(GlobalChoreo::End),
         };
         let sender = project_endpoint(1, &global);
@@ -9039,14 +9044,14 @@ mod choreography_property_tests {
                     from: 0,
                     to: 2,
                     label: 1,
-                    payload_tag: 10,
+                    payload_tag: payload(10),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(4, GlobalChoreo::Comm {
                     from: 0,
                     to: 2,
                     label: 4,
-                    payload_tag: 11,
+                    payload_tag: payload(11),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],
@@ -9060,7 +9065,7 @@ mod choreography_property_tests {
                     body: LocalChoreo::Send {
                         peer: 2,
                         label: 1,
-                        payload_tag: 10,
+                        payload_tag: payload(10),
                         next: Box::new(LocalChoreo::End),
                     },
                 },
@@ -9069,7 +9074,7 @@ mod choreography_property_tests {
                     body: LocalChoreo::Send {
                         peer: 2,
                         label: 4,
-                        payload_tag: 11,
+                        payload_tag: payload(11),
                         next: Box::new(LocalChoreo::End),
                     },
                 },
@@ -9088,12 +9093,12 @@ mod choreography_property_tests {
                     from: 2,
                     to: 3,
                     label: 11,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::Comm {
                         from: 0,
                         to: 2,
                         label: 1,
-                        payload_tag: 0,
+                        payload_tag: payload(0),
                         next: Box::new(GlobalChoreo::End),
                     }),
                 }),
@@ -9101,12 +9106,12 @@ mod choreography_property_tests {
                     from: 2,
                     to: 3,
                     label: 11,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::Comm {
                         from: 0,
                         to: 2,
                         label: 4,
-                        payload_tag: 0,
+                        payload_tag: payload(0),
                         next: Box::new(GlobalChoreo::End),
                     }),
                 }),

@@ -1,0 +1,10 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic nix develop -c cargo test --doc choreography_global
+    Blocking waiting for file lock on build directory
+   Compiling verified-logic v0.2.0 (/home/brittonr/git/OnixResearch/trellis-worktrees/drain-payload-tag-newtype-20260812)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 04s
+   Doc-tests verified_logic
+
+running 1 test
+test src/choreography_global.rs - choreography_global::PayloadTag (line 29) - compile fail ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 3 filtered out; finished in 0.05s

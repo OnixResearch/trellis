@@ -1,0 +1,61 @@
+$ CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic nix develop -c cargo test choreography
+building '/nix/store/jvclzdh8mi4m40jgvpra65mqsid70k74-nix-shell-env.drv'...
+   Compiling verified-logic v0.2.0 (/home/brittonr/git/OnixResearch/trellis-worktrees/drain-payload-tag-newtype-20260812)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1m 01s
+     Running unittests src/lib.rs (/home/brittonr/.cargo-target-autoresearch-verified-logic/debug/deps/verified_logic-bdd90455a5d0dacf)
+
+running 28 tests
+test choreography_global::tests::test_duplicate_labels_rejected ... ok
+test choreography_global::tests::test_participants_exact ... ok
+test choreography_global::tests::test_comm_parts_exact ... ok
+test choreography_global::tests::test_self_send_rejected ... ok
+test choreography_local::tests::test_identical_prefix_merge ... ok
+test choreography_local::tests::test_conflicting_heads_fail_merge ... ok
+test choreography_local::tests::test_decider_recvs_form_offer ... ok
+test choreography_projection::tests::test_decider_projection ... ok
+test choreography_projection::tests::test_non_projectable_branch_conflict ... ok
+test choreography_local::tests::test_offer_union_preserves_shared_and_unshared_labels ... ok
+test choreography_projection::tests::test_nondecider_offer_uses_outer_choice_labels ... ok
+test choreography_projection::tests::test_projectable_common_behavior ... ok
+test choreography_projection::tests::test_nonparticipant_projects_to_end ... ok
+test choreography_projection::tests::test_receiver_projection ... ok
+test choreography_projection::tests::test_sender_projection ... ok
+test choreography_step::tests::test_choice_alignment_under_common_prefix ... ok
+test choreography_step::tests::test_choice_head_steps ... ok
+test choreography_step::tests::test_comm_projection_continuations ... ok
+test choreography_step::tests::test_global_choice_step ... ok
+test choreography_step::tests::test_global_comm_step ... ok
+test choreography_step::tests::test_local_head_steps ... ok
+test choreography_step::tests::test_outer_choice_label_drives_offer_step ... ok
+test properties::choreography_property_tests::test_choreography_projection_duality_ping ... ok
+test properties::choreography_property_tests::test_choreography_choice_label_agreement ... ok
+test properties::choreography_property_tests::test_choreography_step_projection_correspondence_common_prefix ... ok
+test choreography_local::tests::prop_offer_labels_stay_sorted ... ok
+test choreography_global::tests::prop_participants_match_bruteforce ... ok
+test choreography_global::tests::prop_duplicate_adjacent_label_choice_rejected ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 4822 filtered out; finished in 0.02s
+
+     Running unittests src/bin/proof_evidence.rs (/home/brittonr/.cargo-target-autoresearch-verified-logic/debug/deps/proof_evidence-f8dc64517853a554)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running unittests src/bin/proof_evidence_ir.rs (/home/brittonr/.cargo-target-autoresearch-verified-logic/debug/deps/proof_evidence_ir-821b441e02fe6761)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 4 filtered out; finished in 0.00s
+
+     Running unittests src/bin/repo-index.rs (/home/brittonr/.cargo-target-autoresearch-verified-logic/debug/deps/repo_index-8bd6054025d5d227)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.00s
+
+     Running tests/hdl_output_matrix.rs (/home/brittonr/.cargo-target-autoresearch-verified-logic/debug/deps/hdl_output_matrix-2df82b7453e12766)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 5 filtered out; finished in 0.00s

@@ -7,10 +7,10 @@
     "rustc_version": "rustc 1.96.0-nightly (ac7f9ec7d 2026-03-20)",
     "toolchain": "nightly-2026-03-21-x86_64-unknown-linux-gnu",
     "profile_name": "workspace-metadata",
-    "profile_hash": "b3:f2171c5738ee52b51f577991781d483109e3e351a93d07d5831e7226b04629b7",
+    "profile_hash": "b3:9685f42b9289dca49520062ad1ed548be1bfc92ac9a1cef93d784b60dcdbe772",
     "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
   },
-  "baseline_hash": "b3:202b9dbbf360d18ce6299a9bfcecd2903424e6059ee672b65f23d6c439ef474d",
+  "baseline_hash": "b3:39d6cb06e4c79a7907dc2d6463cb29b056c040b145a2282a87b3f6cbec54ea0a",
   "findings": [
     {
       "stable_id": "b3:291545489b06a30a",
@@ -5447,8 +5447,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:d357a370d1299ada",
-      "semantic_id": "b3:d357a370d1299ada",
+      "stable_id": "b3:d023b622c4f1da43",
+      "semantic_id": "b3:d023b622c4f1da43",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -5456,12 +5456,12 @@
       "file": "src/choreography_global.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1225 lines (limit: 300)",
+      "message": "source file is 1278 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:efd3589fea35a788",
-      "semantic_id": "b3:efd3589fea35a788",
+      "stable_id": "b3:780947ee78bf3138",
+      "semantic_id": "b3:780947ee78bf3138",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -5480,7 +5480,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 18,
+      "line": 50,
       "column": 1,
       "message": "item name `GlobalBranch` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5493,7 +5493,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 25,
+      "line": 57,
       "column": 1,
       "message": "item name `GlobalChoreo` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5506,7 +5506,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 40,
+      "line": 72,
       "column": 19,
       "message": "`GBranch` has acronym-style capitalization",
       "crate_name": "verified_logic"
@@ -5519,7 +5519,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 45,
+      "line": 77,
       "column": 17,
       "message": "`GChoreo` has acronym-style capitalization",
       "crate_name": "verified_logic"
@@ -5532,7 +5532,7 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 717,
+      "line": 750,
       "column": 1,
       "message": "parameter uses `&Vec<RoleId>`; accept `&[RoleId]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
@@ -5545,7 +5545,7 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 725,
+      "line": 758,
       "column": 1,
       "message": "parameter uses `&Vec<RoleId>`; accept `&[RoleId]` unless ownership, capacity, or exact owned type identity is required",
       "crate_name": "verified_logic"
@@ -5558,7 +5558,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 742,
+      "line": 775,
       "column": 1,
       "message": "item name `clone_global_branch` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5571,7 +5571,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 751,
+      "line": 784,
       "column": 1,
       "message": "item name `clone_global` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5584,7 +5584,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 761,
+      "line": 794,
       "column": 28,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5597,7 +5597,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 775,
+      "line": 808,
       "column": 17,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5610,7 +5610,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 955,
+      "line": 988,
       "column": 29,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5623,7 +5623,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 990,
+      "line": 1023,
       "column": 1,
       "message": "item name `well_formed_global_choice` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5636,7 +5636,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 1055,
+      "line": 1088,
       "column": 1,
       "message": "item name `well_formed_global` repeats `global` from ancestor path segment `choreography_global`",
       "crate_name": "verified_logic"
@@ -5649,7 +5649,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 1064,
+      "line": 1097,
       "column": 17,
       "message": "boolean binding `result` should have a predicate prefix",
       "crate_name": "verified_logic"
@@ -5662,7 +5662,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 1064,
+      "line": 1097,
       "column": 42,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5675,14 +5675,14 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_global.rs",
-      "line": 1069,
+      "line": 1102,
       "column": 17,
       "message": "boolean binding `result` should have a predicate prefix",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:df2237eee05fc7d7",
-      "semantic_id": "b3:df2237eee05fc7d7",
+      "stable_id": "b3:977c243ab8a5fd7c",
+      "semantic_id": "b3:977c243ab8a5fd7c",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -5690,12 +5690,12 @@
       "file": "src/choreography_local.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1718 lines (limit: 300)",
+      "message": "source file is 1743 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:39f96acdaea14e96",
-      "semantic_id": "b3:39f96acdaea14e96",
+      "stable_id": "b3:370f8c01472ee0d1",
+      "semantic_id": "b3:370f8c01472ee0d1",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -5805,7 +5805,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1293,
+      "line": 1294,
       "column": 1,
       "message": "item name `clone_local_branch` repeats `local` from ancestor path segment `choreography_local`",
       "crate_name": "verified_logic"
@@ -5818,7 +5818,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1299,
+      "line": 1300,
       "column": 1,
       "message": "item name `clone_local` repeats `local` from ancestor path segment `choreography_local`",
       "crate_name": "verified_logic"
@@ -5831,7 +5831,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1307,
+      "line": 1308,
       "column": 28,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5844,7 +5844,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1321,
+      "line": 1322,
       "column": 17,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5857,7 +5857,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1332,
+      "line": 1333,
       "column": 17,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5870,7 +5870,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1348,
+      "line": 1349,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5883,7 +5883,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1362,
+      "line": 1363,
       "column": 9,
       "message": "collection grows in loop without a prior reservation or explicit local bound",
       "crate_name": "verified_logic"
@@ -5896,7 +5896,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1382,
+      "line": 1383,
       "column": 33,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5909,7 +5909,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1411,
+      "line": 1412,
       "column": 29,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5922,7 +5922,7 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1419,
+      "line": 1420,
       "column": 9,
       "message": "conditional nesting is 4 levels deep (limit: 3)",
       "crate_name": "verified_logic"
@@ -5935,7 +5935,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1428,
+      "line": 1429,
       "column": 1,
       "message": "item name `well_formed_local_branches` repeats `local` from ancestor path segment `choreography_local`",
       "crate_name": "verified_logic"
@@ -5948,7 +5948,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1493,
+      "line": 1494,
       "column": 1,
       "message": "item name `well_formed_local` repeats `local` from ancestor path segment `choreography_local`",
       "crate_name": "verified_logic"
@@ -5961,7 +5961,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1502,
+      "line": 1503,
       "column": 17,
       "message": "boolean binding `result` should have a predicate prefix",
       "crate_name": "verified_logic"
@@ -5974,7 +5974,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1502,
+      "line": 1503,
       "column": 26,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -5987,35 +5987,9 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1507,
+      "line": 1508,
       "column": 17,
       "message": "boolean binding `result` should have a predicate prefix",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:3d8a71aa742b5d3c",
-      "semantic_id": "b3:3d8a71aa742b5d3c",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1516,
-      "column": 1,
-      "message": "item name `merge_local` repeats `local` from ancestor path segment `choreography_local`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:bcc468589a942d16",
-      "semantic_id": "b3:bcc468589a942d16",
-      "identity_status": "computed",
-      "lint": "function_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/choreography_local.rs",
-      "line": 1518,
-      "column": 1,
-      "message": "function `merge_local` is 85 lines (limit: 70)",
       "crate_name": "verified_logic"
     },
     {
@@ -6026,7 +6000,7 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1526,
+      "line": 1535,
       "column": 23,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
@@ -6039,14 +6013,14 @@
       "group": "tigerstyle::structure",
       "severity": "warning",
       "file": "src/choreography_local.rs",
-      "line": 1572,
+      "line": 1584,
       "column": 17,
       "message": "conditional nesting is 4 levels deep (limit: 3)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:e35ebc4ecf4638b2",
-      "semantic_id": "b3:e35ebc4ecf4638b2",
+      "stable_id": "b3:ec6192bc79d2682b",
+      "semantic_id": "b3:ec6192bc79d2682b",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -6054,12 +6028,12 @@
       "file": "src/choreography_projection.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1887 lines (limit: 300)",
+      "message": "source file is 1893 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b0bcf64636bf35c7",
-      "semantic_id": "b3:b0bcf64636bf35c7",
+      "stable_id": "b3:578626893487e621",
+      "semantic_id": "b3:578626893487e621",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -6299,14 +6273,14 @@
       "group": "tigerstyle::safety",
       "severity": "warning",
       "file": "src/choreography_projection.rs",
-      "line": 1675,
+      "line": 1676,
       "column": 36,
       "message": "function calls itself recursively",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:08282ec340394a67",
-      "semantic_id": "b3:08282ec340394a67",
+      "stable_id": "b3:2c5d9fabc827aef7",
+      "semantic_id": "b3:2c5d9fabc827aef7",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -6314,12 +6288,12 @@
       "file": "src/choreography_step.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 740 lines (limit: 300)",
+      "message": "source file is 746 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:80057f41c84a5d41",
-      "semantic_id": "b3:80057f41c84a5d41",
+      "stable_id": "b3:708098e83b236927",
+      "semantic_id": "b3:708098e83b236927",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -6481,7 +6455,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 482,
+      "line": 483,
       "column": 1,
       "message": "item name `global_comm_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -6494,7 +6468,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 492,
+      "line": 493,
       "column": 1,
       "message": "item name `global_choice_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -6507,7 +6481,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 502,
+      "line": 503,
       "column": 1,
       "message": "item name `local_send_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -6520,7 +6494,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 512,
+      "line": 513,
       "column": 1,
       "message": "item name `local_recv_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -6533,7 +6507,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 522,
+      "line": 523,
       "column": 1,
       "message": "item name `local_internal_choice_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -6546,7 +6520,7 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/choreography_step.rs",
-      "line": 532,
+      "line": 533,
       "column": 1,
       "message": "item name `local_offer_step` repeats `step` from ancestor path segment `choreography_step`",
       "crate_name": "verified_logic"
@@ -22035,8 +22009,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:6c7880e1c0005dc3",
-      "semantic_id": "b3:6c7880e1c0005dc3",
+      "stable_id": "b3:5c3d1c42db50cf32",
+      "semantic_id": "b3:5c3d1c42db50cf32",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -22044,7 +22018,7 @@
       "file": "src/lib.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1048 lines (limit: 300)",
+      "message": "source file is 1050 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
@@ -32006,8 +31980,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:7eb5bdd1408e128d",
-      "semantic_id": "b3:7eb5bdd1408e128d",
+      "stable_id": "b3:bbc03a77b4b51a5f",
+      "semantic_id": "b3:bbc03a77b4b51a5f",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -32015,7 +31989,7 @@
       "file": "src/properties.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 9373 lines (limit: 300)",
+      "message": "source file is 9378 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
@@ -44694,8 +44668,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:3b8c83d96157f441",
-      "semantic_id": "b3:3b8c83d96157f441",
+      "stable_id": "b3:ffcde0d1e063d282",
+      "semantic_id": "b3:ffcde0d1e063d282",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -44703,12 +44677,12 @@
       "file": "src/typed_durable_reference.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 374 lines (limit: 300)",
+      "message": "source file is 520 lines (limit: 300)",
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:e3dfe5cd3191e059",
-      "semantic_id": "b3:e3dfe5cd3191e059",
+      "stable_id": "b3:45e975070983d910",
+      "semantic_id": "b3:45e975070983d910",
       "identity_status": "computed",
       "lint": "underscore_in_module_filename",
       "group": "tigerstyle::naming",
@@ -44720,45 +44694,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b088fb1f746e99dd",
-      "semantic_id": "b3:b088fb1f746e99dd",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/typed_durable_reference.rs",
-      "line": 14,
-      "column": 1,
-      "message": "item name `TypedDurableReference` repeats `typed` from ancestor path segment `typed_durable_reference`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:6c663f30d5d0ea1c",
-      "semantic_id": "b3:6c663f30d5d0ea1c",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/typed_durable_reference.rs",
-      "line": 127,
-      "column": 1,
-      "message": "item name `finite_reference_metadata` repeats `reference` from ancestor path segment `typed_durable_reference`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:7cb3a6d7abc21a45",
-      "semantic_id": "b3:7cb3a6d7abc21a45",
-      "identity_status": "computed",
-      "lint": "borrowed_argument_types",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/typed_durable_reference.rs",
-      "line": 139,
-      "column": 1,
-      "message": "parameter uses `&Vec<u64>`; accept `&[u64]` unless ownership, capacity, or exact owned type identity is required",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:319209abc52c3b1f",
       "semantic_id": "b3:319209abc52c3b1f",
       "identity_status": "computed",
@@ -44766,22 +44701,9 @@
       "group": "tigerstyle::naming",
       "severity": "warning",
       "file": "src/typed_durable_reference.rs",
-      "line": 163,
+      "line": 267,
       "column": 1,
       "message": "item name `typed_reference_admitted` repeats `typed` from ancestor path segment `typed_durable_reference`",
-      "crate_name": "verified_logic"
-    },
-    {
-      "stable_id": "b3:5d3925f5578091a5",
-      "semantic_id": "b3:5d3925f5578091a5",
-      "identity_status": "computed",
-      "lint": "path_segment_repetition",
-      "group": "tigerstyle::naming",
-      "severity": "warning",
-      "file": "src/typed_durable_reference.rs",
-      "line": 170,
-      "column": 1,
-      "message": "item name `missing_reference_closure` repeats `reference` from ancestor path segment `typed_durable_reference`",
       "crate_name": "verified_logic"
     },
     {

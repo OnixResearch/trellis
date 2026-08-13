@@ -1,0 +1,6 @@
+$ nix develop -c tracey query uncovered
+verified-logic/rust: 0 uncovered out of 2038 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`

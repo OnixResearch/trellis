@@ -400,6 +400,8 @@
 //! - `coalesce_policy` — immediate vs deferred coalescing: convergence, total preservation
 //! - `fragmentation` — fragmentation metrics: external/internal bounds, can-satisfy
 
+#![cfg_attr(not(verus_keep_ghost), feature(register_tool))]
+#![register_tool(tigerstyle)]
 #![cfg_attr(verus_keep_ghost, verifier::deprecated_postcondition_mut_ref_style(true))]
 
 pub mod ability_effect;

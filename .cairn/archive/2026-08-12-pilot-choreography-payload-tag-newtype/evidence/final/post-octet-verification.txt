@@ -1,0 +1,13 @@
+# Post-Octet verification
+
+The final Octet baseline check, canonical pre-commit gate, full-library Verus proof, and Clippy gate ran in one fail-fast command chain.
+
+```text
+Octet exact baseline check: passed
+Canonical scripts/pre-commit-octet.sh: passed
+Verus: 10720 verified, 0 errors
+Clippy --all-targets -- -D warnings: passed
+Combined exit status: 0
+```
+
+The source registers the `tigerstyle` lint tool for Rust and Verus. The unstable feature is enabled only for the normal Rust compilation path because the pinned Verus wrapper already enables it.

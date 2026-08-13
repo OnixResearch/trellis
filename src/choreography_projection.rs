@@ -1656,6 +1656,7 @@ pub fn projectable(global: &GlobalChoreo) -> (result: bool)
 }
 
 // r[impl choreography.projection]
+// r[impl newtypes.choreography-payload.preservation]
 #[verifier::exec_allows_no_decreases_clause]
 pub fn project_endpoint(role: RoleId, global: &GlobalChoreo) -> (result: LocalChoreo)
     requires projectable_exec_spec(*global)
@@ -1715,6 +1716,10 @@ mod tests {
         GlobalBranch { label, body }
     }
 
+    fn payload(raw: u32) -> PayloadTag {
+        PayloadTag { raw }
+    }
+
     fn send(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
         LocalChoreo::Send {
             peer,
@@ -1743,14 +1748,14 @@ mod tests {
                     from: 1,
                     to: 2,
                     label: 9,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(3, GlobalChoreo::Comm {
                     from: 1,
                     to: 2,
                     label: 9,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],
@@ -1759,17 +1764,18 @@ mod tests {
     }
 
     // r[verify choreography.projection]
+    // r[verify newtypes.choreography-payload.preservation]
     #[test]
     fn test_sender_projection() {
         let global = GlobalChoreo::Comm {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(GlobalChoreo::End),
         };
         let projected = project_endpoint(1, &global);
-        assert_eq!(projected, send(2, 7, 9, LocalChoreo::End));
+        assert_eq!(projected, send(2, 7, payload(9), LocalChoreo::End));
     }
 
     // r[verify choreography.projection]
@@ -1779,11 +1785,11 @@ mod tests {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(GlobalChoreo::End),
         };
         let projected = project_endpoint(2, &global);
-        assert_eq!(projected, recv(1, 7, 9, LocalChoreo::End));
+        assert_eq!(projected, recv(1, 7, payload(9), LocalChoreo::End));
     }
 
     // r[verify choreography.projection]
@@ -1818,14 +1824,14 @@ mod tests {
                     from: 0,
                     to: 1,
                     label: 100,
-                    payload_tag: 1,
+                    payload_tag: payload(1),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(20, GlobalChoreo::Comm {
                     from: 0,
                     to: 1,
                     label: 200,
-                    payload_tag: 2,
+                    payload_tag: payload(2),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],
@@ -1836,11 +1842,11 @@ mod tests {
             branches: vec![
                 LocalBranch {
                     label: 10,
-                    body: recv(0, 100, 1, LocalChoreo::End)
+                    body: recv(0, 100, payload(1), LocalChoreo::End)
                 },
                 LocalBranch {
                     label: 20,
-                    body: recv(0, 200, 2, LocalChoreo::End)
+                    body: recv(0, 200, payload(2), LocalChoreo::End)
                 },
             ],
         });
@@ -1853,7 +1859,7 @@ mod tests {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(GlobalChoreo::End),
         };
         let projected = project_endpoint(9, &global);
@@ -1870,14 +1876,14 @@ mod tests {
                     from: 1,
                     to: 2,
                     label: 9,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(3, GlobalChoreo::Comm {
                     from: 2,
                     to: 1,
                     label: 9,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],

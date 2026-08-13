@@ -479,6 +479,7 @@ fn lookup_local_branch(branches: &[LocalBranch], label: LabelId) -> (result: Opt
 }
 
 // r[impl choreography.steps]
+// r[impl newtypes.choreography-payload.preservation]
 pub fn global_comm_step(global: &GlobalChoreo) -> (result: Option<GlobalChoreo>)
     ensures global_comm_step_post_spec(*global, result)
 {
@@ -553,6 +554,10 @@ mod tests {
         GlobalBranch { label, body }
     }
 
+    fn payload(raw: u32) -> PayloadTag {
+        PayloadTag { raw }
+    }
+
     fn send(peer: RoleId, label: LabelId, payload_tag: PayloadTag, next: LocalChoreo) -> LocalChoreo {
         LocalChoreo::Send {
             peer,
@@ -579,7 +584,7 @@ mod tests {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(next.clone()),
         };
         assert_eq!(global_comm_step(&global), Some(next));
@@ -593,7 +598,7 @@ mod tests {
             from: 1,
             to: 2,
             label: 9,
-            payload_tag: 0,
+            payload_tag: payload(0),
             next: Box::new(GlobalChoreo::End),
         };
         let global = GlobalChoreo::Choice {
@@ -607,8 +612,8 @@ mod tests {
     // r[verify choreography.steps]
     #[test]
     fn test_local_head_steps() {
-        let send_local = send(2, 7, 9, LocalChoreo::End);
-        let recv_local = recv(1, 7, 9, LocalChoreo::End);
+        let send_local = send(2, 7, payload(9), LocalChoreo::End);
+        let recv_local = recv(1, 7, payload(9), LocalChoreo::End);
         assert_eq!(local_send_step(&send_local), Some(LocalChoreo::End));
         assert_eq!(local_recv_step(&recv_local), Some(LocalChoreo::End));
     }
@@ -624,7 +629,7 @@ mod tests {
                 },
                 LocalBranch {
                     label: 4,
-                    body: send(9, 2, 0, LocalChoreo::End),
+                    body: send(9, 2, payload(0), LocalChoreo::End),
                 },
             ],
         };
@@ -637,16 +642,17 @@ mod tests {
                 },
                 LocalBranch {
                     label: 4,
-                    body: recv(3, 8, 0, LocalChoreo::End),
+                    body: recv(3, 8, payload(0), LocalChoreo::End),
                 },
             ],
         };
-        assert_eq!(local_internal_choice_step(&internal, 4), Some(send(9, 2, 0, LocalChoreo::End)));
-        assert_eq!(local_offer_step(&offer, 4), Some(recv(3, 8, 0, LocalChoreo::End)));
+        assert_eq!(local_internal_choice_step(&internal, 4), Some(send(9, 2, payload(0), LocalChoreo::End)),);
+        assert_eq!(local_offer_step(&offer, 4), Some(recv(3, 8, payload(0), LocalChoreo::End)),);
         assert_eq!(local_offer_step(&offer, 9), None);
     }
 
     // r[verify choreography.steps]
+    // r[verify newtypes.choreography-payload.preservation]
     #[test]
     fn test_comm_projection_continuations() {
         let next = GlobalChoreo::End;
@@ -654,7 +660,7 @@ mod tests {
             from: 1,
             to: 2,
             label: 7,
-            payload_tag: 9,
+            payload_tag: payload(9),
             next: Box::new(next.clone()),
         };
         let sender = project_endpoint(1, &global);
@@ -673,20 +679,20 @@ mod tests {
                     from: 0,
                     to: 1,
                     label: 100,
-                    payload_tag: 1,
+                    payload_tag: payload(1),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(20, GlobalChoreo::Comm {
                     from: 0,
                     to: 1,
                     label: 200,
-                    payload_tag: 2,
+                    payload_tag: payload(2),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],
         };
         let projected = project_endpoint(1, &global);
-        assert_eq!(local_offer_step(&projected, 20), Some(recv(0, 200, 2, LocalChoreo::End)));
+        assert_eq!(local_offer_step(&projected, 20), Some(recv(0, 200, payload(2), LocalChoreo::End)),);
         assert_eq!(local_offer_step(&projected, 200), None);
     }
 
@@ -700,12 +706,12 @@ mod tests {
                     from: 2,
                     to: 3,
                     label: 11,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::Comm {
                         from: 0,
                         to: 2,
                         label: 1,
-                        payload_tag: 0,
+                        payload_tag: payload(0),
                         next: Box::new(GlobalChoreo::End),
                     }),
                 }),
@@ -713,12 +719,12 @@ mod tests {
                     from: 2,
                     to: 3,
                     label: 11,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::Comm {
                         from: 0,
                         to: 2,
                         label: 4,
-                        payload_tag: 0,
+                        payload_tag: payload(0),
                         next: Box::new(GlobalChoreo::End),
                     }),
                 }),

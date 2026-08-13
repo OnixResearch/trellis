@@ -35,6 +35,10 @@ verus! {
 /// fn needs_reference(_: ReferenceHash) {}
 /// needs_reference(ClosureHash { raw: 1 });
 /// ```
+#[allow(
+    tigerstyle::path_segment_repetition,
+    reason = "the published type name preserves the durable-reference identity contract"
+)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct ReferenceHash {
     pub raw: u64,
@@ -90,6 +94,10 @@ pub struct SchemaVersion {
 }
 
 // r[impl newtypes.durable-identities.types]
+#[allow(
+    tigerstyle::path_segment_repetition,
+    reason = "the published type name preserves the durable-reference identity contract"
+)]
 #[derive(Clone, Copy, PartialEq, Eq, Debug)]
 pub struct TypedDurableReference {
     pub reference_hash: ReferenceHash,
@@ -212,6 +220,10 @@ pub open spec fn implicit_migration_admitted_spec(
 }
 
 // r[impl domain-primitives.typed-durable-reference.envelope]
+#[allow(
+    tigerstyle::path_segment_repetition,
+    reason = "the requirement-linked API keeps its published durable-reference name"
+)]
 pub fn finite_reference_metadata(reference: TypedDurableReference) -> (result: bool)
     ensures result == finite_reference_metadata_spec(reference)
 {
@@ -224,6 +236,10 @@ pub fn finite_reference_metadata(reference: TypedDurableReference) -> (result: b
 
 // r[impl domain-primitives.typed-durable-reference.envelope]
 // r[impl domain-primitives.typed-durable-reference.unpersist-type-match]
+#[allow(
+    tigerstyle::borrowed_argument_types,
+    reason = "the owned Vec view stays aligned with the existing Verus Seq contract"
+)]
 pub fn closure_available(available: &Vec<ClosureHash>, closure_hash: ClosureHash) -> (result: bool)
     ensures result == closure_available_spec(available@, closure_hash)
 {
@@ -255,6 +271,10 @@ pub fn typed_reference_admitted(reference: TypedDurableReference, catalog: &Clos
 }
 
 // r[impl domain-primitives.typed-durable-reference.envelope]
+#[allow(
+    tigerstyle::path_segment_repetition,
+    reason = "the requirement-linked API keeps its published durable-reference name"
+)]
 pub fn missing_reference_closure(
     reference: TypedDurableReference,
     catalog: &ClosureCatalog,

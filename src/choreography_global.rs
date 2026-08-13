@@ -2,6 +2,12 @@
 //!
 //! Defines the runtime AST plus proof-friendly spec views for participants,
 //! communication-prefix shape, and global well-formedness.
+//!
+//! `PayloadTag` adds payload-domain type separation. It does not validate raw
+//! values or change choreography, transport, delivery, or authority semantics.
+// r[impl newtypes.choreography-payload.docs]
+// r[verify newtypes.choreography-payload.docs]
+// r[impl newtypes.choreography-payload.validation]
 
 #![allow(dead_code)]
 
@@ -11,7 +17,33 @@ verus! {
 
 pub type RoleId = u32;
 pub type LabelId = u32;
-pub type PayloadTag = u32;
+
+// r[impl newtypes.choreography-payload.type]
+// r[verify newtypes.choreography-payload.type]
+// r[impl newtypes.choreography-payload.scope]
+/// Payload-type metadata that is distinct from roles and branch labels.
+///
+/// The public `raw` field preserves the complete `u32` value domain. This
+/// wrapper adds type separation only. It adds no numeric validity claim.
+///
+/// ```compile_fail
+/// use verified_logic::choreography_global::{LabelId, PayloadTag};
+/// fn needs_payload(_: PayloadTag) {}
+/// let label: LabelId = 1;
+/// needs_payload(label);
+/// ```
+#[derive(Clone, Copy, PartialEq, Eq, Debug)]
+pub struct PayloadTag {
+    pub raw: u32,
+}
+
+// r[impl newtypes.choreography-payload.preservation]
+/// Compare two typed payload tags without weakening their domain separation.
+pub fn payload_tags_equal(left: PayloadTag, right: PayloadTag) -> (result: bool)
+    ensures result == (left == right)
+{
+    left.raw == right.raw
+}
 
 #[cfg_attr(not(verus_keep_ghost), derive(Clone))]
 #[derive(Debug, PartialEq, Eq)]
@@ -105,6 +137,7 @@ pub(crate) open spec fn gbranches_view(branches: Seq<GlobalBranch>) -> Seq<GBran
     }
 }
 
+// r[impl newtypes.choreography-payload.preservation]
 pub(crate) open spec fn global_view(global: GlobalChoreo) -> GChoreo
     decreases global, 1int, 0int
 {
@@ -1085,6 +1118,10 @@ mod tests {
         GlobalBranch { label, body }
     }
 
+    fn payload(raw: u32) -> PayloadTag {
+        PayloadTag { raw }
+    }
+
     fn roles_set(mut roles: Vec<RoleId>) -> Vec<RoleId> {
         roles.sort_unstable();
         roles.dedup();
@@ -1119,7 +1156,7 @@ mod tests {
                         from,
                         to,
                         label,
-                        payload_tag,
+                        payload_tag: payload(payload_tag),
                         next: Box::new(next),
                     }
                 }),
@@ -1133,7 +1170,23 @@ mod tests {
         })
     }
 
+    // r[impl newtypes.choreography-payload.evidence]
+    // r[verify newtypes.choreography-payload.type]
+    // r[verify newtypes.choreography-payload.evidence]
+    // r[verify newtypes.choreography-payload.scope]
+    // r[verify newtypes.choreography-payload.validation]
+    #[test]
+    fn test_payload_tag_keeps_full_raw_domain_and_alias_scope() {
+        let tag = payload(u32::MAX);
+        let role: RoleId = u32::MAX;
+        let label: LabelId = u32::MAX;
+        assert_eq!(tag.raw, u32::MAX);
+        assert_eq!(role, u32::MAX);
+        assert_eq!(label, u32::MAX);
+    }
+
     // r[verify choreography.communication]
+    // r[verify newtypes.choreography-payload.preservation]
     #[test]
     fn test_comm_parts_exact() {
         let next = GlobalChoreo::End;
@@ -1141,10 +1194,10 @@ mod tests {
             from: 1,
             to: 4,
             label: 9,
-            payload_tag: 7,
+            payload_tag: payload(7),
             next: Box::new(next.clone()),
         };
-        assert_eq!(comm_parts(&global), Some((1, 4, 9, 7, next)));
+        assert_eq!(comm_parts(&global), Some((1, 4, 9, payload(7), next)));
     }
 
     // r[verify choreography.participants]
@@ -1154,7 +1207,7 @@ mod tests {
             from: 3,
             to: 3,
             label: 1,
-            payload_tag: 0,
+            payload_tag: payload(0),
             next: Box::new(GlobalChoreo::End),
         };
         assert!(!well_formed_global(&global));
@@ -1180,14 +1233,14 @@ mod tests {
                     from: 1,
                     to: 4,
                     label: 10,
-                    payload_tag: 0,
+                    payload_tag: payload(0),
                     next: Box::new(GlobalChoreo::End),
                 }),
                 branch(2, GlobalChoreo::Comm {
                     from: 4,
                     to: 1,
                     label: 11,
-                    payload_tag: 1,
+                    payload_tag: payload(1),
                     next: Box::new(GlobalChoreo::End),
                 }),
             ],

@@ -8139,13 +8139,39 @@ restore the parent to an empty-child reclaimed state.
 
 ## Choreography
 
+r[newtypes.choreography-payload.type]
+Choreography payload positions MUST use a distinct `PayloadTag` structure over
+the complete `u32` value domain. Role and branch-label representations MUST
+remain `u32` aliases during this pilot.
+
+r[newtypes.choreography-payload.preservation]
+The typed payload boundary MUST preserve existing well-formedness, projection,
+merge, projectability, global-step, local-step, duality, choice-agreement, and
+step-correspondence semantics for equal raw payload values.
+
+r[newtypes.choreography-payload.validation]
+Full-library Verus verification MUST pass without a new external body,
+assumption, unverified public function, or proof-gap bridge.
+
+r[newtypes.choreography-payload.evidence]
+The pilot MUST include positive semantic tests, negative runtime tests, and
+compile-fail evidence for invalid cross-domain payload construction.
+
+r[newtypes.choreography-payload.docs]
+Canonical requirements, source annotations, test annotations, public API
+documentation, and accepted Cairn text MUST describe the typed payload boundary.
+
+r[newtypes.choreography-payload.scope]
+The pilot MUST NOT migrate `RoleId` or `LabelId`, add payload validation, alter
+choreography semantics, or require newtypes for all verified identifiers.
+
 r[choreography.participants]
-Finite choreography primitives MUST operate on exact `u32` role identifiers,
-branch labels, and payload tags. A communication prefix is well formed only if
-`from != to`. A choice is well formed only if its branch list is non-empty and
-its branch labels are pairwise distinct and stored in strict increasing label
-order. `participants(choreo)` MUST contain exactly the roles that appear as
-communication endpoints or as a branch decider in `choreo`.
+Finite choreography primitives MUST operate on exact `u32` role identifiers
+and branch labels plus typed `PayloadTag` metadata. A communication prefix is
+well formed only if `from != to`. A choice is well formed only if its branch
+list is non-empty and its branch labels are pairwise distinct in strict
+increasing order. `participants(choreo)` MUST contain exactly the roles that
+appear as communication endpoints or as a branch decider in `choreo`.
 
 r[choreography.communication]
 A global communication prefix

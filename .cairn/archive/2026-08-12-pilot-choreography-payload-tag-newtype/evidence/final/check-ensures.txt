@@ -1,0 +1,4 @@
+$ ./scripts/check-ensures.rs
+
+Checked 2315 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
