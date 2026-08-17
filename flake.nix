@@ -17,15 +17,19 @@
       url = "git+ssh://git@github.com/OnixResearch/trellis.git?rev=1f03111b92cc36aade07359c96773e086908c95f";
       flake = false;
     };
+    # r[impl trellis.nickel_toolchain.cohort]
+    nickel-1-17-0.url =
+      "github:nickel-lang/nickel/1320a983e6c3d1e2fb53dd2464b084b4903b1426";
   };
 
-  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, trellis-consumer-release-src, ... }:
+  outputs = { self, nixpkgs, crane, rust-overlay, flake-utils, octet, trellis-consumer-release-src, nickel-1-17-0, ... }:
     flake-utils.lib.eachDefaultSystem (system:
       let
         pkgs = import nixpkgs {
           inherit system;
           overlays = [ (import rust-overlay) ];
         };
+        nickel = nickel-1-17-0.packages.${system}.default;
 
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
@@ -987,6 +991,7 @@
       in
       {
         packages = {
+          nickel-1-17-0 = nickel;
           default = verified-logic;
           verified-logic = verified-logic;
           verus = octetProductionVerus;
@@ -998,6 +1003,43 @@
 
         checks = {
           inherit verified-logic;
+
+          # r[verify trellis.nickel_toolchain.cohort]
+          nickel-cohort-exact = pkgs.runCommand "trellis-nickel-cohort-exact" {
+            nativeBuildInputs = [ nickel ];
+          } ''
+            test '${nickel-1-17-0.rev}' = '1320a983e6c3d1e2fb53dd2464b084b4903b1426'
+            test "$(command -v nickel)" = '${nickel}/bin/nickel'
+            test "$(nickel --version)" = 'nickel-lang-cli nickel 1.17.0 (rev 1320a98)'
+            if grep -q 'pkgs\.nickel' ${self}/flake.nix; then
+              echo 'older, floating, ambient, or mixed Nickel evaluator reference found' >&2
+              exit 1
+            fi
+            mkdir -p "$out"
+          '';
+
+          # r[verify trellis.nickel_toolchain.compatibility]
+          # r[verify trellis.nickel_toolchain.evidence]
+          nickel-toolchain-fixtures = pkgs.runCommand "trellis-nickel-toolchain-fixtures" {
+            nativeBuildInputs = [ nickel pkgs.diffutils ];
+          } ''
+            fixtures=${src}/verification-policy/nickel-toolchain
+            nickel export --format json ${src}/verification-policy/nickel-evaluator.ncl \
+              > evaluator.json
+            diff --unified ${src}/verification-policy/generated/nickel-evaluator.json evaluator.json
+            for fixture in "$fixtures"/positive/*.ncl; do
+              nickel typecheck "$fixture"
+              nickel export --format json "$fixture" > /dev/null
+            done
+            for fixture in "$fixtures"/negative/*.ncl; do
+              if nickel eval "$fixture" >negative.out 2>negative.err; then
+                echo "negative Nickel fixture unexpectedly passed: $fixture" >&2
+                exit 1
+              fi
+              test -s negative.err
+            done
+            mkdir -p "$out"
+          '';
 
           # Cargo tests with nextest
           nextest = craneLib.cargoNextest {
@@ -1075,7 +1117,7 @@
 
           # Nickel-authored verification policy freshness
           verification-policy = pkgs.runCommand "verification-policy" {
-            nativeBuildInputs = [ rustToolchain pkgs.clang pkgs.nickel ];
+            nativeBuildInputs = [ rustToolchain pkgs.clang nickel ];
           } ''
             cd ${src}
             export TMPDIR=$(mktemp -d)
@@ -1087,7 +1129,7 @@
 
           # Trellis-owned direct dependency and vendored snapshot release profile.
           consumer-release-profile = pkgs.runCommand "consumer-release-profile" {
-            nativeBuildInputs = [ rustToolchain pkgs.clang pkgs.mold pkgs.nickel pkgs.b3sum ];
+            nativeBuildInputs = [ rustToolchain pkgs.clang pkgs.mold nickel pkgs.b3sum ];
           } ''
             cd ${src}
             export HOME="$TMPDIR/home"

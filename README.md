@@ -639,6 +639,8 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').ve
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verus-upgrade-trial --no-link -L
 ```
 
+Proof configuration uses the exact reviewed Nickel cohort. See [docs/nickel-toolchain.md](docs/nickel-toolchain.md).
+
 `upstream-verus-corpus/catalog.ncl` pins source snapshots for verifier-upgrade
 regression selection. Its source-intake check validates exact fixed-output
 hashes, license files, and sentinels; it does not run or import upstream proofs.

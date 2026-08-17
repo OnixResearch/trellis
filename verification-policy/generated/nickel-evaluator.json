@@ -1,0 +1,11 @@
+{
+  "evaluator_identity": "nickel-lang-cli nickel 1.17.0 (rev 1320a98)",
+  "evaluator_version": "1.17.0",
+  "non_claims": [
+    "configuration acceptance does not prove a theorem",
+    "proof evidence does not prove downstream correctness"
+  ],
+  "proof_authority": "named-proof-tools",
+  "schema_version": "trellis-nickel-evaluator/v1",
+  "source_commit": "1320a983e6c3d1e2fb53dd2464b084b4903b1426"
+}

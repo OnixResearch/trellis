@@ -16,9 +16,9 @@ let Blake3HexContract = Common.Blake3Hex in
 let Stage = Common.enum ["proposal", "design", "tasks", "implementation", "archive"] in
 let Strictness = Common.enum ["strict", "warn", "off"] in
 let MarkerToken = std.contract.from_predicate (fun value =>
-  std.is_string value && std.string.is_match "^\\[(parallel|serial|depends:[^\\]]+)\\]$" value
+  std.is_string value && std.string.is_match "^\\[(parallel|serial|depends:[^\\]]+|task:[^\\]]+|after:[^\\]]+)\\]$" value
 ) in
-let MarkerKind = Common.enum ["literal", "depends-prefix"] in
+let MarkerKind = Common.enum ["literal", "depends-prefix", "task-id-prefix", "task-predecessor-prefix"] in
 let Severity = Common.enum ["low", "medium", "high", "critical"] in
 let FindingClass = Common.enum ["omission", "systematic", "incoherent", "preference", "env", "pattern"] in
 let FindingScope = Common.enum ["proposal", "spec", "design", "tasks", "review", "tooling"] in
@@ -35,6 +35,12 @@ let TraceabilityExtension = std.contract.from_predicate (fun value =>
 let StackProvenanceGateMode = Common.enum ["disabled", "optional", "required"] in
 let RuntimeCaptureOrigin = Common.enum ["boundary_captured", "ingested_telemetry", "wrapper_asserted", "unknown"] in
 let PositiveNumber = Common.PositiveNumber in
+let WorkflowPathKind = Common.enum ["file", "spec_directory"] in
+let WorkflowStructuralAdmission = Common.enum ["proposal", "delta_specs", "design", "risk", "tasks", "verification", "semantic_review", "acceptance"] in
+let WorkflowSpecEffect = Common.enum ["delta", "full", "none"] in
+let WorkflowTaskLinkClass = Common.enum ["requirement", "acceptance"] in
+let WorkflowState = Common.enum ["done", "ready", "blocked", "skipped"] in
+let WorkflowReviewKind = Common.enum ["semantic_review", "plan"] in
 let DependencyTargetClass = Common.enum ["lifecycle-id"] in
 let artifact_schema_integrity = fun schema =>
   let artifact_ids = Common.ids schema.artifacts in
@@ -74,16 +80,55 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
 ) in
 
 {
+  WorkflowBounds = {
+    max_artifacts | PositiveNumber,
+    max_dependencies | PositiveNumber,
+    max_files_per_artifact | PositiveNumber,
+    max_path_bytes | PositiveNumber,
+    max_artifact_bytes | PositiveNumber,
+    max_template_bytes | PositiveNumber,
+    max_constraints | PositiveNumber,
+    max_non_claims | PositiveNumber,
+    max_issues | PositiveNumber,
+    max_directory_depth | PositiveNumber,
+    max_directory_entries | PositiveNumber,
+  },
+
   Artifact = {
     id | NonEmptyString,
     generates | NonEmptyString,
+    output_path | SafeRelativePath,
+    path_kind | WorkflowPathKind,
+    structural_admission | WorkflowStructuralAdmission,
     requires | Array NonEmptyString | default = [],
+    stage | Stage,
+    instruction_template | NonEmptyString,
+    constraints | Array NonEmptyString | default = [],
+    apply_prerequisites | Array NonEmptyString | default = [],
+    skipped | Bool | default = false,
+    skip_satisfies_dependencies | Bool | default = false,
+  },
+
+  WorkflowReviewObligation = {
+    id | NonEmptyString,
+    artifact_id | NonEmptyString,
+    review_kind | WorkflowReviewKind,
+    required_artifacts | NonEmptyArray | Array NonEmptyString,
   },
 
   ArtifactSchema = {
+    schema_version | NonEmptyString,
     id | NonEmptyString,
+    profile_version | PositiveNumber,
     description | NonEmptyString,
-    artifacts | Array Artifact,
+    spec_effect | WorkflowSpecEffect,
+    task_link_class | WorkflowTaskLinkClass,
+    states | NonEmptyArray | Array WorkflowState,
+    bounds | WorkflowBounds,
+    artifacts | NonEmptyArray | Array Artifact,
+    review_obligations | Array WorkflowReviewObligation | default = [],
+    receipt_fields | NonEmptyArray | Array NonEmptyString,
+    required_non_claims | NonEmptyArray | Array NonEmptyString,
   },
 
   Marker = {
@@ -373,6 +418,7 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     receipt_hash_policy | ReceiptHashPolicy,
     exemption_marker_policy | ExemptionMarkerPolicy,
     exemptions | Array Exemption,
+    ..
   },
 
   PolicyIntegrity = policy_integrity_contract,
