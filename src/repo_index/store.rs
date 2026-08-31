@@ -51,6 +51,7 @@ pub struct RepoIndex {
 }
 
 impl RepoIndex {
+    // r[impl repo-index.persistent-store]
     pub fn open(root: &Path, db_path: &Path) -> Result<Self> {
         if let Some(parent) = db_path.parent() {
             fs::create_dir_all(parent)
@@ -99,6 +100,7 @@ impl RepoIndex {
         Ok(())
     }
 
+    // r[impl repo-index.persistent-store] r[impl repo-index.atomic-refresh]
     pub fn active_generation(&self) -> Result<Option<u64>> {
         let read_txn = self.db.begin_read().context("begin repo-index read transaction")?;
         let meta = read_txn.open_table(META_TABLE).context("open repo-index meta table")?;

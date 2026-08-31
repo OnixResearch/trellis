@@ -24,6 +24,7 @@ use model::RequirementQueryResult;
 pub use store::RefreshOptions;
 pub use store::RepoIndex;
 
+// r[impl repo-index.query]
 pub fn run<I>(args: I) -> Result<()>
 where I: IntoIterator<Item = String> {
     let mut args = args.into_iter();

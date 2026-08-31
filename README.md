@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10752 Verus proofs · 4865 tests · 2055 requirements · 605 modules · 16 trusted/proof-gap boundaries**
+**10752 Verus proofs · 4863 tests · 2062 requirements · 605 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -297,8 +297,8 @@ validation commands captured in the change evidence.
 | `rcu` | read-copy-update: grace periods, quiescent state, safe reclamation |
 | `mpsc_bounds` | MPSC channel bounds: occupancy, send/receive, capacity, close/drain |
 | `futex_state` | futex wait/wake FSM: idle/waiting/notified, notify idempotence |
-| `parking_lot_core_model` | finite key-to-waiter queues with uniqueness, requeue, and bucket metadata validity |
-| `parking_lot_raw_mutex` | compact raw-mutex locked/parked-bit acquisition and release state machine |
+| `parking_lot_core_model` | finite typed `ParkKey`/`ThreadId` queues with uniqueness, requeue, and metadata validity |
+| `parking_lot_raw_mutex` | typed thread ownership and compact raw-mutex locked/parked-bit state transitions |
 | `parking_lot_condvar_model` | condition-variable association, notify, timeout, and no-spurious requeue semantics |
 | `parking_lot_rwlock_model` | packed reader/writer/upgradable RwLock state transitions and fairness gates |
 | `parking_lot_contracts` | parking-lot fairness, timeout, reentrant mutex, Once, raw-lock, and deadlock contracts |

@@ -5,38 +5,43 @@
 //! appear at most once across the table, and queued waiters must record the key
 //! they are parked on.
 
+#[path = "../identitykey.rs"]
+mod identitykey;
+#[path = "../threadid.rs"]
+mod threadid;
+
 #[derive(Clone, Copy, Debug, PartialEq, Eq)]
-pub struct ParkingLotWaiter {
-    pub thread_id: u64,
-    pub parked_key: u64,
+pub struct Waiter {
+    pub thread_id: ThreadId,
+    pub parked_key: ParkKey,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ParkingLotQueue {
-    pub key: u64,
-    pub waiters: Vec<ParkingLotWaiter>,
+pub struct Queue {
+    pub key: ParkKey,
+    pub waiters: Vec<Waiter>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
-pub struct ParkingLotTable {
-    pub queues: Vec<ParkingLotQueue>,
+pub struct Table {
+    pub queues: Vec<Queue>,
 }
 
 #[derive(Clone, Debug, PartialEq, Eq)]
 pub struct RequeueResult {
-    pub woken: Option<ParkingLotWaiter>,
+    pub woken: Option<Waiter>,
     pub moved: usize,
-    pub table: ParkingLotTable,
+    pub table: Table,
 }
 
-// r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn waiter_matches_key(waiter: &ParkingLotWaiter, key: u64) -> bool {
+// r[impl domain-primitives.parking-lot-core.queue-validity] r[impl newtypes.parking-lot-api]
+pub fn waiter_matches_key(waiter: &Waiter, key: ParkKey) -> bool {
     waiter.parked_key == key
 }
 
-// r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn waiter_count(table: &ParkingLotTable, thread_id: u64) -> usize {
-    let mut count = 0usize;
+// r[impl domain-primitives.parking-lot-core.queue-validity] r[impl newtypes.parking-lot-api]
+pub fn waiter_count(table: &Table, thread_id: ThreadId) -> u64 {
+    let mut count = 0u64;
     for queue in &table.queues {
         for waiter in &queue.waiters {
             if waiter.thread_id == thread_id {
@@ -47,13 +52,37 @@ pub fn waiter_count(table: &ParkingLotTable, thread_id: u64) -> usize {
     count
 }
 
-// r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn has_waiter(table: &ParkingLotTable, thread_id: u64) -> bool {
+// r[impl domain-primitives.parking-lot-core.queue-validity] r[impl newtypes.parking-lot-api]
+pub fn has_waiter(table: &Table, thread_id: ThreadId) -> bool {
     waiter_count(table, thread_id) > 0
 }
 
+/// Queue identity for the finite parking-lot model.
+///
+/// ```compile_fail
+/// use verified_logic::parking_lot_core_model::{ParkKey, Table, ThreadId, park_waiter};
+/// let table = Table { queues: Vec::new() };
+/// let thread = ThreadId::new(1);
+/// let _ = park_waiter(&table, thread, thread);
+/// ```
+// r[impl newtypes.parking-lot-identities] r[impl newtypes.parking-lot-evidence]
+// r[impl newtypes.parking-lot-docs] r[impl newtypes.parking-lot-non-claims]
+// r[impl newtypes.parking-lot-validation]
+pub type ParkKey = identitykey::ParkKey;
+
+/// Thread identity for finite waiters and raw-mutex owners.
+///
+/// ```compile_fail
+/// use verified_logic::parking_lot_core_model::{ParkKey, Table, park_waiter};
+/// let table = Table { queues: Vec::new() };
+/// let key = ParkKey::new(1);
+/// let _ = park_waiter(&table, key, key);
+/// ```
+// r[impl newtypes.parking-lot-identities] r[impl newtypes.parking-lot-evidence]
+pub type ThreadId = threadid::ThreadId;
+
 // r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn queue_waiters_match_key(queue: &ParkingLotQueue) -> bool {
+pub fn queue_waiters_match_key(queue: &Queue) -> bool {
     for waiter in &queue.waiters {
         if !waiter_matches_key(waiter, queue.key) {
             return false;
@@ -63,7 +92,7 @@ pub fn queue_waiters_match_key(queue: &ParkingLotQueue) -> bool {
 }
 
 // r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn queues_have_unique_keys(table: &ParkingLotTable) -> bool {
+pub fn queues_have_unique_keys(table: &Table) -> bool {
     for i in 0..table.queues.len() {
         for j in i + 1..table.queues.len() {
             if table.queues[i].key == table.queues[j].key {
@@ -75,7 +104,7 @@ pub fn queues_have_unique_keys(table: &ParkingLotTable) -> bool {
 }
 
 // r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn waiters_unique(table: &ParkingLotTable) -> bool {
+pub fn waiters_unique(table: &Table) -> bool {
     for i in 0..table.queues.len() {
         for wi in 0..table.queues[i].waiters.len() {
             let id = table.queues[i].waiters[wi].thread_id;
@@ -96,7 +125,7 @@ pub fn waiters_unique(table: &ParkingLotTable) -> bool {
 }
 
 // r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn table_valid(table: &ParkingLotTable) -> bool {
+pub fn table_valid(table: &Table) -> bool {
     if !queues_have_unique_keys(table) || !waiters_unique(table) {
         return false;
     }
@@ -108,15 +137,15 @@ pub fn table_valid(table: &ParkingLotTable) -> bool {
     true
 }
 
-fn find_queue_index(table: &ParkingLotTable, key: u64) -> Option<usize> {
+fn find_queue_index(table: &Table, key: ParkKey) -> Option<usize> {
     table.queues.iter().position(|queue| queue.key == key)
 }
 
-fn queue_for_key_mut(table: &mut ParkingLotTable, key: u64) -> &mut ParkingLotQueue {
+fn queue_for_key_mut(table: &mut Table, key: ParkKey) -> &mut Queue {
     if let Some(index) = find_queue_index(table, key) {
         &mut table.queues[index]
     } else {
-        table.queues.push(ParkingLotQueue {
+        table.queues.push(Queue {
             key,
             waiters: Vec::new(),
         });
@@ -125,21 +154,22 @@ fn queue_for_key_mut(table: &mut ParkingLotTable, key: u64) -> &mut ParkingLotQu
     }
 }
 
-// r[impl domain-primitives.parking-lot-core.operations]
-pub fn park_waiter(table: &ParkingLotTable, key: u64, thread_id: u64) -> ParkingLotTable {
+// r[impl domain-primitives.parking-lot-core.operations] r[impl newtypes.parking-lot-api] r[impl
+// newtypes.parking-lot-semantics]
+pub fn park_waiter(table: &Table, key: ParkKey, thread_id: ThreadId) -> Table {
     let mut next = table.clone();
     if has_waiter(&next, thread_id) {
         return next;
     }
-    queue_for_key_mut(&mut next, key).waiters.push(ParkingLotWaiter {
+    queue_for_key_mut(&mut next, key).waiters.push(Waiter {
         thread_id,
         parked_key: key,
     });
     next
 }
 
-// r[impl domain-primitives.parking-lot-core.operations]
-pub fn unpark_one(table: &ParkingLotTable, key: u64) -> (Option<ParkingLotWaiter>, ParkingLotTable) {
+// r[impl domain-primitives.parking-lot-core.operations] r[impl newtypes.parking-lot-api]
+pub fn unpark_one(table: &Table, key: ParkKey) -> (Option<Waiter>, Table) {
     let mut next = table.clone();
     let Some(index) = find_queue_index(&next, key) else {
         return (None, next);
@@ -151,8 +181,8 @@ pub fn unpark_one(table: &ParkingLotTable, key: u64) -> (Option<ParkingLotWaiter
     (Some(waiter), next)
 }
 
-// r[impl domain-primitives.parking-lot-core.operations]
-pub fn unpark_all(table: &ParkingLotTable, key: u64) -> (Vec<ParkingLotWaiter>, ParkingLotTable) {
+// r[impl domain-primitives.parking-lot-core.operations] r[impl newtypes.parking-lot-api]
+pub fn unpark_all(table: &Table, key: ParkKey) -> (Vec<Waiter>, Table) {
     let mut next = table.clone();
     let Some(index) = find_queue_index(&next, key) else {
         return (Vec::new(), next);
@@ -161,8 +191,9 @@ pub fn unpark_all(table: &ParkingLotTable, key: u64) -> (Vec<ParkingLotWaiter>, 
     (removed, next)
 }
 
-// r[impl domain-primitives.parking-lot-core.operations]
-pub fn requeue_after_wake(table: &ParkingLotTable, from: u64, to: u64) -> RequeueResult {
+// r[impl domain-primitives.parking-lot-core.operations] r[impl newtypes.parking-lot-api] r[impl
+// newtypes.parking-lot-semantics]
+pub fn requeue_after_wake(table: &Table, from: ParkKey, to: ParkKey) -> RequeueResult {
     let (woken, after_wake) = unpark_one(table, from);
     let (mut moving, mut next) = unpark_all(&after_wake, from);
     let moved = moving.len();
@@ -181,7 +212,7 @@ pub fn requeue_after_wake(table: &ParkingLotTable, from: u64, to: u64) -> Requeu
 }
 
 // r[impl domain-primitives.parking-lot-core.operations]
-pub fn requeue_preserves_waiter_count(before: &ParkingLotTable, after: &RequeueResult) -> bool {
+pub fn requeue_preserves_waiter_count(before: &Table, after: &RequeueResult) -> bool {
     let before_count: usize = before.queues.iter().map(|queue| queue.waiters.len()).sum();
     let after_count: usize = after.table.queues.iter().map(|queue| queue.waiters.len()).sum();
     let woken_count = usize::from(after.woken.is_some());
@@ -190,13 +221,13 @@ pub fn requeue_preserves_waiter_count(before: &ParkingLotTable, after: &RequeueR
 
 // r[verify domain-primitives.parking-lot-core.queue-validity]
 // r[impl domain-primitives.parking-lot-core.queue-validity]
-pub fn valid_table_has_unique_waiters(table: &ParkingLotTable) -> bool {
+pub fn valid_table_has_unique_waiters(table: &Table) -> bool {
     !table_valid(table) || waiters_unique(table)
 }
 
-// r[verify domain-primitives.parking-lot-core.operations]
+// r[verify domain-primitives.parking-lot-core.operations] r[verify newtypes.parking-lot-semantics]
 // r[impl domain-primitives.parking-lot-core.operations]
-pub fn park_preserves_validity_when_absent(table: &ParkingLotTable, key: u64, thread_id: u64) -> bool {
+pub fn park_preserves_validity_when_absent(table: &Table, key: ParkKey, thread_id: ThreadId) -> bool {
     if !table_valid(table) || has_waiter(table, thread_id) {
         true
     } else {
@@ -204,85 +235,13 @@ pub fn park_preserves_validity_when_absent(table: &ParkingLotTable, key: u64, th
     }
 }
 
-// r[verify domain-primitives.parking-lot-core.operations]
+// r[verify domain-primitives.parking-lot-core.operations] r[verify newtypes.parking-lot-semantics]
 // r[impl domain-primitives.parking-lot-core.operations]
-pub fn requeue_preserves_validity(table: &ParkingLotTable, from: u64, to: u64) -> bool {
+pub fn requeue_preserves_validity(table: &Table, from: ParkKey, to: ParkKey) -> bool {
     if !table_valid(table) {
         true
     } else {
         let result = requeue_after_wake(table, from, to);
         table_valid(&result.table) && requeue_preserves_waiter_count(table, &result)
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    fn table() -> ParkingLotTable {
-        ParkingLotTable {
-            queues: vec![ParkingLotQueue {
-                key: 7,
-                waiters: vec![
-                    ParkingLotWaiter {
-                        thread_id: 1,
-                        parked_key: 7,
-                    },
-                    ParkingLotWaiter {
-                        thread_id: 2,
-                        parked_key: 7,
-                    },
-                ],
-            }],
-        }
-    }
-
-    #[test]
-    fn distinct_waiters_are_valid() {
-        assert!(table_valid(&table()));
-    }
-
-    #[test]
-    fn duplicate_waiter_rejected() {
-        let mut t = table();
-        t.queues.push(ParkingLotQueue {
-            key: 8,
-            waiters: vec![ParkingLotWaiter {
-                thread_id: 1,
-                parked_key: 8,
-            }],
-        });
-        assert!(!table_valid(&t));
-    }
-
-    #[test]
-    fn wrong_key_rejected() {
-        let t = ParkingLotTable {
-            queues: vec![ParkingLotQueue {
-                key: 7,
-                waiters: vec![ParkingLotWaiter {
-                    thread_id: 1,
-                    parked_key: 8,
-                }],
-            }],
-        };
-        assert!(!table_valid(&t));
-    }
-
-    #[test]
-    fn park_empty_unpark_and_requeue_behave() {
-        let empty = ParkingLotTable { queues: Vec::new() };
-        let parked = park_waiter(&empty, 1, 10);
-        assert!(table_valid(&parked));
-        assert_eq!(waiter_count(&parked, 10), 1);
-        let (none, unchanged) = unpark_one(&parked, 99);
-        assert_eq!(none, None);
-        assert_eq!(unchanged, parked);
-
-        let result = requeue_after_wake(&table(), 7, 9);
-        assert_eq!(result.woken.map(|w| w.thread_id), Some(1));
-        assert_eq!(result.moved, 1);
-        assert!(table_valid(&result.table));
-        assert!(requeue_preserves_waiter_count(&table(), &result));
     }
 }

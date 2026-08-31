@@ -15,6 +15,7 @@ use super::model::SymbolKind;
 
 type SymbolPattern = (fn() -> &'static Regex, SymbolKind);
 
+// r[impl repo-index.cross-reference]
 pub fn extract_facts(path: &RepoPath, bytes: &[u8]) -> ExtractedFacts {
     let path = path.as_str();
     let text = String::from_utf8_lossy(bytes);
@@ -49,6 +50,7 @@ pub fn extract_facts(path: &RepoPath, bytes: &[u8]) -> ExtractedFacts {
     }
 }
 
+// r[impl repo-index.cross-reference]
 pub fn infer_openspec_context(path: &RepoPath) -> Option<OpenSpecContext> {
     let path = path.as_str();
     if !path.starts_with("openspec/") {

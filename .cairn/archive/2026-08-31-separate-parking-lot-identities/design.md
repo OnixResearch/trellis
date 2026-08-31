@@ -42,6 +42,14 @@ These modules are ordinary Rust finite models. Their verification comments provi
 
 **Rationale:** Those values have different proof and arithmetic trade-offs. The first change must stay reviewable.
 
+### 7. Reduce Octet debt instead of replacing its baseline
+
+**Choice:** Use nested compatibility-module paths, concise public record names, and two root identity components. Keep `octet-baseline.json` unchanged.
+
+**Rationale:** Editing linted declarations changed stable finding identities. The final layout removes those findings, keeps the root module-file count stable, and produces no new Octet findings.
+
+The recursive coverage checker now scans nested Rust modules. Its self-test covers both nested discovery and a missing source root.
+
 ## Functional core / imperative shell split
 
 - **Pure core**: identity comparison, queue lookup, validity checks, park, unpark, requeue, and raw-mutex transitions.

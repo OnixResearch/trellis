@@ -273,6 +273,7 @@ impl ExtractorKind {
         }
     }
 
+    // r[impl repo-index.cross-reference]
     pub fn from_path(path: &RepoPath) -> Self {
         if path.as_str().starts_with("src/") && has_extension(path.as_str(), "rs") {
             Self::Rust
@@ -285,6 +286,7 @@ impl ExtractorKind {
         }
     }
 
+    // r[impl repo-index.incremental-refresh]
     pub fn extraction_key(self, digest_hex: &Blake3DigestHex) -> String {
         format!("{}:{digest_hex}", self.as_str())
     }
@@ -389,6 +391,7 @@ pub struct PathRow {
 }
 
 impl PathRow {
+    // r[impl repo-index.incremental-refresh]
     pub fn extraction_key(&self) -> String {
         self.extractor_kind.extraction_key(&self.digest_hex)
     }

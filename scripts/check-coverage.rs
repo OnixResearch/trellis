@@ -1,6 +1,6 @@
 #!/usr/bin/env -S nix shell "github:nix-community/fenix?rev=092bd452904e749efa39907aa4a20a42678ac31e#minimal.toolchain" nixpkgs#clang -c cargo -q -Zscript
 
-//! Enforce: every non-test public Rust exec function in `src/*.rs` has an `r[impl ...]` Tracey
+//! Enforce: every non-test public Rust exec function in `src/**/*.rs` has an `r[impl ...]` Tracey
 //! annotation. Exemptions: add `// @verified-logic:exempt <reason>` above the `pub fn`.
 
 use std::fs;
@@ -9,6 +9,9 @@ use std::path::PathBuf;
 use std::process::Command;
 
 const LOOKBACK: usize = 10;
+const MAX_SOURCE_FILES: usize = 20_000;
+const MAX_SOURCE_DIRECTORIES: usize = 2_000;
+const SELF_TEST_SOURCE_FILE_COUNT: usize = 2;
 
 #[derive(Default)]
 struct Report {
@@ -107,20 +110,76 @@ fn check_file(path: &Path, display_path: &str, report: &mut Report) -> Result<()
 }
 
 fn collect_src_rs(root: &Path) -> Result<Vec<PathBuf>, String> {
-    let mut files = Vec::new();
     let src = root.join("src");
-    for entry in fs::read_dir(&src).map_err(|err| format!("failed to read {}: {err}", src.display()))? {
-        let entry = entry.map_err(|err| format!("failed to read src entry: {err}"))?;
-        let path = entry.path();
-        if path.file_name().and_then(|name| name.to_str()) == Some("lib.rs") {
-            continue;
+    let mut pending = vec![src.clone()];
+    let mut files = Vec::new();
+    let mut directory_count = 0usize;
+
+    while let Some(directory) = pending.pop() {
+        directory_count += 1;
+        if directory_count > MAX_SOURCE_DIRECTORIES {
+            return Err(format!(
+                "source directory count exceeds {MAX_SOURCE_DIRECTORIES} under {}",
+                src.display()
+            ));
         }
-        if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
-            files.push(path);
+
+        for entry in fs::read_dir(&directory)
+            .map_err(|err| format!("failed to read {}: {err}", directory.display()))?
+        {
+            let entry = entry.map_err(|err| format!("failed to read source entry: {err}"))?;
+            let file_type = entry
+                .file_type()
+                .map_err(|err| format!("failed to inspect {}: {err}", entry.path().display()))?;
+            let path = entry.path();
+            if file_type.is_dir() {
+                pending.push(path);
+                continue;
+            }
+            if !file_type.is_file() || path.file_name().and_then(|name| name.to_str()) == Some("lib.rs") {
+                continue;
+            }
+            if path.extension().and_then(|ext| ext.to_str()) == Some("rs") {
+                if files.len() >= MAX_SOURCE_FILES {
+                    return Err(format!("source file count exceeds {MAX_SOURCE_FILES} under {}", src.display()));
+                }
+                files.push(path);
+            }
         }
     }
+
     files.sort();
     Ok(files)
+}
+
+fn run_self_test() -> Result<(), String> {
+    let fixture = std::env::temp_dir().join(format!("trellis-check-coverage-{}", std::process::id()));
+    if fixture.exists() {
+        fs::remove_dir_all(&fixture).map_err(|err| format!("failed to reset fixture: {err}"))?;
+    }
+    let nested = fixture.join("src/nested");
+    fs::create_dir_all(&nested).map_err(|err| format!("failed to create fixture: {err}"))?;
+    fs::write(fixture.join("src/lib.rs"), "pub mod nested;\n")
+        .map_err(|err| format!("failed to write fixture lib: {err}"))?;
+    fs::write(fixture.join("src/root.rs"), "pub fn root() {}\n")
+        .map_err(|err| format!("failed to write root fixture: {err}"))?;
+    fs::write(nested.join("mod.rs"), "pub fn nested() {}\n")
+        .map_err(|err| format!("failed to write nested fixture: {err}"))?;
+
+    let files = collect_src_rs(&fixture)?;
+    if files.len() != SELF_TEST_SOURCE_FILE_COUNT
+        || !files.iter().any(|path| path.ends_with("src/root.rs"))
+        || !files.iter().any(|path| path.ends_with("src/nested/mod.rs"))
+    {
+        return Err("recursive source collection missed a positive fixture".to_string());
+    }
+    if collect_src_rs(&fixture.join("missing")).is_ok() {
+        return Err("missing source roots must fail".to_string());
+    }
+
+    fs::remove_dir_all(&fixture).map_err(|err| format!("failed to remove fixture: {err}"))?;
+    println!("✓ recursive source collection self-test passed");
+    Ok(())
 }
 
 fn checker_root() -> Result<PathBuf, String> {
@@ -128,17 +187,16 @@ fn checker_root() -> Result<PathBuf, String> {
     match args.as_slice() {
         [] => Ok(repo_root()),
         [flag, path] if flag == "--root" => Ok(PathBuf::from(path)),
-        _ => Err("usage: check-coverage.rs [--root <repo-or-fixture-root>]".to_string()),
+        _ => Err("usage: check-coverage.rs [--root <repo-or-fixture-root>] | --self-test".to_string()),
     }
 }
 
-fn main() -> Result<(), String> {
-    let root = checker_root()?;
-    std::env::set_current_dir(&root).map_err(|err| format!("failed to cd {}: {err}", root.display()))?;
+fn run_check(root: &Path) -> Result<(), String> {
+    std::env::set_current_dir(root).map_err(|err| format!("failed to cd {}: {err}", root.display()))?;
     let mut report = Report::default();
 
-    for path in collect_src_rs(&root)? {
-        let display = path.strip_prefix(&root).unwrap_or(&path).display().to_string();
+    for path in collect_src_rs(root)? {
+        let display = path.strip_prefix(root).unwrap_or(&path).display().to_string();
         check_file(&path, &display, &mut report)?;
     }
 
@@ -153,4 +211,13 @@ fn main() -> Result<(), String> {
     }
     println!("✓ all pub fns have r[impl] annotations");
     Ok(())
+}
+
+fn main() -> Result<(), String> {
+    let args: Vec<String> = std::env::args().skip(1).collect();
+    if args.as_slice() == ["--self-test"] {
+        run_self_test()
+    } else {
+        run_check(&checker_root()?)
+    }
 }

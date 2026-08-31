@@ -12546,3 +12546,36 @@ The migration MUST pass focused and full Cargo tests, compile-fail checks, Clipp
 
 r[newtypes.durable-identities.non-claims]
 Identity wrappers MUST NOT be presented as cryptographic digests, collision-resistance evidence, persistence evidence, codec correctness, type-checker correctness, dependency retrieval, or migration execution; they provide domain separation and preserved finite-model admission behavior only.
+
+## Parking-Lot Identity Separation
+
+r[newtypes.parking-lot-identities]
+The parking-lot core MUST use distinct `ParkKey` and `ThreadId` types. Each type
+MUST support explicit raw construction and raw access without an implicit
+conversion to the other identity domain.
+
+r[newtypes.parking-lot-api]
+Every public parking-lot core and raw-mutex function MUST use `ParkKey` for
+queue positions and `ThreadId` for waiter or owner positions.
+
+r[newtypes.parking-lot-semantics]
+For equivalent raw values, typed parking-lot operations MUST preserve queue
+validity, waiter uniqueness, waiter counts, requeue results, and raw-mutex
+state transitions.
+
+r[newtypes.parking-lot-evidence]
+The change MUST include positive and negative runtime tests plus compile-fail
+evidence for both directions of identity exchange.
+
+r[newtypes.parking-lot-docs]
+Canonical requirements, source annotations, tests, public module text, and
+accepted Cairn text MUST describe the typed identity boundary.
+
+r[newtypes.parking-lot-non-claims]
+The identity types provide Rust domain separation only. They MUST NOT be
+presented as a Verus, scheduler, blocking, fairness, or operating-system proof.
+
+r[newtypes.parking-lot-validation]
+The migration MUST pass focused and full Cargo tests, compile-fail checks,
+Clippy, Tracey uncovered and untested checks, and Cairn validation before
+archive.

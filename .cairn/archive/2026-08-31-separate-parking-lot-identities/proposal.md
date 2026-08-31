@@ -14,7 +14,7 @@ This change introduces two semantic Rust newtypes in the small, non-Verus parkin
 
 ## Impact
 
-- **Files**: `src/parking_lot_core_model.rs`, `src/parking_lot_raw_mutex.rs`, focused tests or compile-fail fixtures, `docs/requirements.md`, and the accepted `domain-primitives` Cairn spec.
+- **Files**: `src/identitykey.rs`, `src/threadid.rs`, nested parking-lot module files, `tests/parking.rs`, the recursive coverage checker, `docs/requirements.md`, and the accepted `domain-primitives` Cairn spec.
 - **Testing**: focused Cargo tests, compile-fail evidence, full Cargo tests, Clippy, Tracey coverage, and Cairn validation.
 - **Compatibility**: public functions that currently accept raw `u64` identities become source-incompatible. Callers must construct the declared identity type explicitly.
 - **Claims**: this change provides Rust type separation. It does not add a Verus proof or claim lock implementation, scheduler, fairness, or operating-system correctness.
