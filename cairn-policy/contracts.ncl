@@ -29,6 +29,8 @@ let SafeRelativePath = Common.SafeRelativePath in
 let TraceabilityRequirementSourceKind = Common.enum ["accepted_specs", "requirements_doc"] in
 let TraceabilityEvidenceSourceKind = Common.enum ["rust_source", "nickel_source", "tool_source"] in
 let TraceabilityMarkerVerb = Common.enum ["impl", "verify", "depends", "related"] in
+let TraceabilityAssuranceLevel = Common.enum ["declared"] in
+let TraceabilityAnchorKind = Common.enum ["exact_marker_bytes"] in
 let TraceabilityExtension = std.contract.from_predicate (fun value =>
   std.is_string value && std.string.length value > 0 && std.string.is_match "^[A-Za-z0-9_-]+$" value
 ) in
@@ -222,6 +224,8 @@ let policy_integrity_contract = std.contract.from_predicate (fun policy =>
     requirement_sources | NonEmptyArray | Array TraceabilityRequirementSource,
     evidence_sources | NonEmptyArray | Array TraceabilityEvidenceSource,
     marker_verbs | NonEmptyArray | Array TraceabilityMarkerVerb,
+    assurance_level | TraceabilityAssuranceLevel,
+    anchor_kind | TraceabilityAnchorKind,
   },
 
   TraceabilityPolicy = {
