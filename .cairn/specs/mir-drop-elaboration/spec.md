@@ -1,8 +1,8 @@
-# MIR Drop Elaboration Specification
+# Mir Drop Elaboration Specification
 
 ## Purpose
 
-Defines finite MIR drop-elaboration primitives for Trellis. The requirements cover structural drop obligations, initializedness transitions, `Static` / `Dead` / `Conditional` / `Open` classification, drop flags, open-drop expansion, `DropAndReplace` splitting, evidence, documentation, validation, and non-claim boundaries.
+Defines the `mir-drop-elaboration` capability.
 
 ## Requirements
 

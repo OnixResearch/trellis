@@ -727,6 +727,9 @@ pub mod mir_core;
 /// Verified finite lattice effects, convergence, and result inspection.
 #[path = "finite_flow/identity.rs"]
 pub mod mir_dataflow_framework;
+/// Verified finite MIR destruction classification and replacement metadata.
+#[path = "destruct_paths/identity.rs"]
+pub mod mir_destruct;
 /// Verified finite MIR visitor coverage, traversal, and shape preservation.
 #[path = "mir_walk/identity.rs"]
 pub mod mir_visitor_traversal;

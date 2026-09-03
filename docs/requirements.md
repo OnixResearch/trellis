@@ -7861,6 +7861,52 @@ r[mir-dataflow.non-claims]
 Framework evidence MUST NOT claim soundness for a borrow, move, initializedness,
 or other concrete Rust analysis, compiler engine, or pass.
 
+## MIR Destruction Decisions
+
+r[mir-drop.obligations]
+Each admitted structural path MUST have declared destruction metadata.
+Initialization MUST establish, and moves MUST release, subtree obligations.
+
+r[mir-drop.initializedness]
+Initialization, move, and overwrite actions MUST update finite subtree
+maybe-initialized, maybe-uninitialized, and obligation sets deterministically.
+
+r[mir-drop.classification]
+Finite maybe facts MUST classify a target as static, dead, conditional, or open.
+Absent facts MUST fail instead of selecting a default class.
+
+r[mir-drop.admission]
+Body places, parent links, depths, metadata rows, child paths, state facts, and
+obligations MUST be admitted before a decision becomes available.
+
+r[mir-drop.drop-flags]
+Conditional targets MUST emit guarded metadata with a deterministic flag. Dead
+or no-glue targets MUST emit no call metadata.
+
+r[mir-drop.open-drop]
+Open field and active-enum paths MUST expand in declared order within an explicit
+step budget, skipping dead and inactive paths.
+
+r[mir-drop.drop-and-replace]
+All old-target call or guarded metadata MUST precede exactly one replacement
+write. An invalid target MUST fail before that write.
+
+r[mir-drop.evidence]
+Positive and negative tests MUST cover obligations, transitions, four classes,
+guards, open struct/enum expansion, replacement, paths, state, and budgets.
+
+r[mir-drop.docs]
+Public destruction helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[mir-drop.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[mir-drop.non-claims]
+Decision metadata MUST NOT claim destructor effects, unwind cleanup, rustc shim
+behavior, const-eval policy, unsafe-code soundness, or memory safety.
+
 ## MIR Visitor Traversal
 
 r[mir-visitor.locations]

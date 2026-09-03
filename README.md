@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10962 Verus proofs · 5082 tests · 2185 requirements · 617 modules · 16 trusted/proof-gap boundaries**
+**10969 Verus proofs · 5101 tests · 2196 requirements · 618 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -428,6 +428,7 @@ validation commands captured in the change evidence.
 | `hir_id_lowering` | finite owner-scoped source mappings, generated-ID freshness, created-ID use, uniqueness, and definition correspondence admission |
 | `mir_core` | finite Rust-shaped MIR bodies, locals, places, shallow rvalues, block terminators, deterministic structural admission, and CFG facts |
 | `mir_dataflow_framework` | finite join-table laws, forward/backward ordered effects, monotone edge transfers, bounded fixed points, and pure result cursors |
+| `mir_destruct` | finite structural obligations, initializedness updates, static/dead/conditional/open decisions, guarded expansion, and replacement ordering |
 | `mir_visitor_traversal` | explicit MIR visit locations, exactly-once coverage, deterministic preorder/reverse-postorder, reachability, and shape-preserving mutation admission |
 | `mir_pass_pipeline` | finite MIR phase, pass-registration, validation, optimization-gate, and artifact read/borrow/steal trace admission |
 | `rustc_metadata_identity` | finite rlib/dylib/rmeta capability, rustc identity-field, encoded-MIR, pipelining, and bounded dependency-selection admission |

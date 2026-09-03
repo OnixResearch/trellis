@@ -1,0 +1,182 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-drop-elaboration",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "0c0119f1b586ea2765bbcd77810193d167eafc288faf3edb86ec4b58bef85649",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "6beccfa63d161da0934bea463097ed86041340da546fa69565045ccbf654b08e",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "80e567db5609041ea27ae05cde4bc20907128aec76e7c50139728e60c1e59d41",
+        "destination": ".cairn/specs/mir-drop-elaboration/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "6fd0d8aa23e049369b591d1172f9dc896c15c6c9c3ffb09c945264147f19a50f",
+        "operations": [
+          {
+            "block_hash": "b5f1445b101b340fbb805e4ed08a0727fe755ba1c5c5f81b9534332f223fb164",
+            "heading": "### Requirement: Drop Obligations",
+            "kind": "added",
+            "requirement_id": "mir-drop.obligations"
+          },
+          {
+            "block_hash": "fa7a2c44a369dbf0d154c53ad0b0c3e8fa1b855ced6452d6c380725d19c61643",
+            "heading": "### Requirement: Initializedness Transitions",
+            "kind": "added",
+            "requirement_id": "mir-drop.initializedness"
+          },
+          {
+            "block_hash": "112ec75f103edd75498e1dd281dfd7412bafac6c63074377513a1dfbd69ddcfb",
+            "heading": "### Requirement: Drop Classification",
+            "kind": "added",
+            "requirement_id": "mir-drop.classification"
+          },
+          {
+            "block_hash": "905ba5a5837fda35972680936ded3de4e96345dc7bc701768bb07a5c6e3b4e48",
+            "heading": "### Requirement: Drop Admission Metadata",
+            "kind": "added",
+            "requirement_id": "mir-drop.admission"
+          },
+          {
+            "block_hash": "6626b12c771279f09465128faa8ce27cd4e5d80a6c2a0b400c336aa97bedac2f",
+            "heading": "### Requirement: Drop Flags",
+            "kind": "added",
+            "requirement_id": "mir-drop.drop-flags"
+          },
+          {
+            "block_hash": "568432a9819a8384ed57f221eefe823f6705456a1f3adfea8dcdd8bbec8cb915",
+            "heading": "### Requirement: Open Drop Expansion",
+            "kind": "added",
+            "requirement_id": "mir-drop.open-drop"
+          },
+          {
+            "block_hash": "5e0ba799d5a906738ca8303369e5ab2ead5d4ba0d5c3670fe0f83009ca2dbe28",
+            "heading": "### Requirement: DropAndReplace Splitting",
+            "kind": "added",
+            "requirement_id": "mir-drop.drop-and-replace"
+          },
+          {
+            "block_hash": "96a5c39f68cc6cfa4dec114669a357940705c9b6567b60c55cd266be6f111a5f",
+            "heading": "### Requirement: Drop-Elaboration Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mir-drop.evidence"
+          },
+          {
+            "block_hash": "ec69009c1353fa94be8d4414087221d9d5c8adde9f9116559f7ee4afec1d4e0e",
+            "heading": "### Requirement: Drop-Elaboration Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mir-drop.docs"
+          },
+          {
+            "block_hash": "b70c07cc254a7489b2fc961cd8e4d4304970865c0d08200c60d720ba700d98b1",
+            "heading": "### Requirement: Drop-Elaboration Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mir-drop.final-validation"
+          },
+          {
+            "block_hash": "c747b4afd616b9683b9ef84bb7b9594a0e3af15b3645f35bb1701499d67af16c",
+            "heading": "### Requirement: Drop-Elaboration Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mir-drop.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.obligations",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.initializedness",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.classification",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.drop-flags",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.open-drop",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.drop-and-replace",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-drop.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/mir-drop-elaboration/specs/mir-drop-elaboration/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "fdc091a79c08c552b6537e21347e13a08c3362f0ff9a5df5880ee1e8fc162883",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "f20afe7043032eafeccecee07961a8691eee639be264eb5499a5316e71502be9"
+}
