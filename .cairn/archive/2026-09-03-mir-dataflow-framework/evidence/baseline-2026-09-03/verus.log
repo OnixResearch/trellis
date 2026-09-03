@@ -1,0 +1,705 @@
+got build log for '/nix/store/5mmybjc4nvqrbc3xninjlslvdgcrrj2a-verus-proofs' from 'daemon'
+[1m[33mwarning[0m[1m: use of deprecated method `vstd::prelude::OptionAdditionalFns::is_None`: is_Variant is deprecated - use `->` or `matches` instead: https://verus-lang.github.io/verus/guide/datatypes_enum.html[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/constraint_consistency.rs:20:145
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m [1m[94m...[0mnment) requires constraint_relation_assigned_tuple_spec(r,a).is_None() ensures !constraint_consistent_spec(r,a) {}
+   [1m[94m|[0m                                                                 [1m[33m^^^^^^^[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(deprecated)]` on by default
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ability_effect.rs:12:10
+   [1m[94m|[0m
+[1m[94m12[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ability_effect.rs:17:10
+   [1m[94m|[0m
+[1m[94m17[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ability_effect.rs:28:10
+   [1m[94m|[0m
+[1m[94m28[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/algebraic_effect.rs:35:10
+   [1m[94m|[0m
+[1m[94m35[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/algebraic_effect.rs:40:10
+   [1m[94m|[0m
+[1m[94m40[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/algebraic_effect.rs:45:10
+   [1m[94m|[0m
+[1m[94m45[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/algebraic_effect.rs:51:10
+   [1m[94m|[0m
+[1m[94m51[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/beam_process.rs:23:10
+   [1m[94m|[0m
+[1m[94m23[0m [1m[94m|[0m #[derive(Clone, Debug, PartialEq, Eq)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/content_addressed_code.rs:25:10
+   [1m[94m|[0m
+[1m[94m25[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/content_addressed_code.rs:37:10
+   [1m[94m|[0m
+[1m[94m37[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/remote_computation.rs:25:10
+   [1m[94m|[0m
+[1m[94m25[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/remote_computation.rs:35:10
+   [1m[94m|[0m
+[1m[94m35[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/semantic_refactoring.rs:59:10
+   [1m[94m|[0m
+[1m[94m59[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/typed_durable_reference.rs:112:10
+    [1m[94m|[0m
+[1m[94m112[0m [1m[94m|[0m #[derive(Clone, PartialEq, Eq, Debug)]
+    [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/loop_detection.rs:15:17
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nickel_pattern_coverage.rs:95:17
+   [1m[94m|[0m
+[1m[94m95[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_closure.rs:15:10
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m #[derive(Clone, Debug, PartialEq, Eq)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:12:10
+   [1m[94m|[0m
+[1m[94m12[0m [1m[94m|[0m #[derive(Clone)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:20:10
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m #[derive(Clone)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/sel4_ready_queue.rs:16:10
+   [1m[94m|[0m
+[1m[94m16[0m [1m[94m|[0m #[derive(Clone)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/sel4_untyped.rs:30:10
+   [1m[94m|[0m
+[1m[94m30[0m [1m[94m|[0m #[derive(Clone)]
+   [1m[94m|[0m          [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:41:17
+   [1m[94m|[0m
+[1m[94m41[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:48:17
+   [1m[94m|[0m
+[1m[94m48[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:53:17
+   [1m[94m|[0m
+[1m[94m53[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:59:17
+   [1m[94m|[0m
+[1m[94m59[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:66:17
+   [1m[94m|[0m
+[1m[94m66[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:75:17
+   [1m[94m|[0m
+[1m[94m75[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:81:17
+   [1m[94m|[0m
+[1m[94m81[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:88:17
+   [1m[94m|[0m
+[1m[94m88[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+[1m[33mwarning[0m[1m: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/ssa_construction.rs:95:17
+   [1m[94m|[0m
+[1m[94m95[0m [1m[94m|[0m #[derive(Debug, Clone, PartialEq, Eq)]
+   [1m[94m|[0m                 [1m[33m^^^^^[0m
+
+WARNING: (17212,4): 'if' cannot be used in patterns.
+WARNING: (17342,5): 'if' cannot be used in patterns.
+WARNING: (19992,4): 'if' cannot be used in patterns.
+WARNING: (20169,1): 'if' cannot be used in patterns.
+[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m                                                                      [1A[2K[1B[2K[1A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m                                                                      [1A[2K[1B[2K[1A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s                                  [3A[2K[1B[2K[1B[2K[1B[2K[3A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute  [4A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute  [4A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute  [4A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute  [4A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute  [4A[2K[1B[2K[1B[2K[1B[2K[1B[2K[4A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s                                 [6A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[6A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence                              [7A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[7A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s                         [9A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[9A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas[0m [34m[1mfinished[0m [1min[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs                    [10A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[10A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas[0m [34m[1mfinished[0m [1min[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:438:5: 438:31 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s                         [12A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[12A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas[0m [34m[1mfinished[0m [1min[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:438:5: 438:31 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_input_drvs                 [13A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[13A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas[0m [34m[1mfinished[0m [1min[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs
+[31m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:438:5: 438:31 [1mhas been[0m [31m[1mrunning[0m [1mfor[0m 2s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_input_drvs                 [13A[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[1B[2K[13A[1mSome checks are taking longer than 2s (diagnostics for these may be reported out of order)[0m
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/bitfield.rs:153:5: 153:11 [1mhas[0m [34m[1mfinished[0m [1min[0m 2s
+  ⌝ bitvector assertion not satisfied [1mfor[0m lib::bitfield::or_extract_distribute
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::cron_next::next_occurrence
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 [1mhas[0m [34m[1mfinished[0m [1min[0m 4s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_outputs
+[34m•[0m /nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/nix_drv_serialize.rs:438:5: 438:31 [1mhas[0m [34m[1mfinished[0m [1min[0m 3s
+  ⌝ while loop [1mfor[0m lib::nix_drv_serialize::serialize_input_drvs                 verification results:: 10955 verified, 0 errors
+[1m[33mwarning[0m[1m: 31 warnings emitted[0m
+
+[1m[33mwarning[0m[1m: function `MODE_READ` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/access_mode.rs:26:18
+   [1m[94m|[0m
+[1m[94m26[0m [1m[94m|[0m pub open spec fn MODE_READ() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `mode_read`[0m
+   [1m[94m|[0m
+   [1m[94m= [0m[1mnote[0m: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+
+[1m[33mwarning[0m[1m: function `MODE_WRITE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/access_mode.rs:28:18
+   [1m[94m|[0m
+[1m[94m28[0m [1m[94m|[0m pub open spec fn MODE_WRITE() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `mode_write`[0m
+
+[1m[33mwarning[0m[1m: function `MODE_DELETE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/access_mode.rs:30:18
+   [1m[94m|[0m
+[1m[94m30[0m [1m[94m|[0m pub open spec fn MODE_DELETE() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `mode_delete`[0m
+
+[1m[33mwarning[0m[1m: function `MODE_FULL` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/access_mode.rs:32:18
+   [1m[94m|[0m
+[1m[94m32[0m [1m[94m|[0m pub open spec fn MODE_FULL() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `mode_full`[0m
+
+[1m[33mwarning[0m[1m: function `NO_BUDGET` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:251:18
+    [1m[94m|[0m
+[1m[94m251[0m [1m[94m|[0m pub open spec fn NO_BUDGET() -> u8 { 0 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `no_budget`[0m
+
+[1m[33mwarning[0m[1m: function `BUDGET_OK` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:252:18
+    [1m[94m|[0m
+[1m[94m252[0m [1m[94m|[0m pub open spec fn BUDGET_OK() -> u8 { 1 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `budget_ok`[0m
+
+[1m[33mwarning[0m[1m: function `BUDGET_WARNING` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:253:18
+    [1m[94m|[0m
+[1m[94m253[0m [1m[94m|[0m pub open spec fn BUDGET_WARNING() -> u8 { 2 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `budget_warning`[0m
+
+[1m[33mwarning[0m[1m: function `BUDGET_EXCEEDED` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:254:18
+    [1m[94m|[0m
+[1m[94m254[0m [1m[94m|[0m pub open spec fn BUDGET_EXCEEDED() -> u8 { 3 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `budget_exceeded`[0m
+
+[1m[33mwarning[0m[1m: function `ROLE_SMOL` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:383:18
+    [1m[94m|[0m
+[1m[94m383[0m [1m[94m|[0m pub open spec fn ROLE_SMOL() -> u8 { 0 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `role_smol`[0m
+
+[1m[33mwarning[0m[1m: function `ROLE_DEFAULT` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:384:18
+    [1m[94m|[0m
+[1m[94m384[0m [1m[94m|[0m pub open spec fn ROLE_DEFAULT() -> u8 { 1 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `role_default`[0m
+
+[1m[33mwarning[0m[1m: function `ROLE_SLOW` should have a snake case name[0m
+   [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/cost_tracker.rs:385:18
+    [1m[94m|[0m
+[1m[94m385[0m [1m[94m|[0m pub open spec fn ROLE_SLOW() -> u8 { 2 }
+    [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `role_slow`[0m
+
+[1m[33mwarning[0m[1m: function `MAX_DELEGATION_DEPTH` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/delegation.rs:19:18
+   [1m[94m|[0m
+[1m[94m19[0m [1m[94m|[0m pub open spec fn MAX_DELEGATION_DEPTH() -> u64 { 8 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `max_delegation_depth`[0m
+
+[1m[33mwarning[0m[1m: function `V_DELEGATE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/delegation.rs:22:18
+   [1m[94m|[0m
+[1m[94m22[0m [1m[94m|[0m pub open spec fn V_DELEGATE() -> u8 { 7 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_delegate`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_SEG_EMPTY` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_segment.rs:12:18
+   [1m[94m|[0m
+[1m[94m12[0m [1m[94m|[0m pub open spec fn FS_PATH_SEG_EMPTY() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_seg_empty`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_SEG_CURRENT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_segment.rs:13:18
+   [1m[94m|[0m
+[1m[94m13[0m [1m[94m|[0m pub open spec fn FS_PATH_SEG_CURRENT() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_seg_current`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_SEG_PARENT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_segment.rs:14:18
+   [1m[94m|[0m
+[1m[94m14[0m [1m[94m|[0m pub open spec fn FS_PATH_SEG_PARENT() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_seg_parent`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_SEG_NORMAL` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_segment.rs:15:18
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m pub open spec fn FS_PATH_SEG_NORMAL() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_seg_normal`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_TRAVERSAL_ALLOW_ALL` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_traversal.rs:12:18
+   [1m[94m|[0m
+[1m[94m12[0m [1m[94m|[0m pub open spec fn FS_PATH_TRAVERSAL_ALLOW_ALL() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_traversal_allow_all`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_TRAVERSAL_REJECT_PARENT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_traversal.rs:13:18
+   [1m[94m|[0m
+[1m[94m13[0m [1m[94m|[0m pub open spec fn FS_PATH_TRAVERSAL_REJECT_PARENT() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_traversal_reject_parent`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_TRAVERSAL_REJECT_CURRENT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_traversal.rs:14:18
+   [1m[94m|[0m
+[1m[94m14[0m [1m[94m|[0m pub open spec fn FS_PATH_TRAVERSAL_REJECT_CURRENT() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_traversal_reject_current`[0m
+
+[1m[33mwarning[0m[1m: function `FS_PATH_TRAVERSAL_REJECT_BOTH` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/fs_path_traversal.rs:15:18
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m pub open spec fn FS_PATH_TRAVERSAL_REJECT_BOTH() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `fs_path_traversal_reject_both`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_REL_DISJOINT` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_intersection.rs:6:18
+  [1m[94m|[0m
+[1m[94m6[0m [1m[94m|[0m pub open spec fn GEOM_REL_DISJOINT() -> u8 { 0 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_rel_disjoint`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_REL_TOUCHES` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_intersection.rs:7:18
+  [1m[94m|[0m
+[1m[94m7[0m [1m[94m|[0m pub open spec fn GEOM_REL_TOUCHES() -> u8 { 1 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_rel_touches`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_REL_OVERLAPS` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_intersection.rs:8:18
+  [1m[94m|[0m
+[1m[94m8[0m [1m[94m|[0m pub open spec fn GEOM_REL_OVERLAPS() -> u8 { 2 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_rel_overlaps`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_ORIENT_DEGENERATE` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_orientation.rs:6:18
+  [1m[94m|[0m
+[1m[94m6[0m [1m[94m|[0m pub open spec fn GEOM_ORIENT_DEGENERATE() -> u8 { 0 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_orient_degenerate`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_ORIENT_CLOCKWISE` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_orientation.rs:7:18
+  [1m[94m|[0m
+[1m[94m7[0m [1m[94m|[0m pub open spec fn GEOM_ORIENT_CLOCKWISE() -> u8 { 1 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_orient_clockwise`[0m
+
+[1m[33mwarning[0m[1m: function `GEOM_ORIENT_COUNTERCLOCKWISE` should have a snake case name[0m
+ [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/geom_orientation.rs:8:18
+  [1m[94m|[0m
+[1m[94m8[0m [1m[94m|[0m pub open spec fn GEOM_ORIENT_COUNTERCLOCKWISE() -> u8 { 2 }
+  [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `geom_orient_counterclockwise`[0m
+
+[1m[33mwarning[0m[1m: function `STAR` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/glob.rs:18:18
+   [1m[94m|[0m
+[1m[94m18[0m [1m[94m|[0m pub open spec fn STAR() -> u8 { 42 }
+   [1m[94m|[0m                  [1m[33m^^^^[0m [1m[33mhelp: convert the identifier to snake case: `star`[0m
+
+[1m[33mwarning[0m[1m: function `WILDCARD` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/pattern.rs:20:18
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m pub open spec fn WILDCARD() -> int { -1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `wildcard`[0m
+
+[1m[33mwarning[0m[1m: function `V_READ` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:16:18
+   [1m[94m|[0m
+[1m[94m16[0m [1m[94m|[0m pub open spec fn V_READ() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_read`[0m
+
+[1m[33mwarning[0m[1m: function `V_WRITE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:18:18
+   [1m[94m|[0m
+[1m[94m18[0m [1m[94m|[0m pub open spec fn V_WRITE() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_write`[0m
+
+[1m[33mwarning[0m[1m: function `V_DELETE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:20:18
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m pub open spec fn V_DELETE() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_delete`[0m
+
+[1m[33mwarning[0m[1m: function `V_WATCH` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:22:18
+   [1m[94m|[0m
+[1m[94m22[0m [1m[94m|[0m pub open spec fn V_WATCH() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_watch`[0m
+
+[1m[33mwarning[0m[1m: function `V_FULL` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:24:18
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m pub open spec fn V_FULL() -> u8 { 4 }
+   [1m[94m|[0m                  [1m[33m^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_full`[0m
+
+[1m[33mwarning[0m[1m: function `V_PROMPT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:26:18
+   [1m[94m|[0m
+[1m[94m26[0m [1m[94m|[0m pub open spec fn V_PROMPT() -> u8 { 5 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_prompt`[0m
+
+[1m[33mwarning[0m[1m: function `V_TOOL_USE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:28:18
+   [1m[94m|[0m
+[1m[94m28[0m [1m[94m|[0m pub open spec fn V_TOOL_USE() -> u8 { 6 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_tool_use`[0m
+
+[1m[33mwarning[0m[1m: function `V_DELEGATE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/subsumption.rs:30:18
+   [1m[94m|[0m
+[1m[94m30[0m [1m[94m|[0m pub open spec fn V_DELEGATE() -> u8 { 7 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `v_delegate`[0m
+
+[1m[33mwarning[0m[1m: function `COLD` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/tier.rs:18:18
+   [1m[94m|[0m
+[1m[94m18[0m [1m[94m|[0m pub open spec fn COLD() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^[0m [1m[33mhelp: convert the identifier to snake case: `cold`[0m
+
+[1m[33mwarning[0m[1m: function `WARM` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/tier.rs:20:18
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m pub open spec fn WARM() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^[0m [1m[33mhelp: convert the identifier to snake case: `warm`[0m
+
+[1m[33mwarning[0m[1m: function `HOT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/tier.rs:22:18
+   [1m[94m|[0m
+[1m[94m22[0m [1m[94m|[0m pub open spec fn HOT() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^[0m [1m[33mhelp: convert the identifier to snake case: `hot`[0m
+
+[1m[33mwarning[0m[1m: function `TOKEN_CLOCK_SKEW_SECS` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/token_timestamp.rs:12:18
+   [1m[94m|[0m
+[1m[94m12[0m [1m[94m|[0m pub open spec fn TOKEN_CLOCK_SKEW_SECS() -> u64 { 60 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `token_clock_skew_secs`[0m
+
+[1m[33mwarning[0m[1m: function `MAX_CAPABILITIES_PER_TOKEN` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/token_timestamp.rs:15:18
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m pub open spec fn MAX_CAPABILITIES_PER_TOKEN() -> u64 { 32 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `max_capabilities_per_token`[0m
+
+[1m[33mwarning[0m[1m: function `TRANSFER_OK` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/transfer.rs:15:18
+   [1m[94m|[0m
+[1m[94m15[0m [1m[94m|[0m pub open spec fn TRANSFER_OK() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `transfer_ok`[0m
+
+[1m[33mwarning[0m[1m: function `INSUFFICIENT_FUNDS` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/transfer.rs:17:18
+   [1m[94m|[0m
+[1m[94m17[0m [1m[94m|[0m pub open spec fn INSUFFICIENT_FUNDS() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `insufficient_funds`[0m
+
+[1m[33mwarning[0m[1m: function `INVALID_AMOUNT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/transfer.rs:19:18
+   [1m[94m|[0m
+[1m[94m19[0m [1m[94m|[0m pub open spec fn INVALID_AMOUNT() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `invalid_amount`[0m
+
+[1m[33mwarning[0m[1m: function `RECEIVER_OVERFLOW` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/transfer.rs:21:18
+   [1m[94m|[0m
+[1m[94m21[0m [1m[94m|[0m pub open spec fn RECEIVER_OVERFLOW() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `receiver_overflow`[0m
+
+[1m[33mwarning[0m[1m: function `DUPLICATE_TRANSFER` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/transfer.rs:23:18
+   [1m[94m|[0m
+[1m[94m23[0m [1m[94m|[0m pub open spec fn DUPLICATE_TRANSFER() -> u8 { 4 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `duplicate_transfer`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_STRING` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:16:18
+   [1m[94m|[0m
+[1m[94m16[0m [1m[94m|[0m pub open spec fn TYPE_STRING() -> u8 { 0 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_string`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_INTEGER` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:18:18
+   [1m[94m|[0m
+[1m[94m18[0m [1m[94m|[0m pub open spec fn TYPE_INTEGER() -> u8 { 1 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_integer`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_FLOAT` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:20:18
+   [1m[94m|[0m
+[1m[94m20[0m [1m[94m|[0m pub open spec fn TYPE_FLOAT() -> u8 { 2 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_float`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_BOOLEAN` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:22:18
+   [1m[94m|[0m
+[1m[94m22[0m [1m[94m|[0m pub open spec fn TYPE_BOOLEAN() -> u8 { 3 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_boolean`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_DATE` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:24:18
+   [1m[94m|[0m
+[1m[94m24[0m [1m[94m|[0m pub open spec fn TYPE_DATE() -> u8 { 4 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_date`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_DATETIME` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:26:18
+   [1m[94m|[0m
+[1m[94m26[0m [1m[94m|[0m pub open spec fn TYPE_DATETIME() -> u8 { 5 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_datetime`[0m
+
+[1m[33mwarning[0m[1m: function `TYPE_ANY` should have a snake case name[0m
+  [1m[94m--> [0m/nix/store/r53kz6sl0yilxdj58yz0iabw4bjpijma-trellis-verus-proof-source/src/type_lattice.rs:28:18
+   [1m[94m|[0m
+[1m[94m28[0m [1m[94m|[0m pub open spec fn TYPE_ANY() -> u8 { 6 }
+   [1m[94m|[0m                  [1m[33m^^^^^^^^[0m [1m[33mhelp: convert the identifier to snake case: `type_any`[0m
+
+[1m[33mwarning[0m[1m: 54 warnings emitted[0m

@@ -7811,6 +7811,56 @@ MIR-core evidence MUST NOT claim full rustc MIR compatibility, Rust typing,
 borrow checking, drop elaboration, optimization, code generation, text parsing,
 or whole-compiler correctness.
 
+## MIR Dataflow Framework
+
+r[mir-dataflow.domain]
+A finite domain MUST declare bounded states, row width, bottom, top, and height.
+Malformed or missing bounds MUST fail before analysis.
+
+r[mir-dataflow.lattice-laws]
+The finite join table MUST satisfy idempotence, commutativity, associativity,
+bottom identity, and top absorption for every declared state.
+
+r[mir-dataflow.direction]
+Forward analyses MUST compose locations in declaration order. Backward analyses
+MUST reverse location order while keeping each before effect before its primary.
+
+r[mir-dataflow.effects]
+Each statement or terminator location MUST have total in-range before and primary
+transfer tables, applied in that order.
+
+r[mir-dataflow.per-edge]
+Each edge-local transfer MUST name one admitted CFG edge and remain unique for
+that source-target pair.
+
+r[mir-dataflow.admission]
+Every transfer MUST be monotone under the admitted join order. Invalid domains,
+locations, edges, transfers, boundaries, and budgets MUST fail deterministically.
+
+r[mir-dataflow.convergence]
+Fixed-point iteration MUST stop only at stable block equations within a named
+height-and-work-item budget. Exhaustion MUST withhold results.
+
+r[mir-dataflow.results]
+Fixed results MUST expose pure block-entry, block-exit, before, primary, edge,
+and exactly-once requested-location inspection.
+
+r[mir-dataflow.evidence]
+Positive and negative tests MUST cover domains, both directions, ordered effects,
+edge effects, convergence, cursors, and malformed finite tables.
+
+r[mir-dataflow.docs]
+Public analysis helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[mir-dataflow.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[mir-dataflow.non-claims]
+Framework evidence MUST NOT claim soundness for a borrow, move, initializedness,
+or other concrete Rust analysis, compiler engine, or pass.
+
 ## MIR Visitor Traversal
 
 r[mir-visitor.locations]

@@ -11,8 +11,8 @@
       "path": "LICENSE"
     },
     {
-      "blake3": "2b6ae19bf1ff19d40597649d01cf8d9ae2bb4592ccc35193b7152ac9cedf73a6",
-      "bytes": 50064,
+      "blake3": "be7175cdb6aef87dc5a89e9bbe120830fc2cb21d567bcf1a9e7dcef435487588",
+      "bytes": 50205,
       "path": "src/lib.rs"
     },
     {

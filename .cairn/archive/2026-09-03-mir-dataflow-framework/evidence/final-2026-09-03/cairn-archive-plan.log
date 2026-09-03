@@ -1,0 +1,39 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: mir-dataflow-framework",
+      "kind": "archive_change",
+      "path": "./.cairn/changes/mir-dataflow-framework"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-dataflow-framework",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": true,
+  "input_hash": "584944de7f9019a978f682f0527eb8da4fe4b82874281795a95a4cd04b864b2f",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "1087c0dc6ded2d1f51df4e0724893eb1370a0ac44c6539d09940ee35cf348086",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "cd653af5afe752d78e5a7afb4b464f0050d38f30f460d30e258ee696bf21401e"
+}

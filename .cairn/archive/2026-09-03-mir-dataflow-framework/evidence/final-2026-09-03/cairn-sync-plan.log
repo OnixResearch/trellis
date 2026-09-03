@@ -1,0 +1,193 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-dataflow-framework",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "5ef044c9caf365728f56a37609e7063a630225e0d43270a3790cfc14bc733e33",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "feadc33c9058f2d23fa00747c9ff90d78b7e5c64f3b64d2508b4d871fefa165c",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "1fb63c0146064fb34904ae78730bb55715ffae180ea4b5f9eaf629293e0e4538",
+        "destination": ".cairn/specs/mir-dataflow-framework/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "970b40b13fd09eb6f10604e9b697ee1567f47b08319df98e3e3ffb289c66eb16",
+        "operations": [
+          {
+            "block_hash": "df7b099e1d5992cd643f9af9fb228bb3404f09a4ce0070ffdcbce5d74717b03f",
+            "heading": "### Requirement: Dataflow Domain Envelope",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.domain"
+          },
+          {
+            "block_hash": "9b148329bffe6eef46937488f0f0b4d02487805682a89f285bccdfa38de3ed58",
+            "heading": "### Requirement: Join-Semilattice Laws",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.lattice-laws"
+          },
+          {
+            "block_hash": "565a0349c08b378816b5417058523e38e67a7e1defaf7f11729d4c26d3e7d995",
+            "heading": "### Requirement: Analysis Direction",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.direction"
+          },
+          {
+            "block_hash": "60a259de1e1bcb8a25dd3d3fc584a2487eabb5fce2350d36d87f857e1b2c2335",
+            "heading": "### Requirement: Before and Primary Effects",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.effects"
+          },
+          {
+            "block_hash": "979e9ba157f30b4d760b550685d88423de70c80fde7d5236bde47b64e8d80cef",
+            "heading": "### Requirement: Per-Edge Effects",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.per-edge"
+          },
+          {
+            "block_hash": "eb28c3cd045469bb9a994d0c996fa73119f2a120b2299ad1447b9aabb04a9b52",
+            "heading": "### Requirement: Monotone Transfer Admission",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.admission"
+          },
+          {
+            "block_hash": "bdb16a50ac591fc6f0defd2c07e791c159f877788ff027815a61622093144ecb",
+            "heading": "### Requirement: Fixed-Point Convergence",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.convergence"
+          },
+          {
+            "block_hash": "8181642f2360c13713f84147128bfd6846f8c5b7d88297105a50ed90a58c3c94",
+            "heading": "### Requirement: Results Inspection",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.results"
+          },
+          {
+            "block_hash": "8e5bbe6d075a68ca2fa5b922b3ddd2d2d3da57ca51443bc080a3b77cd8bef31e",
+            "heading": "### Requirement: Dataflow Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.evidence"
+          },
+          {
+            "block_hash": "7dcb965df251451f021cf69c36cdae70ef4ac515f79c2cf4f91c1aefeaa4db43",
+            "heading": "### Requirement: Dataflow Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.docs"
+          },
+          {
+            "block_hash": "ab1c7a07ef95243410f90227100ba251c026a4600fe175255bc904d98be82994",
+            "heading": "### Requirement: Dataflow Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.final-validation"
+          },
+          {
+            "block_hash": "fb5870b222062b05b82c6f5cef92d434c8dc2d6ff7d4824f7578b909480c83fe",
+            "heading": "### Requirement: Dataflow Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mir-dataflow.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.domain",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.lattice-laws",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.direction",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.effects",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.per-edge",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.convergence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.results",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-dataflow.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/mir-dataflow-framework/specs/mir-dataflow-framework/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "550244bc55ef3add1e092daef7df1d713c19f962e69e1ca75dc72efd69aede34",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "5a28f88bb9d18a7b8733404ad7cca79a01663175830116d6c72114c3d2afe3e5"
+}

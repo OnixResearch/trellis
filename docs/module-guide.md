@@ -96,6 +96,8 @@ parser and policy admission. Use [`hir_id_lowering`](../src/frontend_lower/ident
 for owner-scoped source mappings, generated-ID freshness, created-ID use, and
 definition correspondence. Use [`mir_core`](../src/mir_core/identity.rs) for
 finite MIR body, local, place, shallow-rvalue, terminator, and CFG admission. Use
+[`mir_dataflow_framework`](../src/finite_flow/identity.rs) for finite lattice
+laws, ordered effects, bounded fixed points, and pure result cursors. Use
 [`mir_visitor_traversal`](../src/mir_walk/identity.rs) for explicit visit
 locations, exactly-once coverage, deterministic block orders, and
 shape-preserving mutation admission. Use

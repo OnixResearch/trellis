@@ -1,0 +1,19 @@
+PASS json artifact contract json-artifacts/proof-evidence-bundle.ncl
+PASS json artifact contract json-artifacts/octet-baseline.ncl
+PASS json artifact contract json-artifacts/verification-policy-generated.ncl
+PASS json artifact contract json-artifacts/proof-review-policy-generated.ncl
+PASS json artifact contract json-artifacts/cairn-policy-generated.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/valid-generated-policy.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/valid-octet-baseline.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-mir-dataflow-framework-20260903/json-artifacts/fixtures/valid-proof-evidence.ncl
+json artifact contract check: PASS

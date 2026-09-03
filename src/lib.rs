@@ -724,6 +724,9 @@ pub mod metric_window;
 /// Verified finite Rust-shaped MIR structural admission and CFG facts.
 #[path = "mir_core/identity.rs"]
 pub mod mir_core;
+/// Verified finite lattice effects, convergence, and result inspection.
+#[path = "finite_flow/identity.rs"]
+pub mod mir_dataflow_framework;
 /// Verified finite MIR visitor coverage, traversal, and shape preservation.
 #[path = "mir_walk/identity.rs"]
 pub mod mir_visitor_traversal;

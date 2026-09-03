@@ -1,10 +1,10 @@
-# MIR Dataflow Framework Specification
+# MIR Dataflow Framework Delta
 
 ## Purpose
 
 Defines finite MIR dataflow framework primitives for Trellis. The requirements cover lattice-law admission, analysis direction, transfer effects, before/primary effect order, per-edge effects, fixed-point convergence, result inspection, evidence, documentation, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Dataflow Domain Envelope
 r[mir-dataflow.domain] The system MUST define finite dataflow domains with declared element states, row widths, bottom state, top state, and finite-height metadata.
