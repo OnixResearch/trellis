@@ -1,10 +1,10 @@
-# domain-primitives Specification
+# Typed Configuration Delta
 
 ## Purpose
 
 Adds Dhall-inspired finite typed configuration normal-form primitives to Trellis without adopting Dhall syntax or replacing Nickel. The requirements define total typed expression admission, deterministic normal-form metadata, semantic digest input selection, safe import-closure admission, and explicit non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Typed Config Expression Envelope
 r[domain-primitives.typed-config.expression-envelope] The system MUST define finite typed configuration expression envelopes for literals, records, variants/options, lists, references, and import metadata with explicit node identifiers, type identifiers, and bounded child references.

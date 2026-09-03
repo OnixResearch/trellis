@@ -61,7 +61,7 @@ let contracts = import "contracts.ncl" in
   artifacts = [
     { path = "Cargo.toml", bytes = 5574, blake3 = "cf0495a0f5204ea0d445bafaea7ae7341932cca7580b90f6c80b1fe511675458" },
     { path = "LICENSE", bytes = 16726, blake3 = "7ad11002cb765572342fc15096832825a9071dfc7f4f427d92c6906d83ea9b54" },
-    { path = "src/lib.rs", bytes = 49933, blake3 = "6f0037d4de69c69cf18e29c77b9c3f14bbe86a175b9d03c059abc33e43a2b8c2" },
+    { path = "src/lib.rs", bytes = 50064, blake3 = "2b6ae19bf1ff19d40597649d01cf8d9ae2bb4592ccc35193b7152ac9cedf73a6" },
     { path = "src/scope.rs", bytes = 15960, blake3 = "42e09767955c07125d923238950f156d842d316cb66100e81ec658c9612e6170" },
     { path = "src/token_timestamp.rs", bytes = 14119, blake3 = "5f2e7f57e27280a22fa6721e5638a4fde989f0c9e8c944549bdb249e4088b621" },
     { path = "src/ucan_ability.rs", bytes = 20719, blake3 = "d10538a8b988bd8f598a54f4d8a24448111f59721ddb62748762338ba35561e7" },

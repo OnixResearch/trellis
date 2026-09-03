@@ -1,0 +1,7 @@
+[2m2026-09-03T11:52:02.137234Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-dhall-style-total-config-20260903
+[2m2026-09-03T11:52:03.149894Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+[2m2026-09-03T11:52:04.160951Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon..
+[2m2026-09-03T11:52:05.172395Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon...
+[2m2026-09-03T11:52:06.185210Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon....
+[2m2026-09-03T11:52:07.197912Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m daemon client: connect_inner failed [3melapsed_ms[0m[2m=[0m5061 [3merror[0m[2m=[0mDaemon failed to start within 5s (last connect error: No such file or directory (os error 2)). Check logs at /home/brittonr/.local/state/tracey/feef726089905abc/daemon.log [3mcallsite[0m[2m=[0m/home/runner/work/tracey/tracey/crates/tracey/src/daemon/client.rs:50
+Error: Cancelled

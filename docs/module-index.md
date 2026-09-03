@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `615` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `616` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -536,6 +536,7 @@ Summary: `615` public modules, `588` requirement-covered modules, `14` example-b
 | `tlb_shootdown` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `14`, verify: `23`, requirements mentions: `0` | — | [`src/tlb_shootdown.rs`](../src/tlb_shootdown.rs) |
 | `token_timestamp` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `17`, requirements mentions: `0` | — | [`src/token_timestamp.rs`](../src/token_timestamp.rs) |
 | `topo_sort` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `3`, requirements mentions: `0` | — | [`src/topo_sort.rs`](../src/topo_sort.rs) |
+| `total_config` | `partial-requirement-coverage`, `runtime-helper`, `test-backed` | — | impl: `8`, verify: `0`, requirements mentions: `0` | — | [`src/normal_input/identity.rs`](../src/normal_input/identity.rs) |
 | `trace_relation` | `partial-requirement-coverage`, `spec-model`, `test-backed` | — | impl: `0`, verify: `16`, requirements mentions: `0` | — | [`src/trace_relation.rs`](../src/trace_relation.rs) |
 | `track_caller_abi` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/track/caller/abi.rs`](../src/track/caller/abi.rs) |
 | `transfer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `22` | — | [`src/transfer.rs`](../src/transfer.rs) |

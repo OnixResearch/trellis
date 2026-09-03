@@ -7586,6 +7586,56 @@ Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot
 extent.
 
+## Typed Configuration Normal Form
+
+r[domain-primitives.typed-config.expression-envelope]
+A finite node graph MUST declare each node, child, reference, root, and import
+index, and MUST reject duplicates, dangling edges, cycles, or unsupported forms.
+
+r[domain-primitives.typed-config.type-admission]
+Each node kind MUST match its declared type. Required record fields MUST exist
+and their child types MUST match before normalization.
+
+r[domain-primitives.typed-config.explicit-failure]
+Missing, malformed, unsupported, cyclic, policy-denied, and digest-mismatched
+inputs MUST return deterministic table, index, and subject metadata.
+
+r[domain-primitives.typed-config.normal-form]
+Normal form MUST sort nodes by key and record fields by name, preserve list
+order, canonicalize variants and options, and omit source labels and comments.
+
+r[domain-primitives.typed-config.semantic-digest]
+Digest input selection MUST contain only admitted normal-form metadata and the
+ordered declared dependency digests. This core MUST NOT compute a hash.
+
+r[domain-primitives.typed-config.import-closure]
+Imports MUST be static and frozen. Remote imports MUST not reach local, home, or
+environment targets, and headers MUST forward only to same-origin relatives.
+
+r[domain-primitives.typed-config.semantic-refactoring]
+Equal digest inputs MUST admit a source refactor. Changed inputs MUST require an
+explicit compatibility or unresolved-dependent record.
+
+r[domain-primitives.typed-config.positive]
+Positive tests MUST cover typed records, canonical field order, source-only
+refactors, stable digest input, frozen imports, and same-origin headers.
+
+r[domain-primitives.typed-config.negative]
+Negative tests MUST cover type and field failures, unsupported forms, graph
+failures, denied imports, digest drift, and unauthorized refactors.
+
+r[domain-primitives.typed-config.docs]
+Public normal-form helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[domain-primitives.typed-config.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[domain-primitives.typed-config.non-claims]
+Normal-form evidence MUST NOT claim Dhall compatibility, Nickel evaluation,
+parsing, import execution, network or filesystem security, or hash correctness.
+
 ## S-expression Primitives
 
 r[s-expression.ast]

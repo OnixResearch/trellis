@@ -62,6 +62,8 @@ injectivity patterns and [`serialization_codec`](../src/serialization_codec.rs)
 for finite codec envelope admission. Use
 [`s_expression`](../src/paren_tree/identity.rs) for bounded canonical atom/list
 trees, deterministic UTF-8 rendering, canonical-only parsing, and roundtrips.
+Use [`total_config`](../src/normal_input/identity.rs) for finite typed graphs,
+canonical normal forms, digest-input selection, frozen imports, and refactors.
 Use [`ucan_cid`](../src/ucan_cid.rs),
 [`ucan_base64url`](../src/ucan_base64url.rs), and [`ucan_json`](../src/ucan_json.rs)
 when the data is UCAN-shaped.

@@ -958,6 +958,9 @@ pub mod tiling;
 pub mod timeseries;
 pub mod tlb_shootdown;
 pub mod token_timestamp;
+/// Verified finite typed configuration normal forms and import policy.
+#[path = "normal_input/identity.rs"]
+pub mod total_config;
 pub mod topo_sort;
 /// Verified finite `#[track_caller]` ABI metadata and admission.
 #[path = "track/caller/abi.rs"]

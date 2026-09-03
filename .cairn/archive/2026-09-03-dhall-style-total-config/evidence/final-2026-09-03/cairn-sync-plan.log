@@ -1,0 +1,193 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "dhall-style-total-config",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "99c93d2c37fa78b90ee7d190557ad310d3a30da0569cc01961e7fcf5e146d2e8",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "a90a79aa05e1dae01946e3f7e61180350957ea4798901853fb9f8c0485a695b0",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "42d16adc468587f034dcc13b8a63d9bb0ee79e0bebae74757c1c294f509a82d9",
+        "destination": ".cairn/specs/domain-primitives/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "523a6f0797d4e75d254abb523ec598d5f5e2b21e64d58f3637efe5ce1d681a7d",
+        "operations": [
+          {
+            "block_hash": "c6bf87ece9e7a9f5547cf528af6f98ac77b136406984c6b8e87bb12523260b7e",
+            "heading": "### Requirement: Typed Config Expression Envelope",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.expression-envelope"
+          },
+          {
+            "block_hash": "21018a4d1a5c4fa8916f9d03392ff712167d2eecdac55531affc93d8a5497a85",
+            "heading": "### Requirement: Typed Config Type Admission",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.type-admission"
+          },
+          {
+            "block_hash": "062a8623b13e405a8a7851afe9c20a43d03831935f78bf38dbac476e0326bcdf",
+            "heading": "### Requirement: Explicit Config Failure Metadata",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.explicit-failure"
+          },
+          {
+            "block_hash": "208acd1576ddcfed10e67ef4021fb940095147843bec4734588d574ef04fbca4",
+            "heading": "### Requirement: Deterministic Config Normal Form",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.normal-form"
+          },
+          {
+            "block_hash": "9cc73efd48abb756e0f355414e9e98d9e644189f7a2ec4cb2c695d849554ef37",
+            "heading": "### Requirement: Semantic Digest Input Selection",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.semantic-digest"
+          },
+          {
+            "block_hash": "659d306ba29dc900d9a2f01082bee945c9e2c04814f6670ff48d0cabcaef0691",
+            "heading": "### Requirement: Typed Config Import Closure",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.import-closure"
+          },
+          {
+            "block_hash": "3305c17a2e65d57a96b2936b00b84a4eedb7a21467611b1328a3b8e4198c4c59",
+            "heading": "### Requirement: Typed Config Semantic Refactoring",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.semantic-refactoring"
+          },
+          {
+            "block_hash": "c0efabdbf74145f20eb6ca7dfe35461320f3767e927a54b6f9ca957cfef25165",
+            "heading": "### Requirement: Typed Config Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.positive"
+          },
+          {
+            "block_hash": "8c6d1f211fa9ec5762639c9b85c05566c8c929bb3be7280bafa7803a547580a3",
+            "heading": "### Requirement: Typed Config Negative Coverage",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.negative"
+          },
+          {
+            "block_hash": "92b02cc0c60062260eb264a2eb2244eca930136b1d47bd5b8eed468f72088fb9",
+            "heading": "### Requirement: Typed Config Documentation Sync",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.docs"
+          },
+          {
+            "block_hash": "0c2ba51901cca0e27d052a71a0875e1903ce2fa86324bcd14cd1a4931135e349",
+            "heading": "### Requirement: Typed Config Validation Evidence",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.final-validation"
+          },
+          {
+            "block_hash": "d0e1dd9b479167e0aa1801696e4ed963fc2e344cb2f34408403363603b81b901",
+            "heading": "### Requirement: Typed Config Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.expression-envelope",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.type-admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.explicit-failure",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.normal-form",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.semantic-digest",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.import-closure",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.semantic-refactoring",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.positive",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.negative",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "domain-primitives.typed-config.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/dhall-style-total-config/specs/domain-primitives/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "524d26460a216c0b428a066c1106e1d40592facda7addf1aaa8efbc3b556d2c1",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "0fb5f7f15e820f42eaeef21ec35ab5ce54c49cb372f7c3a4f4db333077771569"
+}
