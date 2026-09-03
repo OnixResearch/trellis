@@ -10,7 +10,7 @@
     "profile_hash": "b3:9685f42b9289dca49520062ad1ed548be1bfc92ac9a1cef93d784b60dcdbe772",
     "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
   },
-  "baseline_hash": "b3:e762217a0303b96ead039d2c59d7413d2eec806b4a065369db47f98f302783f2",
+  "baseline_hash": "b3:07d78951f1cc5cf706a4a3939df1773ee5d2832ba13fc44e7a2b9e5288963c30",
   "findings": [
     {
       "stable_id": "b3:291545489b06a30a",
@@ -50206,19 +50206,6 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:14c0af1063feb826",
-      "semantic_id": "b3:14c0af1063feb826",
-      "identity_status": "computed",
-      "lint": "excessive_file_length",
-      "group": "tigerstyle::structure",
-      "severity": "warning",
-      "file": "src/lib.rs",
-      "line": 1,
-      "column": 1,
-      "message": "source file is 1059 lines (limit: 300)",
-      "crate_name": "verified_logic"
-    },
-    {
       "stable_id": "b3:14dd51bc32612746",
       "semantic_id": "b3:14dd51bc32612746",
       "identity_status": "computed",
@@ -50281,6 +50268,19 @@
       "line": 1,
       "column": 1,
       "message": "module filename `hdl_ir.rs` contains an underscore; prefer `hdl/ir.rs`",
+      "crate_name": "verified_logic"
+    },
+    {
+      "stable_id": "b3:9f88eccc3f56b25e",
+      "semantic_id": "b3:9f88eccc3f56b25e",
+      "identity_status": "computed",
+      "lint": "excessive_file_length",
+      "group": "tigerstyle::structure",
+      "severity": "warning",
+      "file": "src/lib.rs",
+      "line": 1,
+      "column": 1,
+      "message": "source file is 1064 lines (limit: 300)",
       "crate_name": "verified_logic"
     }
   ]

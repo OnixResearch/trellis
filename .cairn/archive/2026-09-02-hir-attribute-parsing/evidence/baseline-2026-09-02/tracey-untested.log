@@ -1,0 +1,9 @@
+[2m2026-09-03T02:36:03.897495Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m Daemon PID 4035997 remained alive but socket "/home/brittonr/.local/state/tracey/e2b61c51b1727eb2/daemon.sock" stayed unavailable for 14s (last error: No such file or directory (os error 2))
+[2m2026-09-03T02:36:03.897563Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m Daemon PID 4035997 alive but socket unavailable (connect error: No such file or directory (os error 2)); removing endpoint+pid and restarting
+[2m2026-09-03T02:36:03.897957Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-hir-attribute-20260902
+[2m2026-09-03T02:36:04.913519Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+verified-logic/rust: 0 untested (impl but no verify) out of 2072 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`

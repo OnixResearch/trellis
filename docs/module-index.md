@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `606` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `607` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -236,6 +236,7 @@ Summary: `606` public modules, `588` requirement-covered modules, `14` example-b
 | `hdl_validation` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `6`, verify: `8`, requirements mentions: `0` | — | [`src/hdl_validation.rs`](../src/hdl_validation.rs) |
 | `heap_index` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `53`, requirements mentions: `0` | — | [`src/heap_index.rs`](../src/heap_index.rs) |
 | `heartbeat` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `20`, requirements mentions: `10` | — | [`src/heartbeat.rs`](../src/heartbeat.rs) |
+| `hir_attribute_parsing` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/hir/attribute/parsing.rs`](../src/hir/attribute/parsing.rs) |
 | `hypervisor_dirty_log` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `6`, requirements mentions: `0` | — | [`src/hypervisor_dirty_log.rs`](../src/hypervisor_dirty_log.rs) |
 | `hypervisor_exit` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `11`, requirements mentions: `0` | — | [`src/hypervisor_exit.rs`](../src/hypervisor_exit.rs) |
 | `hypervisor_gpa` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `4`, requirements mentions: `0` | — | [`src/hypervisor_gpa.rs`](../src/hypervisor_gpa.rs) |

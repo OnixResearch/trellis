@@ -7586,6 +7586,38 @@ Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot
 extent.
 
+## HIR Attribute Parsing
+
+r[hir-attr.parser-envelope]
+An inert parser descriptor MUST name its parser and template. It MUST contain a
+supported non-empty target mask and complete class and policy metadata.
+
+r[hir-attr.parser-classes]
+No-args, single, combine, and generic parser classes MUST enforce their declared
+argument shape and duplicate behavior before producing parsed metadata.
+
+r[hir-attr.policy]
+Every admitted occurrence MUST satisfy the descriptor's target, duplicate,
+safety-wrapper, and stability-gate policies.
+
+r[hir-attr.admission]
+Admission MUST reject unknown parsers, invalid descriptors, malformed arguments,
+name mismatch, bad targets, duplicates, missing wrappers, and gate mismatch with
+deterministic reason and input-index metadata.
+
+r[hir-attr.early-late-agreement]
+Successful limited-early and later-HIR results MUST use the expected phase order
+and contain equal finite parsed metadata. Failed results are not comparable.
+
+r[hir-attr.evidence]
+Positive and negative tests MUST cover all parser classes, descriptor failures,
+policy checks, deterministic diagnostics, projection, and phase agreement.
+
+r[hir-attr.non-claims]
+The finite model MUST NOT claim active expansion, proc-macro behavior, full token
+parsing, rendered diagnostics, feature stabilization, or whole-frontend
+correctness.
+
 ## Track Caller ABI
 
 r[track-caller.attribute-validity]

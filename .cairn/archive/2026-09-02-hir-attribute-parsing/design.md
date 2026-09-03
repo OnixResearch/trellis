@@ -36,6 +36,12 @@ Trellis can model the admission policy over finite parsed attribute metadata whi
 
 **Rationale:** This is useful for front-end consumers that need early parsed attributes without duplicating policy.
 
+### 6. Use a functional core with aggregate finite inputs
+
+**Choice:** The core consumes one typed descriptor, one aggregate occurrence, and explicit phase metadata. It uses fixed-width counts and target masks without token streams or registry I/O. Separate source files own model, registry, rule, admission, agreement, proof, and test responsibilities.
+
+**Rationale:** Aggregate facts keep policy deterministic and bounded. The split keeps every production file below the Octet source-size limit.
+
 ## Risks / Trade-offs
 
 - Token parsing can be deferred; the first version may consume already-tokenized argument shapes.

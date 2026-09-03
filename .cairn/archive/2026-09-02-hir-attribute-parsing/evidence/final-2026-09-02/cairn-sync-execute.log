@@ -1,0 +1,183 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "hir-attribute-parsing",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "18f86c565dabc2100e3ebcd7738890f87f6e534be680ba0facd54716b9085733",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "1c5520f6a9058a9f1adc4c8036f0ada797769b3f461a58529c2e87c1cc685f2b",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "974968921b711b4633f97264dcf4111ef4bd29f6fa8b3bd0b827ab830827e549",
+        "destination": ".cairn/specs/hir-attribute-parsing/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "3eb4c1741042b72fdfc3a47f9d91e05c24828f442f731e357ef369634aef1eb5",
+        "operations": [
+          {
+            "block_hash": "175f986993fba8816db5236fad91f32ac99054fdc636ead8cde9566d5fec6e2a",
+            "heading": "### Requirement: Attribute Parser Envelope",
+            "kind": "added",
+            "requirement_id": "hir-attr.parser-envelope"
+          },
+          {
+            "block_hash": "a1d7688e94ffde1b16dc270126f671ff904da3a58ffa351cec5403da4ac8a8f3",
+            "heading": "### Requirement: Attribute Parser Classes",
+            "kind": "added",
+            "requirement_id": "hir-attr.parser-classes"
+          },
+          {
+            "block_hash": "58bbeb94dbb9eecd92693a7ee5dc3f4fa8359f6d6a79903f3f6c28f9d89a3b9d",
+            "heading": "### Requirement: Attribute Policy Checks",
+            "kind": "added",
+            "requirement_id": "hir-attr.policy"
+          },
+          {
+            "block_hash": "424edae9f049ba0c6bf71b90179d9b695ec333ef343046d0a1c587b3ea365340",
+            "heading": "### Requirement: Attribute Admission Helpers",
+            "kind": "added",
+            "requirement_id": "hir-attr.admission"
+          },
+          {
+            "block_hash": "66cda03f7ac935de84fde4f89ddf6e9aa6810a84a4bac99bc88ee14f931acaf7",
+            "heading": "### Requirement: Early and Late Parse Agreement",
+            "kind": "added",
+            "requirement_id": "hir-attr.early-late-agreement"
+          },
+          {
+            "block_hash": "d71cfe62bb5849668d871ca465b141c2a97cdfca17ac2c3c493c46633c413ce8",
+            "heading": "### Requirement: Attribute Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "hir-attr.evidence"
+          },
+          {
+            "block_hash": "f9f794ab297dd8e16b7383ad5c17ac9d8ae5985ce00164bdea0f4137f9ea0521",
+            "heading": "### Requirement: Attribute Documentation Sync",
+            "kind": "added",
+            "requirement_id": "hir-attr.docs"
+          },
+          {
+            "block_hash": "9f556514ca860d667a457b36548240fe26dca04f7b6ace0617469b71275519cc",
+            "heading": "### Requirement: Attribute Validation Evidence",
+            "kind": "added",
+            "requirement_id": "hir-attr.final-validation"
+          },
+          {
+            "block_hash": "42938cdbed5a4a1d1434c43a8400573fc261e0f4983770ad14727e182af465f1",
+            "heading": "### Requirement: Attribute Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "hir-attr.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.parser-envelope",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.parser-classes",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.policy",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.early-late-agreement",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-attr.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/hir-attribute-parsing/specs/hir-attribute-parsing/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "3eb4c1741042b72fdfc3a47f9d91e05c24828f442f731e357ef369634aef1eb5",
+          "exists": true,
+          "path": "./.cairn/specs/hir-attribute-parsing/spec.md"
+        }
+      ],
+      "manifest_hash": "1feb79ca061e9a59c54902361397055994b942993720f67a70e857bef9fdcee3"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/hir-attribute-parsing/spec.md"
+        }
+      ],
+      "manifest_hash": "06532fe4aed009eed75945c030e4a6d4ece056ec6cf6217c2924443cb6fdb0b2"
+    },
+    "kind": "sync",
+    "manifest_hash": "bb76085b864e39322f4c16c549d7317741f654399312fcfd1ee15cb63ecc5629"
+  },
+  "plan_hash": "05a8db1d60081d0341a2aeeb1ce0d7c682a3130b5849167bb845550a5f682c20",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "06eaf1cd9b2fa0190730d4dab65ea86c44895a2b754906ab5c19611d73df7f4c"
+}

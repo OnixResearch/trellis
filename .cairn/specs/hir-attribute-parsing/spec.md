@@ -1,8 +1,8 @@
-# HIR Attribute Parsing Specification
+# Hir Attribute Parsing Specification
 
 ## Purpose
 
-Defines finite HIR attribute parsing primitives for Trellis. The requirements cover parser descriptors, parser classes, target policy, duplicate policy, safety wrappers, stability gates, early/late agreement, deterministic diagnostics, evidence, documentation, validation, and non-claim boundaries.
+Defines the `hir-attribute-parsing` capability.
 
 ## Requirements
 

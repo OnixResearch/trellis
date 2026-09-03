@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10791 Verus proofs · 4877 tests · 2072 requirements · 606 modules · 16 trusted/proof-gap boundaries**
+**10839 Verus proofs · 4889 tests · 2079 requirements · 607 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -418,6 +418,12 @@ validation commands captured in the change evidence.
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 
+### Compiler frontend
+
+| Module | What it verifies |
+|---|---|
+| `hir_attribute_parsing` | finite inert parser descriptors, parser classes, target/duplicate/safety/stability policy, deterministic diagnostics, and early/late metadata agreement |
+
 ### Compiler backend
 
 | Module | What it verifies |
@@ -764,3 +770,4 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — Apache-2.0 external reference for a bounded `u24` balanced-reduction conformance profile; no language, compiler, runtime, or benchmark claim transfers.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — Apache-2.0 external reference for the evaluated CPU runtime cohort; no interaction-net, scheduling, generated-code, or runtime-correctness claim transfers.
 - [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.
+- [rustc-dev-guide: Attribute Parsing](https://rustc-dev-guide.rust-lang.org/hir/attribute-parsing.html) — design reference for inert parser classes and policy metadata only; no macro, token-parser, diagnostics, stabilization, or frontend claim transfers.

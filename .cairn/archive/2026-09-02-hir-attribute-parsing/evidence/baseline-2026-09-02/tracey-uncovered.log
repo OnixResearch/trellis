@@ -1,0 +1,15 @@
+[2m2026-09-03T02:35:23.759706Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-hir-attribute-20260902
+[2m2026-09-03T02:35:24.774007Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+[2m2026-09-03T02:35:25.793302Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon..
+[2m2026-09-03T02:35:26.809150Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon...
+[2m2026-09-03T02:35:27.818740Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon....
+[2m2026-09-03T02:35:28.835668Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m daemon client: connect_inner failed [3melapsed_ms[0m[2m=[0m5077 [3merror[0m[2m=[0mDaemon failed to start within 5s (last connect error: No such file or directory (os error 2)). Check logs at /home/brittonr/.local/state/tracey/e2b61c51b1727eb2/daemon.log [3mcallsite[0m[2m=[0m/home/runner/work/tracey/tracey/crates/tracey/src/daemon/client.rs:50
+[2m2026-09-03T02:35:43.857213Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m Daemon PID 4032551 remained alive but socket "/home/brittonr/.local/state/tracey/e2b61c51b1727eb2/daemon.sock" stayed unavailable for 14s (last error: No such file or directory (os error 2))
+[2m2026-09-03T02:35:43.857419Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m Daemon PID 4032551 alive but socket unavailable (connect error: No such file or directory (os error 2)); removing endpoint+pid and restarting
+[2m2026-09-03T02:35:43.857739Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-hir-attribute-20260902
+[2m2026-09-03T02:35:44.871494Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+[2m2026-09-03T02:35:45.883348Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon..
+[2m2026-09-03T02:35:46.897380Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon...
+[2m2026-09-03T02:35:47.919983Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon....
+[2m2026-09-03T02:35:48.938071Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m daemon client: connect_inner failed [3melapsed_ms[0m[2m=[0m20102 [3merror[0m[2m=[0mDaemon failed to start within 5s (last connect error: No such file or directory (os error 2)). Check logs at /home/brittonr/.local/state/tracey/e2b61c51b1727eb2/daemon.log [3mcallsite[0m[2m=[0m/home/runner/work/tracey/tracey/crates/tracey/src/daemon/client.rs:50
+Error: Cancelled

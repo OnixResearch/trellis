@@ -94,6 +94,8 @@
 //!   exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
 //!   projection
+//! - `hir_attribute_parsing` — finite inert parser descriptors, policy admission, deterministic
+//!   reasons, and early/late metadata agreement
 //! - `register_allocation` — live-range overlap graphs, conflict-free register assignment, and
 //!   deterministic spill fallback
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
@@ -636,6 +638,9 @@ pub mod hdl_emit;
 pub mod hdl_ir;
 pub mod hdl_validation;
 pub mod heap_index;
+/// Verified finite inert HIR attribute-policy admission.
+#[path = "hir/attribute/parsing.rs"]
+pub mod hir_attribute_parsing;
 pub mod heartbeat;
 pub mod hypervisor_dirty_log;
 pub mod hypervisor_exit;
