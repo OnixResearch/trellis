@@ -1,0 +1,437 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: mir-core-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-mir-core-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-core-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "d9991917cf2c7ce8d7d54b53220799b4c09efdb6283ac91e3904220e0c73ca77",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "13fa57f7f09ce64cd8e8817797e77f5ed8f301c21ef1a36a64794b14208f4ddf",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/design.md"
+        },
+        {
+          "content_hash": "735023cf27ae3b06941318fc705953fde065c23a4c69ef15e8d533b941216d43",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "eaae3b2c8bcd8a351de6fd226d9782c62cace2a739e2d9baec490932190edb22",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "4c2bb03fa5e93fc0e7273b0ce11b0051758fe5bac8904fb3555aabd026cbd84e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "061a3dca24e74dd6ccca70db746f71f95816fa9d5d6e328b3096352be80bdb8a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/status-before.txt"
+        },
+        {
+          "content_hash": "3a1d08a475db80795a70c73720ca408c440f499dfdcb746601710900ee83d2cd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "d8411e12913d7acdde15a0f49b3a21cb597f32d0f65d5229baffce152479d331",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/verus-rerun.log"
+        },
+        {
+          "content_hash": "d4533406cb01d81eee41ed169a12d518d1395a42bd944756480318a74ba115ff",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "0f4f0465d613d10067971b4422e11c72348c01817437649b05da0d73e82f7992",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "c50881e7139a50b896510baa330872cdd56c4ee1b2d151e070e46f2f87255cf6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "64f442d8d64d40846a52f98e19dc4604da935dd53372dc5c8c974ce4a93499ba",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "4ec4b3088299587d90adf663471d4544777b56680e0809cd7391ae03fde1e1da",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "ac3e5da03468529f8ff315c3271430657c0166ce9d171b5cc75a748b43870c6c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "785e68a4282d029a4ad7f4bf90a62ae15d171921da01d684d181fe23e95b2480",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "029ce2fb5bb99da4db4139df43a51f341affeaedf4a6872b48319eef1321f68e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "408e18a9416a5976ed609adfd85d8ffb3f08cc250b44c0236d5577aaefa7e590",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "cfe28b6f8346d9b90364d70d669f9e95586f985303e19350220d7a7fda2ef047",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "12852e15137a9a3802417957e0a69fc5edf0787269dc95db6754f567a08c99c0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "5e2ec2fd87c3da87188f2b7ab364bc55a1249f0a60068a72d8e1916d84673284",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "15d4e7451703b5cf26d6bfd5a53f83af032a3089067198331cc8235a0b28a21e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "d01ce3fb6ab83e650f667aef39fa719cd1dad002ade27e59bf46913749f484dd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "c3949848a723edfd5136228fc9d209b8f081f44db42f922d072dbb957164705a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "5fc45fae982ea9fa839051d6d188153896da5774e5ae9157d6fd83546625a7ca",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "5fc45fae982ea9fa839051d6d188153896da5774e5ae9157d6fd83546625a7ca",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2bd79f75a6eea015739bc35325746f05312e8290f4045dd680d996891f517639",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "2ba4c3a95f4e16c00219ff3f1511af99ac8d4161f04e11e519289829806db9fe",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "8424663ad423b99d04af82151be6b92247e802a8d5ec041fa821ced70ae154e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "41201be7c83e19614ba83c4fc02fc478028f43fc1742e7cfa851f2d715c0550f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "50a15be40e3fac7838c9e66b8d596d1a4f46dbed750c84048697ee8f44e4c329",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "25c2c3d3b0fd17f7cd0c5d386fb81f2f10a5aeac2d0c82ae88300fed523104ab",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/proposal.md"
+        },
+        {
+          "content_hash": "40a3119567d603b922beccb4f86e4b34cd1da24cb4ba0eb5a682036d66b64ef6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/specs/mir-core/spec.md"
+        },
+        {
+          "content_hash": "ef75c18622f9ad4231893a7e88e34de4c35e75f81138295c79abd5ced9f8c8f6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/tasks.md"
+        },
+        {
+          "content_hash": "914299ad036d6b00759ee0eac3783b1f35688192a87e6bfeb21ea14016f7699c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-core-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/mir-core-primitives"
+        }
+      ],
+      "manifest_hash": "dec788874d7a3544bcec9dfa7c2ef24aa88e10627a3608103328fed89413dba9"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "13fa57f7f09ce64cd8e8817797e77f5ed8f301c21ef1a36a64794b14208f4ddf",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/design.md"
+        },
+        {
+          "content_hash": "735023cf27ae3b06941318fc705953fde065c23a4c69ef15e8d533b941216d43",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "eaae3b2c8bcd8a351de6fd226d9782c62cace2a739e2d9baec490932190edb22",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "4c2bb03fa5e93fc0e7273b0ce11b0051758fe5bac8904fb3555aabd026cbd84e",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "061a3dca24e74dd6ccca70db746f71f95816fa9d5d6e328b3096352be80bdb8a",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/status-before.txt"
+        },
+        {
+          "content_hash": "3a1d08a475db80795a70c73720ca408c440f499dfdcb746601710900ee83d2cd",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "d8411e12913d7acdde15a0f49b3a21cb597f32d0f65d5229baffce152479d331",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/verus-rerun.log"
+        },
+        {
+          "content_hash": "d4533406cb01d81eee41ed169a12d518d1395a42bd944756480318a74ba115ff",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "0f4f0465d613d10067971b4422e11c72348c01817437649b05da0d73e82f7992",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "c50881e7139a50b896510baa330872cdd56c4ee1b2d151e070e46f2f87255cf6",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "64f442d8d64d40846a52f98e19dc4604da935dd53372dc5c8c974ce4a93499ba",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "4ec4b3088299587d90adf663471d4544777b56680e0809cd7391ae03fde1e1da",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "ac3e5da03468529f8ff315c3271430657c0166ce9d171b5cc75a748b43870c6c",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "785e68a4282d029a4ad7f4bf90a62ae15d171921da01d684d181fe23e95b2480",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "029ce2fb5bb99da4db4139df43a51f341affeaedf4a6872b48319eef1321f68e",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "408e18a9416a5976ed609adfd85d8ffb3f08cc250b44c0236d5577aaefa7e590",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "cfe28b6f8346d9b90364d70d669f9e95586f985303e19350220d7a7fda2ef047",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "12852e15137a9a3802417957e0a69fc5edf0787269dc95db6754f567a08c99c0",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "5e2ec2fd87c3da87188f2b7ab364bc55a1249f0a60068a72d8e1916d84673284",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "15d4e7451703b5cf26d6bfd5a53f83af032a3089067198331cc8235a0b28a21e",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "d01ce3fb6ab83e650f667aef39fa719cd1dad002ade27e59bf46913749f484dd",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "c3949848a723edfd5136228fc9d209b8f081f44db42f922d072dbb957164705a",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "5fc45fae982ea9fa839051d6d188153896da5774e5ae9157d6fd83546625a7ca",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "5fc45fae982ea9fa839051d6d188153896da5774e5ae9157d6fd83546625a7ca",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2bd79f75a6eea015739bc35325746f05312e8290f4045dd680d996891f517639",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "2ba4c3a95f4e16c00219ff3f1511af99ac8d4161f04e11e519289829806db9fe",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "8424663ad423b99d04af82151be6b92247e802a8d5ec041fa821ced70ae154e9",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "41201be7c83e19614ba83c4fc02fc478028f43fc1742e7cfa851f2d715c0550f",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "50a15be40e3fac7838c9e66b8d596d1a4f46dbed750c84048697ee8f44e4c329",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "25c2c3d3b0fd17f7cd0c5d386fb81f2f10a5aeac2d0c82ae88300fed523104ab",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/proposal.md"
+        },
+        {
+          "content_hash": "40a3119567d603b922beccb4f86e4b34cd1da24cb4ba0eb5a682036d66b64ef6",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md"
+        },
+        {
+          "content_hash": "ef75c18622f9ad4231893a7e88e34de4c35e75f81138295c79abd5ced9f8c8f6",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/tasks.md"
+        },
+        {
+          "content_hash": "914299ad036d6b00759ee0eac3783b1f35688192a87e6bfeb21ea14016f7699c",
+          "exists": true,
+          "path": "./.cairn/changes/mir-core-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "2c23ddcb8189a7a3f3e06375c49fa0897aab9daccbe53fe0a779e397a845eaeb"
+    },
+    "kind": "archive",
+    "manifest_hash": "f3925601cef75f7bbe95b6a6d617d844a75c6adca0faaff11cf1aa48e64f9e09"
+  },
+  "plan_hash": "5eb1fcd01dc4ddf226d21a2dff5a6efef5adecea6b3a4b6c6bf89a779440b409",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "3b504550ab87c71079d00fe281a348bfeafc8397d37e773760623bc2c61efea7"
+}

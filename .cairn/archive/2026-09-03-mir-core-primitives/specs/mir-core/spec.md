@@ -1,10 +1,10 @@
-# MIR Core Specification
+# MIR Core Delta
 
 ## Purpose
 
 Defines finite Rust-shaped MIR core primitives for Trellis. The requirements cover body/block shape, return-place admission, local/place/projection validity, operand and rvalue envelopes, terminator successor ranges, deterministic failure metadata, evidence, documentation, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: MIR Body Shape
 r[mir-core.body-shape] The system MUST define a finite MIR body envelope with local declarations, basic blocks, and body-level metadata sufficient to validate references without reading compiler state.

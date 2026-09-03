@@ -1,0 +1,4 @@
+cargo_test=0
+verus=1
+verus_rerun=0
+verus_cached_log_path=/nix/store/aw0il8kbk101hb0rzm71gcfv5nj5w37p-verus-proofs

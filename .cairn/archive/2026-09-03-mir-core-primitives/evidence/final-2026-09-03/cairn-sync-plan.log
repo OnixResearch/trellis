@@ -1,0 +1,204 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-core-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/mir-core-primitives/specs/mir-core/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "1b88be17a926f3f892944c47be1e2bb576a41b5ccddb3feae7391e2dfb1a05fd",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "0ad096ee1dd477b5b23aa89734fd6b0b824ce2bf9e14a8d76e944f426037a164",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "40a3119567d603b922beccb4f86e4b34cd1da24cb4ba0eb5a682036d66b64ef6",
+        "destination": ".cairn/specs/mir-core/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "2151d26e902f07f3ebd1c8608dcf0c362ff27758b0028dd5c33111c794ff9518",
+        "operations": [
+          {
+            "block_hash": "d9a6b13a844e092c69cf038bfd2484413dc45b24270ed96e483465723d0b868b",
+            "heading": "### Requirement: MIR Body Shape",
+            "kind": "added",
+            "requirement_id": "mir-core.body-shape"
+          },
+          {
+            "block_hash": "874874452dbb2f551a7d14734072be880d839f6c2708d6d37df4d524865bcac1",
+            "heading": "### Requirement: MIR Return Place",
+            "kind": "added",
+            "requirement_id": "mir-core.return-place"
+          },
+          {
+            "block_hash": "fdb242af558c8feb5c6a3ff59e868be0e7819a9a4765763a214e7d7aef5df692",
+            "heading": "### Requirement: MIR Block Terminator Shape",
+            "kind": "added",
+            "requirement_id": "mir-core.block-terminator"
+          },
+          {
+            "block_hash": "6ca71c351ed18d96bfdd321850e876c92c8f465b574e1554780a7a8f3b8aa022",
+            "heading": "### Requirement: MIR Local References",
+            "kind": "added",
+            "requirement_id": "mir-core.local-reference"
+          },
+          {
+            "block_hash": "111c4f2c567425d978fc54d9bff5049cdf6237a7b458fcc00af21e4a0de7afaf",
+            "heading": "### Requirement: MIR Place Projection Chains",
+            "kind": "added",
+            "requirement_id": "mir-core.place-projection"
+          },
+          {
+            "block_hash": "71e20cc3518e140727f907588e0acb78ae3c76bcac296f3c340d84a2eb13dd8e",
+            "heading": "### Requirement: MIR Operand and Rvalue Shape",
+            "kind": "added",
+            "requirement_id": "mir-core.rvalue-nonnesting"
+          },
+          {
+            "block_hash": "708914189124afa221d786825bd4f6cb32228d5b357cbd81ef2fb5cda864203c",
+            "heading": "### Requirement: MIR Terminator Successors",
+            "kind": "added",
+            "requirement_id": "mir-core.successors"
+          },
+          {
+            "block_hash": "616c9628328849360bcfbd65a7e130ad5b54da6bda23ce2854f0ada9572e7cc9",
+            "heading": "### Requirement: MIR Core Admission Metadata",
+            "kind": "added",
+            "requirement_id": "mir-core.failure-metadata"
+          },
+          {
+            "block_hash": "622c7fd52cadfd49ea140d6a816f33d9fb58763604a0f47a8a942db60ceed7cf",
+            "heading": "### Requirement: MIR Core Downstream Adapter",
+            "kind": "added",
+            "requirement_id": "mir-core.downstream-adapter"
+          },
+          {
+            "block_hash": "4390d939e970ac965d039e6842007687a44757bc79104ab8de8cee6ff9b981cf",
+            "heading": "### Requirement: MIR Core Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mir-core.evidence"
+          },
+          {
+            "block_hash": "5ec3411210c10bc58d0fcacb342bc3ca277f0b3270504a4259cb857c9b85813c",
+            "heading": "### Requirement: MIR Core Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mir-core.docs"
+          },
+          {
+            "block_hash": "0a32330655ee069a659c8b9278200ef00a8fe59d2e45d9501195598aa692d5ad",
+            "heading": "### Requirement: MIR Core Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mir-core.final-validation"
+          },
+          {
+            "block_hash": "8d4aec7c7271a0d4373fcfc7b14cbeb54a8db9205bec483b63ffc905150df4d1",
+            "heading": "### Requirement: MIR Core Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mir-core.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.body-shape",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.return-place",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.block-terminator",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.local-reference",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.place-projection",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.rvalue-nonnesting",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.successors",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.failure-metadata",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.downstream-adapter",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-core.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/mir-core-primitives/specs/mir-core/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "bda4a3bb1ac071107c85af84a9ae2c9260bf0892f7d7934fb798e2241f0e5241",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "164949339b18327fc4d8535f5cb63173145580fc39f7b9edfbe1bae3fc4141e8"
+}

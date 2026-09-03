@@ -7618,6 +7618,61 @@ The finite model MUST NOT claim active expansion, proc-macro behavior, full toke
 parsing, rendered diagnostics, feature stabilization, or whole-frontend
 correctness.
 
+## MIR Core Primitives
+
+r[mir-core.body-shape]
+A finite MIR body MUST carry local and block tables that supply every width
+needed for structural validation without reading compiler state.
+
+r[mir-core.return-place]
+The named `RETURN_PLACE` local MUST exist at the distinguished return index
+before admission checks any statement or terminator reference.
+
+r[mir-core.block-terminator]
+Each admitted basic block MUST contain zero or more statements and exactly one
+final terminator.
+
+r[mir-core.local-reference]
+Every place, projection, operand, statement, and terminator local reference
+MUST name an in-range local declaration.
+
+r[mir-core.place-projection]
+An admitted place MUST have an in-range base and an ordered finite projection
+chain. Unsupported projection markers MUST fail admission.
+
+r[mir-core.rvalue-nonnesting]
+Admitted rvalues MUST contain only operands or places. A raw nested-rvalue
+candidate MUST fail before local transfer facts become available.
+
+r[mir-core.successors]
+Every admitted terminator successor and every extracted CFG edge MUST target an
+in-range block in the same body.
+
+r[mir-core.failure-metadata]
+Admission MUST return the same first failure class and body-relative location
+for repeated checks of the same malformed body.
+
+r[mir-core.downstream-adapter]
+The adapter MUST validate the body before it exposes local count, block count,
+or ordered CFG edges to downstream analyses.
+
+r[mir-core.evidence]
+Positive and negative tests MUST cover every public MIR-core admission family,
+including malformed tables, references, projections, rvalues, and successors.
+
+r[mir-core.docs]
+Public MIR-core helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[mir-core.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[mir-core.non-claims]
+MIR-core evidence MUST NOT claim full rustc MIR compatibility, Rust typing,
+borrow checking, drop elaboration, optimization, code generation, text parsing,
+or whole-compiler correctness.
+
 ## MIR Pass Pipeline
 
 r[mir-pass.phase-order]

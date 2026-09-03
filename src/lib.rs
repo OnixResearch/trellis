@@ -715,6 +715,9 @@ pub mod metric_histogram;
 pub mod metric_id;
 pub mod metric_labels;
 pub mod metric_window;
+/// Verified finite Rust-shaped MIR structural admission and CFG facts.
+#[path = "mir_core/identity.rs"]
+pub mod mir_core;
 /// Verified finite MIR phase, pass, validation, and artifact-state traces.
 #[path = "mir_pass_pipeline/identity.rs"]
 pub mod mir_pass_pipeline;

@@ -1,0 +1,206 @@
+warning: use of deprecated method `vstd::prelude::OptionAdditionalFns::is_None`: is_Variant is deprecated - use `->` or `matches` instead: https://verus-lang.github.io/verus/guide/datatypes_enum.html
+  --> src/constraint_consistency.rs:20:145
+   |
+20 | ...nment) requires constraint_relation_assigned_tuple_spec(r,a).is_None() ensures !constraint_consistent_spec(r,a) {}
+   |                                                                 ^^^^^^^
+   |
+   = note: `#[warn(deprecated)]` on by default
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ability_effect.rs:12:10
+   |
+12 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ability_effect.rs:17:10
+   |
+17 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ability_effect.rs:28:10
+   |
+28 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/algebraic_effect.rs:35:10
+   |
+35 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/algebraic_effect.rs:40:10
+   |
+40 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/algebraic_effect.rs:45:10
+   |
+45 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/algebraic_effect.rs:51:10
+   |
+51 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/beam_process.rs:23:10
+   |
+23 | #[derive(Clone, Debug, PartialEq, Eq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/content_addressed_code.rs:25:10
+   |
+25 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/content_addressed_code.rs:37:10
+   |
+37 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/remote_computation.rs:25:10
+   |
+25 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/remote_computation.rs:35:10
+   |
+35 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/semantic_refactoring.rs:59:10
+   |
+59 | #[derive(Clone, PartialEq, Eq, Debug)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+   --> src/typed_durable_reference.rs:112:10
+    |
+112 | #[derive(Clone, PartialEq, Eq, Debug)]
+    |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/loop_detection.rs:15:17
+   |
+15 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+  --> src/nickel_pattern_coverage.rs:95:17
+   |
+95 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/nix_closure.rs:15:10
+   |
+15 | #[derive(Clone, Debug, PartialEq, Eq)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/nix_drv_serialize.rs:12:10
+   |
+12 | #[derive(Clone)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/nix_drv_serialize.rs:20:10
+   |
+20 | #[derive(Clone)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/sel4_ready_queue.rs:16:10
+   |
+16 | #[derive(Clone)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/sel4_untyped.rs:30:10
+   |
+30 | #[derive(Clone)]
+   |          ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:41:17
+   |
+41 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:48:17
+   |
+48 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:53:17
+   |
+53 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:59:17
+   |
+59 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:66:17
+   |
+66 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:75:17
+   |
+75 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:81:17
+   |
+81 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:88:17
+   |
+88 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+  --> src/ssa_construction.rs:95:17
+   |
+95 | #[derive(Debug, Clone, PartialEq, Eq)]
+   |                 ^^^^^
+
+WARNING: (17212,4): 'if' cannot be used in patterns.
+WARNING: (17342,5): 'if' cannot be used in patterns.
+WARNING: (19992,4): 'if' cannot be used in patterns.
+WARNING: (20169,1): 'if' cannot be used in patterns.
+error: while loop: Resource limit (rlimit) exceeded; consider rerunning with --profile for more details
+   --> src/nix_drv_serialize.rs:396:5
+    |
+396 |     while i < outputs.len()
+    |     ^^^^^^^^^^^^^^^^^^^^^^^
+
+error: function body check: Resource limit (rlimit) exceeded; consider rerunning with --profile for more details
+   --> src/nix_drv_serialize.rs:480:1
+    |
+480 | pub fn serialize_drv(drv: &Derivation) -> (result: Vec<u8>)
+    | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+verification results:: 10875 verified, 2 errors
+error: aborting due to 2 previous errors; 31 warnings emitted
