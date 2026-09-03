@@ -1,0 +1,447 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: hir-id-lowering",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-hir-id-lowering"
+    }
+  ],
+  "blocked": false,
+  "change": "hir-id-lowering",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "9d425673b6c546ac305ba26bf3fbdd5faf7e6d344797efec8ad5453cfdeff5da",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "252ae5ec93f5038b2bab8f791b34ce6ce31b0b1b73ee04bffcc8cbe22b25586b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/design.md"
+        },
+        {
+          "content_hash": "fa86e336c951dc6375477252a2395953cc337bb8c9299ea2ac7ca5e111af089c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "75d6b87ad921a6da51fb545d1fba926dfc670db2823dc4eba742c3b1dff6732a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "515c6f7b6b422c5fb710b168be45a6791fb6473f2c0e278e3514d68f1e456860",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "e19863358ee98736aa9ae270a84e311934435f99c5de621199a092ac34257b78",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "5a7224188b445ee0b198cccaca4458a18b146f3cc51ee9f4d56a9e943563cb3e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "4ee3a2b2f8e03f008998f38f78d3eb83ce126a079ce949ad797ae36951acdde9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "787e3a0199ca37a505d492cf3640efeef7fd32ec95f0218ac329f1ba6b523114",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "cf3e7e6afa7edde9939f3e18c027fca60ef3993a4ea0bf9b19cd0b9e6cabfed0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "b5e28f87a4a2ebed5144b4b9c460d9d86bc292a3597058d66ce90eb2de1a3955",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "3ccb3d7a3fc44f9d944e8a55f2d1f4545fcc369884be659cef582d8ec5ab868f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "69cd959622a59189d6d81c7878b0d1f3b3f185a23dde0884fe0eaea73c63799b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "15ddec98221c2e687a0114b4215ebe3baa2b42b2558ad5f87110432be5844442",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "4d0f034210b48232154450ab94c0ae4f40c111cda1b5c1feda428b4f923d2fe2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "a34fc0308190c5198096bacd0a30acb0ab02ca3fe22f957ccce6caffb9c2715c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "6b1215e4ec7e886eab1cab2943143bc6e01347820624aaa40360ef8a86303db2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "d16dffc93847aa0da518866c3ab9c643741f2032bfb08de2a86e9388bd73e92b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "10b77432b7b50cd8b6a669f0a3086b0018f8da132fa6674f0f6797c95a28cafb",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "ddd4a2b65663048a8eae7a91ea594ca80eebe57cd0a9f1e13b0a41685b98f9f1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "39acd3a2376883565a56402ee9e2912948087b31aceb6419fd52b24999a08658",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "327fa51573a62a0fe5c65cb017a36d2ab46ef12a98745c397e220b44a288d791",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "f479e3b895679ff5c45faca43500ac49a9731bb50408c443ef488456f7ec673f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "27a8ab014a7df5786502c3812e4260b821dc37358c030ea580f9dbd92a64edf4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "85efc336f288340a7814471616bb41c7e010ca32d2d4161d3f2ba46b9cf501a2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "85efc336f288340a7814471616bb41c7e010ca32d2d4161d3f2ba46b9cf501a2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "697f54201a41f50effeab612f2f57ab576655170ece649a279956955b161a920",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "3cd9e6440a43e877373d4118b261f6c9ab6201d9d27194982e316f56918a23e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "9af9af5ec38fe5cda736f3f00d8c38578da0633640fe90db7d430a58595b5f6f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "d551bae07ffc0d64d807519407f270a0d17dd7b6d91fd19fb1d5ba4ed949590d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "273f3825cf53c5c9c583fabc05c85e052970ca25a9864f76053d72d0f82902af",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "d08e84e68f9b3dcd23f7f085d4ac547f00289c221969505f191e4ddac6454c6b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/proposal.md"
+        },
+        {
+          "content_hash": "262b557cc7bda678623ca959f44c5133e2ca0b3cc60dfc74102167c102a3070a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/specs/hir-id-lowering/spec.md"
+        },
+        {
+          "content_hash": "fa74592adeb42e71ad9ffc959203d16cbc4c6e593cab49e16fc1dc1f85088a01",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/tasks.md"
+        },
+        {
+          "content_hash": "d2465df2fb40ac1c2219e71b6193215f3dd1255c8a4a19b3f3814fe132b54417",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-hir-id-lowering/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/hir-id-lowering"
+        }
+      ],
+      "manifest_hash": "bfb40b8c76314b550cefa1f29332dc745ab3141029a91548474f4a7cb84740b0"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "252ae5ec93f5038b2bab8f791b34ce6ce31b0b1b73ee04bffcc8cbe22b25586b",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/design.md"
+        },
+        {
+          "content_hash": "fa86e336c951dc6375477252a2395953cc337bb8c9299ea2ac7ca5e111af089c",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "75d6b87ad921a6da51fb545d1fba926dfc670db2823dc4eba742c3b1dff6732a",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "515c6f7b6b422c5fb710b168be45a6791fb6473f2c0e278e3514d68f1e456860",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "e19863358ee98736aa9ae270a84e311934435f99c5de621199a092ac34257b78",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "5a7224188b445ee0b198cccaca4458a18b146f3cc51ee9f4d56a9e943563cb3e",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "4ee3a2b2f8e03f008998f38f78d3eb83ce126a079ce949ad797ae36951acdde9",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "787e3a0199ca37a505d492cf3640efeef7fd32ec95f0218ac329f1ba6b523114",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "cf3e7e6afa7edde9939f3e18c027fca60ef3993a4ea0bf9b19cd0b9e6cabfed0",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "b5e28f87a4a2ebed5144b4b9c460d9d86bc292a3597058d66ce90eb2de1a3955",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "3ccb3d7a3fc44f9d944e8a55f2d1f4545fcc369884be659cef582d8ec5ab868f",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "69cd959622a59189d6d81c7878b0d1f3b3f185a23dde0884fe0eaea73c63799b",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "15ddec98221c2e687a0114b4215ebe3baa2b42b2558ad5f87110432be5844442",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "4d0f034210b48232154450ab94c0ae4f40c111cda1b5c1feda428b4f923d2fe2",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "a34fc0308190c5198096bacd0a30acb0ab02ca3fe22f957ccce6caffb9c2715c",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "6b1215e4ec7e886eab1cab2943143bc6e01347820624aaa40360ef8a86303db2",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "d16dffc93847aa0da518866c3ab9c643741f2032bfb08de2a86e9388bd73e92b",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "10b77432b7b50cd8b6a669f0a3086b0018f8da132fa6674f0f6797c95a28cafb",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "ddd4a2b65663048a8eae7a91ea594ca80eebe57cd0a9f1e13b0a41685b98f9f1",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "39acd3a2376883565a56402ee9e2912948087b31aceb6419fd52b24999a08658",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "327fa51573a62a0fe5c65cb017a36d2ab46ef12a98745c397e220b44a288d791",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "f479e3b895679ff5c45faca43500ac49a9731bb50408c443ef488456f7ec673f",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "27a8ab014a7df5786502c3812e4260b821dc37358c030ea580f9dbd92a64edf4",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "85efc336f288340a7814471616bb41c7e010ca32d2d4161d3f2ba46b9cf501a2",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "85efc336f288340a7814471616bb41c7e010ca32d2d4161d3f2ba46b9cf501a2",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "697f54201a41f50effeab612f2f57ab576655170ece649a279956955b161a920",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "3cd9e6440a43e877373d4118b261f6c9ab6201d9d27194982e316f56918a23e9",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "9af9af5ec38fe5cda736f3f00d8c38578da0633640fe90db7d430a58595b5f6f",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "d551bae07ffc0d64d807519407f270a0d17dd7b6d91fd19fb1d5ba4ed949590d",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "273f3825cf53c5c9c583fabc05c85e052970ca25a9864f76053d72d0f82902af",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "d08e84e68f9b3dcd23f7f085d4ac547f00289c221969505f191e4ddac6454c6b",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/proposal.md"
+        },
+        {
+          "content_hash": "262b557cc7bda678623ca959f44c5133e2ca0b3cc60dfc74102167c102a3070a",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md"
+        },
+        {
+          "content_hash": "fa74592adeb42e71ad9ffc959203d16cbc4c6e593cab49e16fc1dc1f85088a01",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/tasks.md"
+        },
+        {
+          "content_hash": "d2465df2fb40ac1c2219e71b6193215f3dd1255c8a4a19b3f3814fe132b54417",
+          "exists": true,
+          "path": "./.cairn/changes/hir-id-lowering/verification.md"
+        }
+      ],
+      "manifest_hash": "2dab5b6c38d39419db12b1508b2c9a609ac192a7cbd317a39e149ee317b53ce9"
+    },
+    "kind": "archive",
+    "manifest_hash": "c84842010887d7c1aa17dbd79fbcc3e3d4e6a0b1e9aa2f59e7a30a6ee7d690dd"
+  },
+  "plan_hash": "b59c3d8000571330f06b19c4387eac190eb13b5ed419ab6bef57ef834c2221ce",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "9f05afd6e66fc6a37e34e59f4829991ec0ebb3aa02c0975a2db508f6d6533699"
+}

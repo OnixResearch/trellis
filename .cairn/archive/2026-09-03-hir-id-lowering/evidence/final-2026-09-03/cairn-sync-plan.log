@@ -1,0 +1,171 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "hir-id-lowering",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "2e9eba87e65f1f35c231f821fbfe08b7770f5577d11477cbfcc831656b925b4b",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "310fcfb172ac9fc054e15487f896a1491bcd26303da5e7ce7f62e4e37f4b91ed",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "262b557cc7bda678623ca959f44c5133e2ca0b3cc60dfc74102167c102a3070a",
+        "destination": ".cairn/specs/hir-id-lowering/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "8495964d36a1c44c42b684e5443a94fe28a5660270db98d2d6bc4347cda4ee87",
+        "operations": [
+          {
+            "block_hash": "39ab73492fd07e5fc5e9edb85e4a4d1e52ebbdd9c856c0c3769b2082b33b2f41",
+            "heading": "### Requirement: HIR Owner Scope",
+            "kind": "added",
+            "requirement_id": "hir-id.owner-scope"
+          },
+          {
+            "block_hash": "12052bd0cb945a6a1f0e18007b70aa8a589c979f0ff188ff98569e3eacc21197",
+            "heading": "### Requirement: NodeId Lowering Map",
+            "kind": "added",
+            "requirement_id": "hir-id.lowering-map"
+          },
+          {
+            "block_hash": "cf0f18e81a6392f2c3a1873b2bfee4be02f1a0d4f844daaff73ac7cbf3530e23",
+            "heading": "### Requirement: Created ID Use",
+            "kind": "added",
+            "requirement_id": "hir-id.admission"
+          },
+          {
+            "block_hash": "119cebdec69b8309019e300ef00298a452bc0cf9d5e21962949642ebeb802cb4",
+            "heading": "### Requirement: Generated ID Freshness",
+            "kind": "added",
+            "requirement_id": "hir-id.fresh-generated"
+          },
+          {
+            "block_hash": "6455f910a989beae684b6f9091cefbdb18192dd72fd6dffe1250fd4b4313169d",
+            "heading": "### Requirement: Per-Owner Uniqueness",
+            "kind": "added",
+            "requirement_id": "hir-id.uniqueness"
+          },
+          {
+            "block_hash": "9faf3bd0a1102c8e2ce229e453c1c6f12ed9dbc11c2bade1819b4105c8435053",
+            "heading": "### Requirement: Definition Correspondence Metadata",
+            "kind": "added",
+            "requirement_id": "hir-id.def-correspondence"
+          },
+          {
+            "block_hash": "64dcc49ce32cc0bd4d146ff64383f8b725a211d0597d3ea1f5db1c37c3ffd564",
+            "heading": "### Requirement: HIR ID Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "hir-id.evidence"
+          },
+          {
+            "block_hash": "00c6c6c504dfc2eaa163c5398602cd891c9107c1b20797be25e3a66bb06115ef",
+            "heading": "### Requirement: HIR ID Documentation Sync",
+            "kind": "added",
+            "requirement_id": "hir-id.docs"
+          },
+          {
+            "block_hash": "2ed9ce885186ab5ec546ba35235bffce82242414ffbcad11bc515e1eaef8672a",
+            "heading": "### Requirement: HIR ID Validation Evidence",
+            "kind": "added",
+            "requirement_id": "hir-id.final-validation"
+          },
+          {
+            "block_hash": "2c8f6a293c36cbec5cbb3a7a9e04f677890f238654949ceb81476d18273ad896",
+            "heading": "### Requirement: HIR ID Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "hir-id.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.owner-scope",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.lowering-map",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.fresh-generated",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.uniqueness",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.def-correspondence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "hir-id.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/hir-id-lowering/specs/hir-id-lowering/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "53d06059e5e204869d05b11a58861bf3d9c63345a4f41641fbd77656478fa95c",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "c48106cb4f18f0d02016352e2c8120d675a933370d2e67fd35b5ec0d38b5d9fe"
+}

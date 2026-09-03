@@ -87,7 +87,9 @@ allocate process memory or replace a runtime allocator.
 Goal labels: compiler analysis, HIR metadata, library metadata, CFG modeling, SSA, optimization, ABI metadata.
 
 Use [`hir_attribute_parsing`](../src/hir/attribute/parsing.rs) for finite inert
-parser and policy admission. Use [`mir_core`](../src/mir_core/identity.rs) for
+parser and policy admission. Use [`hir_id_lowering`](../src/frontend_lower/identity.rs)
+for owner-scoped source mappings, generated-ID freshness, created-ID use, and
+definition correspondence. Use [`mir_core`](../src/mir_core/identity.rs) for
 finite MIR body, local, place, shallow-rvalue, terminator, and CFG admission. Use
 [`mir_visitor_traversal`](../src/mir_walk/identity.rs) for explicit visit
 locations, exactly-once coverage, deterministic block orders, and

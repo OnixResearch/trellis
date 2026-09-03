@@ -643,6 +643,9 @@ pub mod heap_index;
 /// Verified finite inert HIR attribute-policy admission.
 #[path = "hir/attribute/parsing.rs"]
 pub mod hir_attribute_parsing;
+/// Verified finite owner-scoped AST-to-HIR identifier admission.
+#[path = "frontend_lower/identity.rs"]
+pub mod hir_id_lowering;
 pub mod heartbeat;
 pub mod hypervisor_dirty_log;
 pub mod hypervisor_exit;

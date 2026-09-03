@@ -7618,6 +7618,48 @@ The finite model MUST NOT claim active expansion, proc-macro behavior, full toke
 parsing, rendered diagnostics, feature stabilization, or whole-frontend
 correctness.
 
+## HIR ID Lowering
+
+r[hir-id.owner-scope]
+Every admitted HIR identifier MUST carry the active owner. A different owner
+MUST fail before lowering facts become available.
+
+r[hir-id.lowering-map]
+Every declared source node MUST have exactly one source-to-HIR mapping, and each
+mapping target MUST be unique in the active owner.
+
+r[hir-id.admission]
+Every mapping and generated target MUST name one created ID. Required IDs MUST
+be used once, while explicit discarded IDs MUST remain unused.
+
+r[hir-id.fresh-generated]
+Generated targets MUST differ from all source-mapped targets and prior generated
+targets, with unique generation provenance in the active owner.
+
+r[hir-id.uniqueness]
+Source mappings, generated nodes, created IDs, and used IDs MUST reject duplicate
+HIR structure identities deterministically.
+
+r[hir-id.def-correspondence]
+Each definition-introducing source node MUST have one unique finite definition
+correspondence. Unrequested or missing correspondences MUST fail.
+
+r[hir-id.evidence]
+Positive and negative tests MUST cover owner scope, mappings, created-ID use,
+generated freshness, uniqueness, stale IDs, and definition metadata.
+
+r[hir-id.docs]
+Public HIR ID helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[hir-id.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[hir-id.non-claims]
+HIR ID evidence MUST NOT claim AST or HIR semantic equivalence, parsing, macro
+expansion, name resolution, THIR construction, typing, or frontend correctness.
+
 ## MIR Core Primitives
 
 r[mir-core.body-shape]

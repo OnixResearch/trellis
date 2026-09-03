@@ -1,10 +1,10 @@
-# HIR ID Lowering Specification
+# HIR ID Lowering Delta
 
 ## Purpose
 
 Defines finite HIR ID-lowering primitives for Trellis. The requirements cover owner scopes, source `NodeId` to `HirId` maps, created-ID use, generated-ID freshness, per-owner uniqueness, definition-correspondence metadata, evidence, documentation, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: HIR Owner Scope
 r[hir-id.owner-scope] The system MUST model HIR owner scopes explicitly and require every admitted HIR identifier to belong to the owner scope in which it is lowered or generated.
