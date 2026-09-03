@@ -1,0 +1,7 @@
+[2m2026-09-03T02:36:31.370295Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m No PID file but endpoint exists at "/home/brittonr/.local/state/tracey/e2b61c51b1727eb2/daemon.sock"; removing stale endpoint
+[2m2026-09-03T02:36:31.370466Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-hir-attribute-20260902
+verified-logic/rust: 0 uncovered out of 2072 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`

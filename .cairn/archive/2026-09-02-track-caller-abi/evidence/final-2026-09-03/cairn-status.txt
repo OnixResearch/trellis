@@ -1,0 +1,4 @@
+validate=0
+proposal=0
+design=0
+tasks=0

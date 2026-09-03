@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `604` public modules, `587` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `608` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -48,7 +48,7 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `bounded_mpmc` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `20`, requirements mentions: `0` | — | [`src/bounded_mpmc.rs`](../src/bounded_mpmc.rs) |
 | `bounded_peers` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `0` | — | [`src/bounded_peers.rs`](../src/bounded_peers.rs) |
 | `bounded_range` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `33`, requirements mentions: `1` | — | [`src/bounded_range.rs`](../src/bounded_range.rs) |
-| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `23` | — | [`src/bounds.rs`](../src/bounds.rs) |
+| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `24` | — | [`src/bounds.rs`](../src/bounds.rs) |
 | `btree_balance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `20`, verify: `45`, requirements mentions: `0` | — | [`src/btree_balance.rs`](../src/btree_balance.rs) |
 | `btree_delete` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `21`, requirements mentions: `0` | — | [`src/btree_delete.rs`](../src/btree_delete.rs) |
 | `btree_insert` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/btree_insert.rs`](../src/btree_insert.rs) |
@@ -61,7 +61,7 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `cas` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `17`, requirements mentions: `3` | — | [`src/cas.rs`](../src/cas.rs) |
 | `cas_loop` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `9`, verify: `18`, requirements mentions: `0` | — | [`src/cas_loop.rs`](../src/cas_loop.rs) |
 | `causal_order` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `10`, requirements mentions: `0` | — | [`src/causal_order.rs`](../src/causal_order.rs) |
-| `chain` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed`, `trusted-boundary-adjacent` | — | impl: `42`, verify: `63`, requirements mentions: `33` | [`2`](proof-gap-sites.tsv) | [`src/chain.rs`](../src/chain.rs) |
+| `chain` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed`, `trusted-boundary-adjacent` | — | impl: `42`, verify: `63`, requirements mentions: `42` | [`2`](proof-gap-sites.tsv) | [`src/chain.rs`](../src/chain.rs) |
 | `chaoscontrol_coverage` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `3`, requirements mentions: `0` | — | [`src/chaoscontrol_coverage.rs`](../src/chaoscontrol_coverage.rs) |
 | `chaoscontrol_exploration_core` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `2`, requirements mentions: `0` | — | [`src/chaoscontrol_exploration_core.rs`](../src/chaoscontrol_exploration_core.rs) |
 | `chaoscontrol_fault_schedule` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `3`, requirements mentions: `0` | — | [`src/chaoscontrol_fault_schedule.rs`](../src/chaoscontrol_fault_schedule.rs) |
@@ -71,10 +71,11 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `chaoscontrol_oracle` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `10`, requirements mentions: `0` | — | [`src/chaoscontrol_oracle.rs`](../src/chaoscontrol_oracle.rs) |
 | `chaoscontrol_scheduler` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `5`, requirements mentions: `0` | — | [`src/chaoscontrol_scheduler.rs`](../src/chaoscontrol_scheduler.rs) |
 | `check_quorum` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `13`, requirements mentions: `0` | — | [`src/check_quorum.rs`](../src/check_quorum.rs) |
-| `choreography_global` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `10`, requirements mentions: `0` | — | [`src/choreography_global.rs`](../src/choreography_global.rs) |
-| `choreography_local` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `9`, requirements mentions: `0` | — | [`src/choreography_local.rs`](../src/choreography_local.rs) |
-| `choreography_projection` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `13`, requirements mentions: `0` | — | [`src/choreography_projection.rs`](../src/choreography_projection.rs) |
-| `choreography_step` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `18`, verify: `15`, requirements mentions: `0` | — | [`src/choreography_step.rs`](../src/choreography_step.rs) |
+| `choreography_global` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `18`, verify: `17`, requirements mentions: `0` | — | [`src/choreography_global.rs`](../src/choreography_global.rs) |
+| `choreography_local` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `13`, requirements mentions: `0` | — | [`src/choreography_local.rs`](../src/choreography_local.rs) |
+| `choreography_ownership` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `15`, verify: `18`, requirements mentions: `0` | — | [`src/choreography_ownership.rs`](../src/choreography_ownership.rs) |
+| `choreography_projection` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `18`, requirements mentions: `0` | — | [`src/choreography_projection.rs`](../src/choreography_projection.rs) |
+| `choreography_step` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `27`, verify: `24`, requirements mentions: `0` | — | [`src/choreography_step.rs`](../src/choreography_step.rs) |
 | `chunk` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `21`, requirements mentions: `8` | — | [`src/chunk.rs`](../src/chunk.rs) |
 | `circuit_breaker` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `17`, requirements mentions: `0` | — | [`src/circuit_breaker.rs`](../src/circuit_breaker.rs) |
 | `client_routing` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `25`, requirements mentions: `0` | — | [`src/client_routing.rs`](../src/client_routing.rs) |
@@ -235,6 +236,7 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `hdl_validation` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `6`, verify: `8`, requirements mentions: `0` | — | [`src/hdl_validation.rs`](../src/hdl_validation.rs) |
 | `heap_index` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `53`, requirements mentions: `0` | — | [`src/heap_index.rs`](../src/heap_index.rs) |
 | `heartbeat` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `20`, requirements mentions: `10` | — | [`src/heartbeat.rs`](../src/heartbeat.rs) |
+| `hir_attribute_parsing` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/hir/attribute/parsing.rs`](../src/hir/attribute/parsing.rs) |
 | `hypervisor_dirty_log` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `6`, requirements mentions: `0` | — | [`src/hypervisor_dirty_log.rs`](../src/hypervisor_dirty_log.rs) |
 | `hypervisor_exit` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `11`, requirements mentions: `0` | — | [`src/hypervisor_exit.rs`](../src/hypervisor_exit.rs) |
 | `hypervisor_gpa` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `4`, requirements mentions: `0` | — | [`src/hypervisor_gpa.rs`](../src/hypervisor_gpa.rs) |
@@ -371,8 +373,8 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `page_checksum` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `13`, verify: `6`, requirements mentions: `0` | — | [`src/page_checksum.rs`](../src/page_checksum.rs) |
 | `parking_lot_condvar_model` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `7`, verify: `2`, requirements mentions: `0` | — | [`src/parking_lot_condvar_model.rs`](../src/parking_lot_condvar_model.rs) |
 | `parking_lot_contracts` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `19`, verify: `6`, requirements mentions: `0` | — | [`src/parking_lot_contracts.rs`](../src/parking_lot_contracts.rs) |
-| `parking_lot_core_model` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `15`, verify: `3`, requirements mentions: `0` | — | [`src/parking_lot_core_model.rs`](../src/parking_lot_core_model.rs) |
-| `parking_lot_raw_mutex` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `8`, verify: `2`, requirements mentions: `0` | — | [`src/parking_lot_raw_mutex.rs`](../src/parking_lot_raw_mutex.rs) |
+| `parking_lot_core_model` | `requirement-covered`, `runtime-helper` | — | impl: `29`, verify: `5`, requirements mentions: `0` | — | [`src/parking_lot_core_model/mod.rs`](../src/parking_lot_core_model/mod.rs) |
+| `parking_lot_raw_mutex` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `16`, verify: `9`, requirements mentions: `0` | — | [`src/parking_lot_raw_mutex/mod.rs`](../src/parking_lot_raw_mutex/mod.rs) |
 | `parking_lot_rwlock_model` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `14`, verify: `2`, requirements mentions: `0` | — | [`src/parking_lot_rwlock_model.rs`](../src/parking_lot_rwlock_model.rs) |
 | `parsing_format` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `9`, verify: `9`, requirements mentions: `0` | — | [`src/parsing_format.rs`](../src/parsing_format.rs) |
 | `partition` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `12`, requirements mentions: `19` | — | [`src/partition.rs`](../src/partition.rs) |
@@ -409,9 +411,9 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `priority_inversion` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `18`, requirements mentions: `0` | — | [`src/priority_inversion.rs`](../src/priority_inversion.rs) |
 | `probability_statistics` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `7`, verify: `7`, requirements mentions: `0` | — | [`src/probability_statistics.rs`](../src/probability_statistics.rs) |
 | `process_state` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `33`, requirements mentions: `0` | — | [`src/process_state.rs`](../src/process_state.rs) |
-| `proof` | `declared-public-module` | — | impl: `0`, verify: `0`, requirements mentions: `0` | — | [`src/proof.rs`](../src/proof.rs) |
+| `proof` | `declared-public-module` | — | impl: `0`, verify: `0`, requirements mentions: `2` | — | [`src/proof.rs`](../src/proof.rs) |
 | `proof_gap_boundary_audit` | `requirement-covered`, `spec-model` | — | impl: `11`, verify: `11`, requirements mentions: `0` | — | [`src/proof_gap_boundary_audit.rs`](../src/proof_gap_boundary_audit.rs) |
-| `properties` | `requirement-covered`, `spec-model`, `test-backed` | — | impl: `244`, verify: `467`, requirements mentions: `234` | — | [`src/properties.rs`](../src/properties.rs) |
+| `properties` | `requirement-covered`, `spec-model`, `test-backed` | — | impl: `245`, verify: `468`, requirements mentions: `236` | — | [`src/properties.rs`](../src/properties.rs) |
 | `quepaxa` | `test-backed` | — | impl: `0`, verify: `0`, requirements mentions: `9` | — | [`src/quepaxa.rs`](../src/quepaxa.rs) |
 | `query_cost` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `7`, requirements mentions: `0` | — | [`src/query_cost.rs`](../src/query_cost.rs) |
 | `quorum` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `6`, verify: `33`, requirements mentions: `25` | — | [`src/quorum.rs`](../src/quorum.rs) |
@@ -441,9 +443,10 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `replication_pipeline` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `18`, requirements mentions: `0` | — | [`src/replication_pipeline.rs`](../src/replication_pipeline.rs) |
 | `request_forward` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `18`, requirements mentions: `0` | — | [`src/request_forward.rs`](../src/request_forward.rs) |
 | `resource_accounting` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `8`, verify: `8`, requirements mentions: `0` | — | [`src/resource_accounting.rs`](../src/resource_accounting.rs) |
-| `result` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `29`, requirements mentions: `27` | — | [`src/result.rs`](../src/result.rs) |
+| `result` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `29`, requirements mentions: `29` | — | [`src/result.rs`](../src/result.rs) |
 | `retry` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `22`, requirements mentions: `5` | — | [`src/retry.rs`](../src/retry.rs) |
 | `ring_buffer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `29`, requirements mentions: `0` | — | [`src/ring_buffer.rs`](../src/ring_buffer.rs) |
+| `rustc_metadata_identity` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/rustc/metadata/identity.rs`](../src/rustc/metadata/identity.rs) |
 | `rwlock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `11`, verify: `22`, requirements mentions: `12` | — | [`src/rwlock.rs`](../src/rwlock.rs) |
 | `safe_reclamation_domain` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `2`, requirements mentions: `0` | — | [`src/safe_reclamation_domain.rs`](../src/safe_reclamation_domain.rs) |
 | `safe_snapshot_replication` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `4`, requirements mentions: `0` | — | [`src/safe_snapshot_replication.rs`](../src/safe_snapshot_replication.rs) |
@@ -527,6 +530,7 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `token_timestamp` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `17`, requirements mentions: `0` | — | [`src/token_timestamp.rs`](../src/token_timestamp.rs) |
 | `topo_sort` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `3`, requirements mentions: `0` | — | [`src/topo_sort.rs`](../src/topo_sort.rs) |
 | `trace_relation` | `partial-requirement-coverage`, `spec-model`, `test-backed` | — | impl: `0`, verify: `16`, requirements mentions: `0` | — | [`src/trace_relation.rs`](../src/trace_relation.rs) |
+| `track_caller_abi` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/track/caller/abi.rs`](../src/track/caller/abi.rs) |
 | `transfer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `22` | — | [`src/transfer.rs`](../src/transfer.rs) |
 | `trust_level` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `19`, requirements mentions: `0` | — | [`src/trust_level.rs`](../src/trust_level.rs) |
 | `two_phase` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `15`, requirements mentions: `0` | — | [`src/two_phase.rs`](../src/two_phase.rs) |
@@ -535,7 +539,7 @@ Summary: `604` public modules, `587` requirement-covered modules, `14` example-b
 | `txn_isolation` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `24`, requirements mentions: `0` | — | [`src/txn_isolation.rs`](../src/txn_isolation.rs) |
 | `type_lattice` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `36`, requirements mentions: `0` | — | [`src/type_lattice.rs`](../src/type_lattice.rs) |
 | `type_unification` | `requirement-covered`, `spec-model` | — | impl: `7`, verify: `13`, requirements mentions: `0` | — | [`src/type_unification.rs`](../src/type_unification.rs) |
-| `typed_durable_reference` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `3`, requirements mentions: `0` | — | [`src/typed_durable_reference.rs`](../src/typed_durable_reference.rs) |
+| `typed_durable_reference` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `22`, verify: `17`, requirements mentions: `0` | — | [`src/typed_durable_reference.rs`](../src/typed_durable_reference.rs) |
 | `typed_state` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `9`, verify: `18`, requirements mentions: `0` | — | [`src/typed_state.rs`](../src/typed_state.rs) |
 | `ucan_ability` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `16`, verify: `6`, requirements mentions: `0` | — | [`src/ucan_ability.rs`](../src/ucan_ability.rs) |
 | `ucan_backend_transcript` | `partial-requirement-coverage`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `0`, requirements mentions: `0` | — | [`src/ucan_backend_transcript.rs`](../src/ucan_backend_transcript.rs) |

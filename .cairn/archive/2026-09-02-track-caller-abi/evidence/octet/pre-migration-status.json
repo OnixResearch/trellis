@@ -1,0 +1,66 @@
+{
+  "status": "lint-failure",
+  "exit_code": 1,
+  "output_format": "json",
+  "metadata": {
+    "tool_name": "cargo-octet",
+    "tool_version": "0.1.0",
+    "rustc_version": "rustc 1.96.0-nightly (ac7f9ec7d 2026-03-20)",
+    "toolchain": "nightly-2026-03-21-x86_64-unknown-linux-gnu",
+    "profile_name": "workspace-metadata",
+    "profile_hash": "b3:f2171c5738ee52b51f577991781d483109e3e351a93d07d5831e7226b04629b7",
+    "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
+  },
+  "baseline": {
+    "baseline_hash": "b3:d9323b657fc87a9273b8c768ba2afd06991302ca778f3d77e0db08407f3f04b1",
+    "accepted_total": 3887,
+    "current_total": 3867,
+    "accepted_current": 3861,
+    "new_total": 6,
+    "stale_total": 26,
+    "new_finding_ids": [
+      "b3:14c0af1063feb826",
+      "b3:14dd51bc32612746",
+      "b3:8959af256d377c72",
+      "b3:8e8dca620c694e29",
+      "b3:aafb1f64a9bc1288",
+      "b3:c0180f11505c2d3a"
+    ],
+    "stale_finding_ids": [
+      "b3:0ede41f0aeefc478",
+      "b3:0fb368207ce336a6",
+      "b3:12f83a69732f5929",
+      "b3:19ae1b76fb9b528a",
+      "b3:2eeff6be48948bda",
+      "b3:3c7b959f1587f991",
+      "b3:4066e91b4ec5cb6a",
+      "b3:414959bcb389d1ee",
+      "b3:550c2d490490099b",
+      "b3:5bf01690dcd0eb89",
+      "b3:5c34fb9655eb39bd",
+      "b3:644af5b3acfa7b8f",
+      "b3:667fec7726af8e56",
+      "b3:6900b446747b5e73",
+      "b3:8448cbb075fb5982",
+      "b3:84e93ae7ba429020",
+      "b3:9238556bbd52042d",
+      "b3:934f2c8351279817",
+      "b3:aaa718e04da4404d",
+      "b3:bc8e6a7809efd755",
+      "b3:ca13e1169fdc3f29",
+      "b3:cf8f7fe9745363e6",
+      "b3:d27ceebca886d503",
+      "b3:d3df2446875e7eca",
+      "b3:de4a4059574cccf1",
+      "b3:e9b784b296e12182"
+    ]
+  },
+  "total_findings": 4098,
+  "warning_findings": 4098,
+  "error_findings": 0,
+  "autofixable_findings": 128,
+  "cargo_process_exit": {
+    "classification": "success",
+    "code": 0
+  }
+}

@@ -94,10 +94,16 @@
 //!   exit edges, and nesting
 //! - `liveness_analysis` — backward live-in/live-out dataflow, fixed-point checking, and live-range
 //!   projection
+//! - `hir_attribute_parsing` — finite inert parser descriptors, policy admission, deterministic
+//!   reasons, and early/late metadata agreement
+//! - `rustc_metadata_identity` — finite crate-artifact identity, encoded-MIR, usage-mode, and
+//!   bounded dependency-selection admission
 //! - `register_allocation` — live-range overlap graphs, conflict-free register assignment, and
 //!   deterministic spill fallback
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
 //!   safe-reuse checks over live ranges
+//! - `track_caller_abi` — finite caller-location metadata, direct-call propagation, trait
+//!   inheritance, reify-shim, and const/codegen trace admission
 //! - `wasm_primitives` — exact Wasm value tags, `i32.add` stack discipline, typed local access,
 //!   linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack
 //!   validation, control-frame stack-height restoration, finite `call_indirect` table/signature
@@ -634,6 +640,9 @@ pub mod hdl_emit;
 pub mod hdl_ir;
 pub mod hdl_validation;
 pub mod heap_index;
+/// Verified finite inert HIR attribute-policy admission.
+#[path = "hir/attribute/parsing.rs"]
+pub mod hir_attribute_parsing;
 pub mod heartbeat;
 pub mod hypervisor_dirty_log;
 pub mod hypervisor_exit;
@@ -771,7 +780,9 @@ pub mod page;
 pub mod page_checksum;
 pub mod parking_lot_condvar_model;
 pub mod parking_lot_contracts;
+#[path = "parking_lot_core_model/mod.rs"]
 pub mod parking_lot_core_model;
+#[path = "parking_lot_raw_mutex/mod.rs"]
 pub mod parking_lot_raw_mutex;
 pub mod parking_lot_rwlock_model;
 pub mod parsing_format;
@@ -843,6 +854,9 @@ pub mod resource_accounting;
 pub mod result;
 pub mod retry;
 pub mod ring_buffer;
+/// Verified finite rustc crate-artifact compatibility and selection.
+#[path = "rustc/metadata/identity.rs"]
+pub mod rustc_metadata_identity;
 pub mod rwlock;
 pub mod safe_reclamation_domain;
 pub mod safe_snapshot_replication;
@@ -924,6 +938,9 @@ pub mod timeseries;
 pub mod tlb_shootdown;
 pub mod token_timestamp;
 pub mod topo_sort;
+/// Verified finite `#[track_caller]` ABI metadata and admission.
+#[path = "track/caller/abi.rs"]
+pub mod track_caller_abi;
 pub mod trace_relation;
 pub mod transfer;
 pub mod trust_level;

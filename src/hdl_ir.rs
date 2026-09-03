@@ -144,7 +144,7 @@ fn hdl_next_state(module: HdlModuleShape, current_state: u16, output: u64) -> Re
     if current_state >= module.fsm_state_count {
         return Err(HdlEvalError::InvalidState);
     }
-    if output == HDL_EMPTY_COUNT.into() {
+    if output == u64::from(HDL_EMPTY_COUNT) {
         return Ok(current_state);
     }
     let advanced = current_state + 1;

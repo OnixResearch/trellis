@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10752 Verus proofs · 4863 tests · 2062 requirements · 605 modules · 16 trusted/proof-gap boundaries**
+**10866 Verus proofs · 4902 tests · 2087 requirements · 608 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -297,7 +297,7 @@ validation commands captured in the change evidence.
 | `rcu` | read-copy-update: grace periods, quiescent state, safe reclamation |
 | `mpsc_bounds` | MPSC channel bounds: occupancy, send/receive, capacity, close/drain |
 | `futex_state` | futex wait/wake FSM: idle/waiting/notified, notify idempotence |
-| `parking_lot_core_model` | finite typed `ParkKey`/`ThreadId` queues with uniqueness, requeue, and metadata validity |
+| `parking_lot_core_model` | finite typed ParkKey/ThreadId queues with uniqueness, requeue, and metadata validity |
 | `parking_lot_raw_mutex` | typed thread ownership and compact raw-mutex locked/parked-bit state transitions |
 | `parking_lot_condvar_model` | condition-variable association, notify, timeout, and no-spurious requeue semantics |
 | `parking_lot_rwlock_model` | packed reader/writer/upgradable RwLock state transitions and fairness gates |
@@ -418,12 +418,20 @@ validation commands captured in the change evidence.
 | `graph_color` | graph 2-coloring (bipartiteness): no adjacent same-color |
 | `shortest_path` | unweighted shortest path via BFS: distance bounds |
 
+### Compiler frontend
+
+| Module | What it verifies |
+|---|---|
+| `hir_attribute_parsing` | finite inert parser descriptors, parser classes, target/duplicate/safety/stability policy, deterministic diagnostics, and early/late metadata agreement |
+| `rustc_metadata_identity` | finite rlib/dylib/rmeta capability, rustc identity-field, encoded-MIR, pipelining, and bounded dependency-selection admission |
+
 ### Compiler backend
 
 | Module | What it verifies |
 |---|---|
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
+| `track_caller_abi` | finite attribute, direct-call, tracked-chain, trait-inheritance, reify-shim, and const/codegen location-metadata admission |
 | `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, finite indirect-call table/signature admission, and branch-table target validation |
 | `gpu_primitives` | finite GPU program shapes, launch/grid/block/thread bounds, pitched/tensor memory-layout, coalesced access, and shared-tile admission |
 | `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` | finite HDL IR admission, deterministic Verilog/SystemVerilog emission, adapter refinement, generated-vector collateral, and tool-evidence classification |
@@ -517,6 +525,7 @@ validation commands captured in the change evidence.
 | `session_tree` | session tree as forest + seq_set composition |
 | `chain` | chain hash integrity with append-preserves proof |
 | `choreography_global` | finite global choreography syntax, participants, and well-formedness |
+| `choreography_ownership` | finite value-owner identities and atomic owner-transfer admission |
 | `choreography_local` | finite local choreography syntax, branch lookup, and merge |
 | `choreography_projection` | projectability checks and endpoint projection |
 | `choreography_step` | one-step global/local reduction and shared-prefix alignment |
@@ -762,3 +771,6 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — Apache-2.0 external reference for a bounded `u24` balanced-reduction conformance profile; no language, compiler, runtime, or benchmark claim transfers.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — Apache-2.0 external reference for the evaluated CPU runtime cohort; no interaction-net, scheduling, generated-code, or runtime-correctness claim transfers.
 - [dafny-lang/dafny](https://github.com/dafny-lang/dafny) release `v4.11.0` at `fcb2042d6d043a2634f0854338c08feeaaaf4ae2` — clean-room proof-robustness workflow reference consumed through Octet contracts. Trellis does not adopt the Dafny verifier, language, compiler, or generated Rust.
+- [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.
+- [rustc-dev-guide: Attribute Parsing](https://rustc-dev-guide.rust-lang.org/hir/attribute-parsing.html) — design reference for inert parser classes and policy metadata only; no macro, token-parser, diagnostics, stabilization, or frontend claim transfers.
+- [rustc-dev-guide: Libraries and metadata](https://rustc-dev-guide.rust-lang.org/backend/libs-and-metadata.html) — design reference for rlib/dylib/rmeta capabilities, rustc identity fields, encoded MIR, and pipelining only; no archive, hash-security, linker, LTO, or build-system claim transfers.

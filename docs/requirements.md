@@ -7586,6 +7586,119 @@ Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot
 extent.
 
+## HIR Attribute Parsing
+
+r[hir-attr.parser-envelope]
+An inert parser descriptor MUST name its parser and template. It MUST contain a
+supported non-empty target mask and complete class and policy metadata.
+
+r[hir-attr.parser-classes]
+No-args, single, combine, and generic parser classes MUST enforce their declared
+argument shape and duplicate behavior before producing parsed metadata.
+
+r[hir-attr.policy]
+Every admitted occurrence MUST satisfy the descriptor's target, duplicate,
+safety-wrapper, and stability-gate policies.
+
+r[hir-attr.admission]
+Admission MUST reject unknown parsers, invalid descriptors, malformed arguments,
+name mismatch, bad targets, duplicates, missing wrappers, and gate mismatch with
+deterministic reason and input-index metadata.
+
+r[hir-attr.early-late-agreement]
+Successful limited-early and later-HIR results MUST use the expected phase order
+and contain equal finite parsed metadata. Failed results are not comparable.
+
+r[hir-attr.evidence]
+Positive and negative tests MUST cover all parser classes, descriptor failures,
+policy checks, deterministic diagnostics, projection, and phase agreement.
+
+r[hir-attr.non-claims]
+The finite model MUST NOT claim active expansion, proc-macro behavior, full token
+parsing, rendered diagnostics, feature stabilization, or whole-frontend
+correctness.
+
+## Rustc Metadata Identity
+
+r[rustc-metadata.library-kind]
+Rlib and dylib candidates MUST declare metadata and linkable code. Rmeta
+candidates MUST declare metadata without claiming linkable object code.
+
+r[rustc-metadata.identity-fields]
+Compatibility MUST compare the declared crate name, compiler version, strict
+version hash, and stable crate ID without changing rustc-mandated algorithms.
+
+r[rustc-metadata.compatibility]
+A candidate MUST satisfy artifact shape, request completeness, identity fields,
+usage-mode linkability, and encoded-MIR requirements before admission.
+
+r[rustc-metadata.admission]
+Admission MUST return deterministic reason and candidate metadata for missing
+fields, invalid capabilities, incompatibility, linkability, and encoded-MIR
+failures.
+
+r[rustc-metadata.dependency-loading]
+Dependency selection MUST scan no more than `MAX_CANDIDATES` artifacts. It MUST
+select one unique compatible candidate or report no match, ambiguity, or a bound
+failure with deterministic candidate identities.
+
+r[rustc-metadata.rmeta-pipelining]
+Rmeta MAY satisfy check, documentation, pipeline, or compatible codegen metadata
+use. Rmeta alone MUST NOT satisfy final linking.
+
+r[rustc-metadata.evidence]
+Positive and negative tests MUST cover all library kinds, identity mismatches,
+encoded-MIR policy, rmeta boundaries, unique selection, no match, ambiguity, and
+candidate bounds.
+
+r[rustc-metadata.non-claims]
+The finite model MUST NOT claim archive parsing, rustc hash construction or
+collision resistance, linking, object code, LTO, compression, or whole-build
+correctness.
+
+## Track Caller ABI
+
+r[track-caller.attribute-validity]
+Tracked functions MUST use the Rust calling convention. They MUST NOT be
+closures, naked functions, or unsupported item kinds.
+
+r[track-caller.location-metadata]
+Caller locations MUST use finite metadata that distinguishes definition sites,
+call sites, and forwarded locations.
+
+r[track-caller.direct-call]
+A direct call to a tracked function MUST supply the location selected from its
+explicit caller context. An untracked callee MUST NOT receive a hidden location.
+
+r[track-caller.propagation]
+A non-empty tracked-call chain MUST preserve the nearest untracked call-site
+identity. Missing, changed, or excessive chain entries MUST fail admission.
+
+r[track-caller.reify-shim]
+A tracked function-pointer use MUST name a matching reify shim with a declared
+definition-site fallback. An untracked function-pointer use MUST NOT add a shim.
+
+r[track-caller.trait-inheritance]
+Prototype, default-body, and local annotations MUST produce one deterministic
+effective trait-method tracking result. Observed metadata MUST match that result.
+
+r[track-caller.const-codegen-agreement]
+Const and codegen traces MUST contain the same bounded ordered edge and location
+metadata. A length, edge, or location mismatch MUST fail agreement.
+
+r[track-caller.admission]
+Admission helpers MUST use deterministic failure classes and subject identities.
+Repeated evaluation of the same metadata MUST return the same first failure.
+
+r[track-caller.evidence]
+Positive and negative tests MUST cover attribute, direct-call, chain, shim,
+trait-inheritance, agreement, bound, and deterministic-failure behavior.
+
+r[track-caller.non-claims]
+The finite metadata model MUST NOT claim stack walking, panic formatting,
+runtime location allocation, ABI lowering, intrinsic behavior, debug-information
+correctness, or whole-codegen correctness.
+
 ## Hypervisor Memslots
 
 r[hypervisor-memslot.disjoint]
