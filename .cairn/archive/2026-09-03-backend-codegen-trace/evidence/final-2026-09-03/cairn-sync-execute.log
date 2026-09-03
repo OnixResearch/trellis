@@ -1,0 +1,205 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "backend-codegen-trace",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "b9db5d4e5670877f3bbe4ef30dca783d2f50dc8b4cb588bb37ba7cba9c014be1",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "8c46fc7e15aaa001913b6eeabc5c8a6780dd717902d29d775a79880028e43313",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "323141c7a29474850e5fadad0de55495540ad9611c866f29ed8857e696ceb167",
+        "destination": ".cairn/specs/backend-codegen-trace/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "b735a418eaab57f4255e5d17bdb217cee986e5f887c063f69ad11fe8faa2ad35",
+        "operations": [
+          {
+            "block_hash": "a3f3f6e68fa8d3727d43f3690bd1319af7077af26dafb21c5e0d0edb7e9f470a",
+            "heading": "### Requirement: Backend Handles",
+            "kind": "added",
+            "requirement_id": "backend-trace.handles"
+          },
+          {
+            "block_hash": "c8ad3385d6377360d2459b36a10b27adaff11d3a4c3dacea13290a3e3ef64292",
+            "heading": "### Requirement: MIR to Backend Block Mapping",
+            "kind": "added",
+            "requirement_id": "backend-trace.block-mapping"
+          },
+          {
+            "block_hash": "f16edda1474125a601dc5ea1fce8c4bf3f0a3932074b176dd9f6f940d7c6f007",
+            "heading": "### Requirement: Lowering Trace",
+            "kind": "added",
+            "requirement_id": "backend-trace.lowering-trace"
+          },
+          {
+            "block_hash": "de044f5c580cb895f6cfb5aa7f61462e78da3ca14f64b16c55320eea0ae64ccd",
+            "heading": "### Requirement: Handle Validity",
+            "kind": "added",
+            "requirement_id": "backend-trace.handle-validity"
+          },
+          {
+            "block_hash": "35d0eb3cc72ef39f4aca9c67525cc25676095ac0d0bd877e4e53574859b5e015",
+            "heading": "### Requirement: Terminator Lowering",
+            "kind": "added",
+            "requirement_id": "backend-trace.terminators"
+          },
+          {
+            "block_hash": "ca97d31f383eb340b11ffc8668f88581bd015245c9785049fb5dd06bf50e249e",
+            "heading": "### Requirement: SSA-Like Local Metadata",
+            "kind": "added",
+            "requirement_id": "backend-trace.ssa-like-locals"
+          },
+          {
+            "block_hash": "7f8c6e87ea75cf86eedb20c4b2da7d5211ccb315ddb1ae4e951acc26790c9515",
+            "heading": "### Requirement: Backend Trace Admission",
+            "kind": "added",
+            "requirement_id": "backend-trace.admission"
+          },
+          {
+            "block_hash": "198be491c3c3860296024ca72fe9c9a1807e8eefff8193ebd13616b5b58e8113",
+            "heading": "### Requirement: Backend Trace Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "backend-trace.evidence"
+          },
+          {
+            "block_hash": "9ed64e8a15b07f2d4443959bd641c9d45e2ef411dcd5b5ae118c7311c0b8b7d5",
+            "heading": "### Requirement: Backend Trace Documentation Sync",
+            "kind": "added",
+            "requirement_id": "backend-trace.docs"
+          },
+          {
+            "block_hash": "aef5b3ff8028691b715ded78e0f5eb10ddbbb44b629ef3fb23b24241dcf17136",
+            "heading": "### Requirement: Backend Trace Validation Evidence",
+            "kind": "added",
+            "requirement_id": "backend-trace.final-validation"
+          },
+          {
+            "block_hash": "f3d162664cf7a496f516683c411d3f75d20462f087ff0522c407e756194b97fb",
+            "heading": "### Requirement: Backend Trace Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "backend-trace.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.handles",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.block-mapping",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.lowering-trace",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.handle-validity",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.terminators",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.ssa-like-locals",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "backend-trace.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/backend-codegen-trace/specs/backend-codegen-trace/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "b735a418eaab57f4255e5d17bdb217cee986e5f887c063f69ad11fe8faa2ad35",
+          "exists": true,
+          "path": "./.cairn/specs/backend-codegen-trace/spec.md"
+        }
+      ],
+      "manifest_hash": "95579c51c4fec9fe7ea7328dad4f7e735c6935ee154ec17aff8c6d87eb9e89d1"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/backend-codegen-trace/spec.md"
+        }
+      ],
+      "manifest_hash": "4c82279b00014c61740561b6eddeefedf8af742936341d2d86261680fd094727"
+    },
+    "kind": "sync",
+    "manifest_hash": "027bdd007e743d6d6d76e895080461629f7478e6475a82ab1e4d8b273985dde2"
+  },
+  "plan_hash": "afe45db21167b6bc570a35d59c8a2725f6c1b0423b4cb013ad815805319dbb75",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "d50ac4850ce99d408e393e85a1a3d4680b145799af31228dde4a5c451b1617c5"
+}

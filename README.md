@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10925 Verus proofs · 4972 tests · 2129 requirements · 612 modules · 16 trusted/proof-gap boundaries**
+**10937 Verus proofs · 4993 tests · 2140 requirements · 613 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -433,6 +433,7 @@ validation commands captured in the change evidence.
 
 | Module | What it verifies |
 |---|---|
+| `backend_codegen_trace` | finite typed builder handles, MIR block mappings, source-tied operations, defined-before-use values, control targets, terminators, and local storage classes |
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
 | `track_caller_abi` | finite attribute, direct-call, tracked-chain, trait-inheritance, reify-shim, and const/codegen location-metadata admission |

@@ -423,6 +423,9 @@ pub mod approval;
 pub mod arithmetic;
 pub mod async_task_state;
 pub mod authorize;
+/// Verified finite backend-neutral builder handle and operation admission.
+#[path = "builder_lower/identity.rs"]
+pub mod backend_codegen_trace;
 pub mod backend_frame_allocator;
 pub mod backoff;
 pub mod balance;

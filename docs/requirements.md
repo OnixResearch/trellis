@@ -7797,6 +7797,52 @@ The finite model MUST NOT claim rustc query execution, incremental correctness,
 pass semantics, optimization soundness, borrow-checker correctness, or
 whole-compiler correctness.
 
+## Backend Codegen Trace
+
+r[backend-trace.handles]
+Every block, function, type, and place use MUST name a declared typed handle.
+Value uses MUST follow a unique prior value definition.
+
+r[backend-trace.block-mapping]
+Every admitted MIR block MUST have one direct declared builder block. Expansion
+blocks MUST be declared, unique, and assigned to that MIR block explicitly.
+
+r[backend-trace.lowering-trace]
+Each finite operation MUST match an admitted MIR statement, operand, place,
+rvalue, or terminator location and an allowed emission block.
+
+r[backend-trace.handle-validity]
+Value, function, type, and place handles MUST be valid at their operation index.
+Dangling and repeated value definitions MUST fail deterministically.
+
+r[backend-trace.terminators]
+Each MIR block MUST finish once with branch, call, return, or unreachable
+metadata. Control targets MUST map a MIR successor or declared expansion.
+
+r[backend-trace.ssa-like-locals]
+Every MIR local MUST have exactly one direct-value or memory-backed class.
+Conflicting, missing, and out-of-range classifications MUST fail.
+
+r[backend-trace.admission]
+Admission MUST report the same first declaration, mapping, local, source,
+operation-order, handle, control-target, or terminator failure.
+
+r[backend-trace.evidence]
+Positive and negative tests MUST cover direct and expanded blocks, operation
+families, handle order, control flow, terminators, and local classes.
+
+r[backend-trace.docs]
+Public builder-record helpers MUST have matching requirement, source, test or
+proof, README, module-guide, accepted-spec, and lifecycle references.
+
+r[backend-trace.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[backend-trace.non-claims]
+Builder-record evidence MUST NOT claim concrete backend IR, target ABI, machine
+code, linker, LTO, debug-information, or performance correctness.
+
 ## Rustc Metadata Identity
 
 r[rustc-metadata.library-kind]

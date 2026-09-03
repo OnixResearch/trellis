@@ -96,6 +96,8 @@ locations, exactly-once coverage, deterministic block orders, and
 shape-preserving mutation admission. Use
 [`mir_pass_pipeline`](../src/mir_pass_pipeline/identity.rs) for finite MIR phase,
 pass, validation, optimization-gate, and artifact-state trace admission. Use
+[`backend_codegen_trace`](../src/builder_lower/identity.rs) for typed builder
+handles, block mappings, source-tied operations, and control-flow admission. Use
 [`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared
 crate-artifact compatibility and bounded dependency selection. Use
 [`track_caller_abi`](../src/track/caller/abi.rs) for caller-location,

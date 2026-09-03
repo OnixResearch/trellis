@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `612` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `613` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -25,6 +25,7 @@ Summary: `612` public modules, `588` requirement-covered modules, `14` example-b
 | `arithmetic` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `6`, verify: `23`, requirements mentions: `9` | — | [`src/arithmetic.rs`](../src/arithmetic.rs) |
 | `async_task_state` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `4`, requirements mentions: `0` | — | [`src/async_task_state.rs`](../src/async_task_state.rs) |
 | `authorize` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `21`, requirements mentions: `7` | — | [`src/authorize.rs`](../src/authorize.rs) |
+| `backend_codegen_trace` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/builder_lower/identity.rs`](../src/builder_lower/identity.rs) |
 | `backend_frame_allocator` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `3`, requirements mentions: `0` | — | [`src/backend_frame_allocator.rs`](../src/backend_frame_allocator.rs) |
 | `backoff` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `12`, requirements mentions: `2` | — | [`src/backoff.rs`](../src/backoff.rs) |
 | `balance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `22`, requirements mentions: `29` | — | [`src/balance.rs`](../src/balance.rs) |

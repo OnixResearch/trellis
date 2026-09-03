@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Defines finite backend-codegen trace primitives for Trellis. The requirements cover abstract backend handles, MIR-to-backend block mapping, lowering trace entries, handle validity, terminator trace shape, SSA-like local metadata, evidence, documentation, validation, and non-claim boundaries.
+Defines the `backend-codegen-trace` capability.
 
 ## Requirements
 
