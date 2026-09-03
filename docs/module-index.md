@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `614` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `615` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -454,6 +454,7 @@ Summary: `614` public modules, `588` requirement-covered modules, `14` example-b
 | `rustc_metadata_identity` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/rustc/metadata/identity.rs`](../src/rustc/metadata/identity.rs) |
 | `rustc_monomorphization` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/instance_partition/identity.rs`](../src/instance_partition/identity.rs) |
 | `rwlock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `11`, verify: `22`, requirements mentions: `12` | — | [`src/rwlock.rs`](../src/rwlock.rs) |
+| `s_expression` | `partial-requirement-coverage`, `test-backed` | — | impl: `5`, verify: `0`, requirements mentions: `0` | — | [`src/paren_tree/identity.rs`](../src/paren_tree/identity.rs) |
 | `safe_reclamation_domain` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `2`, requirements mentions: `0` | — | [`src/safe_reclamation_domain.rs`](../src/safe_reclamation_domain.rs) |
 | `safe_snapshot_replication` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `4`, requirements mentions: `0` | — | [`src/safe_snapshot_replication.rs`](../src/safe_snapshot_replication.rs) |
 | `scheduling_calendar` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `8`, verify: `8`, requirements mentions: `0` | — | [`src/scheduling_calendar.rs`](../src/scheduling_calendar.rs) |

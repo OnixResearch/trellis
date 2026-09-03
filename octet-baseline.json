@@ -50271,8 +50271,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:b11221ab391e117f",
-      "semantic_id": "b3:b11221ab391e117f",
+      "stable_id": "b3:4a37b4f2612a74b5",
+      "semantic_id": "b3:4a37b4f2612a74b5",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -50280,7 +50280,7 @@
       "file": "src/lib.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1087 lines (limit: 300)",
+      "message": "source file is 1090 lines (limit: 300)",
       "crate_name": "verified_logic"
     }
   ]

@@ -1,0 +1,36 @@
+{
+  "status": "lint-failure",
+  "exit_code": 1,
+  "output_format": "json",
+  "metadata": {
+    "tool_name": "cargo-octet",
+    "tool_version": "0.1.0",
+    "rustc_version": "rustc 1.96.0-nightly (ac7f9ec7d 2026-03-20)",
+    "toolchain": "nightly-2026-03-21-x86_64-unknown-linux-gnu",
+    "profile_name": "workspace-metadata",
+    "profile_hash": "b3:f2171c5738ee52b51f577991781d483109e3e351a93d07d5831e7226b04629b7",
+    "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
+  },
+  "baseline": {
+    "baseline_hash": "b3:9cf1f3afdd98e3725177671c02717e6734f10fa99fd4179c397b20ebd69d0ebc",
+    "accepted_total": 3867,
+    "current_total": 3867,
+    "accepted_current": 3866,
+    "new_total": 1,
+    "stale_total": 1,
+    "new_finding_ids": [
+      "b3:4a37b4f2612a74b5"
+    ],
+    "stale_finding_ids": [
+      "b3:b11221ab391e117f"
+    ]
+  },
+  "total_findings": 4098,
+  "warning_findings": 4098,
+  "error_findings": 0,
+  "autofixable_findings": 128,
+  "cargo_process_exit": {
+    "classification": "success",
+    "code": 0
+  }
+}

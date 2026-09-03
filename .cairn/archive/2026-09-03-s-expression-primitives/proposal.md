@@ -7,13 +7,13 @@ This change carves out a narrow Trellis-owned S-expression primitive: finite ato
 ## What Changes
 
 - Add a new `s-expression` Cairn spec for finite canonical S-expression primitives.
-- Plan a `src/s_expression.rs` Verus module with pure AST/spec predicates and checked exec helpers.
+- Add a `src/paren_tree/` component with pure tree predicates, checked helpers, and a narrow public facade.
 - Define atom/list well-formedness, canonical serialization shape, bounded parse/admission results, size/depth budget handling, and deterministic error metadata.
 - Require positive and negative tests for canonical values, roundtrips, malformed delimiters, invalid atoms, non-canonical spacing/escaping, and budget rejection.
 - Require `docs/requirements.md`, source annotations, README/module catalog text, Tracey checks, Verus checks, and Cairn validation evidence before archive.
 
 ## Impact
 
-- **Files**: new Cairn spec package now; later implementation should touch `src/s_expression.rs`, `src/lib.rs`, `docs/requirements.md`, README/module catalog text, and focused tests.
+- **Files**: implementation touches `src/paren_tree/`, `src/lib.rs`, `docs/requirements.md`, README/module catalog text, and focused tests.
 - **Testing**: implementation must include positive and negative tests plus fresh Verus, Tracey, and Cairn validation evidence.
 - **Boundaries**: no evaluator, no macro expander, no global interner, no filesystem/network/process behavior, and no compatibility claim for Steel, Scheme, Lisp, SMT-LIB, or any external S-expression dialect.

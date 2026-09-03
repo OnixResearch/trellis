@@ -7586,6 +7586,52 @@ Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot
 extent.
 
+## S-expression Primitives
+
+r[s-expression.ast]
+Each admitted finite tree MUST be a canonical atom or an ordered list whose
+children are all admitted trees.
+
+r[s-expression.atom-admission]
+Symbols MUST be non-empty and use only the declared ASCII class. Quoted text
+MUST reject unsupported controls and normalize declared escapes.
+
+r[s-expression.canonical-serialization]
+Serialization MUST use one atom spelling, parentheses around lists, one space
+between children, ordered children, and canonical text escapes.
+
+r[s-expression.parse-admission]
+Parsing MUST accept only the canonical grammar and return deterministic byte
+offsets for atom, escape, delimiter, spacing, trailing-input, and budget errors.
+
+r[s-expression.roundtrip]
+Every admitted bounded value MUST return unchanged through canonical
+serialization and canonical parsing, with stable re-serialization.
+
+r[s-expression.budgets]
+Node, depth, and UTF-8 byte budgets MUST be explicit and no larger than the
+named core maxima. Exhaustion MUST fail before an identity claim.
+
+r[s-expression.evidence.positive]
+Positive tests MUST cover symbols, escaped text, empty and nested lists,
+measures, canonical rendering, parsing, Unicode text, and roundtrip checks.
+
+r[s-expression.evidence.negative]
+Negative tests MUST cover invalid atoms and escapes, delimiters, spacing,
+trailing input, malformed nesting, invalid budgets, and each budget exhaustion.
+
+r[s-expression.docs]
+Public canonical-tree helpers MUST have matching requirement, source, test or
+proof, README, module-guide, accepted-spec, and lifecycle references.
+
+r[s-expression.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[s-expression.non-claims]
+Canonical-tree evidence MUST NOT claim evaluation, macros, hygiene, interning,
+modules, bytecode, effects, or compatibility with an external Lisp dialect.
+
 ## HIR Attribute Parsing
 
 r[hir-attr.parser-envelope]

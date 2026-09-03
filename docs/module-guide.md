@@ -59,7 +59,10 @@ those APIs for more than their stated structural contracts.
 
 Start with [`serialize_inj`](../src/serialize_inj.rs) for canonical byte encoding
 injectivity patterns and [`serialization_codec`](../src/serialization_codec.rs)
-for finite codec envelope admission. Use [`ucan_cid`](../src/ucan_cid.rs),
+for finite codec envelope admission. Use
+[`s_expression`](../src/paren_tree/identity.rs) for bounded canonical atom/list
+trees, deterministic UTF-8 rendering, canonical-only parsing, and roundtrips.
+Use [`ucan_cid`](../src/ucan_cid.rs),
 [`ucan_base64url`](../src/ucan_base64url.rs), and [`ucan_json`](../src/ucan_json.rs)
 when the data is UCAN-shaped.
 

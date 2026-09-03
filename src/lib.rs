@@ -876,6 +876,9 @@ pub mod rustc_metadata_identity;
 #[path = "instance_partition/identity.rs"]
 pub mod rustc_monomorphization;
 pub mod rwlock;
+/// Verified finite canonical parenthesized-tree parsing and serialization.
+#[path = "paren_tree/identity.rs"]
+pub mod s_expression;
 pub mod safe_reclamation_domain;
 pub mod safe_snapshot_replication;
 pub mod scheduling_calendar;

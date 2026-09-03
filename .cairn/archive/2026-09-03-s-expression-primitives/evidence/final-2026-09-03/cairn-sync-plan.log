@@ -1,0 +1,182 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "s-expression-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "136247e557fc7b56551a218cfdef8dd203d7c3198163f7a670cdd376e254eef2",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "fda97955bbeadbb2c3f23ca9d826c4a13096a4bb3806a3d45c423f14ad55c486",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "559bcc95450e4a8e69044dd5ae82075f08488afb65d6a470965781c187b64395",
+        "destination": ".cairn/specs/s-expression/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "357263ea39378d3d00c48f85d4eefc404da04baf98004c3bfeaad49ed6e7db8c",
+        "operations": [
+          {
+            "block_hash": "6132d4db5b072b65b03d604016047436d78c389684e6fac8953523244bdaa615",
+            "heading": "### Requirement: S-expression AST Shape",
+            "kind": "added",
+            "requirement_id": "s-expression.ast"
+          },
+          {
+            "block_hash": "1ceb1c7b49abcd0ad895a3fd4225fae321a842a53dca95a335b5cc656495b981",
+            "heading": "### Requirement: S-expression Atom Admission",
+            "kind": "added",
+            "requirement_id": "s-expression.atom-admission"
+          },
+          {
+            "block_hash": "9f068c3fe38d3ea1ed857f73c160fe88403fffc96de34bbb20c7c9d98aecf8cd",
+            "heading": "### Requirement: S-expression Canonical Serialization",
+            "kind": "added",
+            "requirement_id": "s-expression.canonical-serialization"
+          },
+          {
+            "block_hash": "c84dd472fedfb9542ea25b9285e8810b62b760f0025c7e3e8d7ce741518726dd",
+            "heading": "### Requirement: S-expression Parse Admission",
+            "kind": "added",
+            "requirement_id": "s-expression.parse-admission"
+          },
+          {
+            "block_hash": "d9e04a1d54237cb812bf20dbd4983c88b9cd71ba24ec8d8c3aebeb77d9699981",
+            "heading": "### Requirement: S-expression Roundtrip",
+            "kind": "added",
+            "requirement_id": "s-expression.roundtrip"
+          },
+          {
+            "block_hash": "073e4d452829eae1cd7d3f63210a4ce20689a039b92d796fd8914728587c75a6",
+            "heading": "### Requirement: S-expression Size and Depth Budgets",
+            "kind": "added",
+            "requirement_id": "s-expression.budgets"
+          },
+          {
+            "block_hash": "0686538dd669abbb0027cc67c072920f318a0ff2d1eff618694ff4b62376af9a",
+            "heading": "### Requirement: S-expression Positive Evidence",
+            "kind": "added",
+            "requirement_id": "s-expression.evidence.positive"
+          },
+          {
+            "block_hash": "fe30d7d67b248768aad41b7618934b6483b112f4c932001aa62e09e40ef0cdfb",
+            "heading": "### Requirement: S-expression Negative Evidence",
+            "kind": "added",
+            "requirement_id": "s-expression.evidence.negative"
+          },
+          {
+            "block_hash": "31b4790a376870d6b452a72ea5d14792b37568729c34f495d65d8c97515ead7d",
+            "heading": "### Requirement: S-expression Documentation Sync",
+            "kind": "added",
+            "requirement_id": "s-expression.docs"
+          },
+          {
+            "block_hash": "73aab00439dc2ec06c8c658ab81b51bf13692da9a52d8bbbbe9df3da5c57cca9",
+            "heading": "### Requirement: S-expression Validation Evidence",
+            "kind": "added",
+            "requirement_id": "s-expression.final-validation"
+          },
+          {
+            "block_hash": "3cc636f6d655d9e80b05c4bc272e40d8918e65c2951a279de3963725a597be8a",
+            "heading": "### Requirement: S-expression Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "s-expression.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.ast",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.atom-admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.canonical-serialization",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.parse-admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.roundtrip",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.budgets",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.evidence.positive",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.evidence.negative",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "s-expression.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/s-expression-primitives/specs/s-expression/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "201314ab71647bde3c6a91bef13730b9014d23a8991dee8f53a94efdcd404162",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "bd06f549984e5e64c2542fe16c94f0d5f0abfa5c739e2cd270769e3af454bcef"
+}

@@ -1,8 +1,8 @@
-# S-expression Specification
+# S Expression Specification
 
 ## Purpose
 
-Defines finite canonical S-expression primitives for Trellis Verus proofs. The requirements cover AST shape, atom admission, canonical serialization, bounded parse/admission behavior, roundtrip facts, explicit size/depth budgets, evidence coverage, documentation sync, validation, and non-claim boundaries.
+Defines the `s-expression` capability.
 
 ## Requirements
 

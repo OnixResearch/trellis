@@ -1,0 +1,437 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: s-expression-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-s-expression-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "s-expression-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "0d5da03215633c97938beab78879d7ee948a23fbde7f5bd347c0490a1195e216",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "16f7145c1ab43745a63b50515a93e877101829b60fe220ed070518c9e07525a7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/design.md"
+        },
+        {
+          "content_hash": "454195b5d9ba12460f130c1c61b1e23b824d7e460d011e4b91e320bfe13a75c5",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "ee3b473bb625305e38018b798a7b1280997f6c3a253ee5aa38d92832ed2a0161",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "12a554eaffce0b6c9e5d73539a09ec515ec5d39aea62d16c495e09545c1ac37c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "aa313c349e741570710ca74d5882b051ab4959db0bd206e4c2feacf155e85e64",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "63ed64f592f96036223c84772d70462a9901eca735bc99782a9ed0858dbbf974",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "edc515124abab8ae1016c61f757c8c6f73bd16ec54f99d18e2658c452ee36d27",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "4eda8223cf3b2be509efe785350cd80f640013896c406f60f7d7e11ce7e2ef82",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "0d5d7266a73ff3d549484aa6a1a29a56aab611d0bb4ca7235100fdc6d9ac0140",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "5bad280cc4b8ae764dc7bd76f50cb2eabccf225733644da489a0bb3a13105b99",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "2462c75db57384caa1730f43b6562c284c44a0298d2d76ad17f59f891d3919c7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "677149c69d4cb6771701ec54253386b0d9bf0295705ad294d77e495160652315",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "5fa26fb250edad5213ae282c84aa4f84207099f067182ece649900d2805efe3a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "ce54b65cc18dbc5fbaaec7dd355a25a13552f63624f1170dcce03f5f4e021786",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "c397cac4421bfc38a23cd4403634d7eb0a2bc5f893b3cd0034fbed390b3c95c0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "4bae4fda01e53d57a57a3cf0e46db72ce843a595c661c552ccd4b5a72358ca53",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "e161c1a8e71df03bb4e5087b4c4c35e2a6bf26ca17b8d03ba4924d5fc1cfe95b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "59d0c9a7e451e05c784c410b0c9ecb257e2f61210ccd56c8767663bcf92934cd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "20b8209171592e320bd09685341073f4734287be9924fd931a9029db4ce199be",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "a386006359edc869a7529b141d76736eda9dd4ac541710767b1a7c09a5664aae",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "e1b561d02ef084062a6a61ec686adeb801f08944692194e8e6d47f2cab52ec2d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "2cdb5281c403590f1f5355e4d88f768a76c2c1bcf06af77c895f4d456131c882",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "2cdb5281c403590f1f5355e4d88f768a76c2c1bcf06af77c895f4d456131c882",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "82544113d0a8553d55f019304ad455ec962a7538894508c02b10d8ddee479596",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "72126690f390997cf01284dc8a9c22c2b19c4d8f60dbdfa0a4678031f88495ec",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "3140adcbdb642926cd5dd59362c921b7c4ce1c695ff0a078490e45bd8a39d4fc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "f29c141e129c084eac284b508f62fe95a59b0307a03bbe1f5ae642944e196fe1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "d203a7d0583f3058ca68d8c953545f89618ed5419436ecaef9dabf41b2cd9468",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "b168caffee202c868c8874535e4247f23bd17bbf01d05ce437faf8e42dba3c92",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/proposal.md"
+        },
+        {
+          "content_hash": "559bcc95450e4a8e69044dd5ae82075f08488afb65d6a470965781c187b64395",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/specs/s-expression/spec.md"
+        },
+        {
+          "content_hash": "d7657eb5dcd65dda6d61ccd92fb9c1c9262798135bcc5d9e7896a124bc37fa2a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/tasks.md"
+        },
+        {
+          "content_hash": "7777ac356b5b5c61e86318a2fd87c73e93f0734083b336792cb455bb20d8345c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-s-expression-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/s-expression-primitives"
+        }
+      ],
+      "manifest_hash": "50fc547f49982b42ece6fbc2eb638039aa8f2126889118c3f2eea7da04b15f63"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "16f7145c1ab43745a63b50515a93e877101829b60fe220ed070518c9e07525a7",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/design.md"
+        },
+        {
+          "content_hash": "454195b5d9ba12460f130c1c61b1e23b824d7e460d011e4b91e320bfe13a75c5",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "ee3b473bb625305e38018b798a7b1280997f6c3a253ee5aa38d92832ed2a0161",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "12a554eaffce0b6c9e5d73539a09ec515ec5d39aea62d16c495e09545c1ac37c",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "aa313c349e741570710ca74d5882b051ab4959db0bd206e4c2feacf155e85e64",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "63ed64f592f96036223c84772d70462a9901eca735bc99782a9ed0858dbbf974",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "edc515124abab8ae1016c61f757c8c6f73bd16ec54f99d18e2658c452ee36d27",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "4eda8223cf3b2be509efe785350cd80f640013896c406f60f7d7e11ce7e2ef82",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "0d5d7266a73ff3d549484aa6a1a29a56aab611d0bb4ca7235100fdc6d9ac0140",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "5bad280cc4b8ae764dc7bd76f50cb2eabccf225733644da489a0bb3a13105b99",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "2462c75db57384caa1730f43b6562c284c44a0298d2d76ad17f59f891d3919c7",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "677149c69d4cb6771701ec54253386b0d9bf0295705ad294d77e495160652315",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "5fa26fb250edad5213ae282c84aa4f84207099f067182ece649900d2805efe3a",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "ce54b65cc18dbc5fbaaec7dd355a25a13552f63624f1170dcce03f5f4e021786",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "c397cac4421bfc38a23cd4403634d7eb0a2bc5f893b3cd0034fbed390b3c95c0",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "4bae4fda01e53d57a57a3cf0e46db72ce843a595c661c552ccd4b5a72358ca53",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "e161c1a8e71df03bb4e5087b4c4c35e2a6bf26ca17b8d03ba4924d5fc1cfe95b",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "59d0c9a7e451e05c784c410b0c9ecb257e2f61210ccd56c8767663bcf92934cd",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "20b8209171592e320bd09685341073f4734287be9924fd931a9029db4ce199be",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "a386006359edc869a7529b141d76736eda9dd4ac541710767b1a7c09a5664aae",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "e1b561d02ef084062a6a61ec686adeb801f08944692194e8e6d47f2cab52ec2d",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "2cdb5281c403590f1f5355e4d88f768a76c2c1bcf06af77c895f4d456131c882",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "2cdb5281c403590f1f5355e4d88f768a76c2c1bcf06af77c895f4d456131c882",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "82544113d0a8553d55f019304ad455ec962a7538894508c02b10d8ddee479596",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "72126690f390997cf01284dc8a9c22c2b19c4d8f60dbdfa0a4678031f88495ec",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "3140adcbdb642926cd5dd59362c921b7c4ce1c695ff0a078490e45bd8a39d4fc",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "f29c141e129c084eac284b508f62fe95a59b0307a03bbe1f5ae642944e196fe1",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "d203a7d0583f3058ca68d8c953545f89618ed5419436ecaef9dabf41b2cd9468",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "b168caffee202c868c8874535e4247f23bd17bbf01d05ce437faf8e42dba3c92",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/proposal.md"
+        },
+        {
+          "content_hash": "559bcc95450e4a8e69044dd5ae82075f08488afb65d6a470965781c187b64395",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/specs/s-expression/spec.md"
+        },
+        {
+          "content_hash": "d7657eb5dcd65dda6d61ccd92fb9c1c9262798135bcc5d9e7896a124bc37fa2a",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/tasks.md"
+        },
+        {
+          "content_hash": "7777ac356b5b5c61e86318a2fd87c73e93f0734083b336792cb455bb20d8345c",
+          "exists": true,
+          "path": "./.cairn/changes/s-expression-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "71d5a7333d963b75e7f31b278e91c90369fa40ae26e8a42d01a19c60c3e1b52e"
+    },
+    "kind": "archive",
+    "manifest_hash": "4317b94802e9eb6bdc06aa28bc698cf91d8caf3ad28307ee394edc6c949c2915"
+  },
+  "plan_hash": "a0dfb9753b525563a1b9ebab86662e371fb15090843d92e801c4671ea308efe9",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "e62c6dd776a3c60386bd6e201ad940f4e58e74471d88dde56f2c2be1c888bc40"
+}

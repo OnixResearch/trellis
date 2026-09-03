@@ -1,0 +1,7 @@
+[2m2026-09-03T10:57:15.750655Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-s-expression-primitives-20260903
+[2m2026-09-03T10:57:16.762893Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+[2m2026-09-03T10:57:17.772972Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon..
+[2m2026-09-03T10:57:18.784181Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon...
+[2m2026-09-03T10:57:19.796448Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon....
+[2m2026-09-03T10:57:20.808047Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m daemon client: connect_inner failed [3melapsed_ms[0m[2m=[0m5058 [3merror[0m[2m=[0mDaemon failed to start within 5s (last connect error: No such file or directory (os error 2)). Check logs at /home/brittonr/.local/state/tracey/3e30eaec2539c8ef/daemon.log [3mcallsite[0m[2m=[0m/home/runner/work/tracey/tracey/crates/tracey/src/daemon/client.rs:50
+Error: Cancelled
