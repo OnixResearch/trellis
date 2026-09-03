@@ -1,0 +1,447 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: rustc-monomorphization",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-rustc-monomorphization"
+    }
+  ],
+  "blocked": false,
+  "change": "rustc-monomorphization",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "626164de1e5c30140fccfdbb12d0814c8bdedc3a4829d569f7e80baf0677c857",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "08231eff8d11be8d9b2d0968acf0b26da5646dc61610d5c6c6bfa1e94d976e4f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/design.md"
+        },
+        {
+          "content_hash": "5f85ffc86d4aebf31463b1e14c092f376a0bd3374dbb5524329a219fe089a164",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "748f5f9d74e4a07c19442729e5fb60ca2ea2ff0138814d887bd219ec03021fa7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "9fad1e139808aa2c56863dec0ae4dbad9fe3ca3e211ca983756ea4bd353dd250",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "9eb3a4c6c730271f06746f6b7f84cff29b1f257ef67bb17cadf1500b17bbebc8",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "22185dbefca854c9a2b164ca5eb0af89c91492223c1972156a80d8f36c3e3d1a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "f42bdbc9eccc4186fd7366c487660aee66a5d0af7d3ffcfd96ba26c78c2ca0d2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "56f4f5402963bcccef2b2e9eebd1111111bf470c06e61de1e04f7c0b26b98228",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "61e0431aa11ed53b4b21dc5f02dc637f3d1480f178e51b9c2ee3da697a30d3ae",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "966002a6add7cf52ff9346bbb5a82f38d810a9457bdae03cc09ecb694c0fc3bc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "6a7729a2db533a630118f831d4a32e60637bf09c8ca662f55d735f338ddde256",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "892da5dea25beaedb3986ad40d92a1ceca5aa00d66f2a08ab8bcfbe72a28d91f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "2b52e83e8fcd41c608b4448938bba636e6581993e244ecb70e9e30d162cfe504",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "f64dfcf78eb813400edc91c187308f1b4c0c9014f7c13f26669d8afc9115c2b0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "d827ccf0f01b372a21b7f0a7c5a85f3c3cf17da4b5c998c9b46a5c7e7bb62e07",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "fbc6abb9bb8d966138edab8f5b852057fc21c3d2dd2368dd188d1f79f005099e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "50efce553b3079d500fc571752d3e078174f0732038bfe2107332755a73b2efe",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "2a46d14dd3e96382a297491fbd04e393c91a5261db96d1a96f51f80cb958fe48",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "7aef700d70acc77e7cc67625a152ae6b89c293c35e6a6ca7503e64aaae75c537",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "ed147d6edc6392f660ac894beb47d8c5312f47d2e441e5676580155c0a6009da",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "159e610f0238aac158ed2d9c85ffdf086d15ff6cefead264730f1e948def311a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "c409ffe605bd83e39403896eab3bafa49008bdbb8e4137a3b6a2f9f59f6f048a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "b8c047d6ea620801d9aa180dc6b40f8a681255a9f7388c3f3f6fa1b2a35ef4e6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "edc515124abab8ae1016c61f757c8c6f73bd16ec54f99d18e2658c452ee36d27",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "6b818feda679b04b4eefb1567726de5ab7102e93d59ccc23b0ad222ff0f15df4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "d35c674c3fb59b7ad5ca039e87e0410e38265a0ba0f1698f929a7cc23b585404",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "c8e3a9ed2c58b83add3abcee491a2ab12655893354c48302e3b2ae508c039c77",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "19190d0cf8cb6b6353ea08250d2f796e1d184a36b14504e7fb70ce65ccd9f508",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "ef887284bd5d2aa7256b5bcaa5f3af99f258349e479c64488c57b177e4e091ad",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/proposal.md"
+        },
+        {
+          "content_hash": "e736128fb659aa05b853be32f3409bc5c696b8c9f8e9c6ad2d2738e999fde5b0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/specs/rustc-monomorphization/spec.md"
+        },
+        {
+          "content_hash": "bda5988fa6c236c671f4698618a914e7b8d616ff195e87977679b25779faa81a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/tasks.md"
+        },
+        {
+          "content_hash": "6ffbddd3a29985d787e69e1aa1a46bed1be37bca0ab0ee5eb246dc8840cdde88",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-rustc-monomorphization/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/rustc-monomorphization"
+        }
+      ],
+      "manifest_hash": "eb04c8a80b900aa228fe03ee92e6bbc63323494a21f2bd42fa53815c81c23b85"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "08231eff8d11be8d9b2d0968acf0b26da5646dc61610d5c6c6bfa1e94d976e4f",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/design.md"
+        },
+        {
+          "content_hash": "5f85ffc86d4aebf31463b1e14c092f376a0bd3374dbb5524329a219fe089a164",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "748f5f9d74e4a07c19442729e5fb60ca2ea2ff0138814d887bd219ec03021fa7",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "9fad1e139808aa2c56863dec0ae4dbad9fe3ca3e211ca983756ea4bd353dd250",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "9eb3a4c6c730271f06746f6b7f84cff29b1f257ef67bb17cadf1500b17bbebc8",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "22185dbefca854c9a2b164ca5eb0af89c91492223c1972156a80d8f36c3e3d1a",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "f42bdbc9eccc4186fd7366c487660aee66a5d0af7d3ffcfd96ba26c78c2ca0d2",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "56f4f5402963bcccef2b2e9eebd1111111bf470c06e61de1e04f7c0b26b98228",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "61e0431aa11ed53b4b21dc5f02dc637f3d1480f178e51b9c2ee3da697a30d3ae",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "966002a6add7cf52ff9346bbb5a82f38d810a9457bdae03cc09ecb694c0fc3bc",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "6a7729a2db533a630118f831d4a32e60637bf09c8ca662f55d735f338ddde256",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "892da5dea25beaedb3986ad40d92a1ceca5aa00d66f2a08ab8bcfbe72a28d91f",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "2b52e83e8fcd41c608b4448938bba636e6581993e244ecb70e9e30d162cfe504",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "f64dfcf78eb813400edc91c187308f1b4c0c9014f7c13f26669d8afc9115c2b0",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "d827ccf0f01b372a21b7f0a7c5a85f3c3cf17da4b5c998c9b46a5c7e7bb62e07",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "fbc6abb9bb8d966138edab8f5b852057fc21c3d2dd2368dd188d1f79f005099e",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "50efce553b3079d500fc571752d3e078174f0732038bfe2107332755a73b2efe",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "2a46d14dd3e96382a297491fbd04e393c91a5261db96d1a96f51f80cb958fe48",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "7aef700d70acc77e7cc67625a152ae6b89c293c35e6a6ca7503e64aaae75c537",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "ed147d6edc6392f660ac894beb47d8c5312f47d2e441e5676580155c0a6009da",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "159e610f0238aac158ed2d9c85ffdf086d15ff6cefead264730f1e948def311a",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "c409ffe605bd83e39403896eab3bafa49008bdbb8e4137a3b6a2f9f59f6f048a",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "b8c047d6ea620801d9aa180dc6b40f8a681255a9f7388c3f3f6fa1b2a35ef4e6",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "7efeda2a86d260d28d2c1b5f61cf05c863bef3fa16d20ca7ae7c4777df16e00c",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "edc515124abab8ae1016c61f757c8c6f73bd16ec54f99d18e2658c452ee36d27",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "6b818feda679b04b4eefb1567726de5ab7102e93d59ccc23b0ad222ff0f15df4",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "d35c674c3fb59b7ad5ca039e87e0410e38265a0ba0f1698f929a7cc23b585404",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "c8e3a9ed2c58b83add3abcee491a2ab12655893354c48302e3b2ae508c039c77",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "19190d0cf8cb6b6353ea08250d2f796e1d184a36b14504e7fb70ce65ccd9f508",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "ef887284bd5d2aa7256b5bcaa5f3af99f258349e479c64488c57b177e4e091ad",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/proposal.md"
+        },
+        {
+          "content_hash": "e736128fb659aa05b853be32f3409bc5c696b8c9f8e9c6ad2d2738e999fde5b0",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md"
+        },
+        {
+          "content_hash": "bda5988fa6c236c671f4698618a914e7b8d616ff195e87977679b25779faa81a",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/tasks.md"
+        },
+        {
+          "content_hash": "6ffbddd3a29985d787e69e1aa1a46bed1be37bca0ab0ee5eb246dc8840cdde88",
+          "exists": true,
+          "path": "./.cairn/changes/rustc-monomorphization/verification.md"
+        }
+      ],
+      "manifest_hash": "4da3500a2f6d15e7bc9834b9feeac66c623d36690ba14af47305a2050514fdc2"
+    },
+    "kind": "archive",
+    "manifest_hash": "3336a99074d3953fa60417dfb27626bb869bde19971dc4f8e33585f2b3241d3c"
+  },
+  "plan_hash": "d724ed33d10f4b1571bf2fe7295204da6766a7542b47c02dd11235bbfa8f0be1",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "de983295c8bba13ce0eede202d5a898d340bafe84818c9b87e2d372069b5af66"
+}

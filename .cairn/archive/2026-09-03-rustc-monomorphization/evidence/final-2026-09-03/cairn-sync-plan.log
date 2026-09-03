@@ -1,0 +1,171 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "rustc-monomorphization",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "c77666a3a300c3770f717aadcd1252e7b85734bb65bb4b13af173772cb1bd74e",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "de181d215d3a735e30f580513303e2b0aafe707338237ae3e914a8e77617cc49",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "e736128fb659aa05b853be32f3409bc5c696b8c9f8e9c6ad2d2738e999fde5b0",
+        "destination": ".cairn/specs/rustc-monomorphization/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "96204bead7ebf904291d4d5412efe2d34c1bd92d2cc12374b7aa33108ecd742c",
+        "operations": [
+          {
+            "block_hash": "a7711b41acdff292c3e2e18589d59255811118efacd03bf3a92f69e3ec85661d",
+            "heading": "### Requirement: Mono Item Envelope",
+            "kind": "added",
+            "requirement_id": "mono.item-envelope"
+          },
+          {
+            "block_hash": "b5ab66be8dd36653eb3b16ee918bd61790eda8ca321beee66cdc63a699546634",
+            "heading": "### Requirement: Mono Collection Closure",
+            "kind": "added",
+            "requirement_id": "mono.collection"
+          },
+          {
+            "block_hash": "773c63c90d851caf3027c564739c6f01d024e3684db82987221bd73c1c3137da",
+            "heading": "### Requirement: Mono Deduplication",
+            "kind": "added",
+            "requirement_id": "mono.dedup"
+          },
+          {
+            "block_hash": "6b545e1305f2b8f495299f808d7634b52506490e132d3cb60e26e40f3b37487d",
+            "heading": "### Requirement: CGU Classification",
+            "kind": "added",
+            "requirement_id": "mono.cgu-classification"
+          },
+          {
+            "block_hash": "ddd02ab765478c8cd9a2157659295cadc6f48f6dd7a82116f829b412438e4cdf",
+            "heading": "### Requirement: CGU Partition",
+            "kind": "added",
+            "requirement_id": "mono.cgu-partition"
+          },
+          {
+            "block_hash": "73daa628f295e3c388d1e99cc46386ba46cd5b4e2b570bfae011cfacb983925f",
+            "heading": "### Requirement: Mono Admission Helpers",
+            "kind": "added",
+            "requirement_id": "mono.admission"
+          },
+          {
+            "block_hash": "2e80abc325fd214ffdc8a8ce84b0d4c39315fd08ceff38b9cc7ffe984ee30c25",
+            "heading": "### Requirement: Mono Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mono.evidence"
+          },
+          {
+            "block_hash": "973830a554602193ee23018b435ac211c60e73ccbc3897b94a79bb10d81820ca",
+            "heading": "### Requirement: Mono Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mono.docs"
+          },
+          {
+            "block_hash": "f9361b1281f756d11fcf20a8e937f87e94d3d03acaac1ef4fe486b15c02a94ef",
+            "heading": "### Requirement: Mono Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mono.final-validation"
+          },
+          {
+            "block_hash": "bdbe3728d50d50b0b91cfbb11ca330761d1f87afd17f0cf1425863b35f576426",
+            "heading": "### Requirement: Mono Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mono.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mono.item-envelope",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.collection",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.dedup",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.cgu-classification",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.cgu-partition",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mono.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/rustc-monomorphization/specs/rustc-monomorphization/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "57d485eb77a4b8e2775bd30ffe1df1ae575b8d404d3f7ff3fed0f88a8bde6bb7",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "bea10f7aa6030bcb654d400bfac778d6cd8d24318cfd9df3cc31221ef43a4e52"
+}

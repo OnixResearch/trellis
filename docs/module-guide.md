@@ -98,7 +98,9 @@ shape-preserving mutation admission. Use
 pass, validation, optimization-gate, and artifact-state trace admission. Use
 [`backend_codegen_trace`](../src/builder_lower/identity.rs) for typed builder
 handles, block mappings, source-tied operations, and control-flow admission. Use
-[`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared
+[`rustc_monomorphization`](../src/instance_partition/identity.rs) for finite
+concrete-item reachability, deduplication, stability classes, and disjoint unit
+partitions. Use [`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared
 crate-artifact compatibility and bounded dependency selection. Use
 [`track_caller_abi`](../src/track/caller/abi.rs) for caller-location,
 trait-inheritance, direct-call, and reify-shim admission.

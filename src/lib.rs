@@ -872,6 +872,9 @@ pub mod ring_buffer;
 /// Verified finite rustc crate-artifact compatibility and selection.
 #[path = "rustc/metadata/identity.rs"]
 pub mod rustc_metadata_identity;
+/// Verified finite concrete-item collection and unit partition admission.
+#[path = "instance_partition/identity.rs"]
+pub mod rustc_monomorphization;
 pub mod rwlock;
 pub mod safe_reclamation_domain;
 pub mod safe_snapshot_replication;

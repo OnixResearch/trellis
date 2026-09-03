@@ -1,10 +1,10 @@
-# Rustc Monomorphization Specification
+# Rustc Monomorphization Delta
 
 ## Purpose
 
 Defines finite monomorphization and codegen-unit partitioning primitives for Trellis. The requirements cover mono-item identity, concrete instance metadata, root reachability collection, deduplication, stable/volatile classification, CGU partition disjointness/completeness, evidence, documentation, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Mono Item Envelope
 r[mono.item-envelope] The system MUST define finite mono-item identities for function instances, statics, and shims with declared concrete instance metadata.

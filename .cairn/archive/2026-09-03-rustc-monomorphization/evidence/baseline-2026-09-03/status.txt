@@ -1,0 +1,5 @@
+cargo_test=0
+verus=0
+verus_path=/nix/store/9wkrhg2d49vi1kgdfr297j6nf0slk7qg-verus-proofs
+tracey_uncovered=0
+tracey_untested=0

@@ -7843,6 +7843,48 @@ r[backend-trace.non-claims]
 Builder-record evidence MUST NOT claim concrete backend IR, target ABI, machine
 code, linker, LTO, debug-information, or performance correctness.
 
+## Rustc Monomorphization
+
+r[mono.item-envelope]
+Each finite function, static, or shim item MUST have a unique key, compatible
+concrete shape, bounded arguments, optional shim source, origin, and stability.
+
+r[mono.collection]
+Collection MUST equal deterministic finite reachability from declared roots
+through references whose sources and targets are declared items.
+
+r[mono.dedup]
+Repeated roots and reachability paths MUST collapse to one collected key.
+Duplicate collected output keys MUST fail deterministically.
+
+r[mono.cgu-classification]
+Local plain functions and statics MUST be stable. Generic, specialized, shim,
+or external items MUST be volatile.
+
+r[mono.cgu-partition]
+Output units MUST be disjoint and complete over the collected set, and each
+unit's stability MUST match every item it contains.
+
+r[mono.admission]
+Admission MUST report the same first item, root, reference, collected-output,
+or unit failure for the same malformed record.
+
+r[mono.evidence]
+Positive and negative tests MUST cover concrete items, reachable collection,
+deduplication, stability, partition overlap, omission, and malformed metadata.
+
+r[mono.docs]
+Public collection helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[mono.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[mono.non-claims]
+Collection evidence MUST NOT claim trait solving, full substitution, rustc
+instance resolution, code generation, linking, LTO, size, or performance facts.
+
 ## Rustc Metadata Identity
 
 r[rustc-metadata.library-kind]
