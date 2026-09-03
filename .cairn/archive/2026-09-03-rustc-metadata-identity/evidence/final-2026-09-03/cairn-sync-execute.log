@@ -1,0 +1,194 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "rustc-metadata-identity",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "2836299c67a6200c5398550547c78689de42644589b897cebd02990ad03a0a45",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "511de9eaeefe521bfc57aa7e712cde393c533bc27814888eaceae4daccb1abbb",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "e6591feceeb0abf4056aff4a67349a8162ffc998cd46f3b46b93cacd80f71350",
+        "destination": ".cairn/specs/rustc-metadata-identity/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "d19eddaf141a66a440da76308b40e596088f22ea21a01dd28f766ec21844131e",
+        "operations": [
+          {
+            "block_hash": "925b42d1acaa1749269c40203afa7dfd0412ec827817847f2bdef6ebe093fc44",
+            "heading": "### Requirement: Rustc Library Kind Metadata",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.library-kind"
+          },
+          {
+            "block_hash": "c9238c0bc158b658b808a263efdd5d5d4978b9700b452ea3d9cf0209a4737f9b",
+            "heading": "### Requirement: Rustc Identity Fields",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.identity-fields"
+          },
+          {
+            "block_hash": "b1d48205ae00da809b4eb49bad15f260b1bf46168e5899f7e0e6474d2031ade8",
+            "heading": "### Requirement: Metadata Compatibility",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.compatibility"
+          },
+          {
+            "block_hash": "b93429ab752fc9313c2718aa6688191e995515432abfe4e76f25c43f3c71194d",
+            "heading": "### Requirement: Encoded MIR Availability",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.admission"
+          },
+          {
+            "block_hash": "5e9123d3786da69e53835678967e5d4b102488323a1ff4f70a5d3140e17b8058",
+            "heading": "### Requirement: Dependency Loading",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.dependency-loading"
+          },
+          {
+            "block_hash": "e4f002019f18a4bbaf73efffbd3b387297d1a340d649a9225395e08b07dff489",
+            "heading": "### Requirement: Rmeta Pipelining Boundary",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.rmeta-pipelining"
+          },
+          {
+            "block_hash": "115ffd3eda4270965cf6c2845dbee70072c576b867d3aaa2aec3c1914a3bd648",
+            "heading": "### Requirement: Metadata Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.evidence"
+          },
+          {
+            "block_hash": "aada4c5a0ce9e0defe0876ed743718fa3f77319eee96137fa51193ac7e362796",
+            "heading": "### Requirement: Metadata Documentation Sync",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.docs"
+          },
+          {
+            "block_hash": "d5ef04e46986d45c657e01108f387bd4eb4c67e1c65434d55b0e90406c1cd24c",
+            "heading": "### Requirement: Metadata Validation Evidence",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.final-validation"
+          },
+          {
+            "block_hash": "f4b5189f6a6db597078c294a1aad149a64c75b2a7350321aa552820ba4e7f744",
+            "heading": "### Requirement: Metadata Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "rustc-metadata.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.library-kind",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.identity-fields",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.compatibility",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.dependency-loading",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.rmeta-pipelining",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "rustc-metadata.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/rustc-metadata-identity/specs/rustc-metadata-identity/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "d19eddaf141a66a440da76308b40e596088f22ea21a01dd28f766ec21844131e",
+          "exists": true,
+          "path": "./.cairn/specs/rustc-metadata-identity/spec.md"
+        }
+      ],
+      "manifest_hash": "38f620189325cfa91a04b5633de8b84e30505f71b0872332b4ecb64a578b7c12"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/rustc-metadata-identity/spec.md"
+        }
+      ],
+      "manifest_hash": "bd08641e034577739e1e60c4578814ffcaa59205db43711bfb3b5819e82b2823"
+    },
+    "kind": "sync",
+    "manifest_hash": "db53479c3130c8b7ffa238677e99d9390d52e7c511c9238c5c20ca9f99696b87"
+  },
+  "plan_hash": "9acda47ea7b8c0b5be96a64ffc7ef9b1c7bc9a806b89b756817e3dbc12110adb",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "12c1d242a20eceab64e19543f12d48dee7fd26968245d9d3f83dc36947a27c3f"
+}

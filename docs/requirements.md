@@ -7618,6 +7618,44 @@ The finite model MUST NOT claim active expansion, proc-macro behavior, full toke
 parsing, rendered diagnostics, feature stabilization, or whole-frontend
 correctness.
 
+## Rustc Metadata Identity
+
+r[rustc-metadata.library-kind]
+Rlib and dylib candidates MUST declare metadata and linkable code. Rmeta
+candidates MUST declare metadata without claiming linkable object code.
+
+r[rustc-metadata.identity-fields]
+Compatibility MUST compare the declared crate name, compiler version, strict
+version hash, and stable crate ID without changing rustc-mandated algorithms.
+
+r[rustc-metadata.compatibility]
+A candidate MUST satisfy artifact shape, request completeness, identity fields,
+usage-mode linkability, and encoded-MIR requirements before admission.
+
+r[rustc-metadata.admission]
+Admission MUST return deterministic reason and candidate metadata for missing
+fields, invalid capabilities, incompatibility, linkability, and encoded-MIR
+failures.
+
+r[rustc-metadata.dependency-loading]
+Dependency selection MUST scan no more than `MAX_CANDIDATES` artifacts. It MUST
+select one unique compatible candidate or report no match, ambiguity, or a bound
+failure with deterministic candidate identities.
+
+r[rustc-metadata.rmeta-pipelining]
+Rmeta MAY satisfy check, documentation, pipeline, or compatible codegen metadata
+use. Rmeta alone MUST NOT satisfy final linking.
+
+r[rustc-metadata.evidence]
+Positive and negative tests MUST cover all library kinds, identity mismatches,
+encoded-MIR policy, rmeta boundaries, unique selection, no match, ambiguity, and
+candidate bounds.
+
+r[rustc-metadata.non-claims]
+The finite model MUST NOT claim archive parsing, rustc hash construction or
+collision resistance, linking, object code, LTO, compression, or whole-build
+correctness.
+
 ## Track Caller ABI
 
 r[track-caller.attribute-validity]

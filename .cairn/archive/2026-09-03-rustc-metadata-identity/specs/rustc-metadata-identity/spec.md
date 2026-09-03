@@ -1,10 +1,6 @@
-# Rustc Metadata Identity Specification
+# Rustc Metadata Identity Delta
 
-## Purpose
-
-Defines finite rustc metadata identity primitives for Trellis. The requirements cover library-kind metadata, rustc identity fields, compatibility checks, dependency loading, encoded-MIR availability, rmeta pipelining/linkability boundaries, evidence, documentation, validation, and non-claim boundaries.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Rustc Library Kind Metadata
 r[rustc-metadata.library-kind] The system MUST distinguish finite `rlib`, `dylib`, and `rmeta` library-kind metadata and MUST declare whether each candidate carries metadata, linkable object code, and optional codegen payloads.
