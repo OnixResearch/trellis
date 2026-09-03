@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `610` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `611` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -310,6 +310,7 @@ Summary: `610` public modules, `588` requirement-covered modules, `14` example-b
 | `metric_window` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/metric_window.rs`](../src/metric_window.rs) |
 | `mir_core` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/mir_core/identity.rs`](../src/mir_core/identity.rs) |
 | `mir_pass_pipeline` | `partial-requirement-coverage`, `test-backed` | — | impl: `3`, verify: `0`, requirements mentions: `0` | — | [`src/mir_pass_pipeline/identity.rs`](../src/mir_pass_pipeline/identity.rs) |
+| `mir_visitor_traversal` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/mir_walk/identity.rs`](../src/mir_walk/identity.rs) |
 | `ml_batch_iterator` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/ml_batch_iterator.rs`](../src/ml_batch_iterator.rs) |
 | `ml_confusion_matrix` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `1`, requirements mentions: `0` | — | [`src/ml_confusion_matrix.rs`](../src/ml_confusion_matrix.rs) |
 | `ml_dataset_split` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/ml_dataset_split.rs`](../src/ml_dataset_split.rs) |

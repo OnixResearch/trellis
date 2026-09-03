@@ -1,0 +1,92 @@
+{
+  "change": "mir-visitor-traversal",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "1e51f8e1f00702a073f06f083f10b88cd0a4ef2c42fe199261f9de7f639ed31a",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "probe_evidence": {
+    "declarations_present": false,
+    "probes": []
+  },
+  "receipt_hash": "6b153923d58106d21dd1a2c08b0d2377dff5a34670db8256d29e34b88660eb61",
+  "stage": "tasks",
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 13,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 9,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md",
+      "requirement_blocks": 10,
+      "scenario_blocks": 17,
+      "substantive_lines": 62,
+      "substantive_requirement_blocks": 10,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 11,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/mir-visitor-traversal/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 11,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 11,
+      "task_done": 11,
+      "task_in_progress": 0,
+      "task_todo": 0
+    }
+  ],
+  "task_ordering": {
+    "active": false,
+    "edges": [],
+    "issues": [],
+    "nodes": [],
+    "order": [],
+    "ready_tasks": [],
+    "valid": true
+  },
+  "valid": true,
+  "verdict": "PASS"
+}

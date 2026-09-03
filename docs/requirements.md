@@ -7673,6 +7673,49 @@ MIR-core evidence MUST NOT claim full rustc MIR compatibility, Rust typing,
 borrow checking, drop elaboration, optimization, code generation, text parsing,
 or whole-compiler correctness.
 
+## MIR Visitor Traversal
+
+r[mir-visitor.locations]
+Every visit MUST name an admitted body, local, block, statement, terminator,
+place, operand, rvalue, or successor location with fixed-width indices.
+
+r[mir-visitor.trace]
+A finite trace MUST declare its ordered entries, entry block, coverage mode,
+reachability policy, block order, and mutation class.
+
+r[mir-visitor.coverage]
+An exactly-once trace MUST contain every requested location once, with no
+duplicate, invalid, unreachable, or outside location.
+
+r[mir-visitor.traversal-order]
+Preorder and reverse postorder MUST start at the declared entry, follow admitted
+CFG edges deterministically, and exclude unreachable blocks.
+
+r[mir-visitor.mut-shape]
+An immutable trace MUST have no changed body. A value-only mutable trace MUST
+keep admitted local, block, statement, terminator, and successor counts.
+
+r[mir-visitor.admission]
+Admission MUST reject the same first invalid mode, mutation, request, entry,
+coverage, reachability, or order condition for the same malformed trace.
+
+r[mir-visitor.evidence]
+Positive and negative tests MUST cover location families, full coverage,
+duplicates, missing visits, traversal orders, reachability, and mutation shape.
+
+r[mir-visitor.docs]
+Public traversal helpers MUST have matching requirement, source, test or proof,
+README, module-guide, accepted-spec, and lifecycle references.
+
+r[mir-visitor.final-validation]
+Final evidence MUST record focused Cargo and Verus results, Tracey coverage,
+strict Clippy, repository checks, and Cairn lifecycle validation.
+
+r[mir-visitor.non-claims]
+Traversal evidence MUST NOT claim rustc visitor-macro correctness, compiler
+borrow behavior, pass semantics, optimization correctness, or whole-compiler
+correctness.
+
 ## MIR Pass Pipeline
 
 r[mir-pass.phase-order]

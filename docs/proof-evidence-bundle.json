@@ -32,7 +32,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "719e4d18a55390b22fd0c757e7398fe2b7d1a8003c4377f36276e11029822fb4"
+          "digest": "4a546dcdb30a0da4c4456b759dce8d842a29d018d82b25224e29c55614e722a9"
         },
         {
           "path": "src/arithmetic.rs",
@@ -93,7 +93,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "719e4d18a55390b22fd0c757e7398fe2b7d1a8003c4377f36276e11029822fb4"
+          "digest": "4a546dcdb30a0da4c4456b759dce8d842a29d018d82b25224e29c55614e722a9"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -132,7 +132,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "719e4d18a55390b22fd0c757e7398fe2b7d1a8003c4377f36276e11029822fb4"
+          "digest": "4a546dcdb30a0da4c4456b759dce8d842a29d018d82b25224e29c55614e722a9"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",

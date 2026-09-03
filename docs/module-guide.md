@@ -89,6 +89,9 @@ Goal labels: compiler analysis, HIR metadata, library metadata, CFG modeling, SS
 Use [`hir_attribute_parsing`](../src/hir/attribute/parsing.rs) for finite inert
 parser and policy admission. Use [`mir_core`](../src/mir_core/identity.rs) for
 finite MIR body, local, place, shallow-rvalue, terminator, and CFG admission. Use
+[`mir_visitor_traversal`](../src/mir_walk/identity.rs) for explicit visit
+locations, exactly-once coverage, deterministic block orders, and
+shape-preserving mutation admission. Use
 [`mir_pass_pipeline`](../src/mir_pass_pipeline/identity.rs) for finite MIR phase,
 pass, validation, optimization-gate, and artifact-state trace admission. Use
 [`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared

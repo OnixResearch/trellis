@@ -1,10 +1,10 @@
-# MIR Visitor Traversal Specification
+# MIR Visitor Traversal Delta
 
 ## Purpose
 
 Defines finite MIR visitor and traversal primitives for Trellis. The requirements cover visit-location identity, visitor trace admission, coverage, traversal order, mutable shape preservation, evidence, documentation, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: MIR Visit Locations
 r[mir-visitor.locations] The system MUST define finite visit-location identifiers for the MIR-core elements a visitor may inspect or mutate.

@@ -1,0 +1,171 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-visitor-traversal",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "d59bb25d63609139b2db12186043c260690ccd2a216b2cec98000cdeb308d428",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "2b47acd9cb3d88b02d1e49056b805149e262b09da1f004e29ce02da5d49d4320",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "ec6d8e34de47165b65704d7e0585da65aab0d2c2b7332968e6ecbfa6073609eb",
+        "destination": ".cairn/specs/mir-visitor-traversal/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "92bdbb76644c4efada996c5c7cbd096bbb40577481452f8df602e1d58e47be44",
+        "operations": [
+          {
+            "block_hash": "aafd5f669084f8165da394aacbf62b2d98d864a6f107ce1c0eda62700db8941a",
+            "heading": "### Requirement: MIR Visit Locations",
+            "kind": "added",
+            "requirement_id": "mir-visitor.locations"
+          },
+          {
+            "block_hash": "2fada787dc0ee9bceaa8a81401f1f9e995c6641b12567e4e63852e502f550591",
+            "heading": "### Requirement: Visitor Trace Admission",
+            "kind": "added",
+            "requirement_id": "mir-visitor.trace"
+          },
+          {
+            "block_hash": "a4f50d246b473bfe0022156b90d10e4551389fec67a78bf19187e80fffb03613",
+            "heading": "### Requirement: Visitor Coverage",
+            "kind": "added",
+            "requirement_id": "mir-visitor.coverage"
+          },
+          {
+            "block_hash": "1745626c90051176e829a3bb7b869faa8a670e8851b9e198c29acbc26551927d",
+            "heading": "### Requirement: Traversal Order",
+            "kind": "added",
+            "requirement_id": "mir-visitor.traversal-order"
+          },
+          {
+            "block_hash": "e86a09b17505c761b12838afc5a936abf5b937a5c61adc44fa3f697b32cd1a9e",
+            "heading": "### Requirement: Mutable Visitor Shape Preservation",
+            "kind": "added",
+            "requirement_id": "mir-visitor.mut-shape"
+          },
+          {
+            "block_hash": "9d95acfc36d86369a8888b71209d993ceaf1f1871a0e32bd6958c0e3f7ff1d0d",
+            "heading": "### Requirement: Visitor Admission Helpers",
+            "kind": "added",
+            "requirement_id": "mir-visitor.admission"
+          },
+          {
+            "block_hash": "954d1b52b9e41f9fb7522672eecb1763241fc8d293c1aacfd99fb71e26004e94",
+            "heading": "### Requirement: Visitor Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mir-visitor.evidence"
+          },
+          {
+            "block_hash": "bc6637b8b3f14d8f78531142ed3a9d7ea4ab582957508005415bbeccc8b1e5ff",
+            "heading": "### Requirement: Visitor Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mir-visitor.docs"
+          },
+          {
+            "block_hash": "3d928bbea88882657a415282e63d53e4fc107631627543d2b500bf3175534b5b",
+            "heading": "### Requirement: Visitor Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mir-visitor.final-validation"
+          },
+          {
+            "block_hash": "68e9d1ac536359a1f323df5e31b88efbd766000ea8bee02cf5b4cdb740fc07c2",
+            "heading": "### Requirement: Visitor Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mir-visitor.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.locations",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.trace",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.coverage",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.traversal-order",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.mut-shape",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-visitor.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/mir-visitor-traversal/specs/mir-visitor-traversal/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "342730a549e181c856a70151aa54a5a8501fa2c1eec6e2aa85c73750134a6597",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "532ea057a8688b95237c4552c9257e553c71b889a8726d1059c60cf4a13798ab"
+}
