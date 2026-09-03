@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10839 Verus proofs · 4889 tests · 2079 requirements · 607 modules · 16 trusted/proof-gap boundaries**
+**10866 Verus proofs · 4902 tests · 2087 requirements · 608 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -423,6 +423,7 @@ validation commands captured in the change evidence.
 | Module | What it verifies |
 |---|---|
 | `hir_attribute_parsing` | finite inert parser descriptors, parser classes, target/duplicate/safety/stability policy, deterministic diagnostics, and early/late metadata agreement |
+| `rustc_metadata_identity` | finite rlib/dylib/rmeta capability, rustc identity-field, encoded-MIR, pipelining, and bounded dependency-selection admission |
 
 ### Compiler backend
 
@@ -771,3 +772,4 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — Apache-2.0 external reference for the evaluated CPU runtime cohort; no interaction-net, scheduling, generated-code, or runtime-correctness claim transfers.
 - [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.
 - [rustc-dev-guide: Attribute Parsing](https://rustc-dev-guide.rust-lang.org/hir/attribute-parsing.html) — design reference for inert parser classes and policy metadata only; no macro, token-parser, diagnostics, stabilization, or frontend claim transfers.
+- [rustc-dev-guide: Libraries and metadata](https://rustc-dev-guide.rust-lang.org/backend/libs-and-metadata.html) — design reference for rlib/dylib/rmeta capabilities, rustc identity fields, encoded MIR, and pipelining only; no archive, hash-security, linker, LTO, or build-system claim transfers.

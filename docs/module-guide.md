@@ -84,11 +84,14 @@ allocate process memory or replace a runtime allocator.
 
 ## Compiler analysis and IR transforms
 
-Goal labels: compiler analysis, HIR metadata, CFG modeling, SSA, optimization, ABI metadata.
+Goal labels: compiler analysis, HIR metadata, library metadata, CFG modeling, SSA, optimization, ABI metadata.
 
 Use [`hir_attribute_parsing`](../src/hir/attribute/parsing.rs) for finite inert
-parser and policy admission. Use [`track_caller_abi`](../src/track/caller/abi.rs)
-for caller-location, trait-inheritance, direct-call, and reify-shim admission.
+parser and policy admission. Use
+[`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared
+crate-artifact compatibility and bounded dependency selection. Use
+[`track_caller_abi`](../src/track/caller/abi.rs) for caller-location,
+trait-inheritance, direct-call, and reify-shim admission.
 Start with [`control_flow_graph`](../src/control_flow_graph.rs) for block/edge
 shape, then [`dominator_tree`](../src/dominator_tree.rs),
 [`loop_detection`](../src/loop_detection.rs), and [`liveness_analysis`](../src/liveness_analysis.rs)

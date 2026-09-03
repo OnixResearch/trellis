@@ -36,6 +36,12 @@ Trellis should model finite identity and admission facts over declared metadata,
 
 **Rationale:** This makes negative evidence for wrong versions and ambiguous dependencies clear.
 
+### 6. Bound selection and keep effects outside the core
+
+**Choice:** Candidate selection accepts at most `MAX_CANDIDATES` declared artifacts. A pure bounded scan returns the first unique candidate or the first conflicting pair. Separate source files own model, admission, resolver, proof, and test responsibilities.
+
+**Rationale:** The explicit bound prevents unbounded search. The core performs no filesystem, archive, linker, or registry I/O.
+
 ## Risks / Trade-offs
 
 - Real archive scanning has many platform details. This primitive intentionally models declared metadata only.

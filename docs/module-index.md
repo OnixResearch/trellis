@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `607` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `608` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -48,7 +48,7 @@ Summary: `607` public modules, `588` requirement-covered modules, `14` example-b
 | `bounded_mpmc` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `20`, requirements mentions: `0` | — | [`src/bounded_mpmc.rs`](../src/bounded_mpmc.rs) |
 | `bounded_peers` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `0` | — | [`src/bounded_peers.rs`](../src/bounded_peers.rs) |
 | `bounded_range` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `33`, requirements mentions: `1` | — | [`src/bounded_range.rs`](../src/bounded_range.rs) |
-| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `23` | — | [`src/bounds.rs`](../src/bounds.rs) |
+| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `24` | — | [`src/bounds.rs`](../src/bounds.rs) |
 | `btree_balance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `20`, verify: `45`, requirements mentions: `0` | — | [`src/btree_balance.rs`](../src/btree_balance.rs) |
 | `btree_delete` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `21`, requirements mentions: `0` | — | [`src/btree_delete.rs`](../src/btree_delete.rs) |
 | `btree_insert` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/btree_insert.rs`](../src/btree_insert.rs) |
@@ -446,6 +446,7 @@ Summary: `607` public modules, `588` requirement-covered modules, `14` example-b
 | `result` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `29`, requirements mentions: `29` | — | [`src/result.rs`](../src/result.rs) |
 | `retry` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `22`, requirements mentions: `5` | — | [`src/retry.rs`](../src/retry.rs) |
 | `ring_buffer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `29`, requirements mentions: `0` | — | [`src/ring_buffer.rs`](../src/ring_buffer.rs) |
+| `rustc_metadata_identity` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/rustc/metadata/identity.rs`](../src/rustc/metadata/identity.rs) |
 | `rwlock` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `11`, verify: `22`, requirements mentions: `12` | — | [`src/rwlock.rs`](../src/rwlock.rs) |
 | `safe_reclamation_domain` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `2`, requirements mentions: `0` | — | [`src/safe_reclamation_domain.rs`](../src/safe_reclamation_domain.rs) |
 | `safe_snapshot_replication` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `4`, requirements mentions: `0` | — | [`src/safe_snapshot_replication.rs`](../src/safe_snapshot_replication.rs) |
