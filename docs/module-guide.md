@@ -84,9 +84,11 @@ allocate process memory or replace a runtime allocator.
 
 ## Compiler analysis and IR transforms
 
-Goal labels: compiler analysis, CFG modeling, SSA, optimization.
+Goal labels: compiler analysis, CFG modeling, SSA, optimization, ABI metadata.
 
-Start with [`control_flow_graph`](../src/control_flow_graph.rs) for block/edge
+Use [`track_caller_abi`](../src/track/caller/abi.rs) for finite caller-location,
+trait-inheritance, direct-call, and reify-shim admission. Start with
+[`control_flow_graph`](../src/control_flow_graph.rs) for block/edge
 shape, then [`dominator_tree`](../src/dominator_tree.rs),
 [`loop_detection`](../src/loop_detection.rs), and [`liveness_analysis`](../src/liveness_analysis.rs)
 for graph analyses. Use [`ssa_construction`](../src/ssa_construction.rs),

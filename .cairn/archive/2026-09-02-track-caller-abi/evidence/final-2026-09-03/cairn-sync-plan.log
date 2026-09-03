@@ -1,0 +1,193 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "track-caller-abi",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "0e0a346965baccccf76a6e00c2128e6dd4bba129edf02cf628f4513561c16ef5",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "d4f2536f562d7a5b3da943b2780c6bfb36be354fdaca96a5fda4958165763f4a",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "62400f8fc35c623682f3e9634e81268c8961717fdb331d5359573c5933538d52",
+        "destination": ".cairn/specs/track-caller-abi/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "6300e71c2d22a239e1ed7af785b5ce478aafa92554ff054c4247841bf4e03a92",
+        "operations": [
+          {
+            "block_hash": "66d052858ff36bb9a071047b226f0d91808500c8d85ae20d8ffa82209a92f630",
+            "heading": "### Requirement: Track Caller Attribute Validity",
+            "kind": "added",
+            "requirement_id": "track-caller.attribute-validity"
+          },
+          {
+            "block_hash": "c3ea985f884de7ecc25eefad5fe67397f7c71de5fbb998a3fa5622b038da7b96",
+            "heading": "### Requirement: Caller Location Metadata",
+            "kind": "added",
+            "requirement_id": "track-caller.location-metadata"
+          },
+          {
+            "block_hash": "c3b11a5b840985fbabde0dc17d97b552b23cceb86af0752127d916067a5fe2a9",
+            "heading": "### Requirement: Direct Tracked Call Propagation",
+            "kind": "added",
+            "requirement_id": "track-caller.direct-call"
+          },
+          {
+            "block_hash": "41390667fc75d51573bbe6916cd6c5865ea6ebf1638d5c6d3407313af3273424",
+            "heading": "### Requirement: Tracked Chain Propagation",
+            "kind": "added",
+            "requirement_id": "track-caller.propagation"
+          },
+          {
+            "block_hash": "0a4299314756d26ea53ce09fff865f215b24a0741c2dd1f513d7238ad91b56b6",
+            "heading": "### Requirement: Reify Shim for Tracked Function Pointers",
+            "kind": "added",
+            "requirement_id": "track-caller.reify-shim"
+          },
+          {
+            "block_hash": "283a474bdd791516aa7f44b8a00c68f98129a2af310a4ce9e1000188f4751ca5",
+            "heading": "### Requirement: Trait Track Caller Inheritance",
+            "kind": "added",
+            "requirement_id": "track-caller.trait-inheritance"
+          },
+          {
+            "block_hash": "da697f1a7c4d040f2a568789b02217efc339b2889331002a9d3a63bcec742043",
+            "heading": "### Requirement: Const and Codegen Agreement",
+            "kind": "added",
+            "requirement_id": "track-caller.const-codegen-agreement"
+          },
+          {
+            "block_hash": "66b95915b9ddeab65776feff2db6922f811da7338e16f653029cf085b79831a9",
+            "heading": "### Requirement: Track Caller Admission Helpers",
+            "kind": "added",
+            "requirement_id": "track-caller.admission"
+          },
+          {
+            "block_hash": "b083e6bee001236de12fcc361dd9b4acd2c535b3f8934c972466551616ebdbce",
+            "heading": "### Requirement: Track Caller Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "track-caller.evidence"
+          },
+          {
+            "block_hash": "3e959df23def6da92fa0d0a21ae7cd3fc1af95c2455ab7775c5d7544ecdc27be",
+            "heading": "### Requirement: Track Caller Documentation Sync",
+            "kind": "added",
+            "requirement_id": "track-caller.docs"
+          },
+          {
+            "block_hash": "e7f4aa7bf8a76d22c1972f14201fac35d6ef19873bdbb950436c15a2c2260318",
+            "heading": "### Requirement: Track Caller Validation Evidence",
+            "kind": "added",
+            "requirement_id": "track-caller.final-validation"
+          },
+          {
+            "block_hash": "d0f46255fb9cae5c45ed37e616f6a9f42ee3ded02b9b6a2d3df5f81e560ba39a",
+            "heading": "### Requirement: Track Caller Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "track-caller.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.attribute-validity",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.location-metadata",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.direct-call",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.propagation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.reify-shim",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.trait-inheritance",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.const-codegen-agreement",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "track-caller.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/track-caller-abi/specs/track-caller-abi/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "5ae8ee52d07ce9c5fbf7fa0fc53a640cbdf2c3ea457a2bde2bb8adccad0b95a1",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "580042ae741dff486ecfd5e737ec3b94632b9e95bc53be96c1e2e41338651868"
+}

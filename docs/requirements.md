@@ -7586,6 +7586,49 @@ Every slot end MUST lie within the computed frame boundary, and append-only slot
 assignment MUST place each new slot at or after the current maximum slot
 extent.
 
+## Track Caller ABI
+
+r[track-caller.attribute-validity]
+Tracked functions MUST use the Rust calling convention. They MUST NOT be
+closures, naked functions, or unsupported item kinds.
+
+r[track-caller.location-metadata]
+Caller locations MUST use finite metadata that distinguishes definition sites,
+call sites, and forwarded locations.
+
+r[track-caller.direct-call]
+A direct call to a tracked function MUST supply the location selected from its
+explicit caller context. An untracked callee MUST NOT receive a hidden location.
+
+r[track-caller.propagation]
+A non-empty tracked-call chain MUST preserve the nearest untracked call-site
+identity. Missing, changed, or excessive chain entries MUST fail admission.
+
+r[track-caller.reify-shim]
+A tracked function-pointer use MUST name a matching reify shim with a declared
+definition-site fallback. An untracked function-pointer use MUST NOT add a shim.
+
+r[track-caller.trait-inheritance]
+Prototype, default-body, and local annotations MUST produce one deterministic
+effective trait-method tracking result. Observed metadata MUST match that result.
+
+r[track-caller.const-codegen-agreement]
+Const and codegen traces MUST contain the same bounded ordered edge and location
+metadata. A length, edge, or location mismatch MUST fail agreement.
+
+r[track-caller.admission]
+Admission helpers MUST use deterministic failure classes and subject identities.
+Repeated evaluation of the same metadata MUST return the same first failure.
+
+r[track-caller.evidence]
+Positive and negative tests MUST cover attribute, direct-call, chain, shim,
+trait-inheritance, agreement, bound, and deterministic-failure behavior.
+
+r[track-caller.non-claims]
+The finite metadata model MUST NOT claim stack walking, panic formatting,
+runtime location allocation, ABI lowering, intrinsic behavior, debug-information
+correctness, or whole-codegen correctness.
+
 ## Hypervisor Memslots
 
 r[hypervisor-memslot.disjoint]

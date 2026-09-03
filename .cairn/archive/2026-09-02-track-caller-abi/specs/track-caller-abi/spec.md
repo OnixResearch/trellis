@@ -1,10 +1,6 @@
-# Track Caller ABI Specification
+# Track Caller ABI Delta
 
-## Purpose
-
-Defines finite `#[track_caller]` ABI primitives for Trellis. The requirements cover attribute validity, caller-location metadata, direct-call propagation, tracked-chain forwarding, function-pointer reify shims, trait/default inheritance, const/codegen agreement, evidence, documentation, validation, and non-claim boundaries.
-
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Track Caller Attribute Validity
 r[track-caller.attribute-validity] The system MUST admit `track_caller` metadata only for functions whose finite ABI and item-kind metadata allow the attribute.
@@ -52,7 +48,7 @@ r[track-caller.direct-call.tracked-caller]
 - THEN the callee receives the caller's forwarded caller-location metadata.
 
 ### Requirement: Tracked Chain Propagation
-r[track-caller.propagation] Across a finite chain of tracked calls, caller-location metadata MUST resolve to the nearest untracked caller boundary or declared definition-site fallback for shim cases.
+r[track-caller.propagation] Across a non-empty finite chain of tracked calls, caller-location metadata MUST resolve to the nearest untracked caller boundary or declared definition-site fallback for shim cases. Admission MUST reject chains above the named metadata-entry bound.
 
 #### Scenario: Chain forwards nearest untracked caller
 r[track-caller.propagation.chain]
@@ -97,7 +93,7 @@ r[track-caller.trait-inheritance.default]
 - THEN the override inherits tracked status according to the declared finite metadata.
 
 ### Requirement: Const and Codegen Agreement
-r[track-caller.const-codegen-agreement] The system MUST define a finite agreement check requiring const-context and codegen-context caller-location traces to select the same abstract location for the same admitted call graph.
+r[track-caller.const-codegen-agreement] The system MUST define a bounded finite agreement check requiring const-context and codegen-context caller-location traces to contain the same ordered edge and abstract-location metadata for the same admitted call graph.
 
 #### Scenario: Matching traces are accepted
 r[track-caller.const-codegen-agreement.valid]

@@ -98,6 +98,8 @@
 //!   deterministic spill fallback
 //! - `stack_frame_layout` — aligned stack-slot placement, exact rounded frame sizing, and explicit
 //!   safe-reuse checks over live ranges
+//! - `track_caller_abi` — finite caller-location metadata, direct-call propagation, trait
+//!   inheritance, reify-shim, and const/codegen trace admission
 //! - `wasm_primitives` — exact Wasm value tags, `i32.add` stack discipline, typed local access,
 //!   linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack
 //!   validation, control-frame stack-height restoration, finite `call_indirect` table/signature
@@ -771,7 +773,9 @@ pub mod page;
 pub mod page_checksum;
 pub mod parking_lot_condvar_model;
 pub mod parking_lot_contracts;
+#[path = "parking_lot_core_model/mod.rs"]
 pub mod parking_lot_core_model;
+#[path = "parking_lot_raw_mutex/mod.rs"]
 pub mod parking_lot_raw_mutex;
 pub mod parking_lot_rwlock_model;
 pub mod parsing_format;
@@ -924,6 +928,9 @@ pub mod timeseries;
 pub mod tlb_shootdown;
 pub mod token_timestamp;
 pub mod topo_sort;
+/// Verified finite `#[track_caller]` ABI metadata and admission.
+#[path = "track/caller/abi.rs"]
+pub mod track_caller_abi;
 pub mod trace_relation;
 pub mod transfer;
 pub mod trust_level;

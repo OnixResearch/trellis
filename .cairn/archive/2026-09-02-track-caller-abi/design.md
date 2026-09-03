@@ -36,6 +36,12 @@ Trellis should model finite metadata and call-edge behavior, not runtime stack w
 
 **Rationale:** The guide notes both contexts must agree. A finite trace model is enough for Trellis claims.
 
+### 6. Bound metadata and split components
+
+**Choice:** Chain and trace admission reject more than `MAX_METADATA_ENTRIES` entries. The `track_caller_abi` facade composes separate model, admission, chain, trace, proof, and test files under `src/track/caller/`.
+
+**Rationale:** The named bound makes recursive scans finite. Narrow files keep each capability independently reviewable and below the Octet source-size limit.
+
 ## Risks / Trade-offs
 
 - Trait inheritance can become broad. Keep it to finite metadata for prototype/default/impl override cases.

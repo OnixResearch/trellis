@@ -236,7 +236,7 @@ fn hdl_source_result(candidate: HdlAdapterCandidate, input: HdlAdapterInput) -> 
         }
         HdlAdapterKind::WrappingAdd => input.lhs.wrapping_add(input.rhs) & mask,
         HdlAdapterKind::SmallFsmToggle => {
-            if input.lhs & mask == HDL_EMPTY_COUNT.into() {
+            if input.lhs & mask == u64::from(HDL_EMPTY_COUNT) {
                 u64::from(input.current_state)
             } else if input.current_state == HDL_ADAPTER_ZERO_STATE {
                 u64::from(HDL_ADAPTER_ONE_STATE)

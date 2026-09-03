@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10752 Verus proofs · 4863 tests · 2062 requirements · 605 modules · 16 trusted/proof-gap boundaries**
+**10791 Verus proofs · 4877 tests · 2072 requirements · 606 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -297,7 +297,7 @@ validation commands captured in the change evidence.
 | `rcu` | read-copy-update: grace periods, quiescent state, safe reclamation |
 | `mpsc_bounds` | MPSC channel bounds: occupancy, send/receive, capacity, close/drain |
 | `futex_state` | futex wait/wake FSM: idle/waiting/notified, notify idempotence |
-| `parking_lot_core_model` | finite typed `ParkKey`/`ThreadId` queues with uniqueness, requeue, and metadata validity |
+| `parking_lot_core_model` | finite typed ParkKey/ThreadId queues with uniqueness, requeue, and metadata validity |
 | `parking_lot_raw_mutex` | typed thread ownership and compact raw-mutex locked/parked-bit state transitions |
 | `parking_lot_condvar_model` | condition-variable association, notify, timeout, and no-spurious requeue semantics |
 | `parking_lot_rwlock_model` | packed reader/writer/upgradable RwLock state transitions and fairness gates |
@@ -424,6 +424,7 @@ validation commands captured in the change evidence.
 |---|---|
 | `register_allocation` | live-range overlap graphs, conflict-free register assignment, and deterministic spill fallback |
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
+| `track_caller_abi` | finite attribute, direct-call, tracked-chain, trait-inheritance, reify-shim, and const/codegen location-metadata admission |
 | `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, finite indirect-call table/signature admission, and branch-table target validation |
 | `gpu_primitives` | finite GPU program shapes, launch/grid/block/thread bounds, pitched/tensor memory-layout, coalesced access, and shared-tile admission |
 | `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` | finite HDL IR admission, deterministic Verilog/SystemVerilog emission, adapter refinement, generated-vector collateral, and tool-evidence classification |
@@ -517,6 +518,7 @@ validation commands captured in the change evidence.
 | `session_tree` | session tree as forest + seq_set composition |
 | `chain` | chain hash integrity with append-preserves proof |
 | `choreography_global` | finite global choreography syntax, participants, and well-formedness |
+| `choreography_ownership` | finite value-owner identities and atomic owner-transfer admission |
 | `choreography_local` | finite local choreography syntax, branch lookup, and merge |
 | `choreography_projection` | projectability checks and endpoint projection |
 | `choreography_step` | one-step global/local reduction and shared-prefix alignment |
@@ -761,3 +763,4 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [AeneasVerif/aeneas](https://github.com/AeneasVerif/aeneas) — exact-source Aeneas/Lean cross-verifier reference for selected safe Rust primitives; Aeneas evidence remains separately scoped and does not establish Verus/Aeneas semantic equivalence or verifier soundness.
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — Apache-2.0 external reference for a bounded `u24` balanced-reduction conformance profile; no language, compiler, runtime, or benchmark claim transfers.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — Apache-2.0 external reference for the evaluated CPU runtime cohort; no interaction-net, scheduling, generated-code, or runtime-correctness claim transfers.
+- [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.
