@@ -7636,6 +7636,43 @@ r[domain-primitives.typed-config.non-claims]
 Normal-form evidence MUST NOT claim Dhall compatibility, Nickel evaluation,
 parsing, import execution, network or filesystem security, or hash correctness.
 
+## Fenced Attempt Admission
+
+r[fenced-attempt-admission.boundary]
+The closed model MUST cover only finite phase, report, epoch, event, scope,
+linkage, count, and identity-relation facts. Unsupported variants MUST reject.
+
+r[fenced-attempt-admission.refinement]
+Spec and executable decisions for epoch and event classification, phase steps,
+result linkage, report application, and next-epoch arithmetic MUST agree, and
+applied reports MUST change only their named fields.
+
+r[fenced-attempt-admission.fence-safety]
+Stale, future, wrong-job, and wrong-run reports MUST reject unchanged.
+Reassignment MUST produce a strictly greater nonzero epoch and MUST reject at
+the fixed-width maximum.
+
+r[fenced-attempt-admission.event-idempotence]
+A repeated event and payload identity MUST replay as a no-op. An event identity
+with a different payload MUST reject as a conflict without merging either.
+
+r[fenced-attempt-admission.terminal-closure]
+Completed, failed, and superseded phases MUST reject every later
+state-changing report unchanged.
+
+r[fenced-attempt-admission.completion-linkage]
+Completion MUST require result-ready phase, current identity and epoch, worker
+scope, output scope, and the exact retained result identity.
+
+r[fenced-attempt-admission.rejection-preservation]
+Every rejection and replay MUST preserve phase, epoch, event history, progress,
+result linkage, and completion facts field for field.
+
+r[fenced-attempt-admission.evidence]
+Focused tests, bounded random histories, single-fact mutations, direct proof
+functions, Tracey coverage, and full-library Verus runs MUST bind each theorem
+to its requirement with explicit non-claims.
+
 ## S-expression Primitives
 
 r[s-expression.ast]

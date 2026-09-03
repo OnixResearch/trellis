@@ -60,6 +60,9 @@ those APIs for more than their stated structural contracts.
 Start with [`serialize_inj`](../src/serialize_inj.rs) for canonical byte encoding
 injectivity patterns and [`serialization_codec`](../src/serialization_codec.rs)
 for finite codec envelope admission. Use
+[`fenced_attempt_admission`](../src/fenced_attempt/identity.rs) for fenced
+durable-attempt phases, epoch safety, event idempotence, completion linkage,
+and exact rejection preservation. Use
 [`s_expression`](../src/paren_tree/identity.rs) for bounded canonical atom/list
 trees, deterministic UTF-8 rendering, canonical-only parsing, and roundtrips.
 Use [`total_config`](../src/normal_input/identity.rs) for finite typed graphs,

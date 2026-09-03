@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `618` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `619` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -187,6 +187,7 @@ Summary: `618` public modules, `588` requirement-covered modules, `14` example-b
 | `feature_flag_gate` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/feature_flag_gate.rs`](../src/feature_flag_gate.rs) |
 | `feature_flag_rollout_bucket` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/feature_flag_rollout_bucket.rs`](../src/feature_flag_rollout_bucket.rs) |
 | `fee` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `26`, requirements mentions: `11` | — | [`src/fee.rs`](../src/fee.rs) |
+| `fenced_attempt_admission` | `partial-requirement-coverage`, `test-backed` | — | impl: `3`, verify: `0`, requirements mentions: `0` | — | [`src/fenced_attempt/identity.rs`](../src/fenced_attempt/identity.rs) |
 | `fencing` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `17`, requirements mentions: `6` | — | [`src/fencing.rs`](../src/fencing.rs) |
 | `fetch_add` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `17`, verify: `23`, requirements mentions: `0` | — | [`src/fetch_add.rs`](../src/fetch_add.rs) |
 | `follower_commit` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `13`, requirements mentions: `0` | — | [`src/follower_commit.rs`](../src/follower_commit.rs) |

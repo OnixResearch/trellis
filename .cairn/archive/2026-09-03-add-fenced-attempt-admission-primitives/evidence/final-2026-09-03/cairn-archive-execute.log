@@ -1,0 +1,457 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-fenced-attempt-admission-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "add-fenced-attempt-admission-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "9da2c7444dfca3fc203e7ffe22c07542dfc6c58c480a5356be5dc0285de7d5fd",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "fe5786041cf1068374db862a7a9f97cb3ef72ce6b3d2facf11d517e5249454d7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/design.md"
+        },
+        {
+          "content_hash": "69d4fc9c20a465b7fe6f1dbe01ffe416eee23ef8713d7478863bfaf392818a9a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "cd583521709197fa68c1916d67f03ef67ccdec4390833998ac2395e68fc33f1d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "df875e96beb815dedcee66312e9b07aa6d046556b84ba4fb6209722173061c14",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "44b87fcdc1380c40bfe38a0d30d83824532d5db94c5d994a5a88f4b261d86c97",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7d0afd508bbe4bce7644e8b4bbf73f7f8316d6e93aed7aa8fd03899ede9e1c35",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "14803e84a278fadfeef38bcbe9e788e64954a6268707057dcc838c705f568aaa",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "951992d4b0bce5a598421e89cad8cf1ee38e6f2b83aad03fc5d41397cf1e0b76",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "020c119910115189fa6c885f7fc1057a2ab09545ae77bc75976590424119b894",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "e1d005ff20a08deb3d080d60422e1f52cd35e4c2eef33a3d573816f9267bca50",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "d94648d89fd2fe3d266fd9c26899776dbf3b3b0e72a8fe40ace1c20453f3434f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "1a87c7f99a106dfcb7d33b0b4d3ee51f0574f10db3416c23af1c9644a45d7852",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "58c417c1c2f5c8c89583dccb6d963c7fedfc96722d83145d0689ce4f847414de",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "15e4bcd43d488b51855c01f30e31d900eeb3f0ae3900b7fc25f40aaff7d43954",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "0efcb9dfc57905852f05e1a8d9a8718fdf6445927350056f23e97524e298fa83",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "12dd069696b63db5ca36f066be5aca4e08bdf7f0e8a76d609d69608446893906",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "a86ba62a30f0acacaac85a7049a96f675a65bf98e25b772c48fbadcfb708e61f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "21d15f0f81cd4f59ae3e61ce9c7fab807aa2f0b67f56fa37ca51c0dcb83ee90c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "42808f7298180786fa1c9fc2718424a626979040141257f0686ddb4f12366ca6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "14b4b3d41fc4fe07a4e4ddc25eda4432d27a456653abb5155e3150c6d0b8b5c8",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "20a1f251cd333f4b71ac204da0ef7405bd987487a6c9a1fce03f2c5a529f5809",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "eb7454d5f8b2eb7f6a0cf14bf932d81f374af9fb15c8cf02b1efc00f3d449a4b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "7832106e399d47b23b1548718dc9e393a73984738ee9f97087c8fc1cbc254439",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2fd7da098ab7d98816d6399fd4030ff5ef39d11ef83c5e5f93d0120028e666db",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "4bbc99fd98bfc36eea660976233f627a9ea816b40fb43deb72671a3f393de8df",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "c4038ec99ea71e4db46916b040eb590118501415d4e9cfe68a2ad1139fe39e28",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "183732a9cc99a1eee5702813c6ab64ddd3d47699b6ceff728ccf012c3726246a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "d316b3b95e3f5ee7cec5d507ae4a28245877d61d7310203344f3b50ed4602747",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "758097971820ffbdbb6135583bfb02b8855deb34f5cb7aa2fc25dc71aed36b55",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/evidence/scaffold-validation.md"
+        },
+        {
+          "content_hash": "acec5df2523be1b0acb4a67e22ea2b0e5f355b6cd898558a5bd01ab613fc611b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/proposal.md"
+        },
+        {
+          "content_hash": "f5119ae40fcfd64e1357333a1aa79197069b7b68db026729241e94d4864c967c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md"
+        },
+        {
+          "content_hash": "d6a20a955bfa9dfac2ebdeadb6987a374a85588e575beca4f2909cc03860107b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/tasks.md"
+        },
+        {
+          "content_hash": "e2978d81b5bbc833229de5ed4dcf0ff5e67068551f0a8b40e74c9392cff20ebf",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-add-fenced-attempt-admission-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives"
+        }
+      ],
+      "manifest_hash": "3d8bb9e60e9b49d4810e86de6282930c675bc83e57a2bc7322441b2fdff6cd21"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "fe5786041cf1068374db862a7a9f97cb3ef72ce6b3d2facf11d517e5249454d7",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/design.md"
+        },
+        {
+          "content_hash": "69d4fc9c20a465b7fe6f1dbe01ffe416eee23ef8713d7478863bfaf392818a9a",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "cd583521709197fa68c1916d67f03ef67ccdec4390833998ac2395e68fc33f1d",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "df875e96beb815dedcee66312e9b07aa6d046556b84ba4fb6209722173061c14",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "44b87fcdc1380c40bfe38a0d30d83824532d5db94c5d994a5a88f4b261d86c97",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7d0afd508bbe4bce7644e8b4bbf73f7f8316d6e93aed7aa8fd03899ede9e1c35",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "14803e84a278fadfeef38bcbe9e788e64954a6268707057dcc838c705f568aaa",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "951992d4b0bce5a598421e89cad8cf1ee38e6f2b83aad03fc5d41397cf1e0b76",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "020c119910115189fa6c885f7fc1057a2ab09545ae77bc75976590424119b894",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "e1d005ff20a08deb3d080d60422e1f52cd35e4c2eef33a3d573816f9267bca50",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "d94648d89fd2fe3d266fd9c26899776dbf3b3b0e72a8fe40ace1c20453f3434f",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "1a87c7f99a106dfcb7d33b0b4d3ee51f0574f10db3416c23af1c9644a45d7852",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "58c417c1c2f5c8c89583dccb6d963c7fedfc96722d83145d0689ce4f847414de",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "15e4bcd43d488b51855c01f30e31d900eeb3f0ae3900b7fc25f40aaff7d43954",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "0efcb9dfc57905852f05e1a8d9a8718fdf6445927350056f23e97524e298fa83",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "12dd069696b63db5ca36f066be5aca4e08bdf7f0e8a76d609d69608446893906",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "a86ba62a30f0acacaac85a7049a96f675a65bf98e25b772c48fbadcfb708e61f",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "21d15f0f81cd4f59ae3e61ce9c7fab807aa2f0b67f56fa37ca51c0dcb83ee90c",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "42808f7298180786fa1c9fc2718424a626979040141257f0686ddb4f12366ca6",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "14b4b3d41fc4fe07a4e4ddc25eda4432d27a456653abb5155e3150c6d0b8b5c8",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "20a1f251cd333f4b71ac204da0ef7405bd987487a6c9a1fce03f2c5a529f5809",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "eb7454d5f8b2eb7f6a0cf14bf932d81f374af9fb15c8cf02b1efc00f3d449a4b",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "7832106e399d47b23b1548718dc9e393a73984738ee9f97087c8fc1cbc254439",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e77ee62409870370dcc4ef0fde4cbb196e24b207cf2a4b3f38bc41ca4a2e583a",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2fd7da098ab7d98816d6399fd4030ff5ef39d11ef83c5e5f93d0120028e666db",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "4bbc99fd98bfc36eea660976233f627a9ea816b40fb43deb72671a3f393de8df",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "c4038ec99ea71e4db46916b040eb590118501415d4e9cfe68a2ad1139fe39e28",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "183732a9cc99a1eee5702813c6ab64ddd3d47699b6ceff728ccf012c3726246a",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "d316b3b95e3f5ee7cec5d507ae4a28245877d61d7310203344f3b50ed4602747",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "758097971820ffbdbb6135583bfb02b8855deb34f5cb7aa2fc25dc71aed36b55",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/evidence/scaffold-validation.md"
+        },
+        {
+          "content_hash": "acec5df2523be1b0acb4a67e22ea2b0e5f355b6cd898558a5bd01ab613fc611b",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/proposal.md"
+        },
+        {
+          "content_hash": "f5119ae40fcfd64e1357333a1aa79197069b7b68db026729241e94d4864c967c",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md"
+        },
+        {
+          "content_hash": "d6a20a955bfa9dfac2ebdeadb6987a374a85588e575beca4f2909cc03860107b",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/tasks.md"
+        },
+        {
+          "content_hash": "e2978d81b5bbc833229de5ed4dcf0ff5e67068551f0a8b40e74c9392cff20ebf",
+          "exists": true,
+          "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "0edcd460c662d59569f92cbfcffeb62d130bc651525683be5dadefdbd69a27ba"
+    },
+    "kind": "archive",
+    "manifest_hash": "9335ab8e1f8be8812eb2eb3c813de787b283f41cced882fd9e2a92c42f546879"
+  },
+  "plan_hash": "c2271d8fbba336fad1cc62257847a2ed3a2b74d2fb82b6b44424a307993bf6e6",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "e84b1de5a0a396de295df51009cc6af1c8cb8a1db05ad14a577fb02cf926bd56"
+}

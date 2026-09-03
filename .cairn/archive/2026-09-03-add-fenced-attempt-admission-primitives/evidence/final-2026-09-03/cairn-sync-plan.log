@@ -1,0 +1,149 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "add-fenced-attempt-admission-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "6e553164340bba2fda1e07c7ef60dc967fcc79490953126027d7e47fa0e2b095",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "2b2e464c1fe4770163afabdea76aa5ad2c68d2f00041d80efd8fc561fe0db45c",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "f5119ae40fcfd64e1357333a1aa79197069b7b68db026729241e94d4864c967c",
+        "destination": ".cairn/specs/fenced-attempt-admission/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "fdf97bd7e985f3c703ab80ea9422c42e37ce506fab958a35f413a5115bf72176",
+        "operations": [
+          {
+            "block_hash": "ae7e89e7f8183c58702cea9c5e3d570e1ac001259b95538b8834c6504218ffdb",
+            "heading": "### Requirement: Fenced-attempt proof boundary is finite and explicit",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.boundary"
+          },
+          {
+            "block_hash": "ebac73985838b57f449c532a9e7c6b0e46b79a3301ffe57666ce6e4863730808",
+            "heading": "### Requirement: Executable admission refines the specification",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.refinement"
+          },
+          {
+            "block_hash": "f36958186b1c3e4cd98d1873bda0852a9031ea95e6303d07d8de82aa1a1c5d10",
+            "heading": "### Requirement: Only the current fenced attempt can change state",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.fence-safety"
+          },
+          {
+            "block_hash": "ee91edd31b6397b72534e26a8157b8fa35c34939416084f484e5cf834dcee990",
+            "heading": "### Requirement: Attempt events are idempotent and conflict detecting",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.event-idempotence"
+          },
+          {
+            "block_hash": "c56a6f72dafc92406acfe0f5a087a8e0dafd65caf9dd9b2a81ea5c71da48a5ed",
+            "heading": "### Requirement: Terminal states reject later mutations",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.terminal-closure"
+          },
+          {
+            "block_hash": "68d242c2a951cce9a982355e9594cadd2456d40f9957c00b2a97e9f2b7219c1b",
+            "heading": "### Requirement: Completion requires matching result authority",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.completion-linkage"
+          },
+          {
+            "block_hash": "caf145cf55daeb203eaf792fa2f7a058d628bc0a6aaf3f5639677d9877b6ff69",
+            "heading": "### Requirement: Rejection preserves all modeled state",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.rejection-preservation"
+          },
+          {
+            "block_hash": "362754fbe3f7318f25ab17ac4c8f82ad34a4c49933ff37bad08cb8c966b5c6a4",
+            "heading": "### Requirement: Fenced-attempt evidence includes positive and negative proof artifacts",
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.evidence"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.refinement",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.fence-safety",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.event-idempotence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.terminal-closure",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.completion-linkage",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.rejection-preservation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "fenced-attempt-admission.evidence",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/add-fenced-attempt-admission-primitives/specs/fenced-attempt-admission/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "ea75919b73107d70603837195cd574b7a9f9ab2c5510734c937cdf1fcaf486cc",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "9e0aa1857d8c3ec6268c4f860e1efcfcc859a2a88d533bd60072f9c8e800e1f6"
+}

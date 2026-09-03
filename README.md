@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10969 Verus proofs · 5101 tests · 2196 requirements · 618 modules · 16 trusted/proof-gap boundaries**
+**10992 Verus proofs · 5118 tests · 2204 requirements · 619 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -108,6 +108,7 @@ validation commands captured in the change evidence.
 | `dependency_scheduler` | DAG-safe, fair, capacity-bounded job scheduling | verified |
 | `raft_membership_manager` | safe config changes, learner promotion, leadership transfer | verified |
 | `exactly_once_ledger_transfer` | replay-safe balanced transfer posting | verified |
+| `fenced_attempt_admission` | fenced durable-attempt phases, epoch safety, event idempotence, completion linkage, and exact rejection preservation | verified |
 | `sel4_invocation_step` | bounded seL4 invocation transitions preserving invariants | verified |
 | `nix_eval_closure_policy` | Nix/Nickel merge plus reachable closure admission | verified |
 | `chaoscontrol_exploration_core` | deterministic, oracle-checked exploration steps | verified |

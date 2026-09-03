@@ -594,6 +594,9 @@ pub mod fast_backtrack;
 pub mod feature_flag_gate;
 pub mod feature_flag_rollout_bucket;
 pub mod fee;
+/// Verified finite fenced-attempt report admission with exact preservation.
+#[path = "fenced_attempt/identity.rs"]
+pub mod fenced_attempt_admission;
 pub mod fencing;
 pub mod fetch_add;
 pub mod follower_commit;
