@@ -1,0 +1,9 @@
+focused_cargo_test=0
+focused_verus=0
+clippy=0
+tracey_uncovered=0
+tracey_untested=0
+full_verify=0
+octet=0
+json_artifact_contracts=0
+consumer_profile=0

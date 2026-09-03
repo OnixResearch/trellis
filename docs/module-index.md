@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `608` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `609` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -308,6 +308,7 @@ Summary: `608` public modules, `588` requirement-covered modules, `14` example-b
 | `metric_id` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/metric_id.rs`](../src/metric_id.rs) |
 | `metric_labels` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/metric_labels.rs`](../src/metric_labels.rs) |
 | `metric_window` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/metric_window.rs`](../src/metric_window.rs) |
+| `mir_pass_pipeline` | `partial-requirement-coverage`, `test-backed` | — | impl: `3`, verify: `0`, requirements mentions: `0` | — | [`src/mir_pass_pipeline/identity.rs`](../src/mir_pass_pipeline/identity.rs) |
 | `ml_batch_iterator` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/ml_batch_iterator.rs`](../src/ml_batch_iterator.rs) |
 | `ml_confusion_matrix` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `1`, requirements mentions: `0` | — | [`src/ml_confusion_matrix.rs`](../src/ml_confusion_matrix.rs) |
 | `ml_dataset_split` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/ml_dataset_split.rs`](../src/ml_dataset_split.rs) |
@@ -368,7 +369,7 @@ Summary: `608` public modules, `588` requirement-covered modules, `14` example-b
 | `opt_objective` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/opt_objective.rs`](../src/opt_objective.rs) |
 | `opt_optimum_witness` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/opt_optimum_witness.rs`](../src/opt_optimum_witness.rs) |
 | `option` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `40`, requirements mentions: `7` | — | [`src/option.rs`](../src/option.rs) |
-| `ordering` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `37`, requirements mentions: `12` | — | [`src/ordering.rs`](../src/ordering.rs) |
+| `ordering` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `37`, requirements mentions: `13` | — | [`src/ordering.rs`](../src/ordering.rs) |
 | `page` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `42`, requirements mentions: `9` | — | [`src/page.rs`](../src/page.rs) |
 | `page_checksum` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `13`, verify: `6`, requirements mentions: `0` | — | [`src/page_checksum.rs`](../src/page_checksum.rs) |
 | `parking_lot_condvar_model` | `requirement-covered`, `runtime-helper`, `test-backed` | — | impl: `7`, verify: `2`, requirements mentions: `0` | — | [`src/parking_lot_condvar_model.rs`](../src/parking_lot_condvar_model.rs) |

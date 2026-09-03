@@ -715,6 +715,9 @@ pub mod metric_histogram;
 pub mod metric_id;
 pub mod metric_labels;
 pub mod metric_window;
+/// Verified finite MIR phase, pass, validation, and artifact-state traces.
+#[path = "mir_pass_pipeline/identity.rs"]
+pub mod mir_pass_pipeline;
 pub mod ml_batch_iterator;
 pub mod ml_confusion_matrix;
 pub mod ml_dataset_split;

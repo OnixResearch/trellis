@@ -7618,6 +7618,45 @@ The finite model MUST NOT claim active expansion, proc-macro behavior, full toke
 parsing, rendered diagnostics, feature stabilization, or whole-frontend
 correctness.
 
+## MIR Pass Pipeline
+
+r[mir-pass.phase-order]
+A finite total order MUST admit only same-phase pass mutation or the next
+abstract MIR dialect. It MUST reject phase reversal and skipped phases.
+
+r[mir-pass.artifact-state]
+Each current MIR artifact MUST have available, borrowed, or stolen state.
+A stolen artifact MUST NOT be read or validated.
+
+r[mir-pass.pass-compatibility]
+Every pass MUST match its reviewed registration, current input phase, output
+phase, mutation shape, structural effect, validation gate, and optimization gate.
+
+r[mir-pass.admission]
+The bounded trace helper MUST accept only traces whose phase, pass, artifact,
+validation, optimization, and steal obligations all hold.
+
+r[mir-pass.steal-order]
+A steal that requires a dependent read MUST follow a borrow and recorded read.
+Reads after steal, unresolved borrows, and repeated steals MUST be rejected.
+
+r[mir-pass.optimization-gating]
+An optional pass MUST run only when the selected finite optimization level meets
+its registered minimum level.
+
+r[mir-pass.failure-metadata]
+Admission MUST return the same first failure class and zero-based step index for
+the same malformed trace.
+
+r[mir-pass.evidence]
+Positive and negative tests MUST cover phase order, same-phase mutation,
+validation, optimization gates, bounded traces, and borrow/read/steal ordering.
+
+r[mir-pass.non-claims]
+The finite model MUST NOT claim rustc query execution, incremental correctness,
+pass semantics, optimization soundness, borrow-checker correctness, or
+whole-compiler correctness.
+
 ## Rustc Metadata Identity
 
 r[rustc-metadata.library-kind]

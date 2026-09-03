@@ -1,0 +1,447 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: mir-pass-pipeline",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-pass-pipeline",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "265b0afba132006d61459c192fa587d49040502e739a58af079cedc13c0fa652",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "c6781cf7b8bc550b8c33e5263c5fb78a0378934f83f6a610a6eebb397aa41dcd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/design.md"
+        },
+        {
+          "content_hash": "35b2b6e5925d8624e22db04b8fd108761d9807c9097834c44ce3e41883b93400",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "d7fa151009103eaa862696f25a092a2afe9a00d57d63b44dec93468dba9f6eb4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "cfe05fd8ce7e745a0ecccbe8a576766a1fde545e9c0fed8bffde99aa8bcad2b1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "cac1ea5b97447172c620f8221c601d5049067e3a27ba9947ce1f7815b80fd9c6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "663192bac0c8df9619dfa5de3ed4c49a76b5fef2147acc7332b14b2afc4dd44a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-uncovered-rerun.log"
+        },
+        {
+          "content_hash": "4ea6e703a45f6c6e14695da393c505d5753c08b2bd309dd51d994c7c3d0a0b27",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "119b8794b9f0587b7911c3bc8cc93cc63eda463784f2d6ead5342167b44cb1cd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "29deb8d388b08c2fc0024561c89ce631d511feea10be7fa7d20528ea45913dcc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "4b6e25c15642c1cee4bfdb7aa621006ed7148de4987bf361e54c39782c4ec340",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "038d68e21fe325476b0a5fc9d1f421b95d2575ab56f1f9d27827cf4ab34c218d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "24499343474b648f03de63316db6b32ec2488394b02d4edc9e4a0358383960ba",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "aaa364dc059741e4f97942318aea53b5c8ec8a578f5bc9f626d922433d36f257",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "3be011fdc8e62057849a9f8eaed96206d1e424244532dc687cd080da9141e5f7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-status.txt"
+        },
+        {
+          "content_hash": "e99ab7165235a1caf506192a9796795a6814d27ed01551483a242b99e9ae5563",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "7539df415a9348a271b6172f47e57a19e7880c4374c28b48047338e4b3c6e24c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "28b160002e9fee611e913ad5f0be296ce1aec232453d7820b9dc9bdaa039beb3",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "0d3957942bf4a70ff1871cc8a263a6194528cd815adcbc65525060ef4f161eeb",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "588c2b797e60b7b14505ed7584594b7ed009f01b7a886ce7e4caeee45f38dd50",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "752fad35b6907290ddea509c56fdd991b1c501a709df88bcf9f08c540040ad33",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "16607439ba149793e9dedd5433d9fe7efefbc2fe6b65bae791c1f5af3df7328c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "9734cce22aaaa7e647d8ad520418d5304f79dff44b3edc14ad9fccd1dfead642",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "aae05baa04d70cdef4a6d671e8d1909ae567a83f2815ec42114216867985bf54",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "0fdde76d034b63f5c6a111bc90a13d12f7efb443de2e4977d3fed2fb681f03c7",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7a3edd48ad045978d3c2e3056da82f2e4b9ef081a2eae8dacbf07f0db2128560",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "9c0a6a68f28b21910af7244c807baaf7a327c296a7208a175de0be74a981d5bb",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "cb1cd06039b6a8bb71725754ab0b8a9124f56ceb4231410a4a25899eceed6ae8",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "0b68ddd5bf569f72886477af5c6d76f7e8c373896e51bb852fe67b0f99702b8e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "1fae3a3376fc212e4fe7222a2d968c8801b8c5e3c46397391beabf64d5ccd434",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "e5cb26e743355deae6ef81d08c83a667a3a8cecc4a6d28d02d9fb302a584462a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "5308021173a56af21bbd2bc168e13e41f9ad327de923b6bf38de39c883fca0ff",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "0201e76d390aa9221dae95b4a56efa502d117793d3e906c74fd34e7226367670",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/proposal.md"
+        },
+        {
+          "content_hash": "43801b3c501106b5c8ee91c2b63ca2f31efbc20ae6ab4643ef5f96f61ffb10bc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/specs/mir-pass-pipeline/spec.md"
+        },
+        {
+          "content_hash": "b7592d56d59021a8e1feef63279db5cd26637015a034e2459aa79f43490b707e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/tasks.md"
+        },
+        {
+          "content_hash": "9724fa132cde10767add9d2e73a74b42d9c88eda17b146a3a5f6f664abfac682",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-03-mir-pass-pipeline/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/mir-pass-pipeline"
+        }
+      ],
+      "manifest_hash": "91ba4f99e330b418c2967ca2439fb1651a6c51afb185e99672667627e1a41444"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "c6781cf7b8bc550b8c33e5263c5fb78a0378934f83f6a610a6eebb397aa41dcd",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/design.md"
+        },
+        {
+          "content_hash": "35b2b6e5925d8624e22db04b8fd108761d9807c9097834c44ce3e41883b93400",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/README.md"
+        },
+        {
+          "content_hash": "d7fa151009103eaa862696f25a092a2afe9a00d57d63b44dec93468dba9f6eb4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "cfe05fd8ce7e745a0ecccbe8a576766a1fde545e9c0fed8bffde99aa8bcad2b1",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "cac1ea5b97447172c620f8221c601d5049067e3a27ba9947ce1f7815b80fd9c6",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "663192bac0c8df9619dfa5de3ed4c49a76b5fef2147acc7332b14b2afc4dd44a",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-uncovered-rerun.log"
+        },
+        {
+          "content_hash": "4ea6e703a45f6c6e14695da393c505d5753c08b2bd309dd51d994c7c3d0a0b27",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "119b8794b9f0587b7911c3bc8cc93cc63eda463784f2d6ead5342167b44cb1cd",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "29deb8d388b08c2fc0024561c89ce631d511feea10be7fa7d20528ea45913dcc",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-archive-plan.log"
+        },
+        {
+          "content_hash": "4b6e25c15642c1cee4bfdb7aa621006ed7148de4987bf361e54c39782c4ec340",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "038d68e21fe325476b0a5fc9d1f421b95d2575ab56f1f9d27827cf4ab34c218d",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "24499343474b648f03de63316db6b32ec2488394b02d4edc9e4a0358383960ba",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "aaa364dc059741e4f97942318aea53b5c8ec8a578f5bc9f626d922433d36f257",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "3be011fdc8e62057849a9f8eaed96206d1e424244532dc687cd080da9141e5f7",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-status.txt"
+        },
+        {
+          "content_hash": "e99ab7165235a1caf506192a9796795a6814d27ed01551483a242b99e9ae5563",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "7539df415a9348a271b6172f47e57a19e7880c4374c28b48047338e4b3c6e24c",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-sync-plan.log"
+        },
+        {
+          "content_hash": "28b160002e9fee611e913ad5f0be296ce1aec232453d7820b9dc9bdaa039beb3",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "0d3957942bf4a70ff1871cc8a263a6194528cd815adcbc65525060ef4f161eeb",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/consumer-profile.log"
+        },
+        {
+          "content_hash": "588c2b797e60b7b14505ed7584594b7ed009f01b7a886ce7e4caeee45f38dd50",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "752fad35b6907290ddea509c56fdd991b1c501a709df88bcf9f08c540040ad33",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "16607439ba149793e9dedd5433d9fe7efefbc2fe6b65bae791c1f5af3df7328c",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/full-verify.log"
+        },
+        {
+          "content_hash": "9734cce22aaaa7e647d8ad520418d5304f79dff44b3edc14ad9fccd1dfead642",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/json-artifact-contracts.log"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/octet-summary.log"
+        },
+        {
+          "content_hash": "aae05baa04d70cdef4a6d671e8d1909ae567a83f2815ec42114216867985bf54",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "0fdde76d034b63f5c6a111bc90a13d12f7efb443de2e4977d3fed2fb681f03c7",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "7a3edd48ad045978d3c2e3056da82f2e4b9ef081a2eae8dacbf07f0db2128560",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "9c0a6a68f28b21910af7244c807baaf7a327c296a7208a175de0be74a981d5bb",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "cb1cd06039b6a8bb71725754ab0b8a9124f56ceb4231410a4a25899eceed6ae8",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "0b68ddd5bf569f72886477af5c6d76f7e8c373896e51bb852fe67b0f99702b8e",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/migration-guard-output.txt"
+        },
+        {
+          "content_hash": "1fae3a3376fc212e4fe7222a2d968c8801b8c5e3c46397391beabf64d5ccd434",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "e5cb26e743355deae6ef81d08c83a667a3a8cecc4a6d28d02d9fb302a584462a",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/origin-main-summary.txt"
+        },
+        {
+          "content_hash": "68aca16d8edaed535b2fe916b214ba728b523e6b690e5c9ef76d38ef96733ad4",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/post-migration-summary.txt"
+        },
+        {
+          "content_hash": "5308021173a56af21bbd2bc168e13e41f9ad327de923b6bf38de39c883fca0ff",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/evidence/octet/pre-migration-status.json"
+        },
+        {
+          "content_hash": "0201e76d390aa9221dae95b4a56efa502d117793d3e906c74fd34e7226367670",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/proposal.md"
+        },
+        {
+          "content_hash": "43801b3c501106b5c8ee91c2b63ca2f31efbc20ae6ab4643ef5f96f61ffb10bc",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md"
+        },
+        {
+          "content_hash": "b7592d56d59021a8e1feef63279db5cd26637015a034e2459aa79f43490b707e",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/tasks.md"
+        },
+        {
+          "content_hash": "9724fa132cde10767add9d2e73a74b42d9c88eda17b146a3a5f6f664abfac682",
+          "exists": true,
+          "path": "./.cairn/changes/mir-pass-pipeline/verification.md"
+        }
+      ],
+      "manifest_hash": "bcb78718db63e1949b67ec770dfb57ae1220fbcc06cf2988c9974edbe724bfdb"
+    },
+    "kind": "archive",
+    "manifest_hash": "3dce0e1f7e4660a31280325d6b54e970ee72e154561c2836b62059a9928bc7b2"
+  },
+  "plan_hash": "9b73c118592b54aa9d10ff6b8fcb5639cd2e7b0c61eae9de64df24ac94c76d88",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "7a7a5b22e04a74fcbc261427f600d037b42dfaca66364105526cadf6bc4418ef"
+}

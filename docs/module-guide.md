@@ -88,6 +88,8 @@ Goal labels: compiler analysis, HIR metadata, library metadata, CFG modeling, SS
 
 Use [`hir_attribute_parsing`](../src/hir/attribute/parsing.rs) for finite inert
 parser and policy admission. Use
+[`mir_pass_pipeline`](../src/mir_pass_pipeline/identity.rs) for finite MIR phase,
+pass, validation, optimization-gate, and artifact-state trace admission. Use
 [`rustc_metadata_identity`](../src/rustc/metadata/identity.rs) for declared
 crate-artifact compatibility and bounded dependency selection. Use
 [`track_caller_abi`](../src/track/caller/abi.rs) for caller-location,

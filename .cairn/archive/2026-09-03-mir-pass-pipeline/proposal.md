@@ -7,12 +7,12 @@ This change defines a MIR pass-pipeline primitive that can make future compiler-
 ## What Changes
 
 - Add a `mir-pass-pipeline` Cairn spec.
-- Plan a `src/mir_pass_pipeline.rs` Verus module with finite phase, pass, query, and artifact-state models.
+- Add a composable `src/mir_pass_pipeline/` module with finite phase, pass, query, and artifact-state models.
 - Define phase order, pass compatibility, dialect validation, in-place mutation boundaries, optimization-level admission, and read-before-steal constraints.
 - Require positive and negative tests for valid pipelines, out-of-order phases, invalid pass registration, stale reads after steal, and disabled optimization passes.
 
 ## Impact
 
-- **Files**: new Cairn change package now; later implementation should touch `src/mir_pass_pipeline.rs`, `src/lib.rs`, `docs/requirements.md`, README/module catalog text, and tests.
+- **Files**: the implementation touches `src/mir_pass_pipeline/`, `src/lib.rs`, `docs/requirements.md`, README/module catalog text, and tests.
 - **Testing**: implementation must include both accepted pipeline traces and rejected malformed traces.
 - **Boundaries**: no claim about actual rustc query execution, incremental compilation, pass semantic correctness, or optimization soundness unless separately proven.

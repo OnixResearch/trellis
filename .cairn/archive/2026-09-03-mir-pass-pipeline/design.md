@@ -4,11 +4,13 @@ The MIR pipeline described in the guide moves through named query phases from bu
 
 A Trellis primitive should model the finite pipeline trace and ordering obligations. It should not try to run rustc queries.
 
+The implementation uses a functional core. Small model, registration, predicate, transition, proof, and test components remain independently reviewable. No component owns external effects.
+
 ## Decisions
 
 ### 1. Model phases as an explicit total order
 
-**Choice:** The primitive defines a finite ordered phase set for built, const-prepared, promoted, drop-elaborated/const-checked, and optimized MIR dialects.
+**Choice:** The primitive defines a finite ordered phase set for built, const-prepared, promoted, drop-elaborated/const-checked, and optimized MIR dialects. A transition advances by one declared phase.
 
 **Rationale:** Many pipeline bugs are phase-order bugs. A total finite order is easy to validate and reason about.
 
@@ -32,7 +34,7 @@ A Trellis primitive should model the finite pipeline trace and ordering obligati
 
 ### 5. Make optimization-level gating explicit
 
-**Choice:** Experimental or optimization-only passes require a declared level to be enabled; disabled passes must leave the trace unchanged or be rejected.
+**Choice:** Experimental or optimization-only passes require a declared level to be enabled. A trace that claims a disabled pass is rejected before state changes.
 
 **Rationale:** This prevents accidental claims that optional passes always run.
 

@@ -1,0 +1,182 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-pass-pipeline",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "acc66a8b246870e49d484a17cb5ba2186e245dd272512db8d7680ee0655ccc03",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "8a6df527967bd7aa1f2068fd3de26b34316abc2b9ed90cca6a60f1f6e320b555",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "43801b3c501106b5c8ee91c2b63ca2f31efbc20ae6ab4643ef5f96f61ffb10bc",
+        "destination": ".cairn/specs/mir-pass-pipeline/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "a9c42fd0fc19669a642e024d56c334faa04d0642a7161dce1636260e498c1762",
+        "operations": [
+          {
+            "block_hash": "6c20365b024e468ef420171c735473c9c28e081b741a05021afe2379e6323d17",
+            "heading": "### Requirement: MIR Phase Order",
+            "kind": "added",
+            "requirement_id": "mir-pass.phase-order"
+          },
+          {
+            "block_hash": "1d24bc253b51eab0d2ae1c7825d5b8e409a3c98b99eb0a9ea629372b9ad355e4",
+            "heading": "### Requirement: MIR Artifact State",
+            "kind": "added",
+            "requirement_id": "mir-pass.artifact-state"
+          },
+          {
+            "block_hash": "c4037381ff491fa9e8fbfb49b023d0193f23d76925213d6d632966dbfa794f19",
+            "heading": "### Requirement: Pass Compatibility",
+            "kind": "added",
+            "requirement_id": "mir-pass.pass-compatibility"
+          },
+          {
+            "block_hash": "c92302aa8567bea5c7d778dd969350dddf4ae38eef9e7e2eacebf19d9ba3548b",
+            "heading": "### Requirement: Pipeline Admission",
+            "kind": "added",
+            "requirement_id": "mir-pass.admission"
+          },
+          {
+            "block_hash": "6cc744e3150b0004719a2d6296f95e877556caafcb14428a12ba755902d15b4c",
+            "heading": "### Requirement: Steal Ordering",
+            "kind": "added",
+            "requirement_id": "mir-pass.steal-order"
+          },
+          {
+            "block_hash": "117a7d962d09cbfad0fdd3dfa158e9e05ae2b68214555beca0161b540712e8ee",
+            "heading": "### Requirement: Optimization Gating",
+            "kind": "added",
+            "requirement_id": "mir-pass.optimization-gating"
+          },
+          {
+            "block_hash": "a259f2f72576cdc5245142d5e3af5bce7081c78eb38f5aefa7d4b565a3871e4f",
+            "heading": "### Requirement: Pipeline Failure Metadata",
+            "kind": "added",
+            "requirement_id": "mir-pass.failure-metadata"
+          },
+          {
+            "block_hash": "2a88c87b7a0b20780a7708e38d364f671c60bf60836869254685b42e4029efe9",
+            "heading": "### Requirement: Pass Pipeline Evidence Coverage",
+            "kind": "added",
+            "requirement_id": "mir-pass.evidence"
+          },
+          {
+            "block_hash": "c63c74a9d87968037c85a16bab98a8f5859a24d4d330f753c0ef7e4841c956f1",
+            "heading": "### Requirement: Pass Pipeline Documentation Sync",
+            "kind": "added",
+            "requirement_id": "mir-pass.docs"
+          },
+          {
+            "block_hash": "73494775cad1f6e5202a3a03739d4c00170db966619620c4a832d4a5e2acfe6e",
+            "heading": "### Requirement: Pass Pipeline Validation Evidence",
+            "kind": "added",
+            "requirement_id": "mir-pass.final-validation"
+          },
+          {
+            "block_hash": "b07ffe226ee79338fa7a235cda5ed933d292c76f229ac90f9c414e785a6859e7",
+            "heading": "### Requirement: Pass Pipeline Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "mir-pass.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.phase-order",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.artifact-state",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.pass-compatibility",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.steal-order",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.optimization-gating",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.failure-metadata",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "mir-pass.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/mir-pass-pipeline/specs/mir-pass-pipeline/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "6629d04de0d6ad53506d6eb5bec9d6cd1a399a69caa10b5334aaef2935fe88de",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "238aae1b8436338d85d89c7088b7f9f74840890c90ced2457219ccab93fa5a77"
+}

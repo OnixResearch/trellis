@@ -1,8 +1,8 @@
-# MIR Pass Pipeline Specification
+# Mir Pass Pipeline Specification
 
 ## Purpose
 
-Defines finite MIR pass-pipeline primitives for Trellis. The requirements cover phase order, pass compatibility, artifact read/borrow/steal state, validation gates, optimization-level gating, deterministic failure metadata, evidence, documentation, validation, and non-claim boundaries.
+Defines the `mir-pass-pipeline` capability.
 
 ## Requirements
 

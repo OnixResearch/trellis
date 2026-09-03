@@ -1,0 +1,39 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: mir-pass-pipeline",
+      "kind": "archive_change",
+      "path": "./.cairn/changes/mir-pass-pipeline"
+    }
+  ],
+  "blocked": false,
+  "change": "mir-pass-pipeline",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": true,
+  "input_hash": "265b0afba132006d61459c192fa587d49040502e739a58af079cedc13c0fa652",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "8cf927ad9958e69f56a2ebf2b57c9aa12161671ebbfaa560cf34bf4e62babf6c",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "0e4543389d9f26fd9d4769b146025b08309d0558a099552f9b651b2a87641b55"
+}

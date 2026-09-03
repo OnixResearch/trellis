@@ -25,7 +25,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b8cdfa9a315faefc674cfdd46165c482b44862f77e9f153f34843c36ac3c2ee6"
+          "digest": "cb89829ec89446beebf71b557df55eb6a6b6e0604a5e5fd93df03067e1b6579a"
         },
         {
           "path": "src/arithmetic.rs",
@@ -64,10 +64,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "35eb9761ab2f82e09f1e0521a575e8ac4febb8441d9717d86f76305f3f0f4b4c",
+      "chain_identity": "4e96ffdbf9b9cf08479d4ded9fe2f2d803bf2c3d2fa424e8b9c1e9f3ff064651",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "0fc0229d6dd4aeee37aa7cbf10a69ec34eb62bc4bc963e7d0d286eed333af30d",
+        "source_identity": "eb074701506ba7bc7df93c9a7983e721f360744e4de9152bcd5684248ba40d4e",
         "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
         "verifier_receipt_identity": "bb18e8c5366f2b6c64357f07abb8ef8324cb70b7cd0b517c711fc315711c6df3",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -119,7 +119,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b8cdfa9a315faefc674cfdd46165c482b44862f77e9f153f34843c36ac3c2ee6"
+          "digest": "cb89829ec89446beebf71b557df55eb6a6b6e0604a5e5fd93df03067e1b6579a"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -166,10 +166,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "06a453d27f445471729b18de03e334fc52048264d3ce45a49e9a3e0d9af10cf3",
+      "chain_identity": "a5873e664bcf2b026605a0154f95cb3e61ac624ff549bfe73525556deb886c54",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "2ccc22af016e919bfdce601bc36d4fd51e38448c453c19aeb0391af6469991c3",
+        "source_identity": "a24fd8719250b7e132a13c9363182dd45a702840f6257b1a6be0a0ec6b626eb2",
         "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
         "verifier_receipt_identity": "da1af17a0e89acfbc81a89ccc8acb272485e76a7af8c22d0ed4a8903ad3dbae2",
         "assumption_identity": "f68cf69af180c7783524221814f303141011209ae4af2b8c54cd18145da91a92",
@@ -206,7 +206,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b8cdfa9a315faefc674cfdd46165c482b44862f77e9f153f34843c36ac3c2ee6"
+          "digest": "cb89829ec89446beebf71b557df55eb6a6b6e0604a5e5fd93df03067e1b6579a"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",
@@ -245,10 +245,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "16a6c0f4ce22b1e9b9d3bd330d65e5736e6be97de04877d8dfddbb984847eb43",
+      "chain_identity": "7af37ba956d5b4d4449734ca0db97913274d81db00651b3a398e78128e03ed39",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "8752c1310cc50554ce0538643c6fb8157ce20f9a76ce46e4c99b9fc74b8063ac",
+        "source_identity": "814810bb15ac17f73760813906b10143991bec1762f17c4078285cc2f4bfd5ba",
         "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
         "verifier_receipt_identity": "ff7b73b93a7f78b7a825769c65b95e9d10272d44420a6c3bb629b0cf2a5cec3c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
