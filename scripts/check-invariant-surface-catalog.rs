@@ -171,6 +171,15 @@ const REQUIRED_ROWS: &[SeedRow] = &[
         trusted: false,
         source: "src/consensus_fast_path/proofs/arithmetic.rs",
     },
+    SeedRow {
+        module: "wasm_runtime_bounds",
+        requirement: "wasm-runtime-bounds.segmentation",
+        surface: "segmented_steps_match_uninterrupted",
+        labels: &["state-invariant", "soundness"],
+        evidence: "proof",
+        trusted: false,
+        source: "src/wasm_runtime_bounds/proofs/control.rs",
+    },
 ];
 
 fn seed_to_row(seed: &SeedRow) -> CatalogRow {

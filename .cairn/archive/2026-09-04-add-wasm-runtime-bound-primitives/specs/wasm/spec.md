@@ -4,7 +4,7 @@
 
 Extend the accepted WebAssembly primitive domain with finite verified execution-budget, continuation, allocation-phase, growth-policy, and streaming-schedule laws that downstream runtimes can instantiate without claiming proof of any concrete interpreter.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Runtime-bound models are finite and deterministic
 

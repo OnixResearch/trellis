@@ -1,0 +1,122 @@
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:436:13
+    |
+436 |     ensures target@ == old(target)@ + values@
+    |             ^^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:748:9
+    |
+748 |         frame.types@ == old(frame).types@,
+    |         ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:772:9
+    |
+772 |         frame.types@ == old(frame).types@,
+    |         ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:791:20
+    |
+791 |         result ==> stack@.len() == old(stack)@.len() - 1,
+    |                    ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:905:10
+    |
+905 |         !state.reachable,
+    |          ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:917:20
+    |
+917 |         result ==> state.reachable == old(state).reachable,
+    |                    ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:949:9
+    |
+949 |         state.operand_types@ == old(state).operand_types@,
+    |         ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:971:9
+    |
+971 |         state.operand_types@ == old(state).operand_types@,
+    |         ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+   --> src/wasm_primitives.rs:994:9
+    |
+994 |         state.operand_types@ == old(state).operand_types@,
+    |         ^^^^^
+    |
+    = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1020:20
+     |
+1020 |         result ==> state.reachable == old(state).reachable,
+     |                    ^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1053:20
+     |
+1053 |         result ==> state.reachable == old(state).reachable,
+     |                    ^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1084:20
+     |
+1084 |         result ==> state.reachable == old(state).reachable,
+     |                    ^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1115:20
+     |
+1115 |         result ==> state.control@.len() == old(state).control@.len() - 1,
+     |                    ^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1213:9
+     |
+1213 |         memory.pages == old(memory).pages,
+     |         ^^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: to dereference a mutable reference parameter in a postcondition, disambiguate by wrapping it in either `old` or `final`
+    --> src/wasm_primitives.rs:1267:30
+     |
+1267 |         result.is_some() ==> memory.pages == old(memory).pages + delta_pages,
+     |                              ^^^^^^
+     |
+     = help: For information on the new mutable reference support, see: https://github.com/verus-lang/verus/blob/main/source/docs/migration-mut-ref.md
+
+error: aborting due to 15 previous errors
+

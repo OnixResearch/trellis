@@ -1,0 +1,913 @@
+Using Cargo: cargo
+
+=== Coverage: r[impl] on every pub fn ===
+
+Checked 2743 pub fn declarations, 0 exempted
+✓ all pub fns have r[impl] annotations
+
+=== Coverage: ensures on every verified pub fn ===
+
+Checked 2324 pub fn in verus! blocks, 0 exempted
+✓ all verified pub fns have ensures clauses
+
+=== Proof-gap inventory drift ===
+# Proof-Gap Inventory Report
+
+Source root: `src/`
+
+Manifest: `docs/proof-gap-sites.tsv`
+
+## Summary
+
+| marker | expected | actual | status |
+| --- | ---: | ---: | --- |
+| `external_body` | 16 | 16 | ok |
+| `assume_specification` | 0 | 0 | ok |
+| `no_ensures` | 0 | 0 | ok |
+| `runtime_exempt` | 0 | 0 | ok |
+| `assume_call` | 0 | 0 | ok |
+
+## External Body Site List, Classifications, and Rationales
+
+Status: `ok`
+
+Expected sites from manifest: 16
+
+Actual sites from source: 16
+
+Manifest rationales: 16 non-empty entries.
+
+Missing expected sites: none.
+
+Unexpected sites: none.
+
+## Hits
+
+### `external_body`
+
+- `src/chain.rs:176` `#[verifier::external_body]` → `pub fn compute_entry_hash(`
+- `src/chain.rs:856` `#[verifier::external_body]` → `pub proof fn hash_collision_free(`
+- `src/nix_version.rs:762` `#[verifier::external_body]` → `fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)`
+- `src/snapshot_integrity.rs:54` `#[verifier::external_body]` → `pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)`
+- `src/snapshot_integrity.rs:63` `#[verifier::external_body]` → `pub fn dual_hash(a: u64, b: u64) -> (result: u64)`
+- `src/ucan_did.rs:623` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)`
+- `src/ucan_did.rs:631` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)`
+- `src/ucan_did.rs:640` `#[verifier::external_body]` → `pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)`
+- `src/ucan_did.rs:649` `#[verifier::external_body]` → `pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)`
+- `src/ucan_signature.rs:254` `#[verifier::external_body]` → `pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)`
+- `src/ucan_signature.rs:263` `#[verifier::external_body]` → `pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)`
+- `src/ucan_signature.rs:275` `#[verifier::external_body]` → `pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)`
+- `src/ucan_signature.rs:289` `#[verifier::external_body]` → `pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)`
+- `src/ucan_signature.rs:303` `#[verifier::external_body]` → `pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)`
+- `src/ucan_signature.rs:315` `#[verifier::external_body]` → `pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)`
+- `src/web_of_trust_principal.rs:103` `#[verifier::external_body]` → `pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)`
+
+### `assume_specification`
+
+No hits.
+
+### `no_ensures`
+
+No hits.
+
+### `runtime_exempt`
+
+No hits.
+
+### `assume_call`
+
+No hits.
+
+✓ proof-gap inventory matches expected counts, sites, classifications, and rationale manifest
+
+=== Aspen evidence index drift ===
+aspen evidence index valid: 8 rows
+✓ Aspen evidence index matches recorded source commits and blobs
+
+=== Nickel policy freshness and fixtures ===
+PASS nickel export verification-policy/policy.ncl
+PASS verification policy fresh verification-policy/generated/policy.json
+PASS nickel export proof-review/policy.ncl
+PASS proof-review policy fresh proof-review/generated/policy.json
+PASS nickel export cairn-policy/default.ncl
+PASS cairn policy fresh cairn-policy/generated/cairn-policy.json
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/invalid-duplicate-checker.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/invalid-empty-checkers.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/invalid-missing-exemption-owner.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/invalid-unsafe-path.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/invalid-unsupported-severity.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/verification-policy/fixtures/valid-minimal.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-dangling-mode.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-dangling-rule-reference.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-dangling-validation-gate.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-duplicate-rule.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-empty-rules.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/invalid-unsupported-severity.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/proof-review/fixtures/valid-minimal.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/invalid-artifact-dependency.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/invalid-duplicate-marker.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/invalid-replay-group-case.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn-policy/fixtures/valid-minimal.ncl
+verification policy fixture checks: PASS
+verification policy check: PASS
+
+=== Nickel policy checker self-test ===
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/policy-fixture-self-test-1981646/invalid-fixture.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/policy-fixture-self-test-1981646/valid-fixture.ncl
+verification policy checker self-test: PASS
+
+=== Upstream Verus corpus catalog ===
+validated 5 pinned upstream Verus corpus entries
+
+=== Upstream Verus corpus checker self-test ===
+upstream Verus corpus checker self-test passed
+
+=== Nickel lifecycle config freshness and fixtures ===
+PASS nickel export --format yaml cairn/config.ncl
+PASS lifecycle config fresh cairn/config.yaml
+PASS lifecycle config fresh openspec/config.yaml
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl
+PASS valid lifecycle fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/cairn/lifecycle-config-fixtures/valid-minimal.ncl
+lifecycle config check: PASS
+
+=== Nickel lifecycle config checker self-test ===
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/lifecycle-config-self-test-1981951/invalid-fixture.ncl
+PASS valid lifecycle fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/lifecycle-config-self-test-1981951/valid-fixture.ncl
+lifecycle config checker self-test: PASS
+
+=== Crate metadata discoverability ===
+✓ Cargo package metadata is discoverable and locally valid
+
+=== Crate metadata checker self-test ===
+✓ crate metadata checker self-test passed
+
+=== README module catalog drift ===
+✓ README module catalog covers 621 public modules (621 catalog entries, 0 exclusions)
+
+=== README module catalog checker fixtures ===
+✓ README module catalog covers 3 public modules (3 catalog entries, 1 exclusions)
+missing README module catalog entries (1):
+  - `beta`
+stale README module catalog entries (1):
+  - `removed`
+✓ README module catalog self-test fixtures passed
+
+=== Module guide link drift ===
+✓ module guide links 48 public module source files
+
+=== Module guide checker self-test ===
+✓ module guide checker self-test passed
+
+=== Module maturity index drift ===
+✓ module maturity index covers 621 public modules
+
+=== Module maturity index checker self-test ===
+✓ module index checker self-test fixtures passed
+
+=== Invariant surface catalog drift ===
+✓ invariant surface catalog covers 13 required rows
+
+=== Invariant surface catalog checker self-test ===
+✓ invariant catalog checker self-test passed
+
+=== Cookbook recipe metadata ===
+✓ cookbook contains 6 recipes and 11 checked local links
+
+=== Cookbook checker self-test ===
+✓ cookbook checker self-test passed
+
+=== Runnable examples docs ===
+✓ 6 examples are linked with run commands
+
+=== Runnable examples checker self-test ===
+✓ examples checker self-test passed
+
+=== Runnable proof examples ===
+✓ runnable proof examples verified; negative fixture failed as expected
+
+=== JSON artifact contract admission ===
+PASS json artifact contract json-artifacts/proof-evidence-bundle.ncl
+PASS json artifact contract json-artifacts/octet-baseline.ncl
+PASS json artifact contract json-artifacts/verification-policy-generated.ncl
+PASS json artifact contract json-artifacts/proof-review-policy-generated.ncl
+PASS json artifact contract json-artifacts/cairn-policy-generated.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/valid-generated-policy.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/valid-octet-baseline.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/json-artifacts/fixtures/valid-proof-evidence.ncl
+json artifact contract check: PASS
+
+=== JSON artifact contract checker self-test ===
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/json-artifact-contract-self-test-1984459/invalid-fixture.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/target-test/json-artifact-contract-self-test-1984459/valid-fixture.ncl
+json artifact contract checker self-test: PASS
+
+=== Proof evidence bundle validation ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+
+=== Proof evidence bundle self-test ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+
+=== Proof evidence IR chain validation ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+
+=== Proof evidence IR chain self-test ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+
+=== Runtime-cost evidence metadata ===
+✓ runtime evidence contains 2 complete records
+
+=== Runtime-cost evidence checker self-test ===
+✓ runtime evidence checker self-test passed
+
+=== Verified primitive manifest freshness ===
+verified primitive manifest check passed: 9 primitives, 1 preserves envelopes, 11 fixtures checked
+
+=== Verified primitive manifest checker self-test ===
+verified primitive manifest check passed: 1 primitives, 1 preserves envelopes, 1 fixtures checked
+
+=== UCAN bridge coverage ===
+UCAN bridge coverage check passed: 2 rows, 5 fixtures checked
+
+=== UCAN bridge coverage checker self-test ===
+UCAN bridge coverage check passed: 1 rows, 1 fixtures checked
+
+=== Verified-logic consumer release profile ===
+verified-logic consumer profile passed: 39 modules, 42 artifacts, 10 fixtures
+
+=== Verified-logic consumer release profile self-test ===
+verified-logic consumer profile self-test passed
+
+=== README headline metrics drift ===
+✓ README metrics headline static counts are fresh at line 15 (621 modules, 16 trusted/proof-gap boundaries); use --full for command-backed proof/test/requirement counts
+
+=== README headline metrics checker self-test ===
+✓ README metrics self-test passed
+
+=== Clippy ===
+error: no such command: `clippy`
+
+	View all installed commands with `cargo --list`
+	Find a package to install `clippy` with `cargo search cargo-clippy`
+✗ clippy failed
+
+=== Tests ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+✗ tests failed
+
+=== Examples ===
+error: failed to parse manifest at `/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903/Cargo.toml`
+
+Caused by:
+  feature `edition2024` is required
+
+  The package requires the Cargo feature called `edition2024`, but that feature is not stabilized in this version of Cargo (1.76.0-nightly (6790a5127 2023-11-10)).
+  Consider adding `cargo-features = ["edition2024"]` to the top of Cargo.toml (above the [package] table) to tell Cargo you are opting in to use this unstable feature.
+  See https://doc.rust-lang.org/nightly/cargo/reference/unstable.html#edition-2024 for more information about the status of this feature.
+✗ examples failed
+
+=== Verus verification ===
+these 2 derivations will be built:
+  /nix/store/vkg14kwgnppiigmldjjp3xhpncb8bbfx-trellis-verus-proof-source.drv
+  /nix/store/s6sdrsird8x7z7w9s01c9y7bh65qqbqq-verus-proofs.drv
+building '/nix/store/vkg14kwgnppiigmldjjp3xhpncb8bbfx-trellis-verus-proof-source.drv' on 'ssh-ng://root@aspen1.local'...
+copying 1 paths...
+copying path '/nix/store/iiy0bwh1mfq4dkhc77s6k6dz753193vj-src' to 'ssh-ng://root@aspen1.local'...
+building '/nix/store/vkg14kwgnppiigmldjjp3xhpncb8bbfx-trellis-verus-proof-source.drv'...
+copying 1 paths...
+copying path '/nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source' from 'ssh-ng://root@aspen1.local'...
+building '/nix/store/s6sdrsird8x7z7w9s01c9y7bh65qqbqq-verus-proofs.drv' on 'ssh-ng://root@aspen1.local'...
+building '/nix/store/s6sdrsird8x7z7w9s01c9y7bh65qqbqq-verus-proofs.drv'...
+verus-proofs> warning: use of deprecated method `vstd::prelude::OptionAdditionalFns::is_None`: is_Variant is deprecated - use `->` or `matches` instead: https://verus-lang.github.io/verus/guide/datatypes_enum.html
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/constraint_consistency.rs:20:145
+verus-proofs>    |
+verus-proofs> 20 | ...nment) requires constraint_relation_assigned_tuple_spec(r,a).is_None() ensures !constraint_consistent_spec(r,a) {}
+verus-proofs>    |                                                                 ^^^^^^^
+verus-proofs>    |
+verus-proofs>    = note: `#[warn(deprecated)]` on by default
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ability_effect.rs:12:10
+verus-proofs>    |
+verus-proofs> 12 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ability_effect.rs:17:10
+verus-proofs>    |
+verus-proofs> 17 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ability_effect.rs:28:10
+verus-proofs>    |
+verus-proofs> 28 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/algebraic_effect.rs:35:10
+verus-proofs>    |
+verus-proofs> 35 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/algebraic_effect.rs:40:10
+verus-proofs>    |
+verus-proofs> 40 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/algebraic_effect.rs:45:10
+verus-proofs>    |
+verus-proofs> 45 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/algebraic_effect.rs:51:10
+verus-proofs>    |
+verus-proofs> 51 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/beam_process.rs:23:10
+verus-proofs>    |
+verus-proofs> 23 | #[derive(Clone, Debug, PartialEq, Eq)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/content_addressed_code.rs:25:10
+verus-proofs>    |
+verus-proofs> 25 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/content_addressed_code.rs:37:10
+verus-proofs>    |
+verus-proofs> 37 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/remote_computation.rs:25:10
+verus-proofs>    |
+verus-proofs> 25 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/remote_computation.rs:35:10
+verus-proofs>    |
+verus-proofs> 35 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/semantic_refactoring.rs:59:10
+verus-proofs>    |
+verus-proofs> 59 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/typed_durable_reference.rs:112:10
+verus-proofs>     |
+verus-proofs> 112 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>     |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/loop_detection.rs:15:17
+verus-proofs>    |
+verus-proofs> 15 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/nickel_pattern_coverage.rs:95:17
+verus-proofs>    |
+verus-proofs> 95 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/nix_closure.rs:15:10
+verus-proofs>    |
+verus-proofs> 15 | #[derive(Clone, Debug, PartialEq, Eq)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/nix_drv_serialize.rs:12:10
+verus-proofs>    |
+verus-proofs> 12 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/nix_drv_serialize.rs:20:10
+verus-proofs>    |
+verus-proofs> 20 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/sel4_ready_queue.rs:16:10
+verus-proofs>    |
+verus-proofs> 16 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/sel4_untyped.rs:30:10
+verus-proofs>    |
+verus-proofs> 30 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:41:17
+verus-proofs>    |
+verus-proofs> 41 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:48:17
+verus-proofs>    |
+verus-proofs> 48 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:53:17
+verus-proofs>    |
+verus-proofs> 53 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:59:17
+verus-proofs>    |
+verus-proofs> 59 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:66:17
+verus-proofs>    |
+verus-proofs> 66 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:75:17
+verus-proofs>    |
+verus-proofs> 75 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:81:17
+verus-proofs>    |
+verus-proofs> 81 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:88:17
+verus-proofs>    |
+verus-proofs> 88 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/ssa_construction.rs:95:17
+verus-proofs>    |
+verus-proofs> 95 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> WARNING: (17212,4): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (17342,5): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (19992,4): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (20169,1): 'if' cannot be used in patterns.
+verus-proofs> verification results:: 11032 verified, 0 errors
+verus-proofs> warning: 31 warnings emitted
+verus-proofs> 
+verus-proofs> warning: function `MODE_READ` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/access_mode.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn MODE_READ() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `mode_read`
+verus-proofs>    |
+verus-proofs>    = note: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+verus-proofs> 
+verus-proofs> warning: function `MODE_WRITE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/access_mode.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn MODE_WRITE() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `mode_write`
+verus-proofs> 
+verus-proofs> warning: function `MODE_DELETE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/access_mode.rs:30:18
+verus-proofs>    |
+verus-proofs> 30 | pub open spec fn MODE_DELETE() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `mode_delete`
+verus-proofs> 
+verus-proofs> warning: function `MODE_FULL` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/access_mode.rs:32:18
+verus-proofs>    |
+verus-proofs> 32 | pub open spec fn MODE_FULL() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `mode_full`
+verus-proofs> 
+verus-proofs> warning: function `NO_BUDGET` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:251:18
+verus-proofs>     |
+verus-proofs> 251 | pub open spec fn NO_BUDGET() -> u8 { 0 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `no_budget`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_OK` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:252:18
+verus-proofs>     |
+verus-proofs> 252 | pub open spec fn BUDGET_OK() -> u8 { 1 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `budget_ok`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_WARNING` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:253:18
+verus-proofs>     |
+verus-proofs> 253 | pub open spec fn BUDGET_WARNING() -> u8 { 2 }
+verus-proofs>     |                  ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `budget_warning`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_EXCEEDED` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:254:18
+verus-proofs>     |
+verus-proofs> 254 | pub open spec fn BUDGET_EXCEEDED() -> u8 { 3 }
+verus-proofs>     |                  ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `budget_exceeded`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_SMOL` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:383:18
+verus-proofs>     |
+verus-proofs> 383 | pub open spec fn ROLE_SMOL() -> u8 { 0 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `role_smol`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_DEFAULT` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:384:18
+verus-proofs>     |
+verus-proofs> 384 | pub open spec fn ROLE_DEFAULT() -> u8 { 1 }
+verus-proofs>     |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `role_default`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_SLOW` should have a snake case name
+verus-proofs>    --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/cost_tracker.rs:385:18
+verus-proofs>     |
+verus-proofs> 385 | pub open spec fn ROLE_SLOW() -> u8 { 2 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `role_slow`
+verus-proofs> 
+verus-proofs> warning: function `MAX_DELEGATION_DEPTH` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/delegation.rs:19:18
+verus-proofs>    |
+verus-proofs> 19 | pub open spec fn MAX_DELEGATION_DEPTH() -> u64 { 8 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `max_delegation_depth`
+verus-proofs> 
+verus-proofs> warning: function `V_DELEGATE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/delegation.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn V_DELEGATE() -> u8 { 7 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_delegate`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_EMPTY` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_segment.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn FS_PATH_SEG_EMPTY() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_empty`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_CURRENT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_segment.rs:13:18
+verus-proofs>    |
+verus-proofs> 13 | pub open spec fn FS_PATH_SEG_CURRENT() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_current`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_PARENT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_segment.rs:14:18
+verus-proofs>    |
+verus-proofs> 14 | pub open spec fn FS_PATH_SEG_PARENT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_parent`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_NORMAL` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_segment.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn FS_PATH_SEG_NORMAL() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_normal`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_ALLOW_ALL` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_traversal.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn FS_PATH_TRAVERSAL_ALLOW_ALL() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_allow_all`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_PARENT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_traversal.rs:13:18
+verus-proofs>    |
+verus-proofs> 13 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_PARENT() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_parent`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_CURRENT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_traversal.rs:14:18
+verus-proofs>    |
+verus-proofs> 14 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_CURRENT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_current`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_BOTH` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/fs_path_traversal.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_BOTH() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_both`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_DISJOINT` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_intersection.rs:6:18
+verus-proofs>   |
+verus-proofs> 6 | pub open spec fn GEOM_REL_DISJOINT() -> u8 { 0 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_disjoint`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_TOUCHES` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_intersection.rs:7:18
+verus-proofs>   |
+verus-proofs> 7 | pub open spec fn GEOM_REL_TOUCHES() -> u8 { 1 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_touches`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_OVERLAPS` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_intersection.rs:8:18
+verus-proofs>   |
+verus-proofs> 8 | pub open spec fn GEOM_REL_OVERLAPS() -> u8 { 2 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_overlaps`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_DEGENERATE` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_orientation.rs:6:18
+verus-proofs>   |
+verus-proofs> 6 | pub open spec fn GEOM_ORIENT_DEGENERATE() -> u8 { 0 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_degenerate`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_CLOCKWISE` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_orientation.rs:7:18
+verus-proofs>   |
+verus-proofs> 7 | pub open spec fn GEOM_ORIENT_CLOCKWISE() -> u8 { 1 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_clockwise`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_COUNTERCLOCKWISE` should have a snake case name
+verus-proofs>  --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/geom_orientation.rs:8:18
+verus-proofs>   |
+verus-proofs> 8 | pub open spec fn GEOM_ORIENT_COUNTERCLOCKWISE() -> u8 { 2 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_counterclockwise`
+verus-proofs> 
+verus-proofs> warning: function `STAR` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/glob.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn STAR() -> u8 { 42 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `star`
+verus-proofs> 
+verus-proofs> warning: function `WILDCARD` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/pattern.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn WILDCARD() -> int { -1 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `wildcard`
+verus-proofs> 
+verus-proofs> warning: function `V_READ` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:16:18
+verus-proofs>    |
+verus-proofs> 16 | pub open spec fn V_READ() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^ help: convert the identifier to snake case: `v_read`
+verus-proofs> 
+verus-proofs> warning: function `V_WRITE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn V_WRITE() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^ help: convert the identifier to snake case: `v_write`
+verus-proofs> 
+verus-proofs> warning: function `V_DELETE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn V_DELETE() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `v_delete`
+verus-proofs> 
+verus-proofs> warning: function `V_WATCH` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn V_WATCH() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^ help: convert the identifier to snake case: `v_watch`
+verus-proofs> 
+verus-proofs> warning: function `V_FULL` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:24:18
+verus-proofs>    |
+verus-proofs> 24 | pub open spec fn V_FULL() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^ help: convert the identifier to snake case: `v_full`
+verus-proofs> 
+verus-proofs> warning: function `V_PROMPT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn V_PROMPT() -> u8 { 5 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `v_prompt`
+verus-proofs> 
+verus-proofs> warning: function `V_TOOL_USE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn V_TOOL_USE() -> u8 { 6 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_tool_use`
+verus-proofs> 
+verus-proofs> warning: function `V_DELEGATE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/subsumption.rs:30:18
+verus-proofs>    |
+verus-proofs> 30 | pub open spec fn V_DELEGATE() -> u8 { 7 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_delegate`
+verus-proofs> 
+verus-proofs> warning: function `COLD` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/tier.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn COLD() -> u8 { 0 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `cold`
+verus-proofs> 
+verus-proofs> warning: function `WARM` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/tier.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn WARM() -> u8 { 1 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `warm`
+verus-proofs> 
+verus-proofs> warning: function `HOT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/tier.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn HOT() -> u8 { 2 }
+verus-proofs>    |                  ^^^ help: convert the identifier to snake case: `hot`
+verus-proofs> 
+verus-proofs> warning: function `TOKEN_CLOCK_SKEW_SECS` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/token_timestamp.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn TOKEN_CLOCK_SKEW_SECS() -> u64 { 60 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `token_clock_skew_secs`
+verus-proofs> 
+verus-proofs> warning: function `MAX_CAPABILITIES_PER_TOKEN` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/token_timestamp.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn MAX_CAPABILITIES_PER_TOKEN() -> u64 { 32 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `max_capabilities_per_token`
+verus-proofs> 
+verus-proofs> warning: function `TRANSFER_OK` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/transfer.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn TRANSFER_OK() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `transfer_ok`
+verus-proofs> 
+verus-proofs> warning: function `INSUFFICIENT_FUNDS` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/transfer.rs:17:18
+verus-proofs>    |
+verus-proofs> 17 | pub open spec fn INSUFFICIENT_FUNDS() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `insufficient_funds`
+verus-proofs> 
+verus-proofs> warning: function `INVALID_AMOUNT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/transfer.rs:19:18
+verus-proofs>    |
+verus-proofs> 19 | pub open spec fn INVALID_AMOUNT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `invalid_amount`
+verus-proofs> 
+verus-proofs> warning: function `RECEIVER_OVERFLOW` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/transfer.rs:21:18
+verus-proofs>    |
+verus-proofs> 21 | pub open spec fn RECEIVER_OVERFLOW() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `receiver_overflow`
+verus-proofs> 
+verus-proofs> warning: function `DUPLICATE_TRANSFER` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/transfer.rs:23:18
+verus-proofs>    |
+verus-proofs> 23 | pub open spec fn DUPLICATE_TRANSFER() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `duplicate_transfer`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_STRING` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:16:18
+verus-proofs>    |
+verus-proofs> 16 | pub open spec fn TYPE_STRING() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `type_string`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_INTEGER` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn TYPE_INTEGER() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `type_integer`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_FLOAT` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn TYPE_FLOAT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `type_float`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_BOOLEAN` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn TYPE_BOOLEAN() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `type_boolean`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_DATE` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:24:18
+verus-proofs>    |
+verus-proofs> 24 | pub open spec fn TYPE_DATE() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `type_date`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_DATETIME` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn TYPE_DATETIME() -> u8 { 5 }
+verus-proofs>    |                  ^^^^^^^^^^^^^ help: convert the identifier to snake case: `type_datetime`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_ANY` should have a snake case name
+verus-proofs>   --> /nix/store/vyjlmjrc3165rwarszq34n4npap091s1-trellis-verus-proof-source/src/type_lattice.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn TYPE_ANY() -> u8 { 6 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `type_any`
+verus-proofs> 
+verus-proofs> warning: 54 warnings emitted
+verus-proofs> 
+copying 1 paths...
+copying path '/nix/store/vq4c5zvanjmwcndq68h4l9vmxplq1270-verus-proofs' from 'ssh-ng://root@aspen1.local'...
+✓ verus proofs pass
+
+=== Tracey coverage ===
+[2m2026-09-04T05:27:31.023286Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Auto-starting daemon for /home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903
+[2m2026-09-04T05:27:32.036400Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon.
+[2m2026-09-04T05:27:33.046453Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon..
+[2m2026-09-04T05:27:34.056456Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon...
+[2m2026-09-04T05:27:35.066472Z[0m [32m INFO[0m [2mtracey::daemon::client[0m[2m:[0m Starting daemon....
+[2m2026-09-04T05:27:36.076529Z[0m [33m WARN[0m [2mtracey::daemon::client[0m[2m:[0m daemon client: connect_inner failed [3melapsed_ms[0m[2m=[0m5055 [3merror[0m[2m=[0mDaemon failed to start within 5s (last connect error: No such file or directory (os error 2)). Check logs at /home/brittonr/.local/state/tracey/8563a9e2f7627731/daemon.log [3mcallsite[0m[2m=[0m/home/runner/work/tracey/tracey/crates/tracey/src/daemon/client.rs:50
+Error: Cancelled
+
+verified-logic/rust: 1 uncovered out of 2226 rules
+
+## WebAssembly Runtime Bounds
+  - wasm-runtime-bounds.final-validation
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+verified-logic/rust: 1 uncovered out of 2226 rules
+
+## WebAssembly Runtime Bounds
+  - wasm-runtime-bounds.final-validation
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+verified-logic/rust: 1 uncovered out of 2226 rules
+
+## WebAssembly Runtime Bounds
+  - wasm-runtime-bounds.final-validation
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+verified-logic/rust: 1 uncovered out of 2226 rules
+
+## WebAssembly Runtime Bounds
+  - wasm-runtime-bounds.final-validation
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query uncovered --prefix <prefix>`
+
+✗ uncovered requirements found
+
+verified-logic/rust: 0 untested (impl but no verify) out of 2226 rules
+
+---
+→ Run `tracey query rule <rule-id>`
+→ Run `tracey query untested --prefix <prefix>`
+
+✓ no untested requirements
+
+=== SOME CHECKS FAILED ===

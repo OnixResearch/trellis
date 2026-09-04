@@ -1,0 +1,220 @@
+evaluating flake...
+checking flake output 'packages'...
+checking derivation packages.x86_64-linux.nickel-1-17-0...
+derivation evaluated to /nix/store/fnvv96qkzwb6rfxh7mxkxgx9akcjgqyv-nickel-lang-rev-fixup-1.17.0.drv
+checking derivation packages.x86_64-linux.default...
+derivation evaluated to /nix/store/cdvz1a70p078xqkq57asi949qc3drz0j-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/cdvz1a70p078xqkq57asi949qc3drz0j-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verusfmt...
+derivation evaluated to /nix/store/x60zxgg7sk46fh50176glzcfgi8qmazv-octet-verusfmt-0.7.2.drv
+checking derivation packages.x86_64-linux.verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.octet-production-verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation packages.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/83incycgz9ld7zqss23fcyamsshqj9r0-trellis-octet-verus-upgrade-trial.drv
+checking flake output 'checks'...
+checking derivation checks.x86_64-linux.octet...
+derivation evaluated to /nix/store/2s63rn6hj7blygnyvyhsr7ixhg2blqg5-trellis-octet-baseline-check.drv
+checking derivation checks.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/cdvz1a70p078xqkq57asi949qc3drz0j-verified-logic-0.2.0.drv
+checking derivation checks.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation checks.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/83incycgz9ld7zqss23fcyamsshqj9r0-trellis-octet-verus-upgrade-trial.drv
+checking derivation checks.x86_64-linux.nickel-cohort-exact...
+derivation evaluated to /nix/store/mlj1vbgpf4r76nkdf0pkb3wlsqya643x-trellis-nickel-cohort-exact.drv
+checking derivation checks.x86_64-linux.nickel-toolchain-fixtures...
+derivation evaluated to /nix/store/f70dvg4sd865l8vhivs71a0b1v80ysw0-trellis-nickel-toolchain-fixtures.drv
+checking derivation checks.x86_64-linux.nextest...
+derivation evaluated to /nix/store/5yanlj75swn5pmhy01fik9x9br32rmi5-verified-logic-nextest-0.2.0.drv
+checking derivation checks.x86_64-linux.clippy...
+derivation evaluated to /nix/store/5599jq3w4hd9fyjvf4awdsy13cqmvkdb-verified-logic-clippy-0.2.0.drv
+checking derivation checks.x86_64-linux.fmt...
+derivation evaluated to /nix/store/ba2968vq2zc5hbkdrjnhdjsmzmzzf7wd-verified-logic-fmt-0.2.0.drv
+checking derivation checks.x86_64-linux.check-coverage...
+derivation evaluated to /nix/store/sfyhyxxncn5vzvniyczq62dw0rvx7m8d-check-coverage.drv
+checking derivation checks.x86_64-linux.check-ensures...
+derivation evaluated to /nix/store/qlsz8h3a6c14w8b3q4nhb6c8m69fwgyx-check-ensures.drv
+checking derivation checks.x86_64-linux.checker-fixtures...
+derivation evaluated to /nix/store/qyq3ffvv5k8zbiyjv3ypzvs0qn4plyxz-checker-fixtures.drv
+checking derivation checks.x86_64-linux.verification-policy...
+derivation evaluated to /nix/store/7rcjq1zrzx10qdr2nyq2nhbrz3hwsn07-verification-policy.drv
+checking derivation checks.x86_64-linux.consumer-release-profile...
+derivation evaluated to /nix/store/yfjn3r7lvdxdn4k2dbb9rxa20ilm9lhs-consumer-release-profile.drv
+checking derivation checks.x86_64-linux.readme-module-catalog...
+derivation evaluated to /nix/store/c1ylnccnh58nglnmvk07zmwmjkzcrwaj-readme-module-catalog.drv
+checking derivation checks.x86_64-linux.readme-metrics...
+derivation evaluated to /nix/store/sv14kmfpfx1l91k6ri3hvzzb9d1jpfxq-readme-metrics.drv
+checking derivation checks.x86_64-linux.proof-gap-inventory...
+derivation evaluated to /nix/store/lyzay07skw3rxdcncha7i54l76qia55s-proof-gap-inventory.drv
+checking derivation checks.x86_64-linux.verusfmt-ratchet...
+derivation evaluated to /nix/store/7y428n9gdchprr86m9svyq8pa5fbj9bg-trellis-verusfmt-ratchet.drv
+checking derivation checks.x86_64-linux.verus-proofs...
+derivation evaluated to /nix/store/lzw02mmxb924cnbi5wh3wsgvp0m5nzr3-verus-proofs.drv
+checking derivation checks.x86_64-linux.tracey-coverage...
+derivation evaluated to /nix/store/pw2gk525arn2fsq0hfs20jdqxwbfzsv8-tracey-coverage.drv
+checking flake output 'devShells'...
+checking derivation devShells.x86_64-linux.default...
+derivation evaluated to /nix/store/jrvs8zfq2z5zaax169v8084448h0c3r5-nix-shell.drv
+running 23 flake checks...
+building '/nix/store/sfyhyxxncn5vzvniyczq62dw0rvx7m8d-check-coverage.drv'...
+building '/nix/store/qlsz8h3a6c14w8b3q4nhb6c8m69fwgyx-check-ensures.drv'...
+building '/nix/store/qyq3ffvv5k8zbiyjv3ypzvs0qn4plyxz-checker-fixtures.drv'...
+building '/nix/store/yfjn3r7lvdxdn4k2dbb9rxa20ilm9lhs-consumer-release-profile.drv'...
+check-coverage> 
+check-coverage> Checked 2743 pub fn declarations, 0 exempted
+check-coverage> ✓ all pub fns have r[impl] annotations
+building '/nix/store/sv14kmfpfx1l91k6ri3hvzzb9d1jpfxq-readme-metrics.drv'...
+check-ensures> 
+check-ensures> Checked 2324 pub fn in verus! blocks, 0 exempted
+check-ensures> ✓ all verified pub fns have ensures clauses
+building '/nix/store/ijnr2bbyd9zvr09ik1rdgf17028394zw-source.drv'...
+source> structuredAttrs is enabled
+readme-metrics> ✓ README metrics headline static counts are fresh at line 15 (621 modules, 16 trusted/proof-gap boundaries); use --full for command-backed proof/test/requirement counts
+readme-metrics> ✓ README metrics self-test passed
+building '/nix/store/lyzay07skw3rxdcncha7i54l76qia55s-proof-gap-inventory.drv'...
+checker-fixtures> PASS coverage-valid
+checker-fixtures> PASS coverage-missing-impl
+checker-fixtures> PASS ensures-valid
+checker-fixtures> PASS ensures-missing-clause
+checker-fixtures> PASS iterative-valid
+checker-fixtures> PASS iterative-self-cycle
+checker-fixtures> PASS iterative-mutual-cycle
+checker-fixtures> PASS iterative-qualified-local-call
+checker-fixtures> checker fixture self-tests: PASS
+source> 
+source> trying https://github.com/verus-lang/verified-memory-allocator/archive/847354efbb51a7999deb3eef0ed2bfc199bccac1.tar.gz
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+building '/nix/store/c1ylnccnh58nglnmvk07zmwmjkzcrwaj-readme-module-catalog.drv'...
+readme-module-catalog> ✓ README module catalog covers 621 public modules (621 catalog entries, 0 exclusions)
+readme-module-catalog> ✓ README module catalog covers 3 public modules (3 catalog entries, 1 exclusions)
+readme-module-catalog> missing README module catalog entries (1):
+readme-module-catalog>   - `beta`
+readme-module-catalog> stale README module catalog entries (1):
+readme-module-catalog>   - `removed`
+readme-module-catalog> ✓ README module catalog self-test fixtures passed
+building '/nix/store/pw2gk525arn2fsq0hfs20jdqxwbfzsv8-tracey-coverage.drv'...
+source>   0      0   0      0   0      0      0      0                              0
+tracey-coverage> 2026-09-04T06:29:51.245760Z  INFO tracey::daemon::client: Auto-starting daemon for /nix/store/pslzif8sz0aaakha4q1914n326lw06xx-source
+proof-gap-inventory> # Proof-Gap Inventory Report
+proof-gap-inventory> 
+proof-gap-inventory> Source root: `src/`
+proof-gap-inventory> 
+proof-gap-inventory> Manifest: `docs/proof-gap-sites.tsv`
+proof-gap-inventory> 
+proof-gap-inventory> ## Summary
+proof-gap-inventory> 
+proof-gap-inventory> | marker | expected | actual | status |
+proof-gap-inventory> | --- | ---: | ---: | --- |
+proof-gap-inventory> | `external_body` | 16 | 16 | ok |
+proof-gap-inventory> | `assume_specification` | 0 | 0 | ok |
+proof-gap-inventory> | `no_ensures` | 0 | 0 | ok |
+proof-gap-inventory> | `runtime_exempt` | 0 | 0 | ok |
+proof-gap-inventory> | `assume_call` | 0 | 0 | ok |
+proof-gap-inventory> 
+proof-gap-inventory> ## External Body Site List, Classifications, and Rationales
+proof-gap-inventory> 
+proof-gap-inventory> Status: `ok`
+proof-gap-inventory> 
+proof-gap-inventory> Expected sites from manifest: 16
+proof-gap-inventory> 
+proof-gap-inventory> Actual sites from source: 16
+proof-gap-inventory> 
+proof-gap-inventory> Manifest rationales: 16 non-empty entries.
+proof-gap-inventory> 
+proof-gap-inventory> Missing expected sites: none.
+proof-gap-inventory> 
+proof-gap-inventory> Unexpected sites: none.
+proof-gap-inventory> 
+proof-gap-inventory> ## Hits
+proof-gap-inventory> 
+proof-gap-inventory> ### `external_body`
+proof-gap-inventory> 
+proof-gap-inventory> - `src/chain.rs:176` `#[verifier::external_body]` → `pub fn compute_entry_hash(`
+proof-gap-inventory> - `src/chain.rs:856` `#[verifier::external_body]` → `pub proof fn hash_collision_free(`
+proof-gap-inventory> - `src/nix_version.rs:762` `#[verifier::external_body]` → `fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)`
+proof-gap-inventory> - `src/snapshot_integrity.rs:54` `#[verifier::external_body]` → `pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)`
+proof-gap-inventory> - `src/snapshot_integrity.rs:63` `#[verifier::external_body]` → `pub fn dual_hash(a: u64, b: u64) -> (result: u64)`
+proof-gap-inventory> - `src/ucan_did.rs:623` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:631` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:640` `#[verifier::external_body]` → `pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:649` `#[verifier::external_body]` → `pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)`
+proof-gap-inventory> - `src/ucan_signature.rs:254` `#[verifier::external_body]` → `pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:263` `#[verifier::external_body]` → `pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:275` `#[verifier::external_body]` → `pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:289` `#[verifier::external_body]` → `pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)`
+proof-gap-inventory> - `src/ucan_signature.rs:303` `#[verifier::external_body]` → `pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)`
+proof-gap-inventory> - `src/ucan_signature.rs:315` `#[verifier::external_body]` → `pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)`
+proof-gap-inventory> - `src/web_of_trust_principal.rs:103` `#[verifier::external_body]` → `pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)`
+proof-gap-inventory> 
+proof-gap-inventory> ### `assume_specification`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `no_ensures`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `runtime_exempt`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `assume_call`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> PASS: --fixture-missing-rationale failed closed
+proof-gap-inventory> PASS: --fixture-blank-rationale failed closed
+proof-gap-inventory> PASS: --fixture-malformed-rationale failed closed
+building '/nix/store/fvka16vaq2520pyyz6dpqi0n8vw7y5gp-source.drv'...
+source> structuredAttrs is enabled
+source> 
+source> trying https://github.com/verus-lang/paper-sosp24-artifact/archive/b817b036fd9b873a58730af8c2defccb40b7ea83.tar.gz
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+source> 100 525.1k   0 525.1k   0      0  1.12M      0                              0
+source> unpacking source archive /build/847354efbb51a7999deb3eef0ed2bfc199bccac1.tar.gz
+building '/nix/store/mlj1vbgpf4r76nkdf0pkb3wlsqya643x-trellis-nickel-cohort-exact.drv'...
+building '/nix/store/0yhx2rpkc7wxnjl0wfbq52h1il9vf3kh-download.drv'...
+source>   0      0   0      0   0      0      0      0                              0
+download> structuredAttrs is enabled
+download> 
+download> trying https://crates.io/api/v1/crates/libc/0.2.147/download
+download>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+download>                                  Dload  Upload  Total   Spent   Left   Speed
+download>   0      0   0      0   0      0      0      0                              0
+download> curl: (22) The requested URL returned error: 403
+download> Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+source> 100  1.79M   0  1.79M   0      0  4.21M      0                              0
+source> unpacking source archive /build/b817b036fd9b873a58730af8c2defccb40b7ea83.tar.gz
+building '/nix/store/f70dvg4sd865l8vhivs71a0b1v80ysw0-trellis-nickel-toolchain-fixtures.drv'...
+building '/nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv'...
+tracey-coverage> 2026-09-04T06:29:52.258595Z  INFO tracey::daemon::client: Starting daemon.
+building '/nix/store/7y428n9gdchprr86m9svyq8pa5fbj9bg-trellis-verusfmt-ratchet.drv'...
+download>   0      0   0      0   0      0      0      0                              0
+download> curl: (22) The requested URL returned error: 403
+download> Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries
+download> Warning: left.
+tracey-coverage> 2026-09-04T06:29:53.271199Z  INFO tracey::daemon::client: Starting daemon..
+consumer-release-profile> error: profile.artifact.drift: src/lib.rs expected 50852:99a8938764b5705c11925252fd5b5b8da1f600ce73ed77ed5d1bd57578ba08ed got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+consumer-release-profile> error: profile.verification.proof_manifest.drift
+warning: killing stray builder process 2359468 ()...
+warning: killing stray builder process 2361309 ()...
+warning: killing stray builder process 2359159 ()...
+error (ignored): deleting cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872546304": Device or resource busy
+warning: killing stray builder process 2359302 ()...
+warning: killing stray builder process 2359328 ()...
+error: failed to build attribute 'checks.x86_64-linux.consumer-release-profile', build of '/nix/store/yfjn3r7lvdxdn4k2dbb9rxa20ilm9lhs-consumer-release-profile.drv^*' failed: Cannot build '/nix/store/yfjn3r7lvdxdn4k2dbb9rxa20ilm9lhs-consumer-release-profile.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/3p2fx95y6yfr80d1j8v8xjlcidf1xy8v-consumer-release-profile
+       Last 2 log lines:
+       > error: profile.artifact.drift: src/lib.rs expected 50852:99a8938764b5705c11925252fd5b5b8da1f600ce73ed77ed5d1bd57578ba08ed got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+       > error: profile.verification.proof_manifest.drift
+       For full logs, run:
+         nix log /nix/store/yfjn3r7lvdxdn4k2dbb9rxa20ilm9lhs-consumer-release-profile.drv

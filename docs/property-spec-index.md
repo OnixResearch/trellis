@@ -57,6 +57,19 @@ Every property group entry has:
 **Property kinds**: `proof fn`, `proptest`, `#[test]`
 **Count**: 17 direct proofs, 5 randomized properties, and 24 unit tests
 
+## WebAssembly runtime bounds
+
+**Group**: wasm-runtime-bounds
+**Source modules**: `src/wasm_runtime_bounds/identity.rs`,
+`src/wasm_runtime_bounds/machine.rs`,
+`src/wasm_runtime_bounds/execution.rs`,
+`src/wasm_runtime_bounds/binding.rs`,
+`src/wasm_runtime_bounds/resources.rs`,
+`src/wasm_runtime_bounds/streaming.rs`, and
+`src/wasm_runtime_bounds/proofs.rs`
+**Property kinds**: `proof fn`, `proptest`, `#[test]`
+**Count**: 20 direct proofs, 3 randomized properties, and 24 unit tests
+
 ## Concurrency primitives
 
 **Group**: concurrency

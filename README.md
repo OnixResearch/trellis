@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**11012 Verus proofs · 5147 tests · 2215 requirements · 620 modules · 16 trusted/proof-gap boundaries**
+**11032 Verus proofs · 5174 tests · 2226 requirements · 621 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -444,6 +444,7 @@ validation commands captured in the change evidence.
 | `stack_frame_layout` | aligned stack-slot placement, exact rounded frame sizing, and explicit safe-reuse checks over live ranges |
 | `track_caller_abi` | finite attribute, direct-call, tracked-chain, trait-inheritance, reify-shim, and const/codegen location-metadata admission |
 | `wasm_primitives` | exact Wasm value tags, `i32.add` stack discipline, typed local access, linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack validation, control-frame stack-height restoration, finite indirect-call table/signature admission, and branch-table target validation |
+| `wasm_runtime_bounds` | finite transition admission, exact fuel, deterministic segmentation, identity-bound continuation, initialization-only allocation, growth policy, and exact chunk coverage |
 | `gpu_primitives` | finite GPU program shapes, launch/grid/block/thread bounds, pitched/tensor memory-layout, coalesced access, and shared-tile admission |
 | `hdl_ir` / `hdl_emit` / `hdl_adapters` / `hdl_validation` | finite HDL IR admission, deterministic Verilog/SystemVerilog emission, adapter refinement, generated-vector collateral, and tool-evidence classification |
 

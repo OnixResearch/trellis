@@ -1,0 +1,182 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "add-wasm-runtime-bound-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "ec87a20d26bf2b5939587ed21c33c4d3a847542c8ddc2da75431b696f313d465",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "fe46901e2afd3109bae5ccb059135e36a399738c8652668149158c7cd3e84787",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "12b40d6eee13068c6efc8cab289d0f98c29eb2bd3776b08dd17f3be110a7f806",
+        "destination": ".cairn/specs/wasm/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "738ac7a151f7ad9677ef1f125399b472cdb8a251ead17cc5a3b1130a37f9b158",
+        "operations": [
+          {
+            "block_hash": "805bf163c70342c43629ab2fdf2fd1a00d92f0133b48a7a1000247a14a36f135",
+            "heading": "### Requirement: Runtime-bound models are finite and deterministic",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.model"
+          },
+          {
+            "block_hash": "23e4004e5ef4eabd03f8ce42fdd557eb5ad0137d43d209377b7d075a7949829f",
+            "heading": "### Requirement: Fuel accounting is exact and non-underflowing",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.fuel"
+          },
+          {
+            "block_hash": "05f9f522359fe1a85457c1632e1d07cce5dbfda64abdcdee24e7a1809f53f4d7",
+            "heading": "### Requirement: Segmented execution preserves deterministic observations",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.segmentation"
+          },
+          {
+            "block_hash": "3dde2ebe3e3a5420c1217f82749b51dec7f68760f5f82ea63b6336b84d92df6d",
+            "heading": "### Requirement: Continuations bind exact resume facts",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.continuation"
+          },
+          {
+            "block_hash": "939624b084b29ae9c3fb5e4fc9b3cc8b0d49bbe0e12aef36515645bc4895169e",
+            "heading": "### Requirement: Allocation is capped and initialization-only",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.allocation"
+          },
+          {
+            "block_hash": "c5fbd23fea908e53725d10b17c2559f5238d3aaaac630d31a7adccb975f13b14",
+            "heading": "### Requirement: Streaming schedules cover exact bytes",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.streaming"
+          },
+          {
+            "block_hash": "7b4ed2ddfa4135fe8925024739a2eb4ad7fef1365cfb414544bbb509a09abea5",
+            "heading": "### Requirement: Memory growth follows explicit policy",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.growth-policy"
+          },
+          {
+            "block_hash": "372b1c3901fb95bced27fad2f86d04ca25552338646f30697acb6e6643f791ca",
+            "heading": "### Requirement: Runtime-bound helpers carry proof and test evidence",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.evidence"
+          },
+          {
+            "block_hash": "1c878261a523da8f9b4b539b1cfe6c15c93592a6e41921bb5072a9f06dc70353",
+            "heading": "### Requirement: Runtime-bound claims remain abstract",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.non-claims"
+          },
+          {
+            "block_hash": "e005e062216f2db7242622129075ebed2a15aa381e68282f1e189287a39916cd",
+            "heading": "### Requirement: Runtime-bound documentation is traceable",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.docs"
+          },
+          {
+            "block_hash": "2f71ba85db74fe06a6856d44e65bd4c27ddbac3cde0e27c8656616dc7fbb5f90",
+            "heading": "### Requirement: Runtime-bound validation is complete",
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.final-validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.model",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.fuel",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.segmentation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.continuation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.allocation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.streaming",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.growth-policy",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.non-claims",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "wasm-runtime-bounds.final-validation",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "e79017dc2136185306b7c81f4ef74f50bf0754a56a72510fce459f573cf2a5d6",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "463bb6b218ceb521643519c295ab781f6671cd912bd379ebd8caecc92dbb8b6e"
+}

@@ -108,6 +108,8 @@
 //!   linear-memory bounds/grow semantics, control-label branch/return arity, unreachable-stack
 //!   validation, control-frame stack-height restoration, finite `call_indirect` table/signature
 //!   admission, and `br_table` target validation
+//! - `wasm_runtime_bounds` — finite transition, fuel, segmentation, continuation,
+//!   allocation-phase, growth-policy, and exact byte-schedule laws
 //! - `r1cs_constraint` — bounded single-row R1CS shape, modular dot product, and satisfaction
 //!   admission
 //! - `r1cs_boolean` — bounded booleanity row encoding and satisfaction over an R1CS witness slot
@@ -1067,6 +1069,8 @@ pub mod voter_set;
 pub mod wal_recovery;
 pub mod wal_segment;
 pub mod wasm_primitives;
+#[path = "wasm_runtime_bounds/identity.rs"]
+pub mod wasm_runtime_bounds;
 pub mod watermark;
 pub mod web_of_trust_attestation;
 pub mod web_of_trust_chain;

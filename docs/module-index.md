@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `620` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `621` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -49,7 +49,7 @@ Summary: `620` public modules, `588` requirement-covered modules, `14` example-b
 | `bounded_mpmc` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `20`, requirements mentions: `0` | — | [`src/bounded_mpmc.rs`](../src/bounded_mpmc.rs) |
 | `bounded_peers` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `0` | — | [`src/bounded_peers.rs`](../src/bounded_peers.rs) |
 | `bounded_range` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `33`, requirements mentions: `1` | — | [`src/bounded_range.rs`](../src/bounded_range.rs) |
-| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `24` | — | [`src/bounds.rs`](../src/bounds.rs) |
+| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `35` | — | [`src/bounds.rs`](../src/bounds.rs) |
 | `btree_balance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `20`, verify: `45`, requirements mentions: `0` | — | [`src/btree_balance.rs`](../src/btree_balance.rs) |
 | `btree_delete` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `21`, requirements mentions: `0` | — | [`src/btree_delete.rs`](../src/btree_delete.rs) |
 | `btree_insert` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/btree_insert.rs`](../src/btree_insert.rs) |
@@ -605,6 +605,7 @@ Summary: `620` public modules, `588` requirement-covered modules, `14` example-b
 | `wal_recovery` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`storage_allocator`](../examples/storage_allocator.rs) | impl: `14`, verify: `12`, requirements mentions: `0` | — | [`src/wal_recovery.rs`](../src/wal_recovery.rs) |
 | `wal_segment` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `16`, verify: `46`, requirements mentions: `0` | — | [`src/wal_segment.rs`](../src/wal_segment.rs) |
 | `wasm_primitives` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `50`, verify: `75`, requirements mentions: `0` | — | [`src/wasm_primitives.rs`](../src/wasm_primitives.rs) |
+| `wasm_runtime_bounds` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/wasm_runtime_bounds/identity.rs`](../src/wasm_runtime_bounds/identity.rs) |
 | `watermark` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `24`, requirements mentions: `8` | — | [`src/watermark.rs`](../src/watermark.rs) |
 | `web_of_trust_attestation` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `21`, requirements mentions: `0` | — | [`src/web_of_trust_attestation.rs`](../src/web_of_trust_attestation.rs) |
 | `web_of_trust_chain` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `12`, verify: `15`, requirements mentions: `0` | — | [`src/web_of_trust_chain.rs`](../src/web_of_trust_chain.rs) |

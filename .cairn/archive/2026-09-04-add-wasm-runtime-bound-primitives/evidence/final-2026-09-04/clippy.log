@@ -1,0 +1,4 @@
+    Blocking waiting for file lock on build directory
+    Checking blake3 v1.8.4
+    Checking verified-logic v0.2.0 (/home/brittonr/git/OnixResearch/.worktrees/trellis-wasm-runtime-bound-20260903)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 29.46s

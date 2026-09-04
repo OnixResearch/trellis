@@ -7417,6 +7417,60 @@ default target types followed by an `i32` selector. Successful validation MUST
 mark the current path unreachable. Unreachable validation MUST keep operand pops
 stack-polymorphic but still reject malformed depths or mismatched target types.
 
+## WebAssembly Runtime Bounds
+
+r[wasm-runtime-bounds.model]
+The runtime-bound model MUST use finite owned states, explicit host-observation
+transition facts, and closed running, finished, trapped, paused, and fuel
+outcomes. Admission MUST reject out-of-range or duplicate transition keys.
+
+r[wasm-runtime-bounds.fuel]
+Fuel consumption MUST subtract the exact admitted amount. Insufficient fuel and
+zero-budget execution MUST not underflow or change the starting state.
+
+r[wasm-runtime-bounds.segmentation]
+For one admitted deterministic model and one unchanged observation sequence,
+prefix-plus-suffix execution MUST match one run with the combined budget.
+Terminal and explicit host-pause boundaries MUST absorb the unused suffix.
+
+r[wasm-runtime-bounds.continuation]
+A continuation MUST bind exact generation, artifact, profile, input, context,
+and host-observation identities. Resume MUST reject any mismatch without
+changing the continuation, and it MUST retain the pause or fuel reason.
+
+r[wasm-runtime-bounds.allocation]
+Page allocation MUST be monotone, capped, and initialization-only. Invalid
+state, arithmetic overflow, capacity exhaustion, or a closed phase MUST return
+an explicit error without changing the supplied allocator state.
+
+r[wasm-runtime-bounds.streaming]
+A chunk schedule MUST be an exact ordered partition of its declared byte range.
+Admission MUST reject ambiguous empty input, zero lengths, gaps, overlap,
+reordering, arithmetic overflow, extra ranges, and trailing or missing bytes.
+
+r[wasm-runtime-bounds.growth-policy]
+A memory-growth profile MUST explicitly allow or deny `memory.grow`. Denial
+MUST preserve memory, while admission MUST delegate only to the existing
+checked whole-page growth primitive and preserve its success and failure laws.
+
+r[wasm-runtime-bounds.evidence]
+Public runtime-bound decisions MUST have requirement links, positive and
+negative tests, and direct Verus proof artifacts for their declared finite
+laws.
+
+r[wasm-runtime-bounds.non-claims]
+Runtime-bound evidence MUST remain scoped to finite abstract laws. It MUST NOT
+claim concrete interpreter, unsafe allocator, host scheduler, serialization,
+migration, sandbox, certification, or downstream adapter correctness.
+
+r[wasm-runtime-bounds.docs]
+The component MUST have public exports, module guidance, requirement links,
+proof evidence, and explicit consumer revalidation guidance.
+
+r[wasm-runtime-bounds.final-validation]
+Closeout MUST include focused tests, full-library Verus verification, Tracey
+coverage, Cairn gates, accepted-spec synchronization, and archive evidence.
+
 ## Loop Detection
 
 r[loop.back-edge]

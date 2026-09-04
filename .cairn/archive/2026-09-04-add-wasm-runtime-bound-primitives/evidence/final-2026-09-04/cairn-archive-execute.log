@@ -1,0 +1,487 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-wasm-runtime-bound-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "add-wasm-runtime-bound-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "014fcf05d1a939ba081d995332675b2b1090f2d71c821028c01c3d7e35ca3bce",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "2655078fc182924669a721685856d31bbcbbb420a02282a692e5f4c0822cef36",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/design.md"
+        },
+        {
+          "content_hash": "eea517740ef61fe8d089c2b23fabc6079f2ec9da0db80555f7f049643fbb8e8a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "85fa2688aed33323dc9678e7369b1bacb9927f26ac8b36e90d0a656f7b5c867e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "af981c1190a9db8715e4529bc1b7b5d6271ff061343ba69c218b94d128825f34",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "1033e4bc1d2db6023f115c35229473a9310b1bce18109eec319277765aca9813",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "c2325c2a1cf3536be6f209a7a3cce4fe18df333df66488d0638977c8b99d4451",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cargo-test-wasm.log"
+        },
+        {
+          "content_hash": "1de42bf503dfba32e47b1bfe9b68b7752e3e0719f456215c1f993bea558247ce",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "f75c0801fe0103e243ee72ae920480efd4df343d96b0b068bdb99517ddbd3586",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "a28d675e6fea6170a27e63065dc61f6c799364af25f135bf29a0ace4795aa478",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/verus-wasm.log"
+        },
+        {
+          "content_hash": "7d534f2c8fa1571ef6845a03247e5af0e7a42644f5d8583a85f2cbcceaa0cb31",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "a584f3c5752e5fa853e178f122972357ce2738c8a1597f343e86840021f1a01b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "c91b89eff67a1ffdd5acd9e86ff89137195f448ce987948f12b8475730395d3a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "45d9c101872523fe1a63e1b5ede4c6371cea67370c0950b868b57c008c54d43a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "e40f94ded9e9c3d5487738110890ed44a9007719d928f4edd27fc755fde360b4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "2e0f50396732fa262a596ab66e9764552f5dfbd85708f0ef3430aca4e722e21f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "44d0b7569ef574f114862d7547ed29561d5f0e9d549a225ccd34eb55ebf11dbe",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "3275e323c440ae9abc03a9c637e6d069d000ee840d8e2d5b0127880e0c3a71b3",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "b474d14264f0c7f204e7554dd135b4070e9d7884bdbf605f42b61b214de221ed",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "07fd7839920f5a22e5165fc64ecb5925b46c65350811176461d5259b3b07b3c2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "f08a76ee9ebb29ffb009fd44ab849b27a795af30a2c484e58238dc39a0fc54ef",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "3275e323c440ae9abc03a9c637e6d069d000ee840d8e2d5b0127880e0c3a71b3",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "abb0ad6d93d8c2c4ffd64def82b15b6c9a745414cc4e08a09a41d51677c05165",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "1d2fd028b1111e34e73c825339b74f67af90a18b9b77fc8425169c84f2998a96",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-control.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-resources.log"
+        },
+        {
+          "content_hash": "7724d5a51a5ec41bdfdf611787f68d9e5cbb1ddfd2f0ea3cfc10ca5cadd9d3a6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-streaming.log"
+        },
+        {
+          "content_hash": "3eb7f1afd468070286e6df1c75b192334749386e7598b8bc750de51788fa49c3",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/full-wrapper-ambient-toolchain-failure.log"
+        },
+        {
+          "content_hash": "09df8cc6ddc28bc8237e5d3a65c3ba3b4ba10779ad76099c3bea28d5fcf47f9c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "9248fea37b3291e7f9f4225602faa4a9dd28fc4cd38242ea4c0b396bc715756b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "6b10c568b0d4f0659563618e69e43186657e5023a442c870f41b32999407da70",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "09fe447206b0073e1c2778b1cb568a9b9c35722c9bc5e6925d4d41d6a6b2213f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-initial.log"
+        },
+        {
+          "content_hash": "78151914a756dee62353cc0c03048ae4c1a71638a6540f807543910624323891",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-migration.log"
+        },
+        {
+          "content_hash": "71599dffa319ab85f6dc28bc0dc05b73bd3a5aa35de69e4bf7262bd4035b8261",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-pre-migration.log"
+        },
+        {
+          "content_hash": "bd3d6198defec8bdcbcb020a6ab2fe6d0ae626dfd282a6fc306835c63fbdb5fa",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "178aac3a075c81147a0a4822d3f24074854aef78bfa587b5935381f94c3472e4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "de62ee9004107b9db8afc09000e882920d7a3e639868b02708b8b39e17af7687",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "22bc609be3f341d45702f394f1c967d6e2e1f70f679673d7dc22d483e9ebb42d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "567c5c5b52f00d6275cea795015e0b0ca79f4e4ccbba20930efd1bec8e39c1da",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "b3baab302db451c5101fee27982d9cdf31d922fdea47a1659728644a097359a4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/proposal.md"
+        },
+        {
+          "content_hash": "12b40d6eee13068c6efc8cab289d0f98c29eb2bd3776b08dd17f3be110a7f806",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/specs/wasm/spec.md"
+        },
+        {
+          "content_hash": "5b9bc227482834d99d464cd48db0e8105fe068fdea8c753983b86a625e481b84",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/tasks.md"
+        },
+        {
+          "content_hash": "db97ee0d23c966b9fd33eecdaf72a500f5db982612130128ea97bc1b932b7381",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-wasm-runtime-bound-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives"
+        }
+      ],
+      "manifest_hash": "e29ec4fb9293158f3d054b4c4a1e0fe2ce1587e4e9fdc95233a1408f950f42d8"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "2655078fc182924669a721685856d31bbcbbb420a02282a692e5f4c0822cef36",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/design.md"
+        },
+        {
+          "content_hash": "eea517740ef61fe8d089c2b23fabc6079f2ec9da0db80555f7f049643fbb8e8a",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "85fa2688aed33323dc9678e7369b1bacb9927f26ac8b36e90d0a656f7b5c867e",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "af981c1190a9db8715e4529bc1b7b5d6271ff061343ba69c218b94d128825f34",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "1033e4bc1d2db6023f115c35229473a9310b1bce18109eec319277765aca9813",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "c2325c2a1cf3536be6f209a7a3cce4fe18df333df66488d0638977c8b99d4451",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/cargo-test-wasm.log"
+        },
+        {
+          "content_hash": "1de42bf503dfba32e47b1bfe9b68b7752e3e0719f456215c1f993bea558247ce",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "f75c0801fe0103e243ee72ae920480efd4df343d96b0b068bdb99517ddbd3586",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "a28d675e6fea6170a27e63065dc61f6c799364af25f135bf29a0ace4795aa478",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/baseline-2026-09-03/verus-wasm.log"
+        },
+        {
+          "content_hash": "7d534f2c8fa1571ef6845a03247e5af0e7a42644f5d8583a85f2cbcceaa0cb31",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "a584f3c5752e5fa853e178f122972357ce2738c8a1597f343e86840021f1a01b",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "c91b89eff67a1ffdd5acd9e86ff89137195f448ce987948f12b8475730395d3a",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "45d9c101872523fe1a63e1b5ede4c6371cea67370c0950b868b57c008c54d43a",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "e40f94ded9e9c3d5487738110890ed44a9007719d928f4edd27fc755fde360b4",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "2e0f50396732fa262a596ab66e9764552f5dfbd85708f0ef3430aca4e722e21f",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "44d0b7569ef574f114862d7547ed29561d5f0e9d549a225ccd34eb55ebf11dbe",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "3275e323c440ae9abc03a9c637e6d069d000ee840d8e2d5b0127880e0c3a71b3",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "b474d14264f0c7f204e7554dd135b4070e9d7884bdbf605f42b61b214de221ed",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "07fd7839920f5a22e5165fc64ecb5925b46c65350811176461d5259b3b07b3c2",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "f08a76ee9ebb29ffb009fd44ab849b27a795af30a2c484e58238dc39a0fc54ef",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "3275e323c440ae9abc03a9c637e6d069d000ee840d8e2d5b0127880e0c3a71b3",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "abb0ad6d93d8c2c4ffd64def82b15b6c9a745414cc4e08a09a41d51677c05165",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "1d2fd028b1111e34e73c825339b74f67af90a18b9b77fc8425169c84f2998a96",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-control.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-resources.log"
+        },
+        {
+          "content_hash": "7724d5a51a5ec41bdfdf611787f68d9e5cbb1ddfd2f0ea3cfc10ca5cadd9d3a6",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/focused-verus-streaming.log"
+        },
+        {
+          "content_hash": "3eb7f1afd468070286e6df1c75b192334749386e7598b8bc750de51788fa49c3",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/full-wrapper-ambient-toolchain-failure.log"
+        },
+        {
+          "content_hash": "09df8cc6ddc28bc8237e5d3a65c3ba3b4ba10779ad76099c3bea28d5fcf47f9c",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "9248fea37b3291e7f9f4225602faa4a9dd28fc4cd38242ea4c0b396bc715756b",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "6b10c568b0d4f0659563618e69e43186657e5023a442c870f41b32999407da70",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "09fe447206b0073e1c2778b1cb568a9b9c35722c9bc5e6925d4d41d6a6b2213f",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-initial.log"
+        },
+        {
+          "content_hash": "78151914a756dee62353cc0c03048ae4c1a71638a6540f807543910624323891",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-migration.log"
+        },
+        {
+          "content_hash": "71599dffa319ab85f6dc28bc0dc05b73bd3a5aa35de69e4bf7262bd4035b8261",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/octet-pre-migration.log"
+        },
+        {
+          "content_hash": "bd3d6198defec8bdcbcb020a6ab2fe6d0ae626dfd282a6fc306835c63fbdb5fa",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "178aac3a075c81147a0a4822d3f24074854aef78bfa587b5935381f94c3472e4",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "de62ee9004107b9db8afc09000e882920d7a3e639868b02708b8b39e17af7687",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "22bc609be3f341d45702f394f1c967d6e2e1f70f679673d7dc22d483e9ebb42d",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "567c5c5b52f00d6275cea795015e0b0ca79f4e4ccbba20930efd1bec8e39c1da",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "b3baab302db451c5101fee27982d9cdf31d922fdea47a1659728644a097359a4",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/proposal.md"
+        },
+        {
+          "content_hash": "12b40d6eee13068c6efc8cab289d0f98c29eb2bd3776b08dd17f3be110a7f806",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/specs/wasm/spec.md"
+        },
+        {
+          "content_hash": "5b9bc227482834d99d464cd48db0e8105fe068fdea8c753983b86a625e481b84",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/tasks.md"
+        },
+        {
+          "content_hash": "db97ee0d23c966b9fd33eecdaf72a500f5db982612130128ea97bc1b932b7381",
+          "exists": true,
+          "path": "./.cairn/changes/add-wasm-runtime-bound-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "4a319c5e1781ae73ed9ad70a9a2d3c4cf29be0cd673d35aa970960a20866e1ff"
+    },
+    "kind": "archive",
+    "manifest_hash": "34d1b1ca5e2d8b38caf0c583315c25e664c96c53f27370f0e17d1afc0dc5a199"
+  },
+  "plan_hash": "3be9835d3297be7e9ef321d1a2242cbfd43540f5329a19ba3cb4255eb79d0305",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "312b790d6bc3ec39ca7db6b06041c7ad07c60f274bbb4d2ece7da19c334e3c85"
+}

@@ -32,7 +32,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
         },
         {
           "path": "src/arithmetic.rs",
@@ -90,7 +90,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
         },
         {
           "path": "src/consensus_fast_path/agreement.rs",
@@ -168,6 +168,130 @@
       ]
     },
     {
+      "scope": "module:wasm_runtime_bounds",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "wasm-runtime-bounds.allocation",
+        "wasm-runtime-bounds.continuation",
+        "wasm-runtime-bounds.docs",
+        "wasm-runtime-bounds.evidence",
+        "wasm-runtime-bounds.final-validation",
+        "wasm-runtime-bounds.fuel",
+        "wasm-runtime-bounds.growth-policy",
+        "wasm-runtime-bounds.model",
+        "wasm-runtime-bounds.non-claims",
+        "wasm-runtime-bounds.segmentation",
+        "wasm-runtime-bounds.streaming"
+      ],
+      "source_paths": [
+        "src/wasm_runtime_bounds/binding.rs",
+        "src/wasm_runtime_bounds/execution.rs",
+        "src/wasm_runtime_bounds/identity.rs",
+        "src/wasm_runtime_bounds/machine.rs",
+        "src/wasm_runtime_bounds/proofs.rs",
+        "src/wasm_runtime_bounds/proofs/control.rs",
+        "src/wasm_runtime_bounds/proofs/resources.rs",
+        "src/wasm_runtime_bounds/proofs/streaming.rs",
+        "src/wasm_runtime_bounds/resources.rs",
+        "src/wasm_runtime_bounds/streaming.rs",
+        "src/wasm_runtime_bounds/tests/mod.rs",
+        "src/wasm_runtime_bounds/tests/negative.rs",
+        "src/wasm_runtime_bounds/tests/positive.rs",
+        "src/wasm_runtime_bounds/tests/property.rs"
+      ],
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/binding.rs",
+          "algorithm": "blake3",
+          "digest": "a4199a27a731f0c34cf8dd9329d84e31e0c7cc98c7c5a8406d805e220f1e4846"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/execution.rs",
+          "algorithm": "blake3",
+          "digest": "50f6e6e142bb4d7dc9d8d6295414dd4879be69f967025485776eb8923d6cbcd1"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/identity.rs",
+          "algorithm": "blake3",
+          "digest": "414ae19975bc8602be970f5de51f2ebd244885c624ce5abc85d21760b9c28d35"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/machine.rs",
+          "algorithm": "blake3",
+          "digest": "2d0b0dbd4748116ffe876cebd07d83999f330d5e8e83a84a7d93557089043c0c"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/proofs.rs",
+          "algorithm": "blake3",
+          "digest": "8bf96f457816e170822ccb4acf0e2f01eb051164b58f96f463f74ef7f70e949d"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/proofs/control.rs",
+          "algorithm": "blake3",
+          "digest": "7ad8b02c200ea8c688d734e4bf4d8ef9b8692e601e56153285f634db86ffef13"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/proofs/resources.rs",
+          "algorithm": "blake3",
+          "digest": "6cda807e745b0f038cf10df5976d7a59d9bdd0bd16058f26c5bee5ae1c0604f9"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/proofs/streaming.rs",
+          "algorithm": "blake3",
+          "digest": "42c9872bcde0eeacb6240a1ffb7ea67b4e19095554f3a12caa21fe8627500a9e"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/resources.rs",
+          "algorithm": "blake3",
+          "digest": "1e65be1fe56de29178157ccf691833bc406dc6c36135abcf95e7e819ab057ade"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/streaming.rs",
+          "algorithm": "blake3",
+          "digest": "2ecb7cf5bf3fb3e5ee8f7929ce11a9daace1af2d29c2b13670a9fd991cc61749"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/tests/mod.rs",
+          "algorithm": "blake3",
+          "digest": "585c9881414307a3f2a94680c5ec9dea1419560e8088f4087e2609988109ac1a"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/tests/negative.rs",
+          "algorithm": "blake3",
+          "digest": "ff46673bb51fee5d6d4168f243c9fef11ca8699abfb64444ac2defacb03bf1dc"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/tests/positive.rs",
+          "algorithm": "blake3",
+          "digest": "87133eb674ed9f1ac08a75c7a3a08066632a438f54971cb483f42cb33d1cd4d9"
+        },
+        {
+          "path": "src/wasm_runtime_bounds/tests/property.rs",
+          "algorithm": "blake3",
+          "digest": "fd9850e9a84954afb218e4c1d0274ca2382f508c1586619b5f71b3ea4b4bb652"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    },
+    {
       "scope": "module:ucan_signature",
       "evidence_tier": "local-proof-summary",
       "requirement_ids": [
@@ -211,7 +335,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -250,7 +374,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",

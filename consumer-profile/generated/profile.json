@@ -11,8 +11,8 @@
       "path": "LICENSE"
     },
     {
-      "blake3": "421d11bb0fd638081fe9d3651897bb11d80c02c42b3975078c59d17955143ae8",
-      "bytes": 50626,
+      "blake3": "99a8938764b5705c11925252fd5b5b8da1f600ce73ed77ed5d1bd57578ba08ed",
+      "bytes": 50852,
       "path": "src/lib.rs"
     },
     {
@@ -278,8 +278,8 @@
   },
   "verification": {
     "proof_command": "./scripts/verus.sh src/lib.rs",
-    "proof_manifest_blake3": "b684f83b5792e491686c05b87fec796c04852dd9978cd93d5a69004d92c59698",
-    "proof_manifest_bytes": 6451,
+    "proof_manifest_blake3": "067bea97531e1fb65582cf2bf5b19627631046a7a4f9e9a46697ebab9353112a",
+    "proof_manifest_bytes": 11781,
     "proof_manifest_path": "docs/proof-artifact-manifest.json",
     "proof_owner": "Trellis",
     "supported_claim": "Source and profile alignment for imported Trellis verified primitives only."

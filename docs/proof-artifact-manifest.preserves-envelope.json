@@ -3,25 +3,29 @@
   "producer": "Trellis optional Preserves proof-manifest carrier",
   "source_manifest": {
     "path": "docs/proof-artifact-manifest.json",
-    "blake3": "b684f83b5792e491686c05b87fec796c04852dd9978cd93d5a69004d92c59698",
-    "bytes": 6451
+    "blake3": "067bea97531e1fb65582cf2bf5b19627631046a7a4f9e9a46697ebab9353112a",
+    "bytes": 11781
   },
   "envelopes": [
     {
       "envelope_id": "trellis.preserves.proof_artifact_manifest.seed",
       "schema_label": "trellis.proof-artifact-manifest.preserves.v1",
-      "source_manifest_digest": "b684f83b5792e491686c05b87fec796c04852dd9978cd93d5a69004d92c59698",
+      "source_manifest_digest": "067bea97531e1fb65582cf2bf5b19627631046a7a4f9e9a46697ebab9353112a",
       "primitive_ids": [
         "trellis.arithmetic.abs_diff",
         "trellis.consensus.fast_path.quorum",
         "trellis.quorum.majority",
         "trellis.ucan.did.decode_did_key",
-        "trellis.ucan.signature.verify_checked"
+        "trellis.ucan.signature.verify_checked",
+        "trellis.wasm.runtime_bounds.continuation",
+        "trellis.wasm.runtime_bounds.execution",
+        "trellis.wasm.runtime_bounds.resources",
+        "trellis.wasm.runtime_bounds.streaming"
       ],
       "canonical_preserves": {
         "path": "docs/proof-artifact-manifest.preserves",
-        "blake3": "7b7b36a67111d6b58200029dedf9ebd06fc08ff328eb8341219a8e970478d881",
-        "bytes": 493
+        "blake3": "cf0ff5db61b283297c3b0af4c469877b7a0228817c1ebc367f2c0450ed2350fc",
+        "bytes": 656
       },
       "allowed_consumers": [
         "ucan",

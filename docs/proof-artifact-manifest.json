@@ -119,6 +119,160 @@
       ]
     },
     {
+      "primitive_id": "trellis.wasm.runtime_bounds.execution",
+      "module_path": "src/wasm_runtime_bounds/identity.rs",
+      "public_api": [
+        "consume_fuel",
+        "run_bounded",
+        "compare_segments"
+      ],
+      "requirement_ids": [
+        "wasm-runtime-bounds.model",
+        "wasm-runtime-bounds.fuel",
+        "wasm-runtime-bounds.segmentation"
+      ],
+      "source": {
+        "path": "src/wasm_runtime_bounds/execution.rs",
+        "blake3": "50f6e6e142bb4d7dc9d8d6295414dd4879be69f967025485776eb8923d6cbcd1",
+        "bytes": 8434
+      },
+      "proof": {
+        "path": "src/wasm_runtime_bounds/proofs/control.rs",
+        "blake3": "7ad8b02c200ea8c688d734e4bf4d8ef9b8692e601e56153285f634db86ffef13",
+        "bytes": 4732
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove a concrete WebAssembly interpreter",
+        "does not prove host scheduling, sandboxing, or adapter correctness"
+      ]
+    },
+    {
+      "primitive_id": "trellis.wasm.runtime_bounds.continuation",
+      "module_path": "src/wasm_runtime_bounds/identity.rs",
+      "public_api": [
+        "capture_continuation",
+        "admit_resume"
+      ],
+      "requirement_ids": [
+        "wasm-runtime-bounds.continuation"
+      ],
+      "source": {
+        "path": "src/wasm_runtime_bounds/binding.rs",
+        "blake3": "a4199a27a731f0c34cf8dd9329d84e31e0c7cc98c7c5a8406d805e220f1e4846",
+        "bytes": 4902
+      },
+      "proof": {
+        "path": "src/wasm_runtime_bounds/proofs/resources.rs",
+        "blake3": "6cda807e745b0f038cf10df5976d7a59d9bdd0bd16058f26c5bee5ae1c0604f9",
+        "bytes": 5931
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove serialization or migration correctness",
+        "does not prove external authority or adapter correctness"
+      ]
+    },
+    {
+      "primitive_id": "trellis.wasm.runtime_bounds.resources",
+      "module_path": "src/wasm_runtime_bounds/identity.rs",
+      "public_api": [
+        "allocate_pages",
+        "begin_execution",
+        "finish_execution",
+        "apply_growth"
+      ],
+      "requirement_ids": [
+        "wasm-runtime-bounds.allocation",
+        "wasm-runtime-bounds.growth-policy"
+      ],
+      "source": {
+        "path": "src/wasm_runtime_bounds/resources.rs",
+        "blake3": "1e65be1fe56de29178157ccf691833bc406dc6c36135abcf95e7e819ab057ade",
+        "bytes": 4325
+      },
+      "proof": {
+        "path": "src/wasm_runtime_bounds/proofs/resources.rs",
+        "blake3": "6cda807e745b0f038cf10df5976d7a59d9bdd0bd16058f26c5bee5ae1c0604f9",
+        "bytes": 5931
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove unsafe allocator memory safety",
+        "does not prove concrete runtime resource enforcement"
+      ]
+    },
+    {
+      "primitive_id": "trellis.wasm.runtime_bounds.streaming",
+      "module_path": "src/wasm_runtime_bounds/identity.rs",
+      "public_api": [
+        "admit_schedule",
+        "coverage_count"
+      ],
+      "requirement_ids": [
+        "wasm-runtime-bounds.streaming"
+      ],
+      "source": {
+        "path": "src/wasm_runtime_bounds/streaming.rs",
+        "blake3": "2ecb7cf5bf3fb3e5ee8f7929ce11a9daace1af2d29c2b13670a9fd991cc61749",
+        "bytes": 3506
+      },
+      "proof": {
+        "path": "src/wasm_runtime_bounds/proofs/streaming.rs",
+        "blake3": "42c9872bcde0eeacb6240a1ffb7ea67b4e19095554f3a12caa21fe8627500a9e",
+        "bytes": 3568
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove decoder or delivered-byte semantics",
+        "does not prove transport completion"
+      ]
+    },
+    {
       "primitive_id": "trellis.ucan.did.decode_did_key",
       "module_path": "src/ucan_did.rs",
       "public_api": [

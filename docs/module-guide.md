@@ -95,6 +95,12 @@ state transitions. For compiler backend memory layout, use
 Caveat: allocator modules model finite metadata/state transitions. They do not
 allocate process memory or replace a runtime allocator.
 
+For bounded WebAssembly runtime control, use
+[`wasm_runtime_bounds`](../src/wasm_runtime_bounds/identity.rs) for finite
+transition admission, fuel, segmentation, continuation, initialization-only
+page allocation, explicit growth policy, and exact chunk schedules. These laws
+do not verify an interpreter, unsafe allocator, host scheduler, or sandbox.
+
 ## Compiler analysis and IR transforms
 
 Goal labels: compiler analysis, HIR metadata, library metadata, CFG modeling, SSA, optimization, ABI metadata.

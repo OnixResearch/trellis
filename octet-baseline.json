@@ -10,7 +10,7 @@
     "profile_hash": "b3:9685f42b9289dca49520062ad1ed548be1bfc92ac9a1cef93d784b60dcdbe772",
     "config_hash": "b3:d681a2e19ce615caae2f012766820d9ef574986545fb4777747bf14dfc47d595"
   },
-  "baseline_hash": "b3:c7bbff3b23f55343ff694304aef252127a050051bad964aafbbfac662aa9e7da",
+  "baseline_hash": "b3:370ad4228256d36ad8d1e99a5f8d48ac449fedbc61ac92c6ba9964fff15386aa",
   "findings": [
     {
       "stable_id": "b3:291545489b06a30a",
@@ -50271,8 +50271,8 @@
       "crate_name": "verified_logic"
     },
     {
-      "stable_id": "b3:9eb4e48841031554",
-      "semantic_id": "b3:9eb4e48841031554",
+      "stable_id": "b3:a126ebe356b97c05",
+      "semantic_id": "b3:a126ebe356b97c05",
       "identity_status": "computed",
       "lint": "excessive_file_length",
       "group": "tigerstyle::structure",
@@ -50280,7 +50280,7 @@
       "file": "src/lib.rs",
       "line": 1,
       "column": 1,
-      "message": "source file is 1105 lines (limit: 300)",
+      "message": "source file is 1109 lines (limit: 300)",
       "crate_name": "verified_logic"
     }
   ]
