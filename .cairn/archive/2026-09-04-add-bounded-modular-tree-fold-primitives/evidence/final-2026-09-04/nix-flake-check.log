@@ -1,0 +1,332 @@
+evaluating flake...
+checking flake output 'packages'...
+checking derivation packages.x86_64-linux.nickel-1-17-0...
+derivation evaluated to /nix/store/fnvv96qkzwb6rfxh7mxkxgx9akcjgqyv-nickel-lang-rev-fixup-1.17.0.drv
+checking derivation packages.x86_64-linux.default...
+derivation evaluated to /nix/store/vjxp8b0ky37cyv4gy3sp6iqj7ilxm0s9-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/vjxp8b0ky37cyv4gy3sp6iqj7ilxm0s9-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verusfmt...
+derivation evaluated to /nix/store/x60zxgg7sk46fh50176glzcfgi8qmazv-octet-verusfmt-0.7.2.drv
+checking derivation packages.x86_64-linux.verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.octet-production-verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation packages.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/h48fi7fr18khcb1b5i2l8ajxxzfi9glk-trellis-octet-verus-upgrade-trial.drv
+checking flake output 'checks'...
+checking derivation checks.x86_64-linux.octet...
+derivation evaluated to /nix/store/xzichsaqzs2navvhjl6m09x423srvgpm-trellis-octet-baseline-check.drv
+checking derivation checks.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/vjxp8b0ky37cyv4gy3sp6iqj7ilxm0s9-verified-logic-0.2.0.drv
+checking derivation checks.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation checks.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/h48fi7fr18khcb1b5i2l8ajxxzfi9glk-trellis-octet-verus-upgrade-trial.drv
+checking derivation checks.x86_64-linux.nickel-cohort-exact...
+derivation evaluated to /nix/store/42nd4ckw0sikwa42r4qhnjhvhcvznjvq-trellis-nickel-cohort-exact.drv
+checking derivation checks.x86_64-linux.nickel-toolchain-fixtures...
+derivation evaluated to /nix/store/2zv43wjfk49h99w04hcjgwdbam0scp15-trellis-nickel-toolchain-fixtures.drv
+checking derivation checks.x86_64-linux.nextest...
+derivation evaluated to /nix/store/d42y5bff2c696q4jz7a3gjylwir7znvg-verified-logic-nextest-0.2.0.drv
+checking derivation checks.x86_64-linux.clippy...
+derivation evaluated to /nix/store/yxzrmmc8p7k0w8r8as2z32i0nm4va70j-verified-logic-clippy-0.2.0.drv
+checking derivation checks.x86_64-linux.fmt...
+derivation evaluated to /nix/store/3b6zhr1ib1jyav9bjxg1mc6mzv5420q0-verified-logic-fmt-0.2.0.drv
+checking derivation checks.x86_64-linux.check-coverage...
+derivation evaluated to /nix/store/svldj7kjyw5m8s6fzh1b0ajqk25k1zyl-check-coverage.drv
+checking derivation checks.x86_64-linux.check-ensures...
+derivation evaluated to /nix/store/xnxs5kz24bviqklxblwrvvvnnns5k52q-check-ensures.drv
+checking derivation checks.x86_64-linux.checker-fixtures...
+derivation evaluated to /nix/store/824fkzidypnxx8na0djahy1xcd26zznh-checker-fixtures.drv
+checking derivation checks.x86_64-linux.verification-policy...
+derivation evaluated to /nix/store/6znn4lzhkwj44j340p4asjb7rlyw8igc-verification-policy.drv
+checking derivation checks.x86_64-linux.consumer-release-profile...
+derivation evaluated to /nix/store/ms7jm322d7yr1bi4aqcq5iibg1kxjv1m-consumer-release-profile.drv
+checking derivation checks.x86_64-linux.readme-module-catalog...
+derivation evaluated to /nix/store/k2waa8ghib6dhi3an2wfmwags2kifw9y-readme-module-catalog.drv
+checking derivation checks.x86_64-linux.readme-metrics...
+derivation evaluated to /nix/store/vs6q6scwbf4w175c42fnqvjb9qbdfblv-readme-metrics.drv
+checking derivation checks.x86_64-linux.proof-gap-inventory...
+derivation evaluated to /nix/store/ck9xbkb6rzss1isq4d42vp502kgq7rv0-proof-gap-inventory.drv
+checking derivation checks.x86_64-linux.verusfmt-ratchet...
+derivation evaluated to /nix/store/aiwhsr81i3619lia5i7g1mrk8p86qkpf-trellis-verusfmt-ratchet.drv
+checking derivation checks.x86_64-linux.verus-proofs...
+derivation evaluated to /nix/store/x7llyz97ndkxr1zjj0vayr97mjbihcrp-verus-proofs.drv
+checking derivation checks.x86_64-linux.tracey-coverage...
+derivation evaluated to /nix/store/b1lapb9c952b5g3f2hsbzwpx3zhxr61j-tracey-coverage.drv
+checking flake output 'devShells'...
+checking derivation devShells.x86_64-linux.default...
+derivation evaluated to /nix/store/jrvs8zfq2z5zaax169v8084448h0c3r5-nix-shell.drv
+running 20 flake checks...
+building '/nix/store/svldj7kjyw5m8s6fzh1b0ajqk25k1zyl-check-coverage.drv'...
+building '/nix/store/xnxs5kz24bviqklxblwrvvvnnns5k52q-check-ensures.drv'...
+building '/nix/store/824fkzidypnxx8na0djahy1xcd26zznh-checker-fixtures.drv'...
+building '/nix/store/ms7jm322d7yr1bi4aqcq5iibg1kxjv1m-consumer-release-profile.drv'...
+check-coverage> 
+check-coverage> Checked 2775 pub fn declarations, 0 exempted
+check-coverage> ✓ all pub fns have r[impl] annotations
+building '/nix/store/0yhx2rpkc7wxnjl0wfbq52h1il9vf3kh-download.drv'...
+check-ensures> 
+check-ensures> Checked 2324 pub fn in verus! blocks, 0 exempted
+check-ensures> ✓ all verified pub fns have ensures clauses
+checker-fixtures> PASS coverage-valid
+checker-fixtures> PASS coverage-missing-impl
+checker-fixtures> PASS ensures-valid
+checker-fixtures> PASS ensures-missing-clause
+checker-fixtures> PASS iterative-valid
+checker-fixtures> PASS iterative-self-cycle
+checker-fixtures> PASS iterative-mutual-cycle
+checker-fixtures> PASS iterative-qualified-local-call
+checker-fixtures> checker fixture self-tests: PASS
+building '/nix/store/vs6q6scwbf4w175c42fnqvjb9qbdfblv-readme-metrics.drv'...
+building '/nix/store/k2waa8ghib6dhi3an2wfmwags2kifw9y-readme-module-catalog.drv'...
+download> structuredAttrs is enabled
+download> 
+download> trying https://crates.io/api/v1/crates/libc/0.2.147/download
+download>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+download>                                  Dload  Upload  Total   Spent   Left   Speed
+download>   0      0   0      0   0      0      0      0                              0
+download> curl: (22) The requested URL returned error: 403
+download> Warning: Problem (retrying all errors). Will retry in 1 second. 3 retries left.
+readme-metrics> ✓ README metrics headline static counts are fresh at line 15 (624 modules, 16 trusted/proof-gap boundaries); use --full for command-backed proof/test/requirement counts
+readme-metrics> ✓ README metrics self-test passed
+building '/nix/store/ck9xbkb6rzss1isq4d42vp502kgq7rv0-proof-gap-inventory.drv'...
+readme-module-catalog> ✓ README module catalog covers 624 public modules (624 catalog entries, 0 exclusions)
+readme-module-catalog> ✓ README module catalog covers 3 public modules (3 catalog entries, 1 exclusions)
+readme-module-catalog> missing README module catalog entries (1):
+readme-module-catalog>   - `beta`
+readme-module-catalog> stale README module catalog entries (1):
+readme-module-catalog>   - `removed`
+readme-module-catalog> ✓ README module catalog self-test fixtures passed
+building '/nix/store/b1lapb9c952b5g3f2hsbzwpx3zhxr61j-tracey-coverage.drv'...
+tracey-coverage> 2026-09-04T09:30:17.720759Z  INFO tracey::daemon::client: Auto-starting daemon for /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source
+proof-gap-inventory> # Proof-Gap Inventory Report
+proof-gap-inventory> 
+proof-gap-inventory> Source root: `src/`
+proof-gap-inventory> 
+proof-gap-inventory> Manifest: `docs/proof-gap-sites.tsv`
+proof-gap-inventory> 
+proof-gap-inventory> ## Summary
+proof-gap-inventory> 
+proof-gap-inventory> | marker | expected | actual | status |
+proof-gap-inventory> | --- | ---: | ---: | --- |
+proof-gap-inventory> | `external_body` | 16 | 16 | ok |
+proof-gap-inventory> | `assume_specification` | 0 | 0 | ok |
+proof-gap-inventory> | `no_ensures` | 0 | 0 | ok |
+proof-gap-inventory> | `runtime_exempt` | 0 | 0 | ok |
+proof-gap-inventory> | `assume_call` | 0 | 0 | ok |
+proof-gap-inventory> 
+proof-gap-inventory> ## External Body Site List, Classifications, and Rationales
+proof-gap-inventory> 
+proof-gap-inventory> Status: `ok`
+proof-gap-inventory> 
+proof-gap-inventory> Expected sites from manifest: 16
+proof-gap-inventory> 
+proof-gap-inventory> Actual sites from source: 16
+proof-gap-inventory> 
+proof-gap-inventory> Manifest rationales: 16 non-empty entries.
+proof-gap-inventory> 
+proof-gap-inventory> Missing expected sites: none.
+proof-gap-inventory> 
+proof-gap-inventory> Unexpected sites: none.
+proof-gap-inventory> 
+proof-gap-inventory> ## Hits
+proof-gap-inventory> 
+proof-gap-inventory> ### `external_body`
+proof-gap-inventory> 
+proof-gap-inventory> - `src/chain.rs:176` `#[verifier::external_body]` → `pub fn compute_entry_hash(`
+proof-gap-inventory> - `src/chain.rs:856` `#[verifier::external_body]` → `pub proof fn hash_collision_free(`
+proof-gap-inventory> - `src/nix_version.rs:762` `#[verifier::external_body]` → `fn compare_versions_unmodeled_trusted(a: &Vec<u8>, b: &Vec<u8>) -> (result: i8)`
+proof-gap-inventory> - `src/snapshot_integrity.rs:54` `#[verifier::external_body]` → `pub proof fn dual_hash_collision_resistant(a1: u64, b1: u64, a2: u64, b2: u64)`
+proof-gap-inventory> - `src/snapshot_integrity.rs:63` `#[verifier::external_body]` → `pub fn dual_hash(a: u64, b: u64) -> (result: u64)`
+proof-gap-inventory> - `src/ucan_did.rs:623` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_round_trip(bytes: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:631` `#[verifier::external_body]` → `pub proof fn axiom_base58btc_injective(a: Seq<u8>, b: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:640` `#[verifier::external_body]` → `pub fn base58btc_encode(bytes: &Vec<u8>) -> (result: Vec<u8>)`
+proof-gap-inventory> - `src/ucan_did.rs:649` `#[verifier::external_body]` → `pub fn base58btc_decode(encoded: &Vec<u8>) -> (result: Option<Vec<u8>>)`
+proof-gap-inventory> - `src/ucan_signature.rs:254` `#[verifier::external_body]` → `pub proof fn axiom_sign_verify_round_trip(sk: Seq<u8>, msg: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:263` `#[verifier::external_body]` → `pub proof fn axiom_wrong_key_rejects(sk: Seq<u8>, pk: Seq<u8>, msg: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:275` `#[verifier::external_body]` → `pub proof fn axiom_wrong_message_rejects(sk: Seq<u8>, msg1: Seq<u8>, msg2: Seq<u8>)`
+proof-gap-inventory> - `src/ucan_signature.rs:289` `#[verifier::external_body]` → `pub fn sign(sk: &SecretKey, message: &Vec<u8>) -> (result: Ed25519Signature)`
+proof-gap-inventory> - `src/ucan_signature.rs:303` `#[verifier::external_body]` → `pub fn verify(pk: &PublicKey, message: &Vec<u8>, sig: &Ed25519Signature) -> (result: bool)`
+proof-gap-inventory> - `src/ucan_signature.rs:315` `#[verifier::external_body]` → `pub fn public_from_secret(sk: &SecretKey) -> (result: PublicKey)`
+proof-gap-inventory> - `src/web_of_trust_principal.rs:103` `#[verifier::external_body]` → `pub fn blake3_digest_bridge(input: &[u8]) -> (result: Vec<u8>)`
+proof-gap-inventory> 
+proof-gap-inventory> ### `assume_specification`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `no_ensures`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `runtime_exempt`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> ### `assume_call`
+proof-gap-inventory> 
+proof-gap-inventory> No hits.
+proof-gap-inventory> 
+proof-gap-inventory> PASS: --fixture-missing-rationale failed closed
+proof-gap-inventory> PASS: --fixture-blank-rationale failed closed
+proof-gap-inventory> PASS: --fixture-malformed-rationale failed closed
+building '/nix/store/42nd4ckw0sikwa42r4qhnjhvhcvznjvq-trellis-nickel-cohort-exact.drv'...
+building '/nix/store/2zv43wjfk49h99w04hcjgwdbam0scp15-trellis-nickel-toolchain-fixtures.drv'...
+building '/nix/store/j9qi9nzr9kny324ky8k9xy9s1mxk6jf7-verus-0.2026.03.22.drv'...
+verus> Running phase: unpackPhase
+verus> unpacking source archive /nix/store/8ax11klg95n7ywqp93x99wq0wkcpnwcg-source
+verus> source root is source
+verus> Running phase: patchPhase
+verus> Running phase: updateAutotoolsGnuConfigScriptsPhase
+verus> Running phase: configurePhase
+verus> no configure script, doing nothing
+verus> Running phase: buildPhase
+verus> no Makefile or custom buildPhase, doing nothing
+verus> Running phase: installPhase
+verus> Running phase: fixupPhase
+verus> shrinking RPATHs of ELF executables and libraries in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/rust_verify
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/cargo-verus
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/verus
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_builtin_macros.so
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_state_machines_macros.so
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/z3
+verus> checking for references to /build/ in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22...
+verus> patching script interpreter paths in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22
+verus> /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/bin/verus-verify: interpreter directive changed from "#!/usr/bin/env bash" to "/nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/bash"
+download>   0      0   0      0   0      0      0      0                              0
+download> curl: (22) The requested URL returned error: 403
+download> Warning: Problem (retrying all errors). Will retry in 2 seconds. 2 retries
+download> Warning: left.
+verus> stripping (with command strip and flags -S -p) in  /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/bin
+verus> automatically fixing dependencies for ELF files
+verus> {'add_existing': True,
+verus>  'append_rpaths': [],
+verus>  'extra_args': [],
+verus>  'ignore_missing': [],
+verus>  'keep_libc': False,
+verus>  'libs': [PosixPath('/nix/store/z2z0p745mj6160wwdfi01bb6af1kqlq8-auto-patchelf-hook/lib'),
+verus>           PosixPath('/nix/store/rax3bhibi4667jvxv7j22kalzsi9p8xs-auto-patchelf-0-unstable-2024-08-14/lib'),
+verus>           PosixPath('/nix/store/pc4gvj2krf50wc2sipkimnbmx2w3mcgf-binutils-wrapper-2.44/lib'),
+verus>           PosixPath('/nix/store/590yx3aynyhs48jyk8ip37fk1mjqfhkb-patchelf-0.15.2/lib'),
+verus>           PosixPath('/nix/store/gz3rknshr1ywis4mjaqrgj3z2shp3n3v-update-autotools-gnu-config-scripts-hook/lib'),
+verus>           PosixPath('/nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh/lib'),
+verus>           PosixPath('/nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh/lib'),
+verus>           PosixPath('/nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh/lib'),
+verus>           PosixPath('/nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh/lib'),
+verus>           PosixPath('/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh/lib'),
+verus>           PosixPath('/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh/lib'),
+verus>           PosixPath('/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh/lib'),
+verus>           PosixPath('/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh/lib'),
+verus>           PosixPath('/nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh/lib'),
+verus>           PosixPath('/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh/lib'),
+verus>           PosixPath('/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh/lib'),
+verus>           PosixPath('/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh/lib'),
+verus>           PosixPath('/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh/lib'),
+verus>           PosixPath('/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh/lib'),
+verus>           PosixPath('/nix/store/kbw2j1vag664b3sj3rjwz9v53cqx87sb-gcc-wrapper-15.2.0/lib'),
+verus>           PosixPath('/nix/store/4yi6jj75bb5hhdzpzlxfyf69d35wsf2x-binutils-wrapper-2.44/lib'),
+verus>           PosixPath('/nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib'),
+verus>           PosixPath('/nix/store/87y9237m9c9m9mxk9ajwdfmn78vz6w2y-zlib-1.3.1-dev/lib'),
+verus>           PosixPath('/nix/store/vl8jkqpr0l3fac3cxiy4nwc5paiww1lv-zlib-1.3.1/lib'),
+verus>           PosixPath('/nix/store/038bps96h9h5plzsjdq6a2nhwz57rv2v-rust-default-1.94.0/lib'),
+verus>           PosixPath('/nix/store/z2z0p745mj6160wwdfi01bb6af1kqlq8-auto-patchelf-hook/lib'),
+verus>           PosixPath('/nix/store/rax3bhibi4667jvxv7j22kalzsi9p8xs-auto-patchelf-0-unstable-2024-08-14/lib'),
+verus>           PosixPath('/nix/store/pc4gvj2krf50wc2sipkimnbmx2w3mcgf-binutils-wrapper-2.44/lib'),
+verus>           PosixPath('/nix/store/590yx3aynyhs48jyk8ip37fk1mjqfhkb-patchelf-0.15.2/lib'),
+verus>           PosixPath('/nix/store/gz3rknshr1ywis4mjaqrgj3z2shp3n3v-update-autotools-gnu-config-scripts-hook/lib'),
+verus>           PosixPath('/nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh/lib'),
+verus>           PosixPath('/nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh/lib'),
+verus>           PosixPath('/nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh/lib'),
+verus>           PosixPath('/nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh/lib'),
+verus>           PosixPath('/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh/lib'),
+verus>           PosixPath('/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh/lib'),
+verus>           PosixPath('/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh/lib'),
+verus>           PosixPath('/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh/lib'),
+verus>           PosixPath('/nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh/lib'),
+verus>           PosixPath('/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh/lib'),
+verus>           PosixPath('/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh/lib'),
+verus>           PosixPath('/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh/lib'),
+verus>           PosixPath('/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh/lib'),
+verus>           PosixPath('/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh/lib'),
+verus>           PosixPath('/nix/store/kbw2j1vag664b3sj3rjwz9v53cqx87sb-gcc-wrapper-15.2.0/lib'),
+verus>           PosixPath('/nix/store/4yi6jj75bb5hhdzpzlxfyf69d35wsf2x-binutils-wrapper-2.44/lib'),
+verus>           PosixPath('/nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib'),
+verus>           PosixPath('/nix/store/87y9237m9c9m9mxk9ajwdfmn78vz6w2y-zlib-1.3.1-dev/lib'),
+verus>           PosixPath('/nix/store/vl8jkqpr0l3fac3cxiy4nwc5paiww1lv-zlib-1.3.1/lib'),
+verus>           PosixPath('/nix/store/038bps96h9h5plzsjdq6a2nhwz57rv2v-rust-default-1.94.0/lib')],
+verus>  'paths': [PosixPath('/nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22')],
+verus>  'preserve_origin': False,
+verus>  'recursive': True,
+verus>  'runtime_dependencies': [],
+verus>  'structured_logs': False}
+tracey-coverage> 2026-09-04T09:30:18.733154Z  INFO tracey::daemon::client: Starting daemon.
+verus> setting interpreter of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/rust_verify
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/rust_verify
+verus>     librustc_driver-24b10b5e3eb5af70.so -> found: /nix/store/038bps96h9h5plzsjdq6a2nhwz57rv2v-rust-default-1.94.0/lib
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/038bps96h9h5plzsjdq6a2nhwz57rv2v-rust-default-1.94.0/lib:/nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting interpreter of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/cargo-verus
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/cargo-verus
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting interpreter of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/verus
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/verus
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_builtin_macros.so
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_state_machines_macros.so
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting interpreter of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/z3
+verus> searching for dependencies of /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/z3
+verus>     libstdc++.so.6 -> found: /nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib
+verus>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> setting RPATH to: /nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib:/nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+verus> auto-patchelf: 0 dependencies could not be satisfied
+building '/nix/store/6znn4lzhkwj44j340p4asjb7rlyw8igc-verification-policy.drv'...
+verification-policy> PASS nickel export verification-policy/policy.ncl
+verification-policy> PASS verification policy fresh verification-policy/generated/policy.json
+verification-policy> PASS nickel export proof-review/policy.ncl
+verification-policy> PASS proof-review policy fresh proof-review/generated/policy.json
+verification-policy> PASS nickel export cairn-policy/default.ncl
+verification-policy> PASS cairn policy fresh cairn-policy/generated/cairn-policy.json
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/invalid-duplicate-checker.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/invalid-empty-checkers.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/invalid-missing-exemption-owner.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/invalid-unsafe-path.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/verification-policy/fixtures/valid-minimal.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-dangling-mode.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-dangling-rule-reference.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-dangling-validation-gate.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-duplicate-rule.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-empty-rules.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/proof-review/fixtures/valid-minimal.ncl
+tracey-coverage> 2026-09-04T09:30:19.744141Z  INFO tracey::daemon::client: Starting daemon..
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/cairn-policy/fixtures/invalid-artifact-dependency.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/mr1r9kfw54sjwi4vs53075h1a8k1lyl2-source/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl
+consumer-release-profile> error: profile.artifact.drift: src/lib.rs expected 51198:fd246abc7a436722027e37bc95d84b4a1805fdc27e7d37286a0b893ecfdf9e87 got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+consumer-release-profile> error: profile.verification.proof_manifest.drift
+warning: killing stray builder process 3149684 ()...
+warning: killing stray builder process 3149751 ()...
+warning: killing stray builder process 3151389 ()...
+warning: killing stray builder process 3149201 ()...
+error (ignored): deleting cgroup "/sys/fs/cgroup/system.slice/nix-daemon.service/nix-build-uid-872546304": Device or resource busy
+warning: killing stray builder process 3149035 ()...
+warning: killing stray builder process 3149058 ()...
+error: failed to build attribute 'checks.x86_64-linux.consumer-release-profile', build of '/nix/store/ms7jm322d7yr1bi4aqcq5iibg1kxjv1m-consumer-release-profile.drv^*' failed: Cannot build '/nix/store/ms7jm322d7yr1bi4aqcq5iibg1kxjv1m-consumer-release-profile.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/asmaxr7lh7rl8af410xii8b8y8xm8yli-consumer-release-profile
+       Last 2 log lines:
+       > error: profile.artifact.drift: src/lib.rs expected 51198:fd246abc7a436722027e37bc95d84b4a1805fdc27e7d37286a0b893ecfdf9e87 got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+       > error: profile.verification.proof_manifest.drift
+       For full logs, run:
+         nix log /nix/store/ms7jm322d7yr1bi4aqcq5iibg1kxjv1m-consumer-release-profile.drv

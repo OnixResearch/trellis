@@ -1,0 +1,39 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-bounded-modular-tree-fold-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": true,
+  "input_hash": "e63a2940de48c4870d0a43a4df5ee8abdfb8906623cc9ca3748d8452055fdc9f",
+  "layout": "cairn",
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "136ad02d5059a36bb6c8eeb5bc88539b8275d0b7234b57892f66f6ae744943ec",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "1b20bbe0625e846257b084c51962f4da532773f4f1fe82ecb62a2be076ca97a5"
+}

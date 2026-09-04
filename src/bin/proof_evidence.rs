@@ -28,6 +28,23 @@ const EVIDENCE_TIER: &str = "local-proof-summary";
 const VERIFIER_TOOLCHAIN: &str = "Verus via scripts/verus.sh; Tracey via docs/requirements.md";
 const PROOF_COMMAND: &str = "./scripts/verus.sh src/lib.rs";
 const PROOF_EXAMPLE_COMMAND: &str = "./scripts/verus.sh tests/proof_examples/basic_refinement.rs";
+const BOUNDED_FOLD_SCOPE: &str = "module:bounded_modular_tree_fold";
+const BOUNDED_FOLD_PROFILE: &str = "trellis.balanced-u24-wrapping-sum.v1";
+const BOUNDED_FOLD_ORACLE: &str = "verified_logic::bounded_modular_tree_fold::sequential_u24_sum";
+const BOUNDED_FOLD_DOWNSTREAM_REQUIREMENT: &str = "exact artifact pin plus downstream validation or rerun receipt";
+const NOT_APPLICABLE: &str = "not-applicable";
+const BOUNDED_FOLD_PROOF_FUNCTIONS: &[&str] = &[
+    "u24::u24_normalize_closed",
+    "u24::u24_normalize_valid_identity",
+    "u24::u24_normalize_idempotent",
+    "u24::u24_add_closed",
+    "u24::u24_add_zero_identity",
+    "u24::u24_add_commutative",
+    "u24::u24_add_associative",
+    "bounded_modular_tree_fold::core::u24_pair_round_preserves_sum",
+    "bounded_modular_tree_fold::core::power_of_two_round_progress",
+    "bounded_modular_tree_fold::core::power_of_two_combine_count_exact",
+];
 const MISSING_REQUIRED_FIELD_JSON: &str = r#"{
   "schema_version": "trellis-proof-evidence-v1",
   "generated_by": "fixture",
@@ -54,6 +71,12 @@ const FORBIDDEN_CLAIMS: &[&str] = &[
     "certification",
     "third-party conformance",
     "production safety",
+    "downstream certified",
+    "verified external",
+    "bend correctness",
+    "hvm2 correctness",
+    "generated-c equivalence",
+    "hvm interactions",
 ];
 const REQUIRED_NON_CLAIMS: &[&str] = &[
     "not release approval",
@@ -74,6 +97,10 @@ struct ProofRecord {
     evidence_tier: String,
     requirement_ids: Vec<String>,
     source_paths: Vec<String>,
+    proof_functions: Vec<String>,
+    algorithm_profile: String,
+    executable_oracle_symbol: String,
+    downstream_validation_requirement: String,
     proof_command: String,
     verifier_toolchain: String,
     proof_outcome: String,
@@ -283,6 +310,10 @@ fn record_for_scope(
         evidence_tier: EVIDENCE_TIER.to_string(),
         requirement_ids,
         source_paths: source_paths.clone(),
+        proof_functions: Vec::new(),
+        algorithm_profile: NOT_APPLICABLE.to_string(),
+        executable_oracle_symbol: NOT_APPLICABLE.to_string(),
+        downstream_validation_requirement: NOT_APPLICABLE.to_string(),
         proof_command: proof_command.to_string(),
         verifier_toolchain: VERIFIER_TOOLCHAIN.to_string(),
         proof_outcome: PROOF_OUTCOME_VERIFIED.to_string(),
@@ -295,7 +326,35 @@ fn record_for_scope(
     })
 }
 
+fn bounded_fold_record(facts: &RepoFacts) -> Result<ProofRecord, String> {
+    let mut record = record_for_scope(
+        BOUNDED_FOLD_SCOPE,
+        &[
+            "src/u24/mod.rs",
+            "src/bounded_modular_tree_fold/mod.rs",
+            "src/bounded_modular_tree_fold/core.rs",
+            "src/bounded_modular_tree_fold/tests.rs",
+        ],
+        PROOF_COMMAND,
+        facts,
+    )?;
+    record.proof_functions = BOUNDED_FOLD_PROOF_FUNCTIONS.iter().map(|name| (*name).to_string()).collect();
+    record.algorithm_profile = BOUNDED_FOLD_PROFILE.to_string();
+    record.executable_oracle_symbol = BOUNDED_FOLD_ORACLE.to_string();
+    record.downstream_validation_requirement = BOUNDED_FOLD_DOWNSTREAM_REQUIREMENT.to_string();
+    record.claims =
+        vec!["records local Trellis u24 arithmetic, refinement, equivalence, and abstract work proofs".to_string()];
+    record.non_claims.extend([
+        "not Bend or HVM2 correctness".to_string(),
+        "not generated-C or host-compiler equivalence".to_string(),
+        "not benchmark or HVM interaction evidence".to_string(),
+        "downstream validation or rerun required for verified role".to_string(),
+    ]);
+    Ok(record)
+}
+
 // r[impl proof-evidence-bundles.export]
+// r[impl bounded-modular-tree-fold.evidence]
 fn generate_bundle(facts: &RepoFacts) -> Result<ProofBundle, String> {
     let records = vec![
         record_for_scope("module:arithmetic", &["src/arithmetic.rs"], PROOF_COMMAND, facts)?,
@@ -368,6 +427,7 @@ fn generate_bundle(facts: &RepoFacts) -> Result<ProofBundle, String> {
             facts,
         )?,
         record_for_scope("module:ucan_signature", &["src/ucan_signature.rs"], PROOF_COMMAND, facts)?,
+        bounded_fold_record(facts)?,
         record_for_scope(
             "proof-example:basic_refinement",
             &["tests/proof_examples/basic_refinement.rs"],
@@ -423,6 +483,10 @@ fn validate_record(record: &ProofRecord, facts: &RepoFacts, errors: &mut Vec<Str
     if record.content_identities.is_empty() {
         errors.push(format!("{} missing content identities", record.scope));
     }
+    require_non_empty(&record.algorithm_profile, "algorithm_profile", errors);
+    require_non_empty(&record.executable_oracle_symbol, "executable_oracle_symbol", errors);
+    require_non_empty(&record.downstream_validation_requirement, "downstream_validation_requirement", errors);
+    validate_profile_metadata(record, errors);
     validate_requirements(record, facts, errors);
     validate_content_identities(record, facts, errors);
     validate_proof_gaps(record, facts, errors);
@@ -432,6 +496,25 @@ fn validate_record(record: &ProofRecord, facts: &RepoFacts, errors: &mut Vec<Str
 fn require_non_empty(value: &str, field: &str, errors: &mut Vec<String>) {
     if value.is_empty() {
         errors.push(format!("record field `{field}` must be non-empty"));
+    }
+}
+
+fn validate_profile_metadata(record: &ProofRecord, errors: &mut Vec<String>) {
+    if record.scope != BOUNDED_FOLD_SCOPE {
+        return;
+    }
+    let expected_functions: Vec<String> = BOUNDED_FOLD_PROOF_FUNCTIONS.iter().map(|name| (*name).to_string()).collect();
+    if record.proof_functions != expected_functions {
+        errors.push(format!("{} proof function inventory is stale", record.scope));
+    }
+    if record.algorithm_profile != BOUNDED_FOLD_PROFILE {
+        errors.push(format!("{} algorithm profile is stale", record.scope));
+    }
+    if record.executable_oracle_symbol != BOUNDED_FOLD_ORACLE {
+        errors.push(format!("{} executable oracle symbol is stale", record.scope));
+    }
+    if record.downstream_validation_requirement != BOUNDED_FOLD_DOWNSTREAM_REQUIREMENT {
+        errors.push(format!("{} downstream validation requirement is missing or stale", record.scope));
     }
 }
 
@@ -694,6 +777,38 @@ fn run_self_test() -> Result<(), String> {
     let mut overbroad = valid.clone();
     overbroad.records[0].claims = vec!["release approval for production safety".to_string()];
     expect_invalid(&overbroad, &facts, "overbroad claim", "overbroad claim")?;
+
+    let mut profiled = valid.clone();
+    profiled.records[0].scope = BOUNDED_FOLD_SCOPE.to_string();
+    profiled.records[0].proof_functions = BOUNDED_FOLD_PROOF_FUNCTIONS.iter().map(|name| (*name).to_string()).collect();
+    profiled.records[0].algorithm_profile = BOUNDED_FOLD_PROFILE.to_string();
+    profiled.records[0].executable_oracle_symbol = BOUNDED_FOLD_ORACLE.to_string();
+    profiled.records[0].downstream_validation_requirement = BOUNDED_FOLD_DOWNSTREAM_REQUIREMENT.to_string();
+    expect_valid(&profiled, &facts, "profiled proof handoff")?;
+
+    let mut wrong_profile = profiled.clone();
+    wrong_profile.records[0].algorithm_profile = "trellis.balanced-u24-wrapping-sum.v2".to_string();
+    expect_invalid(&wrong_profile, &facts, "algorithm profile is stale", "wrong profile")?;
+
+    let mut missing_functions = profiled.clone();
+    missing_functions.records[0].proof_functions.clear();
+    expect_invalid(&missing_functions, &facts, "proof function inventory is stale", "missing proof functions")?;
+
+    let mut missing_verifier = profiled.clone();
+    missing_verifier.records[0].verifier_toolchain.clear();
+    expect_invalid(&missing_verifier, &facts, "verifier_toolchain", "missing verifier")?;
+
+    let mut wrong_oracle = profiled.clone();
+    wrong_oracle.records[0].executable_oracle_symbol = "unreviewed::oracle".to_string();
+    expect_invalid(&wrong_oracle, &facts, "oracle symbol is stale", "wrong oracle")?;
+
+    let mut unsupported_role = profiled.clone();
+    unsupported_role.records[0].claims = vec!["verified external runtime".to_string()];
+    expect_invalid(&unsupported_role, &facts, "overbroad claim", "unsupported verified role")?;
+
+    let mut downstream_overclaim = profiled;
+    downstream_overclaim.records[0].claims = vec!["downstream certified without receipt".to_string()];
+    expect_invalid(&downstream_overclaim, &facts, "overbroad claim", "downstream overclaim")?;
 
     println!("✓ proof evidence bundle self-test fixtures passed");
     Ok(())

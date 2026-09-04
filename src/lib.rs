@@ -448,6 +448,8 @@ pub mod bitmap;
 pub mod bitwise;
 pub mod bloom;
 pub mod bounded_interval;
+#[path = "bounded_modular_tree_fold/mod.rs"]
+pub mod bounded_modular_tree_fold;
 pub mod bounded_range;
 pub mod btree_balance;
 pub mod btree_delete;
@@ -993,6 +995,8 @@ pub mod txn_isolation;
 pub mod type_lattice;
 pub mod type_unification;
 pub mod typed_state;
+#[path = "u24/mod.rs"]
+pub mod u24;
 pub mod ucan_ability;
 /// Verified UCAN backend operation transcript admission.
 pub mod ucan_backend_transcript;

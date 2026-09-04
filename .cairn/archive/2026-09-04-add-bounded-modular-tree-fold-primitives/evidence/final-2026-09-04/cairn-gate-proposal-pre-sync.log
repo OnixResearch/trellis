@@ -1,0 +1,39 @@
+{
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "227ac593263a84afa6c6a6b7e95c409fa92b7b61f94da096b09e13d14af31c6d",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "probe_evidence": null,
+  "receipt_hash": "2f1e670a9bb3e6606b296d4f9e2987f4a0d9e83f7d1b8ea1d01f18a4dc55f51e",
+  "stage": "proposal",
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    }
+  ],
+  "task_ordering": null,
+  "valid": true,
+  "verdict": "PASS"
+}

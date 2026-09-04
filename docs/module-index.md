@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `622` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `624` public modules, `589` requirement-covered modules, `16` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -46,10 +46,11 @@ Summary: `622` public modules, `588` requirement-covered modules, `14` example-b
 | `blocking_bounded_channel` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `3`, requirements mentions: `0` | — | [`src/blocking_bounded_channel.rs`](../src/blocking_bounded_channel.rs) |
 | `bloom` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `8`, requirements mentions: `2` | — | [`src/bloom.rs`](../src/bloom.rs) |
 | `bounded_interval` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `2`, requirements mentions: `0` | — | [`src/bounded_interval.rs`](../src/bounded_interval.rs) |
+| `bounded_modular_tree_fold` | `example-backed`, `partial-requirement-coverage`, `runtime-helper`, `spec-model`, `test-backed` | [`bounded_modular_tree_fold`](../examples/bounded_modular_tree_fold.rs) | impl: `21`, verify: `0`, requirements mentions: `0` | — | [`src/bounded_modular_tree_fold/mod.rs`](../src/bounded_modular_tree_fold/mod.rs) |
 | `bounded_mpmc` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `20`, requirements mentions: `0` | — | [`src/bounded_mpmc.rs`](../src/bounded_mpmc.rs) |
 | `bounded_peers` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `19`, requirements mentions: `0` | — | [`src/bounded_peers.rs`](../src/bounded_peers.rs) |
 | `bounded_range` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `33`, requirements mentions: `1` | — | [`src/bounded_range.rs`](../src/bounded_range.rs) |
-| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `35` | — | [`src/bounds.rs`](../src/bounds.rs) |
+| `bounds` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`core_basics`](../examples/core_basics.rs) | impl: `2`, verify: `9`, requirements mentions: `36` | — | [`src/bounds.rs`](../src/bounds.rs) |
 | `btree_balance` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `20`, verify: `45`, requirements mentions: `0` | — | [`src/btree_balance.rs`](../src/btree_balance.rs) |
 | `btree_delete` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `21`, requirements mentions: `0` | — | [`src/btree_delete.rs`](../src/btree_delete.rs) |
 | `btree_insert` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `21`, requirements mentions: `0` | — | [`src/btree_insert.rs`](../src/btree_insert.rs) |
@@ -452,7 +453,7 @@ Summary: `622` public modules, `588` requirement-covered modules, `14` example-b
 | `replication_pipeline` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `18`, requirements mentions: `0` | — | [`src/replication_pipeline.rs`](../src/replication_pipeline.rs) |
 | `request_forward` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `18`, requirements mentions: `0` | — | [`src/request_forward.rs`](../src/request_forward.rs) |
 | `resource_accounting` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `8`, verify: `8`, requirements mentions: `0` | — | [`src/resource_accounting.rs`](../src/resource_accounting.rs) |
-| `result` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `29`, requirements mentions: `29` | — | [`src/result.rs`](../src/result.rs) |
+| `result` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `29`, requirements mentions: `30` | — | [`src/result.rs`](../src/result.rs) |
 | `retry` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `22`, requirements mentions: `5` | — | [`src/retry.rs`](../src/retry.rs) |
 | `ring_buffer` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `29`, requirements mentions: `0` | — | [`src/ring_buffer.rs`](../src/ring_buffer.rs) |
 | `rustc_metadata_identity` | `composition-facade`, `partial-requirement-coverage`, `test-backed` | — | impl: `2`, verify: `0`, requirements mentions: `0` | — | [`src/rustc/metadata/identity.rs`](../src/rustc/metadata/identity.rs) |
@@ -554,6 +555,7 @@ Summary: `622` public modules, `588` requirement-covered modules, `14` example-b
 | `type_unification` | `requirement-covered`, `spec-model` | — | impl: `7`, verify: `13`, requirements mentions: `0` | — | [`src/type_unification.rs`](../src/type_unification.rs) |
 | `typed_durable_reference` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `22`, verify: `17`, requirements mentions: `0` | — | [`src/typed_durable_reference.rs`](../src/typed_durable_reference.rs) |
 | `typed_state` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `9`, verify: `18`, requirements mentions: `0` | — | [`src/typed_state.rs`](../src/typed_state.rs) |
+| `u24` | `example-backed`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | [`bounded_modular_tree_fold`](../examples/bounded_modular_tree_fold.rs) | impl: `8`, verify: `12`, requirements mentions: `0` | — | [`src/u24/mod.rs`](../src/u24/mod.rs) |
 | `ucan_ability` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `16`, verify: `6`, requirements mentions: `0` | — | [`src/ucan_ability.rs`](../src/ucan_ability.rs) |
 | `ucan_backend_transcript` | `partial-requirement-coverage`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `0`, requirements mentions: `0` | — | [`src/ucan_backend_transcript.rs`](../src/ucan_backend_transcript.rs) |
 | `ucan_base64url` | `partial-requirement-coverage`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `7`, verify: `0`, requirements mentions: `0` | — | [`src/ucan_base64url.rs`](../src/ucan_base64url.rs) |

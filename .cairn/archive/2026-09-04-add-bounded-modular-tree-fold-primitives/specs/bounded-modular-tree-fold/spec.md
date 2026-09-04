@@ -4,7 +4,7 @@
 
 Add a verified `u24` wrapping-add domain and a finite balanced reduction oracle that downstream evaluations can use without promoting local proofs to external compiler or runtime correctness.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: External projects remain outside the proof boundary
 
@@ -196,7 +196,7 @@ Documentation and evidence MUST state that the proofs do not establish Bend or H
 ### Requirement: Documentation is traceable
 
 r[bounded-modular-tree-fold.docs]
-The change MUST add canonical requirements, public module documentation, exports, `r[impl]` and `r[verify]` links, README and module-catalog entries, examples, proof-evidence metadata, and explicit non-claims for every public surface.
+The change MUST add canonical requirements, public module documentation, exports, implementation and verification links, README and module-catalog entries, examples, proof-evidence metadata, and explicit non-claims for every public surface.
 
 #### Scenario: Coverage is queried
 

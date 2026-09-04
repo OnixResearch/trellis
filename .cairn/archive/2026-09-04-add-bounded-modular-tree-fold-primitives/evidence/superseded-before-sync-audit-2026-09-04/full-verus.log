@@ -1,0 +1,618 @@
+warning: unknown experimental feature 'wasm-builtin'
+warning: unknown experimental feature 'wasm-builtin'
+these 2 derivations will be built:
+  /nix/store/wn172xd0lsgkjnz8jwql6mh8a6489pki-trellis-verus-proof-source.drv
+  /nix/store/4hcdx1j172bw37hhvzcyzh4qa9ammpmz-verus-proofs.drv
+building '/nix/store/wn172xd0lsgkjnz8jwql6mh8a6489pki-trellis-verus-proof-source.drv'...
+building '/nix/store/4hcdx1j172bw37hhvzcyzh4qa9ammpmz-verus-proofs.drv'...
+verus-proofs> warning: use of deprecated method `vstd::prelude::OptionAdditionalFns::is_None`: is_Variant is deprecated - use `->` or `matches` instead: https://verus-lang.github.io/verus/guide/datatypes_enum.html
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/constraint_consistency.rs:20:145
+verus-proofs>    |
+verus-proofs> 20 | ...nment) requires constraint_relation_assigned_tuple_spec(r,a).is_None() ensures !constraint_consistent_spec(r,a) {}
+verus-proofs>    |                                                                 ^^^^^^^
+verus-proofs>    |
+verus-proofs>    = note: `#[warn(deprecated)]` on by default
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ability_effect.rs:12:10
+verus-proofs>    |
+verus-proofs> 12 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ability_effect.rs:17:10
+verus-proofs>    |
+verus-proofs> 17 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ability_effect.rs:28:10
+verus-proofs>    |
+verus-proofs> 28 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/algebraic_effect.rs:35:10
+verus-proofs>    |
+verus-proofs> 35 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/algebraic_effect.rs:40:10
+verus-proofs>    |
+verus-proofs> 40 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/algebraic_effect.rs:45:10
+verus-proofs>    |
+verus-proofs> 45 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/algebraic_effect.rs:51:10
+verus-proofs>    |
+verus-proofs> 51 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/beam_process.rs:23:10
+verus-proofs>    |
+verus-proofs> 23 | #[derive(Clone, Debug, PartialEq, Eq)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/content_addressed_code.rs:25:10
+verus-proofs>    |
+verus-proofs> 25 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/content_addressed_code.rs:37:10
+verus-proofs>    |
+verus-proofs> 37 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/remote_computation.rs:25:10
+verus-proofs>    |
+verus-proofs> 25 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/remote_computation.rs:35:10
+verus-proofs>    |
+verus-proofs> 35 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/semantic_refactoring.rs:59:10
+verus-proofs>    |
+verus-proofs> 59 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/typed_durable_reference.rs:112:10
+verus-proofs>     |
+verus-proofs> 112 | #[derive(Clone, PartialEq, Eq, Debug)]
+verus-proofs>     |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/loop_detection.rs:15:17
+verus-proofs>    |
+verus-proofs> 15 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: autoderive Clone impl does not take the form Verus expects; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nickel_pattern_coverage.rs:95:17
+verus-proofs>    |
+verus-proofs> 95 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_closure.rs:15:10
+verus-proofs>    |
+verus-proofs> 15 | #[derive(Clone, Debug, PartialEq, Eq)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:12:10
+verus-proofs>    |
+verus-proofs> 12 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:20:10
+verus-proofs>    |
+verus-proofs> 20 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/sel4_ready_queue.rs:16:10
+verus-proofs>    |
+verus-proofs> 16 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/sel4_untyped.rs:30:10
+verus-proofs>    |
+verus-proofs> 30 | #[derive(Clone)]
+verus-proofs>    |          ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:41:17
+verus-proofs>    |
+verus-proofs> 41 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:48:17
+verus-proofs>    |
+verus-proofs> 48 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:53:17
+verus-proofs>    |
+verus-proofs> 53 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:59:17
+verus-proofs>    |
+verus-proofs> 59 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:66:17
+verus-proofs>    |
+verus-proofs> 66 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:75:17
+verus-proofs>    |
+verus-proofs> 75 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:81:17
+verus-proofs>    |
+verus-proofs> 81 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:88:17
+verus-proofs>    |
+verus-proofs> 88 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> warning: Verus does not (yet) support autoderive Clone impl when the clone is not a copy; continuing, but without adding a specification for the derived Clone impl
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/ssa_construction.rs:95:17
+verus-proofs>    |
+verus-proofs> 95 | #[derive(Debug, Clone, PartialEq, Eq)]
+verus-proofs>    |                 ^^^^^
+verus-proofs> 
+verus-proofs> WARNING: (17212,4): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (17342,5): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (19992,4): 'if' cannot be used in patterns.
+verus-proofs> WARNING: (20169,1): 'if' cannot be used in patterns.
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 2s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has been running for 3s
+verus-proofs> Some checks are taking longer than 2s (diagnostics for these may be reported out of order)
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cron_next.rs:147:5: 147:25 has finished in 3s
+verus-proofs>   ⌝ while loop for lib::cron_next::next_occurrence
+verus-proofs> • /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/nix_drv_serialize.rs:396:5: 396:28 has finished in 4s
+verus-proofs>   ⌝ while loop for lib::nix_drv_serialize::serialize_outputs                    verification results:: 11097 verified, 0 errors
+verus-proofs> warning: 31 warnings emitted
+verus-proofs> 
+verus-proofs> warning: function `MODE_READ` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/access_mode.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn MODE_READ() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `mode_read`
+verus-proofs>    |
+verus-proofs>    = note: `#[warn(non_snake_case)]` (part of `#[warn(nonstandard_style)]`) on by default
+verus-proofs> 
+verus-proofs> warning: function `MODE_WRITE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/access_mode.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn MODE_WRITE() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `mode_write`
+verus-proofs> 
+verus-proofs> warning: function `MODE_DELETE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/access_mode.rs:30:18
+verus-proofs>    |
+verus-proofs> 30 | pub open spec fn MODE_DELETE() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `mode_delete`
+verus-proofs> 
+verus-proofs> warning: function `MODE_FULL` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/access_mode.rs:32:18
+verus-proofs>    |
+verus-proofs> 32 | pub open spec fn MODE_FULL() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `mode_full`
+verus-proofs> 
+verus-proofs> warning: function `NO_BUDGET` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:251:18
+verus-proofs>     |
+verus-proofs> 251 | pub open spec fn NO_BUDGET() -> u8 { 0 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `no_budget`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_OK` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:252:18
+verus-proofs>     |
+verus-proofs> 252 | pub open spec fn BUDGET_OK() -> u8 { 1 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `budget_ok`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_WARNING` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:253:18
+verus-proofs>     |
+verus-proofs> 253 | pub open spec fn BUDGET_WARNING() -> u8 { 2 }
+verus-proofs>     |                  ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `budget_warning`
+verus-proofs> 
+verus-proofs> warning: function `BUDGET_EXCEEDED` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:254:18
+verus-proofs>     |
+verus-proofs> 254 | pub open spec fn BUDGET_EXCEEDED() -> u8 { 3 }
+verus-proofs>     |                  ^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `budget_exceeded`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_SMOL` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:383:18
+verus-proofs>     |
+verus-proofs> 383 | pub open spec fn ROLE_SMOL() -> u8 { 0 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `role_smol`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_DEFAULT` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:384:18
+verus-proofs>     |
+verus-proofs> 384 | pub open spec fn ROLE_DEFAULT() -> u8 { 1 }
+verus-proofs>     |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `role_default`
+verus-proofs> 
+verus-proofs> warning: function `ROLE_SLOW` should have a snake case name
+verus-proofs>    --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/cost_tracker.rs:385:18
+verus-proofs>     |
+verus-proofs> 385 | pub open spec fn ROLE_SLOW() -> u8 { 2 }
+verus-proofs>     |                  ^^^^^^^^^ help: convert the identifier to snake case: `role_slow`
+verus-proofs> 
+verus-proofs> warning: function `MAX_DELEGATION_DEPTH` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/delegation.rs:19:18
+verus-proofs>    |
+verus-proofs> 19 | pub open spec fn MAX_DELEGATION_DEPTH() -> u64 { 8 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `max_delegation_depth`
+verus-proofs> 
+verus-proofs> warning: function `V_DELEGATE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/delegation.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn V_DELEGATE() -> u8 { 7 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_delegate`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_EMPTY` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_segment.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn FS_PATH_SEG_EMPTY() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_empty`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_CURRENT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_segment.rs:13:18
+verus-proofs>    |
+verus-proofs> 13 | pub open spec fn FS_PATH_SEG_CURRENT() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_current`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_PARENT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_segment.rs:14:18
+verus-proofs>    |
+verus-proofs> 14 | pub open spec fn FS_PATH_SEG_PARENT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_parent`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_SEG_NORMAL` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_segment.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn FS_PATH_SEG_NORMAL() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_seg_normal`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_ALLOW_ALL` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_traversal.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn FS_PATH_TRAVERSAL_ALLOW_ALL() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_allow_all`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_PARENT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_traversal.rs:13:18
+verus-proofs>    |
+verus-proofs> 13 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_PARENT() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_parent`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_CURRENT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_traversal.rs:14:18
+verus-proofs>    |
+verus-proofs> 14 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_CURRENT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_current`
+verus-proofs> 
+verus-proofs> warning: function `FS_PATH_TRAVERSAL_REJECT_BOTH` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/fs_path_traversal.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn FS_PATH_TRAVERSAL_REJECT_BOTH() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `fs_path_traversal_reject_both`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_DISJOINT` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_intersection.rs:6:18
+verus-proofs>   |
+verus-proofs> 6 | pub open spec fn GEOM_REL_DISJOINT() -> u8 { 0 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_disjoint`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_TOUCHES` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_intersection.rs:7:18
+verus-proofs>   |
+verus-proofs> 7 | pub open spec fn GEOM_REL_TOUCHES() -> u8 { 1 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_touches`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_REL_OVERLAPS` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_intersection.rs:8:18
+verus-proofs>   |
+verus-proofs> 8 | pub open spec fn GEOM_REL_OVERLAPS() -> u8 { 2 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_rel_overlaps`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_DEGENERATE` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_orientation.rs:6:18
+verus-proofs>   |
+verus-proofs> 6 | pub open spec fn GEOM_ORIENT_DEGENERATE() -> u8 { 0 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_degenerate`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_CLOCKWISE` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_orientation.rs:7:18
+verus-proofs>   |
+verus-proofs> 7 | pub open spec fn GEOM_ORIENT_CLOCKWISE() -> u8 { 1 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_clockwise`
+verus-proofs> 
+verus-proofs> warning: function `GEOM_ORIENT_COUNTERCLOCKWISE` should have a snake case name
+verus-proofs>  --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/geom_orientation.rs:8:18
+verus-proofs>   |
+verus-proofs> 8 | pub open spec fn GEOM_ORIENT_COUNTERCLOCKWISE() -> u8 { 2 }
+verus-proofs>   |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `geom_orient_counterclockwise`
+verus-proofs> 
+verus-proofs> warning: function `STAR` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/glob.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn STAR() -> u8 { 42 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `star`
+verus-proofs> 
+verus-proofs> warning: function `WILDCARD` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/pattern.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn WILDCARD() -> int { -1 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `wildcard`
+verus-proofs> 
+verus-proofs> warning: function `V_READ` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:16:18
+verus-proofs>    |
+verus-proofs> 16 | pub open spec fn V_READ() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^ help: convert the identifier to snake case: `v_read`
+verus-proofs> 
+verus-proofs> warning: function `V_WRITE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn V_WRITE() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^ help: convert the identifier to snake case: `v_write`
+verus-proofs> 
+verus-proofs> warning: function `V_DELETE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn V_DELETE() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `v_delete`
+verus-proofs> 
+verus-proofs> warning: function `V_WATCH` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn V_WATCH() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^ help: convert the identifier to snake case: `v_watch`
+verus-proofs> 
+verus-proofs> warning: function `V_FULL` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:24:18
+verus-proofs>    |
+verus-proofs> 24 | pub open spec fn V_FULL() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^ help: convert the identifier to snake case: `v_full`
+verus-proofs> 
+verus-proofs> warning: function `V_PROMPT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn V_PROMPT() -> u8 { 5 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `v_prompt`
+verus-proofs> 
+verus-proofs> warning: function `V_TOOL_USE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn V_TOOL_USE() -> u8 { 6 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_tool_use`
+verus-proofs> 
+verus-proofs> warning: function `V_DELEGATE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/subsumption.rs:30:18
+verus-proofs>    |
+verus-proofs> 30 | pub open spec fn V_DELEGATE() -> u8 { 7 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `v_delegate`
+verus-proofs> 
+verus-proofs> warning: function `COLD` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/tier.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn COLD() -> u8 { 0 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `cold`
+verus-proofs> 
+verus-proofs> warning: function `WARM` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/tier.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn WARM() -> u8 { 1 }
+verus-proofs>    |                  ^^^^ help: convert the identifier to snake case: `warm`
+verus-proofs> 
+verus-proofs> warning: function `HOT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/tier.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn HOT() -> u8 { 2 }
+verus-proofs>    |                  ^^^ help: convert the identifier to snake case: `hot`
+verus-proofs> 
+verus-proofs> warning: function `TOKEN_CLOCK_SKEW_SECS` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/token_timestamp.rs:12:18
+verus-proofs>    |
+verus-proofs> 12 | pub open spec fn TOKEN_CLOCK_SKEW_SECS() -> u64 { 60 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `token_clock_skew_secs`
+verus-proofs> 
+verus-proofs> warning: function `MAX_CAPABILITIES_PER_TOKEN` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/token_timestamp.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn MAX_CAPABILITIES_PER_TOKEN() -> u64 { 32 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `max_capabilities_per_token`
+verus-proofs> 
+verus-proofs> warning: function `TRANSFER_OK` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/transfer.rs:15:18
+verus-proofs>    |
+verus-proofs> 15 | pub open spec fn TRANSFER_OK() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `transfer_ok`
+verus-proofs> 
+verus-proofs> warning: function `INSUFFICIENT_FUNDS` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/transfer.rs:17:18
+verus-proofs>    |
+verus-proofs> 17 | pub open spec fn INSUFFICIENT_FUNDS() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `insufficient_funds`
+verus-proofs> 
+verus-proofs> warning: function `INVALID_AMOUNT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/transfer.rs:19:18
+verus-proofs>    |
+verus-proofs> 19 | pub open spec fn INVALID_AMOUNT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^ help: convert the identifier to snake case: `invalid_amount`
+verus-proofs> 
+verus-proofs> warning: function `RECEIVER_OVERFLOW` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/transfer.rs:21:18
+verus-proofs>    |
+verus-proofs> 21 | pub open spec fn RECEIVER_OVERFLOW() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `receiver_overflow`
+verus-proofs> 
+verus-proofs> warning: function `DUPLICATE_TRANSFER` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/transfer.rs:23:18
+verus-proofs>    |
+verus-proofs> 23 | pub open spec fn DUPLICATE_TRANSFER() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^^^^^^^^^^^^^ help: convert the identifier to snake case: `duplicate_transfer`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_STRING` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:16:18
+verus-proofs>    |
+verus-proofs> 16 | pub open spec fn TYPE_STRING() -> u8 { 0 }
+verus-proofs>    |                  ^^^^^^^^^^^ help: convert the identifier to snake case: `type_string`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_INTEGER` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:18:18
+verus-proofs>    |
+verus-proofs> 18 | pub open spec fn TYPE_INTEGER() -> u8 { 1 }
+verus-proofs>    |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `type_integer`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_FLOAT` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:20:18
+verus-proofs>    |
+verus-proofs> 20 | pub open spec fn TYPE_FLOAT() -> u8 { 2 }
+verus-proofs>    |                  ^^^^^^^^^^ help: convert the identifier to snake case: `type_float`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_BOOLEAN` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:22:18
+verus-proofs>    |
+verus-proofs> 22 | pub open spec fn TYPE_BOOLEAN() -> u8 { 3 }
+verus-proofs>    |                  ^^^^^^^^^^^^ help: convert the identifier to snake case: `type_boolean`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_DATE` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:24:18
+verus-proofs>    |
+verus-proofs> 24 | pub open spec fn TYPE_DATE() -> u8 { 4 }
+verus-proofs>    |                  ^^^^^^^^^ help: convert the identifier to snake case: `type_date`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_DATETIME` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:26:18
+verus-proofs>    |
+verus-proofs> 26 | pub open spec fn TYPE_DATETIME() -> u8 { 5 }
+verus-proofs>    |                  ^^^^^^^^^^^^^ help: convert the identifier to snake case: `type_datetime`
+verus-proofs> 
+verus-proofs> warning: function `TYPE_ANY` should have a snake case name
+verus-proofs>   --> /nix/store/rgrx8ysqxrlvlsvwjwkvxqbc6m4y3xy5-trellis-verus-proof-source/src/type_lattice.rs:28:18
+verus-proofs>    |
+verus-proofs> 28 | pub open spec fn TYPE_ANY() -> u8 { 6 }
+verus-proofs>    |                  ^^^^^^^^ help: convert the identifier to snake case: `type_any`
+verus-proofs> 
+verus-proofs> warning: 54 warnings emitted
+verus-proofs> 

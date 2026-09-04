@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**11060 Verus proofs · 5205 tests · 2239 requirements · 622 modules · 16 trusted/proof-gap boundaries**
+**11098 Verus proofs · 5216 tests · 2252 requirements · 624 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -49,6 +49,7 @@ Verus-focused spec/exec/ensures walkthroughs, see
 [docs/proof-examples.md](docs/proof-examples.md).
 
 - [`examples/core_basics.rs`](examples/core_basics.rs): `cargo run --example core_basics`
+- [`examples/bounded_modular_tree_fold.rs`](examples/bounded_modular_tree_fold.rs): `cargo run --example bounded_modular_tree_fold`
 - [`examples/consensus_admission.rs`](examples/consensus_admission.rs): `cargo run --example consensus_admission`
 - [`examples/ucan_web_of_trust.rs`](examples/ucan_web_of_trust.rs): `cargo run --example ucan_web_of_trust`
 - [`examples/r1cs_single_row.rs`](examples/r1cs_single_row.rs): `cargo run --example r1cs_single_row`
@@ -119,6 +120,7 @@ validation commands captured in the change evidence.
 | Module | What it verifies |
 |---|---|
 | `arithmetic` | abs diff, saturating add/sub, checked mul, gcd, div ceil |
+| `bounded_modular_tree_fold` | bounded power-of-two `u24` admission, sequential and balanced refinement, pair-round equivalence, and exact abstract combine counts; see [the profile guide](docs/bounded-modular-tree-fold.md) |
 | `bitwise` | power-of-two, bit get/set/clear/toggle |
 | `bitfield` | multi-bit field extraction and insertion in u64 words |
 | `bitmap` | fixed-size bit set over u64 words |
@@ -133,6 +135,7 @@ validation commands captured in the change evidence.
 | `ring_buffer` | FIFO queue with power-of-two capacity |
 | `sequence` | monotonic sequence generator with batch reservation |
 | `slice` | chunk count, prefix/suffix equality, all-equal, mismatch |
+| `u24` | explicit 24-bit normalization and overflow-safe wrapping addition with closure, identity, commutativity, and associativity proofs |
 
 ### Rust async primitives
 

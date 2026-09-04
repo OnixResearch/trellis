@@ -17,6 +17,10 @@ contains:
 - `requirement_ids`: Tracey requirement IDs covered by both implementation and
   verification markers.
 - `source_paths`: local files whose proof facts are summarized.
+- `proof_functions`: exact local proof functions for profile-specific records.
+- `algorithm_profile`: the exact algorithm profile, or `not-applicable`.
+- `executable_oracle_symbol`: the downstream executable seam, or `not-applicable`.
+- `downstream_validation_requirement`: the required consumer-side validation, or `not-applicable`.
 - `proof_command`: the verifier command that checks the relevant proof surface.
 - `verifier_toolchain`: the local verifier/coverage command family.
 - `proof_outcome` and `tracey_coverage`: fail-closed status fields.

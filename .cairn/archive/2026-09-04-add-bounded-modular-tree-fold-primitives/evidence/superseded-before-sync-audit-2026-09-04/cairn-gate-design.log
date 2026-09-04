@@ -1,0 +1,67 @@
+{
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "6d2ed310dfb71f6f7beb75b2174a5a0972c06a1a172576c52551c90df7b885c2",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "probe_evidence": null,
+  "receipt_hash": "c47fa7de7019d37225bcd48b35534d9e606903d56aea026bb935126cff2d0801",
+  "stage": "design",
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 44,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 26,
+      "substantive_lines": 92,
+      "substantive_requirement_blocks": 13,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    }
+  ],
+  "task_ordering": null,
+  "valid": true,
+  "verdict": "PASS"
+}

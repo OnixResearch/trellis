@@ -17,6 +17,10 @@ let proof_record_contract = {
   evidence_tier | Common.NonEmptyString,
   requirement_ids | Common.NonEmptyArray | Array Common.StableId,
   source_paths | Common.NonEmptyArray | Array Common.SafeRelativePath,
+  proof_functions | Array Common.NonEmptyString,
+  algorithm_profile | Common.NonEmptyString,
+  executable_oracle_symbol | Common.NonEmptyString,
+  downstream_validation_requirement | Common.NonEmptyString,
   proof_command | Common.NonEmptyString,
   verifier_toolchain | Common.NonEmptyString,
   proof_outcome | proof_outcome_contract,
@@ -37,7 +41,13 @@ let claim_is_scoped = fun claim =>
   && !std.string.is_match ".*whole-program correctness.*" claim
   && !std.string.is_match ".*certification.*" claim
   && !std.string.is_match ".*third-party conformance.*" claim
-  && !std.string.is_match ".*production safety.*" claim in
+  && !std.string.is_match ".*production safety.*" claim
+  && !std.string.is_match ".*downstream certified.*" claim
+  && !std.string.is_match ".*verified external.*" claim
+  && !std.string.is_match ".*bend correctness.*" claim
+  && !std.string.is_match ".*hvm2 correctness.*" claim
+  && !std.string.is_match ".*generated-c equivalence.*" claim
+  && !std.string.is_match ".*hvm interactions.*" claim in
 let proof_record_integrity = fun record =>
   Common.all_in required_non_claims record.non_claims
   && std.array.all claim_is_scoped record.claims in

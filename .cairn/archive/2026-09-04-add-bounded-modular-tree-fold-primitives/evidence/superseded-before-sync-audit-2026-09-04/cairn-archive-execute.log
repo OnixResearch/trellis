@@ -1,0 +1,487 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-bounded-modular-tree-fold-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "88e87a1939c7752cdc2eb3e509500ce07b28fe3bf96f2cea57f24c58e97428db",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "54b4196f985a2d4445fea61c6ad95ccb121bd8fc8ccbb892fe0df8c6f202b08b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/design.md"
+        },
+        {
+          "content_hash": "f4d0ad6fcf3ca148f97866f60981253f0dccfd5239cb13fe66e78b8888147407",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/baseline-2026-09-04/cargo-test-lib.log"
+        },
+        {
+          "content_hash": "e184887d53c34c9b12960a3e4b8056aad9ec53c8ee6e62d0c5b1d55a6457d8c4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/baseline-2026-09-04/source.txt"
+        },
+        {
+          "content_hash": "c150b843cd4b1629dd96efc82b4e1f9561ed5ae35e4a13ca2b5090d7ea6f2e0d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "cc5080e8cbf136b2123f89acd62c8424794c3258c3538da59e439df794b97f4a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design-archive.log"
+        },
+        {
+          "content_hash": "8b80a922434c6ba665a6e5850b6b572e94bfe730864a9e78dd5488cca05ea5c8",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "0e0a44838cf24565a8f1bc443bd8aa4fefdc6071ccabe2970ecd1e93bf5ae671",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "097e08fedebf6eb7f794a5abb4f135a70219b3806a0370ecedd778b1b05afa11",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal-archive.log"
+        },
+        {
+          "content_hash": "271a57cfa13b5cb7294347aa4023ef2b3b85288f5a0d9e18f2ae15799ec121f5",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "78b0ba94024cd958c28d429304bb2a09739ff1dec18eecec13c01f325fa0beca",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "761cb32dade536651670beca9384c5cf336c2bb425ab90be75f35fe48b1f1ab6",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks-before-sync.log"
+        },
+        {
+          "content_hash": "342da20a328d2dbca06aa0a8baebebf73ee7beb6909dbe6bb28c40c00ba70582",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "e8219c2789158d483680013313b977e39d95fdd2c5d0f5929845e4fec77ab9c9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "35d85ce2055fb6398a51c6f8d0dfde75420a4dd6d648d47c30ec8752d4911837",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "5f554e1176f19b60fd3dbc4759d6425dbfcb43566ca35e3dacf02d45de44ce3a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "b78cc2759e1e0e6fd632a71dad4cffda2080aba5d8bf062c011a6daa2b0caa26",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate-final.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/changed-rustfmt.log"
+        },
+        {
+          "content_hash": "b49caf4b54ab62a8c6ffe46fe968176b42b36dee10e766f2315c4a211eaec8af",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "353ea148a16acf550df35b0db7b7bd2ce40440bd05c37fd71588e5df2457f252",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/example.log"
+        },
+        {
+          "content_hash": "4bc770a1b2c428379fed6b7d19d476629e551582709c1dcc6e6f9db978f8bb10",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/focused-tree-fold-tests.log"
+        },
+        {
+          "content_hash": "682a2fb145e8afcf2a94416a7436316c7ef27fcf059c854f0500c98596fb9202",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/focused-u24-tests.log"
+        },
+        {
+          "content_hash": "42215657263ef7fe63345512cbd3eaebb15f08dc590743be6e6cdb06aff758ce",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/full-verus.log"
+        },
+        {
+          "content_hash": "432a546325413e99c86ac434f3c82727deb522b645cd7414aa6b9c2c6b1f4231",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "ada74563099af4e3d750693cab2421ae408a69861e6760b30cb030fe05f79622",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "91be6545d36fb8231ce092df4a3dc61a1a27f1c899e42266a87ff73ae54704f1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "50508ecd768443304a1fe4170397d82a1f2ef96a18cc5e27521c712bc49f53bc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/proof-evidence-self-test.log"
+        },
+        {
+          "content_hash": "513671558363c41106e1cd23eecc75496cefd3dce842ec29431822a951179e4c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "abe4a1b7f686464d917a20b060c6eaca8a98eec6f0bac44d9be73f2a505c3f94",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/static-checks.log"
+        },
+        {
+          "content_hash": "bcc25b10239f826fb221a61ca23be11d932b0b724abe1f1ebc203447109c44b1",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "f4267caeda9bdac506e379deaf781abb3fa9ce02d63adcb0a5364225cca8ba88",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "a21123ec03402a26b82594500ff060af62b5180434a957344e50ce1fcbc2793a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "6be2fac8fddf5509edfb8eb3d5b02213136d3f34ebd6517d99dc433fe9c692ef",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "8b42fe3749dca0e8c5e2d4419afddc75ab477fa0f22e470ee944859747181063",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/octet/migration.log"
+        },
+        {
+          "content_hash": "1c60efbabaa2d7fbfb387fa138c8900da6ab4923478b1eb16495f665f23438e0",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/octet/octet-gate.log"
+        },
+        {
+          "content_hash": "5222f12c8a318415a9b861c85a84dfcceebcb667c26a7986d81e70090347d544",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/evidence/octet/octet-initial.log"
+        },
+        {
+          "content_hash": "dbe27b2a385b624a1682e936d89ebc7457a613a1182123758caba8edfb61edbd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/proposal.md"
+        },
+        {
+          "content_hash": "1e1d715250b1961b6098470ca1e99b21c80f5d64c8a2f2c00c09b063e9e22079",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md"
+        },
+        {
+          "content_hash": "2284b3a439994e3588645352c6df3fb8859ba1abd42546e20fbdfb51de17d14d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/tasks.md"
+        },
+        {
+          "content_hash": "05382cd1512b0d4ef373d8085379b5745735419ac90f219cd20578106271b896",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-add-bounded-modular-tree-fold-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives"
+        }
+      ],
+      "manifest_hash": "48500b02aeb0106636a03dbeb4b480737c281b93576c1c36402cd17cdb8e7f5a"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "54b4196f985a2d4445fea61c6ad95ccb121bd8fc8ccbb892fe0df8c6f202b08b",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/design.md"
+        },
+        {
+          "content_hash": "f4d0ad6fcf3ca148f97866f60981253f0dccfd5239cb13fe66e78b8888147407",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/baseline-2026-09-04/cargo-test-lib.log"
+        },
+        {
+          "content_hash": "e184887d53c34c9b12960a3e4b8056aad9ec53c8ee6e62d0c5b1d55a6457d8c4",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/baseline-2026-09-04/source.txt"
+        },
+        {
+          "content_hash": "c150b843cd4b1629dd96efc82b4e1f9561ed5ae35e4a13ca2b5090d7ea6f2e0d",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "cc5080e8cbf136b2123f89acd62c8424794c3258c3538da59e439df794b97f4a",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design-archive.log"
+        },
+        {
+          "content_hash": "8b80a922434c6ba665a6e5850b6b572e94bfe730864a9e78dd5488cca05ea5c8",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "0e0a44838cf24565a8f1bc443bd8aa4fefdc6071ccabe2970ecd1e93bf5ae671",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "097e08fedebf6eb7f794a5abb4f135a70219b3806a0370ecedd778b1b05afa11",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal-archive.log"
+        },
+        {
+          "content_hash": "271a57cfa13b5cb7294347aa4023ef2b3b85288f5a0d9e18f2ae15799ec121f5",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "78b0ba94024cd958c28d429304bb2a09739ff1dec18eecec13c01f325fa0beca",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "761cb32dade536651670beca9384c5cf336c2bb425ab90be75f35fe48b1f1ab6",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks-before-sync.log"
+        },
+        {
+          "content_hash": "342da20a328d2dbca06aa0a8baebebf73ee7beb6909dbe6bb28c40c00ba70582",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "e8219c2789158d483680013313b977e39d95fdd2c5d0f5929845e4fec77ab9c9",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "35d85ce2055fb6398a51c6f8d0dfde75420a4dd6d648d47c30ec8752d4911837",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "5f554e1176f19b60fd3dbc4759d6425dbfcb43566ca35e3dacf02d45de44ce3a",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "b78cc2759e1e0e6fd632a71dad4cffda2080aba5d8bf062c011a6daa2b0caa26",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate-final.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "86bf853fdbf5305912858e2ef0fa670e0409c8e460fd3d1eb6b73a26815e3319",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/changed-rustfmt.log"
+        },
+        {
+          "content_hash": "b49caf4b54ab62a8c6ffe46fe968176b42b36dee10e766f2315c4a211eaec8af",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "353ea148a16acf550df35b0db7b7bd2ce40440bd05c37fd71588e5df2457f252",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/example.log"
+        },
+        {
+          "content_hash": "4bc770a1b2c428379fed6b7d19d476629e551582709c1dcc6e6f9db978f8bb10",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/focused-tree-fold-tests.log"
+        },
+        {
+          "content_hash": "682a2fb145e8afcf2a94416a7436316c7ef27fcf059c854f0500c98596fb9202",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/focused-u24-tests.log"
+        },
+        {
+          "content_hash": "42215657263ef7fe63345512cbd3eaebb15f08dc590743be6e6cdb06aff758ce",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/full-verus.log"
+        },
+        {
+          "content_hash": "432a546325413e99c86ac434f3c82727deb522b645cd7414aa6b9c2c6b1f4231",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "ada74563099af4e3d750693cab2421ae408a69861e6760b30cb030fe05f79622",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "91be6545d36fb8231ce092df4a3dc61a1a27f1c899e42266a87ff73ae54704f1",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "50508ecd768443304a1fe4170397d82a1f2ef96a18cc5e27521c712bc49f53bc",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/proof-evidence-self-test.log"
+        },
+        {
+          "content_hash": "513671558363c41106e1cd23eecc75496cefd3dce842ec29431822a951179e4c",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "abe4a1b7f686464d917a20b060c6eaca8a98eec6f0bac44d9be73f2a505c3f94",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/static-checks.log"
+        },
+        {
+          "content_hash": "bcc25b10239f826fb221a61ca23be11d932b0b724abe1f1ebc203447109c44b1",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "f4267caeda9bdac506e379deaf781abb3fa9ce02d63adcb0a5364225cca8ba88",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "a21123ec03402a26b82594500ff060af62b5180434a957344e50ce1fcbc2793a",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "6be2fac8fddf5509edfb8eb3d5b02213136d3f34ebd6517d99dc433fe9c692ef",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "8b42fe3749dca0e8c5e2d4419afddc75ab477fa0f22e470ee944859747181063",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/octet/migration.log"
+        },
+        {
+          "content_hash": "1c60efbabaa2d7fbfb387fa138c8900da6ab4923478b1eb16495f665f23438e0",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/octet/octet-gate.log"
+        },
+        {
+          "content_hash": "5222f12c8a318415a9b861c85a84dfcceebcb667c26a7986d81e70090347d544",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/evidence/octet/octet-initial.log"
+        },
+        {
+          "content_hash": "dbe27b2a385b624a1682e936d89ebc7457a613a1182123758caba8edfb61edbd",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/proposal.md"
+        },
+        {
+          "content_hash": "1e1d715250b1961b6098470ca1e99b21c80f5d64c8a2f2c00c09b063e9e22079",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md"
+        },
+        {
+          "content_hash": "2284b3a439994e3588645352c6df3fb8859ba1abd42546e20fbdfb51de17d14d",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/tasks.md"
+        },
+        {
+          "content_hash": "05382cd1512b0d4ef373d8085379b5745735419ac90f219cd20578106271b896",
+          "exists": true,
+          "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "2bd2d286bb014343108238e6c4b7d4d5eb79eb2ed3f8edb759f780725c049f05"
+    },
+    "kind": "archive",
+    "manifest_hash": "1c0fb2c3b5008fadbdab61e0c9fea57a585778bbb48c90f58da453c43e203b3e"
+  },
+  "plan_hash": "d57ccdd4c8965b4689f904762cc1be35da2288c2d5bb74244715fa5c4e76d1ef",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "97a0853f51757eb997786d82bf59ec8f6983ff1ea573ebef2ab142896edf01a1"
+}

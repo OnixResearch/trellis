@@ -13362,3 +13362,44 @@ r[newtypes.parking-lot-validation]
 The migration MUST pass focused and full Cargo tests, compile-fail checks,
 Clippy, Tracey uncovered and untested checks, and Cairn validation before
 archive.
+
+## Bounded Modular Tree Fold
+
+r[bounded-modular-tree-fold.boundary]
+Bend 0.2.38 and HVM2 2.0.22 MUST remain pinned external conformance references. Local Trellis proofs MUST NOT prove their implementations or generated artifacts.
+
+r[bounded-modular-tree-fold.u24-domain]
+The module MUST define named `u24` width, modulus, maximum, mask, and widened-sum bounds. Normalization MUST be closed, identity-preserving, and idempotent.
+
+r[bounded-modular-tree-fold.u24-add]
+Executable `u24` addition MUST accept admitted operands, avoid runtime overflow, stay in the domain, and equal mathematical addition modulo the named modulus.
+
+r[bounded-modular-tree-fold.algebra]
+Concrete `u24` wrapping addition MUST have verified zero-identity, commutativity, and associativity proof functions over its declared domain.
+
+r[bounded-modular-tree-fold.admission]
+The versioned profile MUST admit only non-empty power-of-two leaf vectors within a nonzero limit. It MUST reject invalid leaves and unrepresentable accounting deterministically.
+
+r[bounded-modular-tree-fold.refinement]
+The iterative sequential oracle and iterative adjacent-pair reducer MUST refine one ordered `u24` modular-sum specification for admitted input.
+
+r[bounded-modular-tree-fold.equivalence]
+A verified proof function MUST show that one adjacent-pair round preserves the ordered modular sum. The balanced result MUST equal the sequential result.
+
+r[bounded-modular-tree-fold.work]
+For admitted `n` leaves, the balanced schedule MUST shrink each nonterminal round and perform exactly `n - 1` abstract combines.
+
+r[bounded-modular-tree-fold.evidence]
+Proof evidence MUST bind source, requirements, proof functions, verifier, proof gaps, BLAKE3 identities, algorithm profile, executable oracle symbol, and downstream validation requirements.
+
+r[bounded-modular-tree-fold.fixtures]
+Positive, negative, boundary, and property tests MUST cover arithmetic, admission, singleton and multi-round reduction, exact work, stale handoffs, and three-oracle agreement.
+
+r[bounded-modular-tree-fold.non-claims]
+Evidence MUST NOT claim Bend, HVM2, generated-C, host-compiler, arbitrary-tree, benchmark, resource, interaction-count, release, or downstream-decoding correctness.
+
+r[bounded-modular-tree-fold.docs]
+The repository MUST document the public modules, exact external references, profile, oracle symbol, reproduction commands, proof handoff, and bounded claims.
+
+r[bounded-modular-tree-fold.validation]
+Closeout MUST pass focused tests, property tests, full Verus, Tracey, proof evidence, proof gaps, catalogs, Clippy, Octet, Nix, and Cairn gates.

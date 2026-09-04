@@ -1,0 +1,92 @@
+{
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "evidence_summary": {
+    "docs_only": 0,
+    "fixture": 0,
+    "formal": 0,
+    "mode": "advisory",
+    "model": 0,
+    "probe": 0,
+    "property": 0
+  },
+  "input_hash": "26b4b87ba30f00fb7cf5be1fa6bc076770de45381bfc4144622b317832c96047",
+  "issues": [],
+  "layout": "cairn",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "probe_evidence": {
+    "declarations_present": false,
+    "probes": []
+  },
+  "receipt_hash": "bed0d9b35d63eaf7dff10e987cf182715f58695ad7a16da18570a53de06c286a",
+  "stage": "tasks",
+  "substance": [
+    {
+      "checkbox_tasks": 0,
+      "kind": "design",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/design.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 44,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "proposal",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/proposal.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 15,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 0,
+      "kind": "delta_spec",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md",
+      "requirement_blocks": 13,
+      "scenario_blocks": 26,
+      "substantive_lines": 92,
+      "substantive_requirement_blocks": 13,
+      "substantive_tasks": 0,
+      "task_done": 0,
+      "task_in_progress": 0,
+      "task_todo": 0
+    },
+    {
+      "checkbox_tasks": 20,
+      "kind": "tasks",
+      "malformed_dependency_markers": 0,
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/tasks.md",
+      "requirement_blocks": 0,
+      "scenario_blocks": 0,
+      "substantive_lines": 20,
+      "substantive_requirement_blocks": 0,
+      "substantive_tasks": 20,
+      "task_done": 19,
+      "task_in_progress": 0,
+      "task_todo": 1
+    }
+  ],
+  "task_ordering": {
+    "active": false,
+    "edges": [],
+    "issues": [],
+    "nodes": [],
+    "order": [],
+    "ready_tasks": [],
+    "valid": true
+  },
+  "valid": true,
+  "verdict": "PASS"
+}

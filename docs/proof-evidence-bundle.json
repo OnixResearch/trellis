@@ -16,6 +16,10 @@
       "source_paths": [
         "src/arithmetic.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh src/lib.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -32,7 +36,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "src/arithmetic.rs",
@@ -80,6 +84,10 @@
         "src/consensus_fast_path/vocabulary.rs",
         "src/consensus_fast_path/witness.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh src/lib.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -90,7 +98,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "src/consensus_fast_path/agreement.rs",
@@ -207,6 +215,10 @@
         "src/scheme_logic/tests/property.rs",
         "src/scheme_logic/vm.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh src/lib.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -217,7 +229,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "src/scheme_logic/boundary.rs",
@@ -361,6 +373,10 @@
         "src/wasm_runtime_bounds/tests/positive.rs",
         "src/wasm_runtime_bounds/tests/property.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh src/lib.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -371,7 +387,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "src/wasm_runtime_bounds/binding.rs",
@@ -469,6 +485,10 @@
       "source_paths": [
         "src/ucan_signature.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh src/lib.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -497,7 +517,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -515,6 +535,91 @@
       ]
     },
     {
+      "scope": "module:bounded_modular_tree_fold",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "bounded-modular-tree-fold.admission",
+        "bounded-modular-tree-fold.algebra",
+        "bounded-modular-tree-fold.boundary",
+        "bounded-modular-tree-fold.docs",
+        "bounded-modular-tree-fold.equivalence",
+        "bounded-modular-tree-fold.evidence",
+        "bounded-modular-tree-fold.fixtures",
+        "bounded-modular-tree-fold.non-claims",
+        "bounded-modular-tree-fold.refinement",
+        "bounded-modular-tree-fold.u24-add",
+        "bounded-modular-tree-fold.u24-domain",
+        "bounded-modular-tree-fold.validation",
+        "bounded-modular-tree-fold.work"
+      ],
+      "source_paths": [
+        "src/u24/mod.rs",
+        "src/bounded_modular_tree_fold/mod.rs",
+        "src/bounded_modular_tree_fold/core.rs",
+        "src/bounded_modular_tree_fold/tests.rs"
+      ],
+      "proof_functions": [
+        "u24::u24_normalize_closed",
+        "u24::u24_normalize_valid_identity",
+        "u24::u24_normalize_idempotent",
+        "u24::u24_add_closed",
+        "u24::u24_add_zero_identity",
+        "u24::u24_add_commutative",
+        "u24::u24_add_associative",
+        "bounded_modular_tree_fold::core::u24_pair_round_preserves_sum",
+        "bounded_modular_tree_fold::core::power_of_two_round_progress",
+        "bounded_modular_tree_fold::core::power_of_two_combine_count_exact"
+      ],
+      "algorithm_profile": "trellis.balanced-u24-wrapping-sum.v1",
+      "executable_oracle_symbol": "verified_logic::bounded_modular_tree_fold::sequential_u24_sum",
+      "downstream_validation_requirement": "exact artifact pin plus downstream validation or rerun receipt",
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+        },
+        {
+          "path": "src/bounded_modular_tree_fold/core.rs",
+          "algorithm": "blake3",
+          "digest": "1b2c4c19c3f00da0128c488cbc495a9b136566bfb5790f4c86686d8cd2c5542a"
+        },
+        {
+          "path": "src/bounded_modular_tree_fold/mod.rs",
+          "algorithm": "blake3",
+          "digest": "b3862452f53a9cc5a465c2fb14f63e4a70e12119157c9f417afeec884f70eb5a"
+        },
+        {
+          "path": "src/bounded_modular_tree_fold/tests.rs",
+          "algorithm": "blake3",
+          "digest": "75a3bc7f4af2c8bf8e0983883fe1819db6289f78123ab026b6d6db33ecd9601c"
+        },
+        {
+          "path": "src/u24/mod.rs",
+          "algorithm": "blake3",
+          "digest": "cd0e0470ffab9e79d9b1fbb9beccd0cbb749c49499d74afce9f99bf917a7cfb8"
+        }
+      ],
+      "claims": [
+        "records local Trellis u24 arithmetic, refinement, equivalence, and abstract work proofs"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance",
+        "not Bend or HVM2 correctness",
+        "not generated-C or host-compiler equivalence",
+        "not benchmark or HVM interaction evidence",
+        "downstream validation or rerun required for verified role"
+      ]
+    },
+    {
       "scope": "proof-example:basic_refinement",
       "evidence_tier": "local-proof-summary",
       "requirement_ids": [
@@ -524,6 +629,10 @@
       "source_paths": [
         "tests/proof_examples/basic_refinement.rs"
       ],
+      "proof_functions": [],
+      "algorithm_profile": "not-applicable",
+      "executable_oracle_symbol": "not-applicable",
+      "downstream_validation_requirement": "not-applicable",
       "proof_command": "./scripts/verus.sh tests/proof_examples/basic_refinement.rs",
       "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
       "proof_outcome": "verified",
@@ -536,7 +645,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",

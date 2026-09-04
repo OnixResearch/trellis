@@ -1,0 +1,204 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "add-bounded-modular-tree-fold-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "5b38eee5ce59a6989e7f2e29171b541e8a4df4d6683307ba9246ef1caf87af72",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "1d15f83c07befafba5ff89cf42bbb0ae94e8a04af0c7ab4037abc7fc13ea7ece",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "7f2d280840390a2ba3a4c974d0a03f7626cb76667ed906a0fad12da1b4a88a0e",
+        "destination": ".cairn/specs/bounded-modular-tree-fold/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "b2eeb72e6752c2849908cd8f14a1e15419b9ab8cd2a3778902d184c3e2c14711",
+        "operations": [
+          {
+            "block_hash": "e9a6f29917ff49bf3dca9e26bb595ef166d92be303f92e5edd3b1d3e3973927e",
+            "heading": "### Requirement: External projects remain outside the proof boundary",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.boundary"
+          },
+          {
+            "block_hash": "6dd876735f4a410b04a66cd5e3305417996f27cd12ebd2aa5bd3365c09b1cd96",
+            "heading": "### Requirement: The `u24` domain is explicit and closed",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.u24-domain"
+          },
+          {
+            "block_hash": "c7a42a8974e950f9113eb70ddb3faf6ad412c7cc1040689aca754050edd15e11",
+            "heading": "### Requirement: `u24` wrapping addition refines modulo addition",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.u24-add"
+          },
+          {
+            "block_hash": "4b3e5aca81df757dc4f932ec4fe5c745a952687327fd52064c35efd0d45e5a03",
+            "heading": "### Requirement: Concrete `u24` addition satisfies the required algebra",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.algebra"
+          },
+          {
+            "block_hash": "4c4b3bf497dc39176ec27633333efae1ea08682c2868ccfc72a69d78b7125fd8",
+            "heading": "### Requirement: Balanced reduction input is admitted explicitly",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.admission"
+          },
+          {
+            "block_hash": "9d467beaf29f524821c08b7118999982c0e5517ca6a68c7903eca9a23e4189ee",
+            "heading": "### Requirement: Both executable reducers refine one ordered sum",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.refinement"
+          },
+          {
+            "block_hash": "f0ff85fd96ecbaab7c426ef0f85c90ff799e08bc4a24e3833a19e1cd1781199e",
+            "heading": "### Requirement: Balanced reduction equals sequential reduction",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.equivalence"
+          },
+          {
+            "block_hash": "2bbf2631d4b3e20b0822c12ea65ac6532f7d341d4459c91807c759ee0330f6a8",
+            "heading": "### Requirement: Abstract reduction work is exact and bounded",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.work"
+          },
+          {
+            "block_hash": "968188f9a1c699dc3d5e93000d4ba5606e1d8dc78cd4cda4eca0c7204c022723",
+            "heading": "### Requirement: Proof evidence binds the downstream oracle seam",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.evidence"
+          },
+          {
+            "block_hash": "bfb16fa3ceb54dd9953c94e289f58bde0615370119445cfe5e2956e966411da2",
+            "heading": "### Requirement: Positive and negative fixtures cover the boundary",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.fixtures"
+          },
+          {
+            "block_hash": "540793441635b3c09cc421f22211998ab8b6fc428ecd555325c5b21908c7ace1",
+            "heading": "### Requirement: Claims remain local and bounded",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.non-claims"
+          },
+          {
+            "block_hash": "c1ed68aac3e0f2f9faf90d9cfdfed19902da314d52851dcba1df3a1ea506ae66",
+            "heading": "### Requirement: Documentation is traceable",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.docs"
+          },
+          {
+            "block_hash": "4fab960ed2415ab0806f90109ebc716b682823609daf888d3067ebdc3398541c",
+            "heading": "### Requirement: Final validation requires proof and runtime evidence",
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.u24-domain",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.u24-add",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.algebra",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.admission",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.refinement",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.equivalence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.work",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.fixtures",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.non-claims",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "bounded-modular-tree-fold.validation",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/add-bounded-modular-tree-fold-primitives/specs/bounded-modular-tree-fold/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "53f381adcac788e16c1e83a2eeac6295c847ca97eeec8f06ed0d2044d29e9ad9",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "3b367eb831cfde4aa0c44ecb525f852aa67425f419022930366e1aa50a4466c8"
+}
