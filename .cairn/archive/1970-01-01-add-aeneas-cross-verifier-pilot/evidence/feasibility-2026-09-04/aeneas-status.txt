@@ -1,0 +1,7 @@
+exit_code=0
+stdout_bytes=184
+stderr_bytes=0
+Llbc.lean_bytes=748
+Llbc.lean_blake3=b3:4fe6569363d2ffef0075c278a0a49b91ccfb83a9387826927df658a7e5e6644b
+translation.json_bytes=632
+translation.json_blake3=b3:c7df4ccc0437a026d9dff206324ff5d42f3cf1c4e8663022cc4cba34ddc536a4

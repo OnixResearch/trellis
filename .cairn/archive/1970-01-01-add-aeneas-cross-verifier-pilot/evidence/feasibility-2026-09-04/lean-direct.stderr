@@ -1,0 +1,6 @@
+info: trellis_aeneas_pilot: no previous manifest, creating one from scratch
+info: toolchain not updated; already up-to-date
+warning: aeneas: ignoring missing manifest:
+  /nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/aeneas-lean-library/lake-manifest.json
+error: read-only file system (error code: 30)
+  file: /nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/aeneas-lean-library/.lake

@@ -1,0 +1,5 @@
+exit_code=1
+stdout_bytes=2033
+stderr_bytes=20
+theorem_bytes=825
+theorem_blake3=b3:de23229d56a3c91c2537fd1343f5c7beded9512639a87915fed1df65b17b9483

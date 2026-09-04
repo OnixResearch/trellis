@@ -1,0 +1,1307 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-aeneas-cross-verifier-pilot",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot"
+    }
+  ],
+  "blocked": false,
+  "change": "add-aeneas-cross-verifier-pilot",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "0cb6354405db92f0a37449423e3cb5f4cdd542e9d908d4b74a050ae0f19d83aa",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "ae986c61234da9e8e336b4a96540d5d823b2953398cc8f05c1c2730aa0600e95",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/design.md"
+        },
+        {
+          "content_hash": "b5331fa93039df46efa8f135fe533e65cae15fda6af250bae2febb1f28b74c8a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/cargo-test-arithmetic.log"
+        },
+        {
+          "content_hash": "ad4428791ab800f321903f5ec89774d4b84a1836c07842652a79dc85434725bc",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/charon-cargo-help.txt"
+        },
+        {
+          "content_hash": "fb65ac5c0266740999dec66a8c171ad00230d0692b7961141390a714b5fd3900",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/octet.log"
+        },
+        {
+          "content_hash": "1c9aa534bb78d03a0ba066863088a1fa5f97b6bf961780e06fcdeabeb84a4b2c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/provider-identity.json"
+        },
+        {
+          "content_hash": "49e732497bc140ab79b6c302e0d14d9cf8caa2c4e188ad0fd8b11fa6838a0495",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/source-identity.txt"
+        },
+        {
+          "content_hash": "7162323cbba4da68c88601d437ecb518639572cd62372359abfa82f09026fc78",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/tool-identities.json"
+        },
+        {
+          "content_hash": "af5abd699336e7644234bd2dfe4ae103712e239d7f8bd013db23a0de6281e495",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/verus-arithmetic.log"
+        },
+        {
+          "content_hash": "4fe6569363d2ffef0075c278a0a49b91ccfb83a9387826927df658a7e5e6644b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Llbc.lean"
+        },
+        {
+          "content_hash": "77d0133d731834f3b5c49695fa1185e424f19856cc387ea4039377c388ce9f62",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate-2.lean"
+        },
+        {
+          "content_hash": "9ed81d0d58e70cd5e8040103af28a249df2bf62c7c9e8ef3b634be24aa6a8239",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate-3.lean"
+        },
+        {
+          "content_hash": "c65a44426b797e3913856b84b22433acfb1ca83a02a52deea6fa08b1a1fab1d1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate.lean"
+        },
+        {
+          "content_hash": "e4393bbed6ab5fd4258b3fd53ba7e018e5633105fa6cfa42e392748059394605",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.passing.lean"
+        },
+        {
+          "content_hash": "c925bc572e068a74cf30106211f97733c17b4516fd36d847bc59dfc62a9cd851",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas.stderr"
+        },
+        {
+          "content_hash": "757144a923b8058db972794af97a392b63ec0f3542aab774b850f93a8ebd6549",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas.stdout"
+        },
+        {
+          "content_hash": "87d7abaec7f30172a1eb22efabbf2b4f38e4214389a91dc9172df9185e9f1569",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact-status.txt"
+        },
+        {
+          "content_hash": "eb2c9ae130c20ddcd973b16de71c38d776132138441c3e24d86b36168437d10b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact.stdout"
+        },
+        {
+          "content_hash": "80be749543da14714d928190c2ca692bbbd4d7d629ad6b705e3b9d0a73a91584",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib-status.txt"
+        },
+        {
+          "content_hash": "45c3414b387028508341168b4e23688c3505e202e19ede8a85a251d9c73f2907",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib.stdout"
+        },
+        {
+          "content_hash": "26ec60b0c06cd520bd65b389d2fbb9da1d992c5e0a1db376085b183ab0645a4d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-status.txt"
+        },
+        {
+          "content_hash": "8686f0c56536f695c588fdf55fc4e22ae99a7b784fea851d0308e383bd2d5cd8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell-status.txt"
+        },
+        {
+          "content_hash": "83172bd335d5349febe63a0a9d04e6f0b8a56102af293c14f0a6cf376e7066f9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell.stdout"
+        },
+        {
+          "content_hash": "8d0497304c5f2aae6752f3ad3c9f971a063d6bebaa299e3435fb046f45de8f93",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon.stdout"
+        },
+        {
+          "content_hash": "d58a620ee4e0937ddef0116e5a1bec8772508aec4a279bb129054ee4370f9edc",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2.stderr"
+        },
+        {
+          "content_hash": "57c22b028f2816f653302b4f509f5768213e6114c229ef2ba368b86106985573",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2.stdout"
+        },
+        {
+          "content_hash": "ec34b45e631ab1d4514ec4d2138ede9f75b71ea8056f7d2628e48a99e25b0074",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3.stderr"
+        },
+        {
+          "content_hash": "fe39ed4ff179a2f7fdce193579aae37e99f7039afec07f71f430593fa28e295a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3.stdout"
+        },
+        {
+          "content_hash": "9c2e2a230ce12150a1982b8496203ed9a00a6439fad712e21d2646beb49ef0eb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4.stderr"
+        },
+        {
+          "content_hash": "137c229d4e4597f36967267b7f5a397b436744c9e31485678880b9c1a4540a85",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4.stdout"
+        },
+        {
+          "content_hash": "f8ecf6780ded8c53bf5ba4ca5aaa1489b61fdf0b89a0cefa636748bf48362414",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5.stderr"
+        },
+        {
+          "content_hash": "ba534dcc3dafe692ba751918bb57fe56e83d3c8c2fa7c8737162d5db8fe9de74",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5.stdout"
+        },
+        {
+          "content_hash": "4496201c89a0e33190724e0b6a6f173a72140af43125a96ef61e0aa02ab6d99a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct-status.txt"
+        },
+        {
+          "content_hash": "95d383279cea6a26080d448d5465b4b60bcf1d7a6d411ba499d9ade452f9b275",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct.stdout"
+        },
+        {
+          "content_hash": "8aed63d9da3e7e49ce97ac6d1baa65abdf8bc9c8c4000b71062b47b8e407dba2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean.stderr"
+        },
+        {
+          "content_hash": "5c2c494633d6a318f8b869e550050200980944a41c7f263a95e73f9ce6af57b1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean.stdout"
+        },
+        {
+          "content_hash": "bce2cd4233c8346677f466aa8cbb9c783d5b5547e0d7d170033e9d94c1e16971",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/llbc-exact.llbc"
+        },
+        {
+          "content_hash": "274fea83e6fe56fb2b0f876a832a6c0fbcad72179d2b2d0d01afff20174951f8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/llbc.llbc"
+        },
+        {
+          "content_hash": "127de09f69b6656aa9fade2249952e515870ea132de87fbe75bc8a02dc248000",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous.stderr"
+        },
+        {
+          "content_hash": "c1f09587d417fbec4d86eb980a05cab839d774fcf0b8fcd8000fc4ec263c1bea",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous.stdout"
+        },
+        {
+          "content_hash": "c7df4ccc0437a026d9dff206324ff5d42f3cf1c4e8663022cc4cba34ddc536a4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/translation.json"
+        },
+        {
+          "content_hash": "52aac27f9d8fc9ada10ab170379f41aa31e60ea7119a2a5c86a3c76f7049b890",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/accepted-spec-check.txt"
+        },
+        {
+          "content_hash": "14bf84456763179110487bcf5b1f06dde57cc00da41e06a4980d01e5d6561d2f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/archive-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/archive-plan.stderr"
+        },
+        {
+          "content_hash": "2026613b769923c6b16c29ef1f06a7d1fd83baf0c2fe2bfafa653723afceac54",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "c05240644b196780cd4b92b1fe21df4babe0798def267cba8d12bc685722fa98",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "e0f3e03225839427bec4959f78fee416f7a707c4e744c7cbe06ac61948bd6703",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/review-completeness.log"
+        },
+        {
+          "content_hash": "e5974ed9603e8ab4cac304784f9d9ebb0906fff8e45ef421c86fa2eead0ccd1f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-execute.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-execute.stderr"
+        },
+        {
+          "content_hash": "1d8371d1e1f129a85ea651c79dbd9eaee06b2bb62b5666c5aa2b0263823a8548",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-plan.stderr"
+        },
+        {
+          "content_hash": "7d20a4b26f15deaef462b940179bfad163d7a93aa02e59bc6bed038422af0a36",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "54773120cc7d14b65b95719cfc41090a17a55ad98640954cb23b461190a468c1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/validate-after-sync.log"
+        },
+        {
+          "content_hash": "e8ff79f282af655d6449219ce06c659315d6aef7d06b80f7304ba0460d67d3f7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/validate-strict.log"
+        },
+        {
+          "content_hash": "b183f2e469eb1046d9971485e05da6f85761769ba0eea9c43bb89ff3003a25c9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cargo-test-arithmetic.log"
+        },
+        {
+          "content_hash": "8fd7b06e3a56ca5b40b027e8a7e870116bda7952bde30fe60eb9ce7d713b6ef2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-clippy.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-rustfmt.log"
+        },
+        {
+          "content_hash": "d917532e46deef4b89c5cad4b8d80c8a8faccff80cbf5336488f9c394f6ece20",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-self-test.log"
+        },
+        {
+          "content_hash": "02c1dac468431bb421f92f86934804325076232512d40a6e4d2671a41e514a07",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker.log"
+        },
+        {
+          "content_hash": "94dfd4ed145e4fc87b80e9e8385d3d9c40cb0a754e8e48e52ea6a29049ee259b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/clippy-all-targets.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "896a27e5d7ffdaf5bf6f519ea01eb33002c8367ae7ab7f627919c270cd39ea4a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/full-wrapper-before-verify-refs.log"
+        },
+        {
+          "content_hash": "3916506b9244596c8c1edb9f745902182e080d9cc67596c92b3ae06cfd109129",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "b6681316a99952732f5712232d339f1718a34af33e3ce99404503336d66fa07c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-final.log"
+        },
+        {
+          "content_hash": "a4431bde108c3a212fa8ee28147066969f590ad8fc8f00acb5b8f058f051b190",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-stable-source.log"
+        },
+        {
+          "content_hash": "805854660aa4d563c13650eb3315daf7842f12c28279ead142a3a4e43a77eadf",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-stale-llbc.log"
+        },
+        {
+          "content_hash": "dc273f46f6949e9eea5ec210d893ea8dd0cf38e6bfe092b706197880ae8df1ef",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check.log"
+        },
+        {
+          "content_hash": "df1194e9269df477f2bd9bfbae44c909d937d860d83bd96c46a8d4336d4d6108",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/aeneas-proof-receipt.json"
+        },
+        {
+          "content_hash": "c67f831723f2e4a4222044cfc9c62846c5d5b1d325f4f0a5f22c6cd49472f2ed",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/cross-verifier-manifest.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/aeneas.stderr"
+        },
+        {
+          "content_hash": "653d476aac53c6a67744fcea78024a3d2b897a0e855039b137f13b71cfe27741",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/aeneas.stdout"
+        },
+        {
+          "content_hash": "23d500563c8f4e00367d6cc2241bed0fd258d1e5c88de460c9ed3c2ecefae46e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/charon.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/charon.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-false.stderr"
+        },
+        {
+          "content_hash": "ab0edaa930689be0013d68f0eb5ac715ac86b4f1ae9706d68c0bc2a3e0706e68",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-false.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-positive.stderr"
+        },
+        {
+          "content_hash": "d37c6aff800417340d2abd98b2606e6ccaed6a863bae7f38e15aa6187b893103",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-positive.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-vacuous.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-vacuous.stdout"
+        },
+        {
+          "content_hash": "4a6ca6facbd6646f86237fd70f311f1efeb93e66adad40bdd19703d4c1363806",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-artifact-verify.log"
+        },
+        {
+          "content_hash": "26b211d877e57b917bd674525d90988344800f63036147eec3646ebdf31a0d5b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-vacuous.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-vacuous.stderr"
+        },
+        {
+          "content_hash": "1c9aa534bb78d03a0ba066863088a1fa5f97b6bf961780e06fcdeabeb84a4b2c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/provider-identity.json"
+        },
+        {
+          "content_hash": "9221e80fb61ee95a047d0ece1e1740431d41f5698b627dcfe827dd2c009032ed",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-files.b3"
+        },
+        {
+          "content_hash": "a78bbd048ac62006b358b17d79ca9e82cc5536f3281aa420ea50e95b66520e40",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-files.txt"
+        },
+        {
+          "content_hash": "2480ed150f20f2c5fcc47dcfe32064cb98d08d876c3dfdac4ff56d7090112862",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-identity.txt"
+        },
+        {
+          "content_hash": "4e2a3c526af8d229075a93fa540b94e45b5260c002accfc7cca47da63bc2f761",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-path.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nixfmt.log"
+        },
+        {
+          "content_hash": "df2490952e7139cb8539ac06d51d781d402ede50b50fccb2232bac87eb2a339b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/proof-evidence-ir.log"
+        },
+        {
+          "content_hash": "c92435f2d583f1066262205c69bd2f952b9de1d391dcde0b0522f78f4f0cb2c5",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/proof-evidence.log"
+        },
+        {
+          "content_hash": "661216d008ea22c5f6788cd9e33a5738d3445c194923b7bee7b81f39f2253aae",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/readme-metrics.log"
+        },
+        {
+          "content_hash": "b925714bb83f9faad677b7ce7cde1ed1ca617b8b44fbaf510aac020562f9fe62",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "aec5d26c88cea50a8f9f3abcaf1c057406118fbc8061dafa965f861eb45ea02e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "1e51e88ab0cbe71a0b93f7e8072eaf59e23742d50dd8d1d282b8d44f6d09a49b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-untested-initial.log"
+        },
+        {
+          "content_hash": "1e51e88ab0cbe71a0b93f7e8072eaf59e23742d50dd8d1d282b8d44f6d09a49b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "af5abd699336e7644234bd2dfe4ae103712e239d7f8bd013db23a0de6281e495",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/verus-arithmetic.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/false-lean.stderr"
+        },
+        {
+          "content_hash": "ab0edaa930689be0013d68f0eb5ac715ac86b4f1ae9706d68c0bc2a3e0706e68",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/false-lean.stdout"
+        },
+        {
+          "content_hash": "ca723def0fcad0557ee69dd3240f3d8ac1593830077a597e2150da410ee90f0f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/lean-matrix-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/positive-lean.stderr"
+        },
+        {
+          "content_hash": "6f87c386e8d37b8871536bc63fdd5da92c8abefd4081b34d2ab688a7d851bcb1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/positive-lean.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/vacuous-lean.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/vacuous-lean.stdout"
+        },
+        {
+          "content_hash": "71543e2e6c52923faa2c7ae99e39e96eca5eeb747a79a6f4e0c5e9e18c6b491c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "2b373fcbfaaef35f0e3b7cf8c343048f9ae1a4e3668c2db224860b71293533a9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/final.log"
+        },
+        {
+          "content_hash": "0cb55a7e20139d67df8b74be7bcd13e15dd88017329253c2f8749d563a01830c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/migration-apply.log"
+        },
+        {
+          "content_hash": "0ca9335418756f508c85fa6a287bba759c95b4ab117cb2b7dfdac7ed98d04135",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "0cb55a7e20139d67df8b74be7bcd13e15dd88017329253c2f8749d563a01830c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/migration-test.log"
+        },
+        {
+          "content_hash": "67aa87e94c5e5cd2a394cf6a157aeb3a7c201e088f07fda6c9a1fc1e194e3d44",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/replacement-finding.json"
+        },
+        {
+          "content_hash": "944b61bfb9d140dbf111beabe723ca8d3e30079638f468698f806836faedb1a3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/octet/stale-finding.json"
+        },
+        {
+          "content_hash": "94c09067f84fa6cdc68c154cfb807cb1fcd8c20818b598ccb22286c428a29481",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/proposal.md"
+        },
+        {
+          "content_hash": "39f4f46000c99071344339241ebba81e842f6ebc3063f31cf8d926b9dde74049",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md"
+        },
+        {
+          "content_hash": "68ad3d0c94ea12658b199fcfe3cf9bf17d7493176ea67f8374817bd0e8d367a2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/tasks.md"
+        },
+        {
+          "content_hash": "91fec9267cb1329897e4432d23593a360a149e59052de30c356ae6dab3c69c64",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot"
+        }
+      ],
+      "manifest_hash": "7d4243747bd8c815b5e68d2fe1050131081dde7aaea69670fcf18c70877d22e1"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "ae986c61234da9e8e336b4a96540d5d823b2953398cc8f05c1c2730aa0600e95",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/design.md"
+        },
+        {
+          "content_hash": "b5331fa93039df46efa8f135fe533e65cae15fda6af250bae2febb1f28b74c8a",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/cargo-test-arithmetic.log"
+        },
+        {
+          "content_hash": "ad4428791ab800f321903f5ec89774d4b84a1836c07842652a79dc85434725bc",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/charon-cargo-help.txt"
+        },
+        {
+          "content_hash": "fb65ac5c0266740999dec66a8c171ad00230d0692b7961141390a714b5fd3900",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/octet.log"
+        },
+        {
+          "content_hash": "1c9aa534bb78d03a0ba066863088a1fa5f97b6bf961780e06fcdeabeb84a4b2c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/provider-identity.json"
+        },
+        {
+          "content_hash": "49e732497bc140ab79b6c302e0d14d9cf8caa2c4e188ad0fd8b11fa6838a0495",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/source-identity.txt"
+        },
+        {
+          "content_hash": "7162323cbba4da68c88601d437ecb518639572cd62372359abfa82f09026fc78",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/tool-identities.json"
+        },
+        {
+          "content_hash": "af5abd699336e7644234bd2dfe4ae103712e239d7f8bd013db23a0de6281e495",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/baseline-2026-09-04/verus-arithmetic.log"
+        },
+        {
+          "content_hash": "4fe6569363d2ffef0075c278a0a49b91ccfb83a9387826927df658a7e5e6644b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Llbc.lean"
+        },
+        {
+          "content_hash": "77d0133d731834f3b5c49695fa1185e424f19856cc387ea4039377c388ce9f62",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate-2.lean"
+        },
+        {
+          "content_hash": "9ed81d0d58e70cd5e8040103af28a249df2bf62c7c9e8ef3b634be24aa6a8239",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate-3.lean"
+        },
+        {
+          "content_hash": "c65a44426b797e3913856b84b22433acfb1ca83a02a52deea6fa08b1a1fab1d1",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.candidate.lean"
+        },
+        {
+          "content_hash": "e4393bbed6ab5fd4258b3fd53ba7e018e5633105fa6cfa42e392748059394605",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/Theorem.passing.lean"
+        },
+        {
+          "content_hash": "c925bc572e068a74cf30106211f97733c17b4516fd36d847bc59dfc62a9cd851",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas.stderr"
+        },
+        {
+          "content_hash": "757144a923b8058db972794af97a392b63ec0f3542aab774b850f93a8ebd6549",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/aeneas.stdout"
+        },
+        {
+          "content_hash": "87d7abaec7f30172a1eb22efabbf2b4f38e4214389a91dc9172df9185e9f1569",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact-status.txt"
+        },
+        {
+          "content_hash": "eb2c9ae130c20ddcd973b16de71c38d776132138441c3e24d86b36168437d10b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-exact.stdout"
+        },
+        {
+          "content_hash": "80be749543da14714d928190c2ca692bbbd4d7d629ad6b705e3b9d0a73a91584",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib-status.txt"
+        },
+        {
+          "content_hash": "45c3414b387028508341168b4e23688c3505e202e19ede8a85a251d9c73f2907",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-lib.stdout"
+        },
+        {
+          "content_hash": "26ec60b0c06cd520bd65b389d2fbb9da1d992c5e0a1db376085b183ab0645a4d",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-status.txt"
+        },
+        {
+          "content_hash": "8686f0c56536f695c588fdf55fc4e22ae99a7b784fea851d0308e383bd2d5cd8",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell-status.txt"
+        },
+        {
+          "content_hash": "83172bd335d5349febe63a0a9d04e6f0b8a56102af293c14f0a6cf376e7066f9",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon-with-shell.stdout"
+        },
+        {
+          "content_hash": "8d0497304c5f2aae6752f3ad3c9f971a063d6bebaa299e3435fb046f45de8f93",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/charon.stdout"
+        },
+        {
+          "content_hash": "d58a620ee4e0937ddef0116e5a1bec8772508aec4a279bb129054ee4370f9edc",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2.stderr"
+        },
+        {
+          "content_hash": "57c22b028f2816f653302b4f509f5768213e6114c229ef2ba368b86106985573",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-2.stdout"
+        },
+        {
+          "content_hash": "ec34b45e631ab1d4514ec4d2138ede9f75b71ea8056f7d2628e48a99e25b0074",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3.stderr"
+        },
+        {
+          "content_hash": "fe39ed4ff179a2f7fdce193579aae37e99f7039afec07f71f430593fa28e295a",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-3.stdout"
+        },
+        {
+          "content_hash": "9c2e2a230ce12150a1982b8496203ed9a00a6439fad712e21d2646beb49ef0eb",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4.stderr"
+        },
+        {
+          "content_hash": "137c229d4e4597f36967267b7f5a397b436744c9e31485678880b9c1a4540a85",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-4.stdout"
+        },
+        {
+          "content_hash": "f8ecf6780ded8c53bf5ba4ca5aaa1489b61fdf0b89a0cefa636748bf48362414",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5.stderr"
+        },
+        {
+          "content_hash": "ba534dcc3dafe692ba751918bb57fe56e83d3c8c2fa7c8737162d5db8fe9de74",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-candidate-5.stdout"
+        },
+        {
+          "content_hash": "4496201c89a0e33190724e0b6a6f173a72140af43125a96ef61e0aa02ab6d99a",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct-status.txt"
+        },
+        {
+          "content_hash": "95d383279cea6a26080d448d5465b4b60bcf1d7a6d411ba499d9ade452f9b275",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-direct.stdout"
+        },
+        {
+          "content_hash": "8aed63d9da3e7e49ce97ac6d1baa65abdf8bc9c8c4000b71062b47b8e407dba2",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean-status.txt"
+        },
+        {
+          "content_hash": "0b7333017a6951632090668ee51967e83f8b121d790ac2a5f1feb5e0751c3827",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean.stderr"
+        },
+        {
+          "content_hash": "5c2c494633d6a318f8b869e550050200980944a41c7f263a95e73f9ce6af57b1",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/lean.stdout"
+        },
+        {
+          "content_hash": "bce2cd4233c8346677f466aa8cbb9c783d5b5547e0d7d170033e9d94c1e16971",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/llbc-exact.llbc"
+        },
+        {
+          "content_hash": "274fea83e6fe56fb2b0f876a832a6c0fbcad72179d2b2d0d01afff20174951f8",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/llbc.llbc"
+        },
+        {
+          "content_hash": "127de09f69b6656aa9fade2249952e515870ea132de87fbe75bc8a02dc248000",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous.stderr"
+        },
+        {
+          "content_hash": "c1f09587d417fbec4d86eb980a05cab839d774fcf0b8fcd8000fc4ec263c1bea",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/octet-vacuous.stdout"
+        },
+        {
+          "content_hash": "c7df4ccc0437a026d9dff206324ff5d42f3cf1c4e8663022cc4cba34ddc536a4",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/feasibility-2026-09-04/translation.json"
+        },
+        {
+          "content_hash": "52aac27f9d8fc9ada10ab170379f41aa31e60ea7119a2a5c86a3c76f7049b890",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/accepted-spec-check.txt"
+        },
+        {
+          "content_hash": "14bf84456763179110487bcf5b1f06dde57cc00da41e06a4980d01e5d6561d2f",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/archive-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/archive-plan.stderr"
+        },
+        {
+          "content_hash": "2026613b769923c6b16c29ef1f06a7d1fd83baf0c2fe2bfafa653723afceac54",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "c05240644b196780cd4b92b1fe21df4babe0798def267cba8d12bc685722fa98",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "e0f3e03225839427bec4959f78fee416f7a707c4e744c7cbe06ac61948bd6703",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/review-completeness.log"
+        },
+        {
+          "content_hash": "e5974ed9603e8ab4cac304784f9d9ebb0906fff8e45ef421c86fa2eead0ccd1f",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-execute.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-execute.stderr"
+        },
+        {
+          "content_hash": "1d8371d1e1f129a85ea651c79dbd9eaee06b2bb62b5666c5aa2b0263823a8548",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/sync-plan.stderr"
+        },
+        {
+          "content_hash": "7d20a4b26f15deaef462b940179bfad163d7a93aa02e59bc6bed038422af0a36",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "54773120cc7d14b65b95719cfc41090a17a55ad98640954cb23b461190a468c1",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/validate-after-sync.log"
+        },
+        {
+          "content_hash": "e8ff79f282af655d6449219ce06c659315d6aef7d06b80f7304ba0460d67d3f7",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cairn/validate-strict.log"
+        },
+        {
+          "content_hash": "b183f2e469eb1046d9971485e05da6f85761769ba0eea9c43bb89ff3003a25c9",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/cargo-test-arithmetic.log"
+        },
+        {
+          "content_hash": "8fd7b06e3a56ca5b40b027e8a7e870116bda7952bde30fe60eb9ce7d713b6ef2",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-clippy.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-rustfmt.log"
+        },
+        {
+          "content_hash": "d917532e46deef4b89c5cad4b8d80c8a8faccff80cbf5336488f9c394f6ece20",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker-self-test.log"
+        },
+        {
+          "content_hash": "02c1dac468431bb421f92f86934804325076232512d40a6e4d2671a41e514a07",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/checker.log"
+        },
+        {
+          "content_hash": "94dfd4ed145e4fc87b80e9e8385d3d9c40cb0a754e8e48e52ea6a29049ee259b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/clippy-all-targets.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "896a27e5d7ffdaf5bf6f519ea01eb33002c8367ae7ab7f627919c270cd39ea4a",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/full-wrapper-before-verify-refs.log"
+        },
+        {
+          "content_hash": "3916506b9244596c8c1edb9f745902182e080d9cc67596c92b3ae06cfd109129",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "b6681316a99952732f5712232d339f1718a34af33e3ce99404503336d66fa07c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-final.log"
+        },
+        {
+          "content_hash": "a4431bde108c3a212fa8ee28147066969f590ad8fc8f00acb5b8f058f051b190",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-stable-source.log"
+        },
+        {
+          "content_hash": "805854660aa4d563c13650eb3315daf7842f12c28279ead142a3a4e43a77eadf",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check-stale-llbc.log"
+        },
+        {
+          "content_hash": "dc273f46f6949e9eea5ec210d893ea8dd0cf38e6bfe092b706197880ae8df1ef",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-check.log"
+        },
+        {
+          "content_hash": "df1194e9269df477f2bd9bfbae44c909d937d860d83bd96c46a8d4336d4d6108",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/aeneas-proof-receipt.json"
+        },
+        {
+          "content_hash": "c67f831723f2e4a4222044cfc9c62846c5d5b1d325f4f0a5f22c6cd49472f2ed",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/cross-verifier-manifest.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/aeneas.stderr"
+        },
+        {
+          "content_hash": "653d476aac53c6a67744fcea78024a3d2b897a0e855039b137f13b71cfe27741",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/aeneas.stdout"
+        },
+        {
+          "content_hash": "23d500563c8f4e00367d6cc2241bed0fd258d1e5c88de460c9ed3c2ecefae46e",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/charon.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/charon.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-false.stderr"
+        },
+        {
+          "content_hash": "ab0edaa930689be0013d68f0eb5ac715ac86b4f1ae9706d68c0bc2a3e0706e68",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-false.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-positive.stderr"
+        },
+        {
+          "content_hash": "d37c6aff800417340d2abd98b2606e6ccaed6a863bae7f38e15aa6187b893103",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-positive.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-vacuous.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/lean-vacuous.stdout"
+        },
+        {
+          "content_hash": "4a6ca6facbd6646f86237fd70f311f1efeb93e66adad40bdd19703d4c1363806",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-artifact-verify.log"
+        },
+        {
+          "content_hash": "26b211d877e57b917bd674525d90988344800f63036147eec3646ebdf31a0d5b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-vacuous.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/logs/octet-vacuous.stderr"
+        },
+        {
+          "content_hash": "1c9aa534bb78d03a0ba066863088a1fa5f97b6bf961780e06fcdeabeb84a4b2c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/provider-identity.json"
+        },
+        {
+          "content_hash": "9221e80fb61ee95a047d0ece1e1740431d41f5698b627dcfe827dd2c009032ed",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-files.b3"
+        },
+        {
+          "content_hash": "a78bbd048ac62006b358b17d79ca9e82cc5536f3281aa420ea50e95b66520e40",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-files.txt"
+        },
+        {
+          "content_hash": "2480ed150f20f2c5fcc47dcfe32064cb98d08d876c3dfdac4ff56d7090112862",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-identity.txt"
+        },
+        {
+          "content_hash": "4e2a3c526af8d229075a93fa540b94e45b5260c002accfc7cca47da63bc2f761",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result-path.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nixfmt.log"
+        },
+        {
+          "content_hash": "df2490952e7139cb8539ac06d51d781d402ede50b50fccb2232bac87eb2a339b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/proof-evidence-ir.log"
+        },
+        {
+          "content_hash": "c92435f2d583f1066262205c69bd2f952b9de1d391dcde0b0522f78f4f0cb2c5",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/proof-evidence.log"
+        },
+        {
+          "content_hash": "661216d008ea22c5f6788cd9e33a5738d3445c194923b7bee7b81f39f2253aae",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/readme-metrics.log"
+        },
+        {
+          "content_hash": "b925714bb83f9faad677b7ce7cde1ed1ca617b8b44fbaf510aac020562f9fe62",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "aec5d26c88cea50a8f9f3abcaf1c057406118fbc8061dafa965f861eb45ea02e",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "1e51e88ab0cbe71a0b93f7e8072eaf59e23742d50dd8d1d282b8d44f6d09a49b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-untested-initial.log"
+        },
+        {
+          "content_hash": "1e51e88ab0cbe71a0b93f7e8072eaf59e23742d50dd8d1d282b8d44f6d09a49b",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "af5abd699336e7644234bd2dfe4ae103712e239d7f8bd013db23a0de6281e495",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/verus-arithmetic.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/false-lean.stderr"
+        },
+        {
+          "content_hash": "ab0edaa930689be0013d68f0eb5ac715ac86b4f1ae9706d68c0bc2a3e0706e68",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/false-lean.stdout"
+        },
+        {
+          "content_hash": "ca723def0fcad0557ee69dd3240f3d8ac1593830077a597e2150da410ee90f0f",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/lean-matrix-status.txt"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/positive-lean.stderr"
+        },
+        {
+          "content_hash": "6f87c386e8d37b8871536bc63fdd5da92c8abefd4081b34d2ab688a7d851bcb1",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/positive-lean.stdout"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/vacuous-lean.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/implementation-2026-09-04/vacuous-lean.stdout"
+        },
+        {
+          "content_hash": "71543e2e6c52923faa2c7ae99e39e96eca5eeb747a79a6f4e0c5e9e18c6b491c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "2b373fcbfaaef35f0e3b7cf8c343048f9ae1a4e3668c2db224860b71293533a9",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/final.log"
+        },
+        {
+          "content_hash": "0cb55a7e20139d67df8b74be7bcd13e15dd88017329253c2f8749d563a01830c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/migration-apply.log"
+        },
+        {
+          "content_hash": "0ca9335418756f508c85fa6a287bba759c95b4ab117cb2b7dfdac7ed98d04135",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "0cb55a7e20139d67df8b74be7bcd13e15dd88017329253c2f8749d563a01830c",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/migration-test.log"
+        },
+        {
+          "content_hash": "67aa87e94c5e5cd2a394cf6a157aeb3a7c201e088f07fda6c9a1fc1e194e3d44",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/replacement-finding.json"
+        },
+        {
+          "content_hash": "944b61bfb9d140dbf111beabe723ca8d3e30079638f468698f806836faedb1a3",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/evidence/octet/stale-finding.json"
+        },
+        {
+          "content_hash": "94c09067f84fa6cdc68c154cfb807cb1fcd8c20818b598ccb22286c428a29481",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/proposal.md"
+        },
+        {
+          "content_hash": "39f4f46000c99071344339241ebba81e842f6ebc3063f31cf8d926b9dde74049",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md"
+        },
+        {
+          "content_hash": "68ad3d0c94ea12658b199fcfe3cf9bf17d7493176ea67f8374817bd0e8d367a2",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/tasks.md"
+        },
+        {
+          "content_hash": "91fec9267cb1329897e4432d23593a360a149e59052de30c356ae6dab3c69c64",
+          "exists": true,
+          "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/verification.md"
+        }
+      ],
+      "manifest_hash": "197e4092ec5886b15304b680112c4935079ed0c220f880abc53319b4fc14f902"
+    },
+    "kind": "archive",
+    "manifest_hash": "26cd6de0f283778ec7a7eaf4b07af90874f1d39d206875dfe2d852e311e7e615"
+  },
+  "plan_hash": "f7d364e6fec549eb6c0f4ba3ab9fb57d9d0258fc72ac384c1581b7fad34544b3",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "f6afa25f260cec39a5b7313d2f3a4753b4e3e5686e4670f5fa22da517b694a9f"
+}

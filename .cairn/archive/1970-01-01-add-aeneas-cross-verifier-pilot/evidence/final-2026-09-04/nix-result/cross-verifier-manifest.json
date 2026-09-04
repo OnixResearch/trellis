@@ -1,0 +1,50 @@
+{
+  "schema_version": "trellis-cross-verifier-manifest/v1",
+  "status": "passed",
+  "source_path": "src/arithmetic.rs",
+  "source_identity": "b3:3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4",
+  "run_identity": "b3:5384291409feb72a3e6d71d0a0925bd57882dcea88b48cd7135ec354c20a0aff",
+  "receipt_path": "aeneas-pilot/generated/aeneas-proof-receipt.json",
+  "receipt_identity": "b3:da3840e394b1c671ec8b908e98a6ac52a054ab20b55a1cb48cceb1edae2c8d9b",
+  "properties": [
+    {
+      "theorem_id": "trellis.abs-diff.symmetry",
+      "requirement_id": "arithmetic.abs-diff",
+      "verus_proof_symbol": "arithmetic::abs_diff_symmetric",
+      "lean_theorem_symbol": "trellis_abs_diff_symmetric",
+      "theorem_source_identity": "b3:a67c10d4699ae7b0ddb5b35eb87552b893fcf038c93fd5c6b4c776d5b172e3fb",
+      "integer_model": "Aeneas.Std.U64 with a 64-bit little-endian target",
+      "overflow_model": "branch-selected subtraction proves the selected subtraction is in range",
+      "axioms": [
+        "propext"
+      ]
+    },
+    {
+      "theorem_id": "trellis.abs-diff.self-zero",
+      "requirement_id": "arithmetic.abs-diff",
+      "verus_proof_symbol": "arithmetic::abs_diff_self_is_zero",
+      "lean_theorem_symbol": "trellis_abs_diff_self_is_zero",
+      "theorem_source_identity": "b3:b3df314ff917bb6eb9e26f7a8d56b7c5bc8439da5e5c5076c47a4bee58c7ade4",
+      "integer_model": "Aeneas.Std.U64 with a 64-bit little-endian target",
+      "overflow_model": "self subtraction is in range and returns zero",
+      "axioms": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ]
+    }
+  ],
+  "authority_merged": false,
+  "artifact_verification": "valid",
+  "non_claims": [
+    "does not prove Aeneas or Charon translation soundness",
+    "does not prove Lean or verifier soundness",
+    "does not prove whole-program correctness",
+    "does not prove semantic equivalence",
+    "does not establish release eligibility",
+    "does not prove rustc compiler correctness",
+    "does not prove verifier independence",
+    "does not merge Verus and Aeneas proof authority"
+  ],
+  "manifest_identity": "b3:93a5d7aa36a941648edce19b1862c1fae847143cdf8e0e43092992564b91b95d"
+}

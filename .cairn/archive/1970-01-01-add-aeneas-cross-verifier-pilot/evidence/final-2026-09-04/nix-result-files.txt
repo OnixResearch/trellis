@@ -1,0 +1,16 @@
+aeneas-proof-receipt.json
+cross-verifier-manifest.json
+logs/aeneas.stderr
+logs/aeneas.stdout
+logs/charon.stderr
+logs/charon.stdout
+logs/lean-false.stderr
+logs/lean-false.stdout
+logs/lean-positive.stderr
+logs/lean-positive.stdout
+logs/lean-vacuous.stderr
+logs/lean-vacuous.stdout
+logs/octet-artifact-verify.log
+logs/octet-vacuous.json
+logs/octet-vacuous.stderr
+provider-identity.json

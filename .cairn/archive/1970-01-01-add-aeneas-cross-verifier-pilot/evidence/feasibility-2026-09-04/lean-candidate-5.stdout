@@ -1,0 +1,8 @@
+⚠ [1559/1631] Replayed Aeneas.Std.Slice
+warning: Aeneas/Std/Slice.lean:363:4: declaration uses `sorry`
+warning: Aeneas/Std/Slice.lean:586:8: declaration uses `sorry`
+⚠ [1619/1631] Replayed Aeneas.Std.StringIter
+warning: Aeneas/Std/StringIter.lean:12:4: declaration uses `sorry`
+warning: Aeneas/Std/StringIter.lean:15:4: declaration uses `sorry`
+✔ [1630/1631] Built Theorem (1.3s)
+Build completed successfully (1631 jobs).

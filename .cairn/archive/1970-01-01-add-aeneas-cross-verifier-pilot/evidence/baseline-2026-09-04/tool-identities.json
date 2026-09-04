@@ -1,0 +1,14 @@
+{
+  "aeneas_binary": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/aeneas",
+  "aeneas_binary_blake3": "428ce05d0f32c3bc3eceb24c1ead80b0dc742bfda22cba9c4b91b6a7f40a3819",
+  "charon_binary": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/charon",
+  "charon_binary_blake3": "64ee129c4553574e1686d87560af0699dba9010c998dd68fe4a6b25f6b2e64b5",
+  "lake_binary": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/lake",
+  "lake_binary_blake3": "9c0b74bac6d9436481da3be2f158f9abfb76b940a18aa723d2c493b29ac9f2b5",
+  "lean_binary": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/lean",
+  "lean_binary_blake3": "e9e24ff8e9efd3e7f7a692d2411e0bb39316b626aeda1c3f1bce21bf21daea5d",
+  "leantar_binary": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/leantar",
+  "leantar_binary_blake3": "b9f350bec0f839bb2e6157fdac2c8cc877f26a961ce81b16e5bcc97957d257fe",
+  "network_sandbox": "/nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux/share/octet/aeneas-lean/bwrap",
+  "network_sandbox_blake3": "c87d8bcc11f0c5d61e2598dbc08b801d7e1220753ba47b543525835bc1288b6b"
+}

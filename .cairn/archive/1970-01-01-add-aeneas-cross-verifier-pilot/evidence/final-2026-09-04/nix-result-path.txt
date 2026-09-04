@@ -1,0 +1,2 @@
+/nix/store/aw7fxln3r4lqldrijmv1mlx22v1kylqv-trellis-aeneas-cross-verifier-pilot
+filter=excludes-.cairn-and-.pi

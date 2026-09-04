@@ -1,0 +1,32 @@
+{
+  "command": "review completeness",
+  "completeness": {
+    "findings": [],
+    "implementation_refs": [],
+    "receipt_hash": "3b48a2c9950b3b165bc5b6f6874e380ba7d28ccc58f7a4ade7f0743edd9ee572",
+    "requirements": [],
+    "schema_version": "cairn.semantic-review.completeness.v1",
+    "tasks": [
+      "trellis.aeneas_cross_verifier.claim_boundary",
+      "trellis.aeneas_cross_verifier.exact_source",
+      "trellis.aeneas_cross_verifier.feasibility",
+      "trellis.aeneas_cross_verifier.final_validation",
+      "trellis.aeneas_cross_verifier.generated_boundary",
+      "trellis.aeneas_cross_verifier.manifest",
+      "trellis.aeneas_cross_verifier.negative_evidence",
+      "trellis.aeneas_cross_verifier.provider_consumption",
+      "trellis.aeneas_cross_verifier.resource_budget",
+      "trellis.aeneas_cross_verifier.theorem_adequacy",
+      "trellis.aeneas_cross_verifier.theorem_map",
+      "trellis.aeneas_cross_verifier.translation_manifest"
+    ],
+    "valid": true,
+    "verdict": "PASS",
+    "verification_refs": []
+  },
+  "receipt_hash": "1e1c66a26582d0b0fde2ca46d36161004b0f64c8037829230551738c885363fd",
+  "root": ".",
+  "scope": ".cairn/changes/add-aeneas-cross-verifier-pilot",
+  "valid": true,
+  "verdict": "PASS"
+}

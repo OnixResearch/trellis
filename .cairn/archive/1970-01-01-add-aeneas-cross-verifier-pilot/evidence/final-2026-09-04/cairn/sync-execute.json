@@ -1,0 +1,216 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "add-aeneas-cross-verifier-pilot",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "00b039f7e21d04f7746e9d92426fc2eda385b636016d4cd7159a314a662726a4",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "de6e95bc18c6043f3f55216e1fcaa829f4827bea3a1bbdf70dade5b9f6744ed1",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "39f4f46000c99071344339241ebba81e842f6ebc3063f31cf8d926b9dde74049",
+        "destination": ".cairn/specs/aeneas-cross-verifier/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "8f0eaf1107b92a39292b7b0c63bb1c41acb9c8c0e526efc6b2a7f54312bb8c5c",
+        "operations": [
+          {
+            "block_hash": "701735bfc0a36e925ea17927d97308e1fa908b80eef4910a7ed8e638f07e9143",
+            "heading": "### Requirement: Trellis consumes the Octet Aeneas provider",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.provider_consumption"
+          },
+          {
+            "block_hash": "f75b2a0ec14ab135aa7b8eccf81412eae040bcfa065ddb3f23d98753e49a8934",
+            "heading": "### Requirement: Pilot targets exact Trellis source",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.exact_source"
+          },
+          {
+            "block_hash": "cddab9191bec862328d7028a6dbdad2b19878a0f74518fefb6e30195e1c583de",
+            "heading": "### Requirement: Translation manifest linkage is explicit",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.translation_manifest"
+          },
+          {
+            "block_hash": "88fe5e26b14f3ad77a39012e54e123c5df2b800ebf76db7aea6a3d2f31b2d707",
+            "heading": "### Requirement: Feasibility outcome is deterministic",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.feasibility"
+          },
+          {
+            "block_hash": "3095911a5f2f023de62d10e18b8307580140df7fdbf2c9af0637dedf8139a71a",
+            "heading": "### Requirement: Generated and maintained Lean sources are separate",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.generated_boundary"
+          },
+          {
+            "block_hash": "ba4c3a1f2fd95db9522f50267fce6bc26f0f06973dd35e19f5162e33b09202ae",
+            "heading": "### Requirement: Theorem mapping is explicit",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.theorem_map"
+          },
+          {
+            "block_hash": "a4a7c72d323a3c5771765934fa16dc4858a3dfcbcad05b52e362eba160b491ba",
+            "heading": "### Requirement: Theorem adequacy and trust closure are required",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.theorem_adequacy"
+          },
+          {
+            "block_hash": "9cc5315ce5658a289d846b2ad56679a67aedb4c2d6a6f00453683896569b940b",
+            "heading": "### Requirement: Proof campaign resources are bounded",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.resource_budget"
+          },
+          {
+            "block_hash": "b27665cca596b581d77a81679d979c1ad1774a1f51987f7b50badb8468329f8a",
+            "heading": "### Requirement: Cross-verifier manifest preserves separate proof authority",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.manifest"
+          },
+          {
+            "block_hash": "dbf586720d2e9ba4fe38b2378d98f8c3c100012c8aa910117f97a22c68dc28d1",
+            "heading": "### Requirement: Negative proof evidence fails closed",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.negative_evidence"
+          },
+          {
+            "block_hash": "d4e8703c275eb7938793be87ce2cc1df3cfbe9e57a7a692857c169242b4103b9",
+            "heading": "### Requirement: Cross-verifier claims remain bounded",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.claim_boundary"
+          },
+          {
+            "block_hash": "ff112db45d1009b40e716790cf63c8058fd57ae187d032bd613dcd62bf753f5e",
+            "heading": "### Requirement: Pilot validation accepts success or an exact blocker",
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.final_validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.provider_consumption",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.exact_source",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.translation_manifest",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.feasibility",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.generated_boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.theorem_map",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.theorem_adequacy",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.resource_budget",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.manifest",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.negative_evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.claim_boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.aeneas_cross_verifier.final_validation",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/add-aeneas-cross-verifier-pilot/specs/aeneas-cross-verifier/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "8f0eaf1107b92a39292b7b0c63bb1c41acb9c8c0e526efc6b2a7f54312bb8c5c",
+          "exists": true,
+          "path": "./.cairn/specs/aeneas-cross-verifier/spec.md"
+        }
+      ],
+      "manifest_hash": "f609a0117d1098fd18b8304b18c4ee9023e6070b52e6dcc5837f9146beec1af7"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/aeneas-cross-verifier/spec.md"
+        }
+      ],
+      "manifest_hash": "c8b74ee3f6f1c1ea9fa41b0ee31a7974b3c248f6dba54439e821163317ba9d52"
+    },
+    "kind": "sync",
+    "manifest_hash": "3ea45e830e197c81c79882c7dba5435c15f44d50aae7db631511aa0aab9f185e"
+  },
+  "plan_hash": "ff1e3e6c264b918ae4f87398f8e246d35152681779821c8c1bbe0a4e5ae4208a",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "403d0ba41e005d7e95e782728f9126a858b7813c2f14ded386e15c14295b2348"
+}

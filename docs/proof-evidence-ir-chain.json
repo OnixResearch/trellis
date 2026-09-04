@@ -25,7 +25,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/arithmetic.rs",
@@ -64,10 +64,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "cee07e56ca7253c1ebfb7f2fcfc38a87081de8c4921896629b8e9423aacb9032",
+      "chain_identity": "417df9551b6d3ead725c919ce426e7f8bec40ff5573d62cc0e63170bf287f12b",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "be93ac08c360279dd1786447fd43c5f4299c34e3afabd31a556793f7069d43e9",
+        "source_identity": "26bdc927974c5298a0b107bac69470e2eba1b94f516b2ac69d4afbffe2ca105f",
         "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
         "verifier_receipt_identity": "bb18e8c5366f2b6c64357f07abb8ef8324cb70b7cd0b517c711fc315711c6df3",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -120,7 +120,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/consensus_fast_path/agreement.rs",
@@ -231,10 +231,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "0c796c9886c6484629835b28d5a07bbbf2a4f427b63adfe27f11416a617954ca",
+      "chain_identity": "5a2eecbcd4dd6f2d98aff7de0e1ca00c3a43c79341d6f313312e61d63c76b979",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "64ba1de595ff02ffb16ab1d573eec4aabb4ea9c13c90dd55abe2acb83dc19181",
+        "source_identity": "0f9149922ed265fb0be9f850a4b71d427bc9651c9ae345d7842cb1405f898bbf",
         "proof_ir_identity": "22003cf2ebc3ae4365554b4321d6b4c4b678995e7622d66c90e35d103b66c150",
         "verifier_receipt_identity": "0b8692535ff055407c7eb4c766062b86a022144dc24b43c2291d90982840947c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -296,7 +296,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/scheme_logic/boundary.rs",
@@ -449,10 +449,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "fd549d446a4f9f173b126598a409050a7877cd7745b1f1989116ed4398d7efd2",
+      "chain_identity": "3e7aaa8156db87d805cf8009c0a316ed3c80ecf349a9ed065f884cbe65830ada",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "cf256c2e7e6556c5bc2436adac8319ea046c6d09e9819786bf09485899c3f1d5",
+        "source_identity": "4b7b894ab2fe877ea688653ffabded59368090958d5ad51898b55a9f46d5d786",
         "proof_ir_identity": "b2d716196295f969be6fa846ee815d1cb6a283635b6bf30b6386a3b6e04d6bab",
         "verifier_receipt_identity": "7df89f545e48cc269c74353c34f44426b2d8019d9a6295c9f89ca8e805bbd5d9",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -512,7 +512,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/wasm_runtime_bounds/binding.rs",
@@ -629,10 +629,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "07124aaf96f135c14eac2f55409e46e4fc7f5f2cbdf7e82268fb09ecb6862970",
+      "chain_identity": "6ac9c8799a67d9ef666bae2954f161f460196f3c794d162e6f35516364d1c4b7",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "4e4ec114c0d84f2c5bff2e15c243601cf40e0fd58c87c234b0fb15a366c9a6d1",
+        "source_identity": "cad358a413c11fc4dda8498fa1916cdf0f511e7e854092fec8ed9e48fe40c8c3",
         "proof_ir_identity": "f8649159529f5a7e8df4435bb35ab1e618956e532f4e1b052c1c1feccaa051e6",
         "verifier_receipt_identity": "cbb767f559dbe2f8105ce861efd8fb048562699e7d2b1c6bd0614fa5efb7e8e7",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -689,7 +689,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -736,10 +736,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "28adc76cd1cb7b092db6b382fc6b6363c76334c9143d09d13a9232896b0ae6a7",
+      "chain_identity": "a3f73c81d321568bd78224efffb9aff9f566a1ca72dab444aa0baa8dcb0fdf39",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "fa54da8175c6e3d70c8792adee04e2916d3a9b5e13ffcc78d665991f68a25695",
+        "source_identity": "cfbe6ed06e8c1b855ab8f6e854210f992fcda1af82290fb3faaa9a9b96eff54b",
         "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
         "verifier_receipt_identity": "da1af17a0e89acfbc81a89ccc8acb272485e76a7af8c22d0ed4a8903ad3dbae2",
         "assumption_identity": "f68cf69af180c7783524221814f303141011209ae4af2b8c54cd18145da91a92",
@@ -798,7 +798,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "src/bounded_modular_tree_fold/core.rs",
@@ -859,10 +859,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "b42ed0da39426bfd784d08abd7efc37031e72b7126e6b2bb89702562a9e06262",
+      "chain_identity": "7f6297c56be6a7afc485a98702641d1d23dd4b255a6f200d07d353aba80e0e2c",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "0532e54412d873e9a0da25e674b0f3b255640926ad4f8ee7feaf822cfc524418",
+        "source_identity": "85d9daa1c9af70e0733a752258acbdc04166d64385835f29a96f53a9e2a623aa",
         "proof_ir_identity": "83defae5279969634f937c3510ae723827bd9d00a39d65bc26cb3843426ad5c7",
         "verifier_receipt_identity": "5cc3aa594271b8ad04346ce860a67ca39c7f4419154a5b06215abe2d403984c8",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -908,7 +908,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "140843d8bdb0b65e16b80f0759514e2e59d01316332ae95f552404ae593e7ba9"
+          "digest": "b4992162e3b81d773c8961b9032dcfb5b142b731210388952d96ab8d617ff238"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",
@@ -947,10 +947,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "8cade730b85c297fe7f9c1775c9bf0e63853ecad266a48f4a9c787335ff8487e",
+      "chain_identity": "cbe132eff03b21f58cf11f062c85232b2fef4f0717a99408ce6893970d865f5e",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "c7c21ad85175733efb6162f023a769fd9ac65e4d317dac5402d907c68635ec21",
+        "source_identity": "fa4f2b755133e7e4f226edf3da2aed0767bbe9a2e4f64f42a286920d67e87559",
         "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
         "verifier_receipt_identity": "ff7b73b93a7f78b7a825769c65b95e9d10272d44420a6c3bb629b0cf2a5cec3c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",

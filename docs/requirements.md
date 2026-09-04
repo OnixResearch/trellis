@@ -13403,3 +13403,41 @@ The repository MUST document the public modules, exact external references, prof
 
 r[bounded-modular-tree-fold.validation]
 Closeout MUST pass focused tests, property tests, full Verus, Tracey, proof evidence, proof gaps, catalogs, Clippy, Octet, Nix, and Cairn gates.
+
+## Aeneas Cross-Verifier Pilot
+
+r[trellis.aeneas_cross_verifier.provider_consumption]
+The pilot MUST consume Octet revision `890f424cd7b1b2015f39c0eb5747f1bd1e576028`. It MUST bind the reviewed provider, policy, compatibility, and consumer-contract identities.
+
+r[trellis.aeneas_cross_verifier.exact_source]
+The pilot MUST select `src/arithmetic.rs::abs_diff` from normal Cargo macro erasure. It MUST reject copied or rewritten proof targets.
+
+r[trellis.aeneas_cross_verifier.translation_manifest]
+The pilot MUST bind one non-errorful LLBC declaration to one generated Lean declaration through measured `translation.json` bytes. Charon `def_id` values MUST remain run-local.
+
+r[trellis.aeneas_cross_verifier.feasibility]
+Typed stage observations MUST classify the exact-source attempt as supported, blocked, or failed. Only complete reviewed unsupported evidence MAY produce blocked status.
+
+r[trellis.aeneas_cross_verifier.generated_boundary]
+Generated LLBC, translation metadata, and Lean definitions MUST remain separate from maintained theorem source. Freshness checks MUST bind every stage.
+
+r[trellis.aeneas_cross_verifier.theorem_map]
+The pilot MUST map symmetry and self-zero to exact requirement, source, statement, model, Verus symbol, Lean symbol, and receipt identities.
+
+r[trellis.aeneas_cross_verifier.theorem_adequacy]
+Selected theorem source MUST be non-vacuous and free of forbidden proof shortcuts. The trust closure MUST list all observed axioms.
+
+r[trellis.aeneas_cross_verifier.resource_budget]
+Each provider stage MUST use the named timeout, retained-log, retained-artifact, environment, and network-denial policy. Exhaustion MUST produce failure.
+
+r[trellis.aeneas_cross_verifier.manifest]
+The Trellis manifest MUST link separate Verus and Aeneas facts through one runtime source identity. It MUST NOT merge their authority.
+
+r[trellis.aeneas_cross_verifier.negative_evidence]
+Lean MUST reject the false theorem. Octet adequacy MUST reject the vacuous theorem. Tamper fixtures MUST fail before proof promotion.
+
+r[trellis.aeneas_cross_verifier.claim_boundary]
+Evidence MUST NOT claim verifier independence, semantic equivalence, translation soundness, verifier soundness, whole-program correctness, or release eligibility.
+
+r[trellis.aeneas_cross_verifier.final_validation]
+Closeout MUST pass exact-source generation, both positive theorems, false and vacuous controls, trust audit, freshness, tamper, Octet, Verus, Tracey, Nix, and Cairn gates.

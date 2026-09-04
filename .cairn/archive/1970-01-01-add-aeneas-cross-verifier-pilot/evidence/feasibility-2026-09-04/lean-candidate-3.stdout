@@ -1,0 +1,15 @@
+⚠ [1559/1631] Replayed Aeneas.Std.Slice
+warning: Aeneas/Std/Slice.lean:363:4: declaration uses `sorry`
+warning: Aeneas/Std/Slice.lean:586:8: declaration uses `sorry`
+⚠ [1619/1631] Replayed Aeneas.Std.StringIter
+warning: Aeneas/Std/StringIter.lean:12:4: declaration uses `sorry`
+warning: Aeneas/Std/StringIter.lean:15:4: declaration uses `sorry`
+✖ [1630/1631] Building Theorem (1.2s)
+trace: .> LEAN_PATH=/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/Cli/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/batteries/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/Qq/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/aesop/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/proofwidgets/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/importGraph/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/LeanSearchClient/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/packages/plausible/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/mathlib/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/aeneas-lean-library/.lake/build/lib/lean:/tmp/trellis-aeneas-exact-source/.lake/build/lib/lean /nix/store/1dbz0fg47yc6vfhih560q30xmpm4fsq8-lean4-4.31.0/bin/lean /tmp/trellis-aeneas-exact-source/Theorem.lean -o /tmp/trellis-aeneas-exact-source/.lake/build/lib/lean/Theorem.olean -i /tmp/trellis-aeneas-exact-source/.lake/build/lib/lean/Theorem.ilean -c /tmp/trellis-aeneas-exact-source/.lake/build/ir/Theorem.c --setup /tmp/trellis-aeneas-exact-source/.lake/build/ir/Theorem.setup.json --json
+error: Theorem.lean:21:2: 'change' tactic failed, pattern
+  Aeneas.Std.UScalar.sub x x = Aeneas.Std.Result.ok 0#u64
+is not definitionally equal to target
+  (if x ≥ x then x - x else x - x) = Aeneas.Std.Result.ok 0#u64
+error: Lean exited with code 1
+Some required targets logged failures:
+- Theorem

@@ -360,6 +360,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Aeneas cross-verifier artifact validation",
+        "./scripts/check-aeneas-cross-verifier.rs",
+        ["--check"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Aeneas cross-verifier negative fixtures",
+        "./scripts/check-aeneas-cross-verifier.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Proof evidence bundle validation",
         &cargo,
         ["run", "--quiet", "--bin", "proof_evidence", "--", "check"],

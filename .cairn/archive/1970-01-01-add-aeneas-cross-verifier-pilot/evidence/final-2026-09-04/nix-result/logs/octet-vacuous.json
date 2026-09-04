@@ -1,0 +1,26 @@
+{
+  "schema_version": 1,
+  "status": "failed",
+  "artifact_dir": "/build/vacuous-artifacts",
+  "proofs": [
+    {
+      "policy_id": "trellis.aeneas_cross_verifier.vacuous",
+      "rail_index": 0,
+      "backend": "aeneas-lean",
+      "verifier_mode": "fixture",
+      "checked_scope": "formal-proof:negative:trellis.aeneas_cross_verifier.vacuous#rail-0",
+      "receipt": "proofs/trellis.aeneas_cross_verifier.vacuous-rail-0.receipt",
+      "status": "failed",
+      "diagnostics": [
+        "Aeneas theorem adequacy rejected vacuous theorem",
+        "proof command stdout missing pass signal `aeneas-proof-result: pass`",
+        "verifier-failure: proof command `cargo octet prove --rail aeneas-external-consumer` exited without success"
+      ]
+    }
+  ],
+  "diagnostics": [
+    "Aeneas theorem adequacy rejected vacuous theorem",
+    "proof command stdout missing pass signal `aeneas-proof-result: pass`",
+    "verifier-failure: proof command `cargo octet prove --rail aeneas-external-consumer` exited without success"
+  ]
+}

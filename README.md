@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**11098 Verus proofs · 5216 tests · 2252 requirements · 624 modules · 16 trusted/proof-gap boundaries**
+**11098 Verus proofs · 5216 tests · 2264 requirements · 624 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -660,12 +660,29 @@ cargo run --quiet --bin proof_evidence_ir -- check # deterministic proof-evidenc
 ./scripts/check-readme-metrics.rs # README headline metrics drift; --full refreshes command-backed counts
 ./scripts/check-proof-gap-inventory.rs # proof-gap counts, exact sites, classifications, and rationale manifest
 ./scripts/check-upstream-verus-corpus.rs # typed catalog and boundary validation; add --self-test for negative cases
+./scripts/check-aeneas-cross-verifier.rs --check # exact source, generated model, theorem, trust, and receipt linkage
+./scripts/check-aeneas-cross-verifier.rs --self-test # positive profile plus 18 tamper and classification cases
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').aeneas-cross-verifier-pilot --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').upstream-verus-corpus --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verusfmt-ratchet --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verus-upgrade-trial --no-link -L
 ```
 
 Proof configuration uses the exact reviewed Nickel cohort. See [docs/nickel-toolchain.md](docs/nickel-toolchain.md).
+
+The Aeneas pilot selects only `src/arithmetic.rs::abs_diff` from normal Cargo macro erasure. It does not use a copied Rust function.
+
+Octet revision `890f424cd7b1b2015f39c0eb5747f1bd1e576028` supplies the Aeneas, Charon, Lean, policy, compatibility, and consumer-contract boundary.
+
+Charon emits one non-errorful LLBC declaration. Aeneas maps it to `verified_logic.arithmetic.abs_diff` in one generated Lean file.
+
+Lean checks separate symmetry and self-zero theorems. The trust audit records `propext`, `Classical.choice`, and `Quot.sound` for the selected declarations.
+
+The false theorem fails in Lean. Octet's adequacy policy rejects the vacuous theorem before proof promotion.
+
+The Trellis receipt and cross-verifier manifest bind exact BLAKE3 identities. They do not merge Verus and Aeneas authority or claim semantic equivalence.
+
+See [docs/aeneas-cross-verifier-pilot.md](docs/aeneas-cross-verifier-pilot.md) for scope, commands, identities, and non-claims.
 
 `upstream-verus-corpus/catalog.ncl` pins source snapshots for verifier-upgrade
 regression selection. Its source-intake check validates exact fixed-output
@@ -784,7 +801,7 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [verus-lang/verusfmt](https://github.com/verus-lang/verusfmt) — pinned source-format ratchet; formatter output is not proof evidence.
 - [Steel](https://github.com/mattwparas/steel) — external Scheme interpreter reference for finite reader, interning, module, contract, bytecode, and value-graph primitive ideas only; not vendored, executed, or treated as trusted Trellis validation evidence.
 - [`stonysystems/jetpack` at `c03e318ec355b11edd42aac56c68d0765f88d1d2`](https://github.com/stonysystems/jetpack/tree/c03e318ec355b11edd42aac56c68d0765f88d1d2) and the [OSDI 2026 paper](https://www.usenix.org/system/files/osdi26-tang.pdf) — pinned MIT-licensed design, TLA+, and fault-scenario references for reusable crash-fault fast-path proof obligations; external proofs, implementation behavior, and benchmark claims do not transfer to Trellis.
-- [AeneasVerif/aeneas](https://github.com/AeneasVerif/aeneas) — exact-source Aeneas/Lean cross-verifier reference for selected safe Rust primitives; Aeneas evidence remains separately scoped and does not establish Verus/Aeneas semantic equivalence or verifier soundness.
+- [AeneasVerif/aeneas](https://github.com/AeneasVerif/aeneas) at `bc2eb6f941369fa3c695e30598b5758b11e4f0de` and [OnixResearch/octet](https://github.com/OnixResearch/octet) at `890f424cd7b1b2015f39c0eb5747f1bd1e576028` — exact-source Aeneas/Lean provider and consumer-contract references; their evidence remains separately scoped and does not establish semantic equivalence or verifier soundness.
 - [HigherOrderCO/Bend](https://github.com/HigherOrderCO/Bend) at `814453670d0e0d6777c1313c972764dba0491b7f` — Apache-2.0 external reference for a bounded `u24` balanced-reduction conformance profile; no language, compiler, runtime, or benchmark claim transfers.
 - [HigherOrderCO/HVM2](https://github.com/HigherOrderCO/HVM2) at `654276018084b8f44a22b562dd68ab18583bfb5b` — Apache-2.0 external reference for the evaluated CPU runtime cohort; no interaction-net, scheduling, generated-code, or runtime-correctness claim transfers.
 - [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.

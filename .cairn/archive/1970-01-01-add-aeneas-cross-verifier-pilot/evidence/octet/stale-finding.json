@@ -1,0 +1,13 @@
+{
+  "stable_id": "b3:69dd8f7e6f7922b2",
+  "semantic_id": "b3:69dd8f7e6f7922b2",
+  "identity_status": "computed",
+  "lint": "excessive_file_length",
+  "group": "tigerstyle::structure",
+  "severity": "warning",
+  "file": "src/lib.rs",
+  "line": 1,
+  "column": 1,
+  "message": "source file is 1117 lines (limit: 300)",
+  "crate_name": "verified_logic"
+}

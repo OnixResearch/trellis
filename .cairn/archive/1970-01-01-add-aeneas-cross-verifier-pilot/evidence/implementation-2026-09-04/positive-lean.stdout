@@ -1,0 +1,12 @@
+⚠ [1559/1633] Replayed Aeneas.Std.Slice
+warning: Aeneas/Std/Slice.lean:363:4: declaration uses `sorry`
+warning: Aeneas/Std/Slice.lean:586:8: declaration uses `sorry`
+⚠ [1619/1633] Replayed Aeneas.Std.StringIter
+warning: Aeneas/Std/StringIter.lean:12:4: declaration uses `sorry`
+warning: Aeneas/Std/StringIter.lean:15:4: declaration uses `sorry`
+✔ [1630/1633] Built AbsDiffSymmetric (1.4s)
+✔ [1631/1633] Built AbsDiffSelfZero (1.4s)
+ℹ [1632/1633] Built AxiomAudit (1.3s)
+info: AxiomAudit.lean:4:0: 'trellis_abs_diff_symmetric' depends on axioms: [propext]
+info: AxiomAudit.lean:5:0: 'trellis_abs_diff_self_is_zero' depends on axioms: [propext, Classical.choice, Quot.sound]
+Build completed successfully (1633 jobs).

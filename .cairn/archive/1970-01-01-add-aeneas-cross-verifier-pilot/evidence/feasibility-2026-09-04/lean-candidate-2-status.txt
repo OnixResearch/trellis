@@ -1,0 +1,3 @@
+exit_code=1
+stdout_bytes=2968
+stderr_bytes=20
