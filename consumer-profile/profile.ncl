@@ -61,7 +61,7 @@ let contracts = import "contracts.ncl" in
   artifacts = [
     { path = "Cargo.toml", bytes = 5574, blake3 = "cf0495a0f5204ea0d445bafaea7ae7341932cca7580b90f6c80b1fe511675458" },
     { path = "LICENSE", bytes = 16726, blake3 = "7ad11002cb765572342fc15096832825a9071dfc7f4f427d92c6906d83ea9b54" },
-    { path = "src/lib.rs", bytes = 50852, blake3 = "99a8938764b5705c11925252fd5b5b8da1f600ce73ed77ed5d1bd57578ba08ed" },
+    { path = "src/lib.rs", bytes = 51082, blake3 = "0e514208f550375dd3e7184e49a2a6c1fb459538c03dbf85e2b80f434c2b74d5" },
     { path = "src/scope.rs", bytes = 15960, blake3 = "42e09767955c07125d923238950f156d842d316cb66100e81ec658c9612e6170" },
     { path = "src/token_timestamp.rs", bytes = 14119, blake3 = "5f2e7f57e27280a22fa6721e5638a4fde989f0c9e8c944549bdb249e4088b621" },
     { path = "src/ucan_ability.rs", bytes = 20719, blake3 = "d10538a8b988bd8f598a54f4d8a24448111f59721ddb62748762338ba35561e7" },
@@ -106,8 +106,8 @@ let contracts = import "contracts.ncl" in
     proof_owner = "Trellis",
     proof_command = "./scripts/verus.sh src/lib.rs",
     proof_manifest_path = "docs/proof-artifact-manifest.json",
-    proof_manifest_bytes = 11781,
-    proof_manifest_blake3 = "067bea97531e1fb65582cf2bf5b19627631046a7a4f9e9a46697ebab9353112a",
+    proof_manifest_bytes = 21530,
+    proof_manifest_blake3 = "93d4105b47720646f886c4b3285e9a9be48e4fad7478f47fda1c0e4bfd070002",
     supported_claim = "Source and profile alignment for imported Trellis verified primitives only.",
   },
   required_non_claims = [

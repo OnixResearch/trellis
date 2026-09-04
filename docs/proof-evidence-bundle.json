@@ -32,7 +32,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/arithmetic.rs",
@@ -90,7 +90,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/consensus_fast_path/agreement.rs",
@@ -168,6 +168,168 @@
       ]
     },
     {
+      "scope": "module:scheme_logic",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "scheme-logic.bytecode-safety",
+        "scheme-logic.collections-bytevectors",
+        "scheme-logic.contract-blame",
+        "scheme-logic.docs",
+        "scheme-logic.evidence.negative",
+        "scheme-logic.evidence.positive",
+        "scheme-logic.final-validation",
+        "scheme-logic.interning",
+        "scheme-logic.module-graph",
+        "scheme-logic.non-claims",
+        "scheme-logic.reader-datum-structure",
+        "scheme-logic.reader-token-span",
+        "scheme-logic.value-graph"
+      ],
+      "source_paths": [
+        "src/scheme_logic/boundary.rs",
+        "src/scheme_logic/heap.rs",
+        "src/scheme_logic/heap/equivalence.rs",
+        "src/scheme_logic/heap/shapes.rs",
+        "src/scheme_logic/identity.rs",
+        "src/scheme_logic/linkage.rs",
+        "src/scheme_logic/proofs/mod.rs",
+        "src/scheme_logic/proofs/bytecode.rs",
+        "src/scheme_logic/proofs/collections.rs",
+        "src/scheme_logic/proofs/contracts.rs",
+        "src/scheme_logic/proofs/modules.rs",
+        "src/scheme_logic/proofs/reader.rs",
+        "src/scheme_logic/proofs/registry.rs",
+        "src/scheme_logic/registry.rs",
+        "src/scheme_logic/syntax.rs",
+        "src/scheme_logic/tests/mod.rs",
+        "src/scheme_logic/tests/negative.rs",
+        "src/scheme_logic/tests/positive.rs",
+        "src/scheme_logic/tests/property.rs",
+        "src/scheme_logic/vm.rs"
+      ],
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+        },
+        {
+          "path": "src/scheme_logic/boundary.rs",
+          "algorithm": "blake3",
+          "digest": "1f051ca2bd5e2be211cc02c36787729f710c074252a79c7e3cd3b2a5f2b1c110"
+        },
+        {
+          "path": "src/scheme_logic/heap.rs",
+          "algorithm": "blake3",
+          "digest": "8d0321ff5e609c1280a3449171476eb3055777defda0f97e60431dccf61d2c4e"
+        },
+        {
+          "path": "src/scheme_logic/heap/equivalence.rs",
+          "algorithm": "blake3",
+          "digest": "13113e24c91eb03a0dc7b272b0f32863f476c1510a880277c906627a25721988"
+        },
+        {
+          "path": "src/scheme_logic/heap/shapes.rs",
+          "algorithm": "blake3",
+          "digest": "3c39382dec782f501d9fe96900b1cc593f0bfdfa7ce7cd47ecb1d4837bdbbd9c"
+        },
+        {
+          "path": "src/scheme_logic/identity.rs",
+          "algorithm": "blake3",
+          "digest": "ce8f585d927ff644d2e239c11c28ca1f8d2d48517ebc798c57e802f900b930cb"
+        },
+        {
+          "path": "src/scheme_logic/linkage.rs",
+          "algorithm": "blake3",
+          "digest": "364a8dcedf7f638f23a64de61c73f8ea7586c8036694f9dea3f5cdacf8b5975a"
+        },
+        {
+          "path": "src/scheme_logic/proofs/bytecode.rs",
+          "algorithm": "blake3",
+          "digest": "5df0428c625205ea77137491a48b1908bc693939083a763bbc7af9a494474ffa"
+        },
+        {
+          "path": "src/scheme_logic/proofs/collections.rs",
+          "algorithm": "blake3",
+          "digest": "03333873ccfeeb8927115964fb6c1903c10dfb9b6a9f717bcb1ba4f18072d45a"
+        },
+        {
+          "path": "src/scheme_logic/proofs/contracts.rs",
+          "algorithm": "blake3",
+          "digest": "84f59363c536f18954ecccf09c52613cea3585ae569847a3ca4e5897a21092e8"
+        },
+        {
+          "path": "src/scheme_logic/proofs/mod.rs",
+          "algorithm": "blake3",
+          "digest": "43e3ace8d42a68c6111110f67915d472712e0c6aa431e7c0931dfcd68245b3e2"
+        },
+        {
+          "path": "src/scheme_logic/proofs/modules.rs",
+          "algorithm": "blake3",
+          "digest": "1e28cd326bb4823dcc7aef30041c433d5bd087f35052226b8dc7b1df0aae1066"
+        },
+        {
+          "path": "src/scheme_logic/proofs/reader.rs",
+          "algorithm": "blake3",
+          "digest": "efced6c9617c65d9889ca600abb76d7153217b85b6ab221841d058f66d29a3eb"
+        },
+        {
+          "path": "src/scheme_logic/proofs/registry.rs",
+          "algorithm": "blake3",
+          "digest": "89ecbe65247fe2b6d84bfb0ed8fa2b323b248d29f108de333b6e38d3a4b470c9"
+        },
+        {
+          "path": "src/scheme_logic/registry.rs",
+          "algorithm": "blake3",
+          "digest": "dba102751ed38bd164da1bdedf53e9d6c7819ddbc1852f3860d84c15a14d1d3b"
+        },
+        {
+          "path": "src/scheme_logic/syntax.rs",
+          "algorithm": "blake3",
+          "digest": "7b1b8f3c8c63109888192724e22009f465b1411263460c3027459c4b363f4b37"
+        },
+        {
+          "path": "src/scheme_logic/tests/mod.rs",
+          "algorithm": "blake3",
+          "digest": "911d3c9e2275bb3570fd18f0ad576d7e9d605b07d4fc9eef94f0cbfdcc9e4b0f"
+        },
+        {
+          "path": "src/scheme_logic/tests/negative.rs",
+          "algorithm": "blake3",
+          "digest": "d1f5889d4b0e67240c18c697e10b151d9d2aa556e2bdf88b822093e16b3de293"
+        },
+        {
+          "path": "src/scheme_logic/tests/positive.rs",
+          "algorithm": "blake3",
+          "digest": "232051f757b2cfb17af7bf96d3e3a9fed81f68e21d54ef2292f3a88f072c53a0"
+        },
+        {
+          "path": "src/scheme_logic/tests/property.rs",
+          "algorithm": "blake3",
+          "digest": "7bf9b19e114516281763112c52c535e541b43f40b4107d28430ff82bf1ef020c"
+        },
+        {
+          "path": "src/scheme_logic/vm.rs",
+          "algorithm": "blake3",
+          "digest": "9e17f4481da50d28c257cc5b817c58d9de16f14826a49971861d3aec85ca351b"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    },
+    {
       "scope": "module:wasm_runtime_bounds",
       "evidence_tier": "local-proof-summary",
       "requirement_ids": [
@@ -209,7 +371,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/wasm_runtime_bounds/binding.rs",
@@ -335,7 +497,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -374,7 +536,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",

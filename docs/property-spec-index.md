@@ -70,6 +70,17 @@ Every property group entry has:
 **Property kinds**: `proof fn`, `proptest`, `#[test]`
 **Count**: 20 direct proofs, 3 randomized properties, and 24 unit tests
 
+## Scheme logic
+
+**Group**: scheme-logic
+**Source modules**: `src/scheme_logic/identity.rs`,
+`src/scheme_logic/syntax.rs`, `src/scheme_logic/registry.rs`,
+`src/scheme_logic/linkage.rs`, `src/scheme_logic/boundary.rs`,
+`src/scheme_logic/vm.rs`, `src/scheme_logic/heap.rs`, and
+`src/scheme_logic/proofs/mod.rs`
+**Property kinds**: `proof fn`, `proptest`, `#[test]`
+**Count**: 27 direct proofs, 4 randomized properties, and 27 unit tests
+
 ## Concurrency primitives
 
 **Group**: concurrency

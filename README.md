@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**11032 Verus proofs · 5174 tests · 2226 requirements · 621 modules · 16 trusted/proof-gap boundaries**
+**11060 Verus proofs · 5205 tests · 2239 requirements · 622 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -257,6 +257,7 @@ validation commands captured in the change evidence.
 | `semantic_refactoring` | immutable name movement, compatible propagation, and unresolved-dependent admission |
 | `total_config` | finite typed node graphs, required-field admission, canonical normal forms, digest-input selection, frozen import policy, and digest-aware refactors |
 | `s_expression` | bounded dialect-neutral atom/list trees, canonical UTF-8 rendering, canonical-only parsing, deterministic failures, and roundtrip checks |
+| `scheme_logic` | finite reader spans, explicit interning, module linkage, contract/blame metadata, bytecode safety, cycle-safe values, and collection/bytevector shapes |
 | `typed_durable_reference` | typed durable references, unpersist gates, and migration admission |
 
 ### Memory management

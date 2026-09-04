@@ -7829,6 +7829,70 @@ r[s-expression.non-claims]
 Canonical-tree evidence MUST NOT claim evaluation, macros, hygiene, interning,
 modules, bytecode, effects, or compatibility with an external Lisp dialect.
 
+## Scheme Logic Primitives
+
+r[scheme-logic.reader-token-span]
+Reader tokens and parent-child spans MUST use ordered half-open byte ranges
+inside one declared finite source length. Invalid, overlapping, or escaping
+ranges MUST reject with deterministic metadata.
+
+r[scheme-logic.reader-datum-structure]
+Supported delimiter kinds MUST pair exactly once without crossing. Quote-like
+and datum-comment prefixes MUST attach to the following datum token explicitly.
+
+r[scheme-logic.interning]
+Symbol and literal interning MUST use explicit bounded state with dense unique
+keys and unique values. Existing values MUST retain their keys, and returned
+keys MUST resolve to the original values.
+
+r[scheme-logic.module-graph]
+Finite module graphs MUST use unique module and export identities. Every import
+MUST name a declared provider export, and transitive closure MUST use an
+explicit visited set and expansion budget.
+
+r[scheme-logic.contract-blame]
+Contract metadata MUST distinguish flat and function descriptors, check callable
+arity, preserve matching wrapper composition, and attribute domain failures to
+callers and codomain failures to providers.
+
+r[scheme-logic.bytecode-safety]
+Constant pools MUST deduplicate values and preserve retained rollback prefixes.
+Bytecode admission MUST reject invalid operands, stack underflow, arity errors,
+and incorrect final stack summaries before execution.
+
+r[scheme-logic.value-graph]
+Pair, vector, symbol, scalar, empty-list, and procedure-placeholder nodes MUST
+form a finite graph with in-range edges. Display and equality traversal MUST be
+iterative, cycle-safe, and budgeted.
+
+r[scheme-logic.collections-bytevectors]
+Proper lists MUST terminate at the declared empty-list node. Immutable vector
+updates MUST preserve length, hash keys and set members MUST be unique, and
+bytevector elements MUST remain in the byte domain.
+
+r[scheme-logic.evidence.positive]
+Positive tests MUST cover every reader, interner, module, contract, bytecode,
+value-graph, list, vector, hash, and bytevector family that the module exports.
+
+r[scheme-logic.evidence.negative]
+Negative tests MUST reject malformed spans, delimiters, intern tables, imports,
+contracts, bytecode, graphs, lists, hashes, and bytevectors without panicking or
+silently accepting invalid state.
+
+r[scheme-logic.docs]
+The public module MUST have requirement, source, test or proof, README,
+module-guide, accepted-spec, proof-evidence, and lifecycle references.
+
+r[scheme-logic.final-validation]
+Closeout MUST include focused tests, strict Clippy, Verus verification, Tracey
+coverage, Octet, Cairn gates, accepted-spec synchronization, and archive
+evidence.
+
+r[scheme-logic.non-claims]
+Scheme-logic evidence MUST remain limited to Trellis-owned finite predicates. It
+MUST NOT claim Steel compatibility, Scheme conformance, parser or macro
+soundness, GC, JIT, FFI, module-loading, effect, or interpreter correctness.
+
 ## HIR Attribute Parsing
 
 r[hir-attr.parser-envelope]

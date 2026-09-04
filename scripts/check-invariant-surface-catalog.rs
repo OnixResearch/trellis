@@ -180,6 +180,15 @@ const REQUIRED_ROWS: &[SeedRow] = &[
         trusted: false,
         source: "src/wasm_runtime_bounds/proofs/control.rs",
     },
+    SeedRow {
+        module: "scheme_logic",
+        requirement: "scheme-logic.reader-token-span",
+        surface: "child_containment_is_transitive",
+        labels: &["state-invariant", "soundness"],
+        evidence: "proof",
+        trusted: false,
+        source: "src/scheme_logic/proofs/reader.rs",
+    },
 ];
 
 fn seed_to_row(seed: &SeedRow) -> CatalogRow {

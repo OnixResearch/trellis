@@ -1,0 +1,517 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: steel-scheme-logic-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "steel-scheme-logic-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "c75ff18dcf6db33a3b9d2f858daff21cab7aa7df7f35693b25ab6c084cea2eea",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "76d9630b295ff5ccf4dc01842826d1d7989542af521138007c19c8b8a99d85d3",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/design.md"
+        },
+        {
+          "content_hash": "961999dcce47e5f9284ef9bb3404cb57a56c49aeece9a24ed58d157873a048aa",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "2ab13d4a921267ba080efb8914d5c498c9a3f912dfb19a11c6e184b91b6711bf",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "ddf5289dd3d0c52abd520e2afbe2ff9723bb8aaec094a196948bf28c96b91efe",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "8dda76ee002620c01ef57bb31286cb684f976d62a998b3f4fe662e88eb448a83",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "a3731252ce33d827024760b2a533ffd1c0396c2df8fbc2964e3b099ec279947d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cargo-test-paren-tree.log"
+        },
+        {
+          "content_hash": "518bc4a4a57bbad66f197078af4010c7b5345bc7d47b7a0c3d8dcc9ee07abafd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cargo-test-s-expression.log"
+        },
+        {
+          "content_hash": "9d9ae88ac7e97dbf4e3f81a8596ba061e8eaea6681f00a5b427639960d02f87e",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/source.txt"
+        },
+        {
+          "content_hash": "c67ee6a833b646a5f3d501ada1186c8ddb3abf73c43e3f7844fe931b8904eac9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/baseline-2026-09-04/status.txt"
+        },
+        {
+          "content_hash": "3451a377d42badd7b4dc8c581312a5662f497bec0151cb7e66f4b138568387d4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "1c1157dfb5391efa6fc8659164a70aba82221c372f0d96dad0c9dd991dd9ed7a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "d0c1e7f006857737694d1cf3837f4d31a5790cdc02b6481a28ab120ff011d002",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "46aae0a27fd94976d5cfbd902f8bc13e2eb8d0f94bced60be8fef889d6339ecc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "34dd8656607f8e61b9f09208397a88292d086c76c5ddb63f6b9c0117c585efed",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "cde682860dc20c3e9a1fe79940f0b96abf9622aacc48deda9b2b6dfc005cd4d2",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "12f09d56c5e10917ca2445c0b33ccbfe00af4e9ddce31977baf5d045cd7d1375",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "1a36b52b207e5147643a68a285d67744e67827baaaac32da9efe2126d7c73a9c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "9c8fdc2aa00e3db14ea84f1eb81ebeb13207be81949d7d7d60180052e12edc7d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "ad68ae89ff4fea3a63873836e5b91397317a8c1d5958b5ebce1a4ef654677c8f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "6e1e48059b09257225bc74d2c1f93733af88ef0f28b177e3665079575167c4e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "1a36b52b207e5147643a68a285d67744e67827baaaac32da9efe2126d7c73a9c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "aa35d5fb7ff949fe6885d2f63c4270c8567ee6002ece0b59897d9c7a292f7d90",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "af0e27121b007fa38e8edf2b4ce19bbac4559d5c44f138c1c60c369e54226823",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "beff1c975bd386bcaceb9ab4c63dbfa6e3290ebc98885be0da3d5bc5a494f848",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-bytecode.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-collections.log"
+        },
+        {
+          "content_hash": "890ced8e49b912ab74c0975399b76a78d7daf5650979f2d45046dc7e08369400",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-contracts.log"
+        },
+        {
+          "content_hash": "890ced8e49b912ab74c0975399b76a78d7daf5650979f2d45046dc7e08369400",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-modules.log"
+        },
+        {
+          "content_hash": "beff1c975bd386bcaceb9ab4c63dbfa6e3290ebc98885be0da3d5bc5a494f848",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-reader.log"
+        },
+        {
+          "content_hash": "b35019485ebbc26aac9c33867327c502812dd3b3244ada4defaba19b3706466d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-registry.log"
+        },
+        {
+          "content_hash": "445da1b39a618ac7dd2932f5666159005a77f393b8201add4c6281cfc8970c0d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "53ca90d9f7da84f36d30e20fbee2599293ca58d126089316a270a79c7e865c2d",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "c1a38b5902ac1148d38ea56ec481d40bdc65f9f2a17075acf93af775b795a54f",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "5d72591a7f6b5f9f3f223032590fef021c0166ccd9061f62edaf2ff6259db4dc",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-initial.log"
+        },
+        {
+          "content_hash": "902e4312789be68c62fd43a95bdbb32aa57946519a949b6c346c6a7496ed6844",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-migration.log"
+        },
+        {
+          "content_hash": "16aa8f384db5e5db06563be126124bf32d740c8a8d1ec0501d1f2194548da152",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-pre-migration.log"
+        },
+        {
+          "content_hash": "3f084b02d6807ddcbffdb30d41ee61929259cd4f79041894d5dbfd5c9926a188",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e4c6070185254cb9dfe3ca40f1819de95b576fb95ee8b0dd2fe45c9266026a4c",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "17eb5e97427aa7dd1e5965cccc64b6528916fc89a68e564632c3aecf87133039",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "81c63461fc514aea9f4555469d2ca87c9b98bcaebac1310657c87d2c8032c13a",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "186904b9b48c7dc64e059e023bbad702484319cd26d2ec03321a789a7b4330fd",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "6e2a847a56d0aae7951a73c01e4fa5b1fe5ad568bfcf53b0e5967fdc6f6090f4",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "c6d87c83ff0afa33cc7cc3fa491fffeb469c0e5bc2c9796108182dc12c5fad7b",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/proposal.md"
+        },
+        {
+          "content_hash": "c19324cda04da61ebe43063101721d1b044562e5debfc3440e98394f83fff236",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/specs/scheme-logic/spec.md"
+        },
+        {
+          "content_hash": "79816958ec6a060e12d46fd81b4aaa71cf663e9a4a2c503c1ddd50a522e52842",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/tasks.md"
+        },
+        {
+          "content_hash": "0c050e6417bdf478644c3adbe163452fbfde7a7dc85d26f012fdd12f5bf6b442",
+          "exists": true,
+          "path": "./.cairn/archive/2026-09-04-steel-scheme-logic-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives"
+        }
+      ],
+      "manifest_hash": "453848a78d377f6c7de32f9074305293af381112d8dc6a4f723280b3c161b69b"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "76d9630b295ff5ccf4dc01842826d1d7989542af521138007c19c8b8a99d85d3",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/design.md"
+        },
+        {
+          "content_hash": "961999dcce47e5f9284ef9bb3404cb57a56c49aeece9a24ed58d157873a048aa",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "2ab13d4a921267ba080efb8914d5c498c9a3f912dfb19a11c6e184b91b6711bf",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "ddf5289dd3d0c52abd520e2afbe2ff9723bb8aaec094a196948bf28c96b91efe",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "8dda76ee002620c01ef57bb31286cb684f976d62a998b3f4fe662e88eb448a83",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "a3731252ce33d827024760b2a533ffd1c0396c2df8fbc2964e3b099ec279947d",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cargo-test-paren-tree.log"
+        },
+        {
+          "content_hash": "518bc4a4a57bbad66f197078af4010c7b5345bc7d47b7a0c3d8dcc9ee07abafd",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/cargo-test-s-expression.log"
+        },
+        {
+          "content_hash": "9d9ae88ac7e97dbf4e3f81a8596ba061e8eaea6681f00a5b427639960d02f87e",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/source.txt"
+        },
+        {
+          "content_hash": "c67ee6a833b646a5f3d501ada1186c8ddb3abf73c43e3f7844fe931b8904eac9",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/baseline-2026-09-04/status.txt"
+        },
+        {
+          "content_hash": "3451a377d42badd7b4dc8c581312a5662f497bec0151cb7e66f4b138568387d4",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "1c1157dfb5391efa6fc8659164a70aba82221c372f0d96dad0c9dd991dd9ed7a",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-design-final.log"
+        },
+        {
+          "content_hash": "d0c1e7f006857737694d1cf3837f4d31a5790cdc02b6481a28ab120ff011d002",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "46aae0a27fd94976d5cfbd902f8bc13e2eb8d0f94bced60be8fef889d6339ecc",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-proposal-final.log"
+        },
+        {
+          "content_hash": "34dd8656607f8e61b9f09208397a88292d086c76c5ddb63f6b9c0117c585efed",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "cde682860dc20c3e9a1fe79940f0b96abf9622aacc48deda9b2b6dfc005cd4d2",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-tasks-prearchive.log"
+        },
+        {
+          "content_hash": "12f09d56c5e10917ca2445c0b33ccbfe00af4e9ddce31977baf5d045cd7d1375",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "1a36b52b207e5147643a68a285d67744e67827baaaac32da9efe2126d7c73a9c",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "9c8fdc2aa00e3db14ea84f1eb81ebeb13207be81949d7d7d60180052e12edc7d",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "ad68ae89ff4fea3a63873836e5b91397317a8c1d5958b5ebce1a4ef654677c8f",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "6e1e48059b09257225bc74d2c1f93733af88ef0f28b177e3665079575167c4e9",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-validate-prearchive.log"
+        },
+        {
+          "content_hash": "1a36b52b207e5147643a68a285d67744e67827baaaac32da9efe2126d7c73a9c",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/cairn-validate.log"
+        },
+        {
+          "content_hash": "aa35d5fb7ff949fe6885d2f63c4270c8567ee6002ece0b59897d9c7a292f7d90",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/clippy.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "af0e27121b007fa38e8edf2b4ce19bbac4559d5c44f138c1c60c369e54226823",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "beff1c975bd386bcaceb9ab4c63dbfa6e3290ebc98885be0da3d5bc5a494f848",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-bytecode.log"
+        },
+        {
+          "content_hash": "bda99f5bb92ef0d971a558a41435d395d58f3195c75a793708f7b76a2a034188",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-collections.log"
+        },
+        {
+          "content_hash": "890ced8e49b912ab74c0975399b76a78d7daf5650979f2d45046dc7e08369400",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-contracts.log"
+        },
+        {
+          "content_hash": "890ced8e49b912ab74c0975399b76a78d7daf5650979f2d45046dc7e08369400",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-modules.log"
+        },
+        {
+          "content_hash": "beff1c975bd386bcaceb9ab4c63dbfa6e3290ebc98885be0da3d5bc5a494f848",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-reader.log"
+        },
+        {
+          "content_hash": "b35019485ebbc26aac9c33867327c502812dd3b3244ada4defaba19b3706466d",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/focused-verus-registry.log"
+        },
+        {
+          "content_hash": "445da1b39a618ac7dd2932f5666159005a77f393b8201add4c6281cfc8970c0d",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "53ca90d9f7da84f36d30e20fbee2599293ca58d126089316a270a79c7e865c2d",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/nix-flake-check.log"
+        },
+        {
+          "content_hash": "c1a38b5902ac1148d38ea56ec481d40bdc65f9f2a17075acf93af775b795a54f",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-final.log"
+        },
+        {
+          "content_hash": "5d72591a7f6b5f9f3f223032590fef021c0166ccd9061f62edaf2ff6259db4dc",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-initial.log"
+        },
+        {
+          "content_hash": "902e4312789be68c62fd43a95bdbb32aa57946519a949b6c346c6a7496ed6844",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-migration.log"
+        },
+        {
+          "content_hash": "16aa8f384db5e5db06563be126124bf32d740c8a8d1ec0501d1f2194548da152",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/octet-pre-migration.log"
+        },
+        {
+          "content_hash": "3f084b02d6807ddcbffdb30d41ee61929259cd4f79041894d5dbfd5c9926a188",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "e4c6070185254cb9dfe3ca40f1819de95b576fb95ee8b0dd2fe45c9266026a4c",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "17eb5e97427aa7dd1e5965cccc64b6528916fc89a68e564632c3aecf87133039",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "81c63461fc514aea9f4555469d2ca87c9b98bcaebac1310657c87d2c8032c13a",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "186904b9b48c7dc64e059e023bbad702484319cd26d2ec03321a789a7b4330fd",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "6e2a847a56d0aae7951a73c01e4fa5b1fe5ad568bfcf53b0e5967fdc6f6090f4",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "c6d87c83ff0afa33cc7cc3fa491fffeb469c0e5bc2c9796108182dc12c5fad7b",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/proposal.md"
+        },
+        {
+          "content_hash": "c19324cda04da61ebe43063101721d1b044562e5debfc3440e98394f83fff236",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md"
+        },
+        {
+          "content_hash": "79816958ec6a060e12d46fd81b4aaa71cf663e9a4a2c503c1ddd50a522e52842",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/tasks.md"
+        },
+        {
+          "content_hash": "0c050e6417bdf478644c3adbe163452fbfde7a7dc85d26f012fdd12f5bf6b442",
+          "exists": true,
+          "path": "./.cairn/changes/steel-scheme-logic-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "132577d549c11ef4e5d5db8badd55139f42f1305833eb1db3a227ae842f587e9"
+    },
+    "kind": "archive",
+    "manifest_hash": "387240a4804d136bf92c1ff073bedfab0c25a27dd6c9fb185c90ead9996081dd"
+  },
+  "plan_hash": "0b79dee28de0cbcebc4ed96d362042c24ef0234f032a3204e14535693630a784",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "ed4433246c4ce6a5f20968c830c1766e6dbd61f329911c830d513bc959f8f238"
+}

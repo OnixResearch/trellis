@@ -284,6 +284,8 @@
 //! - `sequence` — monotonic ID generation with batch reservation and overflow protection
 //! - `serialization_codec` — finite byte buffers, frames, length prefixes, schema/version,
 //!   checksum-shape metadata, encoder/decoder shape predicates, and bounded round trips
+//! - `scheme_logic` — finite reader spans, explicit interning, module linkage,
+//!   contract/blame metadata, bytecode safety, cycle-safe values, and collection shapes
 //! - `sequential` — sequential access detection, prefetch triggering
 //! - `signal` — signal set algebra: add/remove/contains, union/intersect, deliverable
 //! - `set_associative_lookup` — cache address decomposition and per-set tag lookup
@@ -896,6 +898,8 @@ pub mod s_expression;
 pub mod safe_reclamation_domain;
 pub mod safe_snapshot_replication;
 pub mod scheduling_calendar;
+#[path = "scheme_logic/identity.rs"]
+pub mod scheme_logic;
 pub mod scope;
 pub mod segregated_free;
 pub mod sel4_asid;

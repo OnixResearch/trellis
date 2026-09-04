@@ -1,7 +1,7 @@
 <trellis-proof-artifact-manifest-envelope {
   schema: "trellis.proof-artifact-manifest.preserves.v1"
   source-manifest: "docs/proof-artifact-manifest.json"
-  rows: ["trellis.arithmetic.abs_diff" "trellis.consensus.fast_path.quorum" "trellis.quorum.majority" "trellis.ucan.did.decode_did_key" "trellis.ucan.signature.verify_checked" "trellis.wasm.runtime_bounds.continuation" "trellis.wasm.runtime_bounds.execution" "trellis.wasm.runtime_bounds.resources" "trellis.wasm.runtime_bounds.streaming"]
+  rows: ["trellis.arithmetic.abs_diff" "trellis.consensus.fast_path.quorum" "trellis.quorum.majority" "trellis.scheme.bytecode.safety" "trellis.scheme.collection.shapes" "trellis.scheme.contract.blame" "trellis.scheme.interning.state" "trellis.scheme.module.graph" "trellis.scheme.reader.structure" "trellis.scheme.value.equality" "trellis.scheme.value.graph" "trellis.ucan.did.decode_did_key" "trellis.ucan.signature.verify_checked" "trellis.wasm.runtime_bounds.continuation" "trellis.wasm.runtime_bounds.execution" "trellis.wasm.runtime_bounds.resources" "trellis.wasm.runtime_bounds.streaming"]
   claim: "carrier for proof-manifest identity only"
   non-claims: ["not a proof artifact" "not downstream authorization semantics" "not verifier soundness"]
 }>

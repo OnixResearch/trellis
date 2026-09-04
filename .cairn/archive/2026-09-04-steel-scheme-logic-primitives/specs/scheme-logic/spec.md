@@ -4,10 +4,11 @@
 
 Defines finite Scheme/interpreter-adjacent primitives inspired by Steel for Trellis. The requirements cover reader/token/span shape, explicit interning state, module graph admission, contract/blame metadata, constant-pool and bytecode safety, value graph traversal, Scheme collection/bytevector laws, evidence coverage, documentation sync, validation, and non-claim boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Reader Token Span Admission
-r[scheme-logic.reader-token-span] The system MUST define finite Scheme reader token and span envelopes whose token byte ranges, datum ranges, and AST child ranges are bounded by the declared source length and parent spans.
+r[scheme-logic.reader-token-span]
+The system MUST define finite Scheme reader token and span envelopes whose token byte ranges, datum ranges, and AST child ranges are bounded by the declared source length and parent spans.
 
 #### Scenario: Valid token spans are admitted
 r[scheme-logic.reader-token-span.valid]
@@ -22,7 +23,8 @@ r[scheme-logic.reader-token-span.out-of-bounds]
 - THEN the candidate is rejected with deterministic span-bound metadata.
 
 ### Requirement: Reader Datum Structure Admission
-r[scheme-logic.reader-datum-structure] The system MUST define delimiter, quote, quasiquote, unquote, splice, vector opener, bytevector opener, and datum-comment structure predicates for the supported finite Scheme reader subset.
+r[scheme-logic.reader-datum-structure]
+The system MUST define delimiter, quote, quasiquote, unquote, splice, vector opener, bytevector opener, and datum-comment structure predicates for the supported finite Scheme reader subset.
 
 #### Scenario: Balanced delimiters admit nested data
 r[scheme-logic.reader-datum-structure.balanced]
@@ -43,7 +45,8 @@ r[scheme-logic.reader-datum-structure.unmatched]
 - THEN the candidate is rejected with deterministic delimiter metadata.
 
 ### Requirement: Scheme Interning State
-r[scheme-logic.interning] The system MUST model symbol and literal interning as explicit finite state whose keys resolve to declared values, whose values map to stable keys, and whose intern/resolve roundtrips reject malformed tables instead of depending on global runtime state.
+r[scheme-logic.interning]
+The system MUST model symbol and literal interning as explicit finite state whose keys resolve to declared values, whose values map to stable keys, and whose intern/resolve roundtrips reject malformed tables instead of depending on global runtime state.
 
 #### Scenario: Intern and resolve roundtrip
 r[scheme-logic.interning.roundtrip]
@@ -64,7 +67,8 @@ r[scheme-logic.interning.dangling-key]
 - THEN the table is rejected with deterministic malformed-interner metadata.
 
 ### Requirement: Scheme Module Graph Admission
-r[scheme-logic.module-graph] The system MUST define finite `require`/`provide` graph admission for modules, export sets, import edges, transitive closure metadata, duplicate export rejection, and no unprovided-name leakage.
+r[scheme-logic.module-graph]
+The system MUST define finite `require`/`provide` graph admission for modules, export sets, import edges, transitive closure metadata, duplicate export rejection, and no unprovided-name leakage.
 
 #### Scenario: Import closure resolves provided names
 r[scheme-logic.module-graph.provided]
@@ -91,7 +95,8 @@ r[scheme-logic.module-graph.bounded-closure]
 - THEN the traversal must use explicit fuel or visited-set metadata and must reject under-budget closure claims.
 
 ### Requirement: Scheme Contract and Blame Metadata
-r[scheme-logic.contract-blame] The system MUST define finite contract descriptors for flat contracts, function contracts, arity checks, wrapper composition, and blame polarity without executing user predicates or claiming full higher-order language semantics.
+r[scheme-logic.contract-blame]
+The system MUST define finite contract descriptors for flat contracts, function contracts, arity checks, wrapper composition, and blame polarity without executing user predicates or claiming full higher-order language semantics.
 
 #### Scenario: Function contract arity is admitted
 r[scheme-logic.contract-blame.arity]
@@ -112,7 +117,8 @@ r[scheme-logic.contract-blame.arity-mismatch]
 - THEN the wrapper is rejected with arity-mismatch metadata.
 
 ### Requirement: Constant Pool and Bytecode Safety
-r[scheme-logic.bytecode-safety] The system MUST define constant-pool and bytecode admission predicates for constant deduplication, rollback prefix preservation, operand bounds, stack-effect summaries, local and capture slot bounds, and call arity checks.
+r[scheme-logic.bytecode-safety]
+The system MUST define constant-pool and bytecode admission predicates for constant deduplication, rollback prefix preservation, operand bounds, stack-effect summaries, local and capture slot bounds, and call arity checks.
 
 #### Scenario: Constant deduplication preserves lookup
 r[scheme-logic.bytecode-safety.constant-dedup]
@@ -139,7 +145,8 @@ r[scheme-logic.bytecode-safety.operand-bounds]
 - THEN the bytecode sequence is rejected with operand-bound metadata.
 
 ### Requirement: Scheme Value Graph Traversal
-r[scheme-logic.value-graph] The system MUST model Scheme pair, vector, symbol, literal, and procedure-placeholder values as finite graph nodes with explicit edges, well-formed node references, and cycle-safe traversal metadata.
+r[scheme-logic.value-graph]
+The system MUST model Scheme pair, vector, symbol, literal, and procedure-placeholder values as finite graph nodes with explicit edges, well-formed node references, and cycle-safe traversal metadata.
 
 #### Scenario: Acyclic value graph traversal terminates
 r[scheme-logic.value-graph.acyclic]
@@ -160,7 +167,8 @@ r[scheme-logic.value-graph.dangling-edge]
 - THEN the graph is rejected with dangling-edge metadata.
 
 ### Requirement: Scheme Collections and Bytevectors
-r[scheme-logic.collections-bytevectors] The system MUST define Scheme-specific list, vector, immutable update, hash-map/hash-set envelope, and bytevector predicates that complement Trellis generic collections with Scheme value-shape requirements.
+r[scheme-logic.collections-bytevectors]
+The system MUST define Scheme-specific list, vector, immutable update, hash-map/hash-set envelope, and bytevector predicates that complement Trellis generic collections with Scheme value-shape requirements.
 
 #### Scenario: Proper list shape is admitted
 r[scheme-logic.collections-bytevectors.proper-list]
@@ -187,7 +195,8 @@ r[scheme-logic.collections-bytevectors.improper-list]
 - THEN the value is rejected with improper-list metadata.
 
 ### Requirement: Scheme Logic Positive Evidence
-r[scheme-logic.evidence.positive] The implementation MUST include positive evidence for reader spans, interning roundtrips, provided module imports, contract blame polarity, bytecode safety, cycle-safe traversal, and collection/bytevector preservation.
+r[scheme-logic.evidence.positive]
+The implementation MUST include positive evidence for reader spans, interning roundtrips, provided module imports, contract blame polarity, bytecode safety, cycle-safe traversal, and collection/bytevector preservation.
 
 #### Scenario: Positive fixtures cover accepted behavior
 r[scheme-logic.evidence.positive.fixtures]
@@ -196,7 +205,8 @@ r[scheme-logic.evidence.positive.fixtures]
 - THEN they cover accepted examples for every public scheme-logic primitive family.
 
 ### Requirement: Scheme Logic Negative Evidence
-r[scheme-logic.evidence.negative] The implementation MUST include negative evidence for unmatched delimiters, invalid spans, dangling intern keys, duplicate exports, unprovided imports, arity mismatch, bytecode operand and stack failures, under-budget cyclic traversal, improper lists, and invalid bytevector elements.
+r[scheme-logic.evidence.negative]
+The implementation MUST include negative evidence for unmatched delimiters, invalid spans, dangling intern keys, duplicate exports, unprovided imports, arity mismatch, bytecode operand and stack failures, under-budget cyclic traversal, improper lists, and invalid bytevector elements.
 
 #### Scenario: Negative fixtures cover failure modes
 r[scheme-logic.evidence.negative.fixtures]
@@ -205,7 +215,8 @@ r[scheme-logic.evidence.negative.fixtures]
 - THEN they reject every declared failure mode with deterministic metadata rather than panicking, silently accepting malformed input, or exporting an unsupported proof claim.
 
 ### Requirement: Scheme Logic Documentation Sync
-r[scheme-logic.docs] The implementation MUST update Trellis `docs/requirements.md`, README/module-catalog text, and accepted Cairn spec documentation for any public scheme-logic module or requirement IDs that land in source.
+r[scheme-logic.docs]
+The implementation MUST update Trellis `docs/requirements.md`, README/module-catalog text, and accepted Cairn spec documentation for any public scheme-logic module or requirement IDs that land in source.
 
 #### Scenario: Requirement IDs are traceable
 r[scheme-logic.docs.traceable]
@@ -214,7 +225,8 @@ r[scheme-logic.docs.traceable]
 - THEN matching requirement IDs appear in `docs/requirements.md`, source annotations, tests, and accepted Cairn spec text.
 
 ### Requirement: Scheme Logic Validation Evidence
-r[scheme-logic.final-validation] The change MUST capture focused validation evidence for Cargo tests, Verus verification as needed for new modules or the full library, Tracey uncovered/untested checks, and Cairn validation/gates before archive.
+r[scheme-logic.final-validation]
+The change MUST capture focused validation evidence for Cargo tests, Verus verification as needed for new modules or the full library, Tracey uncovered/untested checks, and Cairn validation/gates before archive.
 
 #### Scenario: Final validation names commands and outcomes
 r[scheme-logic.final-validation.evidence]
@@ -223,7 +235,8 @@ r[scheme-logic.final-validation.evidence]
 - THEN it names the commands run, their outcomes, and any scoped limitations or blockers.
 
 ### Requirement: Scheme Logic Non-Claim Boundary
-r[scheme-logic.non-claims] The scheme-logic primitive MUST state that it does not prove Steel compatibility, complete Scheme standard compliance, parser completeness, macro-expander soundness, GC correctness, JIT correctness, FFI safety, runtime module loading, filesystem or network behavior, or whole-interpreter correctness.
+r[scheme-logic.non-claims]
+The scheme-logic primitive MUST state that it does not prove Steel compatibility, complete Scheme standard compliance, parser completeness, macro-expander soundness, GC correctness, JIT correctness, FFI safety, runtime module loading, filesystem or network behavior, or whole-interpreter correctness.
 
 #### Scenario: Steel reference does not become a compatibility claim
 r[scheme-logic.non-claims.steel-boundary]

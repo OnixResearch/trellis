@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `621` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `622` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -462,6 +462,7 @@ Summary: `621` public modules, `588` requirement-covered modules, `14` example-b
 | `safe_reclamation_domain` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `2`, requirements mentions: `0` | — | [`src/safe_reclamation_domain.rs`](../src/safe_reclamation_domain.rs) |
 | `safe_snapshot_replication` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `4`, requirements mentions: `0` | — | [`src/safe_snapshot_replication.rs`](../src/safe_snapshot_replication.rs) |
 | `scheduling_calendar` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `8`, verify: `8`, requirements mentions: `0` | — | [`src/scheduling_calendar.rs`](../src/scheduling_calendar.rs) |
+| `scheme_logic` | `partial-requirement-coverage`, `runtime-helper`, `test-backed` | — | impl: `7`, verify: `0`, requirements mentions: `0` | — | [`src/scheme_logic/identity.rs`](../src/scheme_logic/identity.rs) |
 | `scope` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `28`, requirements mentions: `10` | — | [`src/scope.rs`](../src/scope.rs) |
 | `segregated_free` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `14`, requirements mentions: `0` | — | [`src/segregated_free.rs`](../src/segregated_free.rs) |
 | `sel4_asid` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `10`, verify: `31`, requirements mentions: `0` | — | [`src/sel4_asid.rs`](../src/sel4_asid.rs) |

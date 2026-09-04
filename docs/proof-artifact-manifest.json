@@ -119,6 +119,299 @@
       ]
     },
     {
+      "primitive_id": "trellis.scheme.reader.structure",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "admit_reader"
+      ],
+      "requirement_ids": [
+        "scheme-logic.reader-token-span",
+        "scheme-logic.reader-datum-structure"
+      ],
+      "source": {
+        "path": "src/scheme_logic/syntax.rs",
+        "blake3": "7b1b8f3c8c63109888192724e22009f465b1411263460c3027459c4b363f4b37",
+        "bytes": 9914
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/reader.rs",
+        "blake3": "efced6c9617c65d9889ca600abb76d7153217b85b6ab221841d058f66d29a3eb",
+        "bytes": 2226
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove parser completeness or Scheme syntax conformance"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.interning.state",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "admit_interner",
+        "intern",
+        "resolve"
+      ],
+      "requirement_ids": [
+        "scheme-logic.interning"
+      ],
+      "source": {
+        "path": "src/scheme_logic/registry.rs",
+        "blake3": "dba102751ed38bd164da1bdedf53e9d6c7819ddbc1852f3860d84c15a14d1d3b",
+        "bytes": 4701
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/registry.rs",
+        "blake3": "89ecbe65247fe2b6d84bfb0ed8fa2b323b248d29f108de333b6e38d3a4b470c9",
+        "bytes": 1968
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove global cache, lock, or hash-table behavior"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.module.graph",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "admit_modules",
+        "import_closure"
+      ],
+      "requirement_ids": [
+        "scheme-logic.module-graph"
+      ],
+      "source": {
+        "path": "src/scheme_logic/linkage.rs",
+        "blake3": "364a8dcedf7f638f23a64de61c73f8ea7586c8036694f9dea3f5cdacf8b5975a",
+        "bytes": 5437
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/modules.rs",
+        "blake3": "1e28cd326bb4823dcc7aef30041c433d5bd087f35052226b8dc7b1df0aae1066",
+        "bytes": 2087
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove runtime module loading or filesystem behavior"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.contract.blame",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "admit_wrapper",
+        "admit_blame",
+        "compose_wrappers"
+      ],
+      "requirement_ids": [
+        "scheme-logic.contract-blame"
+      ],
+      "source": {
+        "path": "src/scheme_logic/boundary.rs",
+        "blake3": "1f051ca2bd5e2be211cc02c36787729f710c074252a79c7e3cd3b2a5f2b1c110",
+        "bytes": 4464
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/contracts.rs",
+        "blake3": "84f59363c536f18954ecccf09c52613cea3585ae569847a3ca4e5897a21092e8",
+        "bytes": 2366
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not execute predicates or prove higher-order language semantics"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.bytecode.safety",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "add_or_get_constant",
+        "rollback_pool",
+        "admit_code"
+      ],
+      "requirement_ids": [
+        "scheme-logic.bytecode-safety"
+      ],
+      "source": {
+        "path": "src/scheme_logic/vm.rs",
+        "blake3": "9e17f4481da50d28c257cc5b817c58d9de16f14826a49971861d3aec85ca351b",
+        "bytes": 8771
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/bytecode.rs",
+        "blake3": "5df0428c625205ea77137491a48b1908bc693939083a763bbc7af9a494474ffa",
+        "bytes": 2465
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove virtual-machine execution correctness"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.value.graph",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "admit_values",
+        "traverse_values"
+      ],
+      "requirement_ids": [
+        "scheme-logic.value-graph",
+        "scheme-logic.non-claims"
+      ],
+      "source": {
+        "path": "src/scheme_logic/heap.rs",
+        "blake3": "8d0321ff5e609c1280a3449171476eb3055777defda0f97e60431dccf61d2c4e",
+        "bytes": 6465
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/collections.rs",
+        "blake3": "03333873ccfeeb8927115964fb6c1903c10dfb9b6a9f717bcb1ba4f18072d45a",
+        "bytes": 2747
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove allocation, garbage collection, display, or runtime equality correctness"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.value.equality",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "compare_values"
+      ],
+      "requirement_ids": [
+        "scheme-logic.value-graph"
+      ],
+      "source": {
+        "path": "src/scheme_logic/heap/equivalence.rs",
+        "blake3": "13113e24c91eb03a0dc7b272b0f32863f476c1510a880277c906627a25721988",
+        "bytes": 4074
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/collections.rs",
+        "blake3": "03333873ccfeeb8927115964fb6c1903c10dfb9b6a9f717bcb1ba4f18072d45a",
+        "bytes": 2747
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove runtime equality or pointer identity"
+      ]
+    },
+    {
+      "primitive_id": "trellis.scheme.collection.shapes",
+      "module_path": "src/scheme_logic/identity.rs",
+      "public_api": [
+        "proper_list_length",
+        "update_vector",
+        "admit_hash_shape",
+        "admit_bytevector"
+      ],
+      "requirement_ids": [
+        "scheme-logic.collections-bytevectors"
+      ],
+      "source": {
+        "path": "src/scheme_logic/heap/shapes.rs",
+        "blake3": "3c39382dec782f501d9fe96900b1cc593f0bfdfa7ce7cd47ecb1d4837bdbbd9c",
+        "bytes": 5212
+      },
+      "proof": {
+        "path": "src/scheme_logic/proofs/collections.rs",
+        "blake3": "03333873ccfeeb8927115964fb6c1903c10dfb9b6a9f717bcb1ba4f18072d45a",
+        "bytes": 2747
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove allocation, garbage collection, or hash implementation behavior"
+      ]
+    },
+    {
       "primitive_id": "trellis.wasm.runtime_bounds.execution",
       "module_path": "src/wasm_runtime_bounds/identity.rs",
       "public_api": [

@@ -1,0 +1,204 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "steel-scheme-logic-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "f9d27e4b6e66b87deb1e2b0849080c4e126fac8b362cdd0bbdb4005690e8b8ff",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "47a152c73106d4d0d9b90a37cc9b501f043b62d33b5ddce3e60db4770403ee3c",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "c19324cda04da61ebe43063101721d1b044562e5debfc3440e98394f83fff236",
+        "destination": ".cairn/specs/scheme-logic/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "eea4d65a4549a894791c4d32b17bfa48536649cef689e4b7a343f47bca4f4886",
+        "operations": [
+          {
+            "block_hash": "b330b2b16557d5dd4c67d4474981223e9f35a50dab5ea9e9360650f856273f18",
+            "heading": "### Requirement: Reader Token Span Admission",
+            "kind": "added",
+            "requirement_id": "scheme-logic.reader-token-span"
+          },
+          {
+            "block_hash": "a5869fe6a635103d7044f33cf8adeee2d5432724268ce308fadedfdc238e3526",
+            "heading": "### Requirement: Reader Datum Structure Admission",
+            "kind": "added",
+            "requirement_id": "scheme-logic.reader-datum-structure"
+          },
+          {
+            "block_hash": "731c0614ced910a8843fc04890dce96a02f52325adcef0fecb80bfee4fb171d9",
+            "heading": "### Requirement: Scheme Interning State",
+            "kind": "added",
+            "requirement_id": "scheme-logic.interning"
+          },
+          {
+            "block_hash": "850457f015b14f1c0e6a343005e5f8406ad68401d75319a08e370ad5003dbe9c",
+            "heading": "### Requirement: Scheme Module Graph Admission",
+            "kind": "added",
+            "requirement_id": "scheme-logic.module-graph"
+          },
+          {
+            "block_hash": "8e4471d8a3b4eca59ea7f20fd39bee42d782e9329f37be4899d860eadd41a13c",
+            "heading": "### Requirement: Scheme Contract and Blame Metadata",
+            "kind": "added",
+            "requirement_id": "scheme-logic.contract-blame"
+          },
+          {
+            "block_hash": "29af5cd35cc9e065e24db4b14edbf1797dd6d24b13fb574353a7514d2f30d3ec",
+            "heading": "### Requirement: Constant Pool and Bytecode Safety",
+            "kind": "added",
+            "requirement_id": "scheme-logic.bytecode-safety"
+          },
+          {
+            "block_hash": "f2863bac1c06ae9a1d6323c1d941c83c575c39f20214373d329884787fed6c62",
+            "heading": "### Requirement: Scheme Value Graph Traversal",
+            "kind": "added",
+            "requirement_id": "scheme-logic.value-graph"
+          },
+          {
+            "block_hash": "909c47793ce0308ec0ec40db9d862cf6cb46f97a67faa4f2a010dc98a94e3477",
+            "heading": "### Requirement: Scheme Collections and Bytevectors",
+            "kind": "added",
+            "requirement_id": "scheme-logic.collections-bytevectors"
+          },
+          {
+            "block_hash": "5d8a37029594ca7d7255318010e0f568cc2de08257da266982a0dc653fb820e9",
+            "heading": "### Requirement: Scheme Logic Positive Evidence",
+            "kind": "added",
+            "requirement_id": "scheme-logic.evidence.positive"
+          },
+          {
+            "block_hash": "8a2fea0efecd1186ad91f12004118bde5262e70943ea0cc1c61ee8dc46182ae7",
+            "heading": "### Requirement: Scheme Logic Negative Evidence",
+            "kind": "added",
+            "requirement_id": "scheme-logic.evidence.negative"
+          },
+          {
+            "block_hash": "c7072cd31b1553f6a186c13954210bf4c2a24d824a715bc08a11e2f97e99a2e3",
+            "heading": "### Requirement: Scheme Logic Documentation Sync",
+            "kind": "added",
+            "requirement_id": "scheme-logic.docs"
+          },
+          {
+            "block_hash": "3ede280c7323ca2195071b5dd94575bcf442b4d015750862141c93c170048988",
+            "heading": "### Requirement: Scheme Logic Validation Evidence",
+            "kind": "added",
+            "requirement_id": "scheme-logic.final-validation"
+          },
+          {
+            "block_hash": "9d16e43b92c42d598db8bed766a1ea3a5d425deb67946ad4b33ac10c79a89382",
+            "heading": "### Requirement: Scheme Logic Non-Claim Boundary",
+            "kind": "added",
+            "requirement_id": "scheme-logic.non-claims"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.reader-token-span",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.reader-datum-structure",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.interning",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.module-graph",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.contract-blame",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.bytecode-safety",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.value-graph",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.collections-bytevectors",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.evidence.positive",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.evidence.negative",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.docs",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.final-validation",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "scheme-logic.non-claims",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/steel-scheme-logic-primitives/specs/scheme-logic/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "8cdf0777a396f46ca0879e62c6dc4537990e24610e55a40442bc7a62e72105ff",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "bc793cbf2cfd239abedb27e42756a73522c15293f90fa222a1f53a0e5acd23b7"
+}

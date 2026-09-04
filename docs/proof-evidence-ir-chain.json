@@ -25,7 +25,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/arithmetic.rs",
@@ -64,10 +64,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "9a36879d3559e61f821b43006493d1a7c1ae8637961744ab7ae51f02c7bf72c1",
+      "chain_identity": "a73af89a54230ea0ff1141f32c33d5ffde0f036e1d91a6913224fc3e9f66812a",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "8620b18d2126b2eda13093e7559a02404106bbd9f38b4464637c22a36edca9ba",
+        "source_identity": "39771e874333e5fe47a68886727580af5088c18facc01b767e6b48c14c0574f1",
         "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
         "verifier_receipt_identity": "bb18e8c5366f2b6c64357f07abb8ef8324cb70b7cd0b517c711fc315711c6df3",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -120,7 +120,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/consensus_fast_path/agreement.rs",
@@ -231,10 +231,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "06736cef6411665712114f7cc29115ce8b1b2048268d55483b1af3d27c3f3b03",
+      "chain_identity": "bfca54cbccc7c09ea592851be428b4a6f5b9b18030031e3546f338504e3b6862",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "a40a4930fbefb77d190d803b568ffd98b5bde60f39d996e7b10ad286bd37c099",
+        "source_identity": "1add4bdbe498392830014dd4607d59e00aa14c7bd9aff56930bad9bebcc79d9b",
         "proof_ir_identity": "22003cf2ebc3ae4365554b4321d6b4c4b678995e7622d66c90e35d103b66c150",
         "verifier_receipt_identity": "0b8692535ff055407c7eb4c766062b86a022144dc24b43c2291d90982840947c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -250,6 +250,226 @@
           "consensus.fast-path.non-claims",
           "consensus.fast-path.quorum",
           "consensus.fast-path.recovery"
+        ],
+        "non_claims": [
+          "not compiler correctness",
+          "not release approval",
+          "not third-party conformance",
+          "not verifier soundness",
+          "not whole-program correctness"
+        ]
+      }
+    },
+    {
+      "scope": "module:scheme_logic",
+      "requirement_ids": [
+        "scheme-logic.bytecode-safety",
+        "scheme-logic.collections-bytevectors",
+        "scheme-logic.contract-blame",
+        "scheme-logic.docs",
+        "scheme-logic.evidence.negative",
+        "scheme-logic.evidence.positive",
+        "scheme-logic.final-validation",
+        "scheme-logic.interning",
+        "scheme-logic.module-graph",
+        "scheme-logic.non-claims",
+        "scheme-logic.reader-datum-structure",
+        "scheme-logic.reader-token-span",
+        "scheme-logic.value-graph"
+      ],
+      "property_ids": [
+        "scheme-logic.bytecode-safety",
+        "scheme-logic.collections-bytevectors",
+        "scheme-logic.contract-blame",
+        "scheme-logic.docs",
+        "scheme-logic.evidence.negative",
+        "scheme-logic.evidence.positive",
+        "scheme-logic.final-validation",
+        "scheme-logic.interning",
+        "scheme-logic.module-graph",
+        "scheme-logic.non-claims",
+        "scheme-logic.reader-datum-structure",
+        "scheme-logic.reader-token-span",
+        "scheme-logic.value-graph"
+      ],
+      "source_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
+        },
+        {
+          "path": "src/scheme_logic/boundary.rs",
+          "algorithm": "blake3",
+          "digest": "1f051ca2bd5e2be211cc02c36787729f710c074252a79c7e3cd3b2a5f2b1c110"
+        },
+        {
+          "path": "src/scheme_logic/heap.rs",
+          "algorithm": "blake3",
+          "digest": "8d0321ff5e609c1280a3449171476eb3055777defda0f97e60431dccf61d2c4e"
+        },
+        {
+          "path": "src/scheme_logic/heap/equivalence.rs",
+          "algorithm": "blake3",
+          "digest": "13113e24c91eb03a0dc7b272b0f32863f476c1510a880277c906627a25721988"
+        },
+        {
+          "path": "src/scheme_logic/heap/shapes.rs",
+          "algorithm": "blake3",
+          "digest": "3c39382dec782f501d9fe96900b1cc593f0bfdfa7ce7cd47ecb1d4837bdbbd9c"
+        },
+        {
+          "path": "src/scheme_logic/identity.rs",
+          "algorithm": "blake3",
+          "digest": "ce8f585d927ff644d2e239c11c28ca1f8d2d48517ebc798c57e802f900b930cb"
+        },
+        {
+          "path": "src/scheme_logic/linkage.rs",
+          "algorithm": "blake3",
+          "digest": "364a8dcedf7f638f23a64de61c73f8ea7586c8036694f9dea3f5cdacf8b5975a"
+        },
+        {
+          "path": "src/scheme_logic/proofs/bytecode.rs",
+          "algorithm": "blake3",
+          "digest": "5df0428c625205ea77137491a48b1908bc693939083a763bbc7af9a494474ffa"
+        },
+        {
+          "path": "src/scheme_logic/proofs/collections.rs",
+          "algorithm": "blake3",
+          "digest": "03333873ccfeeb8927115964fb6c1903c10dfb9b6a9f717bcb1ba4f18072d45a"
+        },
+        {
+          "path": "src/scheme_logic/proofs/contracts.rs",
+          "algorithm": "blake3",
+          "digest": "84f59363c536f18954ecccf09c52613cea3585ae569847a3ca4e5897a21092e8"
+        },
+        {
+          "path": "src/scheme_logic/proofs/mod.rs",
+          "algorithm": "blake3",
+          "digest": "43e3ace8d42a68c6111110f67915d472712e0c6aa431e7c0931dfcd68245b3e2"
+        },
+        {
+          "path": "src/scheme_logic/proofs/modules.rs",
+          "algorithm": "blake3",
+          "digest": "1e28cd326bb4823dcc7aef30041c433d5bd087f35052226b8dc7b1df0aae1066"
+        },
+        {
+          "path": "src/scheme_logic/proofs/reader.rs",
+          "algorithm": "blake3",
+          "digest": "efced6c9617c65d9889ca600abb76d7153217b85b6ab221841d058f66d29a3eb"
+        },
+        {
+          "path": "src/scheme_logic/proofs/registry.rs",
+          "algorithm": "blake3",
+          "digest": "89ecbe65247fe2b6d84bfb0ed8fa2b323b248d29f108de333b6e38d3a4b470c9"
+        },
+        {
+          "path": "src/scheme_logic/registry.rs",
+          "algorithm": "blake3",
+          "digest": "dba102751ed38bd164da1bdedf53e9d6c7819ddbc1852f3860d84c15a14d1d3b"
+        },
+        {
+          "path": "src/scheme_logic/syntax.rs",
+          "algorithm": "blake3",
+          "digest": "7b1b8f3c8c63109888192724e22009f465b1411263460c3027459c4b363f4b37"
+        },
+        {
+          "path": "src/scheme_logic/tests/mod.rs",
+          "algorithm": "blake3",
+          "digest": "911d3c9e2275bb3570fd18f0ad576d7e9d605b07d4fc9eef94f0cbfdcc9e4b0f"
+        },
+        {
+          "path": "src/scheme_logic/tests/negative.rs",
+          "algorithm": "blake3",
+          "digest": "d1f5889d4b0e67240c18c697e10b151d9d2aa556e2bdf88b822093e16b3de293"
+        },
+        {
+          "path": "src/scheme_logic/tests/positive.rs",
+          "algorithm": "blake3",
+          "digest": "232051f757b2cfb17af7bf96d3e3a9fed81f68e21d54ef2292f3a88f072c53a0"
+        },
+        {
+          "path": "src/scheme_logic/tests/property.rs",
+          "algorithm": "blake3",
+          "digest": "7bf9b19e114516281763112c52c535e541b43f40b4107d28430ff82bf1ef020c"
+        },
+        {
+          "path": "src/scheme_logic/vm.rs",
+          "algorithm": "blake3",
+          "digest": "9e17f4481da50d28c257cc5b817c58d9de16f14826a49971861d3aec85ca351b"
+        }
+      ],
+      "proof_ir_identity": "b2d716196295f969be6fa846ee815d1cb6a283635b6bf30b6386a3b6e04d6bab",
+      "verifier_receipt": {
+        "verifier_identity": "verus",
+        "toolchain_identity": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+        "solver_identity": "z3 (declared solver of the pinned Verus toolchain; no version claim)",
+        "command_identity": "33c5e05a51694aff6da5f286e521ed2a78c665a609c604ac434bd1622eaa642d",
+        "input_roots": [
+          "docs/requirements.md",
+          "src/scheme_logic/boundary.rs",
+          "src/scheme_logic/heap.rs",
+          "src/scheme_logic/heap/equivalence.rs",
+          "src/scheme_logic/heap/shapes.rs",
+          "src/scheme_logic/identity.rs",
+          "src/scheme_logic/linkage.rs",
+          "src/scheme_logic/proofs/bytecode.rs",
+          "src/scheme_logic/proofs/collections.rs",
+          "src/scheme_logic/proofs/contracts.rs",
+          "src/scheme_logic/proofs/mod.rs",
+          "src/scheme_logic/proofs/modules.rs",
+          "src/scheme_logic/proofs/reader.rs",
+          "src/scheme_logic/proofs/registry.rs",
+          "src/scheme_logic/registry.rs",
+          "src/scheme_logic/syntax.rs",
+          "src/scheme_logic/tests/mod.rs",
+          "src/scheme_logic/tests/negative.rs",
+          "src/scheme_logic/tests/positive.rs",
+          "src/scheme_logic/tests/property.rs",
+          "src/scheme_logic/vm.rs"
+        ],
+        "result_identity": "56ff47b5dc9da30a9690745fe04b78fd4d9f1da6b7350f4e95830442f46a2b0c",
+        "result_status": "passed"
+      },
+      "assumptions": {
+        "trusted_boundaries": [],
+        "external_bodies": [],
+        "proof_gaps": [],
+        "dependencies": []
+      },
+      "status": "passed",
+      "recorded_only": false,
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not compiler correctness",
+        "not release approval",
+        "not third-party conformance",
+        "not verifier soundness",
+        "not whole-program correctness"
+      ],
+      "chain_identity": "8c4abbd8e41610890072f00d373c36338eb52733284fb1942fc98f8e2582e780",
+      "handoff": {
+        "schema": "trellis-proof-evidence-kamacite-handoff/v1",
+        "source_identity": "5b07dbb9255d8cca4e01b493c45f2d6568de4177202be16f6f7da8b52cac5239",
+        "proof_ir_identity": "b2d716196295f969be6fa846ee815d1cb6a283635b6bf30b6386a3b6e04d6bab",
+        "verifier_receipt_identity": "7df89f545e48cc269c74353c34f44426b2d8019d9a6295c9f89ca8e805bbd5d9",
+        "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
+        "requirement_ids": [
+          "scheme-logic.bytecode-safety",
+          "scheme-logic.collections-bytevectors",
+          "scheme-logic.contract-blame",
+          "scheme-logic.docs",
+          "scheme-logic.evidence.negative",
+          "scheme-logic.evidence.positive",
+          "scheme-logic.final-validation",
+          "scheme-logic.interning",
+          "scheme-logic.module-graph",
+          "scheme-logic.non-claims",
+          "scheme-logic.reader-datum-structure",
+          "scheme-logic.reader-token-span",
+          "scheme-logic.value-graph"
         ],
         "non_claims": [
           "not compiler correctness",
@@ -292,7 +512,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/wasm_runtime_bounds/binding.rs",
@@ -409,10 +629,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "72f4605f16bb54c09ff183ead158be2d80d7399dde02cdc07b8cdfe76dd40849",
+      "chain_identity": "b80c3c376474c045b21bdf73ce5d516dee75fa1b47d7de36bb3839098b487b3e",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "393795b446aeb395661941cab3aaea1f8d41ce0bd300e28cc5e131423275eb75",
+        "source_identity": "8df137bd534e7cbb4f32d383a4cb5b95eb06b2ff3df60ba30d8c09f631b7e9d2",
         "proof_ir_identity": "f8649159529f5a7e8df4435bb35ab1e618956e532f4e1b052c1c1feccaa051e6",
         "verifier_receipt_identity": "cbb767f559dbe2f8105ce861efd8fb048562699e7d2b1c6bd0614fa5efb7e8e7",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -469,7 +689,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -516,10 +736,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "3bd67d6a4062959c5949449b5d501e1c92759072982d9e6781ca1579dd689a98",
+      "chain_identity": "0cc2d7182c60f3a6e86d6eda6106b9921aa229615119720205587545070c1c0e",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "709cda7b58752c4e2d5bc11c082ef6e868b138e6a9b3d40e0a2826fdd4569172",
+        "source_identity": "b7cb91a0254442a06403daaa653ca3c71c8901688f1d737d36c6828e28884151",
         "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
         "verifier_receipt_identity": "da1af17a0e89acfbc81a89ccc8acb272485e76a7af8c22d0ed4a8903ad3dbae2",
         "assumption_identity": "f68cf69af180c7783524221814f303141011209ae4af2b8c54cd18145da91a92",
@@ -556,7 +776,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "79fb8ff0ade2c20aa88fc0dd6b169540046a069fbffae6be069284cb45dc13af"
+          "digest": "f66b64589664fa743a92f6fd8ba330e74252054020975bdbf40c30692b7cb7d0"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",
@@ -595,10 +815,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "47ddad23107d7a93c5641d9571dc40578812f52ac6840eb27c03dcd6ab453c42",
+      "chain_identity": "2b34247edacab6a04adece08d0a0d00d640c5c3e307afef750cac31449b14556",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "b9094f85f2104a5edf9d3891854a34218af7293931e71c6e87a2782488220221",
+        "source_identity": "3169a7388a19fd53642f5bbf38c9fb36ab9455d5e8e0e7cba2a7c842be9d0411",
         "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
         "verifier_receipt_identity": "ff7b73b93a7f78b7a825769c65b95e9d10272d44420a6c3bb629b0cf2a5cec3c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
