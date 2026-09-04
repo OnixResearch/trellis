@@ -32,12 +32,130 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "src/arithmetic.rs",
           "algorithm": "blake3",
           "digest": "3064658eb9d27a1c1c423abbad9e9c8878756594f07a1d01eeb6b3efef4fa8a4"
+        }
+      ],
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not release approval",
+        "not whole-program correctness",
+        "not third-party conformance"
+      ]
+    },
+    {
+      "scope": "module:consensus_fast_path",
+      "evidence_tier": "local-proof-summary",
+      "requirement_ids": [
+        "consensus.fast-path.base-order",
+        "consensus.fast-path.boundary",
+        "consensus.fast-path.certificate",
+        "consensus.fast-path.conflict",
+        "consensus.fast-path.dual-path",
+        "consensus.fast-path.evidence",
+        "consensus.fast-path.fixtures",
+        "consensus.fast-path.linearization",
+        "consensus.fast-path.non-claims",
+        "consensus.fast-path.quorum",
+        "consensus.fast-path.recovery"
+      ],
+      "source_paths": [
+        "src/consensus_fast_path/agreement.rs",
+        "src/consensus_fast_path/barrier.rs",
+        "src/consensus_fast_path/identity.rs",
+        "src/consensus_fast_path/membership.rs",
+        "src/consensus_fast_path/proofs.rs",
+        "src/consensus_fast_path/proofs/arithmetic.rs",
+        "src/consensus_fast_path/proofs/composition.rs",
+        "src/consensus_fast_path/tests.rs",
+        "src/consensus_fast_path/tests/negative.rs",
+        "src/consensus_fast_path/tests/positive.rs",
+        "src/consensus_fast_path/tests/property.rs",
+        "src/consensus_fast_path/vocabulary.rs",
+        "src/consensus_fast_path/witness.rs"
+      ],
+      "proof_command": "./scripts/verus.sh src/lib.rs",
+      "verifier_toolchain": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+      "proof_outcome": "verified",
+      "tracey_coverage": "covered",
+      "proof_gap_references": [],
+      "maturity_facts": [],
+      "content_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+        },
+        {
+          "path": "src/consensus_fast_path/agreement.rs",
+          "algorithm": "blake3",
+          "digest": "da88c1a81487199f82b984bb88f07dde225c1445fff50f06c7687a28be2c442e"
+        },
+        {
+          "path": "src/consensus_fast_path/barrier.rs",
+          "algorithm": "blake3",
+          "digest": "21db4516ea2e6adc861f33df406bc642d87bc23f7ba8684680e1fb01b6c8c6b4"
+        },
+        {
+          "path": "src/consensus_fast_path/identity.rs",
+          "algorithm": "blake3",
+          "digest": "29daf61ccddfa3ed454b937fb383b5b64e21f50d2e5e8181c2ed04d9e396cf35"
+        },
+        {
+          "path": "src/consensus_fast_path/membership.rs",
+          "algorithm": "blake3",
+          "digest": "f36d3e271126d32454a5df8db6090f9d2e629484a55ef3bb93eb084b9e954aae"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs.rs",
+          "algorithm": "blake3",
+          "digest": "5fce966c69f3155d8251ed9a3105ee9782724a6835268a1e66b8f67d359df89a"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs/arithmetic.rs",
+          "algorithm": "blake3",
+          "digest": "5120c6b476d17f94a50b8ed32c15166e253c05ec082cb50b08ed56651089b207"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs/composition.rs",
+          "algorithm": "blake3",
+          "digest": "146fd7206a30d13337e20937eee808efad4ad301b4964f6a08eab17225babe31"
+        },
+        {
+          "path": "src/consensus_fast_path/tests.rs",
+          "algorithm": "blake3",
+          "digest": "e65123aa7c22bcb0735d700ce141f8a4e31dcc43b89bb28abad47f40bb6e7324"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/negative.rs",
+          "algorithm": "blake3",
+          "digest": "9ca7a48239eee81b4479e17725f58821e02196cbd3cdcaf279126660a4a90326"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/positive.rs",
+          "algorithm": "blake3",
+          "digest": "ce9d7f06f14ae99ca5c9cc69482fea22ccac36a997bf751cf570868ddccbd905"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/property.rs",
+          "algorithm": "blake3",
+          "digest": "c09cc4fa916b74760627a3da596c9092b6b3505cd6151abafbc3ae83d71cfc55"
+        },
+        {
+          "path": "src/consensus_fast_path/vocabulary.rs",
+          "algorithm": "blake3",
+          "digest": "597a1c52d009ced5cdd6b7f21e251df3e2fe72366d8a037bb89e3d4f1293ccd6"
+        },
+        {
+          "path": "src/consensus_fast_path/witness.rs",
+          "algorithm": "blake3",
+          "digest": "668c8adeaf2ee3191308030b8dafe9bd0af7bbedd62ceb424abacd181865eff9"
         }
       ],
       "claims": [
@@ -93,7 +211,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -132,7 +250,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",

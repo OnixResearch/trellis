@@ -44,6 +44,19 @@ Every property group entry has:
 **Property kinds**: `proof fn`, `proptest`
 **Count**: ~300
 
+## Consensus acceleration
+
+**Group**: consensus-fast-path
+**Source modules**: `src/consensus_fast_path/identity.rs`,
+`src/consensus_fast_path/vocabulary.rs`,
+`src/consensus_fast_path/membership.rs`,
+`src/consensus_fast_path/agreement.rs`,
+`src/consensus_fast_path/barrier.rs`,
+`src/consensus_fast_path/witness.rs`, and
+`src/consensus_fast_path/proofs.rs`
+**Property kinds**: `proof fn`, `proptest`, `#[test]`
+**Count**: 17 direct proofs, 5 randomized properties, and 24 unit tests
+
 ## Concurrency primitives
 
 **Group**: concurrency

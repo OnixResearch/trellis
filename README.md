@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**10992 Verus proofs · 5118 tests · 2204 requirements · 619 modules · 16 trusted/proof-gap boundaries**
+**11012 Verus proofs · 5147 tests · 2215 requirements · 620 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -551,6 +551,7 @@ validation commands captured in the change evidence.
 | `properties` | 200+ cross-module proofs: signal↔bitwise, permission independence, escrow↔balance, ledger↔transfer, fee conservation, election↔quorum, fencing↔CAS, vector clock↔CRDT, mpmc↔mpsc occupancy, spin↔CAS retry, seqlock↔memory order, RCU↔epoch reclaim, ref count↔hazard pointer, lock ordering↔ticket lock, barrier↔quorum, futex↔notify roundtrip, job state↔timeout↔result, CAS ABA↔pack roundtrip, concurrency protocol↔data structure composition, choreography projection/choice/step correspondence |
 | `concurrent_composition` | concurrency protocol ↔ data structure invariant chains across 7 groups |
 | `consensus_path` | end-to-end Raft read/write path composition proofs |
+| `consensus_fast_path` | crash-fault fast-quorum arithmetic, same-view certificates, ordering prerequisites, commutativity contract, recovery barrier, and dual-path convergence proofs |
 
 ### Additional public module coverage
 

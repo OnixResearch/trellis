@@ -74,6 +74,51 @@
       ]
     },
     {
+      "primitive_id": "trellis.consensus.fast_path.quorum",
+      "module_path": "src/consensus_fast_path/identity.rs",
+      "public_api": [
+        "cluster_size",
+        "majority",
+        "recovery_support",
+        "accelerated_quorum",
+        "accelerated_failure_tolerance",
+        "intersection_lower_bound",
+        "admit_certificate",
+        "recovery_visibility"
+      ],
+      "requirement_ids": [
+        "consensus.fast-path.quorum",
+        "consensus.fast-path.certificate"
+      ],
+      "source": {
+        "path": "src/consensus_fast_path/membership.rs",
+        "blake3": "f36d3e271126d32454a5df8db6090f9d2e629484a55ef3bb93eb084b9e954aae",
+        "bytes": 9106
+      },
+      "proof": {
+        "path": "src/consensus_fast_path/proofs/arithmetic.rs",
+        "blake3": "5120c6b476d17f94a50b8ed32c15166e253c05ec082cb50b08ed56651089b207",
+        "bytes": 6089
+      },
+      "verifier": {
+        "identity": "Verus via ./scripts/verus.sh",
+        "argv": [
+          "./scripts/verus.sh",
+          "src/lib.rs"
+        ]
+      },
+      "trusted_boundary": "verified_module",
+      "evidence_tier": "formal_proof",
+      "non_claims": [
+        "does not prove downstream integration correctness",
+        "does not prove consumer release eligibility",
+        "does not prove verifier soundness outside the declared proof boundary",
+        "does not prove Jetpack or downstream runtime correctness",
+        "does not prove network liveness, storage durability, or performance",
+        "does not prove arbitrary application conflict classifiers"
+      ]
+    },
+    {
       "primitive_id": "trellis.ucan.did.decode_did_key",
       "module_path": "src/ucan_did.rs",
       "public_api": [

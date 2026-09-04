@@ -299,6 +299,26 @@ fn record_for_scope(
 fn generate_bundle(facts: &RepoFacts) -> Result<ProofBundle, String> {
     let records = vec![
         record_for_scope("module:arithmetic", &["src/arithmetic.rs"], PROOF_COMMAND, facts)?,
+        record_for_scope(
+            "module:consensus_fast_path",
+            &[
+                "src/consensus_fast_path/agreement.rs",
+                "src/consensus_fast_path/barrier.rs",
+                "src/consensus_fast_path/identity.rs",
+                "src/consensus_fast_path/membership.rs",
+                "src/consensus_fast_path/proofs.rs",
+                "src/consensus_fast_path/proofs/arithmetic.rs",
+                "src/consensus_fast_path/proofs/composition.rs",
+                "src/consensus_fast_path/tests.rs",
+                "src/consensus_fast_path/tests/negative.rs",
+                "src/consensus_fast_path/tests/positive.rs",
+                "src/consensus_fast_path/tests/property.rs",
+                "src/consensus_fast_path/vocabulary.rs",
+                "src/consensus_fast_path/witness.rs",
+            ],
+            PROOF_COMMAND,
+            facts,
+        )?,
         record_for_scope("module:ucan_signature", &["src/ucan_signature.rs"], PROOF_COMMAND, facts)?,
         record_for_scope(
             "proof-example:basic_refinement",

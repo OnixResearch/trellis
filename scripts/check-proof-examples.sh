@@ -11,13 +11,10 @@ EXPECTED_NEGATIVE_PATTERN='postcondition|ensures|failed|error'
 mkdir -p "$ROOT/.pi/tmp" "$LOG_DIR"
 export TMPDIR="${TMPDIR:-$ROOT/.pi/tmp}"
 
-if [ -z "${VERUS_ROOT:-}" ] || [ ! -x "${VERUS_ROOT:-}/rust_verify" ]; then
-  for candidate in /nix/store/*verus*/rust_verify; do
-    if [ -x "$candidate" ]; then
-      export VERUS_ROOT="$(dirname "$candidate")"
-      break
-    fi
-  done
+if [ -z "${VERUS_ROOT:-}" ] \
+  || { [ ! -x "${VERUS_ROOT:-}/rust_verify" ] \
+    && [ ! -x "${VERUS_ROOT:-}/bin/octet-production-verus" ]; }; then
+  export VERUS_ROOT="$(nix build .#verus --no-link --print-out-paths)"
 fi
 
 require_doc_text() {

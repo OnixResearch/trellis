@@ -452,6 +452,9 @@ pub mod buddy;
 pub mod causal_order;
 pub mod concurrent_composition;
 pub mod consensus_path;
+/// Verified finite crash-fault consensus fast-path proofs.
+#[path = "consensus_fast_path/identity.rs"]
+pub mod consensus_fast_path;
 pub mod consistency_history;
 pub mod consistency_object;
 pub mod consistency_refinement;

@@ -7,6 +7,7 @@ This catalog exposes objective local facts for selected public invariant, well-f
 | Module | Requirement | Surface | Labels | Evidence | Trusted boundary adjacency | Source |
 |---|---|---|---|---|---|---|
 | `cache_hierarchy` | `hierarchy.inclusive-invariant` | `inclusive_invariant_spec` | state-invariant, preservation | proof+test | no | [`src/cache_hierarchy.rs`](../src/cache_hierarchy.rs) |
+| `consensus_fast_path` | `consensus.fast-path.quorum` | `finite_membership_intersection` | state-invariant, soundness | proof | no | [`src/consensus_fast_path/proofs/arithmetic.rs`](../src/consensus_fast_path/proofs/arithmetic.rs) |
 | `constant_folding` | `constfold.soundness` | `fixed_point_path_sound_top_free` | soundness, well-formedness | proof+test | no | [`src/constant_folding.rs`](../src/constant_folding.rs) |
 | `control_flow_graph` | `control-flow-graph.well-formed` | `well_formed_cfg_spec` | well-formedness | proof+test | no | [`src/control_flow_graph.rs`](../src/control_flow_graph.rs) |
 | `cryptoshedding` | `cryptoshedding.chain-recoverability` | `recoverable_spec` | state-invariant, soundness | proof+test | no | [`src/cryptoshedding.rs`](../src/cryptoshedding.rs) |

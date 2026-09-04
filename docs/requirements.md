@@ -6161,6 +6161,62 @@ An allowed durable-history append MUST preserve the same strictly
 increasing sequence-number shape used by journal-style append-only logs.
 Durable history prefix growth is journal-like.
 
+## Consensus Fast Path
+
+r[consensus.fast-path.boundary]
+Fast-path work MUST stay a finite crash-fault arithmetic, certificate, order,
+conflict, recovery, convergence, and history proof surface. External protocol,
+model-checking, benchmark, and capability overclaims MUST reject.
+
+r[consensus.fast-path.quorum]
+Named formulas over a fault budget MUST derive cluster size, majority, fast
+quorum, recovery support, and failure tolerance. Valid inputs MUST give a
+fast/recovery-majority intersection of at least the support threshold.
+
+r[consensus.fast-path.certificate]
+Certificates MUST have unique replica acknowledgements, one command, one
+same-view cohort, equal acceleration and base views at commit, the fast
+quorum, and every active proposer promise. Mixed or incomplete inputs reject.
+
+r[consensus.fast-path.base-order]
+Receive-to-propose, propose-to-log, and log-to-execute preservation MUST
+compose into the execution-order promise. Reordering bases MUST move or reject
+the fast acknowledgement boundary.
+
+r[consensus.fast-path.conflict]
+Non-conflict MUST preserve final state and each command's response under
+both orders. Conservative classifiers MUST treat unknown effects as
+conflicting; a false-negative witness MUST reject refinement.
+
+r[consensus.fast-path.recovery]
+Recovery MUST carry the accepted set across coordinator failure and MUST
+admit normal new-view commands only after the recovery or no-op marker
+commits. Recovered commands MUST precede conflicting new-view work.
+
+r[consensus.fast-path.dual-path]
+Fast and original convergence MUST apply one operation once and return the
+cached response while the dedup record remains retained and identities match.
+
+r[consensus.fast-path.linearization]
+A conflicting later invocation MUST NOT execute before a validly responded
+fast-committed operation. An adjacent non-conflicting swap MUST preserve state
+and responses only under the application commutativity contract.
+
+r[consensus.fast-path.fixtures]
+Positive and negative fixtures MUST cover both replica profiles, certificate
+gates, ordering capabilities, conflict classes, recovery transitions,
+convergence identities, and history boundaries.
+
+r[consensus.fast-path.evidence]
+Every exported theorem MUST bind its requirement, proof function, source,
+verifier, assumptions, tests, and non-claims before archive.
+
+r[consensus.fast-path.non-claims]
+The family MUST NOT claim external implementation correctness, arbitrary
+application classifier soundness, network liveness, storage durability,
+dynamic membership, Byzantine tolerance, transactions, performance, or whole-
+system linearizability.
+
 ## Consensus Path Composition
 
 r[consensus-path.append-preserves-invariant]

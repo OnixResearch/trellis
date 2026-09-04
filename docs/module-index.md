@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `619` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `620` public modules, `588` requirement-covered modules, `14` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -96,6 +96,7 @@ Summary: `619` public modules, `588` requirement-covered modules, `14` example-b
 | `config_override_precedence` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/config_override_precedence.rs`](../src/config_override_precedence.rs) |
 | `config_typed_value` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `1`, requirements mentions: `0` | — | [`src/config_typed_value.rs`](../src/config_typed_value.rs) |
 | `config_validation_decision` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `2`, verify: `1`, requirements mentions: `0` | — | [`src/config_validation_decision.rs`](../src/config_validation_decision.rs) |
+| `consensus_fast_path` | `partial-requirement-coverage`, `test-backed` | — | impl: `4`, verify: `0`, requirements mentions: `0` | — | [`src/consensus_fast_path/identity.rs`](../src/consensus_fast_path/identity.rs) |
 | `consensus_path` | `requirement-covered`, `test-backed` | — | impl: `9`, verify: `21`, requirements mentions: `0` | — | [`src/consensus_path.rs`](../src/consensus_path.rs) |
 | `consistency_history` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `6`, verify: `12`, requirements mentions: `0` | — | [`src/consistency_history.rs`](../src/consistency_history.rs) |
 | `consistency_object` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `3`, verify: `7`, requirements mentions: `0` | — | [`src/consistency_object.rs`](../src/consistency_object.rs) |
@@ -287,7 +288,7 @@ Summary: `619` public modules, `588` requirement-covered modules, `14` example-b
 | `lease_read` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `5`, verify: `18`, requirements mentions: `0` | — | [`src/lease_read.rs`](../src/lease_read.rs) |
 | `ledger` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `27`, requirements mentions: `9` | — | [`src/ledger.rs`](../src/ledger.rs) |
 | `left_right` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `12`, verify: `21`, requirements mentions: `0` | — | [`src/left_right.rs`](../src/left_right.rs) |
-| `linearizability` | `partial-requirement-coverage`, `spec-model`, `test-backed` | — | impl: `0`, verify: `16`, requirements mentions: `1` | — | [`src/linearizability.rs`](../src/linearizability.rs) |
+| `linearizability` | `partial-requirement-coverage`, `spec-model`, `test-backed` | — | impl: `0`, verify: `16`, requirements mentions: `2` | — | [`src/linearizability.rs`](../src/linearizability.rs) |
 | `linearizable_read_gate` | `composition-facade`, `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `1`, verify: `4`, requirements mentions: `0` | — | [`src/linearizable_read_gate.rs`](../src/linearizable_read_gate.rs) |
 | `liveness_analysis` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `13`, verify: `11`, requirements mentions: `0` | — | [`src/liveness_analysis.rs`](../src/liveness_analysis.rs) |
 | `lock_ordering` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `8`, verify: `35`, requirements mentions: `0` | — | [`src/lock_ordering.rs`](../src/lock_ordering.rs) |

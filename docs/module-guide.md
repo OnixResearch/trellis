@@ -25,7 +25,12 @@ or side-channel claims.
 Goal labels: quorum admission, leader safety, log admission.
 
 Start with [`quorum`](../src/quorum.rs) for majority thresholds and quorum
-intersection facts. For leader-election modeling, use [`election`](../src/election.rs),
+intersection facts. For a client-visible fast path beside a base consensus
+protocol, use
+[`consensus_fast_path`](../src/consensus_fast_path/identity.rs) for crash-fault
+fast-quorum arithmetic, same-view certificates, ordering prerequisites,
+commutativity, recovery ordering, and dual-path convergence. For
+leader-election modeling, use [`election`](../src/election.rs),
 [`vote_tally`](../src/vote_tally.rs), and [`election_safety_proof`](../src/election_safety_proof.rs).
 For Raft-shaped finite metadata admission, start with
 [`raft_consensus_core`](../src/raft_consensus_core.rs), then move to

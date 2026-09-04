@@ -162,6 +162,15 @@ const REQUIRED_ROWS: &[SeedRow] = &[
         trusted: false,
         source: "src/ghost_history.rs",
     },
+    SeedRow {
+        module: "consensus_fast_path",
+        requirement: "consensus.fast-path.quorum",
+        surface: "finite_membership_intersection",
+        labels: &["state-invariant", "soundness"],
+        evidence: "proof",
+        trusted: false,
+        source: "src/consensus_fast_path/proofs/arithmetic.rs",
+    },
 ];
 
 fn seed_to_row(seed: &SeedRow) -> CatalogRow {
@@ -282,19 +291,51 @@ fn source_cell(cell: &str) -> Result<String, String> {
     Ok(rest[..end].to_string())
 }
 
-fn declared_modules(lib_rs: &str) -> BTreeSet<String> {
-    let mut modules = BTreeSet::new();
+#[derive(Clone, Debug, Eq, PartialEq)]
+struct ModuleSources {
+    root: String,
+    component_dir: String,
+}
+
+fn path_attribute(trimmed: &str) -> Option<&str> {
+    trimmed.strip_prefix("#[path = \"")?.strip_suffix("\"]")
+}
+
+fn declared_module_sources(lib_rs: &str) -> BTreeMap<String, ModuleSources> {
+    let mut modules = BTreeMap::new();
+    let mut pending_path = None;
     for line in lib_rs.lines() {
-        let trimmed = line.trim_start();
+        let trimmed = line.trim();
+        if let Some(path) = path_attribute(trimmed) {
+            pending_path = Some(path.to_string());
+            continue;
+        }
         if !trimmed.starts_with("pub mod ") {
             continue;
         }
         let name = trimmed.trim_start_matches("pub mod ").trim_end_matches(';');
-        if is_ident(name) {
-            modules.insert(name.to_string());
+        if !is_ident(name) {
+            pending_path = None;
+            continue;
         }
+        let root = pending_path.take().map_or_else(|| format!("src/{name}.rs"), |path| format!("src/{path}"));
+        let component_dir = root.rsplit_once('/').map_or_else(
+            || format!("src/{name}/"),
+            |(parent, _)| {
+                if parent == "src" {
+                    format!("src/{name}/")
+                } else {
+                    format!("{parent}/")
+                }
+            },
+        );
+        modules.insert(name.to_string(), ModuleSources { root, component_dir });
     }
     modules
+}
+
+fn module_owns_source(module: &ModuleSources, source: &str) -> bool {
+    source == module.root || source.starts_with(&module.component_dir)
 }
 
 fn proof_gap_sources(proof_gaps: &str) -> BTreeSet<String> {
@@ -340,7 +381,7 @@ fn source_has_test_evidence(source: &str, requirement: &str) -> bool {
 }
 
 fn validate_rows(rows: Vec<CatalogRow>, inputs: &CatalogInputs, required: &[SeedRow]) -> CatalogCheck {
-    let modules = declared_modules(&inputs.lib_rs);
+    let modules = declared_module_sources(&inputs.lib_rs);
     let trusted_sources = proof_gap_sources(&inputs.proof_gaps);
     let all_requirement_text = format!("{}\n{}", inputs.requirements, inputs.specs);
     let mut errors = Vec::new();
@@ -365,12 +406,13 @@ fn validate_rows(rows: Vec<CatalogRow>, inputs: &CatalogInputs, required: &[Seed
                 row.module, row.surface
             ));
         }
-        if !modules.contains(&row.module) {
+        let Some(module_sources) = modules.get(&row.module) else {
             errors.push(format!("catalog row `{}` references a non-public module", row.module));
-        }
-        if row.source != format!("src/{}.rs", row.module) {
+            continue;
+        };
+        if !module_owns_source(module_sources, &row.source) {
             errors.push(format!(
-                "catalog row `{}` source `{}` does not match public module path",
+                "catalog row `{}` source `{}` is outside its public module tree",
                 row.module, row.source
             ));
         }
@@ -581,6 +623,33 @@ fn run_self_test() -> Result<(), String> {
     if !valid_check.errors.is_empty() {
         return Err(format!("valid fixture failed: {:?}", valid_check.errors));
     }
+
+    let nested_seed = SeedRow {
+        source: "src/example/proofs/arithmetic.rs",
+        ..seed
+    };
+    let mut nested_inputs = fixture_inputs(valid_source, "");
+    nested_inputs.lib_rs = "#[path = \"example/identity.rs\"]\npub mod example;\n".to_string();
+    nested_inputs.sources.clear();
+    nested_inputs.sources.insert(nested_seed.source.to_string(), valid_source.to_string());
+    let nested_check =
+        validate_catalog_text(&render_catalog(&[fixture_row(&nested_seed)]), &nested_inputs, &[nested_seed]);
+    if !nested_check.errors.is_empty() {
+        return Err(format!("explicit-path fixture failed: {:?}", nested_check.errors));
+    }
+
+    let outside_seed = SeedRow {
+        source: "src/example-other/proofs.rs",
+        ..seed
+    };
+    let mut outside_inputs = nested_inputs.clone();
+    outside_inputs.sources.clear();
+    outside_inputs.sources.insert(outside_seed.source.to_string(), valid_source.to_string());
+    expect_error_contains(
+        "explicit-path-source-escape",
+        validate_catalog_text(&render_catalog(&[fixture_row(&outside_seed)]), &outside_inputs, &[outside_seed]),
+        "outside its public module tree",
+    )?;
 
     let missing_catalog = format!("# Empty\n\n{GENERATED_MARKER}\n\n{TABLE_HEADER}\n{TABLE_SEPARATOR}\n");
     expect_error_contains("missing-row", validate_catalog_text(&missing_catalog, &valid_inputs, &[seed]), "no rows")?;

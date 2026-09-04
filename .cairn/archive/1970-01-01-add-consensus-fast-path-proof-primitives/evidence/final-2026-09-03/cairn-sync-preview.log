@@ -1,0 +1,171 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "add-consensus-fast-path-proof-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md"
+  ],
+  "dry_run": true,
+  "input_hash": "f66d0e93502bf246fd0640acfb43d4c66694f3223d18075f25ea3acef2d85b33",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": true,
+        "accepted_before_hash": "c2e3b2446d4dfae1b58319d54ddb248a9a44061465d3fc90aa4b65519eb307b7",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "9b78e2b891e4f35f7d7ffff102cc3e329e26099fc7f37df8dbd2cbf198b7910f",
+        "destination": ".cairn/specs/consensus/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "90e81a18a3fc9d34ddac28ad5accbf42cf5c5f603fa24159aa5c170a1c853162",
+        "operations": [
+          {
+            "block_hash": "1ffb5d133acf1176df6dd492e286b9a2ccc87b2d8923da81e0fb69718bba821b",
+            "heading": "### Requirement: Consensus fast-path proof boundary",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.boundary"
+          },
+          {
+            "block_hash": "d941e85424076a0e0f0adcc73693b75f07fc3b0d463da9c15fb710884c745fe2",
+            "heading": "### Requirement: Fast quorum arithmetic and recovery support",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.quorum"
+          },
+          {
+            "block_hash": "60edd964a31847b69069165e7775264639a86e0549189c627799abece9417e61",
+            "heading": "### Requirement: Fast certificates are unique, same-view, and proposer-complete",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.certificate"
+          },
+          {
+            "block_hash": "0694aafff3eeabd96f4690c2c397235101ff0d14602538823bcae6b36de0bbce",
+            "heading": "### Requirement: Base-engine ordering prerequisites compose",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.base-order"
+          },
+          {
+            "block_hash": "75145a7a4fa16f70fa9908cb5fc295cb6b20e34f9c234c57d8ad656e77d214d1",
+            "heading": "### Requirement: Non-conflict preserves state and responses",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.conflict"
+          },
+          {
+            "block_hash": "4a90b73458e2b78205fc020910160737f05d658a152d1e5f6141831867283d8c",
+            "heading": "### Requirement: View recovery is recoverable and ordered",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.recovery"
+          },
+          {
+            "block_hash": "277e674ae559508883d09598652e811cddf5b4123729e5ffe5a72a8c978a9914",
+            "heading": "### Requirement: Dual paths converge at most once",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.dual-path"
+          },
+          {
+            "block_hash": "1b469c93b3459d4cb64075405756f6dfc1522c034edcb67e2a4523c277731e7e",
+            "heading": "### Requirement: Fast-path composition preserves bounded real-time order",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.linearization"
+          },
+          {
+            "block_hash": "0b212eb3c5d6f40b6c5dc3eefaab0eab21b9de92a8bbd1c5b8e9a3e0ce454b1b",
+            "heading": "### Requirement: Fast-path proof evidence is explicit",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.evidence"
+          },
+          {
+            "block_hash": "b90194794319ef56669e3f5f107d276a80672a989b94f7f1618e9440a0a09df1",
+            "heading": "### Requirement: Fast-path proof fixtures cover success and failure",
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.fixtures"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.quorum",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.certificate",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.base-order",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.conflict",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.recovery",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.dual-path",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.linearization",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.evidence",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "consensus.fast-path.fixtures",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md"
+      }
+    ]
+  },
+  "mutated": false,
+  "mutation_manifest": null,
+  "plan_hash": "9201de33840d9f7a5c3c67e7353710dba2c32563d19a4610debb36a9c51a39d5",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "7143ed4db1aa09e37dc799384c12286441520cc8956a12374a5f91e8822119e9"
+}

@@ -1,0 +1,739 @@
+evaluating flake...
+checking flake output 'packages'...
+checking derivation packages.x86_64-linux.nickel-1-17-0...
+derivation evaluated to /nix/store/fnvv96qkzwb6rfxh7mxkxgx9akcjgqyv-nickel-lang-rev-fixup-1.17.0.drv
+checking derivation packages.x86_64-linux.default...
+derivation evaluated to /nix/store/rz1k30gm5ghv97xzc04h2gq3yl3x29h8-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/rz1k30gm5ghv97xzc04h2gq3yl3x29h8-verified-logic-0.2.0.drv
+checking derivation packages.x86_64-linux.verusfmt...
+derivation evaluated to /nix/store/x60zxgg7sk46fh50176glzcfgi8qmazv-octet-verusfmt-0.7.2.drv
+checking derivation packages.x86_64-linux.verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.octet-production-verus...
+derivation evaluated to /nix/store/qw5j6fmmmrk3q42kkyc339k42gc4rh4x-octet-production-verus-0.2026.05.17.e479cce.drv
+checking derivation packages.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation packages.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/kybbs37lmz2mdpwzvn6zj5va0i4ais8v-trellis-octet-verus-upgrade-trial.drv
+checking flake output 'checks'...
+checking derivation checks.x86_64-linux.octet...
+derivation evaluated to /nix/store/jmaby4bfsaaqnkdyib14glgcl4x8ikas-trellis-octet-baseline-check.drv
+checking derivation checks.x86_64-linux.verified-logic...
+derivation evaluated to /nix/store/rz1k30gm5ghv97xzc04h2gq3yl3x29h8-verified-logic-0.2.0.drv
+checking derivation checks.x86_64-linux.upstream-verus-corpus...
+derivation evaluated to /nix/store/ay1jvkqvkxx2zjq19x1l32k60d3mygdc-trellis-upstream-verus-corpus.drv
+checking derivation checks.x86_64-linux.verus-upgrade-trial...
+derivation evaluated to /nix/store/kybbs37lmz2mdpwzvn6zj5va0i4ais8v-trellis-octet-verus-upgrade-trial.drv
+checking derivation checks.x86_64-linux.nickel-cohort-exact...
+derivation evaluated to /nix/store/6w388yif3na0yk311mb8vymn2xhpybry-trellis-nickel-cohort-exact.drv
+checking derivation checks.x86_64-linux.nickel-toolchain-fixtures...
+derivation evaluated to /nix/store/j5f32cigrzcb3yarf46i9n4i1ma0cph0-trellis-nickel-toolchain-fixtures.drv
+checking derivation checks.x86_64-linux.nextest...
+derivation evaluated to /nix/store/1alp00w0g3wqlgn1pqi8k5q10vlgc94h-verified-logic-nextest-0.2.0.drv
+checking derivation checks.x86_64-linux.clippy...
+derivation evaluated to /nix/store/iqc73k33hvfn361v8rdrj66pb4wa7rd2-verified-logic-clippy-0.2.0.drv
+checking derivation checks.x86_64-linux.fmt...
+derivation evaluated to /nix/store/yzysvrlia0qix3hz3dlhq4b3rfflccjr-verified-logic-fmt-0.2.0.drv
+checking derivation checks.x86_64-linux.check-coverage...
+derivation evaluated to /nix/store/c1cw6fy5xcw1bgrigc1x0nmhjalc49z8-check-coverage.drv
+checking derivation checks.x86_64-linux.check-ensures...
+derivation evaluated to /nix/store/8r72jz7qgvqd1ckbslrd4q4wg45qx38d-check-ensures.drv
+checking derivation checks.x86_64-linux.checker-fixtures...
+derivation evaluated to /nix/store/ww58i48wglmxxagfy63z3zyhjgb2wasq-checker-fixtures.drv
+checking derivation checks.x86_64-linux.verification-policy...
+derivation evaluated to /nix/store/qjnh50aknw4dnbgyf3fg0zzmrrz3v9ip-verification-policy.drv
+checking derivation checks.x86_64-linux.consumer-release-profile...
+derivation evaluated to /nix/store/zvnjq639bs26ilzh9zrh7r98q34q5v1y-consumer-release-profile.drv
+checking derivation checks.x86_64-linux.readme-module-catalog...
+derivation evaluated to /nix/store/7dlxrc663y8qcw4n8imqz3qah1sani4p-readme-module-catalog.drv
+checking derivation checks.x86_64-linux.readme-metrics...
+derivation evaluated to /nix/store/p03b0rlskcdaxkzjs8x56h0qpka27x87-readme-metrics.drv
+checking derivation checks.x86_64-linux.proof-gap-inventory...
+derivation evaluated to /nix/store/ly0qx7p7ha8ngav1knfh3krmsm37ya3s-proof-gap-inventory.drv
+checking derivation checks.x86_64-linux.verusfmt-ratchet...
+derivation evaluated to /nix/store/ak5377nvdw70w1gx6qr1vds50j7wwj1y-trellis-verusfmt-ratchet.drv
+checking derivation checks.x86_64-linux.verus-proofs...
+derivation evaluated to /nix/store/wfqi9d9j7wlh2jz2jr8ara5499lmwkwl-verus-proofs.drv
+checking derivation checks.x86_64-linux.tracey-coverage...
+derivation evaluated to /nix/store/3zrzvpriz9vp31z5v0vgj9v5din65day-tracey-coverage.drv
+checking flake output 'devShells'...
+checking derivation devShells.x86_64-linux.default...
+derivation evaluated to /nix/store/jrvs8zfq2z5zaax169v8084448h0c3r5-nix-shell.drv
+running 33 flake checks...
+building '/nix/store/c1cw6fy5xcw1bgrigc1x0nmhjalc49z8-check-coverage.drv'...
+building '/nix/store/8r72jz7qgvqd1ckbslrd4q4wg45qx38d-check-ensures.drv'...
+building '/nix/store/ww58i48wglmxxagfy63z3zyhjgb2wasq-checker-fixtures.drv'...
+building '/nix/store/zvnjq639bs26ilzh9zrh7r98q34q5v1y-consumer-release-profile.drv'...
+copying path '/nix/store/bpqanfvd8dpg3yz8v9a9j37yrra37k6f-source' from 'http://100.100.103.95:5000'...
+warning: file 'nar/123kk1yqjc12xnx73xhs9gpl6n0dfkishj8vxhw9pj8bva3m4bzg.nar?hash=bpqanfvd8dpg3yz8v9a9j37yrra37k6f' does not exist in binary cache 'http://100.100.103.95:5000'
+copying path '/nix/store/bpqanfvd8dpg3yz8v9a9j37yrra37k6f-source' from 'http://100.100.103.95:5000'...
+warning: file 'nar/123kk1yqjc12xnx73xhs9gpl6n0dfkishj8vxhw9pj8bva3m4bzg.nar?hash=bpqanfvd8dpg3yz8v9a9j37yrra37k6f' does not exist in binary cache 'http://100.100.103.95:5000'
+check-coverage> 
+check-coverage> Checked 2730 pub fn declarations, 0 exempted
+check-coverage> ✓ all pub fns have r[impl] annotations
+building '/nix/store/2s6v9x9a7d20a99zs6rfyaba7rnjci6c-source.drv'...
+source> structuredAttrs is enabled
+source> 
+source> trying https://github.com/verus-lang/verified-node-replication/archive/eb8e27244a4f1b7714defe55aa495c6173a1c330.tar.gz
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+check-ensures> 
+check-ensures> Checked 2324 pub fn in verus! blocks, 0 exempted
+check-ensures> ✓ all verified pub fns have ensures clauses
+building '/nix/store/j5f32cigrzcb3yarf46i9n4i1ma0cph0-trellis-nickel-toolchain-fixtures.drv'...
+source>   0      0   0      0   0      0      0      0                              0
+source> 100 151.5k   0 151.5k   0      0 313.7k      0                              0
+source> unpacking source archive /build/eb8e27244a4f1b7714defe55aa495c6173a1c330.tar.gz
+building '/nix/store/p7slv2naq86539spvwi5g0s7his7mm5f-source.drv'...
+checker-fixtures> PASS coverage-valid
+checker-fixtures> PASS coverage-missing-impl
+checker-fixtures> PASS ensures-valid
+checker-fixtures> PASS ensures-missing-clause
+checker-fixtures> PASS iterative-valid
+checker-fixtures> PASS iterative-self-cycle
+checker-fixtures> PASS iterative-mutual-cycle
+checker-fixtures> PASS iterative-qualified-local-call
+checker-fixtures> checker fixture self-tests: PASS
+building '/nix/store/6b64dihsmkr3fncvq560ih24w6d493ma-source.drv'...
+source> structuredAttrs is enabled
+building '/nix/store/qjnh50aknw4dnbgyf3fg0zzmrrz3v9ip-verification-policy.drv'...
+source> structuredAttrs is enabled
+source> 
+source> trying https://github.com/verus-lang/verus/releases/download/release/0.2026.03.22.5e66329/verus-0.2026.03.22.5e66329-x86-linux.zip
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+source> 
+source> trying https://github.com/verus-lang/verified-ironkv/archive/6b8830a47a2dd5a8ce141438ebb2decb6550298a.tar.gz
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+source>   0      0   0      0   0      0      0      0                              0
+source>   0      0   0      0   0      0      0      0                              0
+verification-policy> PASS nickel export verification-policy/policy.ncl
+verification-policy> PASS verification policy fresh verification-policy/generated/policy.json
+source> 100 114.3k   0 114.3k   0      0 335.0k      0                              0
+source> unpacking source archive /build/6b8830a47a2dd5a8ce141438ebb2decb6550298a.tar.gz
+verification-policy> PASS nickel export proof-review/policy.ncl
+verification-policy> PASS proof-review policy fresh proof-review/generated/policy.json
+building '/nix/store/6w388yif3na0yk311mb8vymn2xhpybry-trellis-nickel-cohort-exact.drv'...
+building '/nix/store/b8lv7gkd755hzlaf07ylkhp6h15fafy7-source.drv'...
+verification-policy> PASS nickel export cairn-policy/default.ncl
+verification-policy> PASS cairn policy fresh cairn-policy/generated/cairn-policy.json
+source> structuredAttrs is enabled
+source> 100 29.83M 100 29.83M   0      0 49.74M      0                              0
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/invalid-duplicate-checker.ncl
+source> unpacking source archive /build/verus-0.2026.03.22.5e66329-x86-linux.zip
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/invalid-empty-checkers.ncl
+source> 
+source> trying https://github.com/verus-lang/verus-belt/archive/b116e9db550e84896674df781b93570c35a9f0da.tar.gz
+source>   % Total    % Received % Xferd  Average Speed  Time    Time    Time   Current
+source>                                  Dload  Upload  Total   Spent   Left   Speed
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/invalid-missing-exemption-owner.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/invalid-unsafe-path.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/verification-policy/fixtures/valid-minimal.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-dangling-mode.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-dangling-rule-reference.ncl
+source>   0      0   0      0   0      0      0      0                              0
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-dangling-validation-gate.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-duplicate-rule.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-empty-rules.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/proof-review/fixtures/valid-minimal.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/invalid-artifact-dependency.ncl
+source> 100 12.49M   0 12.49M   0      0  7.72M      0           00:01          8.75M
+source> unpacking source archive /build/b116e9db550e84896674df781b93570c35a9f0da.tar.gz
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/invalid-duplicate-marker.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/invalid-replay-group-case.ncl
+verification-policy> PASS valid fixture /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source/cairn-policy/fixtures/valid-minimal.ncl
+verification-policy> verification policy fixture checks: PASS
+verification-policy> verification policy check: PASS
+building '/nix/store/vf2gb0hs9fljcarf8c91pcv2ylis0ag6-tracey-1.3.0.drv'...
+tracey> Running phase: unpackPhase
+tracey> unpacking source archive /nix/store/xm2b0dqdnsidci71nv671pnlxr2qcy23-tracey-x86_64-unknown-linux-gnu.tar.xz
+building '/nix/store/yzysvrlia0qix3hz3dlhq4b3rfflccjr-verified-logic-fmt-0.2.0.drv'...
+tracey> source root is .
+tracey> setting SOURCE_DATE_EPOCH to timestamp 1772630521 of file "./tracey-x86_64-unknown-linux-gnu/tracey"
+tracey> Running phase: patchPhase
+tracey> Running phase: updateAutotoolsGnuConfigScriptsPhase
+building '/nix/store/54208ml9s1lw7ciic9hhs62cmqa39vz9-dylint-driver-src.drv'...
+tracey> Running phase: configurePhase
+tracey> no configure script, doing nothing
+tracey> Running phase: buildPhase
+tracey> no Makefile or custom buildPhase, doing nothing
+tracey> Running phase: installPhase
+tracey> Running phase: fixupPhase
+tracey> shrinking RPATHs of ELF executables and libraries in /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0
+tracey> shrinking /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0/bin/tracey
+tracey> checking for references to /build/ in /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0...
+tracey> patching script interpreter paths in /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0
+tracey> stripping (with command strip and flags -S -p) in  /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0/bin
+tracey> automatically fixing dependencies for ELF files
+tracey> {'add_existing': True,
+tracey>  'append_rpaths': [],
+tracey>  'extra_args': [],
+tracey>  'ignore_missing': [],
+tracey>  'keep_libc': False,
+tracey>  'libs': [PosixPath('/nix/store/z2z0p745mj6160wwdfi01bb6af1kqlq8-auto-patchelf-hook/lib'),
+tracey>           PosixPath('/nix/store/rax3bhibi4667jvxv7j22kalzsi9p8xs-auto-patchelf-0-unstable-2024-08-14/lib'),
+tracey>           PosixPath('/nix/store/pc4gvj2krf50wc2sipkimnbmx2w3mcgf-binutils-wrapper-2.44/lib'),
+tracey>           PosixPath('/nix/store/590yx3aynyhs48jyk8ip37fk1mjqfhkb-patchelf-0.15.2/lib'),
+tracey>           PosixPath('/nix/store/gz3rknshr1ywis4mjaqrgj3z2shp3n3v-update-autotools-gnu-config-scripts-hook/lib'),
+tracey>           PosixPath('/nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh/lib'),
+tracey>           PosixPath('/nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh/lib'),
+tracey>           PosixPath('/nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh/lib'),
+tracey>           PosixPath('/nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh/lib'),
+tracey>           PosixPath('/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh/lib'),
+tracey>           PosixPath('/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh/lib'),
+tracey>           PosixPath('/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh/lib'),
+tracey>           PosixPath('/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh/lib'),
+tracey>           PosixPath('/nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh/lib'),
+tracey>           PosixPath('/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh/lib'),
+tracey>           PosixPath('/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh/lib'),
+tracey>           PosixPath('/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh/lib'),
+tracey>           PosixPath('/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh/lib'),
+tracey>           PosixPath('/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh/lib'),
+tracey>           PosixPath('/nix/store/kbw2j1vag664b3sj3rjwz9v53cqx87sb-gcc-wrapper-15.2.0/lib'),
+tracey>           PosixPath('/nix/store/4yi6jj75bb5hhdzpzlxfyf69d35wsf2x-binutils-wrapper-2.44/lib'),
+tracey>           PosixPath('/nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib'),
+tracey>           PosixPath('/nix/store/z2z0p745mj6160wwdfi01bb6af1kqlq8-auto-patchelf-hook/lib'),
+tracey>           PosixPath('/nix/store/rax3bhibi4667jvxv7j22kalzsi9p8xs-auto-patchelf-0-unstable-2024-08-14/lib'),
+tracey>           PosixPath('/nix/store/pc4gvj2krf50wc2sipkimnbmx2w3mcgf-binutils-wrapper-2.44/lib'),
+tracey>           PosixPath('/nix/store/590yx3aynyhs48jyk8ip37fk1mjqfhkb-patchelf-0.15.2/lib'),
+tracey>           PosixPath('/nix/store/gz3rknshr1ywis4mjaqrgj3z2shp3n3v-update-autotools-gnu-config-scripts-hook/lib'),
+tracey>           PosixPath('/nix/store/0y5xmdb7qfvimjwbq7ibg1xdgkgjwqng-no-broken-symlinks.sh/lib'),
+tracey>           PosixPath('/nix/store/cv1d7p48379km6a85h4zp6kr86brh32q-audit-tmpdir.sh/lib'),
+tracey>           PosixPath('/nix/store/85clx3b0xkdf58jn161iy80y5223ilbi-compress-man-pages.sh/lib'),
+tracey>           PosixPath('/nix/store/p3l1a5y7nllfyrjn2krlwgcc3z0cd3fq-make-symlinks-relative.sh/lib'),
+tracey>           PosixPath('/nix/store/5yzw0vhkyszf2d179m0qfkgxmp5wjjx4-move-docs.sh/lib'),
+verified-logic-fmt> cargoVendorDir not set, will not automatically configure vendored sources
+verified-logic-fmt> cargoArtifacts not set, will not reuse any cargo artifacts
+verified-logic-fmt> Running phase: unpackPhase
+verified-logic-fmt> unpacking source archive /nix/store/l3l32i72k26wlafl7d3bld5hn3rs1345-source
+verified-logic-fmt> source root is source
+verified-logic-fmt> Running phase: patchPhase
+verified-logic-fmt> Executing configureCargoCommonVars
+verified-logic-fmt> Running phase: updateAutotoolsGnuConfigScriptsPhase
+verified-logic-fmt> Running phase: configurePhase
+verified-logic-fmt> default configurePhase, nothing to do
+verified-logic-fmt> Running phase: buildPhase
+verified-logic-fmt> +++ command cargo --version
+verified-logic-fmt> cargo 1.96.0-nightly (cbb9bb8bd 2026-03-13)
+verified-logic-fmt> +++ command cargo fmt -- --check
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:218:
+verified-logic-fmt> 
+verified-logic-fmt>  fn assumptions_identity(assumptions: &Assumptions) -> String {
+verified-logic-fmt>      let payload = canonical_object(vec![
+verified-logic-fmt> -        ("trusted_boundaries".to_string().as_str(), json_array(sorted_strings(&assumptions.trusted_boundaries))),
+verified-logic-fmt> +        (
+verified-logic-fmt> +            "trusted_boundaries".to_string().as_str(),
+verified-logic-fmt> +            json_array(sorted_strings(&assumptions.trusted_boundaries)),
+verified-logic-fmt> +        ),
+verified-logic-fmt>          ("external_bodies".to_string().as_str(), json_array(sorted_strings(&assumptions.external_bodies))),
+verified-logic-fmt>          ("proof_gaps".to_string().as_str(), json_array(sorted_strings(&assumptions.proof_gaps))),
+verified-logic-fmt>          ("dependencies".to_string().as_str(), json_array(sorted_strings(&assumptions.dependencies))),
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:457:
+verified-logic-fmt>  fn validate_ir_chain(chain: &IrChain, expected_requirements: &BTreeSet<String>) -> Vec<String> {
+verified-logic-fmt>      let mut errors = Vec::new();
+verified-logic-fmt>      if chain.schema_version != SCHEMA_VERSION {
+verified-logic-fmt> -        errors.push(format!(
+verified-logic-fmt> -            "unsupported schema `{}`; expected `{SCHEMA_VERSION}`",
+verified-logic-fmt> -            chain.schema_version
+verified-logic-fmt> -        ));
+verified-logic-fmt> +        errors.push(format!("unsupported schema `{}`; expected `{SCHEMA_VERSION}`", chain.schema_version));
+verified-logic-fmt>          return errors;
+verified-logic-fmt>      }
+verified-logic-fmt>      if chain.generated_by.is_empty() {
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:481:
+verified-logic-fmt>  /// Derives typed assumptions from the proof-gap manifest rows for the given
+verified-logic-fmt>  /// source paths. Trusted permanent boundaries become trusted_boundaries;
+verified-logic-fmt>  /// other classified gaps stay as proof_gaps.
+verified-logic-fmt> -fn assumptions_from_gaps(
+verified-logic-fmt> -    gap_references: &[String],
+verified-logic-fmt> -    gap_classifications: &[(String, String)],
+verified-logic-fmt> -) -> Assumptions {
+verified-logic-fmt> +fn assumptions_from_gaps(gap_references: &[String], gap_classifications: &[(String, String)]) -> Assumptions {
+verified-logic-fmt>      let mut trusted_boundaries = Vec::new();
+verified-logic-fmt>      let mut proof_gaps = Vec::new();
+verified-logic-fmt>      for reference in gap_references {
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:556:
+verified-logic-fmt>  }
+verified-logic-fmt> 
+verified-logic-fmt>  fn command_identity(proof_command: &str) -> String {
+verified-logic-fmt> -    let payload = canonical_object(vec![
+verified-logic-fmt> -        ("proof_command".to_string().as_str(), Value::String(proof_command.to_string())),
+verified-logic-fmt> -    ]);
+verified-logic-fmt> +    let payload =
+verified-logic-fmt> +        canonical_object(vec![("proof_command".to_string().as_str(), Value::String(proof_command.to_string()))]);
+verified-logic-fmt>      blake3_hex(&canonical_json_bytes(&payload))
+verified-logic-fmt>  }
+verified-logic-fmt> 
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:642:
+verified-logic-fmt>          schema_version: SCHEMA_VERSION.to_string(),
+verified-logic-fmt>          generated_by: GENERATOR_PATH.to_string(),
+verified-logic-fmt>          source_bundle_path: BUNDLE_PATH.to_string(),
+verified-logic-fmt> -        records: bundle
+verified-logic-fmt> -            .records
+verified-logic-fmt> -            .iter()
+verified-logic-fmt> -            .map(|record| record_for_bundle(record, gap_classifications))
+verified-logic-fmt> -            .collect(),
+verified-logic-fmt> +        records: bundle.records.iter().map(|record| record_for_bundle(record, gap_classifications)).collect(),
+verified-logic-fmt>      }
+verified-logic-fmt>  }
+verified-logic-fmt> 
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:698:
+verified-logic-fmt>      let expected_text = sorted_json(&expected)?;
+tracey>           PosixPath('/nix/store/fyaryjvghbkpfnsyw97hb3lyb37s1pd6-move-lib64.sh/lib'),
+tracey>           PosixPath('/nix/store/kd4xwxjpjxi71jkm6ka0np72if9rm3y0-move-sbin.sh/lib'),
+tracey>           PosixPath('/nix/store/pag6l61paj1dc9sv15l7bm5c17xn5kyk-move-systemd-user-units.sh/lib'),
+tracey>           PosixPath('/nix/store/cmzya9irvxzlkh7lfy6i82gbp0saxqj3-multiple-outputs.sh/lib'),
+tracey>           PosixPath('/nix/store/x8c40nfigps493a07sdr2pm5s9j1cdc0-patch-shebangs.sh/lib'),
+tracey>           PosixPath('/nix/store/cickvswrvann041nqxb0rxilc46svw1n-prune-libtool-files.sh/lib'),
+tracey>           PosixPath('/nix/store/xyff06pkhki3qy1ls77w10s0v79c9il0-reproducible-builds.sh/lib'),
+tracey>           PosixPath('/nix/store/z7k98578dfzi6l3hsvbivzm7hfqlk0zc-set-source-date-epoch-to-latest.sh/lib'),
+tracey>           PosixPath('/nix/store/pilsssjjdxvdphlg2h19p0bfx5q0jzkn-strip.sh/lib'),
+tracey>           PosixPath('/nix/store/kbw2j1vag664b3sj3rjwz9v53cqx87sb-gcc-wrapper-15.2.0/lib'),
+tracey>           PosixPath('/nix/store/4yi6jj75bb5hhdzpzlxfyf69d35wsf2x-binutils-wrapper-2.44/lib'),
+tracey>           PosixPath('/nix/store/ihpdbhy4rfxaixiamyb588zfc3vj19al-gcc-15.2.0-lib/lib')],
+tracey>  'paths': [PosixPath('/nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0')],
+tracey>  'preserve_origin': False,
+tracey>  'recursive': True,
+tracey>  'runtime_dependencies': [],
+tracey>  'structured_logs': False}
+tracey> setting interpreter of /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0/bin/tracey
+tracey> searching for dependencies of /nix/store/0gvmjbh3r6m81yrf614c41wqy6lr15a0-tracey-1.3.0/bin/tracey
+tracey>     libgcc_s.so.1 -> found: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+tracey> setting RPATH to: /nix/store/97rn2wpm09db8278qzjvbss9ybxhfsxf-gcc-15.2.0-libgcc/lib
+tracey> auto-patchelf: 0 dependencies could not be satisfied
+verified-logic-fmt>      let actual_text = read_text(&root.join(IR_CHAIN_PATH), IR_CHAIN_PATH)?;
+verified-logic-fmt>      if actual_text != expected_text {
+verified-logic-fmt> -        return Err(format!(
+verified-logic-fmt> -            "{IR_CHAIN_PATH} is stale; run `cargo run --quiet --bin proof_evidence_ir -- write`"
+verified-logic-fmt> -        ));
+verified-logic-fmt> +        return Err(format!("{IR_CHAIN_PATH} is stale; run `cargo run --quiet --bin proof_evidence_ir -- write`"));
+verified-logic-fmt>      }
+verified-logic-fmt>      let chain: IrChain =
+verified-logic-fmt>          serde_json::from_str(&actual_text).map_err(|error| format!("invalid IR chain JSON: {error}"))?;
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:785:
+verified-logic-fmt>      let source_identities = fixture_source_identities();
+verified-logic-fmt>      let chain_id = chain_identity(&source_identities, &ir_identity, &receipt, &assumptions);
+verified-logic-fmt>      let non_claims: Vec<String> = REQUIRED_NON_CLAIMS.iter().map(|claim| (*claim).to_string()).collect();
+verified-logic-fmt> -    let handoff = kamacite_handoff(
+verified-logic-fmt> -        &requirements,
+verified-logic-fmt> -        &source_identities,
+verified-logic-fmt> -        &ir_identity,
+verified-logic-fmt> -        &receipt,
+verified-logic-fmt> -        &assumptions,
+verified-logic-fmt> -        &non_claims,
+verified-logic-fmt> -    );
+verified-logic-fmt> +    let handoff =
+verified-logic-fmt> +        kamacite_handoff(&requirements, &source_identities, &ir_identity, &receipt, &assumptions, &non_claims);
+verified-logic-fmt>      IrChain {
+verified-logic-fmt>          schema_version: SCHEMA_VERSION.to_string(),
+verified-logic-fmt>          generated_by: GENERATOR_PATH.to_string(),
+verified-logic-fmt> Diff in /build/source/src/bin/proof_evidence_ir.rs:873:
+verified-logic-fmt> 
+verified-logic-fmt>      let mut stale_handoff = valid.clone();
+verified-logic-fmt>      stale_handoff.records[0].handoff.verifier_receipt_identity = "stale".to_string();
+verified-logic-fmt> -    expect_invalid(&stale_handoff, &requirements, "handoff verifier receipt identity is inconsistent", "stale handoff")?;
+verified-logic-fmt> +    expect_invalid(
+verified-logic-fmt> +        &stale_handoff,
+verified-logic-fmt> +        &requirements,
+verified-logic-fmt> +        "handoff verifier receipt identity is inconsistent",
+verified-logic-fmt> +        "stale handoff",
+verified-logic-fmt> +    )?;
+verified-logic-fmt> 
+verified-logic-fmt>      let mut empty_input_roots = valid.clone();
+verified-logic-fmt>      empty_input_roots.records[0].verifier_receipt.input_roots = vec![];
+verified-logic-fmt> Diff in /build/source/src/builder_lower/identity.rs:25:
+verified-logic-fmt>  pub use model::FunctionKey;
+verified-logic-fmt>  pub use model::LocalClass;
+verified-logic-fmt>  pub use model::LocalStorage;
+verified-logic-fmt> +pub use model::MAX_OPERATIONS;
+verified-logic-fmt>  pub use model::Operation;
+verified-logic-fmt>  pub use model::PlaceKey;
+verified-logic-fmt>  pub use model::Record;
+verified-logic-fmt> Diff in /build/source/src/builder_lower/identity.rs:32:
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::TypeKey;
+verified-logic-fmt>  pub use model::ValueKey;
+verified-logic-fmt> -pub use model::MAX_OPERATIONS;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt>  mod tests;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:15:
+verified-logic-fmt>  mod vocabulary;
+verified-logic-fmt>  mod witness;
+verified-logic-fmt> 
+verified-logic-fmt> +pub use agreement::ConvergenceFault;
+verified-logic-fmt> +pub use agreement::DedupRecord;
+verified-logic-fmt> +pub use agreement::OriginalCompletion;
+verified-logic-fmt> +pub use agreement::Store;
+verified-logic-fmt>  pub use agreement::apply;
+verified-logic-fmt>  pub use agreement::commute_under_contract;
+verified-logic-fmt>  pub use agreement::conflicts;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:22:
+verified-logic-fmt>  pub use agreement::generic_commutativity_holds;
+verified-logic-fmt>  pub use agreement::identity_matches;
+verified-logic-fmt>  pub use agreement::refinement_holds;
+verified-logic-fmt> -pub use agreement::ConvergenceFault;
+verified-logic-fmt> -pub use agreement::DedupRecord;
+verified-logic-fmt> -pub use agreement::OriginalCompletion;
+verified-logic-fmt> -pub use agreement::Store;
+verified-logic-fmt> -pub use barrier::admit_recovery_order;
+verified-logic-fmt> -pub use barrier::recovered_precedes_new_view;
+verified-logic-fmt> +pub use barrier::MAX_RECOVERY_COMMANDS;
+verified-logic-fmt>  pub use barrier::RecoveryFault;
+verified-logic-fmt>  pub use barrier::RecoverySnapshot;
+verified-logic-fmt>  pub use barrier::RecoveryStage;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:34:
+verified-logic-fmt> -pub use barrier::MAX_RECOVERY_COMMANDS;
+verified-logic-fmt> +pub use barrier::admit_recovery_order;
+verified-logic-fmt> +pub use barrier::recovered_precedes_new_view;
+verified-logic-fmt> +pub use membership::Acknowledgement;
+verified-logic-fmt> +pub use membership::Certificate;
+verified-logic-fmt> +pub use membership::CertificateFault;
+verified-logic-fmt> +pub use membership::CertificateFaultSite;
+verified-logic-fmt> +pub use membership::MAX_FAULTS;
+verified-logic-fmt>  pub use membership::accelerated_failure_tolerance;
+verified-logic-fmt>  pub use membership::accelerated_quorum;
+verified-logic-fmt>  pub use membership::admit_certificate;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:43:
+verified-logic-fmt>  pub use membership::recovery_support;
+verified-logic-fmt>  pub use membership::recovery_visibility;
+verified-logic-fmt>  pub use membership::replica_set;
+verified-logic-fmt> -pub use membership::Acknowledgement;
+verified-logic-fmt> -pub use membership::Certificate;
+verified-logic-fmt> -pub use membership::CertificateFault;
+verified-logic-fmt> -pub use membership::CertificateFaultSite;
+verified-logic-fmt> -pub use membership::MAX_FAULTS;
+verified-logic-fmt> -pub use vocabulary::admit_scope;
+verified-logic-fmt>  pub use vocabulary::BaseCapability;
+verified-logic-fmt>  pub use vocabulary::CapabilityScope;
+verified-logic-fmt>  pub use vocabulary::CommandId;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:62:
+verified-logic-fmt>  pub use vocabulary::Response;
+verified-logic-fmt>  pub use vocabulary::ScopeFault;
+verified-logic-fmt>  pub use vocabulary::ViewId;
+verified-logic-fmt> +pub use vocabulary::admit_scope;
+verified-logic-fmt> +pub use witness::CompositionFault;
+verified-logic-fmt> +pub use witness::CompositionInput;
+verified-logic-fmt> +pub use witness::Invocation;
+verified-logic-fmt> +pub use witness::ViewEvidence;
+verified-logic-fmt>  pub use witness::adjacent_swap_preserves;
+verified-logic-fmt>  pub use witness::admit_composition;
+verified-logic-fmt>  pub use witness::base_admits;
+verified-logic-fmt> Diff in /build/source/src/consensus_fast_path/identity.rs:72:
+verified-logic-fmt>  pub use witness::propose_before;
+verified-logic-fmt>  pub use witness::receive_before;
+verified-logic-fmt>  pub use witness::receive_time_ack_valid;
+verified-logic-fmt> -pub use witness::CompositionFault;
+verified-logic-fmt> -pub use witness::CompositionInput;
+verified-logic-fmt> -pub use witness::Invocation;
+verified-logic-fmt> -pub use witness::ViewEvidence;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt>  mod tests;
+verified-logic-fmt> Diff in /build/source/src/destruct_paths/identity.rs:27:
+verified-logic-fmt>  pub use model::Facts;
+verified-logic-fmt>  pub use model::FailureClass;
+verified-logic-fmt>  pub use model::FlagKey;
+verified-logic-fmt> +pub use model::MAX_EXPANSION_STEPS;
+verified-logic-fmt> +pub use model::MAX_PATHS;
+verified-logic-fmt>  pub use model::Metadata;
+verified-logic-fmt>  pub use model::Path;
+verified-logic-fmt>  pub use model::PathKey;
+verified-logic-fmt> Diff in /build/source/src/destruct_paths/identity.rs:39:
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::ValueKey;
+verified-logic-fmt>  pub use model::VariantFields;
+verified-logic-fmt> -pub use model::MAX_EXPANSION_STEPS;
+verified-logic-fmt> -pub use model::MAX_PATHS;
+verified-logic-fmt>  pub use paths::admit_record;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt> Diff in /build/source/src/fenced_attempt/identity.rs:18:
+verified-logic-fmt>  pub use decide::preserves_state;
+verified-logic-fmt>  pub use decide::state_identity;
+verified-logic-fmt>  pub use model::Disposition;
+verified-logic-fmt> +pub use model::EPOCH_LIMIT;
+verified-logic-fmt>  pub use model::Epoch;
+verified-logic-fmt>  pub use model::EventId;
+verified-logic-fmt>  pub use model::JobId;
+verified-logic-fmt> Diff in /build/source/src/fenced_attempt/identity.rs:24:
+verified-logic-fmt> +pub use model::MAX_EVENTS;
+verified-logic-fmt>  pub use model::PayloadId;
+verified-logic-fmt>  pub use model::Phase;
+verified-logic-fmt>  pub use model::RejectClass;
+verified-logic-fmt> Diff in /build/source/src/fenced_attempt/identity.rs:31:
+verified-logic-fmt>  pub use model::RunId;
+verified-logic-fmt>  pub use model::Scope;
+verified-logic-fmt>  pub use model::State;
+verified-logic-fmt> -pub use model::EPOCH_LIMIT;
+verified-logic-fmt> -pub use model::MAX_EVENTS;
+verified-logic-fmt>  pub use relation::classify_epoch;
+verified-logic-fmt>  pub use relation::classify_event;
+verified-logic-fmt>  pub use relation::identity_rejection;
+verified-logic-fmt> Diff in /build/source/src/finite_flow/identity.rs:29:
+verified-logic-fmt>  pub use model::FailureClass;
+verified-logic-fmt>  pub use model::LocationEffect;
+verified-logic-fmt>  pub use model::LocationState;
+verified-logic-fmt> +pub use model::MAX_ROUNDS;
+verified-logic-fmt> +pub use model::MAX_ROWS;
+verified-logic-fmt> +pub use model::MAX_STATES;
+verified-logic-fmt>  pub use model::Point;
+verified-logic-fmt>  pub use model::Rejection;
+verified-logic-fmt>  pub use model::Results;
+verified-logic-fmt> Diff in /build/source/src/finite_flow/identity.rs:35:
+verified-logic-fmt>  pub use model::StateKey;
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::Transfer;
+verified-logic-fmt> -pub use model::MAX_ROUNDS;
+verified-logic-fmt> -pub use model::MAX_ROWS;
+verified-logic-fmt> -pub use model::MAX_STATES;
+verified-logic-fmt>  pub use tables::admit_analysis;
+verified-logic-fmt>  pub use tables::apply_transfer;
+verified-logic-fmt> 
+verified-logic-fmt> Diff in /build/source/src/frontend_lower/identity.rs:21:
+verified-logic-fmt>  pub use model::Facts;
+verified-logic-fmt>  pub use model::FailureClass;
+verified-logic-fmt>  pub use model::GeneratedNode;
+verified-logic-fmt> +pub use model::MAX_RECORDS;
+verified-logic-fmt>  pub use model::Mapping;
+verified-logic-fmt>  pub use model::OwnerKey;
+verified-logic-fmt>  pub use model::Record;
+verified-logic-fmt> Diff in /build/source/src/frontend_lower/identity.rs:29:
+verified-logic-fmt>  pub use model::SourceKey;
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::UsePolicy;
+verified-logic-fmt> -pub use model::MAX_RECORDS;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt>  mod tests;
+verified-logic-fmt> Diff in /build/source/src/instance_partition/identity.rs:22:
+verified-logic-fmt>  pub use model::Item;
+verified-logic-fmt>  pub use model::ItemKey;
+verified-logic-fmt>  pub use model::ItemKind;
+verified-logic-fmt> +pub use model::MAX_ITEMS;
+verified-logic-fmt>  pub use model::Origin;
+verified-logic-fmt>  pub use model::Record;
+verified-logic-fmt>  pub use model::Reference;
+verified-logic-fmt> Diff in /build/source/src/instance_partition/identity.rs:30:
+building '/nix/store/j9qi9nzr9kny324ky8k9xy9s1mxk6jf7-verus-0.2026.03.22.drv'...
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::Unit;
+verified-logic-fmt>  pub use model::UnitKey;
+verified-logic-fmt> -pub use model::MAX_ITEMS;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt>  mod tests;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:451:
+verified-logic-fmt>  pub mod buddy;
+verified-logic-fmt>  pub mod causal_order;
+verified-logic-fmt>  pub mod concurrent_composition;
+verified-logic-fmt> -pub mod consensus_path;
+verified-logic-fmt>  /// Verified finite crash-fault consensus fast-path proofs.
+verified-logic-fmt>  #[path = "consensus_fast_path/identity.rs"]
+verified-logic-fmt>  pub mod consensus_fast_path;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:458:
+verified-logic-fmt> +pub mod consensus_path;
+verified-logic-fmt>  pub mod consistency_history;
+verified-logic-fmt>  pub mod consistency_object;
+verified-logic-fmt>  pub mod consistency_refinement;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:649:
+verified-logic-fmt>  pub mod hdl_ir;
+verified-logic-fmt>  pub mod hdl_validation;
+verified-logic-fmt>  pub mod heap_index;
+verified-logic-fmt> +pub mod heartbeat;
+verified-logic-fmt>  /// Verified finite inert HIR attribute-policy admission.
+verified-logic-fmt>  #[path = "hir/attribute/parsing.rs"]
+verified-logic-fmt>  pub mod hir_attribute_parsing;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:655:
+verified-logic-fmt>  /// Verified finite owner-scoped AST-to-HIR identifier admission.
+verified-logic-fmt>  #[path = "frontend_lower/identity.rs"]
+verified-logic-fmt>  pub mod hir_id_lowering;
+verified-logic-fmt> -pub mod heartbeat;
+verified-logic-fmt>  pub mod hypervisor_dirty_log;
+verified-logic-fmt>  pub mod hypervisor_exit;
+verified-logic-fmt>  pub mod hypervisor_gpa;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:736:
+verified-logic-fmt>  /// Verified finite MIR destruction classification and replacement metadata.
+verified-logic-fmt>  #[path = "destruct_paths/identity.rs"]
+verified-logic-fmt>  pub mod mir_destruct;
+verified-logic-fmt> -/// Verified finite MIR visitor coverage, traversal, and shape preservation.
+verified-logic-fmt> -#[path = "mir_walk/identity.rs"]
+verified-logic-fmt> -pub mod mir_visitor_traversal;
+verified-logic-fmt>  /// Verified finite MIR phase, pass, validation, and artifact-state traces.
+verified-logic-fmt>  #[path = "mir_pass_pipeline/identity.rs"]
+verified-logic-fmt>  pub mod mir_pass_pipeline;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:745:
+verified-logic-fmt> +/// Verified finite MIR visitor coverage, traversal, and shape preservation.
+verified-logic-fmt> +#[path = "mir_walk/identity.rs"]
+verified-logic-fmt> +pub mod mir_visitor_traversal;
+verified-logic-fmt>  pub mod ml_batch_iterator;
+verified-logic-fmt>  pub mod ml_confusion_matrix;
+verified-logic-fmt>  pub mod ml_dataset_split;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:970:
+verified-logic-fmt>  pub mod timeseries;
+verified-logic-fmt>  pub mod tlb_shootdown;
+verified-logic-fmt>  pub mod token_timestamp;
+verified-logic-fmt> +pub mod topo_sort;
+verified-logic-fmt>  /// Verified finite typed configuration normal forms and import policy.
+verified-logic-fmt>  #[path = "normal_input/identity.rs"]
+verified-logic-fmt>  pub mod total_config;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:976:
+verified-logic-fmt> -pub mod topo_sort;
+verified-logic-fmt> +pub mod trace_relation;
+verified-logic-fmt>  /// Verified finite `#[track_caller]` ABI metadata and admission.
+verified-logic-fmt>  #[path = "track/caller/abi.rs"]
+verified-logic-fmt>  pub mod track_caller_abi;
+verified-logic-fmt> Diff in /build/source/src/lib.rs:980:
+verified-logic-fmt> -pub mod trace_relation;
+verified-logic-fmt>  pub mod transfer;
+verified-logic-fmt>  pub mod trust_level;
+verified-logic-fmt>  pub mod two_phase;
+verified-logic-fmt> Diff in /build/source/src/mir_core/identity.rs:33:
+verified-logic-fmt>  pub use model::Operand;
+verified-logic-fmt>  pub use model::Place;
+verified-logic-fmt>  pub use model::Projection;
+verified-logic-fmt> +pub use model::RETURN_PLACE;
+verified-logic-fmt>  pub use model::Rejection;
+verified-logic-fmt>  pub use model::Rvalue;
+verified-logic-fmt>  pub use model::Statement;
+verified-logic-fmt> Diff in /build/source/src/mir_core/identity.rs:39:
+verified-logic-fmt>  pub use model::Terminator;
+verified-logic-fmt>  pub use model::TypeTag;
+verified-logic-fmt> -pub use model::RETURN_PLACE;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt>  mod tests;
+verified-logic-fmt> Diff in /build/source/src/normal_input/identity.rs:19:
+verified-logic-fmt>  pub use canonical::normalize;
+verified-logic-fmt>  pub use canonical::select_digest_input;
+verified-logic-fmt>  pub use model::Compatibility;
+verified-logic-fmt> +pub use model::DIGEST_BYTES;
+verified-logic-fmt>  pub use model::Digest;
+verified-logic-fmt>  pub use model::DigestInput;
+verified-logic-fmt>  pub use model::Facts;
+verified-logic-fmt> Diff in /build/source/src/normal_input/identity.rs:27:
+verified-logic-fmt>  pub use model::HeaderPolicy;
+verified-logic-fmt>  pub use model::ImportEdge;
+verified-logic-fmt>  pub use model::Kind;
+verified-logic-fmt> +pub use model::MAX_ROWS;
+verified-logic-fmt>  pub use model::Node;
+verified-logic-fmt>  pub use model::NodeKey;
+verified-logic-fmt>  pub use model::NormalChild;
+verified-logic-fmt> Diff in /build/source/src/normal_input/identity.rs:42:
+verified-logic-fmt>  pub use model::Table;
+verified-logic-fmt>  pub use model::Target;
+verified-logic-fmt>  pub use model::TypeTag;
+verified-logic-fmt> -pub use model::DIGEST_BYTES;
+verified-logic-fmt> -pub use model::MAX_ROWS;
+verified-logic-fmt>  pub use policy::admit_imports;
+verified-logic-fmt> 
+verified-logic-fmt>  fn table_width(len: usize, table: model::Table) -> Result<u32, model::Rejection> {
+verified-logic-fmt> Diff in /build/source/src/paren_tree/identity.rs:23:
+verified-logic-fmt>  pub use model::Atom;
+verified-logic-fmt>  pub use model::Budget;
+verified-logic-fmt>  pub use model::FailureClass;
+verified-logic-fmt> -pub use model::Measures;
+verified-logic-fmt> -pub use model::Rejection;
+verified-logic-fmt> -pub use model::Value;
+verified-logic-fmt>  pub use model::MAX_NESTING_DEPTH;
+verified-logic-fmt>  pub use model::MAX_NODE_COUNT;
+building '/nix/store/70r7q5rifacjiiz01nq1darnwxhscbz1-octet-verus-toolchain-profile.drv'...
+consumer-release-profile> error: profile.artifact.drift: src/lib.rs expected 50626:421d11bb0fd638081fe9d3651897bb11d80c02c42b3975078c59d17955143ae8 got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+consumer-release-profile> error: profile.verification.proof_manifest.drift
+verified-logic-fmt>  pub use model::MAX_TEXT_BYTES;
+verified-logic-fmt> Diff in /build/source/src/paren_tree/identity.rs:32:
+verified-logic-fmt> +pub use model::Measures;
+verified-logic-fmt> +pub use model::Rejection;
+verified-logic-fmt> +pub use model::Value;
+verified-logic-fmt>  pub use reader::parse_canonical;
+verified-logic-fmt> 
+verified-logic-fmt>  #[cfg(test)]
+verified-logic-fmt> Diff in /build/source/src/typed_durable_reference.rs:391:
+verified-logic-fmt> 
+verified-logic-fmt>      fn reference(type_hash: u64, schema_version: u64, closure_hash: u64) -> TypedDurableReference {
+verified-logic-fmt>          TypedDurableReference {
+verified-logic-fmt> -            reference_hash: ReferenceHash { raw: 10 + type_hash + schema_version },
+verified-logic-fmt> +            reference_hash: ReferenceHash {
+verified-logic-fmt> +                raw: 10 + type_hash + schema_version,
+verified-logic-fmt> +            },
+verified-logic-fmt>              value_hash: ValueHash { raw: 20 + type_hash },
+verified-logic-fmt>              type_hash: TypeHash { raw: type_hash },
+verified-logic-fmt>              schema_version: SchemaVersion { raw: schema_version },
+verified-logic-fmt> Diff in /build/source/src/typed_durable_reference.rs:418:
+verified-logic-fmt>              new_reference_hash: new_reference.reference_hash,
+verified-logic-fmt>              new_type_hash: new_reference.type_hash,
+verified-logic-fmt>              new_schema_version: new_reference.schema_version,
+verified-logic-fmt> -            converter_closure_hash: ClosureHash { raw: converter_closure_hash },
+verified-logic-fmt> +            converter_closure_hash: ClosureHash {
+verified-logic-fmt> +                raw: converter_closure_hash,
+verified-logic-fmt> +            },
+verified-logic-fmt>          }
+verified-logic-fmt>      }
+verified-logic-fmt> 
+verified-logic-fmt> Diff in /build/source/src/typed_durable_reference.rs:470:
+verified-logic-fmt> 
+verified-logic-fmt>          assert!(unpersist_admitted(
+verified-logic-fmt>              durable,
+verified-logic-fmt> -            UnpersistRequest { expected_type_hash: TypeHash { raw: 100 } },
+verified-logic-fmt> +            UnpersistRequest {
+verified-logic-fmt> +                expected_type_hash: TypeHash { raw: 100 }
+verified-logic-fmt> +            },
+verified-logic-fmt>              &catalog,
+verified-logic-fmt>          ));
+verified-logic-fmt>          assert!(!unpersist_admitted(
+verified-logic-fmt> Diff in /build/source/src/typed_durable_reference.rs:477:
+verified-logic-fmt>              durable,
+verified-logic-fmt> -            UnpersistRequest { expected_type_hash: TypeHash { raw: 101 } },
+verified-logic-fmt> +            UnpersistRequest {
+verified-logic-fmt> +                expected_type_hash: TypeHash { raw: 101 }
+verified-logic-fmt> +            },
+verified-logic-fmt>              &catalog,
+verified-logic-fmt>          ));
+verified-logic-fmt>          assert!(!unpersist_admitted(
+verified-logic-fmt> Diff in /build/source/src/typed_durable_reference.rs:482:
+verified-logic-fmt>              durable,
+verified-logic-fmt> -            UnpersistRequest { expected_type_hash: TypeHash { raw: 100 } },
+verified-logic-fmt> +            UnpersistRequest {
+verified-logic-fmt> +                expected_type_hash: TypeHash { raw: 100 }
+verified-logic-fmt> +            },
+verified-logic-fmt>              &unavailable,
+verified-logic-fmt>          ));
+verified-logic-fmt>      }
+verus> Running phase: unpackPhase
+verus> unpacking source archive /nix/store/8ax11klg95n7ywqp93x99wq0wkcpnwcg-source
+verus> source root is source
+verus> Running phase: patchPhase
+verus> Running phase: updateAutotoolsGnuConfigScriptsPhase
+verus> Running phase: configurePhase
+verus> no configure script, doing nothing
+verus> Running phase: buildPhase
+verus> no Makefile or custom buildPhase, doing nothing
+verus> Running phase: installPhase
+verus> Running phase: fixupPhase
+verus> shrinking RPATHs of ELF executables and libraries in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/rust_verify
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_builtin_macros.so
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/libverus_state_machines_macros.so
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/z3
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/cargo-verus
+verus> shrinking /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/verus
+verus> checking for references to /build/ in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22...
+verus> patching script interpreter paths in /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22
+verus> /nix/store/kv5xnxyml0m7l0qix0554glp33gn91hz-verus-0.2026.03.22/bin/verus-verify: interpreter directive changed from "#!/usr/bin/env bash" to "/nix/store/2hjsch59amjs3nbgh7ahcfzm2bfwl8zi-bash-5.3p9/bin/bash"
+warning: killing stray builder process 1444882 ()...
+warning: killing stray builder process 1446452 ()...
+error: failed to build attribute 'checks.x86_64-linux.consumer-release-profile', build of '/nix/store/zvnjq639bs26ilzh9zrh7r98q34q5v1y-consumer-release-profile.drv^*' failed: Cannot build '/nix/store/zvnjq639bs26ilzh9zrh7r98q34q5v1y-consumer-release-profile.drv'.
+       Reason: builder failed with exit code 1.
+       Output paths:
+         /nix/store/sr49vkrsr7zrbmwxws6waa6d513jhhd6-consumer-release-profile
+       Last 2 log lines:
+       > error: profile.artifact.drift: src/lib.rs expected 50626:421d11bb0fd638081fe9d3651897bb11d80c02c42b3975078c59d17955143ae8 got 47826:a8d89d79f66dbf6ca14869a8384c71dfd807898c5b81e7f6c020f64a6ab94fde
+       > error: profile.verification.proof_manifest.drift
+       For full logs, run:
+         nix log /nix/store/zvnjq639bs26ilzh9zrh7r98q34q5v1y-consumer-release-profile.drv

@@ -1,0 +1,437 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: add-consensus-fast-path-proof-primitives",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives"
+    }
+  ],
+  "blocked": false,
+  "change": "add-consensus-fast-path-proof-primitives",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "e834c44fa2e5a23382ca94a7fee86353e18c5d55d6bd71d5bb29447a700ea456",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "686f0e2d7628d071f083bcee51e0bd0b090fd18a5eacbe547ec1de0f7cb1ca30",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/design.md"
+        },
+        {
+          "content_hash": "d692eee58a33f36cc0521de9369a9f2ecfba128a471e834aaffb54eac162efca",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "82ad4f49cdc537aa5b3d066ea38d637df99560726f24228f9e8f9dec7630605b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "8a00ab3c49a9b20aaf7dd9ebbf0280de1af45b7f5a87ace06b2f926fbb2144ba",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "fac2c7a4cd5a129398d42b22b39bfc0064e5dc0f7ed390eff4396a7e22d989c4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2fd7da098ab7d98816d6399fd4030ff5ef39d11ef83c5e5f93d0120028e666db",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "8ee9131df0bae8523f6e356d027c892cd25a11fa9d7eb2a953b1a051839da494",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "3745bce5721163ce2afffcaf934d6ec8529c0b4660a909620a7149466ef831d3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "ef10a714b662990628153f4420a50dbed355740ee640815411a95333d7e95bd9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "0cbce0a2d295967eb472efaac9b97a677a684dee453183df13e632759d42ae81",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "5ab771257f5eb7a34fc31c4fc6acfc6c7eb8c8d46df0f56e746cef1ec9870827",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "915f12847f3dfddd40f067f0eadcd96d984d83618d87193aa98e309cc3c76b89",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "91d3830d7ed122ed700ba87586745ca23b370f0b09c48fb5ad803f406602f5c1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "e2cbb1ad0e9eaa5b4b5910265813c189d37b30282095587bf5afae36038d203e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "915f12847f3dfddd40f067f0eadcd96d984d83618d87193aa98e309cc3c76b89",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "faf14a2401a4a4f183b0a49ed1228f156fbdfc896866a86f9e2b693b50f21fac",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "d50fa857ff46c05d4ae56e381cd7aeab72760d0e40e7e214aee2b5ef02dfed47",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "ff70df5a0ddd2378f85ea8503f03bf01bbca614ac4b0018641c9d68a6d7622f2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "c8fd034aa967a2f03ecf5012cda1a2959089011e9dfe29c0a7ec4ae7b745a822",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-before-noop-composition.log"
+        },
+        {
+          "content_hash": "e4fca3f28d72b4391d3bcc9bfbb24ca474db6f61a3e60c8121e39786e9e13ec7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-clippy-path-failure.log"
+        },
+        {
+          "content_hash": "96129f6f8830a749bacd8e5c830eff23a2a88abef1776b7e3e7fabe931714153",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-toolchain-failure.log"
+        },
+        {
+          "content_hash": "4a8e027e9b1ffd227a546d2258005ef14b14461ee1fa182386410814049a715c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-verus-discovery-failure.log"
+        },
+        {
+          "content_hash": "7ba7f4f481318f239a3fed4fcfe70ae656869ff6967c58dd198b87279e9ccf28",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper.log"
+        },
+        {
+          "content_hash": "426f048db72d96ebcf03b1f8ddb00767ebb57fe11522aa8e8ce3e3e29fe84dce",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-flake-check-source-mutation-failure.log"
+        },
+        {
+          "content_hash": "63a8cbc81c7aed97a7536d53e5978e49b6ed2dbcb6c841df5466da06352b6562",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-flake-check.log"
+        },
+        {
+          "content_hash": "b7502a4e0a9cbb273b7ede5f8df21f8e70d74878b60a719310a10661e5355f4c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-octet.log"
+        },
+        {
+          "content_hash": "b006d2c85c045ae17f8b3f197de0d3f070b8008e5d6abb3addae4200bbf2885f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/octet-final.log"
+        },
+        {
+          "content_hash": "45524892245867270cbac30ddc2b40abc11f0fe7a77d1f243ecee140c2e05aa9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "458b48525150e52b497ef5a2ffffa0fdfe9c3f19c8aeb4101872ab96781b02bc",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-startup.log"
+        },
+        {
+          "content_hash": "8970a32b736d4ab941ddf3e0c9419e7f2c65ba57efd849bbb6b8b0a9789bc5a4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "975d7742800127cc1740327b291ddd5992602f5e16a3451cff849230678618c5",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "7689316695c2424d3ff109c99a223ed05d25589e4f545ab689c8c09e9ceb86f9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "0646e02e1502c7c6a516aa36037144923272c63d36664ffdeefe4a6fcd463b66",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "5d75bcbdb92af73b520591ae6b8a9f3ee0731c7f07630ca372bad1416f7581de",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/proposal.md"
+        },
+        {
+          "content_hash": "9b78e2b891e4f35f7d7ffff102cc3e329e26099fc7f37df8dbd2cbf198b7910f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/specs/consensus/spec.md"
+        },
+        {
+          "content_hash": "c0c906b2939914020b3f74ab2a5ac1203236a63d736687e5f353ffd9c520d854",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/tasks.md"
+        },
+        {
+          "content_hash": "40b79fade65aacca0250d54ec38b8384c9150d508b8b58240cd3a2a5227cfef5",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-add-consensus-fast-path-proof-primitives/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives"
+        }
+      ],
+      "manifest_hash": "e1960c602d6996725cae12b52827e06db7aef049ee889c667c8998546066ddcd"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "686f0e2d7628d071f083bcee51e0bd0b090fd18a5eacbe547ec1de0f7cb1ca30",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/design.md"
+        },
+        {
+          "content_hash": "d692eee58a33f36cc0521de9369a9f2ecfba128a471e834aaffb54eac162efca",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/cargo-test.log"
+        },
+        {
+          "content_hash": "82ad4f49cdc537aa5b3d066ea38d637df99560726f24228f9e8f9dec7630605b",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/source.txt"
+        },
+        {
+          "content_hash": "8a00ab3c49a9b20aaf7dd9ebbf0280de1af45b7f5a87ace06b2f926fbb2144ba",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/status.txt"
+        },
+        {
+          "content_hash": "fac2c7a4cd5a129398d42b22b39bfc0064e5dc0f7ed390eff4396a7e22d989c4",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-uncovered-startup.log"
+        },
+        {
+          "content_hash": "73a122a2970c17a871e9676da46a5827b42cabc23ce3e0c1f8efef74b77c37cc",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "2fd7da098ab7d98816d6399fd4030ff5ef39d11ef83c5e5f93d0120028e666db",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "8ee9131df0bae8523f6e356d027c892cd25a11fa9d7eb2a953b1a051839da494",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/baseline-2026-09-03/verus.log"
+        },
+        {
+          "content_hash": "3745bce5721163ce2afffcaf934d6ec8529c0b4660a909620a7149466ef831d3",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-archive-preview.log"
+        },
+        {
+          "content_hash": "ef10a714b662990628153f4420a50dbed355740ee640815411a95333d7e95bd9",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-design.log"
+        },
+        {
+          "content_hash": "0cbce0a2d295967eb472efaac9b97a677a684dee453183df13e632759d42ae81",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-proposal.log"
+        },
+        {
+          "content_hash": "5ab771257f5eb7a34fc31c4fc6acfc6c7eb8c8d46df0f56e746cef1ec9870827",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-gate-tasks.log"
+        },
+        {
+          "content_hash": "915f12847f3dfddd40f067f0eadcd96d984d83618d87193aa98e309cc3c76b89",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-post-sync-validate.log"
+        },
+        {
+          "content_hash": "91d3830d7ed122ed700ba87586745ca23b370f0b09c48fb5ad803f406602f5c1",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-sync-execute.log"
+        },
+        {
+          "content_hash": "e2cbb1ad0e9eaa5b4b5910265813c189d37b30282095587bf5afae36038d203e",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-sync-preview.log"
+        },
+        {
+          "content_hash": "915f12847f3dfddd40f067f0eadcd96d984d83618d87193aa98e309cc3c76b89",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/cairn-validate.log"
+        },
+        {
+          "content_hash": "faf14a2401a4a4f183b0a49ed1228f156fbdfc896866a86f9e2b693b50f21fac",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/clippy.log"
+        },
+        {
+          "content_hash": "d50fa857ff46c05d4ae56e381cd7aeab72760d0e40e7e214aee2b5ef02dfed47",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/focused-cargo-test.log"
+        },
+        {
+          "content_hash": "ff70df5a0ddd2378f85ea8503f03bf01bbca614ac4b0018641c9d68a6d7622f2",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/focused-verus.log"
+        },
+        {
+          "content_hash": "c8fd034aa967a2f03ecf5012cda1a2959089011e9dfe29c0a7ec4ae7b745a822",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-before-noop-composition.log"
+        },
+        {
+          "content_hash": "e4fca3f28d72b4391d3bcc9bfbb24ca474db6f61a3e60c8121e39786e9e13ec7",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-clippy-path-failure.log"
+        },
+        {
+          "content_hash": "96129f6f8830a749bacd8e5c830eff23a2a88abef1776b7e3e7fabe931714153",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-toolchain-failure.log"
+        },
+        {
+          "content_hash": "4a8e027e9b1ffd227a546d2258005ef14b14461ee1fa182386410814049a715c",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper-verus-discovery-failure.log"
+        },
+        {
+          "content_hash": "7ba7f4f481318f239a3fed4fcfe70ae656869ff6967c58dd198b87279e9ccf28",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/full-wrapper.log"
+        },
+        {
+          "content_hash": "426f048db72d96ebcf03b1f8ddb00767ebb57fe11522aa8e8ce3e3e29fe84dce",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-flake-check-source-mutation-failure.log"
+        },
+        {
+          "content_hash": "63a8cbc81c7aed97a7536d53e5978e49b6ed2dbcb6c841df5466da06352b6562",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-flake-check.log"
+        },
+        {
+          "content_hash": "b7502a4e0a9cbb273b7ede5f8df21f8e70d74878b60a719310a10661e5355f4c",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/nix-octet.log"
+        },
+        {
+          "content_hash": "b006d2c85c045ae17f8b3f197de0d3f070b8008e5d6abb3addae4200bbf2885f",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/octet-final.log"
+        },
+        {
+          "content_hash": "45524892245867270cbac30ddc2b40abc11f0fe7a77d1f243ecee140c2e05aa9",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/readme-metrics-full.log"
+        },
+        {
+          "content_hash": "458b48525150e52b497ef5a2ffffa0fdfe9c3f19c8aeb4101872ab96781b02bc",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-startup.log"
+        },
+        {
+          "content_hash": "8970a32b736d4ab941ddf3e0c9419e7f2c65ba57efd849bbb6b8b0a9789bc5a4",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "975d7742800127cc1740327b291ddd5992602f5e16a3451cff849230678618c5",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/final-2026-09-03/tracey-untested.log"
+        },
+        {
+          "content_hash": "7689316695c2424d3ff109c99a223ed05d25589e4f545ab689c8c09e9ceb86f9",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/octet/README.md"
+        },
+        {
+          "content_hash": "0646e02e1502c7c6a516aa36037144923272c63d36664ffdeefe4a6fcd463b66",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/evidence/octet/migration-guard.rs"
+        },
+        {
+          "content_hash": "5d75bcbdb92af73b520591ae6b8a9f3ee0731c7f07630ca372bad1416f7581de",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/proposal.md"
+        },
+        {
+          "content_hash": "9b78e2b891e4f35f7d7ffff102cc3e329e26099fc7f37df8dbd2cbf198b7910f",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/specs/consensus/spec.md"
+        },
+        {
+          "content_hash": "c0c906b2939914020b3f74ab2a5ac1203236a63d736687e5f353ffd9c520d854",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/tasks.md"
+        },
+        {
+          "content_hash": "40b79fade65aacca0250d54ec38b8384c9150d508b8b58240cd3a2a5227cfef5",
+          "exists": true,
+          "path": "./.cairn/changes/add-consensus-fast-path-proof-primitives/verification.md"
+        }
+      ],
+      "manifest_hash": "e6520b88fe4b0a8c99acbd09fa6b62ae352f5cf9d377eaca2e57f07bccca5a3a"
+    },
+    "kind": "archive",
+    "manifest_hash": "2bf5f96d85f5f61677e96b5e7526e0dc8c8e1ffbfca394beed4f490c83230653"
+  },
+  "plan_hash": "1efb68e8ea4f69b70f848fb74c0110de7ed21956ec6e403ce49693538061c65a",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "39aa78480455b22be2a26ecf0e1083589eebfba14c940c86544d176427654a9e"
+}

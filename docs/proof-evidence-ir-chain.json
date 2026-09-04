@@ -25,7 +25,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "src/arithmetic.rs",
@@ -64,10 +64,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "a69980296bf6d9967ebb47567e999bb993b59d10dabe731a1d024526018c1b84",
+      "chain_identity": "c99b41ead756a00fcad5002beecdf2277c3cc1df5c58ffd2fc2c098f8d9e1bb2",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "01148277fc61207c3250b1dd5c5b057b8cc5c0199fa33e7993ec685695b313fd",
+        "source_identity": "9960958675e666486881b3b0dfc5177ce5cec76ebd7fe4070d4fb703ee4ab260",
         "proof_ir_identity": "04f3372eee1f7e67125ff2f73aa30c74969026901ae404866c5f04c6a50534ed",
         "verifier_receipt_identity": "bb18e8c5366f2b6c64357f07abb8ef8324cb70b7cd0b517c711fc315711c6df3",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
@@ -78,6 +78,178 @@
           "arithmetic.gcd",
           "arithmetic.saturating-add",
           "arithmetic.saturating-sub"
+        ],
+        "non_claims": [
+          "not compiler correctness",
+          "not release approval",
+          "not third-party conformance",
+          "not verifier soundness",
+          "not whole-program correctness"
+        ]
+      }
+    },
+    {
+      "scope": "module:consensus_fast_path",
+      "requirement_ids": [
+        "consensus.fast-path.base-order",
+        "consensus.fast-path.boundary",
+        "consensus.fast-path.certificate",
+        "consensus.fast-path.conflict",
+        "consensus.fast-path.dual-path",
+        "consensus.fast-path.evidence",
+        "consensus.fast-path.fixtures",
+        "consensus.fast-path.linearization",
+        "consensus.fast-path.non-claims",
+        "consensus.fast-path.quorum",
+        "consensus.fast-path.recovery"
+      ],
+      "property_ids": [
+        "consensus.fast-path.base-order",
+        "consensus.fast-path.boundary",
+        "consensus.fast-path.certificate",
+        "consensus.fast-path.conflict",
+        "consensus.fast-path.dual-path",
+        "consensus.fast-path.evidence",
+        "consensus.fast-path.fixtures",
+        "consensus.fast-path.linearization",
+        "consensus.fast-path.non-claims",
+        "consensus.fast-path.quorum",
+        "consensus.fast-path.recovery"
+      ],
+      "source_identities": [
+        {
+          "path": "docs/requirements.md",
+          "algorithm": "blake3",
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
+        },
+        {
+          "path": "src/consensus_fast_path/agreement.rs",
+          "algorithm": "blake3",
+          "digest": "da88c1a81487199f82b984bb88f07dde225c1445fff50f06c7687a28be2c442e"
+        },
+        {
+          "path": "src/consensus_fast_path/barrier.rs",
+          "algorithm": "blake3",
+          "digest": "21db4516ea2e6adc861f33df406bc642d87bc23f7ba8684680e1fb01b6c8c6b4"
+        },
+        {
+          "path": "src/consensus_fast_path/identity.rs",
+          "algorithm": "blake3",
+          "digest": "29daf61ccddfa3ed454b937fb383b5b64e21f50d2e5e8181c2ed04d9e396cf35"
+        },
+        {
+          "path": "src/consensus_fast_path/membership.rs",
+          "algorithm": "blake3",
+          "digest": "f36d3e271126d32454a5df8db6090f9d2e629484a55ef3bb93eb084b9e954aae"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs.rs",
+          "algorithm": "blake3",
+          "digest": "5fce966c69f3155d8251ed9a3105ee9782724a6835268a1e66b8f67d359df89a"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs/arithmetic.rs",
+          "algorithm": "blake3",
+          "digest": "5120c6b476d17f94a50b8ed32c15166e253c05ec082cb50b08ed56651089b207"
+        },
+        {
+          "path": "src/consensus_fast_path/proofs/composition.rs",
+          "algorithm": "blake3",
+          "digest": "146fd7206a30d13337e20937eee808efad4ad301b4964f6a08eab17225babe31"
+        },
+        {
+          "path": "src/consensus_fast_path/tests.rs",
+          "algorithm": "blake3",
+          "digest": "e65123aa7c22bcb0735d700ce141f8a4e31dcc43b89bb28abad47f40bb6e7324"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/negative.rs",
+          "algorithm": "blake3",
+          "digest": "9ca7a48239eee81b4479e17725f58821e02196cbd3cdcaf279126660a4a90326"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/positive.rs",
+          "algorithm": "blake3",
+          "digest": "ce9d7f06f14ae99ca5c9cc69482fea22ccac36a997bf751cf570868ddccbd905"
+        },
+        {
+          "path": "src/consensus_fast_path/tests/property.rs",
+          "algorithm": "blake3",
+          "digest": "c09cc4fa916b74760627a3da596c9092b6b3505cd6151abafbc3ae83d71cfc55"
+        },
+        {
+          "path": "src/consensus_fast_path/vocabulary.rs",
+          "algorithm": "blake3",
+          "digest": "597a1c52d009ced5cdd6b7f21e251df3e2fe72366d8a037bb89e3d4f1293ccd6"
+        },
+        {
+          "path": "src/consensus_fast_path/witness.rs",
+          "algorithm": "blake3",
+          "digest": "668c8adeaf2ee3191308030b8dafe9bd0af7bbedd62ceb424abacd181865eff9"
+        }
+      ],
+      "proof_ir_identity": "22003cf2ebc3ae4365554b4321d6b4c4b678995e7622d66c90e35d103b66c150",
+      "verifier_receipt": {
+        "verifier_identity": "verus",
+        "toolchain_identity": "Verus via scripts/verus.sh; Tracey via docs/requirements.md",
+        "solver_identity": "z3 (declared solver of the pinned Verus toolchain; no version claim)",
+        "command_identity": "33c5e05a51694aff6da5f286e521ed2a78c665a609c604ac434bd1622eaa642d",
+        "input_roots": [
+          "docs/requirements.md",
+          "src/consensus_fast_path/agreement.rs",
+          "src/consensus_fast_path/barrier.rs",
+          "src/consensus_fast_path/identity.rs",
+          "src/consensus_fast_path/membership.rs",
+          "src/consensus_fast_path/proofs.rs",
+          "src/consensus_fast_path/proofs/arithmetic.rs",
+          "src/consensus_fast_path/proofs/composition.rs",
+          "src/consensus_fast_path/tests.rs",
+          "src/consensus_fast_path/tests/negative.rs",
+          "src/consensus_fast_path/tests/positive.rs",
+          "src/consensus_fast_path/tests/property.rs",
+          "src/consensus_fast_path/vocabulary.rs",
+          "src/consensus_fast_path/witness.rs"
+        ],
+        "result_identity": "56ff47b5dc9da30a9690745fe04b78fd4d9f1da6b7350f4e95830442f46a2b0c",
+        "result_status": "passed"
+      },
+      "assumptions": {
+        "trusted_boundaries": [],
+        "external_bodies": [],
+        "proof_gaps": [],
+        "dependencies": []
+      },
+      "status": "passed",
+      "recorded_only": false,
+      "claims": [
+        "records local Trellis proof facts for the named scope"
+      ],
+      "non_claims": [
+        "not compiler correctness",
+        "not release approval",
+        "not third-party conformance",
+        "not verifier soundness",
+        "not whole-program correctness"
+      ],
+      "chain_identity": "455c85edc79ad3f52f2afb6126358a1932a825c6d61cf219153c8c9e541b0394",
+      "handoff": {
+        "schema": "trellis-proof-evidence-kamacite-handoff/v1",
+        "source_identity": "f87a4d0685c3108f215c417b0eeb12f7f8c8b79573167efac7a0aa3a3dbb529a",
+        "proof_ir_identity": "22003cf2ebc3ae4365554b4321d6b4c4b678995e7622d66c90e35d103b66c150",
+        "verifier_receipt_identity": "0b8692535ff055407c7eb4c766062b86a022144dc24b43c2291d90982840947c",
+        "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
+        "requirement_ids": [
+          "consensus.fast-path.base-order",
+          "consensus.fast-path.boundary",
+          "consensus.fast-path.certificate",
+          "consensus.fast-path.conflict",
+          "consensus.fast-path.dual-path",
+          "consensus.fast-path.evidence",
+          "consensus.fast-path.fixtures",
+          "consensus.fast-path.linearization",
+          "consensus.fast-path.non-claims",
+          "consensus.fast-path.quorum",
+          "consensus.fast-path.recovery"
         ],
         "non_claims": [
           "not compiler correctness",
@@ -119,7 +291,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "src/ucan_signature.rs",
@@ -166,10 +338,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "4048cc412a2785dd98e64e7d0222a14c77ca52b1ea03c090f8311f093f8a91e0",
+      "chain_identity": "5394fcb52c6fa33b7c071590ab33b958ae3b22b251fb23f469448abd2c3a18e2",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "37bbc00f89ad188af0c9486976f433c5f337322b3c1a86351d234058d43e666a",
+        "source_identity": "1316a9eb5d4b21bc4285291291722d812acf3738025807c783e9a1c03e901c02",
         "proof_ir_identity": "f05621ad4ed2a98e9fe3c58b2acebb9ac7719bda82290f8086e4fbea7e287e3c",
         "verifier_receipt_identity": "da1af17a0e89acfbc81a89ccc8acb272485e76a7af8c22d0ed4a8903ad3dbae2",
         "assumption_identity": "f68cf69af180c7783524221814f303141011209ae4af2b8c54cd18145da91a92",
@@ -206,7 +378,7 @@
         {
           "path": "docs/requirements.md",
           "algorithm": "blake3",
-          "digest": "68493d693910b117683490a23153a644e4d7d46635a6d9c84c215b60df44987c"
+          "digest": "b7cd0b98464dd9524225135939396b13749da2ec0f732bd7fc12dcd406bd2b84"
         },
         {
           "path": "tests/proof_examples/basic_refinement.rs",
@@ -245,10 +417,10 @@
         "not verifier soundness",
         "not whole-program correctness"
       ],
-      "chain_identity": "9ba84058ca87e8f899f6d0c469410351cf4a5904c5f4ebc27eec053b915e767a",
+      "chain_identity": "66ab84f64839bc6763ed70a0385e774659caba0207b05e212b0d68ecc571496a",
       "handoff": {
         "schema": "trellis-proof-evidence-kamacite-handoff/v1",
-        "source_identity": "97a963d172d92b9fe3a9ef857a971c0a216360a6b6c50adfb9163a907ca1c5e6",
+        "source_identity": "ba3c80ed289f4a0e0c60d946bcecd37c90a4f22c7d9ace455908bb15f7f74235",
         "proof_ir_identity": "5121a80fe09e20271d93fd6f40a021b90574e9e6a0e9cdc6bd2e0595b11bf3d6",
         "verifier_receipt_identity": "ff7b73b93a7f78b7a825769c65b95e9d10272d44420a6c3bb629b0cf2a5cec3c",
         "assumption_identity": "e14ba2b746f44506ea259518479858e922f86bebc85eba174f54184529fcf903",
