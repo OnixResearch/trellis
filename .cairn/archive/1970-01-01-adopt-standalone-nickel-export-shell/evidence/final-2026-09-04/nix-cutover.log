@@ -1,0 +1,5 @@
+this derivation will be built:
+  /nix/store/ayrjdwcz052akz0hyxl3gs7c093mss67-trellis-nickel-export-cutover.drv
+building '/nix/store/ayrjdwcz052akz0hyxl3gs7c093mss67-trellis-nickel-export-cutover.drv'...
+trellis-nickel-export-cutover> standalone Nickel export check passed: 9 exact outputs, 31 invalid fixtures
+trellis-nickel-export-cutover> standalone Nickel export self-test passed: 12 negative cases

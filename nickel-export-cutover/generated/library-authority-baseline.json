@@ -1,0 +1,30 @@
+{
+  "schema": "trellis-nickel-export-authority-baseline/v1",
+  "entries": [
+    {
+      "path": "src/nix_base32.rs",
+      "token": "Command::new",
+      "count": 1
+    },
+    {
+      "path": "src/nix_base32.rs",
+      "token": "std::process",
+      "count": 1
+    },
+    {
+      "path": "src/repo_index/mod.rs",
+      "token": "std::env",
+      "count": 1
+    },
+    {
+      "path": "src/repo_index/store.rs",
+      "token": "std::env",
+      "count": 1
+    },
+    {
+      "path": "src/repo_index/store.rs",
+      "token": "std::fs",
+      "count": 3
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+{
+  "allow_secret_material": false,
+  "contract": "",
+  "dependencies": [
+    "verification-policy/contracts.ncl",
+    "verification-policy/generated/policy.json",
+    "policy-contracts/common.ncl"
+  ],
+  "destination": "nickel-export-cutover/generated/outputs/verification-policy-contract.json",
+  "family_id": "trellis.json-artifact.verification-policy",
+  "format": "json",
+  "import_paths": [],
+  "schema": "onix-nickel-export-request/v1",
+  "selector": "",
+  "source": "json-artifacts/verification-policy-generated.ncl"
+}

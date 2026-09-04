@@ -1,0 +1,16 @@
+{
+  "allow_secret_material": false,
+  "contract": "",
+  "dependencies": [
+    "json-artifacts/contracts.ncl",
+    "docs/proof-evidence-bundle.json",
+    "policy-contracts/common.ncl"
+  ],
+  "destination": "nickel-export-cutover/generated/outputs/proof-evidence-contract.json",
+  "family_id": "trellis.json-artifact.proof-evidence",
+  "format": "json",
+  "import_paths": [],
+  "schema": "onix-nickel-export-request/v1",
+  "selector": "",
+  "source": "json-artifacts/proof-evidence-bundle.ncl"
+}

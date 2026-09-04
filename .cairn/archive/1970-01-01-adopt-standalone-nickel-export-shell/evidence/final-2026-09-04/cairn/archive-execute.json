@@ -1,0 +1,1767 @@
+{
+  "actions": [
+    {
+      "description": "move active change to archive: adopt-standalone-nickel-export-shell",
+      "kind": "archive_change",
+      "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell"
+    }
+  ],
+  "blocked": false,
+  "change": "adopt-standalone-nickel-export-shell",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "dry_run": false,
+  "input_hash": "3970f67f5309822484035029ee088577040bef87ef642c0455b9c0c9351f67a2",
+  "layout": "cairn",
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "b7a5c6d66bff16276e4b4f827e99bdbecf9fffe0d7884edbcd108dc4f304764b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/design.md"
+        },
+        {
+          "content_hash": "d2be9415c5a94ae659290e88edd4c12edb921692e383790ecfae57797fe75577",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "52222e7dd104f605ea2ac5332f16cc68f13a5585ed6433482841782b127c5189",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "a7144b0ffb17a12330eb3ed122efed7ed091688e27fe1ca14d15d94dc1a3e07c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "d252cd1616ec72e7f3bab1fe53d95bfc84c985a1d8f45f27a2602d47c0c55d10",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/validate.log"
+        },
+        {
+          "content_hash": "5e040c1fa61b6c640d580999810d6e927ebb4ea62c49f00326477b8335bd8a54",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/invalid-fixture-paths.txt"
+        },
+        {
+          "content_hash": "418e3908d859b389e80e85df7b31d29364fbb9999e0cc7beee7d015bc60b3204",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/json-artifacts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/json-artifacts.log"
+        },
+        {
+          "content_hash": "d8df9d2a09db3699351192f134ef1a256bcdac60a688a0ef1a9a8d679702ffd1",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl.stdout"
+        },
+        {
+          "content_hash": "9c1be8a5ce5e7990c0eb81965b0e94c9290465091911faa3db40e929c8be4ab7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl.stdout"
+        },
+        {
+          "content_hash": "7d13ad3ed38563061c43bb5899a077dea93449b91e6a1d7c8061cbc06bdfe336",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl.stdout"
+        },
+        {
+          "content_hash": "128522060c67a719d05c0a3a2591789b1c7ff12c728ef016af24afdb9791d58a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl.stdout"
+        },
+        {
+          "content_hash": "3e64213a09f8a1789e23c94e76cb3fcb0db96efd67ea21d977d8facd5e0da01b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl.stdout"
+        },
+        {
+          "content_hash": "29409e6a4f6d4e43bbba424620c8627c3022a8d876fe42e23cc5c289ad4a9e8a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-artifact-dependency.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-artifact-dependency.ncl.stdout"
+        },
+        {
+          "content_hash": "7305556d2d2a86a15abb922235947155c938ce7b8541ab112d777fc9c9f7fb00",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl.stdout"
+        },
+        {
+          "content_hash": "e0e5a8202c413a8c59ea5c85ab4e2298ee412564c43e7c0dfdd0a82c5735223f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-duplicate-marker.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-duplicate-marker.ncl.stdout"
+        },
+        {
+          "content_hash": "5a682b114a65c376dc61198fa3b790ed32af1444669160165561dc5278123f0f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl.stdout"
+        },
+        {
+          "content_hash": "e66f895f38a69a66e23a67ccb1680c1241b84b76c397201873a825a071645fd8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-replay-group-case.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-replay-group-case.ncl.stdout"
+        },
+        {
+          "content_hash": "bb1cea48be3b9807e635815c79498974f9dd51b61fd40d110d42a4fc8dd5a5f8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "1f1982e13fb3884d2441cbfcda161ca4171d47c92977cbad41b9d8d6fd554b8a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl.stdout"
+        },
+        {
+          "content_hash": "f9fd45a38db743ee5043f5c3cb3c089e2b5546b370953704804f3935bea90bc7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl.stdout"
+        },
+        {
+          "content_hash": "e7bde131b31b6100c10f44610c9407641c37f705e9bc8b314ab24429785a1ba4",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "b5608fbc76c36f53aa79c975ffb881a500a09b4503b3e74e865b9b916a9a1fc0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "a0d5d8679166715bf82298621db28c31bbb9b99e8d3f8db86f8014a3fa03082e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl.stdout"
+        },
+        {
+          "content_hash": "c525b66146336e66a9cf3cd330a46055baf9ee4fba17e65b347fda113ebc64fd",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl.stdout"
+        },
+        {
+          "content_hash": "5227f802c1ba3b14ee015607b885cd1b574ab01fe011871f9f9f1f7f427631a3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl.stdout"
+        },
+        {
+          "content_hash": "dce68800e2dbeb0cbce7510a36d37c835aa8edaf8b2aa38b35e89ec11a918949",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "d78aca39a70f1457237466eec174fb464be877f29b0e74ba46eb0ce33493095c",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl.stdout"
+        },
+        {
+          "content_hash": "a195d1fc2e112b18b108fa8fc42b8db8d9c30ffd4fbbacb5fb9cb9c02eaa0e69",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-mode.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-mode.ncl.stdout"
+        },
+        {
+          "content_hash": "d3f2fe0e42ec6728ab064eec27b8e6eace01deaab08c91c902df207f9722dacc",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-rule-reference.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-rule-reference.ncl.stdout"
+        },
+        {
+          "content_hash": "cec15a0a8bf3602b1a57b34561ca4045b86d90e9403c3f0f36b5cb5c9650046a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-validation-gate.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-validation-gate.ncl.stdout"
+        },
+        {
+          "content_hash": "eaacbd474af36b0782da6d0fe84259ccb74bafc359f5d8e9081f462d4d585f22",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-duplicate-rule.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-duplicate-rule.ncl.stdout"
+        },
+        {
+          "content_hash": "7f0c5bd70b8fa35353405004a2c03f96c5008e5615937c61e83f06d058aaf9ab",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-empty-rules.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-empty-rules.ncl.stdout"
+        },
+        {
+          "content_hash": "0eae145563618b41070c7dac28209abe98f1952d64ab063a66f8fda21825e9c0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "2d36caf23a3a9a31d0a9078900c97dfb38f02ebc6b2ce52e9de52d3f3cc5b063",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-duplicate-checker.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-duplicate-checker.ncl.stdout"
+        },
+        {
+          "content_hash": "79ae5e87f02e87ebaf8c3e5a43a826f53d05a00915a8aae6ab6921d24903350d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-empty-checkers.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-empty-checkers.ncl.stdout"
+        },
+        {
+          "content_hash": "320d1623dffa8640b0d8669f41b9d76ed25d4f5a4e280bc9127d83d674000c9d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-missing-exemption-owner.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-missing-exemption-owner.ncl.stdout"
+        },
+        {
+          "content_hash": "7306acfb8bb37bf6caa9b02fdc58ef45533f376292df1fd4070523704fb344af",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "0ea47660d2cdc61dbca6b50ec23093e513a230e6446be0fa41959f32e448b00d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "c63ca349c136a6e88c1a408ff71d1a0ee9b24024768c968ef7dd18d271df98f0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid-results.txt"
+        },
+        {
+          "content_hash": "7a3769d59ce0c34fcbbadfde501e7d559bb359475f56bae5f455e805c581252b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-output-identities.txt"
+        },
+        {
+          "content_hash": "0502fecf2ca0a41716048fd51484553d86b68a14e62218aeb3715fb60d886941",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/cairn-policy-contract.json"
+        },
+        {
+          "content_hash": "0502fecf2ca0a41716048fd51484553d86b68a14e62218aeb3715fb60d886941",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/cairn-policy.json"
+        },
+        {
+          "content_hash": "9d4c6f2b7db5b6960de54faf69367ab45a85b53e6a41c35975b476b77d539daf",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/lifecycle.yaml"
+        },
+        {
+          "content_hash": "fb0cce6ce1fe45cd678b55e646ce4c1430eefa86901a9dd09560088b80fd2deb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/octet-baseline.json"
+        },
+        {
+          "content_hash": "67f11ae6c04bb429a069704ff1340b6777d4302f3933c07698e6b91738646919",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-evidence-bundle.json"
+        },
+        {
+          "content_hash": "7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-review-policy-contract.json"
+        },
+        {
+          "content_hash": "7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-review-policy.json"
+        },
+        {
+          "content_hash": "064615f9e4034e337e102e51e5fb9c010d82137b9f4a4f64ea9113aee4e35ab3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/verification-policy-contract.json"
+        },
+        {
+          "content_hash": "064615f9e4034e337e102e51e5fb9c010d82137b9f4a4f64ea9113aee4e35ab3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/verification-policy.json"
+        },
+        {
+          "content_hash": "b231eaf6d7f31d432c30b7f612fb082b8d1d90c08fee2422f6dbceca884bc32d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/lifecycle-config-self-test.log"
+        },
+        {
+          "content_hash": "09d11f41044ef88226ec3359b4249a4d0518ac2df4baf87162f101c16662406e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/lifecycle-config.log"
+        },
+        {
+          "content_hash": "73748fe4aedd6b1962d27a6fea04d5a63724b4b37d00e350331e8f3e52b562f7",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/nickel-version.txt"
+        },
+        {
+          "content_hash": "4687e8dbf9168d9976bfe0b40adc21aa8515fb647592c46e0272c567d23e9640",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/source-revisions.txt"
+        },
+        {
+          "content_hash": "4079c7894ab4bacbf78b601ffb1c0d3a8f33d6fc272f07b29b7f4fef8208cc18",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "b66f2f82c1b6ef5718fa9529f74b924a333cc67a8469f4411ae7e08bb7e19dcb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/verification-policy.log"
+        },
+        {
+          "content_hash": "fcce8c5042efc85ebae056191e1b1aa5c5323c7621fa6433b047229f193fb21d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-check.log"
+        },
+        {
+          "content_hash": "d917532e46deef4b89c5cad4b8d80c8a8faccff80cbf5336488f9c394f6ece20",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-self-test.log"
+        },
+        {
+          "content_hash": "fcce8c5042efc85ebae056191e1b1aa5c5323c7621fa6433b047229f193fb21d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-write.log"
+        },
+        {
+          "content_hash": "d35a41233aada247b1d12fe8d5dd559d7e181777b7ce5e778b093cab3aa99dcb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/artifact-identities.b3"
+        },
+        {
+          "content_hash": "1fad12e6bdb0d30895fb817b05d8fd97be199d01a4e489433629778eae97d314",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/accepted-spec-count.txt"
+        },
+        {
+          "content_hash": "7f28a7f87f8b9341dbe19b21dd45c4f48429977cb2c9551cef015f4a846c4078",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/accepted-spec.b3"
+        },
+        {
+          "content_hash": "c981ad37988f6b6f59fb1d8942ef7ea2634c7db136c821c544f564b14b9ba518",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/archive-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/archive-plan.stderr"
+        },
+        {
+          "content_hash": "fdc825c2bfa3df3169d18bd51add856097bdb933556341e9e859a392fc37f2f3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "e659d9feae2c203030ba453b72ea9be361cd256539859c8fc6797200d660e927",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "1bda0d2a60af014f223ed3c0f67c359d7712b9af4720768b77b761d688aecbf3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/review-completeness.log"
+        },
+        {
+          "content_hash": "382132205658382e17639c427fc4f58641d5c6f795603bd5077dc3bcb248084a",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-execute.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-execute.stderr"
+        },
+        {
+          "content_hash": "e02bf24b5e617a77ec56630a0dced0bc0d4ea476ee80cebd15b597fc6c68a49e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-plan.stderr"
+        },
+        {
+          "content_hash": "287fe02728171d23ccce2dcc5e1e9e68be9b55d48a0823e66dc92aa408aad0ec",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "c16bc38e9e896e7b51210267fd6f644f255f3604cb6532850d11d4d289f28786",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/validate-after-sync.log"
+        },
+        {
+          "content_hash": "0e0dea065503398069498f340f628e4a21d4811a3524ce26f594789a69c6ed21",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/validate-strict.log"
+        },
+        {
+          "content_hash": "7dd745254b4232aa1e7a0087f5158a24d32883bfd154463fc6b514fa6dd1110d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/design.log"
+        },
+        {
+          "content_hash": "33551477ca35cde154ad06f749166e9413a5975bb7a0851a61bf3dbf4bedcdcb",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/proposal.log"
+        },
+        {
+          "content_hash": "1bda0d2a60af014f223ed3c0f67c359d7712b9af4720768b77b761d688aecbf3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/review-completeness.log"
+        },
+        {
+          "content_hash": "e3c2a814f74f2a260f91fac45b535d0c777d5b217e8977cc31612a3c6b70e461",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/tasks.log"
+        },
+        {
+          "content_hash": "06d4fa0bc1575301716622f1e8b89b5b15aa3df5c1a26439a4b364fe3e57bc22",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/validate.log"
+        },
+        {
+          "content_hash": "be4514eb9c5b65996d7839e5fa339873dadd8f663d3f276f7ae4334ae6bc2995",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/clippy-all-targets.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "1d1d27f56420908966a441b2a5f201addbf3f79085ab869851d3191844e9af36",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-check.log"
+        },
+        {
+          "content_hash": "2e77d67b2c5a9bd0555cd3e8de9e35695f8a4db33c49d01b519277b6d4f9ffef",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-self-test.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-after-octet.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-after-proof-evidence.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-final.log"
+        },
+        {
+          "content_hash": "9338491810aaafd732b53168b77b33bb980649cc66cfbc08cabcdc05d711a1ee",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "58124bf1819b72ae899954f06bbbbba3340394fc867083fa6979a0780205ca65",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-identities.b3"
+        },
+        {
+          "content_hash": "a336ee5747a1e4fbd68be8e4d82fc0732221c50c4613212e1aa8db542cb8b758",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-paths.txt"
+        },
+        {
+          "content_hash": "d4cb43aadfb714ac69efe9495b644a20c7ff886d2f44091f8ef10c0c1c1e1d77",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-sizes.txt"
+        },
+        {
+          "content_hash": "904dc5093172ecbf3ef11c8fd8ff726f9de8672b5b366586f4fed6ce70283a1d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/json-contracts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/json-contracts.log"
+        },
+        {
+          "content_hash": "0ab87dbf2bc5b636a80ff7fbed7ec2c215e4be0b98a87de8fac8faee9ad4a6e0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-legacy-parity.log"
+        },
+        {
+          "content_hash": "b3e17581133f8d3d26aa942ab3e485e4981b9a7f8374135f711c62864c87f5ba",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-self-test.log"
+        },
+        {
+          "content_hash": "5c5f82b5b07175e6a92b22b89a545f7593ef2943de9049084fcb14bf7ac805ac",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-semantic.log"
+        },
+        {
+          "content_hash": "b05c533e6202387edb37eb7f585108ba3712cbc9c24247bc288996aa11e2e1ef",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/module-index-check.log"
+        },
+        {
+          "content_hash": "3d2032d9af42b5994b73423d6d1f19aadf4a367096e9d1b59e15c45330ba6f2f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/module-index-write.log"
+        },
+        {
+          "content_hash": "9c66d2c4c5bd5e228cc459019a66c74906a7c584f4f32f74646a26b5c51db4db",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-aeneas.log"
+        },
+        {
+          "content_hash": "497fa3a683f246fe7a7610a0a255799f02b995f2525578760aba0892cadf602f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-cutover.log"
+        },
+        {
+          "content_hash": "642f498f8ef6868fac657b268588a9462e13aba2727f1da7421d2846ff314308",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-verification-policy.log"
+        },
+        {
+          "content_hash": "11992d0e0127ff393b6350226be0a1389b1bf972678772f97c593a25f4502b28",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet-status.stderr"
+        },
+        {
+          "content_hash": "2b52ac2ee844f6777700d520e143bca87e8040887f20f3c746d23978e485e443",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet-write-candidate.log"
+        },
+        {
+          "content_hash": "070aebb64be47edc62014da1dd257862b48547ebf5b303fc5269f25d41865a7d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-format.log"
+        },
+        {
+          "content_hash": "7661e985a7893aea83deccd93913c7bcc479bb82e979439659ee57cad8369366",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-source.b3"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-typecheck.log"
+        },
+        {
+          "content_hash": "c92435f2d583f1066262205c69bd2f952b9de1d391dcde0b0522f78f4f0cb2c5",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-check.log"
+        },
+        {
+          "content_hash": "df2490952e7139cb8539ac06d51d781d402ede50b50fccb2232bac87eb2a339b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-ir-check.log"
+        },
+        {
+          "content_hash": "275d3a6797d42d394b9f9367adf92dc771b044f5d2a5569fd42ba55163ce50da",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-ir-write.log"
+        },
+        {
+          "content_hash": "15f997e40daa6a82dc19e018f3fbaf1f6589e3384bbe1736360047087e3f9b94",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-write.log"
+        },
+        {
+          "content_hash": "1e54456ad67dbc81d5240189591f3a934f69d3a2cd247b528beee0db0d46b343",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/readme-metrics.log"
+        },
+        {
+          "content_hash": "bcf31929c6c57d41c2973b0092a3fc817c3ed402d9380bd77822e48407d397d3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-uncovered-1.log"
+        },
+        {
+          "content_hash": "bcf31929c6c57d41c2973b0092a3fc817c3ed402d9380bd77822e48407d397d3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-1.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-2.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-3.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-4.log"
+        },
+        {
+          "content_hash": "74847c971632e9f5f558815ab56a9f9ded48d2bf0a68677a6e2db2499d298d9b",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "a01614c7e4bd16da5a4dbd5dd23aa2077872db730304ff7cc44596d1324d8121",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-legacy-parity.log"
+        },
+        {
+          "content_hash": "b66dcbe2c1cd3ff7a4ee5570e77de7660d4a21c718cd54ac9f3c94608713372e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "079595947e32f4367e7a62c165c9da384f14cc7e1998ef8fade13860e054b891",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-semantic.log"
+        },
+        {
+          "content_hash": "1d1d27f56420908966a441b2a5f201addbf3f79085ab869851d3191844e9af36",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/check.log"
+        },
+        {
+          "content_hash": "cb60db4444647d585f23d77ef0eeab04e93d55adec23c053b9467cd7f52c7897",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/diagnostic-address-drift.log"
+        },
+        {
+          "content_hash": "5cd2f8b9084bc006e020db6a3722b0e9228dd173683dfcd526606bb059e6b541",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/json-contracts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/json-contracts.log"
+        },
+        {
+          "content_hash": "0ab87dbf2bc5b636a80ff7fbed7ec2c215e4be0b98a87de8fac8faee9ad4a6e0",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-legacy-parity.log"
+        },
+        {
+          "content_hash": "f7e48f826bbfb5ff99fb11fa312560fe21267d0994434c4182695cabd9b156b8",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-self-test.log"
+        },
+        {
+          "content_hash": "5c5f82b5b07175e6a92b22b89a545f7593ef2943de9049084fcb14bf7ac805ac",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-semantic.log"
+        },
+        {
+          "content_hash": "794eb9a12360b88d8c5b77925262fd9e3ebd82afd577eca94165048f715503d6",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/nix-cutover.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/profile-typecheck.log"
+        },
+        {
+          "content_hash": "e4932b7d024a24bb55174ef001b5e65807f11ea3b8e6320d8d88e97fcd7c520d",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/self-test.log"
+        },
+        {
+          "content_hash": "397913a7ced0067fc8753ea901a18485fc7631965fa0f4cf241d69a707c434f9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/tool-paths.txt"
+        },
+        {
+          "content_hash": "a01614c7e4bd16da5a4dbd5dd23aa2077872db730304ff7cc44596d1324d8121",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-legacy-parity.log"
+        },
+        {
+          "content_hash": "a043aade1db0be9140f7fd47923ec8de16d65b0beaa2663f9fea08899dce2b4f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "079595947e32f4367e7a62c165c9da384f14cc7e1998ef8fade13860e054b891",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-semantic.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/write.log"
+        },
+        {
+          "content_hash": "ee988c4d491b91491a791a17ba715648ed20ab281cea1f5a0ba40e064caf54e9",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/proposal.md"
+        },
+        {
+          "content_hash": "c2fb337cae48c3ce6bf83088842f705cf726978625d87163af23d0c011448042",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md"
+        },
+        {
+          "content_hash": "4c8b7f6a23dac481d1242576c05790468fb2e6d7d6a40794b8ee70f0e3c4983e",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/tasks.md"
+        },
+        {
+          "content_hash": "df68bf7862720e4f9b284acd9cb06999188797cff2f0e2a1b3f72336a5a65c97",
+          "exists": true,
+          "path": "./.cairn/archive/1970-01-01-adopt-standalone-nickel-export-shell/verification.md"
+        },
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell"
+        }
+      ],
+      "manifest_hash": "6ac68da32d6500d451780d36b7b6b38e4a294278a71b4afffdd6b4e87afa8880"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": "b7a5c6d66bff16276e4b4f827e99bdbecf9fffe0d7884edbcd108dc4f304764b",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/design.md"
+        },
+        {
+          "content_hash": "d2be9415c5a94ae659290e88edd4c12edb921692e383790ecfae57797fe75577",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "52222e7dd104f605ea2ac5332f16cc68f13a5585ed6433482841782b127c5189",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "a7144b0ffb17a12330eb3ed122efed7ed091688e27fe1ca14d15d94dc1a3e07c",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "d252cd1616ec72e7f3bab1fe53d95bfc84c985a1d8f45f27a2602d47c0c55d10",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/cairn/validate.log"
+        },
+        {
+          "content_hash": "5e040c1fa61b6c640d580999810d6e927ebb4ea62c49f00326477b8335bd8a54",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/invalid-fixture-paths.txt"
+        },
+        {
+          "content_hash": "418e3908d859b389e80e85df7b31d29364fbb9999e0cc7beee7d015bc60b3204",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/json-artifacts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/json-artifacts.log"
+        },
+        {
+          "content_hash": "d8df9d2a09db3699351192f134ef1a256bcdac60a688a0ef1a9a8d679702ffd1",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl.stdout"
+        },
+        {
+          "content_hash": "9c1be8a5ce5e7990c0eb81965b0e94c9290465091911faa3db40e929c8be4ab7",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl.stdout"
+        },
+        {
+          "content_hash": "7d13ad3ed38563061c43bb5899a077dea93449b91e6a1d7c8061cbc06bdfe336",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl.stdout"
+        },
+        {
+          "content_hash": "128522060c67a719d05c0a3a2591789b1c7ff12c728ef016af24afdb9791d58a",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl.stdout"
+        },
+        {
+          "content_hash": "3e64213a09f8a1789e23c94e76cb3fcb0db96efd67ea21d977d8facd5e0da01b",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl.stdout"
+        },
+        {
+          "content_hash": "29409e6a4f6d4e43bbba424620c8627c3022a8d876fe42e23cc5c289ad4a9e8a",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-artifact-dependency.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-artifact-dependency.ncl.stdout"
+        },
+        {
+          "content_hash": "7305556d2d2a86a15abb922235947155c938ce7b8541ab112d777fc9c9f7fb00",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl.stdout"
+        },
+        {
+          "content_hash": "e0e5a8202c413a8c59ea5c85ab4e2298ee412564c43e7c0dfdd0a82c5735223f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-duplicate-marker.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-duplicate-marker.ncl.stdout"
+        },
+        {
+          "content_hash": "5a682b114a65c376dc61198fa3b790ed32af1444669160165561dc5278123f0f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl.stdout"
+        },
+        {
+          "content_hash": "e66f895f38a69a66e23a67ccb1680c1241b84b76c397201873a825a071645fd8",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-replay-group-case.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/cairn-policy/fixtures/invalid-replay-group-case.ncl.stdout"
+        },
+        {
+          "content_hash": "bb1cea48be3b9807e635815c79498974f9dd51b61fd40d110d42a4fc8dd5a5f8",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "1f1982e13fb3884d2441cbfcda161ca4171d47c92977cbad41b9d8d6fd554b8a",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-generated-policy-unsupported-enum.ncl.stdout"
+        },
+        {
+          "content_hash": "f9fd45a38db743ee5043f5c3cb3c089e2b5546b370953704804f3935bea90bc7",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-malformed-finding.ncl.stdout"
+        },
+        {
+          "content_hash": "e7bde131b31b6100c10f44610c9407641c37f705e9bc8b314ab24429785a1ba4",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "b5608fbc76c36f53aa79c975ffb881a500a09b4503b3e74e865b9b916a9a1fc0",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-octet-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "a0d5d8679166715bf82298621db28c31bbb9b99e8d3f8db86f8014a3fa03082e",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-malformed-digest.ncl.stdout"
+        },
+        {
+          "content_hash": "c525b66146336e66a9cf3cd330a46055baf9ee4fba17e65b347fda113ebc64fd",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-missing-nonclaim.ncl.stdout"
+        },
+        {
+          "content_hash": "5227f802c1ba3b14ee015607b885cd1b574ab01fe011871f9f9f1f7f427631a3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl.stdout"
+        },
+        {
+          "content_hash": "dce68800e2dbeb0cbce7510a36d37c835aa8edaf8b2aa38b35e89ec11a918949",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "d78aca39a70f1457237466eec174fb464be877f29b0e74ba46eb0ce33493095c",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl.stdout"
+        },
+        {
+          "content_hash": "a195d1fc2e112b18b108fa8fc42b8db8d9c30ffd4fbbacb5fb9cb9c02eaa0e69",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-mode.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-mode.ncl.stdout"
+        },
+        {
+          "content_hash": "d3f2fe0e42ec6728ab064eec27b8e6eace01deaab08c91c902df207f9722dacc",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-rule-reference.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-rule-reference.ncl.stdout"
+        },
+        {
+          "content_hash": "cec15a0a8bf3602b1a57b34561ca4045b86d90e9403c3f0f36b5cb5c9650046a",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-validation-gate.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-dangling-validation-gate.ncl.stdout"
+        },
+        {
+          "content_hash": "eaacbd474af36b0782da6d0fe84259ccb74bafc359f5d8e9081f462d4d585f22",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-duplicate-rule.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-duplicate-rule.ncl.stdout"
+        },
+        {
+          "content_hash": "7f0c5bd70b8fa35353405004a2c03f96c5008e5615937c61e83f06d058aaf9ab",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-empty-rules.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-empty-rules.ncl.stdout"
+        },
+        {
+          "content_hash": "0eae145563618b41070c7dac28209abe98f1952d64ab063a66f8fda21825e9c0",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/proof-review/fixtures/invalid-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "2d36caf23a3a9a31d0a9078900c97dfb38f02ebc6b2ce52e9de52d3f3cc5b063",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-duplicate-checker.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-duplicate-checker.ncl.stdout"
+        },
+        {
+          "content_hash": "79ae5e87f02e87ebaf8c3e5a43a826f53d05a00915a8aae6ab6921d24903350d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-empty-checkers.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-empty-checkers.ncl.stdout"
+        },
+        {
+          "content_hash": "320d1623dffa8640b0d8669f41b9d76ed25d4f5a4e280bc9127d83d674000c9d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-missing-exemption-owner.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-missing-exemption-owner.ncl.stdout"
+        },
+        {
+          "content_hash": "7306acfb8bb37bf6caa9b02fdc58ef45533f376292df1fd4070523704fb344af",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsafe-path.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsafe-path.ncl.stdout"
+        },
+        {
+          "content_hash": "0ea47660d2cdc61dbca6b50ec23093e513a230e6446be0fa41959f32e448b00d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsupported-severity.ncl.stderr"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid/verification-policy/fixtures/invalid-unsupported-severity.ncl.stdout"
+        },
+        {
+          "content_hash": "c63ca349c136a6e88c1a408ff71d1a0ee9b24024768c968ef7dd18d271df98f0",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-invalid-results.txt"
+        },
+        {
+          "content_hash": "7a3769d59ce0c34fcbbadfde501e7d559bb359475f56bae5f455e805c581252b",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-output-identities.txt"
+        },
+        {
+          "content_hash": "0502fecf2ca0a41716048fd51484553d86b68a14e62218aeb3715fb60d886941",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/cairn-policy-contract.json"
+        },
+        {
+          "content_hash": "0502fecf2ca0a41716048fd51484553d86b68a14e62218aeb3715fb60d886941",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/cairn-policy.json"
+        },
+        {
+          "content_hash": "9d4c6f2b7db5b6960de54faf69367ab45a85b53e6a41c35975b476b77d539daf",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/lifecycle.yaml"
+        },
+        {
+          "content_hash": "fb0cce6ce1fe45cd678b55e646ce4c1430eefa86901a9dd09560088b80fd2deb",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/octet-baseline.json"
+        },
+        {
+          "content_hash": "67f11ae6c04bb429a069704ff1340b6777d4302f3933c07698e6b91738646919",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-evidence-bundle.json"
+        },
+        {
+          "content_hash": "7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-review-policy-contract.json"
+        },
+        {
+          "content_hash": "7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/proof-review-policy.json"
+        },
+        {
+          "content_hash": "064615f9e4034e337e102e51e5fb9c010d82137b9f4a4f64ea9113aee4e35ab3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/verification-policy-contract.json"
+        },
+        {
+          "content_hash": "064615f9e4034e337e102e51e5fb9c010d82137b9f4a4f64ea9113aee4e35ab3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/legacy-outputs/verification-policy.json"
+        },
+        {
+          "content_hash": "b231eaf6d7f31d432c30b7f612fb082b8d1d90c08fee2422f6dbceca884bc32d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/lifecycle-config-self-test.log"
+        },
+        {
+          "content_hash": "09d11f41044ef88226ec3359b4249a4d0518ac2df4baf87162f101c16662406e",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/lifecycle-config.log"
+        },
+        {
+          "content_hash": "73748fe4aedd6b1962d27a6fea04d5a63724b4b37d00e350331e8f3e52b562f7",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/nickel-version.txt"
+        },
+        {
+          "content_hash": "4687e8dbf9168d9976bfe0b40adc21aa8515fb647592c46e0272c567d23e9640",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/source-revisions.txt"
+        },
+        {
+          "content_hash": "4079c7894ab4bacbf78b601ffb1c0d3a8f33d6fc272f07b29b7f4fef8208cc18",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "b66f2f82c1b6ef5718fa9529f74b924a333cc67a8469f4411ae7e08bb7e19dcb",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/baseline-2026-09-04/verification-policy.log"
+        },
+        {
+          "content_hash": "fcce8c5042efc85ebae056191e1b1aa5c5323c7621fa6433b047229f193fb21d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-check.log"
+        },
+        {
+          "content_hash": "d917532e46deef4b89c5cad4b8d80c8a8faccff80cbf5336488f9c394f6ece20",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-self-test.log"
+        },
+        {
+          "content_hash": "fcce8c5042efc85ebae056191e1b1aa5c5323c7621fa6433b047229f193fb21d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/aeneas-write.log"
+        },
+        {
+          "content_hash": "d35a41233aada247b1d12fe8d5dd559d7e181777b7ce5e778b093cab3aa99dcb",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/artifact-identities.b3"
+        },
+        {
+          "content_hash": "1fad12e6bdb0d30895fb817b05d8fd97be199d01a4e489433629778eae97d314",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/accepted-spec-count.txt"
+        },
+        {
+          "content_hash": "7f28a7f87f8b9341dbe19b21dd45c4f48429977cb2c9551cef015f4a846c4078",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/accepted-spec.b3"
+        },
+        {
+          "content_hash": "c981ad37988f6b6f59fb1d8942ef7ea2634c7db136c821c544f564b14b9ba518",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/archive-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/archive-plan.stderr"
+        },
+        {
+          "content_hash": "fdc825c2bfa3df3169d18bd51add856097bdb933556341e9e859a392fc37f2f3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/design.log"
+        },
+        {
+          "content_hash": "e659d9feae2c203030ba453b72ea9be361cd256539859c8fc6797200d660e927",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/proposal.log"
+        },
+        {
+          "content_hash": "1bda0d2a60af014f223ed3c0f67c359d7712b9af4720768b77b761d688aecbf3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/review-completeness.log"
+        },
+        {
+          "content_hash": "382132205658382e17639c427fc4f58641d5c6f795603bd5077dc3bcb248084a",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-execute.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-execute.stderr"
+        },
+        {
+          "content_hash": "e02bf24b5e617a77ec56630a0dced0bc0d4ea476ee80cebd15b597fc6c68a49e",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-plan.json"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/sync-plan.stderr"
+        },
+        {
+          "content_hash": "287fe02728171d23ccce2dcc5e1e9e68be9b55d48a0823e66dc92aa408aad0ec",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/tasks.log"
+        },
+        {
+          "content_hash": "c16bc38e9e896e7b51210267fd6f644f255f3604cb6532850d11d4d289f28786",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/validate-after-sync.log"
+        },
+        {
+          "content_hash": "0e0dea065503398069498f340f628e4a21d4811a3524ce26f594789a69c6ed21",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn/validate-strict.log"
+        },
+        {
+          "content_hash": "7dd745254b4232aa1e7a0087f5158a24d32883bfd154463fc6b514fa6dd1110d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/design.log"
+        },
+        {
+          "content_hash": "33551477ca35cde154ad06f749166e9413a5975bb7a0851a61bf3dbf4bedcdcb",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/proposal.log"
+        },
+        {
+          "content_hash": "1bda0d2a60af014f223ed3c0f67c359d7712b9af4720768b77b761d688aecbf3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/review-completeness.log"
+        },
+        {
+          "content_hash": "e3c2a814f74f2a260f91fac45b535d0c777d5b217e8977cc31612a3c6b70e461",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/tasks.log"
+        },
+        {
+          "content_hash": "06d4fa0bc1575301716622f1e8b89b5b15aa3df5c1a26439a4b364fe3e57bc22",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cairn-precomplete/validate.log"
+        },
+        {
+          "content_hash": "be4514eb9c5b65996d7839e5fa339873dadd8f663d3f276f7ae4334ae6bc2995",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/clippy-all-targets.log"
+        },
+        {
+          "content_hash": "cfca683c757da617a989dc0919d8ee7f662aae658ae9ae8dab64ee324ade63e9",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/consumer-profile.log"
+        },
+        {
+          "content_hash": "1d1d27f56420908966a441b2a5f201addbf3f79085ab869851d3191844e9af36",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-check.log"
+        },
+        {
+          "content_hash": "2e77d67b2c5a9bd0555cd3e8de9e35695f8a4db33c49d01b519277b6d4f9ffef",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-self-test.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-after-octet.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-after-proof-evidence.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/cutover-write-final.log"
+        },
+        {
+          "content_hash": "9338491810aaafd732b53168b77b33bb980649cc66cfbc08cabcdc05d711a1ee",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/full-wrapper.log"
+        },
+        {
+          "content_hash": "58124bf1819b72ae899954f06bbbbba3340394fc867083fa6979a0780205ca65",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-identities.b3"
+        },
+        {
+          "content_hash": "a336ee5747a1e4fbd68be8e4d82fc0732221c50c4613212e1aa8db542cb8b758",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-paths.txt"
+        },
+        {
+          "content_hash": "d4cb43aadfb714ac69efe9495b644a20c7ff886d2f44091f8ef10c0c1c1e1d77",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/generated-sizes.txt"
+        },
+        {
+          "content_hash": "904dc5093172ecbf3ef11c8fd8ff726f9de8672b5b366586f4fed6ce70283a1d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/json-contracts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/json-contracts.log"
+        },
+        {
+          "content_hash": "0ab87dbf2bc5b636a80ff7fbed7ec2c215e4be0b98a87de8fac8faee9ad4a6e0",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-legacy-parity.log"
+        },
+        {
+          "content_hash": "b3e17581133f8d3d26aa942ab3e485e4981b9a7f8374135f711c62864c87f5ba",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-self-test.log"
+        },
+        {
+          "content_hash": "5c5f82b5b07175e6a92b22b89a545f7593ef2943de9049084fcb14bf7ac805ac",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/lifecycle-semantic.log"
+        },
+        {
+          "content_hash": "b05c533e6202387edb37eb7f585108ba3712cbc9c24247bc288996aa11e2e1ef",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/module-index-check.log"
+        },
+        {
+          "content_hash": "3d2032d9af42b5994b73423d6d1f19aadf4a367096e9d1b59e15c45330ba6f2f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/module-index-write.log"
+        },
+        {
+          "content_hash": "9c66d2c4c5bd5e228cc459019a66c74906a7c584f4f32f74646a26b5c51db4db",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-aeneas.log"
+        },
+        {
+          "content_hash": "497fa3a683f246fe7a7610a0a255799f02b995f2525578760aba0892cadf602f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-cutover.log"
+        },
+        {
+          "content_hash": "642f498f8ef6868fac657b268588a9462e13aba2727f1da7421d2846ff314308",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/nix-verification-policy.log"
+        },
+        {
+          "content_hash": "11992d0e0127ff393b6350226be0a1389b1bf972678772f97c593a25f4502b28",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet-status.stderr"
+        },
+        {
+          "content_hash": "2b52ac2ee844f6777700d520e143bca87e8040887f20f3c746d23978e485e443",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet-write-candidate.log"
+        },
+        {
+          "content_hash": "070aebb64be47edc62014da1dd257862b48547ebf5b303fc5269f25d41865a7d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/octet.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-format.log"
+        },
+        {
+          "content_hash": "7661e985a7893aea83deccd93913c7bcc479bb82e979439659ee57cad8369366",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-source.b3"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/profile-typecheck.log"
+        },
+        {
+          "content_hash": "c92435f2d583f1066262205c69bd2f952b9de1d391dcde0b0522f78f4f0cb2c5",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-check.log"
+        },
+        {
+          "content_hash": "df2490952e7139cb8539ac06d51d781d402ede50b50fccb2232bac87eb2a339b",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-ir-check.log"
+        },
+        {
+          "content_hash": "275d3a6797d42d394b9f9367adf92dc771b044f5d2a5569fd42ba55163ce50da",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-ir-write.log"
+        },
+        {
+          "content_hash": "15f997e40daa6a82dc19e018f3fbaf1f6589e3384bbe1736360047087e3f9b94",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/proof-evidence-write.log"
+        },
+        {
+          "content_hash": "1e54456ad67dbc81d5240189591f3a934f69d3a2cd247b528beee0db0d46b343",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/readme-metrics.log"
+        },
+        {
+          "content_hash": "bcf31929c6c57d41c2973b0092a3fc817c3ed402d9380bd77822e48407d397d3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-uncovered-1.log"
+        },
+        {
+          "content_hash": "bcf31929c6c57d41c2973b0092a3fc817c3ed402d9380bd77822e48407d397d3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-uncovered.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-1.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-2.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-3.log"
+        },
+        {
+          "content_hash": "e39f68c65dd5583a63ad173ce8bc893031b1b85eecd70d864c5191c3288621b3",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested-4.log"
+        },
+        {
+          "content_hash": "74847c971632e9f5f558815ab56a9f9ded48d2bf0a68677a6e2db2499d298d9b",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/tracey-untested.log"
+        },
+        {
+          "content_hash": "a01614c7e4bd16da5a4dbd5dd23aa2077872db730304ff7cc44596d1324d8121",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-legacy-parity.log"
+        },
+        {
+          "content_hash": "b66dcbe2c1cd3ff7a4ee5570e77de7660d4a21c718cd54ac9f3c94608713372e",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "079595947e32f4367e7a62c165c9da384f14cc7e1998ef8fade13860e054b891",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/final-2026-09-04/verification-policy-semantic.log"
+        },
+        {
+          "content_hash": "1d1d27f56420908966a441b2a5f201addbf3f79085ab869851d3191844e9af36",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/check.log"
+        },
+        {
+          "content_hash": "cb60db4444647d585f23d77ef0eeab04e93d55adec23c053b9467cd7f52c7897",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/diagnostic-address-drift.log"
+        },
+        {
+          "content_hash": "5cd2f8b9084bc006e020db6a3722b0e9228dd173683dfcd526606bb059e6b541",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/json-contracts-self-test.log"
+        },
+        {
+          "content_hash": "177f5d65cece0d89a4d5a2df344b5a418344580a5d18513ef1916260ccb483c2",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/json-contracts.log"
+        },
+        {
+          "content_hash": "0ab87dbf2bc5b636a80ff7fbed7ec2c215e4be0b98a87de8fac8faee9ad4a6e0",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-legacy-parity.log"
+        },
+        {
+          "content_hash": "f7e48f826bbfb5ff99fb11fa312560fe21267d0994434c4182695cabd9b156b8",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-self-test.log"
+        },
+        {
+          "content_hash": "5c5f82b5b07175e6a92b22b89a545f7593ef2943de9049084fcb14bf7ac805ac",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/lifecycle-semantic.log"
+        },
+        {
+          "content_hash": "794eb9a12360b88d8c5b77925262fd9e3ebd82afd577eca94165048f715503d6",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/nix-cutover.log"
+        },
+        {
+          "content_hash": "af1349b9f5f9a1a6a0404dea36dcc9499bcb25c9adc112b7cc9a93cae41f3262",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/profile-typecheck.log"
+        },
+        {
+          "content_hash": "e4932b7d024a24bb55174ef001b5e65807f11ea3b8e6320d8d88e97fcd7c520d",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/self-test.log"
+        },
+        {
+          "content_hash": "397913a7ced0067fc8753ea901a18485fc7631965fa0f4cf241d69a707c434f9",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/tool-paths.txt"
+        },
+        {
+          "content_hash": "a01614c7e4bd16da5a4dbd5dd23aa2077872db730304ff7cc44596d1324d8121",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-legacy-parity.log"
+        },
+        {
+          "content_hash": "a043aade1db0be9140f7fd47923ec8de16d65b0beaa2663f9fea08899dce2b4f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-self-test.log"
+        },
+        {
+          "content_hash": "079595947e32f4367e7a62c165c9da384f14cc7e1998ef8fade13860e054b891",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/verification-policy-semantic.log"
+        },
+        {
+          "content_hash": "55b77bc6c34af34cbf5e04201bd14eeaf454719d3584a061034b03c3278cc59f",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/evidence/implementation-2026-09-04/write.log"
+        },
+        {
+          "content_hash": "ee988c4d491b91491a791a17ba715648ed20ab281cea1f5a0ba40e064caf54e9",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/proposal.md"
+        },
+        {
+          "content_hash": "c2fb337cae48c3ce6bf83088842f705cf726978625d87163af23d0c011448042",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md"
+        },
+        {
+          "content_hash": "4c8b7f6a23dac481d1242576c05790468fb2e6d7d6a40794b8ee70f0e3c4983e",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/tasks.md"
+        },
+        {
+          "content_hash": "df68bf7862720e4f9b284acd9cb06999188797cff2f0e2a1b3f72336a5a65c97",
+          "exists": true,
+          "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/verification.md"
+        }
+      ],
+      "manifest_hash": "4bb76b4f4fdc141f2a72a3be7a317d9d8312e6d16c5e4bd38183a0a4a7c59b2b"
+    },
+    "kind": "archive",
+    "manifest_hash": "4c9f0f3412fe796d9fe6351b51d075f302e404437b6eb42abab0ba76796d6a05"
+  },
+  "plan_hash": "43e43c50ee6ebf5cdb7e1eeaf12efe5ae42bddee62f4656e4ce6aecc55d1cc36",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "161c3393b97489d1805eab6ac689698074def1efe77dd6736c57b2d6b7117450"
+}

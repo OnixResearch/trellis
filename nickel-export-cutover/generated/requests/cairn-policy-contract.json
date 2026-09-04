@@ -1,0 +1,16 @@
+{
+  "allow_secret_material": true,
+  "contract": "",
+  "dependencies": [
+    "cairn-policy/contracts.ncl",
+    "cairn-policy/generated/cairn-policy.json",
+    "policy-contracts/common.ncl"
+  ],
+  "destination": "nickel-export-cutover/generated/outputs/cairn-policy-contract.json",
+  "family_id": "trellis.json-artifact.cairn-policy",
+  "format": "json",
+  "import_paths": [],
+  "schema": "onix-nickel-export-request/v1",
+  "selector": "",
+  "source": "json-artifacts/cairn-policy-generated.ncl"
+}

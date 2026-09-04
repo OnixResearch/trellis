@@ -1,0 +1,10 @@
+PASS nickel export --format yaml cairn/config.ncl
+PASS lifecycle config fresh cairn/config.yaml
+PASS lifecycle config fresh openspec/config.yaml
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-empty-domains.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-malformed-rules.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-unsafe-generated-path.ncl
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl
+PASS valid lifecycle fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/valid-minimal.ncl
+lifecycle config legacy parity: PASS

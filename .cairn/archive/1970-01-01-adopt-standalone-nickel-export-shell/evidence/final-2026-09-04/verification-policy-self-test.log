@@ -1,0 +1,3 @@
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/policy-fixture-self-test-1311249/invalid-fixture.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/policy-fixture-self-test-1311249/valid-fixture.ncl
+verification policy checker self-test: PASS

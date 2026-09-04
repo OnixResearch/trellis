@@ -1,0 +1,11 @@
+error: missing definition for `name`
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-contracts.ncl:4:3
+  │
+4 │   name | Common.StableId,
+  │   ^^^^ required here
+  │
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-missing-project-name.ncl:8:15
+  │
+8 │     project = { description = "fixture", language = "rust", schema = "spec-driven" },
+  │               ---------------------------------------------------------------------- in this record
+

@@ -1,0 +1,18 @@
+error: non mergeable terms
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/valid-minimal.ncl:8:88
+  │
+8 │     project = { name = "trellis", description = "fixture", language = "rust", schema = "spec-driven" },
+  │                                                                                        ^^^^^^^^^^^^^ cannot merge this expression
+  │
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn/lifecycle-config-fixtures/invalid-unsupported-schema.ncl:3:34
+  │  
+2 │ ╭ (import "valid-minimal.ncl") & {
+3 │ │   compatibility.project.schema = "legacy-openspec",
+  │ │                                  ^^^^^^^^^^^^^^^^^ with this expression
+4 │ │ } | Contracts.Source | Contracts.SourceIntegrity
+  │ ╰─' originally merged here
+  │  
+  = Merge operands have the same merge priority but they can't be combined.
+  = Both values are of type String but they aren't equal.
+  = String values can only be merged if they are equal
+

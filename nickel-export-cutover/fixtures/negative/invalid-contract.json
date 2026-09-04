@@ -1,0 +1,12 @@
+{
+  "schema": "onix-nickel-export-request/v1",
+  "family_id": "trellis.negative.invalid-contract",
+  "source": "source.ncl",
+  "dependencies": [],
+  "import_paths": [],
+  "selector": "value",
+  "contract": "missing-contract.ncl",
+  "format": "raw",
+  "destination": "generated/value.txt",
+  "allow_secret_material": false
+}

@@ -6,7 +6,7 @@ Schema: `module-index-v1`. This index is generated from local deterministic fact
 
 Labels are objective facts, not endorsement scores: `runtime-helper` means the module exposes public runtime functions, `spec-model` means it contains Verus specs, `requirement-covered` means source-local Tracey implementation and verification markers are both present, `test-backed` means source-local tests or proptests are present, `example-backed` means a checked runnable example imports the module, `composition-facade` means the source describes a facade/composite surface, and `trusted-boundary-adjacent` means the proof-gap inventory names the module. Proof-focused runnable examples are documented in [proof-examples.md](proof-examples.md).
 
-Summary: `624` public modules, `589` requirement-covered modules, `16` example-backed modules, `6` trusted-boundary-adjacent modules.
+Summary: `624` public modules, `590` requirement-covered modules, `16` example-backed modules, `6` trusted-boundary-adjacent modules.
 
 | Module | Labels | Examples | Tracey facts | Proof gaps | Source |
 |---|---|---|---|---|---|
@@ -421,7 +421,7 @@ Summary: `624` public modules, `589` requirement-covered modules, `16` example-b
 | `priority_inversion` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `18`, requirements mentions: `0` | — | [`src/priority_inversion.rs`](../src/priority_inversion.rs) |
 | `probability_statistics` | `requirement-covered`, `runtime-helper`, `spec-model` | — | impl: `7`, verify: `7`, requirements mentions: `0` | — | [`src/probability_statistics.rs`](../src/probability_statistics.rs) |
 | `process_state` | `requirement-covered`, `runtime-helper`, `spec-model`, `test-backed` | — | impl: `4`, verify: `33`, requirements mentions: `0` | — | [`src/process_state.rs`](../src/process_state.rs) |
-| `proof` | `declared-public-module` | — | impl: `0`, verify: `0`, requirements mentions: `2` | — | [`src/proof.rs`](../src/proof.rs) |
+| `proof` | `requirement-covered` | — | impl: `6`, verify: `6`, requirements mentions: `2` | — | [`src/proof.rs`](../src/proof.rs) |
 | `proof_gap_boundary_audit` | `requirement-covered`, `spec-model` | — | impl: `11`, verify: `11`, requirements mentions: `0` | — | [`src/proof_gap_boundary_audit.rs`](../src/proof_gap_boundary_audit.rs) |
 | `properties` | `requirement-covered`, `spec-model`, `test-backed` | — | impl: `245`, verify: `468`, requirements mentions: `236` | — | [`src/properties.rs`](../src/properties.rs) |
 | `quepaxa` | `test-backed` | — | impl: `0`, verify: `0`, requirements mentions: `9` | — | [`src/quepaxa.rs`](../src/quepaxa.rs) |

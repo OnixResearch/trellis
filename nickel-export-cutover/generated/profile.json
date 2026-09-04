@@ -1,0 +1,320 @@
+{
+  "authority_baseline": "nickel-export-cutover/generated/library-authority-baseline.json",
+  "cases": [
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": true,
+      "id": "verification-policy",
+      "manifest_path": "nickel-export-cutover/generated/manifests/verification-policy.json",
+      "request_field": "verification_policy",
+      "request_path": "nickel-export-cutover/generated/requests/verification-policy.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": true,
+      "id": "proof-review-policy",
+      "manifest_path": "nickel-export-cutover/generated/manifests/proof-review-policy.json",
+      "request_field": "proof_review_policy",
+      "request_path": "nickel-export-cutover/generated/requests/proof-review-policy.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": true,
+      "id": "cairn-policy",
+      "manifest_path": "nickel-export-cutover/generated/manifests/cairn-policy.json",
+      "request_field": "cairn_policy",
+      "request_path": "nickel-export-cutover/generated/requests/cairn-policy.json"
+    },
+    {
+      "compatibility_destinations": [
+        "openspec/config.yaml"
+      ],
+      "destination_preexisting": true,
+      "id": "lifecycle-config",
+      "manifest_path": "nickel-export-cutover/generated/manifests/lifecycle-config.json",
+      "request_field": "lifecycle_config",
+      "request_path": "nickel-export-cutover/generated/requests/lifecycle-config.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": false,
+      "id": "proof-evidence-contract",
+      "manifest_path": "nickel-export-cutover/generated/manifests/proof-evidence-contract.json",
+      "request_field": "proof_evidence_contract",
+      "request_path": "nickel-export-cutover/generated/requests/proof-evidence-contract.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": false,
+      "id": "octet-baseline-contract",
+      "manifest_path": "nickel-export-cutover/generated/manifests/octet-baseline-contract.json",
+      "request_field": "octet_baseline_contract",
+      "request_path": "nickel-export-cutover/generated/requests/octet-baseline-contract.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": false,
+      "id": "verification-policy-contract",
+      "manifest_path": "nickel-export-cutover/generated/manifests/verification-policy-contract.json",
+      "request_field": "verification_policy_contract",
+      "request_path": "nickel-export-cutover/generated/requests/verification-policy-contract.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": false,
+      "id": "proof-review-policy-contract",
+      "manifest_path": "nickel-export-cutover/generated/manifests/proof-review-policy-contract.json",
+      "request_field": "proof_review_policy_contract",
+      "request_path": "nickel-export-cutover/generated/requests/proof-review-policy-contract.json"
+    },
+    {
+      "compatibility_destinations": [],
+      "destination_preexisting": false,
+      "id": "cairn-policy-contract",
+      "manifest_path": "nickel-export-cutover/generated/manifests/cairn-policy-contract.json",
+      "request_field": "cairn_policy_contract",
+      "request_path": "nickel-export-cutover/generated/requests/cairn-policy-contract.json"
+    }
+  ],
+  "evaluator": {
+    "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+    "version": "1.17.0",
+    "version_output": "nickel-lang-cli nickel 1.17.0 (rev 1320a98)"
+  },
+  "exporter": {
+    "repository": "github.com/OnixResearch/nickel-export",
+    "revision": "257fafc1c746f1faf156207043a4c826bfb16d49"
+  },
+  "invalid_families": [
+    {
+      "dependencies": [
+        "verification-policy/contracts.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "directory": "verification-policy/fixtures",
+      "id": "verification-policy"
+    },
+    {
+      "dependencies": [
+        "proof-review/contracts.ncl",
+        "proof-review/fixtures/valid-minimal.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "directory": "proof-review/fixtures",
+      "id": "proof-review"
+    },
+    {
+      "dependencies": [
+        "cairn-policy/contracts.ncl",
+        "cairn-policy/default.ncl",
+        "cairn-policy/generated/cairn-policy.base.json",
+        "policy-contracts/common.ncl"
+      ],
+      "directory": "cairn-policy/fixtures",
+      "id": "cairn-policy"
+    },
+    {
+      "dependencies": [
+        "cairn/lifecycle-config-contracts.ncl",
+        "cairn/lifecycle-config-fixtures/valid-minimal.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "directory": "cairn/lifecycle-config-fixtures",
+      "id": "lifecycle-config"
+    },
+    {
+      "dependencies": [
+        "json-artifacts/contracts.ncl",
+        "json-artifacts/fixtures/valid-generated-policy.ncl",
+        "json-artifacts/fixtures/valid-octet-baseline.ncl",
+        "json-artifacts/fixtures/valid-proof-evidence.ncl",
+        "verification-policy/contracts.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "directory": "json-artifacts/fixtures",
+      "id": "json-artifacts"
+    }
+  ],
+  "requests": {
+    "cairn_policy": {
+      "allow_secret_material": true,
+      "contract": "",
+      "dependencies": [
+        "cairn-policy/contracts.ncl",
+        "cairn-policy/generated/cairn-policy.base.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "cairn-policy/generated/cairn-policy.json",
+      "family_id": "trellis.cairn-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "cairn-policy/default.ncl"
+    },
+    "cairn_policy_contract": {
+      "allow_secret_material": true,
+      "contract": "",
+      "dependencies": [
+        "cairn-policy/contracts.ncl",
+        "cairn-policy/generated/cairn-policy.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "nickel-export-cutover/generated/outputs/cairn-policy-contract.json",
+      "family_id": "trellis.json-artifact.cairn-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "json-artifacts/cairn-policy-generated.ncl"
+    },
+    "lifecycle_config": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "cairn/lifecycle-config-contracts.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "cairn/config.yaml",
+      "family_id": "trellis.lifecycle-config",
+      "format": "yaml",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "cairn/config.ncl"
+    },
+    "octet_baseline_contract": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "json-artifacts/contracts.ncl",
+        "octet-baseline.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "nickel-export-cutover/generated/outputs/octet-baseline-contract.json",
+      "family_id": "trellis.json-artifact.octet-baseline",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "json-artifacts/octet-baseline.ncl"
+    },
+    "proof_evidence_contract": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "json-artifacts/contracts.ncl",
+        "docs/proof-evidence-bundle.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "nickel-export-cutover/generated/outputs/proof-evidence-contract.json",
+      "family_id": "trellis.json-artifact.proof-evidence",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "json-artifacts/proof-evidence-bundle.ncl"
+    },
+    "proof_review_policy": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "proof-review/contracts.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "proof-review/generated/policy.json",
+      "family_id": "trellis.proof-review-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "proof-review/policy.ncl"
+    },
+    "proof_review_policy_contract": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "proof-review/contracts.ncl",
+        "proof-review/generated/policy.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "nickel-export-cutover/generated/outputs/proof-review-policy-contract.json",
+      "family_id": "trellis.json-artifact.proof-review-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "json-artifacts/proof-review-policy-generated.ncl"
+    },
+    "verification_policy": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "verification-policy/contracts.ncl",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "verification-policy/generated/policy.json",
+      "family_id": "trellis.verification-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "verification-policy/policy.ncl"
+    },
+    "verification_policy_contract": {
+      "allow_secret_material": false,
+      "contract": "",
+      "dependencies": [
+        "verification-policy/contracts.ncl",
+        "verification-policy/generated/policy.json",
+        "policy-contracts/common.ncl"
+      ],
+      "destination": "nickel-export-cutover/generated/outputs/verification-policy-contract.json",
+      "family_id": "trellis.json-artifact.verification-policy",
+      "format": "json",
+      "import_paths": [],
+      "schema": "onix-nickel-export-request/v1",
+      "selector": "",
+      "source": "json-artifacts/verification-policy-generated.ncl"
+    }
+  },
+  "schema": "trellis-nickel-export-cutover/v1",
+  "secret_material_opt_ins": [
+    {
+      "family_id": "trellis.cairn-policy",
+      "marker": "MarkerToken =",
+      "path": "cairn-policy/contracts.ncl",
+      "rationale": "The reviewed contract identifier is policy vocabulary, not a secret value."
+    },
+    {
+      "family_id": "trellis.cairn-policy",
+      "marker": "SECRET=",
+      "path": "cairn-policy/generated/cairn-policy.base.json",
+      "rationale": "The policy rejects this literal in evidence summaries."
+    },
+    {
+      "family_id": "trellis.cairn-policy",
+      "marker": "token=",
+      "path": "cairn-policy/generated/cairn-policy.base.json",
+      "rationale": "The policy rejects this literal in evidence summaries."
+    },
+    {
+      "family_id": "trellis.json-artifact.cairn-policy",
+      "marker": "MarkerToken =",
+      "path": "cairn-policy/contracts.ncl",
+      "rationale": "The wrapper imports the same reviewed policy vocabulary."
+    },
+    {
+      "family_id": "trellis.json-artifact.cairn-policy",
+      "marker": "SECRET=",
+      "path": "cairn-policy/generated/cairn-policy.json",
+      "rationale": "The checked policy rejects this literal in evidence summaries."
+    },
+    {
+      "family_id": "trellis.json-artifact.cairn-policy",
+      "marker": "token=",
+      "path": "cairn-policy/generated/cairn-policy.json",
+      "rationale": "The checked policy rejects this literal in evidence summaries."
+    }
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "schema": "onix-nickel-export-manifest/v1",
+  "generator": "nickel-export-core/v1",
+  "evaluator": {
+    "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+    "version": "1.17.0",
+    "options": [
+      "format=yaml"
+    ],
+    "import_path_policy": "declared_only"
+  },
+  "exports": [
+    {
+      "schema": "onix-nickel-export-receipt/v1",
+      "family_id": "trellis.lifecycle-config",
+      "source": {
+        "path": "cairn/config.ncl",
+        "identity": "b3:cdf385d854d340df6e9d43babc38c77e461c34922c7651a6141b3cba21cfec8f",
+        "bytes": 1158
+      },
+      "dependencies": [
+        {
+          "path": "cairn/lifecycle-config-contracts.ncl",
+          "identity": "b3:022984a508e9b30d666b37f1a8d72af58235198d1444919314cc165d8e6cb28d",
+          "bytes": 1358
+        },
+        {
+          "path": "policy-contracts/common.ncl",
+          "identity": "b3:f52372582bc9d6f6f099d31bb92f59bb9b2bdf87631f2a30cb0b5625af70979a",
+          "bytes": 3058
+        }
+      ],
+      "import_paths": [],
+      "selector": "",
+      "contract": "",
+      "format": "yaml",
+      "output": {
+        "path": "cairn/config.yaml",
+        "identity": "b3:9d4c6f2b7db5b6960de54faf69367ab45a85b53e6a41c35975b476b77d539daf",
+        "bytes": 742
+      },
+      "evaluator": {
+        "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+        "version": "1.17.0",
+        "options": [
+          "format=yaml"
+        ],
+        "import_path_policy": "declared_only"
+      },
+      "diagnostics": [],
+      "non_claim": "Nickel export success proves only exact declared input and output identities under the recorded evaluator descriptor; it does not prove deployability, product-policy conformance, evaluator equivalence, build success, or release eligibility"
+    }
+  ],
+  "manifest_identity": "b3:fa1130335d5f35ba028ba8e4a88a21510835e81928050a1a721381d19bf22de1"
+}

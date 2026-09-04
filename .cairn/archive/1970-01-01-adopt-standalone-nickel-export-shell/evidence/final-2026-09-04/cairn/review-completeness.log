@@ -1,0 +1,26 @@
+{
+  "command": "review completeness",
+  "completeness": {
+    "findings": [],
+    "implementation_refs": [],
+    "receipt_hash": "94c5f12cc3304d4d9d653cf78d3650aa2493c75d84e45e601dbd01e559fda2dc",
+    "requirements": [],
+    "schema_version": "cairn.semantic-review.completeness.v1",
+    "tasks": [
+      "trellis.nickel_export_cutover.authority",
+      "trellis.nickel_export_cutover.boundary",
+      "trellis.nickel_export_cutover.dual_run",
+      "trellis.nickel_export_cutover.rollback",
+      "trellis.nickel_export_cutover.source",
+      "trellis.nickel_export_cutover.validation"
+    ],
+    "valid": true,
+    "verdict": "PASS",
+    "verification_refs": []
+  },
+  "receipt_hash": "ffceaf517021f641baa46fe9cfc920ccb2093fbdce097eefb754c6728f613074",
+  "root": ".",
+  "scope": ".cairn/changes/adopt-standalone-nickel-export-shell",
+  "valid": true,
+  "verdict": "PASS"
+}

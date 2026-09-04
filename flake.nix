@@ -18,6 +18,11 @@
       url = "github:OnixResearch/octet?rev=890f424cd7b1b2015f39c0eb5747f1bd1e576028";
       inputs.crane.follows = "crane";
     };
+    # r[impl trellis.nickel_export_cutover.source]
+    nickel-export = {
+      url = "github:OnixResearch/nickel-export/257fafc1c746f1faf156207043a4c826bfb16d49";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     trellis-consumer-release-src = {
       url = "git+ssh://git@github.com/OnixResearch/trellis.git?rev=1f03111b92cc36aade07359c96773e086908c95f";
       flake = false;
@@ -35,6 +40,7 @@
       flake-utils,
       octet,
       octet-aeneas,
+      nickel-export,
       trellis-consumer-release-src,
       nickel-1-17-0,
       ...
@@ -47,6 +53,7 @@
           overlays = [ (import rust-overlay) ];
         };
         nickel = nickel-1-17-0.packages.${system}.default;
+        nickelExport = nickel-export.packages.${system}.default;
 
         rustToolchain = pkgs.rust-bin.fromRustupToolchainFile ./rust-toolchain.toml;
 
@@ -75,6 +82,7 @@
               || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null
               || (builtins.match ".*/consumer-profile/generated/.*\\.json$" path) != null
               || (builtins.match ".*/aeneas-pilot/.*\\.(json|lean|llbc)$" path) != null
+              || (builtins.match ".*/nickel-export-cutover/.*\\.(json|ncl)$" path) != null
               || (builtins.match ".*/docs/proof-evidence-bundle\\.json$" path) != null
               || (builtins.match ".*/docs/proof-artifact-manifest\\.json$" path) != null;
             isSessionOrLifecycleState = path: (builtins.match ".*/(\\.cairn|\\.pi)(/.*)?" path) != null;
@@ -1093,6 +1101,7 @@
           upstream-verus-corpus = upstreamVerusCorpus;
           verus-upgrade-trial = verusUpgradeTrial;
           octet-aeneas-provider = octetAeneasProvider;
+          nickel-export = nickelExport;
         };
 
         checks = {
@@ -1266,6 +1275,75 @@
                 rustc "$TMPDIR/check-verification-policy.rs" -o "$TMPDIR/check-verification-policy"
                 "$TMPDIR/check-verification-policy"
                 touch $out
+              '';
+
+          # r[verify trellis.nickel_export_cutover.source]
+          # r[verify trellis.nickel_export_cutover.boundary]
+          # r[verify trellis.nickel_export_cutover.authority]
+          # r[verify trellis.nickel_export_cutover.dual_run]
+          # r[verify trellis.nickel_export_cutover.rollback]
+          # r[verify trellis.nickel_export_cutover.validation]
+          nickel-export-cutover =
+            pkgs.runCommand "trellis-nickel-export-cutover"
+              {
+                nativeBuildInputs = [
+                  rustToolchain
+                  pkgs.b3sum
+                  pkgs.clang
+                  pkgs.mold
+                  nickel
+                  nickelExport
+                ];
+                inherit buildInputs;
+              }
+              ''
+                set -euo pipefail
+                test '${nickel-export.rev}' = '257fafc1c746f1faf156207043a4c826bfb16d49'
+                test "$(command -v nickel)" = '${nickel}/bin/nickel'
+                test "$(command -v nickel-export)" = '${nickelExport}/bin/nickel-export'
+
+                source_root="$TMPDIR/source"
+                checker_dir="$TMPDIR/checker"
+                mkdir -p "$source_root" "$checker_dir/src/nickel_export_cutover" "$TMPDIR/cargo-home" "$TMPDIR/cargo-target"
+                cp -R ${src}/. "$source_root/"
+                chmod -R u+w "$source_root"
+                cp ${./flake.nix} "$source_root/flake.nix"
+                mkdir -p "$source_root/cairn" "$source_root/openspec"
+                cp ${./cairn/config.yaml} "$source_root/cairn/config.yaml"
+                cp ${./openspec/config.yaml} "$source_root/openspec/config.yaml"
+                cp ${src}/scripts/check-nickel-export-cutover.rs "$checker_dir/src/main.rs"
+                cp ${src}/scripts/nickel_export_cutover/*.rs "$checker_dir/src/nickel_export_cutover/"
+                cp '${octetConsumerVendorDir}/config.toml' "$TMPDIR/cargo-home/config.toml"
+                cat > "$checker_dir/Cargo.toml" <<'EOF'
+                [package]
+                name = "trellis-nickel-export-cutover-checker"
+                version = "0.1.0"
+                edition = "2024"
+                publish = false
+
+                [dependencies]
+                blake3 = "1"
+                serde = { version = "1", features = ["derive"] }
+                serde_json = "1"
+                EOF
+                export CARGO_HOME="$TMPDIR/cargo-home"
+                export CARGO_TARGET_DIR="$TMPDIR/cargo-target"
+                cargo clippy --quiet --offline --manifest-path "$checker_dir/Cargo.toml" -- -D warnings
+                cargo build --quiet --offline --manifest-path "$checker_dir/Cargo.toml"
+                checker="$CARGO_TARGET_DIR/debug/trellis-nickel-export-cutover-checker"
+                "$checker" \
+                  --root "$source_root" \
+                  --nickel '${nickel}/bin/nickel' \
+                  --nickel-export '${nickelExport}/bin/nickel-export' \
+                  --source-revision '${nickel-export.rev}' \
+                  --check
+                "$checker" \
+                  --root "$source_root" \
+                  --nickel '${nickel}/bin/nickel' \
+                  --nickel-export '${nickelExport}/bin/nickel-export' \
+                  --source-revision '${nickel-export.rev}' \
+                  --self-test
+                touch "$out"
               '';
 
           # Trellis-owned direct dependency and vendored snapshot release profile.
@@ -1766,7 +1844,10 @@
               pre-commit
               nickel
             ])
-            ++ [ verusfmt ];
+            ++ [
+              nickelExport
+              verusfmt
+            ];
 
           inputsFrom = [ verified-logic ];
         };

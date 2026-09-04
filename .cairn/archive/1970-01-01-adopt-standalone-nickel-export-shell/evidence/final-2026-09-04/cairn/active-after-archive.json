@@ -1,0 +1,28 @@
+{
+  "changes": [
+    {
+      "delta_specs": [
+        "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries/specs/repo-index/spec.md"
+      ],
+      "has_design": true,
+      "has_proposal": true,
+      "has_tasks": true,
+      "metadata": {
+        "groups": [],
+        "status": null,
+        "target_date": null
+      },
+      "name": "adopt-cap-std-repo-artifact-boundaries",
+      "path": "./.cairn/changes/adopt-cap-std-repo-artifact-boundaries",
+      "task_counts": {
+        "done": 0,
+        "in_progress": 0,
+        "todo": 7,
+        "total": 7,
+        "unmarked": 0
+      }
+    }
+  ],
+  "layout": "cairn",
+  "root": "."
+}

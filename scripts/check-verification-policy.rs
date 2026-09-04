@@ -9,6 +9,7 @@ use std::process::Command;
 use std::process::Output;
 
 const SELF_TEST_ARG: &str = "--self-test";
+const LEGACY_PARITY_ARG: &str = "--legacy-parity";
 const HELP_ARG: &str = "--help";
 const HELP_SHORT_ARG: &str = "-h";
 const NICKEL_BIN: &str = "nickel";
@@ -179,10 +180,14 @@ fn check_fixture_dir(dir: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn check_all_policies(root: &Path) -> Result<(), String> {
+fn check_all_policies(root: &Path, legacy_parity: bool) -> Result<(), String> {
     for check in POLICY_CHECKS {
         let exported = nickel_export(root, check.source)?;
-        check_fresh(root, check, &exported)?;
+        if legacy_parity {
+            check_fresh(root, check, &exported)?;
+        } else {
+            println!("PASS {} semantic export", check.label);
+        }
     }
     Ok(())
 }
@@ -220,8 +225,19 @@ fn run_self_test(root: &Path) -> Result<(), String> {
     Ok(())
 }
 
+fn run_check(root: &Path, legacy_parity: bool) -> Result<(), String> {
+    check_all_policies(root, legacy_parity)?;
+    check_all_fixtures(root)?;
+    if legacy_parity {
+        println!("verification policy legacy parity: PASS");
+    } else {
+        println!("verification policy semantic check: PASS");
+    }
+    Ok(())
+}
+
 fn print_usage() {
-    println!("usage: check-verification-policy.rs [--self-test]");
+    println!("usage: check-verification-policy.rs [--self-test|--legacy-parity]");
 }
 
 fn main() -> Result<(), String> {
@@ -229,17 +245,13 @@ fn main() -> Result<(), String> {
     std::env::set_current_dir(&root).map_err(|err| format!("failed to cd {}: {err}", root.display()))?;
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.as_slice() {
-        [] => {
-            check_all_policies(&root)?;
-            check_all_fixtures(&root)?;
-            println!("verification policy check: PASS");
-            Ok(())
-        }
+        [] => run_check(&root, false),
+        [arg] if arg == LEGACY_PARITY_ARG => run_check(&root, true),
         [arg] if arg == SELF_TEST_ARG => run_self_test(&root),
         [arg] if arg == HELP_ARG || arg == HELP_SHORT_ARG => {
             print_usage();
             Ok(())
         }
-        _ => Err("usage: check-verification-policy.rs [--self-test]".to_string()),
+        _ => Err("usage: check-verification-policy.rs [--self-test|--legacy-parity]".to_string()),
     }
 }

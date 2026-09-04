@@ -1,0 +1,47 @@
+{
+  "checkers": [
+    {
+      "exemptions": [],
+      "generated_artifact": "verification-policy/generated/policy.json",
+      "inputs": [
+        "src/*.rs"
+      ],
+      "name": "check-coverage",
+      "script": "scripts/check-coverage.rs",
+      "severity": "error"
+    },
+    {
+      "exemptions": [],
+      "generated_artifact": "verification-policy/generated/policy.json",
+      "inputs": [
+        "src/*.rs"
+      ],
+      "name": "check-ensures",
+      "script": "scripts/check-ensures.rs",
+      "severity": "error"
+    },
+    {
+      "exemptions": [],
+      "generated_artifact": "verification-policy/generated/policy.json",
+      "inputs": [
+        "src/chaoscontrol_scheduler.rs",
+        "src/chaoscontrol_fault_schedule.rs"
+      ],
+      "name": "check-iterative-exec",
+      "script": "scripts/check-iterative-exec.rs",
+      "severity": "error"
+    },
+    {
+      "exemptions": [],
+      "generated_artifact": "verification-policy/generated/policy.json",
+      "inputs": [
+        "tests/fixtures/checkers/**"
+      ],
+      "name": "checker-fixtures",
+      "script": "scripts/checker-fixtures.rs",
+      "severity": "error"
+    }
+  ],
+  "generated_artifact": "verification-policy/generated/policy.json",
+  "version": "1"
+}

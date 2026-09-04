@@ -9,6 +9,7 @@ use std::process::Command;
 use std::process::Output;
 
 const SELF_TEST_ARG: &str = "--self-test";
+const LEGACY_PARITY_ARG: &str = "--legacy-parity";
 const HELP_ARG: &str = "--help";
 const HELP_SHORT_ARG: &str = "-h";
 const NICKEL_BIN: &str = "nickel";
@@ -73,6 +74,23 @@ fn check_generated_configs(root: &Path, exported: &[u8]) -> Result<(), String> {
             ));
         }
         println!("PASS lifecycle config fresh {generated}");
+    }
+    Ok(())
+}
+
+fn check_compatibility_configs(root: &Path) -> Result<(), String> {
+    let (canonical, compatibility) =
+        GENERATED_CONFIGS.split_first().ok_or("lifecycle config destinations are empty")?;
+    let canonical_path = root.join(canonical);
+    let canonical_bytes =
+        fs::read(&canonical_path).map_err(|err| format!("failed to read {}: {err}", canonical_path.display()))?;
+    for generated in compatibility {
+        let path = root.join(generated);
+        let bytes = fs::read(&path).map_err(|err| format!("failed to read {}: {err}", path.display()))?;
+        if bytes != canonical_bytes {
+            return Err(format!("lifecycle compatibility destination drift: {generated}"));
+        }
+        println!("PASS lifecycle compatibility destination {generated}");
     }
     Ok(())
 }
@@ -173,16 +191,24 @@ fn run_self_test(root: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn run_check(root: &Path) -> Result<(), String> {
+fn run_check(root: &Path, legacy_parity: bool) -> Result<(), String> {
     let exported = nickel_yaml_export(root)?;
-    check_generated_configs(root, &exported)?;
+    if legacy_parity {
+        check_generated_configs(root, &exported)?;
+    } else {
+        check_compatibility_configs(root)?;
+    }
     check_fixture_dir(&root.join(FIXTURE_DIR))?;
-    println!("lifecycle config check: PASS");
+    if legacy_parity {
+        println!("lifecycle config legacy parity: PASS");
+    } else {
+        println!("lifecycle config semantic check: PASS");
+    }
     Ok(())
 }
 
 fn print_usage() {
-    println!("usage: check-lifecycle-config.rs [--self-test]");
+    println!("usage: check-lifecycle-config.rs [--self-test|--legacy-parity]");
 }
 
 fn main() -> Result<(), String> {
@@ -190,12 +216,13 @@ fn main() -> Result<(), String> {
     std::env::set_current_dir(&root).map_err(|err| format!("failed to cd {}: {err}", root.display()))?;
     let args: Vec<String> = std::env::args().skip(1).collect();
     match args.as_slice() {
-        [] => run_check(&root),
+        [] => run_check(&root, false),
+        [arg] if arg == LEGACY_PARITY_ARG => run_check(&root, true),
         [arg] if arg == SELF_TEST_ARG => run_self_test(&root),
         [arg] if arg == HELP_ARG || arg == HELP_SHORT_ARG => {
             print_usage();
             Ok(())
         }
-        _ => Err("usage: check-lifecycle-config.rs [--self-test]".to_string()),
+        _ => Err("usage: check-lifecycle-config.rs [--self-test|--legacy-parity]".to_string()),
     }
 }

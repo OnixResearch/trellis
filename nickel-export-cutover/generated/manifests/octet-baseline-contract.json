@@ -1,0 +1,60 @@
+{
+  "schema": "onix-nickel-export-manifest/v1",
+  "generator": "nickel-export-core/v1",
+  "evaluator": {
+    "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+    "version": "1.17.0",
+    "options": [
+      "format=json"
+    ],
+    "import_path_policy": "declared_only"
+  },
+  "exports": [
+    {
+      "schema": "onix-nickel-export-receipt/v1",
+      "family_id": "trellis.json-artifact.octet-baseline",
+      "source": {
+        "path": "json-artifacts/octet-baseline.ncl",
+        "identity": "b3:cf1e95c5cc8a9a352d1dfbd83d2e5719bb751a0585edc51381f71e35c613f5bd",
+        "bytes": 102
+      },
+      "dependencies": [
+        {
+          "path": "json-artifacts/contracts.ncl",
+          "identity": "b3:b8a8bc985e0c204ab3f96ad4ecc5209940eebf17b169ae829e903c465de100e6",
+          "bytes": 4405
+        },
+        {
+          "path": "octet-baseline.json",
+          "identity": "b3:44cead77a043d6f303b2d89e1ddb668cd72f5af20e43e55620fd2bb23286511c",
+          "bytes": 1786144
+        },
+        {
+          "path": "policy-contracts/common.ncl",
+          "identity": "b3:f52372582bc9d6f6f099d31bb92f59bb9b2bdf87631f2a30cb0b5625af70979a",
+          "bytes": 3058
+        }
+      ],
+      "import_paths": [],
+      "selector": "",
+      "contract": "",
+      "format": "json",
+      "output": {
+        "path": "nickel-export-cutover/generated/outputs/octet-baseline-contract.json",
+        "identity": "b3:fb0cce6ce1fe45cd678b55e646ce4c1430eefa86901a9dd09560088b80fd2deb",
+        "bytes": 1786144
+      },
+      "evaluator": {
+        "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+        "version": "1.17.0",
+        "options": [
+          "format=json"
+        ],
+        "import_path_policy": "declared_only"
+      },
+      "diagnostics": [],
+      "non_claim": "Nickel export success proves only exact declared input and output identities under the recorded evaluator descriptor; it does not prove deployability, product-policy conformance, evaluator equivalence, build success, or release eligibility"
+    }
+  ],
+  "manifest_identity": "b3:3e49a4b8707e5b6be78a59796d755b7d71d91fa5ee9fb94a0e47b579b590cc8e"
+}

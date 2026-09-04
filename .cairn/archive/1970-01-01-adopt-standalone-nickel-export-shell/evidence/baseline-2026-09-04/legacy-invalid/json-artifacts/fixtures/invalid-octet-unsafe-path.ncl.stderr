@@ -1,0 +1,18 @@
+error: not a function
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/valid-octet-baseline.ncl:15:14
+   │  
+15 │     findings = [{
+   │ ╭──────────────^
+16 │ │     stable_id = "b3:0123456789abcdef",
+17 │ │     semantic_id = "b3:0123456789abcdef",
+18 │ │     identity_status = "computed",
+   · │
+26 │ │     crate_name = "verified_logic",
+27 │ │   }],
+   │ ╰────^ this term is applied, but it is not a function
+   │  
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/invalid-octet-unsafe-path.ncl:3:15
+   │
+ 3 │   findings = [(import "valid-octet-baseline.ncl").findings.0 & {
+   │               ---------------------------------------------- applied here
+

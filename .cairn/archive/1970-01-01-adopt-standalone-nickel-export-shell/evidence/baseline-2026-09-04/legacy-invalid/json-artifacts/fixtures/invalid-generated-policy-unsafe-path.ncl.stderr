@@ -1,0 +1,18 @@
+error: not a function
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/valid-generated-policy.ncl:5:14
+   │  
+ 5 │     checkers = [{
+   │ ╭──────────────^
+ 6 │ │     name = "fixture-checker",
+ 7 │ │     script = "scripts/check-coverage.rs",
+ 8 │ │     inputs = ["src/*.rs"],
+ 9 │ │     generated_artifact = "verification-policy/generated/policy.json",
+10 │ │     severity = "error",
+11 │ │   }],
+   │ ╰────^ this term is applied, but it is not a function
+   │  
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/invalid-generated-policy-unsafe-path.ncl:3:15
+   │
+ 3 │   checkers = [(import "valid-generated-policy.ncl").checkers.0 & {
+   │               ------------------------------------------------ applied here
+

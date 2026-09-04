@@ -1,0 +1,7 @@
+this derivation will be built:
+  /nix/store/h2h6hkywl0lkxrh1gvpw7iw4ilp3fh3w-trellis-aeneas-cross-verifier-pilot.drv
+building '/nix/store/h2h6hkywl0lkxrh1gvpw7iw4ilp3fh3w-trellis-aeneas-cross-verifier-pilot.drv'...
+trellis-aeneas-cross-verifier-pilot> aeneas cross-verifier passed: 2 theorems, receipt b3:baa04429d7c1eab4e0a984017f5a29bd02de7ced8aeeebe07bfb003027bcbc04, manifest b3:1c1ffd9ccbd8c2cd8de455ed4da6b9cc685fd589d0dc5e8c3c007c34046d49f9
+trellis-aeneas-cross-verifier-pilot> aeneas cross-verifier self-test passed: trellis.abs-diff.aeneas-cross-verifier-v1 positive profile, 18 negative cases
+trellis-aeneas-cross-verifier-pilot> aeneas cross-verifier passed: 2 theorems, receipt b3:baa04429d7c1eab4e0a984017f5a29bd02de7ced8aeeebe07bfb003027bcbc04, manifest b3:1c1ffd9ccbd8c2cd8de455ed4da6b9cc685fd589d0dc5e8c3c007c34046d49f9
+trellis-aeneas-cross-verifier-pilot> aeneas cross-verifier self-test passed: trellis.abs-diff.aeneas-cross-verifier-v1 positive profile, 18 negative cases

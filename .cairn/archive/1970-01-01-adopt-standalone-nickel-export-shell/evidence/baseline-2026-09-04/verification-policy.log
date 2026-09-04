@@ -1,0 +1,27 @@
+PASS nickel export verification-policy/policy.ncl
+PASS verification policy fresh verification-policy/generated/policy.json
+PASS nickel export proof-review/policy.ncl
+PASS proof-review policy fresh proof-review/generated/policy.json
+PASS nickel export cairn-policy/default.ncl
+PASS cairn policy fresh cairn-policy/generated/cairn-policy.json
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-duplicate-checker.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-empty-checkers.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-missing-exemption-owner.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-unsafe-path.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-unsupported-severity.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/valid-minimal.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-dangling-mode.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-dangling-rule-reference.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-dangling-validation-gate.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-duplicate-rule.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-empty-rules.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/invalid-unsupported-severity.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/proof-review/fixtures/valid-minimal.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/invalid-artifact-dependency.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/invalid-duplicate-marker.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl
+PASS invalid fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/invalid-replay-group-case.ncl
+PASS valid fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/cairn-policy/fixtures/valid-minimal.ncl
+verification policy fixture checks: PASS
+verification policy check: PASS

@@ -12,7 +12,7 @@ are listed in `openspec/specs/verification-gaps/spec.md` so any weaker
 bridge stays explicit. Requirement coverage is tracked by
 [Tracey](https://tracey.bearcove.eu/).
 
-**11098 Verus proofs · 5216 tests · 2264 requirements · 624 modules · 16 trusted/proof-gap boundaries**
+**11098 Verus proofs · 5216 tests · 2270 requirements · 624 modules · 16 trusted/proof-gap boundaries**
 
 Trellis is an active research library. APIs, proof inventories, and verifier
 pins may evolve; each verification claim remains scoped to the exact source,
@@ -642,7 +642,9 @@ nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').oc
 ./scripts/check-coverage.rs   # every pub fn has r[impl] annotation
 ./scripts/check-ensures.rs    # every pub fn in verus! has ensures
 ./scripts/checker-fixtures.rs # valid/invalid regression fixtures for checker behavior
-./scripts/check-verification-policy.rs # Nickel policy typecheck/export freshness
+./scripts/check-verification-policy.rs # Trellis policy semantics and fixtures
+./scripts/check-nickel-export-cutover.rs --check # standalone exact-byte freshness and legacy parity
+./scripts/check-nickel-export-cutover.rs --self-test # fail-closed exporter controls
 ./scripts/check-readme-module-catalog.rs # README module catalog drift and fixture self-test
 ./scripts/check-crate-metadata.rs # Cargo package metadata discoverability and local path validation
 ./scripts/check-module-guide.rs # task-oriented module guide link drift and fixture self-test
@@ -663,12 +665,19 @@ cargo run --quiet --bin proof_evidence_ir -- check # deterministic proof-evidenc
 ./scripts/check-aeneas-cross-verifier.rs --check # exact source, generated model, theorem, trust, and receipt linkage
 ./scripts/check-aeneas-cross-verifier.rs --self-test # positive profile plus 18 tamper and classification cases
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').aeneas-cross-verifier-pilot --no-link -L
+nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').nickel-export-cutover --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').upstream-verus-corpus --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verusfmt-ratchet --no-link -L
 nix build .#checks.$(nix eval --raw --impure --expr 'builtins.currentSystem').verus-upgrade-trial --no-link -L
 ```
 
 Proof configuration uses the exact reviewed Nickel cohort. See [docs/nickel-toolchain.md](docs/nickel-toolchain.md).
+
+The standalone export rail pins `OnixResearch/nickel-export` revision `257fafc1c746f1faf156207043a4c826bfb16d49`. It compares nine exact outputs and 31 invalid fixtures.
+
+Trellis retains policy, proof, destination, and release authority. The existing checkers remain available through explicit legacy-parity rollback modes.
+
+See [docs/nickel-export-cutover.md](docs/nickel-export-cutover.md) for the checked profile, commands, and non-claims.
 
 The Aeneas pilot selects only `src/arithmetic.rs::abs_diff` from normal Cargo macro erasure. It does not use a copied Rust function.
 
@@ -807,3 +816,4 @@ Earlier grants remain valid, and third-party references retain their own terms. 
 - [rustc-dev-guide: Implicit caller location](https://rustc-dev-guide.rust-lang.org/backend/implicit-caller-location.html) — design reference for finite caller-location metadata and reify-shim behavior only; no rustc implementation or codegen claim transfers.
 - [rustc-dev-guide: Attribute Parsing](https://rustc-dev-guide.rust-lang.org/hir/attribute-parsing.html) — design reference for inert parser classes and policy metadata only; no macro, token-parser, diagnostics, stabilization, or frontend claim transfers.
 - [rustc-dev-guide: Libraries and metadata](https://rustc-dev-guide.rust-lang.org/backend/libs-and-metadata.html) — design reference for rlib/dylib/rmeta capabilities, rustc identity fields, encoded MIR, and pipelining only; no archive, hash-security, linker, LTO, or build-system claim transfers.
+- [OnixResearch/nickel-export](https://github.com/OnixResearch/nickel-export) at `257fafc1c746f1faf156207043a4c826bfb16d49` — exact export, identity, diagnostic, and freshness mechanism; Trellis policy, proof, and release authority do not transfer.

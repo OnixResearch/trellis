@@ -1,0 +1,18 @@
+error: not a function
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/valid-proof-evidence.ncl:5:13
+   │  
+ 5 │     records = [{
+   │ ╭─────────────^
+ 6 │ │     scope = "module:fixture",
+ 7 │ │     evidence_tier = "local-proof-summary",
+ 8 │ │     requirement_ids = ["fixture.req"],
+   · │
+22 │ │     non_claims = ["not release approval", "not whole-program correctness", "not third-party conformance"],
+23 │ │   }],
+   │ ╰────^ this term is applied, but it is not a function
+   │  
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/invalid-proof-overbroad-claim.ncl:3:14
+   │
+ 3 │   records = [(import "valid-proof-evidence.ncl").records.0 & { claims = ["release approval for production safety"] }],
+   │              --------------------------------------------- applied here
+

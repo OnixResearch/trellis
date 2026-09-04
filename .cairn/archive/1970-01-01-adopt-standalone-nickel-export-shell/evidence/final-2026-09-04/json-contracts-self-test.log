@@ -1,0 +1,3 @@
+PASS invalid json artifact fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/json-artifact-contract-self-test-1311534/invalid-fixture.ncl
+PASS valid json artifact fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/json-artifact-contract-self-test-1311534/valid-fixture.ncl
+json artifact contract checker self-test: PASS

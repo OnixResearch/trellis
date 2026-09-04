@@ -1,0 +1,150 @@
+{
+  "actions": [
+    {
+      "description": "merge delta spec into main specs: ./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md",
+      "kind": "sync_delta_spec",
+      "path": "./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md"
+    }
+  ],
+  "blocked": false,
+  "change": "adopt-standalone-nickel-export-shell",
+  "cross_repo_dependencies": {
+    "blocked_count": 0,
+    "dependency_count": 0,
+    "input_hash": "e890d3bebd6f9f984387d26d4c6685963b96d2172fdf1df42756927cfa255a9c",
+    "non_claims": [
+      "dependency satisfaction proves presented receipt linkage only",
+      "dependency satisfaction does not prove upstream correctness or remote trust",
+      "dependency satisfaction does not prove downstream integration correctness or release eligibility"
+    ],
+    "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+    "receipt_hash": "b37bae535823028673cb011a8f08a9b26fbfca1414a5b5141892f75699ce5c01",
+    "rows": [],
+    "satisfied_count": 0,
+    "schema": "cairn.cross-repo-dependency-receipt.v1",
+    "valid": true,
+    "verdict": "PASS"
+  },
+  "cross_repo_evidence_issues": [],
+  "delta_specs": [
+    "./.cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md"
+  ],
+  "dry_run": false,
+  "input_hash": "0ac4b7b0448395ce429e5c2e4ab2d7cc7c947ed4d939e5bcc4dac9482aebfa1f",
+  "layout": "cairn",
+  "merge_preflight": {
+    "documents": [
+      {
+        "accepted_before_exists": false,
+        "accepted_before_hash": "c5be16ce8b72581fe20e0cdef0dbd3001f95f60fdacae721c281bc140d4659a2",
+        "blocked": false,
+        "changed": true,
+        "delta_hash": "c2fb337cae48c3ce6bf83088842f705cf726978625d87163af23d0c011448042",
+        "destination": ".cairn/specs/nickel-export-infrastructure/spec.md",
+        "diagnostics": [],
+        "expected_after_hash": "e6458321ebb987b25f165768e39b24e1f90ec2081091cc078e41aabb0d069d81",
+        "operations": [
+          {
+            "block_hash": "aae0c5ae6b854ae4034b9f4eb551301e33a136c1962ecf43e57ea373f5b48820",
+            "heading": "### Requirement: Standalone shell source is immutable",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.source"
+          },
+          {
+            "block_hash": "e9ec753d5db2e82bfcee0a0c49dc5d601deea7ba00639e3c97aaa68258b2cd79",
+            "heading": "### Requirement: External execution remains a checker-shell concern",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.boundary"
+          },
+          {
+            "block_hash": "40713227359e51867c4027e45c4fdfc078635a13078caa60f9025c80a9bf60ac",
+            "heading": "### Requirement: Trellis proof and policy authority is retained",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.authority"
+          },
+          {
+            "block_hash": "b1cd7c471907785ea6b0e748d4204d2aa412ec621456b09d7a25668a4cab3dfc",
+            "heading": "### Requirement: Migration dual-runs all current output families",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.dual_run"
+          },
+          {
+            "block_hash": "4e249f0969b67f058865570aa6742e32a3c9319fbf1300ebc66b41e929bdff57",
+            "heading": "### Requirement: Legacy checkers provide fail-closed rollback",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.rollback"
+          },
+          {
+            "block_hash": "ab329c0db1607c7da09025cf12fb782df952f54e4ad34c44a2216389c37bd02b",
+            "heading": "### Requirement: Migration validation preserves non-claims",
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.validation"
+          }
+        ],
+        "outcomes": [
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.source",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.boundary",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.authority",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.dual_run",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.rollback",
+            "state": "applied"
+          },
+          {
+            "kind": "added",
+            "requirement_id": "trellis.nickel_export_cutover.validation",
+            "state": "applied"
+          }
+        ],
+        "source": ".cairn/changes/adopt-standalone-nickel-export-shell/specs/nickel-export-infrastructure/spec.md"
+      }
+    ]
+  },
+  "mutated": true,
+  "mutation_manifest": {
+    "after": {
+      "entries": [
+        {
+          "content_hash": "e6458321ebb987b25f165768e39b24e1f90ec2081091cc078e41aabb0d069d81",
+          "exists": true,
+          "path": "./.cairn/specs/nickel-export-infrastructure/spec.md"
+        }
+      ],
+      "manifest_hash": "e859a016f80c783a7dc7e0103731a1892afaca7a54fbd313eb9978df4f7793b3"
+    },
+    "before": {
+      "entries": [
+        {
+          "content_hash": null,
+          "exists": false,
+          "path": "./.cairn/specs/nickel-export-infrastructure/spec.md"
+        }
+      ],
+      "manifest_hash": "0a4f287022025ef62a9afb382472620a88541322fe8662a3fb5060b627db7888"
+    },
+    "kind": "sync",
+    "manifest_hash": "d9aaa9c2dcea974d255b667c90b839c59494d1e56348e9f0f850bc73ef3e6514"
+  },
+  "plan_hash": "8249837face2c92c1640df587d6d97d24fe6151dadf44427b91c1f14e937d7d7",
+  "policy": "cairn-default",
+  "policy_hash": "8280151b7a53822eed460149ecb600bf11418d7463c935e0742009b334f4e7dd",
+  "reasons": [],
+  "receipt_hash": "94743a5a6640d8ccff8bab8ae1051ce1f748c1637cf40163b4463f676b77d585"
+}

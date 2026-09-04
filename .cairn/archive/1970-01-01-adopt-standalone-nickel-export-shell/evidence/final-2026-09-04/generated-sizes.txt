@@ -1,0 +1,26 @@
+    564 nickel-export-cutover/generated/library-authority-baseline.json
+   2206 nickel-export-cutover/generated/manifests/cairn-policy-contract.json
+   2155 nickel-export-cutover/generated/manifests/cairn-policy.json
+   1927 nickel-export-cutover/generated/manifests/lifecycle-config.json
+   2184 nickel-export-cutover/generated/manifests/octet-baseline-contract.json
+   2199 nickel-export-cutover/generated/manifests/proof-evidence-contract.json
+   2216 nickel-export-cutover/generated/manifests/proof-review-policy-contract.json
+   1945 nickel-export-cutover/generated/manifests/proof-review-policy.json
+   2230 nickel-export-cutover/generated/manifests/verification-policy-contract.json
+   1966 nickel-export-cutover/generated/manifests/verification-policy.json
+ 162466 nickel-export-cutover/generated/outputs/cairn-policy-contract.json
+1786144 nickel-export-cutover/generated/outputs/octet-baseline-contract.json
+  25578 nickel-export-cutover/generated/outputs/proof-evidence-contract.json
+   6886 nickel-export-cutover/generated/outputs/proof-review-policy-contract.json
+   1245 nickel-export-cutover/generated/outputs/verification-policy-contract.json
+  11655 nickel-export-cutover/generated/profile.json
+    497 nickel-export-cutover/generated/requests/cairn-policy-contract.json
+    445 nickel-export-cutover/generated/requests/cairn-policy.json
+    376 nickel-export-cutover/generated/requests/lifecycle-config.json
+    475 nickel-export-cutover/generated/requests/octet-baseline-contract.json
+    494 nickel-export-cutover/generated/requests/proof-evidence-contract.json
+    513 nickel-export-cutover/generated/requests/proof-review-policy-contract.json
+    393 nickel-export-cutover/generated/requests/proof-review-policy.json
+    527 nickel-export-cutover/generated/requests/verification-policy-contract.json
+    414 nickel-export-cutover/generated/requests/verification-policy.json
+2017700 total

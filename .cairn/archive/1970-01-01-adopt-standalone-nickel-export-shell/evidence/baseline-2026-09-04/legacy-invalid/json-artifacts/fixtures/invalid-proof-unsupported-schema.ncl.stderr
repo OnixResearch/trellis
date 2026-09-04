@@ -1,0 +1,18 @@
+error: non mergeable terms
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/valid-proof-evidence.ncl:3:20
+  │
+3 │   schema_version = "trellis-proof-evidence-v1",
+  │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^ cannot merge this expression
+  │
+  ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/json-artifacts/fixtures/invalid-proof-unsupported-schema.ncl:3:20
+  │  
+2 │ ╭ (import "valid-proof-evidence.ncl") & {
+3 │ │   schema_version = "trellis-proof-evidence-v2",
+  │ │                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^ with this expression
+4 │ │ } | Contracts.ProofEvidenceBundle | Contracts.ProofEvidenceBundleIntegrity
+  │ ╰─' originally merged here
+  │  
+  = Merge operands have the same merge priority but they can't be combined.
+  = Both values are of type String but they aren't equal.
+  = String values can only be merged if they are equal
+

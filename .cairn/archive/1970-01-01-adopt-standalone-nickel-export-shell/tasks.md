@@ -1,0 +1,11 @@
+## Tasks
+
+- [x] [serial] Capture baseline checker commands, exact verification-policy/lifecycle/artifact-contract outputs, invalid-fixture behavior, and focused positive/negative results before changing generation logic. r[trellis.nickel_export_cutover.boundary] r[trellis.nickel_export_cutover.validation]
+- [x] [serial] Pin the standalone source, Nix lock, and evaluator cohort to `github.com/OnixResearch/nickel-export` revision `257fafc1c746f1faf156207043a4c826bfb16d49`; reject floating and release-path overrides. r[trellis.nickel_export_cutover.source]
+- [x] [serial] Add a thin Rust/Nix checker-shell adapter for canonical requests, exact identities, structured diagnostics, and `--check` freshness without changing verified modules. r[trellis.nickel_export_cutover.boundary]
+- [x] [parallel] Add a boundary rail proving Verus modules and pure proof models remain free of standalone-shell, filesystem, process, environment, and evaluator authority. r[trellis.nickel_export_cutover.authority]
+- [x] [serial] Dual-run verification-policy bytes, lifecycle YAML, JSON artifact contracts, and invalid fixtures over identical source/dependency/evaluator/selector/contract inputs. r[trellis.nickel_export_cutover.dual_run]
+- [x] [parallel] Add positive multi-format/freshness fixtures and negative malformed request, invalid contract, stale output, tamper, path escape, symlink, evaluator drift, secret marker, and proof/release overclaim fixtures. r[trellis.nickel_export_cutover.validation]
+- [x] [serial] Keep existing checker scripts authoritative for one complete validation cycle and record fail-closed rollback plus paired regression fixtures for every classified difference. r[trellis.nickel_export_cutover.rollback]
+- [x] [serial] Run focused before/after checker tests, source-pin and checked-output freshness checks, `./scripts/verify.rs`, `./scripts/verus.sh src/lib.rs`, direct Tracey coverage, Cairn validation/gates, and relevant Nix checks; capture exact blockers without weakening proof policy. r[trellis.nickel_export_cutover.validation]
+- [x] [serial] Remove only duplicate generic export mechanics after parity evidence passes, retaining Trellis semantic checks, proof gates, destinations, and rollback. r[trellis.nickel_export_cutover.authority] r[trellis.nickel_export_cutover.rollback]

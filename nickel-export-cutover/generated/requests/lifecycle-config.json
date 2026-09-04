@@ -1,0 +1,15 @@
+{
+  "allow_secret_material": false,
+  "contract": "",
+  "dependencies": [
+    "cairn/lifecycle-config-contracts.ncl",
+    "policy-contracts/common.ncl"
+  ],
+  "destination": "cairn/config.yaml",
+  "family_id": "trellis.lifecycle-config",
+  "format": "yaml",
+  "import_paths": [],
+  "schema": "onix-nickel-export-request/v1",
+  "selector": "",
+  "source": "cairn/config.ncl"
+}

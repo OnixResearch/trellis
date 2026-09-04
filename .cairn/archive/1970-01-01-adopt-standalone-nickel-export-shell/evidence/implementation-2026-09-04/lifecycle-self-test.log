@@ -1,0 +1,3 @@
+PASS invalid lifecycle fixture rejected /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/lifecycle-config-self-test-1275190/invalid-fixture.ncl
+PASS valid lifecycle fixture /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/target-test/lifecycle-config-self-test-1275190/valid-fixture.ncl
+lifecycle config checker self-test: PASS

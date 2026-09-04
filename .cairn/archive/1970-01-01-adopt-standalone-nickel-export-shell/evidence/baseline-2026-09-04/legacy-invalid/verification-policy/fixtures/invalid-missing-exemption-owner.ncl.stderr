@@ -1,0 +1,11 @@
+error: missing definition for `owner`
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/contracts.ncl:5:3
+   │
+ 5 │   owner | Common.NonEmptyString,
+   │   ^^^^^ required here
+   │
+   ┌─ /home/brittonr/git/OnixResearch/.worktrees/trellis-nickel-export-20260904/verification-policy/fixtures/invalid-missing-exemption-owner.ncl:11:19
+   │
+11 │     exemptions = [{ scope = "src/generated.rs", reason = "fixture", expires = "2026-12-31" }],
+   │                   -------------------------------------------------------------------------- in this record
+

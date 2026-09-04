@@ -1,0 +1,55 @@
+{
+  "schema": "onix-nickel-export-manifest/v1",
+  "generator": "nickel-export-core/v1",
+  "evaluator": {
+    "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+    "version": "1.17.0",
+    "options": [
+      "format=json"
+    ],
+    "import_path_policy": "declared_only"
+  },
+  "exports": [
+    {
+      "schema": "onix-nickel-export-receipt/v1",
+      "family_id": "trellis.verification-policy",
+      "source": {
+        "path": "verification-policy/policy.ncl",
+        "identity": "b3:293ad2c78eb8991c8c21fd79adacf18944eff71640236ae413acd77f62129cf0",
+        "bytes": 1149
+      },
+      "dependencies": [
+        {
+          "path": "policy-contracts/common.ncl",
+          "identity": "b3:f52372582bc9d6f6f099d31bb92f59bb9b2bdf87631f2a30cb0b5625af70979a",
+          "bytes": 3058
+        },
+        {
+          "path": "verification-policy/contracts.ncl",
+          "identity": "b3:c69291b8ad8639f0c3e085b18bfafe0a51cbc7d3455fc66d7776f694983198b6",
+          "bytes": 1054
+        }
+      ],
+      "import_paths": [],
+      "selector": "",
+      "contract": "",
+      "format": "json",
+      "output": {
+        "path": "verification-policy/generated/policy.json",
+        "identity": "b3:064615f9e4034e337e102e51e5fb9c010d82137b9f4a4f64ea9113aee4e35ab3",
+        "bytes": 1245
+      },
+      "evaluator": {
+        "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+        "version": "1.17.0",
+        "options": [
+          "format=json"
+        ],
+        "import_path_policy": "declared_only"
+      },
+      "diagnostics": [],
+      "non_claim": "Nickel export success proves only exact declared input and output identities under the recorded evaluator descriptor; it does not prove deployability, product-policy conformance, evaluator equivalence, build success, or release eligibility"
+    }
+  ],
+  "manifest_identity": "b3:060ca1e666cb91a80bc778d54347f99c921d09a56c96a3d33cd2e422ffd645fa"
+}

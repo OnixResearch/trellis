@@ -1,0 +1,30 @@
+this derivation will be built:
+  /nix/store/ajffmkhk53602v33wcdrdcn46pwcr0js-verification-policy.drv
+building '/nix/store/ajffmkhk53602v33wcdrdcn46pwcr0js-verification-policy.drv'...
+verification-policy> PASS nickel export verification-policy/policy.ncl
+verification-policy> PASS verification policy semantic export
+verification-policy> PASS nickel export proof-review/policy.ncl
+verification-policy> PASS proof-review policy semantic export
+verification-policy> PASS nickel export cairn-policy/default.ncl
+verification-policy> PASS cairn policy semantic export
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/invalid-duplicate-checker.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/invalid-empty-checkers.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/invalid-missing-exemption-owner.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/invalid-unsafe-path.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/verification-policy/fixtures/valid-minimal.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-dangling-mode.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-dangling-rule-reference.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-dangling-validation-gate.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-duplicate-rule.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-empty-rules.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/invalid-unsupported-severity.ncl
+verification-policy> PASS valid fixture /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/proof-review/fixtures/valid-minimal.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/invalid-artifact-dependency.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/invalid-determinism-surface-coverage.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/invalid-duplicate-marker.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/invalid-receipt-schema-hash-field.ncl
+verification-policy> PASS invalid fixture rejected /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/invalid-replay-group-case.ncl
+verification-policy> PASS valid fixture /nix/store/6gvxc96kpszl5q7n2mzmhygw9wnbpss4-source/cairn-policy/fixtures/valid-minimal.ncl
+verification-policy> verification policy fixture checks: PASS
+verification-policy> verification policy semantic check: PASS

@@ -1,0 +1,60 @@
+{
+  "schema": "onix-nickel-export-manifest/v1",
+  "generator": "nickel-export-core/v1",
+  "evaluator": {
+    "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+    "version": "1.17.0",
+    "options": [
+      "format=json"
+    ],
+    "import_path_policy": "declared_only"
+  },
+  "exports": [
+    {
+      "schema": "onix-nickel-export-receipt/v1",
+      "family_id": "trellis.json-artifact.proof-review-policy",
+      "source": {
+        "path": "json-artifacts/proof-review-policy-generated.ncl",
+        "identity": "b3:336437367245bc1aa40f09763d300d2e8702fefa8df37168b9f14b5499434b34",
+        "bytes": 154
+      },
+      "dependencies": [
+        {
+          "path": "policy-contracts/common.ncl",
+          "identity": "b3:f52372582bc9d6f6f099d31bb92f59bb9b2bdf87631f2a30cb0b5625af70979a",
+          "bytes": 3058
+        },
+        {
+          "path": "proof-review/contracts.ncl",
+          "identity": "b3:c3458aaf1c899f54f864b3e055259dc0ff9915f3914d5c82298de4ff592b8778",
+          "bytes": 3612
+        },
+        {
+          "path": "proof-review/generated/policy.json",
+          "identity": "b3:7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+          "bytes": 6886
+        }
+      ],
+      "import_paths": [],
+      "selector": "",
+      "contract": "",
+      "format": "json",
+      "output": {
+        "path": "nickel-export-cutover/generated/outputs/proof-review-policy-contract.json",
+        "identity": "b3:7e658d97c1c7959b237e6dc0be2a3665825dd3264221d1b5bdfbd8c592cc6aba",
+        "bytes": 6886
+      },
+      "evaluator": {
+        "identity": "github:nickel-lang/nickel@1320a983e6c3d1e2fb53dd2464b084b4903b1426",
+        "version": "1.17.0",
+        "options": [
+          "format=json"
+        ],
+        "import_path_policy": "declared_only"
+      },
+      "diagnostics": [],
+      "non_claim": "Nickel export success proves only exact declared input and output identities under the recorded evaluator descriptor; it does not prove deployability, product-policy conformance, evaluator equivalence, build success, or release eligibility"
+    }
+  ],
+  "manifest_identity": "b3:120b3415a718e7a4e4326281fbd5505fe5009b289e8c89b498605ea9312ea407"
+}

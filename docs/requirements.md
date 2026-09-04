@@ -13441,3 +13441,23 @@ Evidence MUST NOT claim verifier independence, semantic equivalence, translation
 
 r[trellis.aeneas_cross_verifier.final_validation]
 Closeout MUST pass exact-source generation, both positive theorems, false and vacuous controls, trust audit, freshness, tamper, Octet, Verus, Tracey, Nix, and Cairn gates.
+
+## Standalone Nickel Export Shell
+
+r[trellis.nickel_export_cutover.source]
+Release inputs MUST pin Nickel export revision `257fafc1c746f1faf156207043a4c826bfb16d49` and the exact Nickel 1.17.0 evaluator cohort. Release checks MUST reject floating or local overrides.
+
+r[trellis.nickel_export_cutover.boundary]
+Only Trellis checker shells MAY invoke the exporter, read source files, run Nickel, or write destinations. Verified modules and pure proof models MUST NOT gain that authority.
+
+r[trellis.nickel_export_cutover.authority]
+Trellis MUST retain policy meaning, proof-corpus semantics, Verus and Tracey gates, fixture expectations, destinations, and release decisions after export.
+
+r[trellis.nickel_export_cutover.dual_run]
+Legacy and standalone paths MUST use identical declared inputs. Verification policy, lifecycle YAML, and JSON contract outputs MUST match by exact bytes and BLAKE3 identity.
+
+r[trellis.nickel_export_cutover.rollback]
+Legacy checkers MUST remain required through one complete positive and negative cycle. Any output or diagnostic drift MUST keep legacy behavior authoritative and fail closed.
+
+r[trellis.nickel_export_cutover.validation]
+Validation MUST cover exact output, freshness, malformed requests, invalid contracts, stale and tampered outputs, path escape, symlinks, evaluator drift, secret markers, and proof or release overclaims.

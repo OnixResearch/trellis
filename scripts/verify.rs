@@ -241,7 +241,21 @@ fn main() -> std::process::ExitCode {
         "✗ Aspen evidence index drift detected",
     );
     runner.run_status(
-        "Nickel policy freshness and fixtures",
+        "Standalone Nickel export exact-byte cutover",
+        "./scripts/check-nickel-export-cutover.rs",
+        ["--check"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Standalone Nickel export negative controls",
+        "./scripts/check-nickel-export-cutover.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Nickel policy semantics and fixtures",
         "./scripts/check-verification-policy.rs",
         std::iter::empty::<&str>(),
         "",

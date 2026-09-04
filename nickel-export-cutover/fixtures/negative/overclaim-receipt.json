@@ -1,0 +1,8 @@
+{
+  "schema": "onix-nickel-export-receipt/v1",
+  "family_id": "trellis.negative.overclaim",
+  "claims": [
+    "Trellis proof correctness",
+    "release eligibility"
+  ]
+}
