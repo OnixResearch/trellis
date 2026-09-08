@@ -1,8 +1,11 @@
 # Agent Notes
 
-## Verification
-- Fresh local reruns on the current tree: `cargo test --quiet` passes (`3839 passed` + `13` doc tests), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`7465 verified, 0 errors`).
-- Fresh direct Tracey reruns are green: `tracey query uncovered` returns `0 uncovered out of 1542 rules` and `tracey query untested` returns `0 untested out of 1542 rules`.
+## Recorded verification observations
+
+These saved notes are not current-tree acceptance evidence. Inspect the current revision's required check outputs before claiming a fresh result.
+
+- A prior local run recorded: `cargo test --quiet` passes (`3839 passed` + `13` doc tests), `cargo clippy --all-targets -- -D warnings` passes, and `./scripts/verus.sh src/lib.rs` passes (`7465 verified, 0 errors`).
+- A prior direct Tracey run recorded: `tracey query uncovered` returns `0 uncovered out of 1542 rules` and `tracey query untested` returns `0 untested out of 1542 rules`.
 - `./scripts/verify.rs` can still fail transiently during Tracey daemon auto-start with `Error: Cancelled` even when the later direct uncovered/untested queries are green; rerun or capture the direct Tracey commands before claiming a fresh full-tree green snapshot.
 
 ## Tooling gotchas
@@ -64,7 +67,7 @@
 - `src/web_of_trust_policy.rs` closed most cleanly by modeling threshold counting over distinct final-hop attestation indices already deduped by introducer digest, while each candidate's qualification came from a fixed-final-hop chain search. That kept repeated-final-hop / `I = S` rejection inside `chain_valid_at_spec(...)` instead of duplicating simple-path reasoning in the policy layer.
 - `src/properties.rs` threshold-dedup proofs closed best at the threshold scan-state layer, not by mutating attestation sets: once `seen_introducer_spec(...)` already contains an introducer digest, a later same-digest edge is semantically inert for both the remaining count and the remaining accept/reject decision. Use direct duplicate-attestation regression tests to cover the end-to-end "multiple edges vs one counted edge" scenario.
 - For archived evidence that a human reviewer must read through pi's truncated file views, avoid one giant review packet. Split semantic diff evidence into small per-file packets under `openspec/changes/archive/<date>-<change>/evidence/`, add a tiny `review-index.md`, add a `validation-review-packet.txt` plus `tasks-review-packet.txt`, and make `cargo-test.txt` a concise command+count transcript with the exact `CARGO_TARGET_DIR=...` command line visible; keep any full raw log as a separate sibling file. If the big per-file diffs are still too large for review, also split them into numbered chunk files under `evidence/chunks/`.
-- `cargo test` in this repo can surface genuinely unrelated test compile regressions once enough source files rebuild. If full-tree test fails on ambiguous `vec![]` inference in old unit tests (for example `src/collections.rs` / `src/seq_set.rs`), fix them with explicit `Vec::<T>::new()` instead of assuming the failure is caused by the current feature work.
+- `cargo test` in this repo can surface genuinely unrelated test compile regressions once enough source files rebuild. If full-tree tests expose unrelated compile errors, record the exact blocker, including the command, diagnostics, and affected paths. This includes ambiguous `vec![]` inference in old unit tests (for example `src/collections.rs` / `src/seq_set.rs`). Unless the user authorizes repair, keep unrelated files unchanged. Keep whole-suite requirements unchanged. Report any required check that remains blocked instead of claiming a full-tree pass.
 - For helper-only requirements, `tracey` still expects an `r[impl]` reference. The Shamir change only went green after adding `r[impl]` tags to defining spec/helpers for identity, basis, constant-term, and threshold rules that had tests/proofs but no separate exec anchor.
 - For consistency-model work, done review expects the object-model layer to use `src/consistency_history.rs` / `src/consistency_relations.rs` directly. Reusing `trace_relation::TraceEvent` for new consistency-model predicates is spec drift and will be flagged.
 - `src/control_flow_graph.rs` uses a simplified entry model: branch targets must be in-range and nonzero, and leader splitting treats `Return` like other terminators so post-return instructions always start a fresh block.
@@ -123,7 +126,7 @@
 
 ## Proof audit hotspots
 - Trusted boundaries are not limited to `external_body`: the real `assume(...)` soundness oracles are now gone, and there are no remaining `@verified-logic:no-ensures` / placeholder surfaces in `src/`.
-- Tracey is currently green (`0 uncovered`, `0 untested`).
+- A prior Tracey run recorded `0 uncovered` and `0 untested`. Inspect current outputs before claiming a fresh pass.
 - The recent Tracey drift was cleared with metadata-only fixes: add `r[verify]` tags for untested rules, and add `r[impl]` tags to spec-level implementations when a requirement has no separate exec fn (for example `query_cost::index_scan_cost_spec` and `snapshot_isolation::si_allows_commit_spec`).
 - The temporary `src/mesi.rs` (6) and `src/page.rs` (1) trusted boundaries from the 2026-04-08 remediation are now closed; stale notes or inventories that still count MESI/page `external_body` sites are wrong.
 - `src/mesi.rs:check_system_invariant` verifies best as a direct prefix-scan with prefix invariants, not by post-hoc count summaries.
