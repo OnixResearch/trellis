@@ -177,6 +177,9 @@ fn validate_observation(observation: &model::Observation, seen: &mut BTreeSet<St
     {
         diagnostics.push(format!("observation evidence for `{}` is empty", observation.module));
     }
+    if observation.measured_class != model::CLASS_UNMEASURED && !observation.reviewed {
+        diagnostics.push(format!("measured observation for `{}` is not marked reviewed", observation.module));
+    }
 }
 
 pub(crate) fn validate_claim_text(label: &str, text: &str) -> Vec<String> {

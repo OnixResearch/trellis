@@ -81,6 +81,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": ".cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/translation.json"
       }
     },
@@ -178,6 +179,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
@@ -225,6 +227,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
@@ -612,6 +615,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
@@ -1279,6 +1283,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
@@ -1296,6 +1301,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
@@ -1863,6 +1869,7 @@
         "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
+        "reviewed": true,
         "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },

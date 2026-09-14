@@ -48,7 +48,9 @@ measured class is an eligibility observation, not proof coverage.
 | `unmeasured` | no positive measure. A failed tool run also stays unmeasured |
 
 A source scan may propose one of the four tier classes as a hypothesis. Only a
-recorded observation sets the measured class.
+recorded observation sets the measured class, and a measured class requires
+`reviewed: true` on that observation. An unreviewed local run can never produce
+a measured class.
 
 ## Bounds
 

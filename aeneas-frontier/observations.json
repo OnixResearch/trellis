@@ -12,49 +12,56 @@
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": ".cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/translation.json"
+      "evidence": ".cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/translation.json",
+      "reviewed": true
     },
     {
       "module": "src/bounds.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     },
     {
       "module": "src/bitwise.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     },
     {
       "module": "src/conversion.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     },
     {
       "module": "src/integer.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     },
     {
       "module": "src/interval.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     },
     {
       "module": "src/ordering.rs",
       "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json",
+      "reviewed": true
     }
   ]
 }

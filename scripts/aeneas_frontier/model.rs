@@ -54,6 +54,8 @@ pub(crate) struct Observation {
     pub(crate) stage: String,
     pub(crate) outcome: String,
     pub(crate) measured_class: String,
+    #[serde(default)]
+    pub(crate) reviewed: bool,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) construct: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]

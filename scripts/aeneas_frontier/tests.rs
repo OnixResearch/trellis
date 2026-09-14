@@ -34,6 +34,7 @@ fn observation(module: &str, stage: &str, outcome: &str, measured_class: &str) -
         stage: stage.to_owned(),
         outcome: outcome.to_owned(),
         measured_class: measured_class.to_owned(),
+        reviewed: true,
         construct: None,
         diagnostic_class: None,
         evidence: None,
@@ -168,6 +169,10 @@ fn negative_frontier_cases(
     let mut supported_with_construct = file.clone();
     supported_with_construct.observations[0].construct = Some("unsafe-block".to_owned());
     expect("supported-recorded-construct", validation::validate_observations(&supported_with_construct))?;
+
+    let mut unreviewed = file.clone();
+    unreviewed.observations[0].reviewed = false;
+    expect("unreviewed-measured", validation::validate_observations(&unreviewed))?;
 
     let mut stage_drift = file.clone();
     stage_drift.observations[1].measured_class = String::from("blocked-aeneas-translation");
