@@ -172,7 +172,14 @@
     {
       "module": "src/bitwise.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/bitwise.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/block_cache.rs",
@@ -212,7 +219,14 @@
     {
       "module": "src/bounds.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/bounds.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/btree_balance.rs",
@@ -592,7 +606,14 @@
     {
       "module": "src/conversion.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/conversion.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/cost_tracker.rs",
@@ -1252,7 +1273,14 @@
     {
       "module": "src/integer.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/integer.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/integration_adapters.rs",
@@ -1262,7 +1290,14 @@
     {
       "module": "src/interval.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/interval.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/job_cancel.rs",
@@ -1822,7 +1857,14 @@
     {
       "module": "src/ordering.rs",
       "hypothesis": "tier-1-primitive",
-      "measured_class": "unmeasured"
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/ordering.rs",
+        "stage": "charon-extraction",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      }
     },
     {
       "module": "src/page.rs",
@@ -3002,10 +3044,10 @@
   ],
   "counts": {
     "total_modules": 596,
-    "measured": 1,
+    "measured": 7,
     "blocked": 0,
     "excluded": 0,
-    "unmeasured": 595,
+    "unmeasured": 589,
     "hypothesis_tier_1": 374,
     "hypothesis_tier_2": 214,
     "hypothesis_tier_3": 2,

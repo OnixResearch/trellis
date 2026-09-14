@@ -1,0 +1,120 @@
+{
+  "schema_version": "trellis-aeneas-batch-evidence/v1",
+  "provider": {
+    "package": "octet-aeneas-lean-provider-closure",
+    "revision": "890f424cd7b1b2015f39c0eb5747f1bd1e576028",
+    "profile_identity": "b3:cd11b49d1acede2c6a91fa26f0b7a6b4b28db4007b4601a65b3269706a0ce625",
+    "compatibility_matrix_identity": "b3:403656d75de41b955cd2493ef289ba17308da65a3d214babc1ea606aeae248f5"
+  },
+  "charon_version": "0.1.223",
+  "target": "x86_64-unknown-linux-gnu",
+  "rustc": "1.98.0-nightly-2026-06-01",
+  "command": "charon cargo --preset aeneas --start-from <item> -- --lib",
+  "items": [
+    {
+      "item": "crate::bounds::clamp",
+      "module": "src/bounds.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 12,
+      "llbc_bytes": 70337,
+      "llbc_blake3": "b3:e53f13070d20ec800b7c67531d40a46886d3e161cd70ea8d5712a06cc12bf345",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::bounds::in_range",
+      "module": "src/bounds.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 12,
+      "llbc_bytes": 68451,
+      "llbc_blake3": "b3:bbc75c7866a57ba9978527a6b2d10ac69edf48b7968bf44bf0474c276435c25a",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::bitwise::is_power_of_two",
+      "module": "src/bitwise.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 13,
+      "llbc_bytes": 79498,
+      "llbc_blake3": "b3:2bdf24d34cea077288c8e168cf40a2a7e21908691ec6727d270686c2113e6eb4",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::bitwise::bit_at",
+      "module": "src/bitwise.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 12,
+      "llbc_bytes": 75637,
+      "llbc_blake3": "b3:56011e67aef7efcd4a5d009e8a996297c9cb2baf8318aef747e8eb4ea5641ada",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::integer::is_even",
+      "module": "src/integer.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 16,
+      "llbc_bytes": 74718,
+      "llbc_blake3": "b3:f5bb9cb9d62e43eb97119ececd3f5b2276ebbda49ecbf1db533efb80400b50bb",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::ordering::min",
+      "module": "src/ordering.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 18,
+      "llbc_bytes": 72974,
+      "llbc_blake3": "b3:81b3ecabc13718358f1de7ee3ebfd3c6081381b6ca0723167f5aafa118a3fc41",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::interval::contains",
+      "module": "src/interval.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 13,
+      "llbc_bytes": 77744,
+      "llbc_blake3": "b3:dfbb79e37956b24f03d1748c8753dd63d16e46d9e27504c5d9aeeed9fcd018c7",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    },
+    {
+      "item": "crate::conversion::narrow_u32",
+      "module": "src/conversion.rs",
+      "stage": "charon-extraction",
+      "status": 0,
+      "seconds": 12,
+      "llbc_bytes": 80471,
+      "llbc_blake3": "b3:8e25bab344d9d59b28f6281b57055fb353342699b36e150f3bebc200efa85b44",
+      "has_errors": false,
+      "outcome": "supported",
+      "measured_class": "tier-1-primitive"
+    }
+  ],
+  "tool_identities": {
+    "charon_binary": "/nix/store/ax6ddlwx80jids6lgcj7hvw5q9s0xwlz-charon-0.1.223/bin/charon",
+    "charon_binary_blake3": "b3:6fb64f9bb21349d953df64ea7dbe31af738a65e3ac92ac17789234361ae938c9",
+    "rustc": "1.98.0-nightly-2026-06-01",
+    "linker": "clang with mold",
+    "sandboxed_provider_rail": false,
+    "reviewed_binary": false,
+    "reviewed_charon_binary_blake3": "b3:64ee129c4553574e1686d87560af0699dba9010c998dd68fe4a6b25f6b2e64b5"
+  }
+}
