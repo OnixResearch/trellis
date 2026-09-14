@@ -22,8 +22,8 @@
 ## Phase 4: Receipt, claim boundary, and validation
 
 - [x] [serial] Render the coverage receipt with class counts, named bounds, provider identities, and explicit non-claims. r[trellis.aeneas_lean_coverage.receipt]
-- [ ] [serial] Implement the claim-boundary check and reject whole-library proof coverage, progress-score, verifier-independence, semantic-equivalence, and trust-boundary-closure wording. r[trellis.aeneas_lean_coverage.claim_boundary]
-  - Progress 2026-09-14: the artifact non-claims are pinned to the required set, so a changed artifact fails. A documentation-text overclaim scanner remains open.
+- [x] [serial] Implement the claim-boundary check and reject whole-library proof coverage, progress-score, verifier-independence, semantic-equivalence, and trust-boundary-closure wording. r[trellis.aeneas_lean_coverage.claim_boundary]
+  - Evidence 2026-09-14: `--write` and `--check` scan the Aeneas documents for affirmative overclaims with negation-aware sentence parsing. The self-test covers six overclaim negatives, and a shell-level probe rejects an appended whole-library claim.
 - [x] [serial] Document the frontier classes and counts, registry rules, batch bounds, provider revision, commands, and non-claims. r[trellis.aeneas_lean_coverage.claim_boundary] r[trellis.aeneas_lean_coverage.registry]
 - [ ] [serial] Run the provider preflight, frontier/registry/receipt/tamper checks, focused Cargo tests, the repository Verus command, `tracey query uncovered`, and Cairn validation; if blocked, record the exact blocked receipt and the smallest next discriminating check. r[trellis.aeneas_lean_coverage.final_validation]
   - Progress 2026-09-14: checker Clippy with `-D warnings`, `--self-test` (20 negative cases), `--write`, and `--check` pass. The checker is wired into `scripts/verify.rs`. The repository-wide Verus, Tracey, and Cairn runs remain open.

@@ -82,6 +82,7 @@
               || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null
               || (builtins.match ".*/consumer-profile/generated/.*\\.json$" path) != null
               || (builtins.match ".*/aeneas-pilot/.*\\.(json|lean|llbc)$" path) != null
+              || (builtins.match ".*/aeneas-frontier/.*\\.json$" path) != null
               || (builtins.match ".*/nickel-export-cutover/.*\\.(json|ncl)$" path) != null
               || (builtins.match ".*/docs/proof-evidence-bundle\\.json$" path) != null
               || (builtins.match ".*/docs/proof-artifact-manifest\\.json$" path) != null;
@@ -1761,6 +1762,49 @@
                 cp "$TMPDIR/provider-identity.json" "$out/provider-identity.json"
                 cp "$source_root/aeneas-pilot/generated/aeneas-proof-receipt.json" "$out/aeneas-proof-receipt.json"
                 cp "$source_root/aeneas-pilot/generated/cross-verifier-manifest.json" "$out/cross-verifier-manifest.json"
+              '';
+
+          aeneas-lean-coverage-frontier =
+            pkgs.runCommand "trellis-aeneas-lean-coverage-frontier"
+              {
+                nativeBuildInputs = [
+                  rustToolchain
+                  pkgs.coreutils
+                  pkgs.findutils
+                  pkgs.gnugrep
+                ];
+              }
+              ''
+                set -euo pipefail
+                source_root="$TMPDIR/source"
+                checker_root="$TMPDIR/checker"
+                mkdir -p "$source_root" "$checker_root/src/aeneas_frontier" "$TMPDIR/cargo-home" "$TMPDIR/cargo-target"
+                cp -R ${src}/. "$source_root/"
+                chmod -R u+w "$source_root"
+                cp "$source_root/scripts/check-aeneas-frontier.rs" "$checker_root/src/main.rs"
+                cp "$source_root"/scripts/aeneas_frontier/*.rs "$checker_root/src/aeneas_frontier/"
+                cp '${octetConsumerVendorDir}/config.toml' "$TMPDIR/cargo-home/config.toml"
+                cat > "$checker_root/Cargo.toml" <<'EOF'
+                [package]
+                name = "trellis-aeneas-frontier-checker"
+                version = "0.1.0"
+                edition = "2024"
+                publish = false
+
+                [dependencies]
+                serde = { version = "1", features = ["derive"] }
+                serde_json = "1"
+                EOF
+                export CARGO_HOME="$TMPDIR/cargo-home"
+                export CARGO_TARGET_DIR="$TMPDIR/cargo-target"
+                cargo clippy --quiet --offline --manifest-path "$checker_root/Cargo.toml" -- -D warnings
+                cargo build --quiet --offline --manifest-path "$checker_root/Cargo.toml"
+                checker="$CARGO_TARGET_DIR/debug/trellis-aeneas-frontier-checker"
+                "$checker" --root "$source_root" --check
+                "$checker" --root "$source_root" --self-test
+                mkdir -p "$out"
+                cp "$source_root/aeneas-frontier/generated/frontier.json" "$out/frontier.json"
+                cp "$source_root/aeneas-frontier/generated/registry.json" "$out/registry.json"
               '';
 
           # Pinned upstream source intake and exact formatter migration ratchet

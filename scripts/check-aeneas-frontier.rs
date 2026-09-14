@@ -30,6 +30,10 @@ const TARGETS_PATH: &str = "aeneas-frontier/targets.json";
 const FRONTIER_PATH: &str = "aeneas-frontier/generated/frontier.json";
 const REGISTRY_PATH: &str = "aeneas-frontier/generated/registry.json";
 const REQUIREMENTS_PATH: &str = "docs/requirements.md";
+const CLAIM_DOCUMENTS: [&str; 2] = [
+    "docs/aeneas-cross-verifier-pilot.md",
+    "docs/aeneas-lean-coverage-frontier.md",
+];
 const SOURCE_DIRECTORY: &str = "src";
 const MODULE_SUFFIX: &str = ".rs";
 const MAX_INPUT_BYTES: u64 = 16_777_216;
@@ -94,6 +98,7 @@ fn run() -> Result<String, String> {
         Mode::Check => {
             let inputs = load_inputs(&root, Load::WithGenerated)?;
             require_clean(&validate_inputs(&inputs))?;
+            require_clean(&validate_claim_documents(&root)?)?;
             let frontier = build_frontier(&inputs);
             let registry = validation::build_registry(&inputs.requirement_ids, &inputs.targets);
             compare_generated(&root, &inputs, &frontier, &registry)?;
@@ -111,6 +116,7 @@ fn run() -> Result<String, String> {
 fn write_generated(root: &Path) -> Result<String, String> {
     let inputs = load_inputs(root, Load::InputsOnly)?;
     require_clean(&validate_inputs(&inputs))?;
+    require_clean(&validate_claim_documents(root)?)?;
     let frontier = build_frontier(&inputs);
     let registry = validation::build_registry(&inputs.requirement_ids, &inputs.targets);
     require_clean(&validation::validate_frontier(&frontier, &inputs.inventory, &inputs.observations))?;
@@ -151,6 +157,16 @@ fn validate_inputs(inputs: &Inputs) -> Vec<String> {
         }
     }
     diagnostics
+}
+
+fn validate_claim_documents(root: &Path) -> Result<Vec<String>, String> {
+    let mut diagnostics = Vec::new();
+    for path in CLAIM_DOCUMENTS {
+        let bytes = read_relative(root, path)?;
+        let text = String::from_utf8(bytes).map_err(|error| format!("`{path}` is not UTF-8: {error}"))?;
+        diagnostics.extend(validation::validate_claim_text(path, &text));
+    }
+    Ok(diagnostics)
 }
 
 fn compare_generated(

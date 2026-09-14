@@ -57,7 +57,11 @@ statement identity cannot serve two requirements.
 ./scripts/check-aeneas-frontier.rs --self-test
 ```
 
-Run `--write` after a change to `observations.json` or `targets.json`.
+Run `--write` after a change to `observations.json` or `targets.json`. Both
+`--write` and `--check` scan this document and
+`docs/aeneas-cross-verifier-pilot.md` for affirmative overclaims, and reject a
+sentence that claims whole-library coverage, progress, semantic equivalence,
+verifier independence, verifier soundness, or trust-boundary closure.
 
 ## Non-claims
 

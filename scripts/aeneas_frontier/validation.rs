@@ -11,6 +11,32 @@ use crate::model;
 
 pub(crate) const NON_TARGET_REASON: &str = "not-selected-in-batch";
 
+/// Affirmative phrases that would overstate a frontier or batch result.
+pub(crate) const CLAIM_PATTERNS: [&str; 9] = [
+    "proves whole-library",
+    "whole-library proof coverage",
+    "all modules are proved",
+    "semantically equivalent",
+    "proves verifier independence",
+    "proves verifier soundness",
+    "proves progress",
+    "proves trust-boundary closure",
+    "closes the trust boundaries",
+];
+
+/// Tokens that mark a sentence as a non-claim.
+const NEGATION_TOKENS: [&str; 9] = [
+    "does not",
+    "do not",
+    "doesn't",
+    "don't",
+    "never",
+    "non-claim",
+    "not prove",
+    "not claim",
+    "no claim",
+];
+
 const EXTERNAL_CRATE_TOKENS: [&str; 7] = ["blake3", "ed25519", "redb", "regex", "serde_json", "bs58", "anyhow"];
 
 pub(crate) fn hypothesis_for_source(contents: &str) -> &'static str {
@@ -151,6 +177,38 @@ fn validate_observation(observation: &model::Observation, seen: &mut BTreeSet<St
     {
         diagnostics.push(format!("observation evidence for `{}` is empty", observation.module));
     }
+}
+
+pub(crate) fn validate_claim_text(label: &str, text: &str) -> Vec<String> {
+    let mut diagnostics = Vec::new();
+    let mut paragraph = String::new();
+    let flush = |paragraph: &mut String, diagnostics: &mut Vec<String>| {
+        if paragraph.is_empty() {
+            return;
+        }
+        for sentence in paragraph.split(['.', '!', '?']) {
+            let lowered = sentence.to_ascii_lowercase();
+            if !CLAIM_PATTERNS.iter().any(|pattern| lowered.contains(pattern)) {
+                continue;
+            }
+            if NEGATION_TOKENS.iter().any(|token| lowered.contains(token)) {
+                continue;
+            }
+            let excerpt = sentence.split_whitespace().collect::<Vec<_>>().join(" ");
+            diagnostics.push(format!("{label} carries an overclaim: {excerpt}"));
+        }
+        paragraph.clear();
+    };
+    for line in text.lines() {
+        if line.trim().is_empty() {
+            flush(&mut paragraph, &mut diagnostics);
+        } else {
+            paragraph.push(' ');
+            paragraph.push_str(line);
+        }
+    }
+    flush(&mut paragraph, &mut diagnostics);
+    diagnostics
 }
 
 pub(crate) fn validate_observations(file: &model::ObservationsFile) -> Vec<String> {

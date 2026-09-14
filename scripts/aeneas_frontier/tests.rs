@@ -129,6 +129,10 @@ fn positive_cases() -> Result<(), String> {
     if !validation::validate_registry(&registry, &requirements(), &targets).is_empty() {
         return Err("positive registry must validate".to_owned());
     }
+    let non_claim_text = "This change does not prove whole-library proof coverage.\nIt does not prove semantic equivalence,\nverifier independence, or release eligibility.\n";
+    if !validation::validate_claim_text("doc", non_claim_text).is_empty() {
+        return Err("non-claim text must pass the claim check".to_owned());
+    }
     Ok(())
 }
 
@@ -137,7 +141,9 @@ fn negative_cases() -> Result<u64, String> {
     let frontier = frontier_of(&file);
     let targets = targets_file();
     let registry = validation::build_registry(&requirements(), &targets);
-    Ok(negative_frontier_cases(&file, &frontier, &targets)? + negative_registry_cases(&targets, &registry)?)
+    Ok(negative_frontier_cases(&file, &frontier, &targets)?
+        + negative_registry_cases(&targets, &registry)?
+        + negative_claim_cases()?)
 }
 
 fn negative_frontier_cases(
@@ -295,6 +301,25 @@ fn negative_registry_cases(targets: &model::TargetsFile, registry: &model::Regis
         validation::validate_registry(&statement_drift, &requirements(), targets),
     )?;
 
+    Ok(negatives)
+}
+
+fn negative_claim_cases() -> Result<u64, String> {
+    let cases = [
+        "The frontier proves whole-library proof coverage for Trellis.",
+        "The manifest shows the two models are semantically equivalent.",
+        "The batch proves verifier independence.",
+        "The batch proves progress on the whole corpus.",
+        "The batch proves trust-boundary closure for the unsafe modules.",
+        "The campaign closes the trust boundaries.",
+    ];
+    let mut negatives = 0u64;
+    for text in cases {
+        if validation::validate_claim_text("doc", text).is_empty() {
+            return Err(format!("negative claim case `{text}` produced no diagnostic"));
+        }
+        negatives += 1;
+    }
     Ok(negatives)
 }
 
