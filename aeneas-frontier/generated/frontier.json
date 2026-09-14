@@ -1,0 +1,3021 @@
+{
+  "schema_version": "trellis-aeneas-frontier/v1",
+  "bounds": {
+    "modules_per_batch": 8,
+    "theorems_per_module": 4,
+    "active_batches": 1
+  },
+  "provider": {
+    "package": "octet-aeneas-lean-provider-closure",
+    "revision": "890f424cd7b1b2015f39c0eb5747f1bd1e576028",
+    "profile_identity": "b3:cd11b49d1acede2c6a91fa26f0b7a6b4b28db4007b4601a65b3269706a0ce625",
+    "compatibility_matrix_identity": "b3:403656d75de41b955cd2493ef289ba17308da65a3d214babc1ea606aeae248f5"
+  },
+  "modules": [
+    {
+      "module": "src/ability_effect.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/access_mode.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/acid.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/algebraic.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/algebraic_effect.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/alloc_bitmap.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/alloc_token.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/append_entries_build.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/append_entries_check.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/append_response.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/approval.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/arena.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/arithmetic.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "tier-1-primitive",
+      "observation": {
+        "module": "src/arithmetic.rs",
+        "stage": "aeneas-translation",
+        "outcome": "supported",
+        "measured_class": "tier-1-primitive",
+        "evidence": ".cairn/archive/1970-01-01-add-aeneas-cross-verifier-pilot/evidence/final-2026-09-04/nix-result/translation.json"
+      }
+    },
+    {
+      "module": "src/async_task_state.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/authorize.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/backend_frame_allocator.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/backoff.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/balance.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ballot.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/barrier.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/batch.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_link.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_mailbox.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_monitor.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_process.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_registry.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_scheduler.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/beam_send.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bitfield.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bitmap.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bitwise.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/block_cache.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/blocking_bounded_channel.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bloom.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bounded_interval.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bounded_mpmc.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bounded_peers.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bounded_range.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/bounds.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/btree_balance.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/btree_delete.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/btree_insert.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/buddy.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cache_coherent_memory_region.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cache_hierarchy.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cache_partition.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cache_prefetch.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/calendar.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cas.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cas_loop.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/causal_order.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chain.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_coverage.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_exploration_core.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_fault_schedule.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_fault_state.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_frontier.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_input_tree.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_oracle.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chaoscontrol_scheduler.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/check_quorum.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/choreography_global.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/choreography_local.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/choreography_ownership.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/choreography_projection.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/choreography_step.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/chunk.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/circuit_breaker.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/client_routing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/client_session.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/coalesce_policy.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/collections.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/commit_advance.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/commit_notify.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/compaction_fence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/composite_outcome.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/composite_receipt_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/concurrent_composition.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_change.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_default.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_key.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_override_precedence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_typed_value.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/config_validation_decision.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consensus_path.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_history.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_object.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_refinement.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_relations.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_session.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistency_transactional.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistent_hash.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/consistent_snapshot.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constant_folding.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constant_time_eq.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_assignment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_consistency.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_domain.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_propagation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_relation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_variable.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/constraint_witness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/containment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/content_addressed_code.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_actuator_saturation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_deadband.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_error_signal.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_flow_graph.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_hysteresis.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_rate_limit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_safety_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/control_setpoint.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/conversion.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cost_tracker.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cow.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/crash_safe_page_cache.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/crdt.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cron_field.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cron_match.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cron_next.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cryptoshedding.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ct_select.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/cycle_detect.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_cross_field.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_enum_constraint.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_error_accumulation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_field_presence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_normalization_decision.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_range_constraint.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/data_validation_schema_predicate.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/dead_code_elimination.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/deadline_queue.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/debruijn.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/delegation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/dependency_scheduler.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/directory_coherence.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/distributed_lock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/dominator_tree.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/double_entry.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/drain.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/drain_protocol.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/drop_guard.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_bounded_array.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_fifo_queue.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_key_value_map.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_priority_queue.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_ring_buffer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ds_union_find.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/durable_history.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/durable_job_executor.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/durable_replay.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/durable_resume.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/durable_terminal.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/election.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/election_init.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/election_jitter.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/election_safety_proof.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/election_timer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/entry_type.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/env_scrub.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/epoch.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/epoch_reclaim.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/escrow.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/eviction.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/eviction_score.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/exactly_once_ledger_transfer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/expiration.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fair_share.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/false_sharing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fast_backtrack.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/feature_flag_gate.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/feature_flag_rollout_bucket.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fee.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fenced_distributed_lock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fencing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fetch_add.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/follower_commit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/follower_read.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/follower_redirect.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/forest.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fragmentation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/free_list.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/free_space_map.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_containment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_extension_type.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_form.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_join_split.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_normalization.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_segment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/fs_path_traversal.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/futex_state.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_bounds.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_containment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_grid_cell.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_intersection.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_orientation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_point_vector.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/geom_transform.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ghost_history.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gis_bounding_box.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gis_coordinate_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gis_linestring_topology.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gis_tile_index.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/glob.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gossip.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/gpu_primitives.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_adjacency.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_color.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_component_partition.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_frontier_cut.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_query_composition.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_reachability.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_shortest_path_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/graph_topological_order.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hash_bucket.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hazard_pointer.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hdl_adapters.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hdl_emit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hdl_ir.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hdl_validation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/heap_index.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/heartbeat.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_dirty_log.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_exit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_gpa.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_interrupt.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_memslot.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/hypervisor_vcpu.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_alias_map.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_canonicalization.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_collision_metadata.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_identifier_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_lookup_result.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_namespace_scope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_registration_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/id_scoped_uniqueness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/identitykey.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/index_query_pagination.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/index_select.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/install_snapshot.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/instruction_selection.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/integer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/integration_adapters.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/interval.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_cancel.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_dag.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_idempotency.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_priority.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_result.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_retry.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_slot.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_state.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/job_timeout.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/joint_consensus.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/journal.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/knowledge_graph.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/kv_version.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/last_applied.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/layout_constraint.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/leader_append_only.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/leader_completeness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/leader_completeness_ghost.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/leadership_transfer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/learner_change.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/learner_readiness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lease.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lease_mutex.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lease_read.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ledger.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/left_right.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lib.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/linearizability.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/linearizable_read_gate.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/liveness_analysis.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lock_ordering.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/log.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/log_compaction.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/log_conflict.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/log_invariant_inductive.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/loop_detection.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/lsm_level.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/markov.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/match_index.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/memory_order.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/merkle.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/mesi.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_aggregate.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_alert.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_counter.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_gauge.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_histogram.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_id.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_labels.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/metric_window.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_batch_iterator.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_confusion_matrix.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_dataset_split.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_feature_normalization.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_inference_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_label_encoding.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_tensor_shape.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ml_top_k.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/moesi.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/monotonic.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/mpsc_bounds.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/mvcc.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_checksum_shape.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_endpoint_address.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_header_field.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_message_sequence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_packet_frame.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_parser_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_payload_bound.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/net_protocol_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_field_merge.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_merge_split.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_pattern_coverage.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_polarity.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_priority.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_record_merge.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nickel_subtype.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_attrset.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_base32.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_closure.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_drv_serialize.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_eval_closure_policy.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_fingerprint.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_hash_truncate.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_list.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_store_path.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_string.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nix_version.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/node_classify.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/node_lifecycle.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/nonce.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/noop_commit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_affine_transform_discrete.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_checked_arithmetic_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_denominator_safe_ratio.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_fixed_point_scale.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_histogram_counter.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_monotone_sequence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_prefix_sum.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/numeric_quantized_threshold.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/oneshot_channel.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_admission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_bound.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_candidate_ranking.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_dominance.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_feasible_set.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_frontier.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_objective.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/opt_optimum_witness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/option.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ordering.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/page.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/page_checksum.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/parking_lot_condvar_model.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/parking_lot_contracts.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/parking_lot_rwlock_model.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/parsing_format.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/partition.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pattern.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/paxos.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/peer_spec.rs",
+      "hypothesis": "tier-3-external",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/per_core_rwlock.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/permission.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/persistent_state.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_collision_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_contact_manifold.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_energy_budget.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_integrator_step.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_momentum_budget.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_time_horizon.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_units.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/physics_vector_bounds.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pointwise.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_action.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_authorization.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_conflict.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_decision_engine.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_delegation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_grant_denial.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_principal.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_resource.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/policy_rule.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pool.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pre_vote.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pre_vote_lease.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pre_vote_tally.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/pressure.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/priority_election.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/priority_inversion.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/probability_statistics.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/process_state.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/proof.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/proof_gap_boundary_audit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/properties.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/quepaxa.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/query_cost.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/quorum.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/quorum_cert.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/quota.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_bit_decomposition.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_boolean.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_constraint.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_gates.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_lookup.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_public_inputs.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/r1cs_system.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/raft_consensus_core.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/raft_membership_manager.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/raft_step.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/raft_timing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/rate_limit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/rcu.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/reachability.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/read_index.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/rect_grid_index.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ref_count.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/region.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/register_allocation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/remote_computation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/replication_mode.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/replication_pipeline.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/request_forward.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/resource_accounting.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/result.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/retry.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ring_buffer.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/rwlock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/safe_reclamation_domain.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/safe_snapshot_replication.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/scheduling_calendar.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/scope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/segregated_free.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_asid.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_cap_rights.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_cdt.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_cspace.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_endpoint.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_fault_ipc.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_invariants.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_invocation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_invocation_step.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_irq.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_notification.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_ready_queue.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_reply.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_tcb.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_untyped.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sel4_vspace.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/semantic_refactoring.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/semaphore.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/seq_fold.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/seq_set.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/seqlock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sequence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/sequential.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/serializable_txn_guard.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/serialization_codec.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/serialize_inj.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/session_tree.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/set_associative_lookup.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/settlement.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_field.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_lagrange.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_poly.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_reconstruct.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_split.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shamir_threshold.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/shortest_path.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/signal.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/signal_processing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/size_class.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/slab.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/slice.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/snapshot_compaction.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/snapshot_integrity.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/snapshot_isolation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/snapshot_transfer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/spin_backoff.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/split_coalesce.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/spreadsheet_address.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/spreadsheet_dependency.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/spreadsheet_formula.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/spreadsheet_recalc.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ssa_construction.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/stack_frame_layout.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/state_machine_safety.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/state_machine_workflow.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/storage_index.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/store_buffer.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/subsumption.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/surelock_deadlock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/surelock_id.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/surelock_key.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/surelock_level.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/surelock_lockset.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/table_relational.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/task_waker.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/tcp_state.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/term_authority.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/text_string.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/threadid.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ticket_lock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/tier.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/tiered_rate_limit.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/tiling.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/timeseries.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/tlb_shootdown.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/token_timestamp.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/topo_sort.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/trace_relation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/transfer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/trust_level.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/two_phase.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/two_phase_lock.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/txn_dependency.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/txn_isolation.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/type_lattice.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/type_unification.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/typed_durable_reference.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/typed_state.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_ability.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_backend_transcript.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_base64url.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_capability_merge.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_caveat.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_caveat_evaluation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_caveat_preservation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_chain.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_cid.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_claims_presence.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_compact.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_delegation_depth.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_did.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_header.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_invocation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_json.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_parsed_capability_shape.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_parsed_caveat_payload.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_parsed_caveat_shape.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_parsed_did_claim.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_principal_link.rs",
+      "hypothesis": "tier-3-external",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_proof_reference.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_proof_reference_collection.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_proof_reference_list_shape.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_proof_store_result.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_proof_traversal.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_replay_admission.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_revocation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_revocation_check.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_signature.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_temporal.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_temporal_order.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_token.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/ucan_verification_stage.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vector_clock.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/verification_frontier.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/verified_compiler_pipeline.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/verified_lsm_ingest.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/view_change.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_color_layout.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_color_transform_envelope.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_connected_components.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_convolution_window.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_detection_nms.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_image_buffer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_image_pyramid.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vision_roi.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/vote_tally.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/voter_set.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/wal_recovery.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/wal_segment.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/wasm_primitives.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/watermark.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_attestation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_chain.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_policy.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_principal.rs",
+      "hypothesis": "tier-4-trust-boundary",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_resolution.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_revocation.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/web_of_trust_ucan_authorizer.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/weighted_round_robin.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/witness.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/work_stealing.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/write_buffer.rs",
+      "hypothesis": "tier-1-primitive",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/write_policy.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    },
+    {
+      "module": "src/zeroize.rs",
+      "hypothesis": "tier-2-collection",
+      "measured_class": "unmeasured"
+    }
+  ],
+  "counts": {
+    "total_modules": 596,
+    "measured": 1,
+    "blocked": 0,
+    "excluded": 0,
+    "unmeasured": 595,
+    "hypothesis_tier_1": 374,
+    "hypothesis_tier_2": 214,
+    "hypothesis_tier_3": 2,
+    "hypothesis_tier_4": 6
+  },
+  "non_claims": [
+    "does not prove whole-library Aeneas or Lean coverage",
+    "does not prove Aeneas, Charon, or Lean soundness",
+    "does not prove Verus and Aeneas semantic equivalence",
+    "does not prove verifier independence",
+    "does not establish release eligibility"
+  ]
+}

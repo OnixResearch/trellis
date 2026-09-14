@@ -388,6 +388,20 @@ fn main() -> std::process::ExitCode {
         "",
     );
     runner.run_status(
+        "Aeneas coverage frontier validation",
+        "./scripts/check-aeneas-frontier.rs",
+        ["--check"],
+        "",
+        "",
+    );
+    runner.run_status(
+        "Aeneas coverage frontier negative fixtures",
+        "./scripts/check-aeneas-frontier.rs",
+        ["--self-test"],
+        "",
+        "",
+    );
+    runner.run_status(
         "Proof evidence bundle validation",
         &cargo,
         ["run", "--quiet", "--bin", "proof_evidence", "--", "check"],

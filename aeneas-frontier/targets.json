@@ -1,0 +1,16 @@
+{
+  "schema_version": "trellis-aeneas-targets/v1",
+  "targets": [
+    {
+      "requirement_id": "arithmetic.abs-diff",
+      "module": "src/arithmetic.rs",
+      "statement_blake3": [
+        "b3:a67c10d4699ae7b0ddb5b35eb87552b893fcf038c93fd5c6b4c776d5b172e3fb",
+        "b3:b3df314ff917bb6eb9e26f7a8d56b7c5bc8439da5e5c5076c47a4bee58c7ade4"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "trust_closure": ["propext", "Classical.choice", "Quot.sound"],
+      "receipt": "b3:da3840e394b1c671ec8b908e98a6ac52a054ab20b55a1cb48cceb1edae2c8d9b"
+    }
+  ]
+}
