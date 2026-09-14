@@ -16,45 +16,45 @@
     },
     {
       "module": "src/bounds.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     },
     {
       "module": "src/bitwise.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     },
     {
       "module": "src/conversion.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     },
     {
       "module": "src/integer.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     },
     {
       "module": "src/interval.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     },
     {
       "module": "src/ordering.rs",
-      "stage": "charon-extraction",
+      "stage": "aeneas-translation",
       "outcome": "supported",
       "measured_class": "tier-1-primitive",
-      "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+      "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
     }
   ]
 }

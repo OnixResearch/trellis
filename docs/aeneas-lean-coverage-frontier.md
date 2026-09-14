@@ -15,7 +15,8 @@ instrument, not the proof.
 |---|---|
 | `aeneas-frontier/observations.json` | recorded provider observations, one per measured module |
 | `aeneas-frontier/targets.json` | selected requirement statements with approved hashes and receipts |
-| `aeneas-frontier/evidence/batch-2026-09-14.json` | extraction batch evidence: item, status, seconds, LLBC bytes, LLBC BLAKE3, tool identities |
+| `aeneas-frontier/evidence/batch-2026-09-14.json` | local extraction batch evidence: item, status, seconds, LLBC bytes, LLBC BLAKE3, tool identities |
+| `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity |
 | `aeneas-frontier/generated/frontier.json` | generated frontier artifact with class counts |
 | `aeneas-frontier/generated/registry.json` | generated requirement statement registry |
 | `scripts/aeneas_frontier/model.rs` | typed records for observations, frontier rows, and registry rows |
@@ -25,13 +26,14 @@ instrument, not the proof.
 
 ## Measurement status
 
-The measured classes currently come from the Charon extraction stage. One
-module (`src/arithmetic.rs`) also has the archived pilot translation and Lean
-theorem evidence. Six modules have extraction observations from a local batch
-that used the pinned Charon version but not the reviewed provider binary: the
-batch evidence records `reviewed_binary: false` and both binary BLAKE3
-identities. A reviewed-rail rerun stays open. A measured class is an eligibility
-observation, not proof coverage.
+The measured classes come from the reviewed Octet provider binaries: Charon
+extraction (`charon_binary_blake3` `b3:64ee129c…`) and Aeneas Lean translation
+(`aeneas_binary_blake3` `b3:428ce05d…`). Eight items over six modules reached
+the translation stage, and the archived pilot reached the Lean theorem stage
+for `src/arithmetic.rs::abs_diff`. The batch runs used a local work root and
+target directory, not the provider sandbox, so the reviewed execution shell
+stays open. No Lean theorem evidence exists yet for the six batch modules. A
+measured class is an eligibility observation, not proof coverage.
 
 ## Classes
 

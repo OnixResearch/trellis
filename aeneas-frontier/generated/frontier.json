@@ -175,10 +175,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/bitwise.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
@@ -222,10 +222,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/bounds.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
@@ -609,10 +609,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/conversion.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
@@ -1276,10 +1276,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/integer.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
@@ -1293,10 +1293,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/interval.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
@@ -1860,10 +1860,10 @@
       "measured_class": "tier-1-primitive",
       "observation": {
         "module": "src/ordering.rs",
-        "stage": "charon-extraction",
+        "stage": "aeneas-translation",
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
       }
     },
     {
