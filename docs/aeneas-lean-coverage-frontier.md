@@ -19,6 +19,7 @@ instrument, not the proof.
 | `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity, budget record |
 | `aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json` | sandboxed batch evidence: denied-network provider run with per-stage status, time, and identities |
 | `aeneas-frontier/evidence/verify-2026-09-15.txt` | repo verification transcript: all checks passed |
+| `aeneas-frontier/evidence/octet-receipt-blocker-2026-09-15.txt` | why no `octet-proof-receipt` row exists yet, with the pinned CLI build error and the next check |
 | `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, library `sorry` sites, local receipt |
 | `aeneas-frontier/evidence/lean-build-2026-09-14.txt`, `-b.txt`, `-c.txt` | bounded build transcripts: command, axiom lines, summary |
 | `aeneas-frontier/evidence/lean-negatives-2026-09-14.txt` | bounded transcript for the false and vacuous Lean runs |

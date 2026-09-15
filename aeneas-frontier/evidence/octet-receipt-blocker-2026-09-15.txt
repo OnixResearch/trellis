@@ -1,0 +1,58 @@
+# Octet rail receipt blocker, 2026-09-15
+
+Status: an `octet-proof-receipt` row is not available in this environment.
+
+## What a reviewed receipt needs
+
+1. The pinned Octet `cargo-octet` binary (Octet revision
+   `890f424cd7b1b2015f39c0eb5747f1bd1e576028`).
+2. The provider library as shipped (`OCTET_AENEAS_LEAN_LIBRARY` = the closure's
+   `aeneas-lean-library`, source only), built inside the rail sandbox.
+3. A consumer profile that the Octet contracts validate, and a policy rail that
+   names the source file, theorem file, theorem id, statement hash, and scope.
+
+## Blocker
+
+Building the pinned CLI fails while resolving its flake inputs:
+
+```
+error: mismatch in field 'narHash' of input
+'{"owner":"trailofbits","repo":"dylint","rev":"0e0a71eefe6f01563d11acc6e1d7af1d505934a9", ...}'
+```
+
+An `--override-input octet-aeneas/dylint ...` retry reports the same mismatch.
+The installed `cargo-octet 0.1.0` runs the adequacy path, but it is not the
+pinned revision, so its output cannot stand as a reviewed rail receipt.
+
+## Cost of the blocked rail run
+
+The provider ships mathlib and the Aeneas Lean library as source. A rail run
+builds them inside the sandbox; a local build needed the mathlib cache (8542
+files, 6.8 GB) and about 7 minutes of `lake build` once cached. Without a cache
+inside a denied-network sandbox the same build takes hours.
+
+## Local workarounds used, and why they are not receipts
+
+- The batch ran inside a `bwrap` sandbox with a denied network, a read-only
+  store, a cleared environment, and a vendored cargo home. That bounds the
+  execution, and it uses the reviewed Charon and Aeneas binaries, but the
+  pipeline driver is a local script rather than the Octet rail.
+- `cargo-octet prove` with a patched policy rejects the vacuous theorem. That is
+  a real adequacy result, and it is negative evidence only.
+- The four batch theorems check in a local Lean build and carry the
+  `local-lake-build` receipt class.
+
+## Smallest next discriminating check
+
+Build the pinned `cargo-octet` where the `dylint` input hash matches, then run:
+
+```
+cargo-octet prove \
+  --policy-artifacts-dir <patched policy with a bounds.clamp rail> \
+  --source src/bounds.rs \
+  --rail trellis.aeneas_lean_coverage.clamp#rail-0 \
+  --artifact-dir <output>
+```
+
+with `OCTET_AENEAS_LEAN_LIBRARY=<provider>/aeneas-lean-library` and a vendored
+cargo home. Expect the first run to build mathlib inside the sandbox.
