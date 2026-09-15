@@ -37,10 +37,10 @@
   "build": {
     "command": "<provider>/lake build",
     "result": "success",
-    "jobs": 1641
+    "jobs": 1642
   },
   "receipt_class": "local-lake-build",
-  "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+  "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
   "theorems": [
     {
       "requirement_id": "bounds.clamp",
@@ -65,6 +65,28 @@
       "trust_closure": [
         "propext"
       ]
+    },
+    {
+      "requirement_id": "bounds.in-range",
+      "module": "src/bounds.rs",
+      "theorem_file": "aeneas-frontier/theorems/InRangeSelection.lean",
+      "theorem_symbol": "trellis_in_range_selection",
+      "statement_blake3": "b3:5b53a5b8fbcd189a974b702026eda649ce5c50427d9a9fd619a0246ac13bc699",
+      "generated_model": "aeneas-frontier/generated/lean/BoundsInRange.lean",
+      "trust_closure": [
+        "propext"
+      ]
+    },
+    {
+      "requirement_id": "interval.contains",
+      "module": "src/interval.rs",
+      "theorem_file": "aeneas-frontier/theorems/ContainsSelection.lean",
+      "theorem_symbol": "trellis_contains_selection",
+      "statement_blake3": "b3:dbed5296c55ef7ea03f66eb5a224884ff9ace11702e3f278eacf15033dcbb7df",
+      "generated_model": "aeneas-frontier/generated/lean/IntervalContains.lean",
+      "trust_closure": [
+        "propext"
+      ]
     }
   ],
   "axiom_audit": "import ClampSelection\nimport MinSelection\n\n#print axioms trellis_clamp_selection\n#print axioms trellis_min_selection",
@@ -74,5 +96,11 @@
     "does not prove whole-program correctness",
     "does not establish release eligibility",
     "is not an Octet proof receipt and does not carry rail authority"
+  ],
+  "library_sorry_sites": [
+    "Aeneas/Std/Slice.lean:363:4",
+    "Aeneas/Std/Slice.lean:586:8",
+    "Aeneas/Std/StringIter.lean:12:4",
+    "Aeneas/Std/StringIter.lean:15:4"
   ]
 }

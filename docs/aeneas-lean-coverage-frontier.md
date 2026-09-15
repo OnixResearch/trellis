@@ -34,12 +34,16 @@ The measured classes come from the reviewed Octet provider binaries: Charon
 extraction (`charon_binary_blake3` `b3:64ee129c…`) and Aeneas Lean translation
 (`aeneas_binary_blake3` `b3:428ce05d…`). Eight items over six modules reached
 the translation stage, and the archived pilot reached the Lean theorem stage
-for `src/arithmetic.rs::abs_diff`. Two batch theorems (`bounds.clamp` and
-`ordering.min`) now check in Lean through a local build with the `propext`
-axiom closure; their registry receipts carry the `local-lake-build` class. The
-batch runs used a local work root and target directory, not the provider
-sandbox, so the reviewed execution shell stays open. A measured class is an
-eligibility observation, not proof coverage.
+for `src/arithmetic.rs::abs_diff`. Four batch theorems (`bounds.clamp`,
+`ordering.min`, `bounds.in-range`, and `interval.contains`) now check in Lean
+through a local build, each with the `propext` axiom closure; their registry
+receipts carry the `local-lake-build` class. The Aeneas Lean library itself
+contains four `sorry` sites (`Aeneas/Std/Slice.lean` and
+`Aeneas/Std/StringIter.lean`); the theorem axiom audit reports only `propext`,
+and the sorry sites stay recorded as library trust facts. The batch runs used a
+local work root and target directory, not the provider sandbox, so the reviewed
+execution shell stays open. A measured class is an eligibility observation, not
+proof coverage.
 
 ## Classes
 

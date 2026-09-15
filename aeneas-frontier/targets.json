@@ -9,7 +9,11 @@
         "b3:b3df314ff917bb6eb9e26f7a8d56b7c5bc8439da5e5c5076c47a4bee58c7ade4"
       ],
       "claim_class": "named-theorem-over-generated-model",
-      "trust_closure": ["propext", "Classical.choice", "Quot.sound"],
+      "trust_closure": [
+        "propext",
+        "Classical.choice",
+        "Quot.sound"
+      ],
       "receipt": "b3:da3840e394b1c671ec8b908e98a6ac52a054ab20b55a1cb48cceb1edae2c8d9b",
       "receipt_class": "octet-proof-receipt"
     },
@@ -20,8 +24,10 @@
         "b3:9ed330e003b5206277346ab6d88c6d6d55196320f682e58f10f6bc54b17cb821"
       ],
       "claim_class": "named-theorem-over-generated-model",
-      "trust_closure": ["propext"],
-      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
       "receipt_class": "local-lake-build"
     },
     {
@@ -31,8 +37,36 @@
         "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523"
       ],
       "claim_class": "named-theorem-over-generated-model",
-      "trust_closure": ["propext"],
-      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt_class": "local-lake-build"
+    },
+    {
+      "requirement_id": "bounds.in-range",
+      "module": "src/bounds.rs",
+      "statement_blake3": [
+        "b3:5b53a5b8fbcd189a974b702026eda649ce5c50427d9a9fd619a0246ac13bc699"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt_class": "local-lake-build"
+    },
+    {
+      "requirement_id": "interval.contains",
+      "module": "src/interval.rs",
+      "statement_blake3": [
+        "b3:dbed5296c55ef7ea03f66eb5a224884ff9ace11702e3f278eacf15033dcbb7df"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
       "receipt_class": "local-lake-build"
     }
   ]

@@ -759,13 +759,22 @@
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
       "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "bounds.in-range",
-      "targeted": false,
-      "non_target_reason": "not-selected-in-batch"
+      "targeted": true,
+      "statement_blake3": [
+        "b3:5b53a5b8fbcd189a974b702026eda649ce5c50427d9a9fd619a0246ac13bc699"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "module": "src/bounds.rs",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "btree-balance.can-borrow",
@@ -4579,8 +4588,17 @@
     },
     {
       "requirement_id": "interval.contains",
-      "targeted": false,
-      "non_target_reason": "not-selected-in-batch"
+      "targeted": true,
+      "statement_blake3": [
+        "b3:dbed5296c55ef7ea03f66eb5a224884ff9ace11702e3f278eacf15033dcbb7df"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "module": "src/interval.rs",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "interval.is-empty",
@@ -6143,7 +6161,7 @@
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
       "receipt_class": "local-lake-build"
     },
     {
@@ -11384,8 +11402,8 @@
   ],
   "counts": {
     "total_requirements": 2270,
-    "targeted": 3,
-    "non_target": 2267
+    "targeted": 5,
+    "non_target": 2265
   },
   "non_claims": [
     "does not prove whole-library Aeneas or Lean coverage",
