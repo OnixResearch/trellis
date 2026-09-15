@@ -4,7 +4,7 @@
 
 Adds capability-bounded local filesystem roots for Trellis repository-index and proof-evidence tooling boundaries.
 
-## Requirements
+## ADDED Requirements
 
 ### Requirement: Trellis repository tooling filesystem authority is capability-rooted
 r[trellis.repo_index.cap_std_boundary.root_wrappers] Trellis MUST represent repository, index database, proof-evidence input, and artifact output filesystem authority as typed capability roots opened by repository tooling shells.
