@@ -27,20 +27,21 @@
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
       "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "ordering.min",
       "module": "src/ordering.rs",
       "statement_blake3": [
-        "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523"
+        "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523",
+        "b3:22c5b0ae140acdbd3e640e369896af8c4b3939cafd00be869e73b37d911f88a0"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
       "receipt_class": "local-lake-build"
     },
     {
@@ -53,7 +54,7 @@
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
       "receipt_class": "local-lake-build"
     },
     {
@@ -66,7 +67,7 @@
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+      "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
       "receipt_class": "local-lake-build"
     }
   ]

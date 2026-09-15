@@ -37,10 +37,10 @@
   "build": {
     "command": "<provider>/lake build",
     "result": "success",
-    "jobs": 1642
+    "jobs": 1643
   },
   "receipt_class": "local-lake-build",
-  "receipt": "b3:6367be80c4e27f2e76c6689db861789b7d4b1fe8449bffcbd69531416179d980",
+  "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
   "theorems": [
     {
       "requirement_id": "bounds.clamp",
@@ -87,6 +87,18 @@
       "trust_closure": [
         "propext"
       ]
+    },
+    {
+      "requirement_id": "ordering.min",
+      "module": "src/ordering.rs",
+      "theorem_file": "aeneas-frontier/theorems/MinCommutative.lean",
+      "theorem_symbol": "trellis_min_commutative",
+      "statement_blake3": "b3:22c5b0ae140acdbd3e640e369896af8c4b3939cafd00be869e73b37d911f88a0",
+      "generated_model": "aeneas-frontier/generated/lean/OrderingMin.lean",
+      "trust_closure": [
+        "propext"
+      ],
+      "verus_proof_symbol": "ordering::min_commutative"
     }
   ],
   "axiom_audit": "import ClampSelection\nimport MinSelection\n\n#print axioms trellis_clamp_selection\n#print axioms trellis_min_selection",

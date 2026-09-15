@@ -1,0 +1,15 @@
+command: <provider>/lake build
+provider store path: /nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux
+mathlib cache: 8542 files via lake exe cache get
+exit: 0
+info: AxiomAudit.lean:7:0: 'trellis_clamp_selection' depends on axioms: [propext]
+info: AxiomAudit.lean:8:0: 'trellis_min_selection' depends on axioms: [propext]
+info: AxiomAudit.lean:9:0: 'trellis_min_commutative' depends on axioms: [propext]
+info: AxiomAudit.lean:10:0: 'trellis_in_range_selection' depends on axioms: [propext]
+info: AxiomAudit.lean:11:0: 'trellis_contains_selection' depends on axioms: [propext]
+Build completed successfully (1643 jobs).
+library_sorry_sites:
+  Aeneas/Std/Slice.lean:363:4: declaration uses `sorry`
+  Aeneas/Std/Slice.lean:586:8: declaration uses `sorry`
+  Aeneas/Std/StringIter.lean:12:4: declaration uses `sorry`
+  Aeneas/Std/StringIter.lean:15:4: declaration uses `sorry`
