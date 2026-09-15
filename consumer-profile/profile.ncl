@@ -59,7 +59,7 @@ let contracts = import "contracts.ncl" in
     "web_of_trust_ucan_authorizer",
   ],
   artifacts = [
-    { path = "Cargo.toml", bytes = 5574, blake3 = "cf0495a0f5204ea0d445bafaea7ae7341932cca7580b90f6c80b1fe511675458" },
+    { path = "Cargo.toml", bytes = 5592, blake3 = "6b3abf06f8a3af25296c40f64cd8732bdea2a3aebcb5afbc6cda429cf7ff60a4" },
     { path = "LICENSE", bytes = 16726, blake3 = "7ad11002cb765572342fc15096832825a9071dfc7f4f427d92c6906d83ea9b54" },
     { path = "src/lib.rs", bytes = 52814, blake3 = "34a55b7fd7a909b3e65dcf94f51e97625f15e877b530ec269977d6d04ab171c6" },
     { path = "src/scope.rs", bytes = 15960, blake3 = "42e09767955c07125d923238950f156d842d316cb66100e81ec658c9612e6170" },

@@ -44,6 +44,7 @@ impl RelativeLocator {
     ///
     /// Returns an error when the value is empty, absolute, or contains an
     /// empty, `.`, or `..` segment.
+    // r[impl trellis.repo_index.cap_std_boundary.conversion]
     pub fn new(value: impl Into<String>) -> Result<Self, RelativeLocatorError> {
         let normalized = value.into().replace('\\', "/");
         if normalized.is_empty() {
@@ -59,6 +60,7 @@ impl RelativeLocator {
     }
 
     #[must_use]
+    // r[impl trellis.repo_index.cap_std_boundary.conversion]
     pub fn as_str(&self) -> &str {
         &self.0
     }

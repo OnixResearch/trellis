@@ -24,7 +24,22 @@
     {
       "path": "src/repo_index/store.rs",
       "token": "std::fs",
-      "count": 3
+      "count": 1
+    },
+    {
+      "path": "src/tooling/evidence_roots.rs",
+      "token": "std::fs",
+      "count": 2
+    },
+    {
+      "path": "src/tooling/locator.rs",
+      "token": "std::fs",
+      "count": 1
+    },
+    {
+      "path": "src/tooling/repository_roots.rs",
+      "token": "std::fs",
+      "count": 2
     }
   ]
 }

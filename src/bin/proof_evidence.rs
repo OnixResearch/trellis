@@ -1,5 +1,6 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
+use std::path::Path;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
@@ -625,7 +626,7 @@ fn collect_repo_files_from(
             collect_repo_files_from(input, &child, path_text)?;
             continue;
         }
-        if !child.as_str().ends_with(".rs") {
+        if Path::new(child.as_str()).extension().is_none_or(|extension| extension != "rs") {
             continue;
         }
         let text = input.read_to_string(&child).map_err(|err| format!("failed to read {child}: {err}"))?;

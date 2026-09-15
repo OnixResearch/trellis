@@ -1,8 +1,8 @@
 {
   "artifacts": [
     {
-      "blake3": "cf0495a0f5204ea0d445bafaea7ae7341932cca7580b90f6c80b1fe511675458",
-      "bytes": 5574,
+      "blake3": "6b3abf06f8a3af25296c40f64cd8732bdea2a3aebcb5afbc6cda429cf7ff60a4",
+      "bytes": 5592,
       "path": "Cargo.toml"
     },
     {

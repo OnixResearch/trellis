@@ -24,6 +24,7 @@ impl ProofEvidenceInputRoot {
     /// # Errors
     ///
     /// Returns an error when the root cannot be opened as a directory.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn open(root: &Path) -> io::Result<Self> {
         Ok(Self {
             dir: Dir::open_ambient_dir(root, ambient_authority())?,
@@ -35,6 +36,7 @@ impl ProofEvidenceInputRoot {
     /// # Errors
     ///
     /// Returns an error when the locator is missing or escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn read_to_string(&self, relative: &RelativeLocator) -> io::Result<String> {
         self.dir.read_to_string(relative.as_str())
     }
@@ -44,12 +46,14 @@ impl ProofEvidenceInputRoot {
     /// # Errors
     ///
     /// Returns an error when the locator is missing or escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn read_dir(&self, relative: &RelativeLocator) -> io::Result<Vec<String>> {
         read_directory(&self.dir, relative.as_str())
     }
 
     /// Report whether an input locator is a directory.
     #[must_use]
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn is_dir(&self, relative: &RelativeLocator) -> bool {
         self.dir.metadata(relative.as_str()).is_ok_and(|metadata| metadata.is_dir())
     }
@@ -66,6 +70,7 @@ impl ArtifactOutputRoot {
     /// # Errors
     ///
     /// Returns an error when the root cannot be opened as a directory.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn open(root: &Path) -> io::Result<Self> {
         Ok(Self {
             dir: Dir::open_ambient_dir(root, ambient_authority())?,
@@ -77,6 +82,7 @@ impl ArtifactOutputRoot {
     /// # Errors
     ///
     /// Returns an error when the locator escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn write(&self, relative: &RelativeLocator, bytes: &[u8]) -> io::Result<()> {
         self.dir.write(relative.as_str(), bytes)
     }

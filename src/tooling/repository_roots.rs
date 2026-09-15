@@ -25,6 +25,7 @@ impl RepositoryRoot {
     /// # Errors
     ///
     /// Returns an error when the root cannot be opened as a directory.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn open(root: &Path) -> io::Result<Self> {
         Ok(Self {
             dir: Dir::open_ambient_dir(root, ambient_authority())?,
@@ -36,18 +37,21 @@ impl RepositoryRoot {
     /// # Errors
     ///
     /// Returns an error when the locator is missing or escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn read(&self, relative: &RelativeLocator) -> io::Result<Vec<u8>> {
         self.dir.read(relative.as_str())
     }
 
     /// Report whether a repository locator is a directory.
     #[must_use]
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn is_dir(&self, relative: &RelativeLocator) -> bool {
         self.dir.metadata(relative.as_str()).is_ok_and(|metadata| metadata.is_dir())
     }
 
     /// Report whether a repository locator is a file.
     #[must_use]
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn is_file(&self, relative: &RelativeLocator) -> bool {
         self.dir.metadata(relative.as_str()).is_ok_and(|metadata| metadata.is_file())
     }
@@ -57,6 +61,7 @@ impl RepositoryRoot {
     /// # Errors
     ///
     /// Returns an error when the locator is missing or escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn read_dir(&self, relative: &RelativeLocator) -> io::Result<Vec<String>> {
         read_directory(&self.dir, relative.as_str())
     }
@@ -74,6 +79,7 @@ impl IndexDatabaseRoot {
     /// # Errors
     ///
     /// Returns an error when the root cannot be opened as a directory.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn open(root: &Path) -> io::Result<Self> {
         Ok(Self {
             root: root.to_path_buf(),
@@ -83,6 +89,7 @@ impl IndexDatabaseRoot {
 
     /// Resolve the database path for a validated relative locator.
     #[must_use]
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn database_path(&self, relative: &RelativeLocator) -> PathBuf {
         self.root.join(relative.as_str())
     }
@@ -92,6 +99,7 @@ impl IndexDatabaseRoot {
     /// # Errors
     ///
     /// Returns an error when the locator escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn create_parent_dir(&self, relative: &RelativeLocator) -> io::Result<()> {
         let Some(parent) = Path::new(relative.as_str()).parent() else {
             return Ok(());
@@ -107,6 +115,7 @@ impl IndexDatabaseRoot {
     /// # Errors
     ///
     /// Returns an error when the locator escapes the root.
+    // r[impl trellis.repo_index.cap_std_boundary.root_wrappers]
     pub fn remove_file(&self, relative: &RelativeLocator) -> io::Result<()> {
         self.dir.remove_file(relative.as_str())
     }
