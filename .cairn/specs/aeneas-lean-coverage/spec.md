@@ -1,12 +1,10 @@
-# Aeneas/Lean Coverage Frontier Specification
+# Aeneas Lean Coverage Specification
 
 ## Purpose
 
-Define how Trellis measures Aeneas/Lean eligibility across its module tree and
-how it maps existing requirement IDs to approved Lean statements, without
-claiming whole-library proof coverage.
+Defines the `aeneas-lean-coverage` capability.
 
-## ADDED Requirements
+## Requirements
 
 ### Requirement: Module eligibility is measured
 
@@ -146,6 +144,22 @@ fails at its declared gate.
 - GIVEN positive selection would include a false, vacuous, or tampered item
 - WHEN selection validation runs
 - THEN Trellis MUST fail before publishing positive evidence.
+
+### Requirement: Theorem adequacy gates the batch theorems
+
+r[trellis.aeneas_lean_coverage.theorem_adequacy] Trellis MUST reject a selected theorem unless it carries an approved statement identity, a non-vacuous statement, a complete declared trust closure, and a passing check from the reviewed provider, and MUST keep false and vacuous theorems outside positive selection.
+
+#### Scenario: Adequate theorem proceeds
+
+- GIVEN a selected theorem matches its approved statement identity, states a non-vacuous property, declares its trust closure, and passes the reviewed provider check
+- WHEN adequacy admission runs
+- THEN the theorem MAY be registered with its receipt class.
+
+#### Scenario: Vacuous or trust-incomplete theorem is rejected
+
+- GIVEN a selected theorem states a vacuous `True`-style property, omits a trust input, or fails the reviewed provider check
+- WHEN adequacy admission runs
+- THEN Trellis MUST reject it and MUST keep it outside positive selection.
 
 ### Requirement: Claims stay scoped
 
