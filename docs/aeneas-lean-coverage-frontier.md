@@ -17,6 +17,8 @@ instrument, not the proof.
 | `aeneas-frontier/targets.json` | selected requirement statements with approved hashes and receipts |
 | `aeneas-frontier/evidence/batch-2026-09-14.json` | local extraction batch evidence: item, status, seconds, LLBC bytes, LLBC BLAKE3, tool identities |
 | `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity, budget record |
+| `aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json` | sandboxed batch evidence: denied-network provider run with per-stage status, time, and identities |
+| `aeneas-frontier/evidence/verify-2026-09-15.txt` | repo verification transcript: all checks passed |
 | `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, library `sorry` sites, local receipt |
 | `aeneas-frontier/evidence/lean-build-2026-09-14.txt`, `-b.txt`, `-c.txt` | bounded build transcripts: command, axiom lines, summary |
 | `aeneas-frontier/evidence/lean-negatives-2026-09-14.txt` | bounded transcript for the false and vacuous Lean runs |
@@ -39,7 +41,9 @@ the translation stage, and the archived pilot reached the Lean theorem stage
 for `src/arithmetic.rs::abs_diff`. Five batch theorems now check in Lean through
 a local build: `bounds.clamp`, `bounds.in-range`, `interval.contains`,
 `ordering.min` (selection), and `ordering.min` (commutativity, the independent
-counterpart of the Verus `ordering::min_commutative` proof). Each carries the
+counterpart of the Verus `ordering::min_commutative` proof). All eight batch
+items also ran through Charon extraction and Aeneas Lean translation inside the
+provider sandbox with a denied network namespace. Each theorem carries the
 `propext` axiom closure; their registry receipts carry the `local-lake-build`
 class. The Aeneas Lean library itself
 contains four `sorry` sites (`Aeneas/Std/Slice.lean` and

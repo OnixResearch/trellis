@@ -1,0 +1,12 @@
+command: CARGO_TARGET_DIR=/home/brittonr/.cargo-target-autoresearch-verified-logic ./scripts/verify.rs
+exit: 0
+result: ALL CHECKS PASSED
+coverage: 2775 pub fn declarations, all annotated
+ensures: 2324 verified pub fn, all with ensures clauses
+proof-gap inventory: 16 external_body sites, 0 other markers
+clippy: clean
+tests: pass
+examples: compile
+verus: proofs pass
+tracey: no uncovered requirements, no untested requirements
+note: the Aspen evidence index resolves ../aspen, so the worktree carried a .worktrees/aspen symlink

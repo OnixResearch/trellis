@@ -180,7 +180,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
@@ -228,7 +228,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
@@ -616,7 +616,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
@@ -1284,7 +1284,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
@@ -1302,7 +1302,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
@@ -1870,7 +1870,7 @@
         "outcome": "supported",
         "measured_class": "tier-1-primitive",
         "reviewed": true,
-        "evidence": "aeneas-frontier/evidence/batch-2026-09-14-reviewed.json"
+        "evidence": "aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json"
       }
     },
     {
