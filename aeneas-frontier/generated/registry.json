@@ -752,7 +752,7 @@
       "requirement_id": "bounds.clamp",
       "targeted": true,
       "statement_blake3": [
-        "b3:9ed330e003b5206277346ab6d88c6d6d55196320f682e58f10f6bc54b17cb821"
+        "b3:dc47e31115bda480c3137e68b9f9959bb23d5bc4a094682d91a8134b7852897c"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "module": "src/bounds.rs",
@@ -766,7 +766,7 @@
       "requirement_id": "bounds.in-range",
       "targeted": true,
       "statement_blake3": [
-        "b3:5b53a5b8fbcd189a974b702026eda649ce5c50427d9a9fd619a0246ac13bc699"
+        "b3:effbb00facdd0862c9f2c16ed14ac101b675a272ddfd8f522cc723378fa92eee"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "module": "src/bounds.rs",
@@ -4590,7 +4590,7 @@
       "requirement_id": "interval.contains",
       "targeted": true,
       "statement_blake3": [
-        "b3:dbed5296c55ef7ea03f66eb5a224884ff9ace11702e3f278eacf15033dcbb7df"
+        "b3:84185cd8f2f22ab70e6ef5c25c3fc433def43eb1fcbdfc5a44fab36d72b07f2c"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "module": "src/interval.rs",
@@ -6154,8 +6154,8 @@
       "requirement_id": "ordering.min",
       "targeted": true,
       "statement_blake3": [
-        "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523",
-        "b3:22c5b0ae140acdbd3e640e369896af8c4b3939cafd00be869e73b37d911f88a0"
+        "b3:c8aba4965c2ebafe8e4b154795ae5f4001b1eb368c69e9d27b4799c98af698a2",
+        "b3:a46ac334f6bdc807f4f9831f87a943808e4a105fa869fdcaa77c7df0ead24604"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "module": "src/ordering.rs",

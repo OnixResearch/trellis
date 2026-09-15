@@ -47,7 +47,7 @@
       "module": "src/bounds.rs",
       "theorem_file": "aeneas-frontier/theorems/ClampSelection.lean",
       "theorem_symbol": "trellis_clamp_selection",
-      "statement_blake3": "b3:9ed330e003b5206277346ab6d88c6d6d55196320f682e58f10f6bc54b17cb821",
+      "statement_blake3": "b3:dc47e31115bda480c3137e68b9f9959bb23d5bc4a094682d91a8134b7852897c",
       "generated_model": "aeneas-frontier/generated/lean/BoundsClamp.lean",
       "generated_model_blake3": "b3:99fcba3aeeba9bfe4acbc5375850fa9b99a45d60c1362060bc1ce32a8ced4b39",
       "trust_closure": [
@@ -59,7 +59,7 @@
       "module": "src/ordering.rs",
       "theorem_file": "aeneas-frontier/theorems/MinSelection.lean",
       "theorem_symbol": "trellis_min_selection",
-      "statement_blake3": "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523",
+      "statement_blake3": "b3:c8aba4965c2ebafe8e4b154795ae5f4001b1eb368c69e9d27b4799c98af698a2",
       "generated_model": "aeneas-frontier/generated/lean/OrderingMin.lean",
       "generated_model_blake3": "b3:6deb75144ead34a72c3a6f75962506ee364fa20f6f6effc6609a7a92383f7ec4",
       "trust_closure": [
@@ -71,7 +71,7 @@
       "module": "src/bounds.rs",
       "theorem_file": "aeneas-frontier/theorems/InRangeSelection.lean",
       "theorem_symbol": "trellis_in_range_selection",
-      "statement_blake3": "b3:5b53a5b8fbcd189a974b702026eda649ce5c50427d9a9fd619a0246ac13bc699",
+      "statement_blake3": "b3:effbb00facdd0862c9f2c16ed14ac101b675a272ddfd8f522cc723378fa92eee",
       "generated_model": "aeneas-frontier/generated/lean/BoundsInRange.lean",
       "trust_closure": [
         "propext"
@@ -82,7 +82,7 @@
       "module": "src/interval.rs",
       "theorem_file": "aeneas-frontier/theorems/ContainsSelection.lean",
       "theorem_symbol": "trellis_contains_selection",
-      "statement_blake3": "b3:dbed5296c55ef7ea03f66eb5a224884ff9ace11702e3f278eacf15033dcbb7df",
+      "statement_blake3": "b3:84185cd8f2f22ab70e6ef5c25c3fc433def43eb1fcbdfc5a44fab36d72b07f2c",
       "generated_model": "aeneas-frontier/generated/lean/IntervalContains.lean",
       "trust_closure": [
         "propext"
@@ -93,7 +93,7 @@
       "module": "src/ordering.rs",
       "theorem_file": "aeneas-frontier/theorems/MinCommutative.lean",
       "theorem_symbol": "trellis_min_commutative",
-      "statement_blake3": "b3:22c5b0ae140acdbd3e640e369896af8c4b3939cafd00be869e73b37d911f88a0",
+      "statement_blake3": "b3:a46ac334f6bdc807f4f9831f87a943808e4a105fa869fdcaa77c7df0ead24604",
       "generated_model": "aeneas-frontier/generated/lean/OrderingMin.lean",
       "trust_closure": [
         "propext"
