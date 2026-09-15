@@ -79,9 +79,12 @@ statement identity cannot serve two requirements.
 
 Every targeted row also records a receipt class:
 
-- `octet-proof-receipt` is an Octet rail receipt and carries rail authority.
+- `trellis-proof-receipt` is a Trellis receipt built from the reviewed provider
+  stage evidence. The archived pilot uses this class.
+- `octet-proof-receipt` is an Octet `cargo octet prove` receipt and carries
+  Octet rail authority. No row uses this class yet.
 - `local-lake-build` is a local Lean build transcript. It proves the named
-theorem over the recorded generated model, and it carries no rail authority.
+  theorem over the recorded generated model, and it carries no rail authority.
 
 ## Commands
 

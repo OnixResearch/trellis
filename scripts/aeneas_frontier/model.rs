@@ -30,9 +30,10 @@ pub(crate) const MAX_MODULES_PER_BATCH: u64 = 8;
 pub(crate) const MAX_THEOREMS_PER_MODULE: u64 = 4;
 pub(crate) const MAX_ACTIVE_BATCHES: u64 = 1;
 
+pub(crate) const RECEIPT_CLASS_TRELLIS: &str = "trellis-proof-receipt";
 pub(crate) const RECEIPT_CLASS_OCTET: &str = "octet-proof-receipt";
 pub(crate) const RECEIPT_CLASS_LOCAL: &str = "local-lake-build";
-pub(crate) const RECEIPT_CLASSES: [&str; 2] = [RECEIPT_CLASS_OCTET, RECEIPT_CLASS_LOCAL];
+pub(crate) const RECEIPT_CLASSES: [&str; 3] = [RECEIPT_CLASS_TRELLIS, RECEIPT_CLASS_OCTET, RECEIPT_CLASS_LOCAL];
 
 pub(crate) const REQUIRED_NON_CLAIMS: [&str; 5] = [
     "does not prove whole-library Aeneas or Lean coverage",

@@ -93,7 +93,7 @@ fn targets_file() -> model::TargetsFile {
             claim_class: "named-theorem-over-generated-model".to_owned(),
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
-            receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
+            receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
         }],
     }
 }
@@ -232,7 +232,7 @@ fn negative_frontier_cases(
         claim_class: "named-theorem-over-generated-model".to_owned(),
         trust_closure: vec!["propext".to_owned()],
         receipt: RECEIPT.to_owned(),
-        receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
+        receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
     });
     expect("reused-statement", validation::validate_targets(&reused_statement, &requirements()))?;
 
@@ -256,7 +256,7 @@ fn negative_frontier_cases(
             claim_class: "named-theorem-over-generated-model".to_owned(),
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
-            receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
+            receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
         });
     }
     let mut many_requirements = requirements();
