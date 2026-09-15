@@ -1,0 +1,5 @@
+command: <provider>/lake env lean FalseClamp.lean ; <provider>/lake env lean VacuousClamp.lean
+false_exit: 1
+false_diagnostic: error: unsolved goals
+vacuous_exit: 0
+vacuous_result: Lean accepts the encoded True theorem; adequacy admission must reject it

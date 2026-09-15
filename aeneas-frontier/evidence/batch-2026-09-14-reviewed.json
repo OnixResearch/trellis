@@ -209,5 +209,13 @@
       },
       "outcome": "translated"
     }
-  ]
+  ],
+  "budget": {
+    "timeout_ms": 900000,
+    "timeout_source": "octet aeneas-lean provider profile",
+    "stdout_max_bytes": 1048576,
+    "stderr_max_bytes": 1048576,
+    "log_bound_enforced": false,
+    "observed_max_stage_seconds": 14
+  }
 }
