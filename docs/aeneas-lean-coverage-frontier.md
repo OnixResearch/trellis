@@ -19,7 +19,9 @@ instrument, not the proof.
 | `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity, budget record |
 | `aeneas-frontier/evidence/batch-2026-09-15-sandboxed.json` | sandboxed batch evidence: denied-network provider run with per-stage status, time, and identities |
 | `aeneas-frontier/evidence/verify-2026-09-15.txt` | repo verification transcript: all checks passed |
-| `aeneas-frontier/evidence/octet-receipt-blocker-2026-09-15.txt` | why no `octet-proof-receipt` row exists yet, with the pinned CLI build error and the next check |
+| `aeneas-frontier/evidence/octet-receipt-blocker-2026-09-15.txt` | why no `octet-proof-receipt` row existed at that time, with the pinned CLI build error |
+| `aeneas-frontier/evidence/octet-rail-clamp-2026-09-15/` | the Octet formal-proof envelope receipt for `bounds.clamp`, its status, and its working conditions |
+| `aeneas-frontier/theorems/rail/` | theorem copies that import the rail's `Llbc` module |
 | `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, library `sorry` sites, local receipt |
 | `aeneas-frontier/evidence/lean-build-2026-09-14.txt`, `-b.txt`, `-c.txt` | bounded build transcripts: command, axiom lines, summary |
 | `aeneas-frontier/evidence/lean-negatives-2026-09-14.txt` | bounded transcript for the false and vacuous Lean runs |
@@ -42,11 +44,13 @@ the translation stage, and the archived pilot reached the Lean theorem stage
 for `src/arithmetic.rs::abs_diff`. Five batch theorems now check in Lean through
 a local build: `bounds.clamp`, `bounds.in-range`, `interval.contains`,
 `ordering.min` (selection), and `ordering.min` (commutativity, the independent
-counterpart of the Verus `ordering::min_commutative` proof). All eight batch
-items also ran through Charon extraction and Aeneas Lean translation inside the
-provider sandbox with a denied network namespace. Each theorem carries the
-`propext` axiom closure; their registry receipts carry the `local-lake-build`
-class. The Aeneas Lean library itself
+counterpart of the Verus `ordering::min_commutative` proof). The `bounds.clamp`
+requirement also carries an Octet formal-proof envelope receipt produced by the
+pinned CLI; that receipt's working conditions and deviations are recorded with
+it. All eight batch items also ran through Charon extraction and Aeneas Lean
+translation inside the provider sandbox with a denied network namespace. Each
+theorem carries the `propext` axiom closure; the local registry receipts carry
+the `local-lake-build` class. The Aeneas Lean library itself
 contains four `sorry` sites (`Aeneas/Std/Slice.lean` and
 `Aeneas/Std/StringIter.lean`); the theorem axiom audit reports only `propext`,
 and the sorry sites stay recorded as library trust facts. The batch runs used a
@@ -84,12 +88,13 @@ BLAKE3 identities, the claim class, the module, the trust closure, and the
 proof receipt. A non-target row records an explicit non-target reason. One
 statement identity cannot serve two requirements.
 
-Every targeted row also records a receipt class:
+Every targeted row also records a receipt class and a receipt evidence path:
 
 - `trellis-proof-receipt` is a Trellis receipt built from the reviewed provider
   stage evidence. The archived pilot uses this class.
-- `octet-proof-receipt` is an Octet `cargo octet prove` receipt and carries
-  Octet rail authority. No row uses this class yet.
+- `octet-proof-receipt` is an Octet `cargo octet prove` formal-proof envelope.
+  The `bounds.clamp` row uses this class; the receipt evidence records the
+  working conditions and deviations of that run.
 - `local-lake-build` is a local Lean build transcript. It proves the named
   theorem over the recorded generated model, and it carries no rail authority.
 

@@ -15,20 +15,22 @@
         "Quot.sound"
       ],
       "receipt": "b3:baa04429d7c1eab4e0a984017f5a29bd02de7ced8aeeebe07bfb003027bcbc04",
-      "receipt_class": "trellis-proof-receipt"
+      "receipt_class": "trellis-proof-receipt",
+      "receipt_evidence": "aeneas-pilot/generated/aeneas-proof-receipt.json"
     },
     {
       "requirement_id": "bounds.clamp",
       "module": "src/bounds.rs",
       "statement_blake3": [
-        "b3:dc47e31115bda480c3137e68b9f9959bb23d5bc4a094682d91a8134b7852897c"
+        "b3:da7e097a070bdfc3014efab94ffb5b7788a67505710fe2e468d5adea226043b4"
       ],
       "claim_class": "named-theorem-over-generated-model",
       "trust_closure": [
         "propext"
       ],
-      "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
-      "receipt_class": "local-lake-build"
+      "receipt": "b3:63da4db595096c8ea13e6713ec63b7c1d8ece0d2a581282fa0f36c6df10b8d43",
+      "receipt_class": "octet-proof-receipt",
+      "receipt_evidence": "aeneas-frontier/evidence/octet-rail-clamp-2026-09-15/receipt.json"
     },
     {
       "requirement_id": "ordering.min",
@@ -42,7 +44,8 @@
         "propext"
       ],
       "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
-      "receipt_class": "local-lake-build"
+      "receipt_class": "local-lake-build",
+      "receipt_evidence": "aeneas-frontier/evidence/lean-2026-09-14.json"
     },
     {
       "requirement_id": "bounds.in-range",
@@ -55,7 +58,8 @@
         "propext"
       ],
       "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
-      "receipt_class": "local-lake-build"
+      "receipt_class": "local-lake-build",
+      "receipt_evidence": "aeneas-frontier/evidence/lean-2026-09-14.json"
     },
     {
       "requirement_id": "interval.contains",
@@ -68,7 +72,8 @@
         "propext"
       ],
       "receipt": "b3:9f962f956a545060aeafa7d9495e547d0112349ec75143985eb6bff5792d2a5e",
-      "receipt_class": "local-lake-build"
+      "receipt_class": "local-lake-build",
+      "receipt_evidence": "aeneas-frontier/evidence/lean-2026-09-14.json"
     }
   ]
 }

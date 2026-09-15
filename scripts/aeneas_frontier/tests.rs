@@ -94,6 +94,7 @@ fn targets_file() -> model::TargetsFile {
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
             receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
+            receipt_evidence: "aeneas-frontier/evidence/lean-2026-09-14.json".to_owned(),
         }],
     }
 }
@@ -143,16 +144,13 @@ fn negative_cases() -> Result<u64, String> {
     let frontier = frontier_of(&file);
     let targets = targets_file();
     let registry = validation::build_registry(&requirements(), &targets);
-    Ok(negative_frontier_cases(&file, &frontier, &targets)?
+    Ok(negative_frontier_cases(&file, &frontier)?
+        + negative_target_cases(&targets)?
         + negative_registry_cases(&targets, &registry)?
         + negative_claim_cases()?)
 }
 
-fn negative_frontier_cases(
-    file: &model::ObservationsFile,
-    frontier: &model::FrontierArtifact,
-    targets: &model::TargetsFile,
-) -> Result<u64, String> {
+fn negative_frontier_cases(file: &model::ObservationsFile, frontier: &model::FrontierArtifact) -> Result<u64, String> {
     let mut negatives = 0u64;
     let mut expect = |name: &str, diagnostics: Vec<String>| -> Result<(), String> {
         if diagnostics.is_empty() {
@@ -230,6 +228,20 @@ fn negative_frontier_cases(
     binding_drift.provider.profile_identity = String::from("b3:0000");
     expect("provider-binding-drift", validation::validate_frontier(&binding_drift, &inventory(), file))?;
 
+    Ok(negatives)
+}
+
+fn negative_target_cases(targets: &model::TargetsFile) -> Result<u64, String> {
+    let mut negatives = 0u64;
+    let mut expect = |name: &str, diagnostics: Vec<String>| -> Result<(), String> {
+        if diagnostics.is_empty() {
+            Err(format!("negative case `{name}` produced no diagnostic"))
+        } else {
+            negatives += 1;
+            Ok(())
+        }
+    };
+
     let mut unknown_requirement = targets.clone();
     unknown_requirement.targets[0].requirement_id = String::from("arithmetic.unknown");
     expect("unknown-requirement", validation::validate_targets(&unknown_requirement, &requirements()))?;
@@ -243,6 +255,7 @@ fn negative_frontier_cases(
         trust_closure: vec!["propext".to_owned()],
         receipt: RECEIPT.to_owned(),
         receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
+        receipt_evidence: "aeneas-frontier/evidence/lean-2026-09-14.json".to_owned(),
     });
     expect("reused-statement", validation::validate_targets(&reused_statement, &requirements()))?;
 
@@ -253,6 +266,10 @@ fn negative_frontier_cases(
     let mut unknown_receipt_class = targets.clone();
     unknown_receipt_class.targets[0].receipt_class = String::from("self-asserted");
     expect("unknown-receipt-class", validation::validate_targets(&unknown_receipt_class, &requirements()))?;
+
+    let mut unsafe_evidence = targets.clone();
+    unsafe_evidence.targets[0].receipt_evidence = String::from("../outside.json");
+    expect("unsafe-receipt-evidence", validation::validate_targets(&unsafe_evidence, &requirements()))?;
 
     let mut over_bound = model::TargetsFile {
         schema_version: model::TARGETS_SCHEMA.to_owned(),
@@ -267,6 +284,7 @@ fn negative_frontier_cases(
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
             receipt_class: model::RECEIPT_CLASS_TRELLIS.to_owned(),
+            receipt_evidence: "aeneas-frontier/evidence/lean-2026-09-14.json".to_owned(),
         });
     }
     let mut many_requirements = requirements();

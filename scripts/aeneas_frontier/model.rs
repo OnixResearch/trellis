@@ -139,6 +139,7 @@ pub(crate) struct Target {
     pub(crate) trust_closure: Vec<String>,
     pub(crate) receipt: String,
     pub(crate) receipt_class: String,
+    pub(crate) receipt_evidence: String,
 }
 
 #[derive(Clone, Debug, Deserialize, Eq, PartialEq, Serialize)]
@@ -165,6 +166,8 @@ pub(crate) struct RegistryRow {
     pub(crate) receipt: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) receipt_class: Option<String>,
+    #[serde(default, skip_serializing_if = "Option::is_none")]
+    pub(crate) receipt_evidence: Option<String>,
     #[serde(default, skip_serializing_if = "Option::is_none")]
     pub(crate) non_target_reason: Option<String>,
 }

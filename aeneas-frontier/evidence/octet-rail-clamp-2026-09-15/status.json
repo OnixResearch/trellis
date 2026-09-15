@@ -1,0 +1,21 @@
+{
+  "schema_version": "octet-prove-status/v1",
+  "bundle_kind": "prove",
+  "status": "passed",
+  "output_format": "json",
+  "metadata": {
+    "profile_name": "prove-verification"
+  },
+  "proofs": [
+    {
+      "policy_id": "trellis.aeneas_lean_coverage.clamp",
+      "rail_index": 0,
+      "backend": "aeneas-lean",
+      "verifier_mode": "fixture",
+      "checked_scope": "formal-proof:trellis:trellis.aeneas_lean_coverage.clamp#rail-0",
+      "receipt": "proofs/trellis.aeneas_lean_coverage.clamp-rail-0.receipt",
+      "status": "passed",
+      "diagnostics": []
+    }
+  ]
+}

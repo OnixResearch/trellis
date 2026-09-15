@@ -77,6 +77,13 @@ pub(crate) fn is_module_path(value: &str) -> bool {
         && relative.components().all(|component| matches!(component, std::path::Component::Normal(_)))
 }
 
+pub(crate) fn is_relative_path(value: &str) -> bool {
+    let relative = std::path::Path::new(value);
+    !value.is_empty()
+        && !relative.is_absolute()
+        && relative.components().all(|component| matches!(component, std::path::Component::Normal(_)))
+}
+
 fn is_stage(value: &str) -> bool {
     !value.is_empty()
         && value
@@ -435,6 +442,12 @@ pub(crate) fn validate_targets(targets: &model::TargetsFile, requirement_ids: &[
                 target.requirement_id, target.receipt_class
             ));
         }
+        if !is_relative_path(&target.receipt_evidence) {
+            diagnostics.push(format!(
+                "target `{}` receipt evidence `{}` is not a safe relative path",
+                target.requirement_id, target.receipt_evidence
+            ));
+        }
     }
     diagnostics
 }
@@ -456,6 +469,7 @@ pub(crate) fn build_registry(requirement_ids: &[String], targets: &model::Target
                 trust_closure: target.trust_closure.clone(),
                 receipt: Some(target.receipt.clone()),
                 receipt_class: Some(target.receipt_class.clone()),
+                receipt_evidence: Some(target.receipt_evidence.clone()),
                 non_target_reason: None,
             });
         } else {
@@ -468,6 +482,7 @@ pub(crate) fn build_registry(requirement_ids: &[String], targets: &model::Target
                 trust_closure: Vec::new(),
                 receipt: None,
                 receipt_class: None,
+                receipt_evidence: None,
                 non_target_reason: Some(NON_TARGET_REASON.to_owned()),
             });
         }
@@ -532,6 +547,9 @@ pub(crate) fn validate_registry(
                 if row.receipt_class.as_deref() != Some(target.receipt_class.as_str()) {
                     diagnostics.push(format!("registry row `{}` receipt class drifted", row.requirement_id));
                 }
+                if row.receipt_evidence.as_deref() != Some(target.receipt_evidence.as_str()) {
+                    diagnostics.push(format!("registry row `{}` receipt evidence drifted", row.requirement_id));
+                }
                 if row.non_target_reason.is_some() {
                     diagnostics
                         .push(format!("targeted registry row `{}` carries a non-target reason", row.requirement_id));
@@ -547,7 +565,11 @@ pub(crate) fn validate_registry(
                 if row.non_target_reason.is_none() {
                     diagnostics.push(format!("registry row `{}` has no non-target reason", row.requirement_id));
                 }
-                if !row.statement_blake3.is_empty() || row.receipt.is_some() || row.receipt_class.is_some() {
+                if !row.statement_blake3.is_empty()
+                    || row.receipt.is_some()
+                    || row.receipt_class.is_some()
+                    || row.receipt_evidence.is_some()
+                {
                     diagnostics
                         .push(format!("non-target registry row `{}` carries proof identities", row.requirement_id));
                 }
