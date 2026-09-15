@@ -1,0 +1,8 @@
+command: <provider>/lake build
+provider closure: octet-aeneas-lean-provider-closure
+provider store path: /nix/store/3gb7jdqbxhjx2icidi460qa9fkahpvpl-octet-aeneas-lean-provider-closure-x86_64-linux
+mathlib cache: 8542 files via lake exe cache get
+exit: 0
+info: AxiomAudit.lean:4:0: 'trellis_clamp_selection' depends on axioms: [propext]
+info: AxiomAudit.lean:5:0: 'trellis_min_selection' depends on axioms: [propext]
+Build completed successfully (1641 jobs).

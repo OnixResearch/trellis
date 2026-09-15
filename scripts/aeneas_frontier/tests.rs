@@ -93,6 +93,7 @@ fn targets_file() -> model::TargetsFile {
             claim_class: "named-theorem-over-generated-model".to_owned(),
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
+            receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
         }],
     }
 }
@@ -231,12 +232,17 @@ fn negative_frontier_cases(
         claim_class: "named-theorem-over-generated-model".to_owned(),
         trust_closure: vec!["propext".to_owned()],
         receipt: RECEIPT.to_owned(),
+        receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
     });
     expect("reused-statement", validation::validate_targets(&reused_statement, &requirements()))?;
 
     let mut empty_trust = targets.clone();
     empty_trust.targets[0].trust_closure.clear();
     expect("empty-trust-closure", validation::validate_targets(&empty_trust, &requirements()))?;
+
+    let mut unknown_receipt_class = targets.clone();
+    unknown_receipt_class.targets[0].receipt_class = String::from("self-asserted");
+    expect("unknown-receipt-class", validation::validate_targets(&unknown_receipt_class, &requirements()))?;
 
     let mut over_bound = model::TargetsFile {
         schema_version: model::TARGETS_SCHEMA.to_owned(),
@@ -250,6 +256,7 @@ fn negative_frontier_cases(
             claim_class: "named-theorem-over-generated-model".to_owned(),
             trust_closure: vec!["propext".to_owned()],
             receipt: RECEIPT.to_owned(),
+            receipt_class: model::RECEIPT_CLASS_OCTET.to_owned(),
         });
     }
     let mut many_requirements = requirements();
@@ -304,6 +311,17 @@ fn negative_registry_cases(targets: &model::TargetsFile, registry: &model::Regis
     expect(
         "registry-statement-drift",
         validation::validate_registry(&statement_drift, &requirements(), targets),
+    )?;
+
+    let mut receipt_class_drift = registry.clone();
+    for row in &mut receipt_class_drift.rows {
+        if row.targeted {
+            row.receipt_class = Some(model::RECEIPT_CLASS_LOCAL.to_owned());
+        }
+    }
+    expect(
+        "registry-receipt-class-drift",
+        validation::validate_registry(&receipt_class_drift, &requirements(), targets),
     )?;
 
     Ok(negatives)

@@ -82,7 +82,7 @@
               || (builtins.match ".*/upstream-verus-corpus/generated/.*\\.json$" path) != null
               || (builtins.match ".*/consumer-profile/generated/.*\\.json$" path) != null
               || (builtins.match ".*/aeneas-pilot/.*\\.(json|lean|llbc)$" path) != null
-              || (builtins.match ".*/aeneas-frontier/.*\\.json$" path) != null
+              || (builtins.match ".*/aeneas-frontier/.*\\.(json|lean|txt)$" path) != null
               || (builtins.match ".*/nickel-export-cutover/.*\\.(json|ncl)$" path) != null
               || (builtins.match ".*/docs/proof-evidence-bundle\\.json$" path) != null
               || (builtins.match ".*/docs/proof-artifact-manifest\\.json$" path) != null;

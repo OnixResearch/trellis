@@ -424,6 +424,12 @@ pub(crate) fn validate_targets(targets: &model::TargetsFile, requirement_ids: &[
         if !is_blake3(&target.receipt) {
             diagnostics.push(format!("target `{}` receipt is not a BLAKE3 identity", target.requirement_id));
         }
+        if !model::RECEIPT_CLASSES.contains(&target.receipt_class.as_str()) {
+            diagnostics.push(format!(
+                "target `{}` receipt class `{}` is not a known class",
+                target.requirement_id, target.receipt_class
+            ));
+        }
     }
     diagnostics
 }
@@ -444,6 +450,7 @@ pub(crate) fn build_registry(requirement_ids: &[String], targets: &model::Target
                 module: Some(target.module.clone()),
                 trust_closure: target.trust_closure.clone(),
                 receipt: Some(target.receipt.clone()),
+                receipt_class: Some(target.receipt_class.clone()),
                 non_target_reason: None,
             });
         } else {
@@ -455,6 +462,7 @@ pub(crate) fn build_registry(requirement_ids: &[String], targets: &model::Target
                 module: None,
                 trust_closure: Vec::new(),
                 receipt: None,
+                receipt_class: None,
                 non_target_reason: Some(NON_TARGET_REASON.to_owned()),
             });
         }
@@ -516,6 +524,9 @@ pub(crate) fn validate_registry(
                 if row.receipt.as_deref() != Some(target.receipt.as_str()) {
                     diagnostics.push(format!("registry row `{}` receipt drifted", row.requirement_id));
                 }
+                if row.receipt_class.as_deref() != Some(target.receipt_class.as_str()) {
+                    diagnostics.push(format!("registry row `{}` receipt class drifted", row.requirement_id));
+                }
                 if row.non_target_reason.is_some() {
                     diagnostics
                         .push(format!("targeted registry row `{}` carries a non-target reason", row.requirement_id));
@@ -531,7 +542,7 @@ pub(crate) fn validate_registry(
                 if row.non_target_reason.is_none() {
                     diagnostics.push(format!("registry row `{}` has no non-target reason", row.requirement_id));
                 }
-                if !row.statement_blake3.is_empty() || row.receipt.is_some() {
+                if !row.statement_blake3.is_empty() || row.receipt.is_some() || row.receipt_class.is_some() {
                     diagnostics
                         .push(format!("non-target registry row `{}` carries proof identities", row.requirement_id));
                 }

@@ -17,6 +17,10 @@ instrument, not the proof.
 | `aeneas-frontier/targets.json` | selected requirement statements with approved hashes and receipts |
 | `aeneas-frontier/evidence/batch-2026-09-14.json` | local extraction batch evidence: item, status, seconds, LLBC bytes, LLBC BLAKE3, tool identities |
 | `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity |
+| `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, local receipt |
+| `aeneas-frontier/evidence/lean-build-2026-09-14.txt` | bounded build transcript: command, axiom lines, summary |
+| `aeneas-frontier/generated/lean/` | generated Lean models and translation manifests from the reviewed batch |
+| `aeneas-frontier/theorems/` | maintained Lean theorems and the axiom audit |
 | `aeneas-frontier/generated/frontier.json` | generated frontier artifact with class counts |
 | `aeneas-frontier/generated/registry.json` | generated requirement statement registry |
 | `scripts/aeneas_frontier/model.rs` | typed records for observations, frontier rows, and registry rows |
@@ -30,10 +34,12 @@ The measured classes come from the reviewed Octet provider binaries: Charon
 extraction (`charon_binary_blake3` `b3:64ee129c…`) and Aeneas Lean translation
 (`aeneas_binary_blake3` `b3:428ce05d…`). Eight items over six modules reached
 the translation stage, and the archived pilot reached the Lean theorem stage
-for `src/arithmetic.rs::abs_diff`. The batch runs used a local work root and
-target directory, not the provider sandbox, so the reviewed execution shell
-stays open. No Lean theorem evidence exists yet for the six batch modules. A
-measured class is an eligibility observation, not proof coverage.
+for `src/arithmetic.rs::abs_diff`. Two batch theorems (`bounds.clamp` and
+`ordering.min`) now check in Lean through a local build with the `propext`
+axiom closure; their registry receipts carry the `local-lake-build` class. The
+batch runs used a local work root and target directory, not the provider
+sandbox, so the reviewed execution shell stays open. A measured class is an
+eligibility observation, not proof coverage.
 
 ## Classes
 
@@ -64,6 +70,12 @@ The registry holds one row per unique `r[...]` requirement ID in
 BLAKE3 identities, the claim class, the module, the trust closure, and the
 proof receipt. A non-target row records an explicit non-target reason. One
 statement identity cannot serve two requirements.
+
+Every targeted row also records a receipt class:
+
+- `octet-proof-receipt` is an Octet rail receipt and carries rail authority.
+- `local-lake-build` is a local Lean build transcript. It proves the named
+theorem over the recorded generated model, and it carries no rail authority.
 
 ## Commands
 

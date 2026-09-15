@@ -240,7 +240,8 @@
         "Classical.choice",
         "Quot.sound"
       ],
-      "receipt": "b3:da3840e394b1c671ec8b908e98a6ac52a054ab20b55a1cb48cceb1edae2c8d9b"
+      "receipt": "b3:da3840e394b1c671ec8b908e98a6ac52a054ab20b55a1cb48cceb1edae2c8d9b",
+      "receipt_class": "octet-proof-receipt"
     },
     {
       "requirement_id": "arithmetic.checked-mul",
@@ -749,8 +750,17 @@
     },
     {
       "requirement_id": "bounds.clamp",
-      "targeted": false,
-      "non_target_reason": "not-selected-in-batch"
+      "targeted": true,
+      "statement_blake3": [
+        "b3:9ed330e003b5206277346ab6d88c6d6d55196320f682e58f10f6bc54b17cb821"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "module": "src/bounds.rs",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "bounds.in-range",
@@ -6124,8 +6134,17 @@
     },
     {
       "requirement_id": "ordering.min",
-      "targeted": false,
-      "non_target_reason": "not-selected-in-batch"
+      "targeted": true,
+      "statement_blake3": [
+        "b3:87f7da08a4899ea865e1279f9bc17d93c0033a95fa3e7e84c8fe649b8605d523"
+      ],
+      "claim_class": "named-theorem-over-generated-model",
+      "module": "src/ordering.rs",
+      "trust_closure": [
+        "propext"
+      ],
+      "receipt": "b3:bd7dfd032ed1c78e2f35dc3b5534e0ee27c5e62a4574774bb823831b4353e4d0",
+      "receipt_class": "local-lake-build"
     },
     {
       "requirement_id": "ordering.sign",
@@ -11365,8 +11384,8 @@
   ],
   "counts": {
     "total_requirements": 2270,
-    "targeted": 1,
-    "non_target": 2269
+    "targeted": 3,
+    "non_target": 2267
   },
   "non_claims": [
     "does not prove whole-library Aeneas or Lean coverage",
