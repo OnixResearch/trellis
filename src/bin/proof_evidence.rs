@@ -1,12 +1,19 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::fs;
-use std::path::Path;
 use std::path::PathBuf;
 use std::process::ExitCode;
 
 use serde::Deserialize;
 use serde::Serialize;
+
+#[path = "../tooling/locator.rs"]
+mod locator;
+#[path = "../tooling/evidence_roots.rs"]
+mod evidence_roots;
+
+use evidence_roots::ArtifactOutputRoot;
+use evidence_roots::ProofEvidenceInputRoot;
+use locator::RelativeLocator;
 
 const SCHEMA_VERSION: &str = "trellis-proof-evidence-v1";
 const BUNDLE_PATH: &str = "docs/proof-evidence-bundle.json";
@@ -595,52 +602,48 @@ fn sorted_json(bundle: &ProofBundle) -> Result<String, String> {
     })
 }
 
-fn collect_repo_files(root: &Path, relative_dir: &str, path_text: &mut BTreeMap<String, String>) -> Result<(), String> {
-    let dir = root.join(relative_dir);
-    if !dir.exists() {
+fn collect_repo_files(input: &ProofEvidenceInputRoot, relative_dir: &str, path_text: &mut BTreeMap<String, String>) -> Result<(), String> {
+    let dir = locator(relative_dir)?;
+    if !input.is_dir(&dir) {
         return Ok(());
     }
-    collect_repo_files_from(root, &dir, path_text)
+    collect_repo_files_from(input, &dir, path_text)
 }
 
-fn collect_repo_files_from(root: &Path, dir: &Path, path_text: &mut BTreeMap<String, String>) -> Result<(), String> {
-    let mut entries = Vec::new();
-    for entry in fs::read_dir(dir).map_err(|err| format!("failed to read {}: {err}", dir.display()))? {
-        entries.push(entry.map_err(|err| err.to_string())?.path());
-    }
-    entries.sort();
-    for path in entries {
-        if path.is_dir() {
-            collect_repo_files_from(root, &path, path_text)?;
+fn locator(value: &str) -> Result<RelativeLocator, String> {
+    RelativeLocator::new(value).map_err(|error| format!("invalid tooling locator {value:?}: {error}"))
+}
+
+fn collect_repo_files_from(
+    input: &ProofEvidenceInputRoot,
+    dir: &RelativeLocator,
+    path_text: &mut BTreeMap<String, String>,
+) -> Result<(), String> {
+    for name in input.read_dir(dir).map_err(|err| format!("failed to read {dir}: {err}"))? {
+        let child = locator(&format!("{dir}/{name}"))?;
+        if input.is_dir(&child) {
+            collect_repo_files_from(input, &child, path_text)?;
             continue;
         }
-        if path.extension().and_then(|ext| ext.to_str()) != Some("rs") {
+        if !child.as_str().ends_with(".rs") {
             continue;
         }
-        let relative = relative_path(root, &path)?;
-        path_text.insert(relative.clone(), read_text(&path, &relative)?);
+        let text = input.read_to_string(&child).map_err(|err| format!("failed to read {child}: {err}"))?;
+        path_text.insert(child.as_str().to_owned(), text);
     }
     Ok(())
 }
 
-fn relative_path(root: &Path, path: &Path) -> Result<String, String> {
-    path.strip_prefix(root)
-        .map_err(|err| err.to_string())?
-        .to_str()
-        .map(|value| value.replace('\\', "/"))
-        .ok_or_else(|| format!("non-utf8 path `{}`", path.display()))
-}
-
-fn read_text(path: &Path, display: &str) -> Result<String, String> {
-    fs::read_to_string(path).map_err(|err| format!("failed to read {display}: {err}"))
-}
-
-fn load_repo_facts(root: &Path) -> Result<RepoFacts, String> {
+fn load_repo_facts(input: &ProofEvidenceInputRoot) -> Result<RepoFacts, String> {
     let mut path_text = BTreeMap::new();
-    collect_repo_files(root, "src", &mut path_text)?;
-    collect_repo_files(root, "tests", &mut path_text)?;
+    collect_repo_files(input, "src", &mut path_text)?;
+    collect_repo_files(input, "tests", &mut path_text)?;
     for path in [REQUIREMENTS_PATH, PROOF_GAP_PATH, MODULE_INDEX_PATH] {
-        path_text.insert(path.to_string(), read_text(&root.join(path), path)?);
+        let locator_value = locator(path)?;
+        let text = input
+            .read_to_string(&locator_value)
+            .map_err(|err| format!("failed to read {path}: {err}"))?;
+        path_text.insert(path.to_string(), text);
     }
     let requirements = extract_requirement_ids(
         path_text.get(REQUIREMENTS_PATH).ok_or_else(|| format!("missing {REQUIREMENTS_PATH}"))?,
@@ -665,22 +668,26 @@ fn load_repo_facts(root: &Path) -> Result<RepoFacts, String> {
     })
 }
 
-fn run_write(root: &Path) -> Result<(), String> {
-    let facts = load_repo_facts(root)?;
+fn run_write(input: &ProofEvidenceInputRoot, output: &ArtifactOutputRoot) -> Result<(), String> {
+    let facts = load_repo_facts(input)?;
     let bundle = generate_bundle(&facts)?;
     let errors = validate_bundle(&bundle, &facts);
     if !errors.is_empty() {
         return Err(errors.join("\n"));
     }
-    fs::write(root.join(BUNDLE_PATH), sorted_json(&bundle)?)
+    let bytes = sorted_json(&bundle)?;
+    output
+        .write(&locator(BUNDLE_PATH)?, bytes.as_bytes())
         .map_err(|err| format!("failed to write {BUNDLE_PATH}: {err}"))?;
     println!("✓ wrote {BUNDLE_PATH}");
     Ok(())
 }
 
-fn run_check(root: &Path) -> Result<(), String> {
-    let facts = load_repo_facts(root)?;
-    let bundle_text = read_text(&root.join(BUNDLE_PATH), BUNDLE_PATH)?;
+fn run_check(input: &ProofEvidenceInputRoot) -> Result<(), String> {
+    let facts = load_repo_facts(input)?;
+    let bundle_text = input
+        .read_to_string(&locator(BUNDLE_PATH)?)
+        .map_err(|err| format!("failed to read {BUNDLE_PATH}: {err}"))?;
     let bundle: ProofBundle =
         serde_json::from_str(&bundle_text).map_err(|err| format!("invalid bundle JSON: {err}"))?;
     let expected = sorted_json(&generate_bundle(&facts)?)?;
@@ -844,10 +851,20 @@ fn repo_root() -> PathBuf {
 fn main() -> ExitCode {
     let args: Vec<String> = std::env::args().skip(1).collect();
     let root = repo_root();
+    let input = match ProofEvidenceInputRoot::open(&root) {
+        Ok(input) => input,
+        Err(err) => {
+            eprintln!("✗ failed to open proof-evidence input root {}: {err}", root.display());
+            return ExitCode::FAILURE;
+        }
+    };
     let result = match args.as_slice() {
-        [] => run_check(&root),
-        [command] if command == "check" => run_check(&root),
-        [command] if command == "write" => run_write(&root),
+        [] => run_check(&input),
+        [command] if command == "check" => run_check(&input),
+        [command] if command == "write" => match ArtifactOutputRoot::open(&root) {
+            Ok(output) => run_write(&input, &output),
+            Err(err) => Err(format!("failed to open proof-evidence artifact root {}: {err}", root.display())),
+        },
         [command] if command == "self-test" => run_self_test(),
         _ => Err("usage: proof_evidence [check|write|self-test]".to_string()),
     };

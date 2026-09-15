@@ -3,12 +3,14 @@ mod model;
 mod store;
 
 use std::env;
-use std::path::PathBuf;
 
 use anyhow::Context;
 use anyhow::Result;
 use anyhow::anyhow;
 use anyhow::bail;
+use crate::locator::RelativeLocator;
+use crate::repository_roots::IndexDatabaseRoot;
+use crate::repository_roots::RepositoryRoot;
 pub use model::Blake3DigestHex;
 pub use model::Blake3DigestHexError;
 pub use model::DEFAULT_DB_PATH;
@@ -34,7 +36,10 @@ where I: IntoIterator<Item = String> {
     };
 
     let cwd = env::current_dir().context("read current directory for repo-index")?;
-    let index = RepoIndex::open(&cwd, &default_db_path(&cwd))?;
+    let repository = RepositoryRoot::open(&cwd).context("open repository capability root")?;
+    let index_root = IndexDatabaseRoot::open(&cwd).context("open index database capability root")?;
+    let database = RelativeLocator::new(default_db_locator()).context("validate default index database locator")?;
+    let index = RepoIndex::open(repository, index_root, &database)?;
 
     match command.as_str() {
         "build" => {
@@ -110,8 +115,8 @@ fn usage() -> &'static str {
     "usage: repo-index <build|stats|path <path>|symbol <name>|requirement <id>|digest <hex>>"
 }
 
-fn default_db_path(root: &std::path::Path) -> PathBuf {
-    root.join(DEFAULT_DB_PATH)
+fn default_db_locator() -> &'static str {
+    DEFAULT_DB_PATH
 }
 
 fn print_refresh_summary(summary: &RefreshSummary) {

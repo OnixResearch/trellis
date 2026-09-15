@@ -23,6 +23,7 @@ cargo_check_args = ["--lib"]
 anyhow = "1.0"
 blake3 = "1.8"
 bs58 = "0.5"
+cap-std = "4.0.3"
 ed25519-dalek = { version = "2.1", features = ["rand_core"] }
 redb = "2.6"
 regex = "1.12"

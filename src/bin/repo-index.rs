@@ -1,3 +1,7 @@
+#[path = "../tooling/locator.rs"]
+mod locator;
+#[path = "../tooling/repository_roots.rs"]
+mod repository_roots;
 #[path = "../repo_index/mod.rs"]
 mod repo_index;
 

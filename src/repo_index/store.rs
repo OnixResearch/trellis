@@ -1,8 +1,6 @@
 use std::collections::BTreeMap;
 use std::collections::BTreeSet;
-use std::fs;
 use std::path::Path;
-use std::path::PathBuf;
 
 use anyhow::Context;
 use anyhow::Result;
@@ -11,6 +9,10 @@ use anyhow::bail;
 use redb::Database;
 use redb::ReadableTable;
 use redb::TableDefinition;
+
+use crate::locator::RelativeLocator;
+use crate::repository_roots::IndexDatabaseRoot;
+use crate::repository_roots::RepositoryRoot;
 
 use super::extract::extract_facts;
 use super::extract::infer_openspec_context;
@@ -41,42 +43,41 @@ pub struct RefreshOptions {
 
 #[derive(Debug)]
 struct ScannedFile {
-    absolute_path: PathBuf,
     relative_path: RepoPath,
 }
 
 pub struct RepoIndex {
-    root: PathBuf,
+    repository: RepositoryRoot,
     db: Database,
 }
 
 impl RepoIndex {
     // r[impl repo-index.persistent-store]
-    pub fn open(root: &Path, db_path: &Path) -> Result<Self> {
-        if let Some(parent) = db_path.parent() {
-            fs::create_dir_all(parent)
-                .with_context(|| format!("create repo-index parent directory {}", parent.display()))?;
-        }
-        let mut db =
-            Database::create(db_path).with_context(|| format!("open repo index database {}", db_path.display()))?;
+    pub fn open(repository: RepositoryRoot, index: IndexDatabaseRoot, database: &RelativeLocator) -> Result<Self> {
+        index
+            .create_parent_dir(database)
+            .with_context(|| format!("create repo-index parent directory for {database}"))?;
+        let database_path = index.database_path(database);
+        let mut db = Database::create(&database_path)
+            .with_context(|| format!("open repo index database {}", database_path.display()))?;
         if let Err(error) = Self::initialize(&db) {
             if schema_mismatch(&error) {
                 drop(db);
-                if db_path.exists() {
-                    fs::remove_file(db_path)
-                        .with_context(|| format!("remove stale repo index database {}", db_path.display()))?;
+                match index.remove_file(database) {
+                    Ok(()) => {}
+                    Err(remove_error) if remove_error.kind() == std::io::ErrorKind::NotFound => {}
+                    Err(remove_error) => {
+                        return Err(anyhow!("remove stale repo index database {database}: {remove_error}"));
+                    }
                 }
-                db = Database::create(db_path)
-                    .with_context(|| format!("recreate repo index database {}", db_path.display()))?;
+                db = Database::create(&database_path)
+                    .with_context(|| format!("recreate repo index database {}", database_path.display()))?;
                 Self::initialize(&db)?;
             } else {
                 return Err(error);
             }
         }
-        Ok(Self {
-            root: root.to_path_buf(),
-            db,
-        })
+        Ok(Self { repository, db })
     }
 
     fn initialize(db: &Database) -> Result<()> {
@@ -117,7 +118,7 @@ impl RepoIndex {
     }
 
     pub fn refresh_with_options(&self, options: RefreshOptions) -> Result<RefreshSummary> {
-        let scanned = scan_tracked_files(&self.root)?;
+        let scanned = scan_tracked_files(&self.repository)?;
         let previous_rows = self.active_path_rows()?;
         let previous_by_path: BTreeMap<RepoPath, PathRow> =
             previous_rows.into_iter().map(|row| (row.path.clone(), row)).collect();
@@ -142,8 +143,11 @@ impl RepoIndex {
             let mut stats_table = write_txn.open_table(STATS_TABLE).context("open repo-index stats table")?;
 
             for scanned_file in scanned {
-                let bytes = fs::read(&scanned_file.absolute_path)
-                    .with_context(|| format!("read tracked file {}", scanned_file.absolute_path.display()))?;
+                let locator = repo_locator(&scanned_file.relative_path)?;
+                let bytes = self
+                    .repository
+                    .read(&locator)
+                    .with_context(|| format!("read tracked file {}", scanned_file.relative_path))?;
                 let digest_hex = Blake3DigestHex::from_bytes(&bytes);
                 let extractor_kind = super::model::ExtractorKind::from_path(&scanned_file.relative_path);
                 let row = PathRow {
@@ -427,81 +431,75 @@ fn decode<T: serde::de::DeserializeOwned>(bytes: &[u8]) -> Result<T> {
     serde_json::from_slice(bytes).context("deserialize repo-index row")
 }
 
-fn scan_tracked_files(root: &Path) -> Result<Vec<ScannedFile>> {
+fn repo_locator(path: &RepoPath) -> Result<RelativeLocator> {
+    RelativeLocator::new(path.as_str()).map_err(|error| anyhow!("repo path {path} is not a tooling locator: {error}"))
+}
+
+fn locator_for(relative: &str) -> Result<RelativeLocator> {
+    RelativeLocator::new(relative).map_err(|error| anyhow!("tooling path {relative:?} is not a relative locator: {error}"))
+}
+
+fn scan_tracked_files(repository: &RepositoryRoot) -> Result<Vec<ScannedFile>> {
     let mut scanned = Vec::new();
-    collect_files_with_extension(root, Path::new("src"), "rs", &mut scanned, false)?;
-    push_if_exists(root, Path::new("docs/requirements.md"), &mut scanned)?;
-    collect_files_with_extension(root, Path::new("openspec/specs"), "md", &mut scanned, false)?;
-    collect_files_with_extension(root, Path::new("openspec/changes"), "md", &mut scanned, true)?;
-    push_if_exists(root, Path::new("README.md"), &mut scanned)?;
-    push_if_exists(root, Path::new("AGENTS.md"), &mut scanned)?;
+    collect_files_with_extension(repository, "src", "rs", &mut scanned, false)?;
+    push_if_exists(repository, "docs/requirements.md", &mut scanned)?;
+    collect_files_with_extension(repository, "openspec/specs", "md", &mut scanned, false)?;
+    collect_files_with_extension(repository, "openspec/changes", "md", &mut scanned, true)?;
+    push_if_exists(repository, "README.md", &mut scanned)?;
+    push_if_exists(repository, "AGENTS.md", &mut scanned)?;
     scanned.sort_by_key(|file| file.relative_path.clone());
     Ok(scanned)
 }
 
-fn push_if_exists(root: &Path, relative: &Path, scanned: &mut Vec<ScannedFile>) -> Result<()> {
-    let absolute = root.join(relative);
-    if absolute.is_file() {
+fn push_if_exists(repository: &RepositoryRoot, relative: &str, scanned: &mut Vec<ScannedFile>) -> Result<()> {
+    let locator = locator_for(relative)?;
+    if repository.is_file(&locator) {
         scanned.push(ScannedFile {
-            absolute_path: absolute,
-            relative_path: normalize_relative_path(relative)?,
+            relative_path: RepoPath::new(relative)?,
         });
     }
     Ok(())
 }
 
 fn collect_files_with_extension(
-    root: &Path,
-    relative_dir: &Path,
+    repository: &RepositoryRoot,
+    relative_dir: &str,
     extension: &str,
     scanned: &mut Vec<ScannedFile>,
     skip_archive: bool,
 ) -> Result<()> {
-    let absolute_dir = root.join(relative_dir);
-    if !absolute_dir.is_dir() {
+    let dir = locator_for(relative_dir)?;
+    if !repository.is_dir(&dir) {
         return Ok(());
     }
-    collect_files_recursive(root, relative_dir, extension, scanned, skip_archive)
+    collect_files_recursive(repository, relative_dir, extension, scanned, skip_archive)
 }
 
 fn collect_files_recursive(
-    root: &Path,
-    relative_dir: &Path,
+    repository: &RepositoryRoot,
+    relative_dir: &str,
     extension: &str,
     scanned: &mut Vec<ScannedFile>,
     skip_archive: bool,
 ) -> Result<()> {
-    let absolute_dir = root.join(relative_dir);
-    let mut entries: Vec<_> = fs::read_dir(&absolute_dir)
-        .with_context(|| format!("read directory {}", absolute_dir.display()))?
-        .collect::<std::io::Result<Vec<_>>>()
-        .with_context(|| format!("collect directory {}", absolute_dir.display()))?;
-    entries.sort_by_key(std::fs::DirEntry::file_name);
-
-    for entry in entries {
-        let file_type = entry.file_type().with_context(|| format!("read file type for {}", entry.path().display()))?;
-        let file_name = entry.file_name();
-        let child_relative = relative_dir.join(&file_name);
-        let child_repo_path = normalize_relative_path(&child_relative)?;
-        if file_type.is_dir() {
-            if skip_archive && child_repo_path.as_str() == "openspec/changes/archive" {
+    let dir = locator_for(relative_dir)?;
+    for name in repository.read_dir(&dir).with_context(|| format!("read directory {relative_dir}"))? {
+        let child_relative = format!("{relative_dir}/{name}");
+        let child_locator = locator_for(&child_relative)?;
+        if repository.is_dir(&child_locator) {
+            if skip_archive && child_relative == "openspec/changes/archive" {
                 continue;
             }
-            collect_files_recursive(root, &child_relative, extension, scanned, skip_archive)?;
-        } else if file_type.is_file() && child_relative.extension().and_then(|value| value.to_str()) == Some(extension)
+            collect_files_recursive(repository, &child_relative, extension, scanned, skip_archive)?;
+        } else if repository.is_file(&child_locator)
+            && Path::new(&name).extension().and_then(|value| value.to_str()) == Some(extension)
         {
             scanned.push(ScannedFile {
-                absolute_path: entry.path(),
-                relative_path: child_repo_path,
+                relative_path: RepoPath::new(&child_relative)?,
             });
         }
     }
-
     Ok(())
-}
-
-fn normalize_relative_path(path: &Path) -> Result<RepoPath> {
-    RepoPath::new(path.to_string_lossy()).context("normalize tracked repository path")
 }
 
 #[cfg(test)]
@@ -515,10 +513,13 @@ mod tests {
     use tempfile::TempDir;
 
     use super::EXTRACTION_TABLE;
+    use super::IndexDatabaseRoot;
     use super::META_TABLE;
     use super::PATH_TABLE;
     use super::RefreshOptions;
+    use super::RelativeLocator;
     use super::RepoIndex;
+    use super::RepositoryRoot;
     use super::STATS_TABLE;
     use crate::repo_index::model::Blake3DigestHex;
     use crate::repo_index::model::CURRENT_SCHEMA_VERSION;
@@ -578,7 +579,10 @@ mod tests {
         }
 
         fn index(&self) -> Result<RepoIndex> {
-            RepoIndex::open(self.root(), &self.root().join(DEFAULT_DB_PATH))
+            let repository = RepositoryRoot::open(self.root())?;
+            let index_root = IndexDatabaseRoot::open(self.root())?;
+            let database = RelativeLocator::new(DEFAULT_DB_PATH).expect("valid default database locator");
+            RepoIndex::open(repository, index_root, &database)
         }
     }
 
