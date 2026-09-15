@@ -151,7 +151,11 @@ fn validate_inputs(inputs: &Inputs) -> Vec<String> {
             .iter()
             .find(|observation| observation.module == target.module)
             .map(|observation| observation.measured_class.as_str());
-        if measured.is_none_or(|class| class == model::CLASS_UNMEASURED) {
+        let target_is_unmeasured = match measured {
+            Some(class) => class == model::CLASS_UNMEASURED,
+            None => true,
+        };
+        if target_is_unmeasured {
             diagnostics
                 .push(format!("target `{}` selects unmeasured module `{}`", target.requirement_id, target.module));
         }

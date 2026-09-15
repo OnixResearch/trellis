@@ -172,9 +172,7 @@ fn validate_observation(observation: &model::Observation, seen: &mut BTreeSet<St
         }
         other => diagnostics.push(format!("observation outcome `{other}` is not a known outcome")),
     }
-    if let Some(evidence) = observation.evidence.as_deref()
-        && evidence.is_empty()
-    {
+    if observation.evidence.as_deref().is_some_and(str::is_empty) {
         diagnostics.push(format!("observation evidence for `{}` is empty", observation.module));
     }
     if observation.measured_class != model::CLASS_UNMEASURED && !observation.reviewed {
