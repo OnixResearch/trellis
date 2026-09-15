@@ -162,6 +162,13 @@ fn validate_observation(observation: &model::Observation, seen: &mut BTreeSet<St
             if !has_diagnostic {
                 diagnostics
                     .push(format!("failed observation for `{}` must record a diagnostic class", observation.module));
+            } else if !model::DIAGNOSTIC_CLASSES.contains(&observation.diagnostic_class.as_deref().unwrap_or_default())
+            {
+                diagnostics.push(format!(
+                    "failed observation for `{}` uses unknown diagnostic class `{}`",
+                    observation.module,
+                    observation.diagnostic_class.as_deref().unwrap_or_default()
+                ));
             }
             if has_construct {
                 diagnostics.push(format!(

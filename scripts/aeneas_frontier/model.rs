@@ -35,6 +35,15 @@ pub(crate) const RECEIPT_CLASS_OCTET: &str = "octet-proof-receipt";
 pub(crate) const RECEIPT_CLASS_LOCAL: &str = "local-lake-build";
 pub(crate) const RECEIPT_CLASSES: [&str; 3] = [RECEIPT_CLASS_TRELLIS, RECEIPT_CLASS_OCTET, RECEIPT_CLASS_LOCAL];
 
+/// Closed diagnostic classes for a failed observation.
+pub(crate) const DIAGNOSTIC_CLASS_TIMEOUT: &str = "stage-timeout";
+pub(crate) const DIAGNOSTIC_CLASSES: [&str; 4] = [
+    DIAGNOSTIC_CLASS_TIMEOUT,
+    "process-spawn-failure",
+    "provider-identity-drift",
+    "artifact-read-failure",
+];
+
 pub(crate) const REQUIRED_NON_CLAIMS: [&str; 5] = [
     "does not prove whole-library Aeneas or Lean coverage",
     "does not prove Aeneas, Charon, or Lean soundness",

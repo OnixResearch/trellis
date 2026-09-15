@@ -16,9 +16,11 @@ instrument, not the proof.
 | `aeneas-frontier/observations.json` | recorded provider observations, one per measured module |
 | `aeneas-frontier/targets.json` | selected requirement statements with approved hashes and receipts |
 | `aeneas-frontier/evidence/batch-2026-09-14.json` | local extraction batch evidence: item, status, seconds, LLBC bytes, LLBC BLAKE3, tool identities |
-| `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity |
-| `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, local receipt |
-| `aeneas-frontier/evidence/lean-build-2026-09-14.txt` | bounded build transcript: command, axiom lines, summary |
+| `aeneas-frontier/evidence/batch-2026-09-14-reviewed.json` | reviewed-provider batch evidence: Charon and Aeneas binary BLAKE3, LLBC identity, generated Lean identity, translation manifest identity, budget record |
+| `aeneas-frontier/evidence/lean-2026-09-14.json` | local Lean build evidence: theorem statements, axiom closure, generated-model identities, library `sorry` sites, local receipt |
+| `aeneas-frontier/evidence/lean-build-2026-09-14.txt`, `-b.txt`, `-c.txt` | bounded build transcripts: command, axiom lines, summary |
+| `aeneas-frontier/evidence/lean-negatives-2026-09-14.txt` | bounded transcript for the false and vacuous Lean runs |
+| `aeneas-frontier/evidence/octet-adequacy-2026-09-14.txt` | Octet adequacy rejection of the vacuous theorem, with no receipt written |
 | `aeneas-frontier/generated/lean/` | generated Lean models and translation manifests from the reviewed batch |
 | `aeneas-frontier/theorems/` | maintained Lean theorems and the axiom audit |
 | `aeneas-frontier/generated/frontier.json` | generated frontier artifact with class counts |
@@ -57,7 +59,7 @@ proof coverage.
 | `tier-4-trust-boundary` | module that contains an `#[verifier::external_body]` site |
 | `excluded-construct` | measured provider rejection; the observation names the construct |
 | `blocked-<stage>` | measured stage blocker; the observation names the stage and diagnostic class |
-| `unmeasured` | no positive measure. A failed tool run also stays unmeasured |
+| `unmeasured` | no positive measure. A failed tool run also stays unmeasured; a failed observation records one closed diagnostic class (`stage-timeout`, `process-spawn-failure`, `provider-identity-drift`, `artifact-read-failure`) |
 
 A source scan may propose one of the four tier classes as a hypothesis. Only a
 recorded observation sets the measured class, and a measured class requires

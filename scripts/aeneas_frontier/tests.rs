@@ -175,6 +175,16 @@ fn negative_frontier_cases(
     unreviewed.observations[0].reviewed = false;
     expect("unreviewed-measured", validation::validate_observations(&unreviewed))?;
 
+    let mut unknown_diagnostic = file.clone();
+    unknown_diagnostic.observations[2].diagnostic_class = Some("whoops".to_owned());
+    expect("unknown-diagnostic-class", validation::validate_observations(&unknown_diagnostic))?;
+
+    let mut timeout_budget = file.clone();
+    timeout_budget.observations[2].diagnostic_class = Some(model::DIAGNOSTIC_CLASS_TIMEOUT.to_owned());
+    if !validation::validate_observations(&timeout_budget).is_empty() {
+        return Err("a stage-timeout observation must stay a valid budget result".to_owned());
+    }
+
     let mut stage_drift = file.clone();
     stage_drift.observations[1].measured_class = String::from("blocked-aeneas-translation");
     expect("blocked-stage-class-drift", validation::validate_observations(&stage_drift))?;

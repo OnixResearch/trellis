@@ -1,0 +1,8 @@
+command: cargo-octet prove --policy-artifacts-dir <patched> --source src/bounds.rs --rail trellis.aeneas_lean_coverage.vacuous#rail-0
+exit: 1
+diagnostic: Aeneas theorem adequacy rejected vacuous theorem
+theorem: aeneas-frontier/fixtures/negative/VacuousClamp.lean
+theorem_blake3: b3:9c16d5c28ce57c3339b4cef21dfe6b03f89e97b3e77bc539ec9026a0926fd051
+receipt_written: none
+recorded_artifacts: command.txt, evidence-log-manifest.json
+note: the prove run rejected the theorem before any stage executed, so no Lean build was needed
