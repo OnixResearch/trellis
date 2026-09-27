@@ -29,6 +29,10 @@
     };
     # r[impl trellis.nickel_toolchain.cohort]
     nickel-1-17-0.url = "github:nickel-lang/nickel/1320a983e6c3d1e2fb53dd2464b084b4903b1426";
+    onixpkgs = {
+      url = "git+ssh://git@github.com/OnixResearch/onixpkgs.git";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -43,6 +47,7 @@
       nickel-export,
       trellis-consumer-release-src,
       nickel-1-17-0,
+      onixpkgs,
       ...
     }:
     flake-utils.lib.eachDefaultSystem (
@@ -50,7 +55,10 @@
       let
         pkgs = import nixpkgs {
           inherit system;
-          overlays = [ (import rust-overlay) ];
+          overlays = [
+            (import rust-overlay)
+            onixpkgs.overlays.default
+          ];
         };
         nickel = nickel-1-17-0.packages.${system}.default;
         nickelExport = nickel-export.packages.${system}.default;
@@ -1073,23 +1081,6 @@
               ''}
             '';
 
-        # Tracey: fetch release binary
-        tracey = pkgs.stdenv.mkDerivation {
-          pname = "tracey";
-          version = "1.3.0";
-          src = pkgs.fetchurl {
-            url = "https://github.com/bearcove/tracey/releases/latest/download/tracey-x86_64-unknown-linux-gnu.tar.xz";
-            hash = "sha256-+8DCXEQyjMsJcLJQkJX/KUEvpyy7xrADbEzujBKCH0c=";
-          };
-          sourceRoot = ".";
-          nativeBuildInputs = [ pkgs.autoPatchelfHook ];
-          buildInputs = [ pkgs.stdenv.cc.cc.lib ];
-          installPhase = ''
-            mkdir -p $out/bin
-            install -m 755 tracey-*/tracey $out/bin/tracey
-          '';
-        };
-
       in
       {
         packages = {
@@ -1838,7 +1829,7 @@
           tracey-coverage =
             pkgs.runCommand "tracey-coverage"
               {
-                nativeBuildInputs = [ tracey ];
+                nativeBuildInputs = [ pkgs.tracey ];
               }
               ''
                 cd ${src}
